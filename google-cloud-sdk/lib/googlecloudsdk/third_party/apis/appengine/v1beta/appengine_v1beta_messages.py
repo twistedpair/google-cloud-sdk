@@ -1795,7 +1795,8 @@ class Network(_messages.Message):
     name: Google Compute Engine network where the virtual machines are
       created. Specify the short name, not the resource path.Defaults to
       default.
-    sessionAffinity: Enable session affinity.
+    sessionAffinity: Enable session affinity. Only applicable in the App
+      Engine flexible environment.
     subnetworkName: Google Cloud Platform sub-network where the virtual
       machines are created. Specify the short name, not the resource path.If a
       subnetwork name is specified, a network name will also be required

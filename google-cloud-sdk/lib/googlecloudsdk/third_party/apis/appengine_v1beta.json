@@ -921,7 +921,7 @@
           "type": "string"
         },
         "sessionAffinity": {
-          "description": "Enable session affinity.",
+          "description": "Enable session affinity. Only applicable in the App Engine flexible environment.",
           "type": "boolean"
         }
       }

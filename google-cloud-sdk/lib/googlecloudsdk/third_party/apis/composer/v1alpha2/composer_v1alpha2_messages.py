@@ -719,15 +719,22 @@ class SoftwareConfig(_messages.Message):
       * `C_FORCE_ROOT` * `CONTAINER_NAME` * `DAGS_FOLDER` * `GCP_PROJECT` *
       `GCS_BUCKET` * `GKE_CLUSTER_NAME` * `SQL_DATABASE` * `SQL_INSTANCE` *
       `SQL_PASSWORD` * `SQL_PROJECT` * `SQL_REGION` * `SQL_USER`
-    imageVersion: Output only. The version of the software running in the
-      environment. This encapsulates both the version of Cloud Composer
-      functionality and the version of Apache Airflow. It must match the
-      regular expression `composer-[0-9]+\.[0-9]+(\.[0-9]+)?-airflow-[0-9]+\.[
-      0-9]+(\.[0-9]+.*)?`.  The Cloud Composer portion of the version is a
-      [semantic version](https://semver.org). The portion of the image version
-      following <em>airflow-</em> is an official Apache Airflow repository
+    imageVersion: The version of the software running in the environment. This
+      encapsulates both the version of Cloud Composer functionality and the
+      version of Apache Airflow. It must match the regular expression `compose
+      r-([0-9]+\.[0-9]+\.[0-9]+|latest)-airflow-[0-9]+\.[0-9]+(\.[0-9]+.*)?`.
+      When used as input, the server also checks if the provided version is
+      supported and denies the request for an unsupported version.  The Cloud
+      Composer portion of the version is a [semantic
+      version](https://semver.org) or `latest`. When the patch version is
+      omitted, the current Cloud Composer patch version is selected. When
+      `latest` is provided instead of an explicit version number, the server
+      replaces `latest` with the current Cloud Composer version and stores
+      that version number in the same field.  The portion of the image version
+      that follows <em>airflow-</em> is an official Apache Airflow repository
       [release name](https://github.com/apache/incubator-airflow/releases).
-      See also [Release Notes](/composer/docs/release-notes).
+      See also [Version List](/composer/docs/concepts/versioning/composer-
+      versions).
     pypiPackages: Optional. Custom Python Package Index (PyPI) packages to be
       installed in the environment.  Keys refer to the lowercase package name
       such as "numpy" and values are the lowercase extras and version

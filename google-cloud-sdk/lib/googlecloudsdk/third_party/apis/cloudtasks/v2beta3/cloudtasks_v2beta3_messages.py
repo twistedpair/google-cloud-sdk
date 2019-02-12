@@ -1405,7 +1405,7 @@ class Task(_messages.Message):
     createTime: Output only. The time that the task was created.
       `create_time` will be truncated to the nearest second.
     dispatchCount: Output only. The number of attempts dispatched.  This count
-      includes tasks which have been dispatched but haven't received a
+      includes attempts which have been dispatched but haven't received a
       response.
     dispatchDeadline: The deadline for requests sent to the worker. If the
       worker does not respond by this deadline then the request is cancelled

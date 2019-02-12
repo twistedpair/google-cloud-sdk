@@ -552,24 +552,25 @@ def GetAcceleratorFlag():
       help="""\
 Manage the accelerator config for GPU serving. When deploying a model with the
 new Alpha Google Compute Engine Machine Types, a GPU accelerator may also be selected.
+You can see what accelerators are supported in what location via the
+'gcloud alpha ml-engine locations list' command.
 
-*type*::: The type of the accelerator. Choices are 'nvdia-tesla-k80', 'nvdia-tesla-p100', 'nvdia-tesla-v100' and 'nvdia-tesla-p4'.
+*type*::: The type of the accelerator. Choices are {}.
 
 *count*::: The number of accelerators to attach to each machine running the job.
-""")
+""".format(', '.join(["'{}'".format(c) for c in _ACCELERATOR_TYPE_MAPPER.choices])))
 
 
 def ParseAcceleratorFlag(accelerator):
   """Validates and returns a accelerator config message object."""
-  types = ('nvidia-tesla-k80', 'nvidia-tesla-p100', 'nvidia-tesla-v100',
-           'nvidia-tesla-p4')
+  types = [c for c in _ACCELERATOR_TYPE_MAPPER.choices]
   if accelerator is None:
     return None
   raw_type = accelerator.get('type', None)
   if raw_type not in types:
     raise ArgumentError("""\
-The type of the accelerator can only be one of the following: 'nvidia-tesla-k80', 'nvidia-tesla-p100', 'nvidia-tesla-v100' and 'nvidia-tesla-p4'.
-""")
+The type of the accelerator can only be one of the following: {}.
+""".format(', '.join(["'{}'".format(c) for c in types])))
   accelerator_count = accelerator.get('count', 0)
   if accelerator_count <= 0:
     raise ArgumentError("""\

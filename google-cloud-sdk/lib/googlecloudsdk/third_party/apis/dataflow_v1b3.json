@@ -428,6 +428,20 @@
         "serviceAccountEmail": {
           "description": "Identity to run virtual machines as. Defaults to the default account.",
           "type": "string"
+        },
+        "flexResourceSchedulingGoal": {
+          "description": "Which Flexible Resource Scheduling mode to run in.",
+          "enumDescriptions": [
+            "Run in the default mode.",
+            "Optimize for lower execution time.",
+            "Optimize for lower cost."
+          ],
+          "type": "string",
+          "enum": [
+            "FLEXRS_UNSPECIFIED",
+            "FLEXRS_SPEED_OPTIMIZED",
+            "FLEXRS_COST_OPTIMIZED"
+          ]
         }
       }
     },
@@ -3799,6 +3813,11 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "maxWorkItemCommitBytes": {
+          "description": "Maximum size for work item commit supported windmill storage layer.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },

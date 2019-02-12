@@ -98,7 +98,8 @@ def AddSourceRefFlags(parser):
 def AddRegionArg(parser):
   """Add a region arg."""
   parser.add_argument(
-      '--region', help='The region in which to create the service.')
+      '--region', help='The region in which the resource can be found. '
+      'Alternatively, set the property [run/region].')
 
 
 # TODO(b/118339293): Stop hardcoding regions.

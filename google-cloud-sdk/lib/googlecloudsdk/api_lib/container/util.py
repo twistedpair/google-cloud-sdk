@@ -101,9 +101,13 @@ def _KubectlInstalledAsComponent():
 
 def CheckKubectlInstalled():
   """Verify that the kubectl component is installed or print a warning."""
-  if (not file_utils.FindExecutableOnPath(_KUBECTL_COMPONENT_NAME) and
-      not _KubectlInstalledAsComponent()):
+  executable = file_utils.FindExecutableOnPath(_KUBECTL_COMPONENT_NAME)
+  component = _KubectlInstalledAsComponent()
+  if not (executable or component):
     log.warning(MISSING_KUBECTL_MSG)
+    return None
+
+  return executable if executable else component
 
 
 def GenerateClusterUrl(cluster_ref):

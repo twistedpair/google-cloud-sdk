@@ -211,9 +211,7 @@ class Condition(_messages.Message):
     svc: Trusted attributes discharged by the service.
     sys: Trusted attributes supplied by any service that owns resources and
       uses the IAM system for access control.
-    value: DEPRECATED. Use 'values' instead.
-    values: The objects of the condition. This is mutually exclusive with
-      'value'.
+    values: The objects of the condition.
   """
 
   class IamValueValuesEnum(_messages.Enum):
@@ -304,8 +302,7 @@ class Condition(_messages.Message):
   op = _messages.EnumField('OpValueValuesEnum', 2)
   svc = _messages.StringField(3)
   sys = _messages.EnumField('SysValueValuesEnum', 4)
-  value = _messages.StringField(5)
-  values = _messages.StringField(6, repeated=True)
+  values = _messages.StringField(5, repeated=True)
 
 
 class CounterOptions(_messages.Message):

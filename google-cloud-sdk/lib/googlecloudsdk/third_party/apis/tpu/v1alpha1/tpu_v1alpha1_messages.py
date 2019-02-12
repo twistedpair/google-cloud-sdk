@@ -253,13 +253,18 @@ class Node(_messages.Message):
       HEALTH_UNSPECIFIED: Health status is unknown: not initialized or failed
         to retrieve.
       HEALTHY: The resource is healthy.
-      UNHEALTHY: The resource is unhealthy.
+      DEPRECATED_UNHEALTHY: The resource is unhealthy.
       TIMEOUT: The resource is unresponsive.
+      UNHEALTHY_TENSORFLOW: The in-guest ML stack is unhealthy.
+      UNHEALTHY_MAINTENANCE: The node is under maintenance/priority boost
+        caused rescheduling and will resume running once rescheduled.
     """
     HEALTH_UNSPECIFIED = 0
     HEALTHY = 1
-    UNHEALTHY = 2
+    DEPRECATED_UNHEALTHY = 2
     TIMEOUT = 3
+    UNHEALTHY_TENSORFLOW = 4
+    UNHEALTHY_MAINTENANCE = 5
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state for the TPU Node.

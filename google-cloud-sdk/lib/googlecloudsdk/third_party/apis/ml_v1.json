@@ -322,7 +322,8 @@
             "Nvidia Tesla P100 GPU.",
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
-            "Nvidia Tesla T4 GPU."
+            "Nvidia Tesla T4 GPU.",
+            "TPU V2"
           ],
           "type": "string",
           "enum": [
@@ -331,7 +332,8 @@
             "NVIDIA_TESLA_P100",
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
-            "NVIDIA_TESLA_T4"
+            "NVIDIA_TESLA_T4",
+            "TPU_V2"
           ]
         }
       }
@@ -749,7 +751,8 @@
             "Nvidia Tesla P100 GPU.",
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
-            "Nvidia Tesla T4 GPU."
+            "Nvidia Tesla T4 GPU.",
+            "TPU V2"
           ],
           "type": "array",
           "items": {
@@ -760,7 +763,8 @@
               "NVIDIA_TESLA_P100",
               "NVIDIA_TESLA_V100",
               "NVIDIA_TESLA_P4",
-              "NVIDIA_TESLA_T4"
+              "NVIDIA_TESLA_T4",
+              "TPU_V2"
             ]
           }
         }

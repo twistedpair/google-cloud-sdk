@@ -30,6 +30,11 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.resource import resource_printer
 
 
+COMPUTE_ALPHA_API_VERSION = 'alpha'
+COMPUTE_BETA_API_VERSION = 'beta'
+COMPUTE_GA_API_VERSION = 'v1'
+
+
 class InstanceNotReadyError(exceptions.Error):
   """The user is attempting to perform an operation on a not-ready instance."""
 

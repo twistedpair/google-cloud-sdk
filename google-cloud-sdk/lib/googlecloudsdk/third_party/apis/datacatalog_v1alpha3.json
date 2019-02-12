@@ -374,6 +374,11 @@
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
                   "type": "string"
+                },
+                "crawlerId": {
+                  "description": "Required. The id of the crawler to create.",
+                  "location": "query",
+                  "type": "string"
                 }
               },
               "parameterOrder": [

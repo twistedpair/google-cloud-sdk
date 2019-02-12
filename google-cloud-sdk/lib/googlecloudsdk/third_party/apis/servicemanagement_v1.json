@@ -2981,7 +2981,7 @@
               "type": "string"
             },
             "pageSize": {
-              "description": "Requested size of the next page of data.",
+              "description": "The max number of items to include in the response list. Page size is 50\nif not specified. Maximum value is 100.",
               "location": "query",
               "type": "integer",
               "format": "int32"
@@ -3393,7 +3393,7 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The max number of items to include in the response list.",
+                  "description": "The max number of items to include in the response list. Page size is 50\nif not specified. Maximum value is 100.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -3534,7 +3534,7 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The max number of items to include in the response list.",
+                  "description": "The max number of items to include in the response list. Page size is 50\nif not specified. Maximum value is 100.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"

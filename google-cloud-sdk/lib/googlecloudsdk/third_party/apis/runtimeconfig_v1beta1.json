@@ -656,12 +656,8 @@
             "DISCHARGED"
           ]
         },
-        "value": {
-          "description": "DEPRECATED. Use 'values' instead.",
-          "type": "string"
-        },
         "values": {
-          "description": "The objects of the condition. This is mutually exclusive with 'value'.",
+          "description": "The objects of the condition.",
           "type": "array",
           "items": {
             "type": "string"

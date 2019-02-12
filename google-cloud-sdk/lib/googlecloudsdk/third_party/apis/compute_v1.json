@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20190125",
+ "revision": "20190201",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -3037,13 +3037,9 @@
       ""
      ]
     },
-    "value": {
-     "type": "string",
-     "description": "DEPRECATED. Use 'values' instead."
-    },
     "values": {
      "type": "array",
-     "description": "The objects of the condition. This is mutually exclusive with 'value'.",
+     "description": "The objects of the condition.",
      "items": {
       "type": "string"
      }
@@ -4432,6 +4428,10 @@
       ""
      ]
     },
+    "allPorts": {
+     "type": "boolean",
+     "description": "This field is used along with the backend_service field for internal load balancing or with the target field for internal TargetInstance. This field cannot be used with port or portRange fields.\n\nWhen the load balancing scheme is INTERNAL and protocol is TCP/UDP, specify this field to allow packets addressed to any ports will be forwarded to the backends configured with this forwarding rule."
+    },
     "backendService": {
      "type": "string",
      "description": "This field is only used for INTERNAL load balancing.\n\nFor internal load balancing, this field identifies the BackendService resource to receive the matched traffic."
@@ -5726,7 +5726,7 @@
       },
       "sha1Checksum": {
        "type": "string",
-       "description": "An optional SHA1 checksum of the disk image before unpackaging; provided by the client when the disk image is created.",
+       "description": "An optional SHA1 checksum of the disk image before unpackaging provided by the client when the disk image is created.",
        "pattern": "[a-f0-9]{40}"
       },
       "source": {
@@ -8148,7 +8148,7 @@
     },
     "googleReferenceId": {
      "type": "string",
-     "description": "[Output Only] Google reference ID; to be used when raising support tickets with Google or otherwise to debug backend connectivity issues."
+     "description": "[Output Only] Google reference ID to be used when raising support tickets with Google or otherwise to debug backend connectivity issues."
     },
     "id": {
      "type": "string",
@@ -25811,7 +25811,7 @@
      "parameters": {
       "forceAttach": {
        "type": "boolean",
-       "description": "Whether to force attach the disk even if it's currently attached to another instance. This is only available for regional disks.",
+       "description": "Whether to force attach the disk even if it's currently attached to another instance.",
        "location": "query"
       },
       "instance": {
@@ -26329,7 +26329,7 @@
      "id": "compute.instances.reset",
      "path": "{project}/zones/{zone}/instances/{instance}/reset",
      "httpMethod": "POST",
-     "description": "Performs a reset on the instance. This is a hard reset; the VM does not do a graceful shutdown. For more information, see Resetting an instance.",
+     "description": "Performs a reset on the instance. This is a hard reset the VM does not do a graceful shutdown. For more information, see Resetting an instance.",
      "parameters": {
       "instance": {
        "type": "string",

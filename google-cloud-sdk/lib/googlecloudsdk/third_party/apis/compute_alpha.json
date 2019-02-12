@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20190125",
+ "revision": "20190201",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1040,7 +1040,8 @@
      "description": "[Output Only] Creation timestamp in RFC3339 text format."
     },
     "description": {
-     "type": "string"
+     "type": "string",
+     "description": "An optional description of this resource. Provide this property when you create the resource."
     },
     "id": {
      "type": "string",
@@ -1071,14 +1072,16 @@
      "description": "[Output Only] Server-defined URL for this resource with the resource id."
     },
     "specificAllocation": {
-     "$ref": "AllocationSpecificSKUAllocation"
+     "$ref": "AllocationSpecificSKUAllocation",
+     "description": "Allocation for instances with specific machine shapes."
     },
     "specificAllocationRequired": {
      "type": "boolean",
      "description": "Indicates whether the allocation can be consumed by VMs with \"any allocation\" defined. If the field is set, then only VMs that target the allocation by name using --allocation-affinity can consume this allocation."
     },
     "zone": {
-     "type": "string"
+     "type": "string",
+     "description": "Zone in which the allocation resides, must be provided if allocation is created with commitment creation."
     }
    }
   },
@@ -1355,7 +1358,8 @@
      "format": "int64"
     },
     "instanceProperties": {
-     "$ref": "AllocationSpecificSKUAllocationAllocatedInstanceProperties"
+     "$ref": "AllocationSpecificSKUAllocationAllocatedInstanceProperties",
+     "description": "The instance properties for this specific sku allocation."
     }
    }
   },
@@ -1762,14 +1766,14 @@
    "properties": {
     "origins": {
      "type": "array",
-     "description": "List of authentication methods that can be used for origin authentication. Similar to peers, these will be evaluated in order; the first valid one will be used to set origin identity. If none of these methods pass, the request will be rejected with authentication failed error (401). Leave the list empty if origin authentication is not required.",
+     "description": "List of authentication methods that can be used for origin authentication. Similar to peers, these will be evaluated in order the first valid one will be used to set origin identity. If none of these methods pass, the request will be rejected with authentication failed error (401). Leave the list empty if origin authentication is not required.",
      "items": {
       "$ref": "OriginAuthenticationMethod"
      }
     },
     "peers": {
      "type": "array",
-     "description": "List of authentication methods that can be used for peer authentication. They will be evaluated in order; the first valid one will be used to set peer identity. If none of these methods pass, the request will be rejected with authentication failed error (401). Leave the list empty if peer authentication is not required.",
+     "description": "List of authentication methods that can be used for peer authentication. They will be evaluated in order the first valid one will be used to set peer identity. If none of these methods pass, the request will be rejected with authentication failed error (401). Leave the list empty if peer authentication is not required.",
      "items": {
       "$ref": "PeerAuthenticationMethod"
      }
@@ -3480,14 +3484,16 @@
     },
     "callCredentialType": {
      "type": "string",
-     "description": "The type of call credentials to use for GRPC requests to the SDS server. This field can be set to one of the following: ACCESS_TOKEN: An access token is used as call credentials for the SDS server. GCE_VM: The local GCE VM service account credentials are used to access the SDS server. JWT_SERVICE_TOKEN: The user provisioned service account credentials are used to access the SDS server.",
+     "description": "The type of call credentials to use for GRPC requests to the SDS server. This field can be set to one of the following: ACCESS_TOKEN: An access token is used as call credentials for the SDS server. GCE_VM: The local GCE VM service account credentials are used to access the SDS server. JWT_SERVICE_TOKEN: The user provisioned service account credentials are used to access the SDS server. FROM_PLUGIN: Custom authenticator credentials are used to access the SDS server.",
      "enum": [
       "ACCESS_TOKEN",
+      "FROM_PLUGIN",
       "GCE_VM",
       "INVALID",
       "JWT_SERVICE_ACCOUNT"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -4102,13 +4108,9 @@
       ""
      ]
     },
-    "value": {
-     "type": "string",
-     "description": "DEPRECATED. Use 'values' instead."
-    },
     "values": {
      "type": "array",
-     "description": "The objects of the condition. This is mutually exclusive with 'value'.",
+     "description": "The objects of the condition.",
      "items": {
       "type": "string"
      }
@@ -7057,6 +7059,192 @@
     }
    }
   },
+  "HealthCheckService": {
+   "id": "HealthCheckService",
+   "type": "object",
+   "description": "A HealthCheckService defines a set of backends on which to perform periodic health checks and an endpoint to which to send notification of changes in the health status of the backends.",
+   "properties": {
+    "creationTimestamp": {
+     "type": "string",
+     "description": "[Output Only] Creation timestamp in RFC3339 text format."
+    },
+    "description": {
+     "type": "string",
+     "description": "An optional description of this resource. Provide this property when you create the resource."
+    },
+    "healthChecks": {
+     "type": "array",
+     "description": "List of URLs to the HealthCheck resources. Must have at least one HealthCheck, and not more than 10. HealthCheck resources must have portSpecification=USE_SERVING_PORT. For regional HealthCheckService, the HealthCheck must be regional and in the same region. For global HealthCheckService, HealthCheck must be global. Mix of regional and global HealthChecks is not supported. Multiple regional HealthChecks must belong to the same region. Regional HealthChecks\u003c/code? must belong to the same region as zones of NEGs.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "healthStatusAggregationStrategy": {
+     "type": "string",
+     "description": "Policy for how the results from multiple health checks for the same endpoint are aggregated.  \n- NO_AGGREGATION. An EndpointHealth message is returned for each backend in the health check service. \n- AND. If any backend's health check reports UNHEALTHY, then UNHEALTHY is the HealthState of the entire health check service. If all backend's are healthy, the HealthState of the health check service is HEALTHY. .",
+     "enum": [
+      "AND",
+      "NO_AGGREGATION"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "id": {
+     "type": "string",
+     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
+     "format": "uint64"
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output only] Type of the resource. Always compute#healthCheckServicefor health check services.",
+     "default": "compute#healthCheckService"
+    },
+    "name": {
+     "type": "string",
+     "description": "Name of the resource. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
+     "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
+    },
+    "networkEndpointGroups": {
+     "type": "array",
+     "description": "List of URLs to the NetworkEndpointGroup resources. Must not have more than 100. For regional HealthCheckService, NEGs must be in zones in the region of the HealthCheckService.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "notificationEndpoints": {
+     "type": "array",
+     "description": "List of URLs to the NotificationEndpoint resources. Must not have more than 10. A list of endpoints for receiving notifications of change in health status. For regional HealthCheckService, NotificationEndpoint must be regional and in the same region. For global HealthCheckService, NotificationEndpoint must be global.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "region": {
+     "type": "string",
+     "description": "[Output Only] URL of the region where the health check service resides. This field is not applicable to global health check services. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body."
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for the resource."
+    },
+    "selfLinkWithId": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL with id for the resource."
+    }
+   }
+  },
+  "HealthCheckServicesList": {
+   "id": "HealthCheckServicesList",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "[Output Only] Unique identifier for the resource; defined by the server."
+    },
+    "items": {
+     "type": "array",
+     "description": "A list of HealthCheckService resources.",
+     "items": {
+      "$ref": "HealthCheckService"
+     }
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of the resource. Always compute#healthCheckServicesList for lists of HealthCheckServices.",
+     "default": "compute#healthCheckServicesList"
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for this resource."
+    },
+    "warning": {
+     "type": "object",
+     "description": "[Output Only] Informational warning message.",
+     "properties": {
+      "code": {
+       "type": "string",
+       "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
+       "enum": [
+        "CLEANUP_FAILED",
+        "DEPRECATED_RESOURCE_USED",
+        "DEPRECATED_TYPE_USED",
+        "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "EXPERIMENTAL_TYPE_USED",
+        "EXTERNAL_API_WARNING",
+        "FIELD_VALUE_OVERRIDEN",
+        "INJECTED_KERNELS_DEPRECATED",
+        "MISSING_TYPE_DEPENDENCY",
+        "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+        "NEXT_HOP_CANNOT_IP_FORWARD",
+        "NEXT_HOP_INSTANCE_NOT_FOUND",
+        "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+        "NEXT_HOP_NOT_RUNNING",
+        "NOT_CRITICAL_ERROR",
+        "NO_RESULTS_ON_PAGE",
+        "REQUIRED_TOS_AGREEMENT",
+        "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+        "RESOURCE_NOT_DELETED",
+        "SCHEMA_VALIDATION_IGNORED",
+        "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+        "UNDECLARED_PROPERTIES",
+        "UNREACHABLE"
+       ],
+       "enumDescriptions": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+       ]
+      },
+      "data": {
+       "type": "array",
+       "description": "[Output Only] Metadata about this warning in key: value format. For example:\n\"data\": [ { \"key\": \"scope\", \"value\": \"zones/us-east1-d\" }",
+       "items": {
+        "type": "object",
+        "properties": {
+         "key": {
+          "type": "string",
+          "description": "[Output Only] A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings (for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding)."
+         },
+         "value": {
+          "type": "string",
+          "description": "[Output Only] A warning data value corresponding to the key."
+         }
+        }
+       }
+      },
+      "message": {
+       "type": "string",
+       "description": "[Output Only] A human-readable description of the warning code."
+      }
+     }
+    }
+   }
+  },
   "HealthChecksAggregatedList": {
    "id": "HealthChecksAggregatedList",
    "type": "object",
@@ -7802,7 +7990,7 @@
     },
     "weightedBackendServices": {
      "type": "array",
-     "description": "A list of weighted backend services to send traffic to when a route match occurs. The weights determine the percentage of traffic that flows to their corresponding backend service. The weights must add up to 100. If all traffic needs to go to a single backend service, there must be one weightedBackendService with weight set to 100.\nOnce a backendService is identified and before forwarding the request to the backend service, advanced routing actions like Url rewrites and header transformations are applied depending on additional settings specified in this HttpRouteAction.",
+     "description": "A list of weighted backend services to send traffic to when a route match occurs. The weights determine the fraction of traffic that flows to their corresponding backend service. If all traffic needs to go to a single backend service, there must be one  weightedBackendService with weight set to a non 0 number.\nOnce a backendService is identified and before forwarding the request to the backend service, advanced routing actions like Url rewrites and header transformations are applied depending on additional settings specified in this HttpRouteAction.",
      "items": {
       "$ref": "WeightedBackendService"
      }
@@ -8166,7 +8354,7 @@
       },
       "sha1Checksum": {
        "type": "string",
-       "description": "An optional SHA1 checksum of the disk image before unpackaging; provided by the client when the disk image is created.",
+       "description": "An optional SHA1 checksum of the disk image before unpackaging provided by the client when the disk image is created.",
        "pattern": "[a-f0-9]{40}"
       },
       "source": {
@@ -11070,7 +11258,7 @@
     },
     "googleReferenceId": {
      "type": "string",
-     "description": "[Output Only] Google reference ID; to be used when raising support tickets with Google or otherwise to debug backend connectivity issues."
+     "description": "[Output Only] Google reference ID to be used when raising support tickets with Google or otherwise to debug backend connectivity issues."
     },
     "id": {
      "type": "string",
@@ -16406,6 +16594,179 @@
     }
    }
   },
+  "NotificationEndpoint": {
+   "id": "NotificationEndpoint",
+   "type": "object",
+   "description": "A notification endpoint resource defines an endpoint to receive notifications when there are status changes detected by the associated health check service.",
+   "properties": {
+    "creationTimestamp": {
+     "type": "string",
+     "description": "[Output Only] Creation timestamp in RFC3339 text format."
+    },
+    "description": {
+     "type": "string",
+     "description": "An optional description of this resource. Provide this property when you create the resource."
+    },
+    "grpcSettings": {
+     "$ref": "NotificationEndpointGrpcSettings",
+     "description": "Settings of the gRPC notification endpoint including the endpoint URL and the retry duration."
+    },
+    "id": {
+     "type": "string",
+     "description": "[Output Only] A unique identifier for this resource type. The server generates this identifier.",
+     "format": "uint64"
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of the resource. Always compute#notificationEndpoint for notification endpoints.",
+     "default": "compute#notificationEndpoint"
+    },
+    "name": {
+     "type": "string",
+     "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
+     "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
+    },
+    "region": {
+     "type": "string",
+     "description": "[Output Only] URL of the region where the notification endpoint resides. This field applies only to the regional resource. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body."
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for the resource."
+    }
+   }
+  },
+  "NotificationEndpointGrpcSettings": {
+   "id": "NotificationEndpointGrpcSettings",
+   "type": "object",
+   "description": "Represents a gRPC setting that describes one gRPC notification endpoint and the retry duration attempting to send notification to this endpoint.",
+   "properties": {
+    "endpoint": {
+     "type": "string",
+     "description": "Endpoint to which gRPC notifications are sent. This must be a valid gRPCLB DNS name."
+    },
+    "payloadName": {
+     "type": "string",
+     "description": "Optional. If specified, this field is used to populate the ?name? field in gRPC requests."
+    },
+    "retryDurationSec": {
+     "type": "integer",
+     "description": "How much time (in seconds) is spent attempting notification retries until a successful response is received. Default is 30s. Limit is 20m (1200s). Must be a positive number.",
+     "format": "uint32"
+    }
+   }
+  },
+  "NotificationEndpointList": {
+   "id": "NotificationEndpointList",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "[Output Only] Unique identifier for the resource; defined by the server."
+    },
+    "items": {
+     "type": "array",
+     "description": "A list of NotificationEndpoint resources.",
+     "items": {
+      "$ref": "NotificationEndpoint"
+     }
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of the resource. Always compute#notificationEndpoint for notification endpoints.",
+     "default": "compute#notificationEndpointList"
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for this resource."
+    },
+    "warning": {
+     "type": "object",
+     "description": "[Output Only] Informational warning message.",
+     "properties": {
+      "code": {
+       "type": "string",
+       "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
+       "enum": [
+        "CLEANUP_FAILED",
+        "DEPRECATED_RESOURCE_USED",
+        "DEPRECATED_TYPE_USED",
+        "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "EXPERIMENTAL_TYPE_USED",
+        "EXTERNAL_API_WARNING",
+        "FIELD_VALUE_OVERRIDEN",
+        "INJECTED_KERNELS_DEPRECATED",
+        "MISSING_TYPE_DEPENDENCY",
+        "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+        "NEXT_HOP_CANNOT_IP_FORWARD",
+        "NEXT_HOP_INSTANCE_NOT_FOUND",
+        "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+        "NEXT_HOP_NOT_RUNNING",
+        "NOT_CRITICAL_ERROR",
+        "NO_RESULTS_ON_PAGE",
+        "REQUIRED_TOS_AGREEMENT",
+        "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+        "RESOURCE_NOT_DELETED",
+        "SCHEMA_VALIDATION_IGNORED",
+        "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+        "UNDECLARED_PROPERTIES",
+        "UNREACHABLE"
+       ],
+       "enumDescriptions": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+       ]
+      },
+      "data": {
+       "type": "array",
+       "description": "[Output Only] Metadata about this warning in key: value format. For example:\n\"data\": [ { \"key\": \"scope\", \"value\": \"zones/us-east1-d\" }",
+       "items": {
+        "type": "object",
+        "properties": {
+         "key": {
+          "type": "string",
+          "description": "[Output Only] A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings (for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding)."
+         },
+         "value": {
+          "type": "string",
+          "description": "[Output Only] A warning data value corresponding to the key."
+         }
+        }
+       }
+      },
+      "message": {
+       "type": "string",
+       "description": "[Output Only] A human-readable description of the warning code."
+      }
+     }
+    }
+   }
+  },
   "Operation": {
    "id": "Operation",
    "type": "object",
@@ -20194,6 +20555,11 @@
      "type": "integer",
      "description": "Local BGP Autonomous System Number (ASN). Must be an RFC6996 private ASN, either 16-bit or 32-bit. The value will be fixed for this router resource. All VPN tunnels that link to this router will have the same local ASN.",
      "format": "uint32"
+    },
+    "keepaliveInterval": {
+     "type": "integer",
+     "description": "The interval in seconds between BGP keepalive messages that are sent to the peer. Hold time is three times the interval at which keepalive messages are sent, and the hold time is the maximum number of seconds allowed to elapse between successive keepalive messages that BGP receives from a peer. BGP will use the smaller of either the local hold time value or the peer?s hold time value as the hold time for the BGP connection between the two peers. If set, this value must be between 1 and 120. The default is 20.",
+     "format": "uint32"
     }
    }
   },
@@ -20242,6 +20608,22 @@
      "description": "The priority of routes advertised to this BGP peer. In the case where there is more than one matching route of maximum length, the routes with lowest priority value win.",
      "format": "uint32"
     },
+    "bfd": {
+     "$ref": "RouterBgpPeerBfd",
+     "description": "BFD configuration for the BGP peering."
+    },
+    "enable": {
+     "type": "string",
+     "description": "The status of the BGP peer connection. If set to FALSE, any active session with the peer is terminated and all associated routing information is removed. If set to TRUE, the peer connection can be established with routing information. The default is TRUE.",
+     "enum": [
+      "FALSE",
+      "TRUE"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
     "interfaceName": {
      "type": "string",
      "description": "Name of the interface the BGP peer is associated with."
@@ -20275,6 +20657,58 @@
     "peerIpAddress": {
      "type": "string",
      "description": "IP address of the BGP interface outside Google cloud. Only IPv4 is supported."
+    }
+   }
+  },
+  "RouterBgpPeerBfd": {
+   "id": "RouterBgpPeerBfd",
+   "type": "object",
+   "properties": {
+    "minReceiveInterval": {
+     "type": "integer",
+     "description": "The minimum interval, in milliseconds, between BFD packets received from the peer router. The actual value is negotiated between the two routers and is equal to the greater of this value and the transmit interval of the other router. If BFD echo mode is enabled on this router and the peer router, this value is used to negotiate the interval between BFD echo packets transmitted by the peer router. Otherwise, it will be used to determine the interval between BFD control packets. If set, this value must be between 33 and 30000. The default is 300.",
+     "format": "uint32"
+    },
+    "minTransmitInterval": {
+     "type": "integer",
+     "description": "The minimum interval, in milliseconds, between BFD packets transmitted to the peer router. The actual value is negotiated between the two routers and is equal to the greater of this value and the corresponding receive interval of the other router. If BFD echo mode is enabled on this router and the peer router, this value is used to negotiate the interval between BFD echo packets transmitted by this router. Otherwise, it will be used to determine the interval between BFD control packets. If set, this value must be between 33 and 30000. The default is 300.",
+     "format": "uint32"
+    },
+    "mode": {
+     "type": "string",
+     "description": "The BFD session initiation mode for this BGP peer. If set to ACTIVE, the Cloud Router will initiate the BFD session for this BGP peer. If set to PASSIVE, the Cloud Router will wait for the peer router to initiate the BFD session for this BGP peer. If set to DISABLED, BFD is disabled for this BGP peer. The default is PASSIVE.",
+     "enum": [
+      "ACTIVE",
+      "DISABLED",
+      "PASSIVE"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    },
+    "multiplier": {
+     "type": "integer",
+     "description": "The number of consecutive BFD packets that must be missed before BFD declares that a peer is unavailable. If set, the value must be a value between 2 and 16. The default is 3.",
+     "format": "uint32"
+    },
+    "packetMode": {
+     "type": "string",
+     "description": "The BFD packet mode for this BGP peer. If set to CONTROL_AND_ECHO, BFD echo mode is enabled for this BGP peer. In this mode, if the peer router also has BFD echo mode enabled, BFD echo packets will be sent to the other router. If the peer router does not have BFD echo mode enabled, only control packets will be sent. If set to CONTROL_ONLY, BFD echo mode is disabled for this BGP peer. If this router and the peer router have a multihop connection, this should be set to CONTROL_ONLY as BFD echo mode is only supported on singlehop connections. The default is CONTROL_AND_ECHO.",
+     "enum": [
+      "CONTROL_AND_ECHO",
+      "CONTROL_ONLY"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "slowTimerInterval": {
+     "type": "integer",
+     "description": "The minimum interval, in milliseconds, between BFD control packets transmitted to and received from the peer router when BFD echo mode is enabled on both routers. The actual transmit and receive intervals are negotiated between the two routers and are equal to the greater of this value and the corresponding interval on the other router. If set, this value must be between 1000 and 30000. The default is 5000.",
+     "format": "uint32"
     }
    }
   },
@@ -28020,7 +28454,7 @@
     },
     "weight": {
      "type": "integer",
-     "description": "Specifies the fraction of traffic sent to backendService. The sum of all weights specified in weightedBackendServices within HttpRouteAction must equal 100.\nThe selection of a backend service is determined only for new traffic. Once a user's request has been directed to a backendService, subsequent requests will be sent to the same backendService as determined by the BackendService's session affinity policy.",
+     "description": "Specifies the fraction of traffic sent to backendService, computed as weight / (sum of all weightedBackendService weights in routeAction) .\nThe selection of a backend service is determined only for new traffic. Once a user's request has been directed to a backendService, subsequent requests will be sent to the same backendService as determined by the BackendService's session affinity policy.\nThe value must be between 0 and 1000",
      "format": "uint32"
     }
    }
@@ -29141,7 +29575,7 @@
      "id": "compute.allocations.resize",
      "path": "{project}/zones/{zone}/allocations/{allocation}/resize",
      "httpMethod": "POST",
-     "description": "Resizes the allocation (applicable to standalone allocation only)",
+     "description": "Resizes the allocation (applicable to standalone allocations only)",
      "parameters": {
       "allocation": {
        "type": "string",
@@ -36451,7 +36885,7 @@
      "parameters": {
       "forceAttach": {
        "type": "boolean",
-       "description": "Whether to force attach the disk even if it's currently attached to another instance. This is only available for regional disks.",
+       "description": "Whether to force attach the disk even if it's currently attached to another instance.",
        "location": "query"
       },
       "instance": {
@@ -37159,7 +37593,7 @@
      "id": "compute.instances.reset",
      "path": "{project}/zones/{zone}/instances/{instance}/reset",
      "httpMethod": "POST",
-     "description": "Performs a reset on the instance. This is a hard reset; the VM does not do a graceful shutdown. For more information, see Resetting an instance.",
+     "description": "Performs a reset on the instance. This is a hard reset the VM does not do a graceful shutdown. For more information, see Resetting an instance.",
      "parameters": {
       "instance": {
        "type": "string",
@@ -45042,6 +45476,239 @@
     }
    }
   },
+  "regionHealthCheckServices": {
+   "methods": {
+    "delete": {
+     "id": "compute.regionHealthCheckServices.delete",
+     "path": "{project}/regions/{region}/healthCheckServices/{healthCheckService}",
+     "httpMethod": "DELETE",
+     "description": "Deletes the specified regional HealthCheckService.",
+     "parameters": {
+      "healthCheckService": {
+       "type": "string",
+       "description": "Name of the HealthCheckService to delete. The name must be 1-63 characters long, and comply with RFC1035.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region scoping this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "healthCheckService"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "get": {
+     "id": "compute.regionHealthCheckServices.get",
+     "path": "{project}/regions/{region}/healthCheckServices/{healthCheckService}",
+     "httpMethod": "GET",
+     "description": "Returns the specified regional HealthCheckService resource.",
+     "parameters": {
+      "healthCheckService": {
+       "type": "string",
+       "description": "Name of the HealthCheckService to update. The name must be 1-63 characters long, and comply with RFC1035.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region scoping this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "healthCheckService"
+     ],
+     "response": {
+      "$ref": "HealthCheckService"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "insert": {
+     "id": "compute.regionHealthCheckServices.insert",
+     "path": "{project}/regions/{region}/healthCheckServices",
+     "httpMethod": "POST",
+     "description": "Creates a regional HealthCheckService resource in the specified project and region using the data included in the request.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region scoping this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region"
+     ],
+     "request": {
+      "$ref": "HealthCheckService"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "list": {
+     "id": "compute.regionHealthCheckServices.list",
+     "path": "{project}/regions/{region}/healthCheckServices",
+     "httpMethod": "GET",
+     "description": "Lists all the HealthCheckService resources that have been configured for the specified project in the given region.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, \u003e, or \u003c.\n\nFor example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance.\n\nYou can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true).",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region scoping this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region"
+     ],
+     "response": {
+      "$ref": "HealthCheckServicesList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "testIamPermissions": {
+     "id": "compute.regionHealthCheckServices.testIamPermissions",
+     "path": "{project}/regions/{region}/healthCheckServices/{resource}/testIamPermissions",
+     "httpMethod": "POST",
+     "description": "Returns permissions that a caller has on the specified resource.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "resource"
+     ],
+     "request": {
+      "$ref": "TestPermissionsRequest"
+     },
+     "response": {
+      "$ref": "TestPermissionsResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    }
+   }
+  },
   "regionHealthChecks": {
    "methods": {
     "delete": {
@@ -46551,6 +47218,241 @@
     "testIamPermissions": {
      "id": "compute.regionInstanceGroups.testIamPermissions",
      "path": "{project}/regions/{region}/instanceGroups/{resource}/testIamPermissions",
+     "httpMethod": "POST",
+     "description": "Returns permissions that a caller has on the specified resource.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "resource"
+     ],
+     "request": {
+      "$ref": "TestPermissionsRequest"
+     },
+     "response": {
+      "$ref": "TestPermissionsResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    }
+   }
+  },
+  "regionNotificationEndpoints": {
+   "methods": {
+    "delete": {
+     "id": "compute.regionNotificationEndpoints.delete",
+     "path": "{project}/regions/{region}/notificationEndpoints/{notificationEndpoint}",
+     "httpMethod": "DELETE",
+     "description": "Deletes the specified NotificationEndpoint in the given region",
+     "parameters": {
+      "notificationEndpoint": {
+       "type": "string",
+       "description": "Name of the NotificationEndpoint resource to delete.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region scoping this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "notificationEndpoint"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "get": {
+     "id": "compute.regionNotificationEndpoints.get",
+     "path": "{project}/regions/{region}/notificationEndpoints/{notificationEndpoint}",
+     "httpMethod": "GET",
+     "description": "Returns the specified NotificationEndpoint resource in the given region.",
+     "parameters": {
+      "notificationEndpoint": {
+       "type": "string",
+       "description": "Name of the NotificationEndpoint resource to return.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region scoping this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "notificationEndpoint"
+     ],
+     "response": {
+      "$ref": "NotificationEndpoint"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "insert": {
+     "id": "compute.regionNotificationEndpoints.insert",
+     "path": "{project}/regions/{region}/notificationEndpoints",
+     "httpMethod": "POST",
+     "description": "Create a NotificationEndpoint in the specified project in the given region using the parameters that are included in the request.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region scoping this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region"
+     ],
+     "request": {
+      "$ref": "NotificationEndpoint"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "list": {
+     "id": "compute.regionNotificationEndpoints.list",
+     "path": "{project}/regions/{region}/notificationEndpoints",
+     "httpMethod": "GET",
+     "description": "Lists the NotificationEndpoints for a project in the given region.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, \u003e, or \u003c.\n\nFor example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance.\n\nYou can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true).",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region scoping this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region"
+     ],
+     "response": {
+      "$ref": "NotificationEndpointList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "testIamPermissions": {
+     "id": "compute.regionNotificationEndpoints.testIamPermissions",
+     "path": "{project}/regions/{region}/notificationEndpoints/{resource}/testIamPermissions",
      "httpMethod": "POST",
      "description": "Returns permissions that a caller has on the specified resource.",
      "parameters": {

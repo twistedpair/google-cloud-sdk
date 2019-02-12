@@ -1543,6 +1543,10 @@
         "desiredImageProject": {
           "description": "The project containing the desired image to use for this node.\nThis is used to create clusters using a custom image.",
           "type": "string"
+        },
+        "desiredDatabaseEncryption": {
+          "description": "Configuration of etcd encryption.",
+          "$ref": "DatabaseEncryption"
         }
       }
     },

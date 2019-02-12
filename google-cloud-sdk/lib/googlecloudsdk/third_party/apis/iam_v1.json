@@ -164,10 +164,6 @@
         "oauth2ClientId": {
           "description": "@OutputOnly The OAuth2 client id for the service account.\nThis is used in conjunction with the OAuth2 clientconfig API to make\nthree legged OAuth2 (3LO) flows to access the data of Google users.",
           "type": "string"
-        },
-        "disabled": {
-          "description": "@OutputOnly A bool indicate if the service account is disabled.",
-          "type": "boolean"
         }
       }
     },
@@ -181,7 +177,7 @@
           "type": "string"
         },
         "serviceAccount": {
-          "description": "The ServiceAccount resource to\ncreate. Currently, only the following values are user assignable:\n`display_name` .",
+          "description": "The ServiceAccount resource to create.\nCurrently, only the following values are user assignable:\n`display_name` .",
           "$ref": "ServiceAccount"
         }
       }

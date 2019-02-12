@@ -658,8 +658,9 @@ class DlpProjectsJobTriggersListRequest(_messages.Message):
       insignificant.  Example: `name asc,update_time, create_time desc`
       Supported fields are:  - `create_time`: corresponds to time the
       JobTrigger was created. - `update_time`: corresponds to time the
-      JobTrigger was last updated. - `name`: corresponds to JobTrigger's name.
-      - `display_name`: corresponds to JobTrigger's display name. - `status`:
+      JobTrigger was last updated. - `last_run_time`: corresponds to the last
+      time the JobTrigger ran. - `name`: corresponds to JobTrigger's name. -
+      `display_name`: corresponds to JobTrigger's display name. - `status`:
       corresponds to JobTrigger's status.
     pageSize: Optional size of the page, can be limited by a server.
     pageToken: Optional page token to continue retrieval. Comes from previous
@@ -2383,6 +2384,8 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
     SupportedByValueListEntryValuesEnum:
 
   Fields:
+    description: Description of the infotype. Translated when language is
+      provided in the request.
     displayName: Human readable form of the infoType name.
     name: Internal name of the infoType.
     supportedBy: Which parts of the API supports this InfoType.
@@ -2400,9 +2403,10 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
     INSPECT = 1
     RISK_ANALYSIS = 2
 
-  displayName = _messages.StringField(1)
-  name = _messages.StringField(2)
-  supportedBy = _messages.EnumField('SupportedByValueListEntryValuesEnum', 3, repeated=True)
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  supportedBy = _messages.EnumField('SupportedByValueListEntryValuesEnum', 4, repeated=True)
 
 
 class GooglePrivacyDlpV2InfoTypeLimit(_messages.Message):

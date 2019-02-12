@@ -457,6 +457,7 @@ class ClusterUpdate(_messages.Message):
     desiredBinaryAuthorization: The desired configuration options for the
       Binary Authorization feature.
     desiredClusterAutoscaling: Cluster-level autoscaling configuration.
+    desiredDatabaseEncryption: Configuration of etcd encryption.
     desiredImage: The desired name of the image to use for this node. This is
       used to create clusters using a custom image.
     desiredImageProject: The project containing the desired image to use for
@@ -518,20 +519,21 @@ class ClusterUpdate(_messages.Message):
   desiredAddonsConfig = _messages.MessageField('AddonsConfig', 1)
   desiredBinaryAuthorization = _messages.MessageField('BinaryAuthorization', 2)
   desiredClusterAutoscaling = _messages.MessageField('ClusterAutoscaling', 3)
-  desiredImage = _messages.StringField(4)
-  desiredImageProject = _messages.StringField(5)
-  desiredImageType = _messages.StringField(6)
-  desiredLocations = _messages.StringField(7, repeated=True)
-  desiredLoggingService = _messages.StringField(8)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 9)
-  desiredMasterVersion = _messages.StringField(10)
-  desiredMonitoringService = _messages.StringField(11)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 12)
-  desiredNodePoolId = _messages.StringField(13)
-  desiredNodeVersion = _messages.StringField(14)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 15)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 16)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 17)
+  desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 4)
+  desiredImage = _messages.StringField(5)
+  desiredImageProject = _messages.StringField(6)
+  desiredImageType = _messages.StringField(7)
+  desiredLocations = _messages.StringField(8, repeated=True)
+  desiredLoggingService = _messages.StringField(9)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 10)
+  desiredMasterVersion = _messages.StringField(11)
+  desiredMonitoringService = _messages.StringField(12)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 13)
+  desiredNodePoolId = _messages.StringField(14)
+  desiredNodeVersion = _messages.StringField(15)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 16)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 17)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 18)
 
 
 class CompleteIPRotationRequest(_messages.Message):

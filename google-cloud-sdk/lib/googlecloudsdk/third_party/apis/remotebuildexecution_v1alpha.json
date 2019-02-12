@@ -181,7 +181,7 @@
           "type": "string"
         },
         "instanceId": {
-          "description": "ID of the created instance.\nA valid `instance_id` must:\nbe 6-50 characters long,\ncontains only lowercase letters, digits, hyphens and underscores,\nstart with a lowercase letter, and\nend with a lowercase letter or a digit.",
+          "description": "ID of the created instance.\nA valid `instance_id` must:\nbe 6-50 characters long,\ncontain only lowercase letters, digits, hyphens and underscores,\nstart with a lowercase letter, and\nend with a lowercase letter or a digit.",
           "type": "string"
         },
         "instance": {

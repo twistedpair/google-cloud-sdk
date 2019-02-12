@@ -718,7 +718,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateInstanceRequest(_messa
     instance: Specifies the instance to create. The name in the instance, if
       specified in the instance, is ignored.
     instanceId: ID of the created instance. A valid `instance_id` must: be
-      6-50 characters long, contains only lowercase letters, digits, hyphens
+      6-50 characters long, contain only lowercase letters, digits, hyphens
       and underscores, start with a lowercase letter, and end with a lowercase
       letter or a digit.
     parent: Resource name of the project containing the instance. Format:

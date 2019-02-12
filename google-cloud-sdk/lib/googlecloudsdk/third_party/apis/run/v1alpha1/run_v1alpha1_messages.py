@@ -190,9 +190,7 @@ class Configuration(_messages.Message):
 
 class ConfigurationCondition(_messages.Message):
   r"""ConfigurationCondition defines a readiness condition for a
-  Configuration. See:
-  https://github.com/kubernetes/community/blob/master/contributors/devel/api-
-  conventions.md#typical-status-properties
+  Configuration.
 
   Fields:
     lastTransitionTime: Last time the condition transitioned from one status
@@ -205,7 +203,7 @@ class ConfigurationCondition(_messages.Message):
     type: ConfigurationConditionType is used to communicate the status of the
       reconciliation process. See also:
       https://github.com/knative/serving/blob/master/docs/spec/errors.md
-      #error-conditions-and-reporting Types include:"LatestRevisionReady"
+      #error-conditions-and-reporting Types include:"Ready"
   """
 
   lastTransitionTime = _messages.StringField(1)
@@ -220,12 +218,19 @@ class ConfigurationSpec(_messages.Message):
   client).
 
   Fields:
-    generation: For open Knative: metadata.generation does not work yet, this
-      is a stopgap way of specifying generation +optional
+    generation: Deprecated and not currently populated by Cloud Run. See
+      metadata.generation instead, which is the sequence number containing the
+      latest generation of the desired state.  Read-only.
     revisionTemplate: RevisionTemplate holds the latest specification for the
-      Revision to be stamped out. If a Build specification is provided, then
-      the RevisionTemplate's BuildName field will be populated with the name
-      of the Build object created to produce the container for the Revision.
+      Revision to be stamped out. The template references the container image,
+      and may also include labels and annotations that should be attached to
+      the Revision. To correlate a Revision, and/or to force a Revision to be
+      created when the spec doesn't otherwise change, a nonce label may be
+      provided in the template metadata. For more details, see:
+      https://github.com/knative/serving/blob/master/docs/client-
+      conventions.md#associate-modifications-with-revisions  Cloud Run does
+      not currently support referencing a build that is responsible for
+      materializing the container image from source.
   """
 
   generation = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -249,7 +254,9 @@ class ConfigurationStatus(_messages.Message):
     observedGeneration: ObservedGeneration is the 'Generation' of the
       Configuration that was last processed by the controller. The observed
       generation is updated even if the controller failed to process the spec
-      and create the Revision. The API version for this revision.
+      and create the Revision.  Clients polling for completed reconciliation
+      should poll until observedGeneration = metadata.generation, and the
+      Ready condition's status is True or False.
   """
 
   conditions = _messages.MessageField('ConfigurationCondition', 1, repeated=True)
@@ -485,7 +492,10 @@ class DomainMappingStatus(_messages.Message):
     conditions: Array of observed DomainMappingConditions, indicating the
       current state of the DomainMapping.
     observedGeneration: ObservedGeneration is the 'Generation' of the
-      DomainMapping that was last processed by the controller.
+      DomainMapping that was last processed by the controller.  Clients
+      polling for completed reconciliation should poll until
+      observedGeneration = metadata.generation and the Ready condition's
+      status is True or False.
     resourceRecords: The resource records required to configure this domain
       mapping. These records must be added to the domain's DNS configuration
       in order to serve the application via this domain mapping.
@@ -806,6 +816,19 @@ class ListDomainMappingsResponse(_messages.Message):
   metadata = _messages.MessageField('ListMeta', 4)
 
 
+class ListLocationsResponse(_messages.Message):
+  r"""The response message for Locations.ListLocations.
+
+  Fields:
+    locations: A list of locations that matches the specified filter in the
+      request.
+    nextPageToken: The standard List next-page token.
+  """
+
+  locations = _messages.MessageField('Location', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListMeta(_messages.Message):
   r"""ListMeta describes metadata that synthetic resources must have,
   including lists and various status objects. A resource may have only one of
@@ -902,6 +925,86 @@ class LocalObjectReference(_messages.Message):
   name = _messages.StringField(1)
 
 
+class Location(_messages.Message):
+  r"""A resource that represents Google Cloud Platform location.
+
+  Messages:
+    LabelsValue: Cross-service attributes for the location. For example
+      {"cloud.googleapis.com/region": "us-east1"}
+    MetadataValue: Service-specific metadata. For example the available
+      capacity at the given location.
+
+  Fields:
+    displayName: The friendly name for this location, typically a nearby city
+      name. For example, "Tokyo".
+    labels: Cross-service attributes for the location. For example
+      {"cloud.googleapis.com/region": "us-east1"}
+    locationId: The canonical id for this location. For example: `"us-east1"`.
+    metadata: Service-specific metadata. For example the available capacity at
+      the given location.
+    name: Resource name for the location, which may vary between
+      implementations. For example: `"projects/example-project/locations/us-
+      east1"`
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Cross-service attributes for the location. For example
+    {"cloud.googleapis.com/region": "us-east1"}
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Service-specific metadata. For example the available capacity at the
+    given location.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  displayName = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  locationId = _messages.StringField(3)
+  metadata = _messages.MessageField('MetadataValue', 4)
+  name = _messages.StringField(5)
+
+
 class ObjectMeta(_messages.Message):
   r"""ObjectMeta is metadata that all persisted resources must have, which
   includes all objects users must create.
@@ -923,10 +1026,11 @@ class ObjectMeta(_messages.Message):
       arbitrary metadata. They are not queryable and should be preserved when
       modifying objects. More info: http://kubernetes.io/docs/user-
       guide/annotations +optional
-    clusterName: The name of the cluster which the object belongs to. This is
-      used to distinguish resources with same name and namespace in different
-      clusters. This field is not set anywhere right now and apiserver is
-      going to ignore it if set in create or update request. +optional
+    clusterName: Not currently supported by Cloud Run.  The name of the
+      cluster which the object belongs to. This is used to distinguish
+      resources with same name and namespace in different clusters. This field
+      is not set anywhere right now and apiserver is going to ignore it if set
+      in create or update request. +optional
     creationTimestamp: CreationTimestamp is a timestamp representing the
       server time when this object was created. It is not guaranteed to be set
       in happens-before order across separate operations. Clients may not set
@@ -934,10 +1038,10 @@ class ObjectMeta(_messages.Message):
       by the system. Read-only. Null for lists. More info:
       https://git.k8s.io/community/contributors/devel/api-
       conventions.md#metadata +optional
-    deletionGracePeriodSeconds: Number of seconds allowed for this object to
-      gracefully terminate before it will be removed from the system. Only set
-      when deletionTimestamp is also set. May only be shortened. Read-only.
-      +optional
+    deletionGracePeriodSeconds: Not currently supported by Cloud Run.  Number
+      of seconds allowed for this object to gracefully terminate before it
+      will be removed from the system. Only set when deletionTimestamp is also
+      set. May only be shortened. Read-only. +optional
     deletionTimestamp: DeletionTimestamp is RFC 3339 date and time at which
       this resource will be deleted. This field is set by the server when a
       graceful deletion is requested by the user, and is not directly settable
@@ -958,48 +1062,51 @@ class ObjectMeta(_messages.Message):
       by the system when a graceful deletion is requested. Read-only. More
       info: https://git.k8s.io/community/contributors/devel/api-
       conventions.md#metadata +optional
-    finalizers: Must be empty before the object is deleted from the registry.
-      Each entry is an identifier for the responsible component that will
-      remove the entry from the list. If the deletionTimestamp of the object
-      is non-nil, entries in this list can only be removed. +optional
-      +patchStrategy=merge
-    generateName: GenerateName is an optional prefix, used by the server, to
-      generate a unique name ONLY IF the Name field has not been provided. If
-      this field is used, the name returned to the client will be different
-      than the name passed. This value will also be combined with a unique
-      suffix. The provided value has the same validation rules as the Name
-      field, and may be truncated by the length of the suffix required to make
-      the value unique on the server.  If this field is specified and the
-      generated name exists, the server will NOT return a 409 - instead, it
-      will either return 201 Created or 500 with Reason ServerTimeout
-      indicating a unique name could not be found in the time allotted, and
-      the client should retry (optionally after the time indicated in the
-      Retry-After header).  Applied only if Name is not specified. More info:
+    finalizers: Not currently supported by Cloud Run.  Must be empty before
+      the object is deleted from the registry. Each entry is an identifier for
+      the responsible component that will remove the entry from the list. If
+      the deletionTimestamp of the object is non-nil, entries in this list can
+      only be removed. +optional +patchStrategy=merge
+    generateName: Not currently supported by Cloud Run.  GenerateName is an
+      optional prefix, used by the server, to generate a unique name ONLY IF
+      the Name field has not been provided. If this field is used, the name
+      returned to the client will be different than the name passed. This
+      value will also be combined with a unique suffix. The provided value has
+      the same validation rules as the Name field, and may be truncated by the
+      length of the suffix required to make the value unique on the server.
+      If this field is specified and the generated name exists, the server
+      will NOT return a 409 - instead, it will either return 201 Created or
+      500 with Reason ServerTimeout indicating a unique name could not be
+      found in the time allotted, and the client should retry (optionally
+      after the time indicated in the Retry-After header).  Applied only if
+      Name is not specified. More info:
       https://git.k8s.io/community/contributors/devel/api-
       conventions.md#idempotency +optional  string generateName = 2;
     generation: A sequence number representing a specific generation of the
       desired state. Populated by the system. Read-only. +optional
-    initializers: An initializer is a controller which enforces some system
-      invariant at object creation time. This field is a list of initializers
-      that have not yet acted on this object. If nil or empty, this object has
-      been completely initialized. Otherwise, the object is considered
-      uninitialized and is hidden (in list/watch and get calls) from clients
-      that haven't explicitly asked to observe uninitialized objects.  When an
-      object is created, the system will populate this list with the current
-      set of initializers. Only privileged users may set or modify this list.
-      Once it is empty, it may not be modified further by any user.
+    initializers: Not currently supported by Cloud Run.  An initializer is a
+      controller which enforces some system invariant at object creation time.
+      This field is a list of initializers that have not yet acted on this
+      object. If nil or empty, this object has been completely initialized.
+      Otherwise, the object is considered uninitialized and is hidden (in
+      list/watch and get calls) from clients that haven't explicitly asked to
+      observe uninitialized objects.  When an object is created, the system
+      will populate this list with the current set of initializers. Only
+      privileged users may set or modify this list. Once it is empty, it may
+      not be modified further by any user.
     labels: Map of string keys and values that can be used to organize and
       categorize (scope and select) objects. May match selectors of
       replication controllers and routes. More info: http://kubernetes.io/docs
       /user-guide/labels +optional
-    name: Name must be unique within a namespace. Is required when creating
-      resources, although some resources may allow a client to request the
-      generation of an appropriate name automatically. Name is primarily
-      intended for creation idempotence and configuration definition. Cannot
-      be updated. More info: http://kubernetes.io/docs/user-
-      guide/identifiers#names +optional
-    namespace: Namespace defines the space within each name must be unique. In
-      Cloud Run this must be equal to either the project ID or project number.
+    name: Name must be unique within a namespace, within a Cloud Run region.
+      Is required when creating resources, although some resources may allow a
+      client to request the generation of an appropriate name automatically.
+      Name is primarily intended for creation idempotence and configuration
+      definition. Cannot be updated. More info: http://kubernetes.io/docs
+      /user-guide/identifiers#names +optional
+    namespace: Namespace defines the space within each name must be unique,
+      within a Cloud Run region. In Cloud Run the namespace must be equal to
+      either the project ID or project number.
     ownerReferences: List of objects that own this object. If ALL objects in
       the list have been deleted, this object will be garbage collected.
       +optional
@@ -1415,8 +1522,12 @@ class ResourceRequirements(_messages.Message):
 
 
 class Revision(_messages.Message):
-  r"""Revision is an immutable snapshot of code and configuration. See also: h
-  ttps://github.com/knative/serving/blob/master/docs/spec/overview.md#revision
+  r"""Revision is an immutable snapshot of code and configuration.  A revision
+  references a container image. Revisions are created by updates to a
+  Configuration.  Cloud Run does not currently support referencing a build
+  that is responsible for materializing the container image from source.  See
+  also: https://github.com/knative/serving/blob/master/docs/spec/overview.md#r
+  evision
 
   Fields:
     apiVersion: The API version for this call such as "v1alpha1".
@@ -1436,9 +1547,7 @@ class Revision(_messages.Message):
 
 
 class RevisionCondition(_messages.Message):
-  r"""RevisionCondition defines a readiness condition for a Revision. See:
-  https://github.com/kubernetes/community/blob/master/contributors/devel/api-
-  conventions.md#typical-status-properties
+  r"""RevisionCondition defines a readiness condition for a Revision.
 
   Fields:
     lastTransitionTime: Last time the condition transitioned from one status
@@ -1470,9 +1579,10 @@ class RevisionSpec(_messages.Message):
 
   Enums:
     ServingStateValueValuesEnum: ServingState holds a value describing the
-      desired state the Kubernetes resources should be in for this Revision.
-      Users must not specify this when creating a revision. It is expected
-      that the system will manipulate this based on routability and load.
+      state the resources are in for this Revision. Users must not specify
+      this when creating a revision. It is expected that the system will
+      manipulate this based on routability and load.  Populated by the system.
+      Read-only.
 
   Fields:
     concurrencyModel: ConcurrencyModel specifies the desired concurrency model
@@ -1480,50 +1590,41 @@ class RevisionSpec(_messages.Message):
       favor of ContainerConcurrency. +optional
     container: Container defines the unit of execution for this Revision. In
       the context of a Revision, we disallow a number of the fields of this
-      Container, including: name, resources, ports, and volumeMounts. The
-      runtime contract is documented here:
+      Container, including: name, ports, and volumeMounts. The runtime
+      contract is documented here:
       https://github.com/knative/serving/blob/master/docs/runtime-contract.md
     containerConcurrency: ContainerConcurrency specifies the maximum allowed
       in-flight (concurrent) requests per container of the Revision. Values
       are: - `0` thread-safe, the system should manage the max concurrency.
       This is    the default value. - `1` not-thread-safe. Single concurrency
       - `2-N` thread-safe, max concurrency of N
-    generation: For open Knative: metadata.generation does not work yet, this
-      is a stopgap way of specifying generation +optional
-    serviceAccountName: ServiceAccountName holds the name of the Kubernetes
-      service account as which the underlying K8s resources should be run. If
-      unspecified this will default to the "default" service account for the
-      namespace in which the Revision exists. This may be used to provide
-      access to private container images by following:
-      https://kubernetes.io/docs/tasks/configure-pod-container/configure-
-      service-account/#add-imagepullsecrets-to-a-service-account
-    servingState: ServingState holds a value describing the desired state the
-      Kubernetes resources should be in for this Revision. Users must not
-      specify this when creating a revision. It is expected that the system
-      will manipulate this based on routability and load.
+    generation: Deprecated and not currently populated by Cloud Run. See
+      metadata.generation instead, which is the sequence number containing the
+      latest generation of the desired state.  Read-only.
+    serviceAccountName: Not currently used by Cloud Run.
+    servingState: ServingState holds a value describing the state the
+      resources are in for this Revision. Users must not specify this when
+      creating a revision. It is expected that the system will manipulate this
+      based on routability and load.  Populated by the system. Read-only.
     timeoutSeconds: TimeoutSeconds holds the max duration the instance is
-      allowed for responding to a request. (not used by Cloud Run)
+      allowed for responding to a request. Not currently used by Cloud Run.
   """
 
   class ServingStateValueValuesEnum(_messages.Enum):
-    r"""ServingState holds a value describing the desired state the Kubernetes
-    resources should be in for this Revision. Users must not specify this when
-    creating a revision. It is expected that the system will manipulate this
-    based on routability and load.
+    r"""ServingState holds a value describing the state the resources are in
+    for this Revision. Users must not specify this when creating a revision.
+    It is expected that the system will manipulate this based on routability
+    and load.  Populated by the system. Read-only.
 
     Values:
       REVISION_SERVING_STATE_UNSPECIFIED: The revision serving state hasn't
         been specified.
-      ACTIVE: The revision is ready to serve traffic. It should have
-        Kubernetes resources, and the Istio route should be pointed to the
-        given resources.
+      ACTIVE: The revision is ready to serve traffic.
       RESERVE: The revision is not currently serving traffic, but could be
-        made to serve traffic quickly. It should have Kubernetes resources,
-        but the Istio route should be pointed to the activator.
+        made to serve traffic quickly. Not currently used by Cloud Run.
       RETIRED: The revision has been decommissioned and is not needed to serve
-        traffic anymore. It should not have any Istio routes or Kubernetes
-        resources. A Revision may be brought out of retirement, but it may
-        take longer than it would from a "Reserve" state.
+        traffic anymore. A Revision may be brought out of retirement, but it
+        may take longer than it would from a "Reserve" state.
     """
     REVISION_SERVING_STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -1544,27 +1645,24 @@ class RevisionStatus(_messages.Message):
   controller).
 
   Fields:
-    conditions: List of observed RevisionConditions, indicating the current
-      state of the Revision. As a Revision is being prepared, it will
+    conditions: Conditions communicates information about ongoing/complete
+      reconciliation processes that bring the "spec" inline with the observed
+      state of the world.  As a Revision is being prepared, it will
       incrementally update conditions "ResourcesAvailable",
       "ContainerHealthy", and "Active", which contribute to the overall
       "Ready" condition.
     imageDigest: ImageDigest holds the resolved digest for the image specified
       within .Spec.Container.Image. The digest is resolved during the creation
       of Revision. This field holds the digest value regardless of whether a
-      tag or digest was originally specified in the Container object. It may
-      be empty if the image comes from a registry listed to skip resolution.
+      tag or digest was originally specified in the Container object.
     logUrl: Specifies the generated logging url for this particular revision
       based on the revision url template specified in the controller's config.
       +optional
-    observedGeneration: ObservedGeneration is the 'Generation' of the
-      Configuration that was last processed by the controller. The observed
-      generation is updated even if the controller failed to process the spec
-      and create the Revision.
-    serviceName: ServiceName holds the name of a core Kubernetes Service
-      resource that load balances over the pods backing this Revision. When
-      the Revision is Active, this service would be an appropriate ingress
-      target for targeting the revision.
+    observedGeneration: ObservedGeneration is the 'Generation' of the Revision
+      that was last processed by the controller.  Clients polling for
+      completed reconciliation should poll until observedGeneration =
+      metadata.generation, and the Ready condition's status is True or False.
+    serviceName: Not currently used by Cloud Run.
   """
 
   conditions = _messages.MessageField('RevisionCondition', 1, repeated=True)
@@ -1598,6 +1696,8 @@ class Route(_messages.Message):
   Configuration for "latest ready" revision changes, and smoothly rolling out
   latest revisions. See also:
   https://github.com/knative/serving/blob/master/docs/spec/overview.md#route
+  Cloud Run currently supports referencing a single Configuration to
+  automatically deploy the "latest ready" Revision from that Configuration.
 
   Fields:
     apiVersion: The API version for this call such as "v1alpha1".
@@ -1617,9 +1717,7 @@ class Route(_messages.Message):
 
 
 class RouteCondition(_messages.Message):
-  r"""RouteCondition defines a readiness condition. See:
-  https://github.com/kubernetes/community/blob/master/contributors/devel/api-
-  conventions.md#typical-status-properties
+  r"""RouteCondition defines a readiness condition for a Route.
 
   Fields:
     lastTransitionTime: Last time the condition transitioned from one status
@@ -1632,8 +1730,7 @@ class RouteCondition(_messages.Message):
     type: RouteConditionType is used to communicate the status of the
       reconciliation process. See also:
       https://github.com/knative/serving/blob/master/docs/spec/errors.md
-      #error-conditions-and-reporting Types include: "RolloutInProgress",
-      "TrafficDropped".
+      #error-conditions-and-reporting Types include: "Ready".
   """
 
   lastTransitionTime = _messages.StringField(1)
@@ -1647,10 +1744,12 @@ class RouteSpec(_messages.Message):
   r"""RouteSpec holds the desired state of the Route (from the client).
 
   Fields:
-    generation: For open Knative: metadata.generation does not work yet, this
-      is a stopgap way of specifying generation +optional
+    generation: Deprecated and not currently populated by Cloud Run. See
+      metadata.generation instead, which is the sequence number containing the
+      latest generation of the desired state.  Read-only.
     traffic: Traffic specifies how to distribute traffic over a collection of
-      Knative Revisions and Configurations.
+      Knative Revisions and Configurations. Cloud Run currently supports a
+      single configurationName.
   """
 
   generation = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1670,13 +1769,16 @@ class RouteStatus(_messages.Message):
     domain: Domain holds the top-level domain that will distribute traffic
       over the provided targets. It generally has the form https://{route-hash
       }-{project-hash}-{cluster-level-suffix}.a.run.app
-    domainInternal: DomainInternal holds the top-level domain that will
-      distribute traffic over the provided targets from inside the cluster. It
-      generally has the form {route-name}.{route-namespace}.svc.cluster.local
-    observedGeneration: ObservedGeneration is the 'Generation' of the
-      Configuration that was last processed by the controller. The observed
-      generation is updated even if the controller failed to process the spec
-      and create the Revision.
+    domainInternal: For Cloud Run, identifical to domain.
+    observedGeneration: ObservedGeneration is the 'Generation' of the Route
+      that was last processed by the controller.  Clients polling for
+      completed reconciliation should poll until observedGeneration =
+      metadata.generation and the Ready condition's status is True or False.
+      Note that providing a trafficTarget that only has a configurationName
+      will result in a Route that does not increment either its
+      metadata.generation or its observedGeneration, as new "latest ready"
+      revisions from the Configuration are processed without an update to the
+      Route's spec.
     traffic: Traffic holds the configured traffic distribution. These entries
       will always contain RevisionName references. When ConfigurationName
       appears in the spec, this will hold the LatestReadyRevisionName that we
@@ -1709,7 +1811,8 @@ class RunNamespacesConfigurationsGetRequest(_messages.Message):
   r"""A RunNamespacesConfigurationsGetRequest object.
 
   Fields:
-    name: The name of the configuration being retrieved.
+    name: The name of the configuration being retrieved. If needed, replace
+      {namespace_id} with the project ID.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1721,19 +1824,18 @@ class RunNamespacesConfigurationsListRequest(_messages.Message):
   Fields:
     continue_: Optional encoded string to continue paging.
     fieldSelector: Allows to filter resources based on a specific value for a
-      field name. k8s will send this in a query string format. i.e.
-      'metadata.name%3Dlorem'
-    includeUninitialized: Kubernetes-compatible parameter. Not used by Cloud
-      Run.
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
     parent: The project ID or project number from which the configurations
       should be listed.
     resourceVersion: The baseline resource version from which the list or
-      watch operation should start.
-    watch: Flag that indicates that kubectl expects to watch this resource as
-      well. Not supported by Cloud run.
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)
@@ -1763,12 +1865,12 @@ class RunNamespacesDomainmappingsDeleteRequest(_messages.Message):
   r"""A RunNamespacesDomainmappingsDeleteRequest object.
 
   Fields:
-    name: The name of the domain mapping being deleted.
-    orphanDependents: Kubernetes-compatible attribute that specifies the
-      cascade behavior on delete. Cloud Run only supports cascading behavior,
-      so this must be false. This attribute is deprecated, and might be
-      replaced with PropagationPolicy See
-      https://github.com/kubernetes/kubernetes/issues/46659 for more info.
+    name: The name of the domain mapping being deleted. If needed, replace
+      {namespace_id} with the project ID.
+    orphanDependents: Deprecated. Specifies the cascade behavior on delete.
+      Cloud Run only supports cascading behavior, so this must be false. This
+      attribute is deprecated, and might be replaced with PropagationPolicy
+      See https://github.com/kubernetes/kubernetes/issues/46659 for more info.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1779,7 +1881,8 @@ class RunNamespacesDomainmappingsGetRequest(_messages.Message):
   r"""A RunNamespacesDomainmappingsGetRequest object.
 
   Fields:
-    name: The name of the domain mapping being retrieved.
+    name: The name of the domain mapping being retrieved. If needed, replace
+      {namespace_id} with the project ID.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1791,19 +1894,18 @@ class RunNamespacesDomainmappingsListRequest(_messages.Message):
   Fields:
     continue_: Optional encoded string to continue paging.
     fieldSelector: Allows to filter resources based on a specific value for a
-      field name. k8s will send this in a query string format. i.e.
-      'metadata.name%3Dlorem'
-    includeUninitialized: Kubernetes-compatible parameter. Not used by Cloud
-      Run.
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
     parent: The project ID or project number from which the domain mappings
       should be listed.
     resourceVersion: The baseline resource version from which the list or
-      watch operation should start.
-    watch: Flag that indicates that kubectl expects to watch this resource as
-      well. Not supported by Cloud Run.
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)
@@ -1821,7 +1923,8 @@ class RunNamespacesDomainmappingsReplaceDomainMappingRequest(_messages.Message):
 
   Fields:
     domainMapping: A DomainMapping resource to be passed as the request body.
-    name: The name of the domain mapping being retrieved.
+    name: The name of the domain mapping being retrieved. If needed, replace
+      {namespace_id} with the project ID.
   """
 
   domainMapping = _messages.MessageField('DomainMapping', 1)
@@ -1832,12 +1935,12 @@ class RunNamespacesRevisionsDeleteRequest(_messages.Message):
   r"""A RunNamespacesRevisionsDeleteRequest object.
 
   Fields:
-    name: The name of the revision being deleted.
-    orphanDependents: Kubernetes-compatible attribute that specifies the
-      cascade behavior on delete. Cloud Run only supports cascading behavior,
-      so this must be false. This attribute is deprecated, and might be
-      replaced with PropagationPolicy See
-      https://github.com/kubernetes/kubernetes/issues/46659 for more info.
+    name: The name of the revision being deleted. If needed, replace
+      {namespace_id} with the project ID.
+    orphanDependents: Deprecated. Specifies the cascade behavior on delete.
+      Cloud Run only supports cascading behavior, so this must be false. This
+      attribute is deprecated, and might be replaced with PropagationPolicy
+      See https://github.com/kubernetes/kubernetes/issues/46659 for more info.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1848,7 +1951,8 @@ class RunNamespacesRevisionsGetRequest(_messages.Message):
   r"""A RunNamespacesRevisionsGetRequest object.
 
   Fields:
-    name: The name of the revision being retrieved.
+    name: The name of the revision being retrieved. If needed, replace
+      {namespace_id} with the project ID.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1860,19 +1964,18 @@ class RunNamespacesRevisionsListRequest(_messages.Message):
   Fields:
     continue_: Optional encoded string to continue paging.
     fieldSelector: Allows to filter resources based on a specific value for a
-      field name. k8s will send this in a query string format. i.e.
-      'metadata.name%3Dlorem'
-    includeUninitialized: Kubernetes-compatible parameter. Not used by Cloud
-      Run.
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
     parent: The project ID or project number from which the revisions should
       be listed.
     resourceVersion: The baseline resource version from which the list or
-      watch operation should start.
-    watch: Flag that indicates that kubectl expects to watch this resource as
-      well. Not supported by Cloud run.
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)
@@ -1889,7 +1992,8 @@ class RunNamespacesRoutesGetRequest(_messages.Message):
   r"""A RunNamespacesRoutesGetRequest object.
 
   Fields:
-    name: The name of the route being retrieved.
+    name: The name of the route being retrieved. If needed, replace
+      {namespace_id} with the project ID.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1901,19 +2005,18 @@ class RunNamespacesRoutesListRequest(_messages.Message):
   Fields:
     continue_: Optional encoded string to continue paging.
     fieldSelector: Allows to filter resources based on a specific value for a
-      field name. k8s will send this in a query string format. i.e.
-      'metadata.name%3Dlorem'
-    includeUninitialized: Kubernetes-compatible parameter. Not used by Cloud
-      Run.
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
     parent: The project ID or project number from which the routes should be
       listed.
     resourceVersion: The baseline resource version from which the list or
-      watch operation should start.
-    watch: Flag that indicates that kubectl expects to watch this resource as
-      well. Not supported by Cloud Run.
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)
@@ -1943,12 +2046,12 @@ class RunNamespacesServicesDeleteRequest(_messages.Message):
   r"""A RunNamespacesServicesDeleteRequest object.
 
   Fields:
-    name: The name of the service being deleted.
-    orphanDependents: Deprecated. Kubernetes-compatible attribute that
-      specifies the cascade behavior on delete. Cloud Run only supports
-      cascading behavior, so this must be false. This attribute is deprecated,
-      and might be replaced with PropagationPolicy See
-      https://github.com/kubernetes/kubernetes/issues/46659 for more info.
+    name: The name of the service being deleted. If needed, replace
+      {namespace_id} with the project ID.
+    orphanDependents: Deprecated. Specifies the cascade behavior on delete.
+      Cloud Run only supports cascading behavior, so this must be false. This
+      attribute is deprecated, and might be replaced with PropagationPolicy
+      See https://github.com/kubernetes/kubernetes/issues/46659 for more info.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1959,7 +2062,8 @@ class RunNamespacesServicesGetRequest(_messages.Message):
   r"""A RunNamespacesServicesGetRequest object.
 
   Fields:
-    name: The name of the service being retrieved.
+    name: The name of the service being retrieved. If needed, replace
+      {namespace_id} with the project ID.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1971,19 +2075,18 @@ class RunNamespacesServicesListRequest(_messages.Message):
   Fields:
     continue_: Optional encoded string to continue paging.
     fieldSelector: Allows to filter resources based on a specific value for a
-      field name. k8s will send this in a query string format. i.e.
-      'metadata.name%3Dlorem'
-    includeUninitialized: Kubernetes-compatible parameter. Not used by Cloud
-      Run.
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
     parent: The project ID or project number from which the services should be
       listed.
     resourceVersion: The baseline resource version from which the list or
-      watch operation should start.
-    watch: Flag that indicates that kubectl expects to watch this resource as
-      well. Not supported by Cloud Run.
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)
@@ -2001,7 +2104,8 @@ class RunNamespacesServicesPatchRequest(_messages.Message):
 
   Fields:
     httpBody: A HttpBody resource to be passed as the request body.
-    name: The name of the service being patched.
+    name: The name of the service being patched. If needed, replace
+      {namespace_id} with the project ID.
   """
 
   httpBody = _messages.MessageField('HttpBody', 1)
@@ -2012,7 +2116,8 @@ class RunNamespacesServicesReplaceServiceRequest(_messages.Message):
   r"""A RunNamespacesServicesReplaceServiceRequest object.
 
   Fields:
-    name: The name of the service being replaced.
+    name: The name of the service being replaced. If needed, replace
+      {namespace_id} with the project ID.
     service: A Service resource to be passed as the request body.
   """
 
@@ -2038,7 +2143,8 @@ class RunProjectsLocationsConfigurationsGetRequest(_messages.Message):
   r"""A RunProjectsLocationsConfigurationsGetRequest object.
 
   Fields:
-    name: The name of the configuration being retrieved.
+    name: The name of the configuration being retrieved. If needed, replace
+      {namespace_id} with the project ID.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2050,19 +2156,18 @@ class RunProjectsLocationsConfigurationsListRequest(_messages.Message):
   Fields:
     continue_: Optional encoded string to continue paging.
     fieldSelector: Allows to filter resources based on a specific value for a
-      field name. k8s will send this in a query string format. i.e.
-      'metadata.name%3Dlorem'
-    includeUninitialized: Kubernetes-compatible parameter. Not used by Cloud
-      Run.
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
     parent: The project ID or project number from which the configurations
       should be listed.
     resourceVersion: The baseline resource version from which the list or
-      watch operation should start.
-    watch: Flag that indicates that kubectl expects to watch this resource as
-      well. Not supported by Cloud run.
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)
@@ -2092,12 +2197,12 @@ class RunProjectsLocationsDomainmappingsDeleteRequest(_messages.Message):
   r"""A RunProjectsLocationsDomainmappingsDeleteRequest object.
 
   Fields:
-    name: The name of the domain mapping being deleted.
-    orphanDependents: Kubernetes-compatible attribute that specifies the
-      cascade behavior on delete. Cloud Run only supports cascading behavior,
-      so this must be false. This attribute is deprecated, and might be
-      replaced with PropagationPolicy See
-      https://github.com/kubernetes/kubernetes/issues/46659 for more info.
+    name: The name of the domain mapping being deleted. If needed, replace
+      {namespace_id} with the project ID.
+    orphanDependents: Deprecated. Specifies the cascade behavior on delete.
+      Cloud Run only supports cascading behavior, so this must be false. This
+      attribute is deprecated, and might be replaced with PropagationPolicy
+      See https://github.com/kubernetes/kubernetes/issues/46659 for more info.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2108,7 +2213,8 @@ class RunProjectsLocationsDomainmappingsGetRequest(_messages.Message):
   r"""A RunProjectsLocationsDomainmappingsGetRequest object.
 
   Fields:
-    name: The name of the domain mapping being retrieved.
+    name: The name of the domain mapping being retrieved. If needed, replace
+      {namespace_id} with the project ID.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2120,19 +2226,18 @@ class RunProjectsLocationsDomainmappingsListRequest(_messages.Message):
   Fields:
     continue_: Optional encoded string to continue paging.
     fieldSelector: Allows to filter resources based on a specific value for a
-      field name. k8s will send this in a query string format. i.e.
-      'metadata.name%3Dlorem'
-    includeUninitialized: Kubernetes-compatible parameter. Not used by Cloud
-      Run.
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
     parent: The project ID or project number from which the domain mappings
       should be listed.
     resourceVersion: The baseline resource version from which the list or
-      watch operation should start.
-    watch: Flag that indicates that kubectl expects to watch this resource as
-      well. Not supported by Cloud Run.
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)
@@ -2150,23 +2255,40 @@ class RunProjectsLocationsDomainmappingsReplaceDomainMappingRequest(_messages.Me
 
   Fields:
     domainMapping: A DomainMapping resource to be passed as the request body.
-    name: The name of the domain mapping being retrieved.
+    name: The name of the domain mapping being retrieved. If needed, replace
+      {namespace_id} with the project ID.
   """
 
   domainMapping = _messages.MessageField('DomainMapping', 1)
   name = _messages.StringField(2, required=True)
 
 
+class RunProjectsLocationsListRequest(_messages.Message):
+  r"""A RunProjectsLocationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The resource that owns the locations collection, if applicable.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
 class RunProjectsLocationsRevisionsDeleteRequest(_messages.Message):
   r"""A RunProjectsLocationsRevisionsDeleteRequest object.
 
   Fields:
-    name: The name of the revision being deleted.
-    orphanDependents: Kubernetes-compatible attribute that specifies the
-      cascade behavior on delete. Cloud Run only supports cascading behavior,
-      so this must be false. This attribute is deprecated, and might be
-      replaced with PropagationPolicy See
-      https://github.com/kubernetes/kubernetes/issues/46659 for more info.
+    name: The name of the revision being deleted. If needed, replace
+      {namespace_id} with the project ID.
+    orphanDependents: Deprecated. Specifies the cascade behavior on delete.
+      Cloud Run only supports cascading behavior, so this must be false. This
+      attribute is deprecated, and might be replaced with PropagationPolicy
+      See https://github.com/kubernetes/kubernetes/issues/46659 for more info.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2177,7 +2299,8 @@ class RunProjectsLocationsRevisionsGetRequest(_messages.Message):
   r"""A RunProjectsLocationsRevisionsGetRequest object.
 
   Fields:
-    name: The name of the revision being retrieved.
+    name: The name of the revision being retrieved. If needed, replace
+      {namespace_id} with the project ID.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2189,19 +2312,18 @@ class RunProjectsLocationsRevisionsListRequest(_messages.Message):
   Fields:
     continue_: Optional encoded string to continue paging.
     fieldSelector: Allows to filter resources based on a specific value for a
-      field name. k8s will send this in a query string format. i.e.
-      'metadata.name%3Dlorem'
-    includeUninitialized: Kubernetes-compatible parameter. Not used by Cloud
-      Run.
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
     parent: The project ID or project number from which the revisions should
       be listed.
     resourceVersion: The baseline resource version from which the list or
-      watch operation should start.
-    watch: Flag that indicates that kubectl expects to watch this resource as
-      well. Not supported by Cloud run.
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)
@@ -2218,7 +2340,8 @@ class RunProjectsLocationsRoutesGetRequest(_messages.Message):
   r"""A RunProjectsLocationsRoutesGetRequest object.
 
   Fields:
-    name: The name of the route being retrieved.
+    name: The name of the route being retrieved. If needed, replace
+      {namespace_id} with the project ID.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2230,19 +2353,18 @@ class RunProjectsLocationsRoutesListRequest(_messages.Message):
   Fields:
     continue_: Optional encoded string to continue paging.
     fieldSelector: Allows to filter resources based on a specific value for a
-      field name. k8s will send this in a query string format. i.e.
-      'metadata.name%3Dlorem'
-    includeUninitialized: Kubernetes-compatible parameter. Not used by Cloud
-      Run.
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
     parent: The project ID or project number from which the routes should be
       listed.
     resourceVersion: The baseline resource version from which the list or
-      watch operation should start.
-    watch: Flag that indicates that kubectl expects to watch this resource as
-      well. Not supported by Cloud Run.
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)
@@ -2272,12 +2394,12 @@ class RunProjectsLocationsServicesDeleteRequest(_messages.Message):
   r"""A RunProjectsLocationsServicesDeleteRequest object.
 
   Fields:
-    name: The name of the service being deleted.
-    orphanDependents: Deprecated. Kubernetes-compatible attribute that
-      specifies the cascade behavior on delete. Cloud Run only supports
-      cascading behavior, so this must be false. This attribute is deprecated,
-      and might be replaced with PropagationPolicy See
-      https://github.com/kubernetes/kubernetes/issues/46659 for more info.
+    name: The name of the service being deleted. If needed, replace
+      {namespace_id} with the project ID.
+    orphanDependents: Deprecated. Specifies the cascade behavior on delete.
+      Cloud Run only supports cascading behavior, so this must be false. This
+      attribute is deprecated, and might be replaced with PropagationPolicy
+      See https://github.com/kubernetes/kubernetes/issues/46659 for more info.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2300,7 +2422,8 @@ class RunProjectsLocationsServicesGetRequest(_messages.Message):
   r"""A RunProjectsLocationsServicesGetRequest object.
 
   Fields:
-    name: The name of the service being retrieved.
+    name: The name of the service being retrieved. If needed, replace
+      {namespace_id} with the project ID.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2312,19 +2435,18 @@ class RunProjectsLocationsServicesListRequest(_messages.Message):
   Fields:
     continue_: Optional encoded string to continue paging.
     fieldSelector: Allows to filter resources based on a specific value for a
-      field name. k8s will send this in a query string format. i.e.
-      'metadata.name%3Dlorem'
-    includeUninitialized: Kubernetes-compatible parameter. Not used by Cloud
-      Run.
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
     parent: The project ID or project number from which the services should be
       listed.
     resourceVersion: The baseline resource version from which the list or
-      watch operation should start.
-    watch: Flag that indicates that kubectl expects to watch this resource as
-      well. Not supported by Cloud Run.
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)
@@ -2342,7 +2464,8 @@ class RunProjectsLocationsServicesPatchRequest(_messages.Message):
 
   Fields:
     httpBody: A HttpBody resource to be passed as the request body.
-    name: The name of the service being patched.
+    name: The name of the service being patched. If needed, replace
+      {namespace_id} with the project ID.
   """
 
   httpBody = _messages.MessageField('HttpBody', 1)
@@ -2353,7 +2476,8 @@ class RunProjectsLocationsServicesReplaceServiceRequest(_messages.Message):
   r"""A RunProjectsLocationsServicesReplaceServiceRequest object.
 
   Fields:
-    name: The name of the service being replaced.
+    name: The name of the service being replaced. If needed, replace
+      {namespace_id} with the project ID.
     service: A Service resource to be passed as the request body.
   """
 
@@ -2479,12 +2603,16 @@ class SecurityContext(_messages.Message):
 
 
 class Service(_messages.Message):
-  r"""Service is a convenience resource to create, group and manipulate a
-  Route, Configuration(s), and Revision(s) that represent a single function,
-  application, or microservice. The Service spec has several modes/types that
-  represent different patterns for interacting the underlying Knative
-  resources, from always deploying the latest Revision, pinning specific
-  revisions, to canarying gradual rollouts.
+  r"""Service acts as a top-level container that manages a set of Routes and
+  Configurations which implement a network service. Service exists to provide
+  a singular abstraction which can be access controlled, reasoned about, and
+  which encapsulates software lifecycle decisions such as rollout policy and
+  team resource ownership. Service acts only as an orchestrator of the
+  underlying Routes and Configurations (much as a kubernetes Deployment
+  orchestrates ReplicaSets).  The Service's controller will track the statuses
+  of its owned Configuration and Route, reflecting their statuses and
+  conditions as its own.  See also:
+  https://github.com/knative/serving/blob/master/docs/spec/overview.md#service
 
   Fields:
     apiVersion: The API version for this call such as "v1alpha1".
@@ -2504,9 +2632,7 @@ class Service(_messages.Message):
 
 
 class ServiceCondition(_messages.Message):
-  r"""ServiceCondition defines a readiness condition. See:
-  https://github.com/kubernetes/community/blob/master/contributors/devel/api-
-  conventions.md#typical-status-properties
+  r"""ServiceCondition defines a readiness condition for a Service.
 
   Fields:
     lastTransitionTime: Last time the condition transitioned from one status
@@ -2519,7 +2645,9 @@ class ServiceCondition(_messages.Message):
     type: ServiceConditionType is used to communicate the status of the
       reconciliation process. See also:
       https://github.com/knative/serving/blob/master/docs/spec/errors.md
-      #error-conditions-and-reporting Types include: "Ready", "Failed".
+      #error-conditions-and-reporting  Types include: "Ready",
+      "ConfigurationsReady", and "RoutesReady". "Ready" will be true when the
+      underlying Route and Configuration are ready.
   """
 
   lastTransitionTime = _messages.StringField(1)
@@ -2534,11 +2662,12 @@ class ServiceSpec(_messages.Message):
   which is used to manipulate the underlying Route and Configuration(s).
 
   Fields:
-    generation: For open-source Knative metadata.generation does not work yet,
-      this is a stopgap way of specifying generation Ignored by Cloud Run.
-      +optional
+    generation: Deprecated and not currently populated by Cloud Run. See
+      metadata.generation instead, which is the sequence number containing the
+      latest generation of the desired state.  Read-only.
     pinned: Pins this service to a specific revision name. The revision must
-      be owned by the configuration provided. +optional
+      be owned by the configuration provided.  Not currently supported by
+      Cloud Run. +optional
     runLatest: RunLatest defines a simple Service. It will automatically
       configure a route that keeps the latest ready revision from the supplied
       configuration running. +optional
@@ -2550,8 +2679,9 @@ class ServiceSpec(_messages.Message):
 
 
 class ServiceSpecPinnedType(_messages.Message):
-  r"""Pins this service to a specific revision name. The revision must be
-  owned by the configuration provided.
+  r"""ServiceSpecPinnedType Pins this service to a specific revision name. The
+  revision must be owned by the configuration provided.  Not currently
+  supported by Cloud Run.
 
   Fields:
     configuration: The configuration for this service.
@@ -2564,9 +2694,8 @@ class ServiceSpecPinnedType(_messages.Message):
 
 
 class ServiceSpecRunLatest(_messages.Message):
-  r"""RunLatest defines a simple Service. It will automatically configure a
-  route that keeps the latest ready revision from the supplied configuration
-  running.
+  r"""ServiceSpecRunLatest contains the options for always having a route to
+  the latest configuration. See ServiceSpec for more details.
 
   Fields:
     configuration: The configuration for this service.
@@ -2579,25 +2708,29 @@ class ServiceStatus(_messages.Message):
   r"""The current state of the Service. Output only.
 
   Fields:
-    address: Similar to domain, information on where the service is available
-      on HTTP.
-    conditions: Array of observed ServiceCondition, indicating the current
-      state of the Service.
-    domain: The top-level domain from the underlying Route.
+    address: From RouteStatus. Similar to domain, information on where the
+      service is available on HTTP.
+    conditions: Conditions communicates information about ongoing/complete
+      reconciliation processes that bring the "spec" inline with the observed
+      state of the world.
+    domain: From RouteStatus. Domain holds the top-level domain that will
+      distribute traffic over the provided targets. It generally has the form
+      https://{route-hash}-{project-hash}-{cluster-level-suffix}.a.run.app
     latestCreatedRevisionName: From ConfigurationStatus.
       LatestCreatedRevisionName is the last revision that was created from
       this Service's Configuration. It might not be ready yet, for that use
-      LatestReadyRevisionName. +optional
+      LatestReadyRevisionName.
     latestReadyRevisionName: From ConfigurationStatus. LatestReadyRevisionName
       holds the name of the latest Revision stamped out from this Service's
       Configuration that has had its "Ready" condition become "True".
-      +optional
-    observedGeneration: Generation of the service that was last processed by
-      the controller.
-    traffic: Traffic holds the configured traffic distribution from the
-      related Route. These entries will always contain RevisionName
-      references. When ConfigurationName appears in the spec for runLatest,
-      this will hold the LatestReadyRevisionName that was last observed.
+    observedGeneration: ObservedGeneration is the 'Generation' of the Route
+      that was last processed by the controller.  Clients polling for
+      completed reconciliation should poll until observedGeneration =
+      metadata.generation and the Ready condition's status is True or False.
+    traffic: From RouteStatus. Traffic holds the configured traffic
+      distribution. These entries will always contain RevisionName references.
+      When ConfigurationName appears in the spec, this will hold the
+      LatestReadyRevisionName that we last observed.
   """
 
   address = _messages.MessageField('Addressable', 1)
@@ -2737,13 +2870,17 @@ class TrafficTarget(_messages.Message):
       changes, we will automatically migrate traffic from the prior "latest
       ready" revision to the new one. This field is never set in Route's
       status, only its spec. This is mutually exclusive with RevisionName.
+      Cloud Run currently supports a single ConfigurationName.
     name: Name is optionally used to expose a dedicated hostname for
-      referencing this target exclusively. It has the form:
-      {name}.${route.status.domain} +optional
+      referencing this target exclusively.  Not currently supported by Cloud
+      Run. +optional
     percent: Percent specifies percent of the traffic to this Revision or
-      Configuration. This defaults to zero if unspecified.
+      Configuration. This defaults to zero if unspecified.  Cloud Run
+      currently requires 100 percent for a single ConfigurationName
+      TrafficTarget entry.
     revisionName: RevisionName of a specific revision to which to send this
       portion of traffic. This is mutually exclusive with ConfigurationName.
+      Providing RevisionName in spec is not currently supported by Cloud Run.
   """
 
   configurationName = _messages.StringField(1)

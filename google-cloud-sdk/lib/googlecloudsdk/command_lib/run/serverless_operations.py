@@ -946,20 +946,36 @@ class ServerlessOperations(object):
 
     request = messages.RunNamespacesDomainmappingsCreateRequest(
         domainMapping=new_mapping.Message(),
-        parent=domain_mapping_ref.RelativeName())
+        parent=domain_mapping_ref.Parent().RelativeName())
     with metrics.record_duration(metrics.CREATE_DOMAIN_MAPPING):
       response = self._client.namespaces_domainmappings.Create(request)
-    return domain_mapping.DomainMapping(response)
+    return domain_mapping.DomainMapping(response, messages)
 
-  def DeleteDomainMapping(self, domain):
+  def DeleteDomainMapping(self, domain_mapping_ref):
     """Delete a domain mapping.
 
     Args:
-      domain: str, domain name of the domainmapping to be deleted.
+      domain_mapping_ref: Resource, domainmapping resource.
     """
     messages = self._messages_module
 
     request = messages.RunNamespacesDomainmappingsDeleteRequest(
-        name=domain)
+        name=domain_mapping_ref.RelativeName())
     with metrics.record_duration(metrics.DELETE_DOMAIN_MAPPING):
       self._client.namespaces_domainmappings.Delete(request)
+
+  def GetDomainMapping(self, domain_name):
+    """Get a domain mapping.
+
+    Args:
+      domain_name: str, domain name.
+
+    Returns:
+      A domain_mapping.DomainMapping object.
+    """
+    messages = self._messages_module
+    request = messages.RunNamespacesDomainmappingsGetRequest(
+        name=domain_name)
+    with metrics.record_duration(metrics.GET_DOMAIN_MAPPING):
+      response = self._client.namespaces_domainmappings.Get(request)
+    return domain_mapping.DomainMapping(response)

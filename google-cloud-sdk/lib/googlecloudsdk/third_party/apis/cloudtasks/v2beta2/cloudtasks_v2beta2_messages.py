@@ -1787,7 +1787,7 @@ class TaskStatus(_messages.Message):
 
   Fields:
     attemptDispatchCount: Output only. The number of attempts dispatched.
-      This count includes tasks which have been dispatched but haven't
+      This count includes attempts which have been dispatched but haven't
       received a response.
     attemptResponseCount: Output only. The number of attempts which have
       received a response.  This field is not calculated for pull tasks.

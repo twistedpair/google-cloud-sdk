@@ -501,7 +501,7 @@
           "format": "google-duration"
         },
         "dispatchCount": {
-          "description": "Output only. The number of attempts dispatched.\n\nThis count includes tasks which have been dispatched but haven't\nreceived a response.",
+          "description": "Output only. The number of attempts dispatched.\n\nThis count includes attempts which have been dispatched but haven't\nreceived a response.",
           "type": "integer",
           "format": "int32"
         },

@@ -5,6 +5,49 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 234.0.0 (2019-02-12)
+
+### Cloud SDK
+
+* Added the `accessibility/screen_reader` property. This property changes
+  some gcloud UX to make output more screen reader friendly. See `gcloud topic
+  accessibility` for more information`.
+  * Accessibility support is still in the early stages, so please report any
+    issues that you would like fixed using `gcloud feedback`.
+
+### Cloud Asset Inventory
+
+* Added `gcloud beta asset` command group to manage the Cloud Asset Inventory.
+
+### Cloud Resource Manager
+
+* Promoted `resource-manager folders` command group to beta
+
+### Cloud Services
+
+* Added `gcloud beta services vpc-peerings` to support updating a connection.
+
+### Cloud Source Repositories
+
+* Promoted `gcloud source project-configs` command group to GA.
+* Promoted `gcloud source repos update` to GA.
+
+### Compute Engine
+
+* Promoted `gcloud beta compute networks subnets <get|set>-iam-policy` and `<add|remove>-iam-policy-bindings` to GA.
+* Promoted the following commands to beta:
+    *   `gcloud compute disks <add|remove-resource-policies>`
+    *   `gcloud compute resource-policies create-snapshot-schedule`
+    *   `gcloud compute resource-policies delete`
+    *   `gcloud compute resource-policies describe`
+    *   `gcloud compute resource-policies list`
+* Promoted `--service-label` flag of `gcloud compute forwarding-rules create`
+  to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 233.0.0 (2019-02-05)
 
 ### Cloud Dataflow

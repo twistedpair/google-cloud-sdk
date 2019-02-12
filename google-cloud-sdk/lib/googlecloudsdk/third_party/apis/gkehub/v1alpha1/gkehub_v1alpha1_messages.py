@@ -189,9 +189,7 @@ class Condition(_messages.Message):
     svc: Trusted attributes discharged by the service.
     sys: Trusted attributes supplied by any service that owns resources and
       uses the IAM system for access control.
-    value: DEPRECATED. Use 'values' instead.
-    values: The objects of the condition. This is mutually exclusive with
-      'value'.
+    values: The objects of the condition.
   """
 
   class IamValueValuesEnum(_messages.Enum):
@@ -282,8 +280,7 @@ class Condition(_messages.Message):
   op = _messages.EnumField('OpValueValuesEnum', 2)
   svc = _messages.StringField(3)
   sys = _messages.EnumField('SysValueValuesEnum', 4)
-  value = _messages.StringField(5)
-  values = _messages.StringField(6, repeated=True)
+  values = _messages.StringField(5, repeated=True)
 
 
 class CounterOptions(_messages.Message):
@@ -437,7 +434,7 @@ class GkehubProjectsLocationsGlobalConnectAgentsGenerateManifestRequest(_message
       project. Limited to 1024 characters
     connectAgent_namespace: Optional, if the user wishes the connect agent and
       dependent resources to be run in different namespace than the default
-      namespace `gke-connect-[project_id]-[connect_agent_id]`
+      namespace `gke-connect-[project_id]`
     connectAgent_proxy: Optional connection name of the proxy, format must be
       in the form http(s)://USERNAME:PASSWORD@IP_ADDRESS:PORT, depends on
       HTTP/HTTPS protocol supported by the proxy. This will direct connect
@@ -447,7 +444,7 @@ class GkehubProjectsLocationsGlobalConnectAgentsGenerateManifestRequest(_message
     connectAgent_registry_name: The image will be pulled form ${name
       }/gkeconnect-gce:{tag} The name of the Docker registry.
     connectAgent_registry_tag: The tag of the connect agent image to use.
-    parent: The parent project the connect agent  is associated with.
+    parent: The parent project the connect agent is associated with.
       `projects/[project_id]/locations/global/connectAgents`.
   """
 

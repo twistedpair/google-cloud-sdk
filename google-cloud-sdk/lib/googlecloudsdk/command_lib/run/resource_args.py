@@ -177,7 +177,8 @@ def ClusterAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='cluster',
       help_text='Specific to Cloud Run on Kubernetes Engine: '
-      'The name of the Kubernetes Engine cluster to use.',
+      'The name of the Kubernetes Engine cluster to use. Alternatively, set the'
+      ' property [run/cluster].',
       fallthroughs=[
           deps.PropertyFallthrough(properties.VALUES.run.cluster)])
 
@@ -186,7 +187,8 @@ def ClusterLocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='location',
       help_text='Specific to Cloud Run on Kubernetes Engine: '
-      'The location of the {resource}.',
+      'The location of the {resource}. Alternatively, set the '
+      'property [run/cluster_location].',
       fallthroughs=[
           deps.PropertyFallthrough(
               properties.VALUES.run.cluster_location)])

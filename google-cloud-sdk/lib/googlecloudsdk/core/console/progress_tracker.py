@@ -40,8 +40,8 @@ import six
 
 
 def ProgressTracker(
-    message=None, autotick=True, detail_message_callback=None, tick_delay=1,
-    interruptable=True,
+    message=None, autotick=True, detail_message_callback=None, tick_delay=0.2,
+    interruptable=True, screen_reader=False,
     aborted_message=console_io.OperationCancelledError.DEFAULT_MESSAGE):
   """A context manager for telling the user about long-running progress.
 
@@ -55,6 +55,8 @@ def ProgressTracker(
     interruptable: boolean, True if the user can ctrl-c the operation. If so,
       it will stop and will report as aborted. If False, a message will be
       displayed saying that it cannot be cancelled.
+    screen_reader: boolean, override for screen reader accessibility property
+      toggle.
     aborted_message: str, A custom message to put in the exception when it is
       cancelled by the user.
 
@@ -70,16 +72,23 @@ def ProgressTracker(
     is_tty = console_io.IsInteractive(error=True)
     tracker_cls = (_NormalProgressTracker if is_tty
                    else _NonInteractiveProgressTracker)
+    screen_reader = (screen_reader or
+                     properties.VALUES.accessibility.screen_reader.GetBool())
+    spinner_override_message = None
+    if screen_reader:
+      tick_delay = 1
+      spinner_override_message = 'working'
+
     return tracker_cls(
         message, autotick, detail_message_callback, tick_delay, interruptable,
-        aborted_message)
+        aborted_message, spinner_override_message)
 
 
 class _BaseProgressTracker(six.with_metaclass(abc.ABCMeta, object)):
   """A context manager for telling the user about long-running progress."""
 
   def __init__(self, message, autotick, detail_message_callback, tick_delay,
-               interruptable, aborted_message):
+               interruptable, aborted_message, spinner_override_message):
     self._stream = sys.stderr
     if message is None:
       self._spinner_only = True
@@ -90,6 +99,7 @@ class _BaseProgressTracker(six.with_metaclass(abc.ABCMeta, object)):
       self._message = message
       self._prefix = message + '...'
     self._detail_message_callback = detail_message_callback
+    self.spinner_override_message = spinner_override_message
     self._ticks = 0
     self._done = False
     self._lock = threading.Lock()
@@ -223,9 +233,16 @@ class _NormalProgressTracker(_BaseProgressTracker):
     with self._lock:
       if not self._done:
         self._ticks += 1
-        self._Print(self._symbols.spin_marks[
-            self._ticks % len(self._symbols.spin_marks)])
+        self._Print(self._GetSuffix())
     return self._done
+
+  def _GetSuffix(self):
+    if self.spinner_override_message:
+      num_dots = self._ticks % 4  # 3 dots max.
+      return self.spinner_override_message + '.' * num_dots
+    else:
+      return self._symbols.spin_marks[
+          self._ticks % len(self._symbols.spin_marks)]
 
   def _Print(self, message=''):
     """Reprints the prefix followed by an optional message.

@@ -51,6 +51,9 @@ DELETE_SERVICE = _SERVERLESS_PREFIX + 'delete_service'
 # Time to get a configuration
 GET_CONFIGURATION = _SERVERLESS_PREFIX + 'get_configuration'
 
+# Time to get a domain mapping
+GET_DOMAIN_MAPPING = _SERVERLESS_PREFIX + 'get_domain_mapping'
+
 # Time to list domain mappings
 LIST_DOMAIN_MAPPINGS = _SERVERLESS_PREFIX + 'list_domain_mappings'
 

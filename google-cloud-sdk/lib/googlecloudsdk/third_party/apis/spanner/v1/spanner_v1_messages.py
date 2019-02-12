@@ -356,9 +356,7 @@ class Condition(_messages.Message):
     svc: Trusted attributes discharged by the service.
     sys: Trusted attributes supplied by any service that owns resources and
       uses the IAM system for access control.
-    value: DEPRECATED. Use 'values' instead.
-    values: The objects of the condition. This is mutually exclusive with
-      'value'.
+    values: The objects of the condition.
   """
 
   class IamValueValuesEnum(_messages.Enum):
@@ -449,8 +447,7 @@ class Condition(_messages.Message):
   op = _messages.EnumField('OpValueValuesEnum', 2)
   svc = _messages.StringField(3)
   sys = _messages.EnumField('SysValueValuesEnum', 4)
-  value = _messages.StringField(5)
-  values = _messages.StringField(6, repeated=True)
+  values = _messages.StringField(5, repeated=True)
 
 
 class CounterOptions(_messages.Message):
@@ -1234,7 +1231,9 @@ class ListBackupsResponse(_messages.Message):
   r"""A ListBackupsResponse object.
 
   Fields:
-    backups: The list of matching backups.
+    backups: The list of matching backups. Backups returned are ordered by
+      `create_time` in descending order, starting from the most recent
+      `create_time`.
     nextPageToken: `next_page_token` can be sent in a subsequent ListBackups
       call to fetch more of the matching backups.
   """
@@ -2480,16 +2479,20 @@ class SpannerProjectsInstancesBackupOperationsListRequest(_messages.Message):
       progress, else true.   * `metadata.type_url` (using filter string
       `metadata.@type`) and fields      in `metadata.value` (using filter
       string `metadata.<field_name>`,      where <field_name> is a field in
-      metadata.value) are  eligible for      filtering.  To filter on multiple
-      expressions, provide each separate expression within parentheses. By
-      default, each expression is an AND expression. However, you can include
-      AND, OR, and NOT expressions explicitly.  Some examples of using filters
-      are:    * `done:true` --> The operation is complete.   *
-      `metadata.database:prod`          --> The database the backup was taken
-      from has a name containing              the string "prod".   * `(metadat
-      a.@type:type.googleapis.com/google.spanner.admin.database.v1.CreateBacku
-      pMetadata)      AND (metadata.name:howl)      AND
-      (metadata.progress.start_time < \"2018-03-28T14:50:00Z\")      AND
+      metadata.value) are eligible for      filtering.   * `error` --> Error
+      associated with the long-running operation.   * `response.type_url`
+      (using filter string `response.@type`) and fields      in
+      `response.value` (using filter string `response.<field_name>`,
+      where <field_name> is a field in response.value) are eligible for
+      filtering.  To filter on multiple expressions, provide each separate
+      expression within parentheses. By default, each expression is an AND
+      expression. However, you can include AND, OR, and NOT expressions
+      explicitly.  Some examples of using filters are:    * `done:true` -->
+      The operation is complete.   * `metadata.database:prod`          --> The
+      database the backup was taken from has a name containing
+      the string "prod".   * `(metadata.@type:type.googleapis.com/google.spann
+      er.admin.database.v1.CreateBackupMetadata)      AND (metadata.name:howl)
+      AND (metadata.progress.start_time < \"2018-03-28T14:50:00Z\")      AND
       (error:*)`          --> Return CreateBackup operations where the created
       backup name              contains the string "howl", the
       progress.start_time of the              backup operation is before
@@ -2592,16 +2595,6 @@ class SpannerProjectsInstancesBackupsListRequest(_messages.Message):
       \"2018-03-28T14:50:00Z\"`          --> The backup `expire_time` is
       before 2018-03-28T14:50:00Z.   * `size_bytes > 10000000000` --> The
       backup's size is greater than 10GB
-    orderBy: An expression for specifying the sort order of the results of the
-      request. The string value should specify only one field in Backup.
-      Fields supported are:    * name    * database    * expire_time    *
-      create_time    * size_bytes    * state  For example, "create_time". The
-      default sorting order is ascending. To specify descending order for the
-      field, a suffix " desc" should be appended to the field name. For
-      example, "create_time desc". Redundant space characters in the syntax
-      are insigificant.  If order_by is empty, results will be sorted by
-      `create_time` in descending order starting from the most recently
-      created backup.
     pageSize: Number of backups to be returned in the response. If 0 or less,
       defaults to the server's maximum allowed page size.
     pageToken: If non-empty, `page_token` should contain a next_page_token
@@ -2612,10 +2605,9 @@ class SpannerProjectsInstancesBackupsListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class SpannerProjectsInstancesBackupsPatchRequest(_messages.Message):
@@ -2704,13 +2696,18 @@ class SpannerProjectsInstancesDatabaseOperationsListRequest(_messages.Message):
       progress, else true.   * `metadata.type_url` (using filter string
       `metadata.@type`) and fields      in `metadata.value` (using filter
       string `metadata.<field_name>`,      where <field_name> is a field in
-      metadata.value) are  eligible for      filtering.  To filter on multiple
-      expressions, provide each separate expression within parentheses. By
-      default, each expression is an AND expression. However, you can include
-      AND, OR, and NOT expressions explicitly.  Some examples of using filters
-      are:    * `done:true` --> The operation is complete.   * `(metadata.@typ
-      e:type.googleapis.com/google.spanner.admin.database.v1.RestoreDatabaseMe
-      tadata)      AND (metadata.source_type:BACKUP)      AND
+      metadata.value) are eligible for      filtering.   * `error` --> Error
+      associated with the long-running operation.   * `response.type_url`
+      (using filter string `response.@type`) and fields      in
+      `response.value` (using filter string `response.<field_name>`,
+      where <field_name> is a field in response.value) are eligible for
+      filtering.  To filter on multiple expressions, provide each separate
+      expression within parentheses. By default, each expression is an AND
+      expression. However, you can include AND, OR, and NOT expressions
+      explicitly.  Some examples of using filters are:    * `done:true` -->
+      The operation is complete.   * `(metadata.@type:type.googleapis.com/goog
+      le.spanner.admin.database.v1.RestoreDatabaseMetadata)      AND
+      (metadata.source_type:BACKUP)      AND
       (metadata.backup_info.backup:backup_howl)      AND
       (metadata.name:restored_howl)      AND (metadata.progress.start_time <
       \"2018-03-28T14:50:00Z\")      AND (error:*)`          --> Return

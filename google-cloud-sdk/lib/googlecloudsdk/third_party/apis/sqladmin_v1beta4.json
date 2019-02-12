@@ -5,7 +5,7 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20190125",
+ "revision": "20190201",
  "title": "Cloud SQL Admin API",
  "description": "Creates and manages Cloud SQL instances, which provide fully managed MySQL or PostgreSQL databases.",
  "ownerDomain": "google.com",
@@ -678,6 +678,10 @@
      "items": {
       "type": "string"
      }
+    },
+    "inBeta": {
+     "type": "boolean",
+     "description": "True if the flag is only released in Beta."
     },
     "kind": {
      "type": "string",

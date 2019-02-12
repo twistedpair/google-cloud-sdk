@@ -284,7 +284,7 @@ class SpannerV1(base_api.BaseApiClient):
         method_id=u'spanner.projects.instances.backups.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
         relative_path=u'v1/{+parent}/backups',
         request_field='',
         request_type_name=u'SpannerProjectsInstancesBackupsListRequest',

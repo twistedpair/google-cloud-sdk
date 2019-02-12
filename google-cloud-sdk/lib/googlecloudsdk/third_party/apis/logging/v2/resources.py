@@ -31,6 +31,16 @@ class Collections(enum.Enum):
       [u'billingAccountsId'],
       True
   )
+  BILLINGACCOUNTS_BUCKETS = (
+      'billingAccounts.buckets',
+      '{+name}',
+      {
+          '':
+              'billingAccounts/{billingAccountsId}/buckets/{bucketsId}',
+      },
+      [u'name'],
+      True
+  )
   BILLINGACCOUNTS_EXCLUSIONS = (
       'billingAccounts.exclusions',
       '{+name}',
@@ -49,6 +59,16 @@ class Collections(enum.Enum):
               'billingAccounts/{billingAccountsId}/sinks/{sinksId}',
       },
       [u'sinkName'],
+      True
+  )
+  BUCKETS = (
+      'buckets',
+      '{+name}',
+      {
+          '':
+              '{v2Id}/{v2Id1}/buckets/{bucketsId}',
+      },
+      [u'name'],
       True
   )
   EXCLUSIONS = (
@@ -74,6 +94,24 @@ class Collections(enum.Enum):
       {
           '':
               'folders/{foldersId}/exclusions/{exclusionsId}',
+      },
+      [u'name'],
+      True
+  )
+  FOLDERS_LOCATIONS = (
+      'folders.locations',
+      'folders/{foldersId}/locations/{locationsId}',
+      {},
+      [u'foldersId', u'locationsId'],
+      True
+  )
+  FOLDERS_LOCATIONS_BUCKETS = (
+      'folders.locations.buckets',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/locations/{locationsId}/buckets/'
+              '{bucketsId}',
       },
       [u'name'],
       True
@@ -105,6 +143,24 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS = (
+      'organizations.locations',
+      'organizations/{organizationsId}/locations/{locationsId}',
+      {},
+      [u'organizationsId', u'locationsId'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_BUCKETS = (
+      'organizations.locations.buckets',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'buckets/{bucketsId}',
+      },
+      [u'name'],
+      True
+  )
   ORGANIZATIONS_SINKS = (
       'organizations.sinks',
       '{+sinkName}',
@@ -128,6 +184,24 @@ class Collections(enum.Enum):
       {
           '':
               'projects/{projectsId}/exclusions/{exclusionsId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS = (
+      'projects.locations',
+      'projects/{projectsId}/locations/{locationsId}',
+      {},
+      [u'projectsId', u'locationsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_BUCKETS = (
+      'projects.locations.buckets',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/buckets/'
+              '{bucketsId}',
       },
       [u'name'],
       True

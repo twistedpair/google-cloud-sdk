@@ -565,6 +565,14 @@ MAP = {
             default_version=True
         ),
     },
+    'healthcare': {
+        'v1alpha2': APIDef(
+            class_path='googlecloudsdk.third_party.apis.healthcare.v1alpha2',
+            client_classpath='healthcare_v1alpha2_client.HealthcareV1alpha2',
+            messages_modulepath='healthcare_v1alpha2_messages',
+            default_version=True
+        ),
+    },
     'iam': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.iam.v1',

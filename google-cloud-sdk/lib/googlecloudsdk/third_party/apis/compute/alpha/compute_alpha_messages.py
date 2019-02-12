@@ -1181,7 +1181,8 @@ class Allocation(_messages.Message):
       committment creation.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
-    description: A string attribute.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#allocations for
@@ -1197,12 +1198,13 @@ class Allocation(_messages.Message):
       resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
-    specificAllocation: A AllocationSpecificSKUAllocation attribute.
+    specificAllocation: Allocation for instances with specific machine shapes.
     specificAllocationRequired: Indicates whether the allocation can be
       consumed by VMs with "any allocation" defined. If the field is set, then
       only VMs that target the allocation by name using --allocation-affinity
       can consume this allocation.
-    zone: A string attribute.
+    zone: Zone in which the allocation resides, must be provided if allocation
+      is created with commitment creation.
   """
 
   commitment = _messages.StringField(1)
@@ -1532,8 +1534,8 @@ class AllocationSpecificSKUAllocation(_messages.Message):
   Fields:
     count: Specifies number of resources that are allocated.
     inUseCount: [OutputOnly] Indicates how many resource are in use.
-    instanceProperties: A
-      AllocationSpecificSKUAllocationAllocatedInstanceProperties attribute.
+    instanceProperties: The instance properties for this specific sku
+      allocation.
   """
 
   count = _messages.IntegerField(1)
@@ -2084,16 +2086,16 @@ class AuthenticationPolicy(_messages.Message):
 
   Fields:
     origins: List of authentication methods that can be used for origin
-      authentication. Similar to peers, these will be evaluated in order; the
+      authentication. Similar to peers, these will be evaluated in order the
       first valid one will be used to set origin identity. If none of these
       methods pass, the request will be rejected with authentication failed
       error (401). Leave the list empty if origin authentication is not
       required.
     peers: List of authentication methods that can be used for peer
-      authentication. They will be evaluated in order; the first valid one
-      will be used to set peer identity. If none of these methods pass, the
-      request will be rejected with authentication failed error (401). Leave
-      the list empty if peer authentication is not required.
+      authentication. They will be evaluated in order the first valid one will
+      be used to set peer identity. If none of these methods pass, the request
+      will be rejected with authentication failed error (401). Leave the list
+      empty if peer authentication is not required.
     principalBinding: Define whether peer or origin identity should be used
       for principal. Default value is USE_PEER. If peer (or origin) identity
       is not available, either because peer/origin authentication is not
@@ -4169,6 +4171,8 @@ class CallCredentials(_messages.Message):
       the SDS server. GCE_VM: The local GCE VM service account credentials are
       used to access the SDS server. JWT_SERVICE_TOKEN: The user provisioned
       service account credentials are used to access the SDS server.
+      FROM_PLUGIN: Custom authenticator credentials are used to access the SDS
+      server.
 
   Fields:
     accessToken: The access token that is used as call credential for the SDS
@@ -4178,7 +4182,8 @@ class CallCredentials(_messages.Message):
       ACCESS_TOKEN: An access token is used as call credentials for the SDS
       server. GCE_VM: The local GCE VM service account credentials are used to
       access the SDS server. JWT_SERVICE_TOKEN: The user provisioned service
-      account credentials are used to access the SDS server.
+      account credentials are used to access the SDS server. FROM_PLUGIN:
+      Custom authenticator credentials are used to access the SDS server.
     fromPlugin: Custom authenticator credentials.
     jwtServiceAccount: This service account credentials are used as call
       credentials for the SDS server. This field is used only if
@@ -4191,18 +4196,21 @@ class CallCredentials(_messages.Message):
     access token is used as call credentials for the SDS server. GCE_VM: The
     local GCE VM service account credentials are used to access the SDS
     server. JWT_SERVICE_TOKEN: The user provisioned service account
-    credentials are used to access the SDS server.
+    credentials are used to access the SDS server. FROM_PLUGIN: Custom
+    authenticator credentials are used to access the SDS server.
 
     Values:
       ACCESS_TOKEN: <no description>
+      FROM_PLUGIN: <no description>
       GCE_VM: <no description>
       INVALID: <no description>
       JWT_SERVICE_ACCOUNT: <no description>
     """
     ACCESS_TOKEN = 0
-    GCE_VM = 1
-    INVALID = 2
-    JWT_SERVICE_ACCOUNT = 3
+    FROM_PLUGIN = 1
+    GCE_VM = 2
+    INVALID = 3
+    JWT_SERVICE_ACCOUNT = 4
 
   accessToken = _messages.StringField(1)
   callCredentialType = _messages.EnumField('CallCredentialTypeValueValuesEnum', 2)
@@ -9778,7 +9786,7 @@ class ComputeInstancesAttachDiskRequest(_messages.Message):
   Fields:
     attachedDisk: A AttachedDisk resource to be passed as the request body.
     forceAttach: Whether to force attach the disk even if it's currently
-      attached to another instance. This is only available for regional disks.
+      attached to another instance.
     instance: The instance name for this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -14826,6 +14834,138 @@ class ComputeRegionDisksTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
+class ComputeRegionHealthCheckServicesDeleteRequest(_messages.Message):
+  r"""A ComputeRegionHealthCheckServicesDeleteRequest object.
+
+  Fields:
+    healthCheckService: Name of the HealthCheckService to delete. The name
+      must be 1-63 characters long, and comply with RFC1035.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  healthCheckService = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionHealthCheckServicesGetRequest(_messages.Message):
+  r"""A ComputeRegionHealthCheckServicesGetRequest object.
+
+  Fields:
+    healthCheckService: Name of the HealthCheckService to update. The name
+      must be 1-63 characters long, and comply with RFC1035.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  healthCheckService = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionHealthCheckServicesInsertRequest(_messages.Message):
+  r"""A ComputeRegionHealthCheckServicesInsertRequest object.
+
+  Fields:
+    healthCheckService: A HealthCheckService resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  healthCheckService = _messages.MessageField('HealthCheckService', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionHealthCheckServicesListRequest(_messages.Message):
+  r"""A ComputeRegionHealthCheckServicesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+
+
+class ComputeRegionHealthCheckServicesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeRegionHealthCheckServicesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
 class ComputeRegionHealthChecksDeleteRequest(_messages.Message):
   r"""A ComputeRegionHealthChecksDeleteRequest object.
 
@@ -15756,6 +15896,136 @@ class ComputeRegionInstanceGroupsSetNamedPortsRequest(_messages.Message):
 
 class ComputeRegionInstanceGroupsTestIamPermissionsRequest(_messages.Message):
   r"""A ComputeRegionInstanceGroupsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
+class ComputeRegionNotificationEndpointsDeleteRequest(_messages.Message):
+  r"""A ComputeRegionNotificationEndpointsDeleteRequest object.
+
+  Fields:
+    notificationEndpoint: Name of the NotificationEndpoint resource to delete.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  notificationEndpoint = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionNotificationEndpointsGetRequest(_messages.Message):
+  r"""A ComputeRegionNotificationEndpointsGetRequest object.
+
+  Fields:
+    notificationEndpoint: Name of the NotificationEndpoint resource to return.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  notificationEndpoint = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionNotificationEndpointsInsertRequest(_messages.Message):
+  r"""A ComputeRegionNotificationEndpointsInsertRequest object.
+
+  Fields:
+    notificationEndpoint: A NotificationEndpoint resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  notificationEndpoint = _messages.MessageField('NotificationEndpoint', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionNotificationEndpointsListRequest(_messages.Message):
+  r"""A ComputeRegionNotificationEndpointsListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+
+
+class ComputeRegionNotificationEndpointsTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeRegionNotificationEndpointsTestIamPermissionsRequest object.
 
   Fields:
     project: Project ID for this request.
@@ -20760,9 +21030,7 @@ class Condition(_messages.Message):
     svc: Trusted attributes discharged by the service.
     sys: Trusted attributes supplied by any service that owns resources and
       uses the IAM system for access control.
-    value: DEPRECATED. Use 'values' instead.
-    values: The objects of the condition. This is mutually exclusive with
-      'value'.
+    values: The objects of the condition.
   """
 
   class IamValueValuesEnum(_messages.Enum):
@@ -20824,8 +21092,7 @@ class Condition(_messages.Message):
   op = _messages.EnumField('OpValueValuesEnum', 2)
   svc = _messages.StringField(3)
   sys = _messages.EnumField('SysValueValuesEnum', 4)
-  value = _messages.StringField(5)
-  values = _messages.StringField(6, repeated=True)
+  values = _messages.StringField(5, repeated=True)
 
 
 class ConnectionDraining(_messages.Message):
@@ -24387,6 +24654,221 @@ class HealthCheckReference(_messages.Message):
   healthCheck = _messages.StringField(1)
 
 
+class HealthCheckService(_messages.Message):
+  r"""A HealthCheckService defines a set of backends on which to perform
+  periodic health checks and an endpoint to which to send notification of
+  changes in the health status of the backends.
+
+  Enums:
+    HealthStatusAggregationStrategyValueValuesEnum: Policy for how the results
+      from multiple health checks for the same endpoint are aggregated.   -
+      NO_AGGREGATION. An EndpointHealth message is returned for each backend
+      in the health check service.  - AND. If any backend's health check
+      reports UNHEALTHY, then UNHEALTHY is the HealthState of the entire
+      health check service. If all backend's are healthy, the HealthState of
+      the health check service is HEALTHY. .
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    healthChecks: List of URLs to the HealthCheck resources. Must have at
+      least one HealthCheck, and not more than 10. HealthCheck resources must
+      have portSpecification=USE_SERVING_PORT. For regional
+      HealthCheckService, the HealthCheck must be regional and in the same
+      region. For global HealthCheckService, HealthCheck must be global. Mix
+      of regional and global HealthChecks is not supported. Multiple regional
+      HealthChecks must belong to the same region. Regional
+      HealthChecks</code? must belong to the same region as zones of NEGs.
+    healthStatusAggregationStrategy: Policy for how the results from multiple
+      health checks for the same endpoint are aggregated.   - NO_AGGREGATION.
+      An EndpointHealth message is returned for each backend in the health
+      check service.  - AND. If any backend's health check reports UNHEALTHY,
+      then UNHEALTHY is the HealthState of the entire health check service. If
+      all backend's are healthy, the HealthState of the health check service
+      is HEALTHY. .
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output only] Type of the resource. Always
+      compute#healthCheckServicefor health check services.
+    name: Name of the resource. The name must be 1-63 characters long, and
+      comply with RFC1035. Specifically, the name must be 1-63 characters long
+      and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which
+      means the first character must be a lowercase letter, and all following
+      characters must be a dash, lowercase letter, or digit, except the last
+      character, which cannot be a dash.
+    networkEndpointGroups: List of URLs to the NetworkEndpointGroup resources.
+      Must not have more than 100. For regional HealthCheckService, NEGs must
+      be in zones in the region of the HealthCheckService.
+    notificationEndpoints: List of URLs to the NotificationEndpoint resources.
+      Must not have more than 10. A list of endpoints for receiving
+      notifications of change in health status. For regional
+      HealthCheckService, NotificationEndpoint must be regional and in the
+      same region. For global HealthCheckService, NotificationEndpoint must be
+      global.
+    region: [Output Only] URL of the region where the health check service
+      resides. This field is not applicable to global health check services.
+      You must specify this field as part of the HTTP request URL. It is not
+      settable as a field in the request body.
+    selfLink: [Output Only] Server-defined URL for the resource.
+    selfLinkWithId: [Output Only] Server-defined URL with id for the resource.
+  """
+
+  class HealthStatusAggregationStrategyValueValuesEnum(_messages.Enum):
+    r"""Policy for how the results from multiple health checks for the same
+    endpoint are aggregated.   - NO_AGGREGATION. An EndpointHealth message is
+    returned for each backend in the health check service.  - AND. If any
+    backend's health check reports UNHEALTHY, then UNHEALTHY is the
+    HealthState of the entire health check service. If all backend's are
+    healthy, the HealthState of the health check service is HEALTHY. .
+
+    Values:
+      AND: <no description>
+      NO_AGGREGATION: <no description>
+    """
+    AND = 0
+    NO_AGGREGATION = 1
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  healthChecks = _messages.StringField(3, repeated=True)
+  healthStatusAggregationStrategy = _messages.EnumField('HealthStatusAggregationStrategyValueValuesEnum', 4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default=u'compute#healthCheckService')
+  name = _messages.StringField(7)
+  networkEndpointGroups = _messages.StringField(8, repeated=True)
+  notificationEndpoints = _messages.StringField(9, repeated=True)
+  region = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  selfLinkWithId = _messages.StringField(12)
+
+
+class HealthCheckServicesList(_messages.Message):
+  r"""A HealthCheckServicesList object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of HealthCheckService resources.
+    kind: [Output Only] Type of the resource. Always
+      compute#healthCheckServicesList for lists of HealthCheckServices.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('HealthCheckService', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#healthCheckServicesList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
+
+
 class HealthChecksAggregatedList(_messages.Message):
   r"""A HealthChecksAggregatedList object.
 
@@ -25247,14 +25729,14 @@ class HttpRouteAction(_messages.Message):
     urlRewrite: The spec to modify the URL of the request, prior to forwarding
       the request to the matched service
     weightedBackendServices: A list of weighted backend services to send
-      traffic to when a route match occurs. The weights determine the
-      percentage of traffic that flows to their corresponding backend service.
-      The weights must add up to 100. If all traffic needs to go to a single
-      backend service, there must be one weightedBackendService with weight
-      set to 100. Once a backendService is identified and before forwarding
-      the request to the backend service, advanced routing actions like Url
-      rewrites and header transformations are applied depending on additional
-      settings specified in this HttpRouteAction.
+      traffic to when a route match occurs. The weights determine the fraction
+      of traffic that flows to their corresponding backend service. If all
+      traffic needs to go to a single backend service, there must be one
+      weightedBackendService with weight set to a non 0 number. Once a
+      backendService is identified and before forwarding the request to the
+      backend service, advanced routing actions like Url rewrites and header
+      transformations are applied depending on additional settings specified
+      in this HttpRouteAction.
   """
 
   corsPolicy = _messages.MessageField('CorsPolicy', 1)
@@ -25706,7 +26188,7 @@ class Image(_messages.Message):
         and not a runtime format. Provided by the client when the disk image
         is created.
       sha1Checksum: An optional SHA1 checksum of the disk image before
-        unpackaging; provided by the client when the disk image is created.
+        unpackaging provided by the client when the disk image is created.
       source: The full Google Cloud Storage URL where the disk image is
         stored. You must provide either this property or the sourceDisk
         property but not both.
@@ -28895,7 +29377,7 @@ class Interconnect(_messages.Message):
       Interconnect.
     googleIpAddress: [Output Only] IP address configured on the Google side of
       the Interconnect link. This can be used only for ping tests.
-    googleReferenceId: [Output Only] Google reference ID; to be used when
+    googleReferenceId: [Output Only] Google reference ID to be used when
       raising support tickets with Google or otherwise to debug backend
       connectivity issues.
     id: [Output Only] The unique identifier for the resource. This identifier
@@ -35032,6 +35514,190 @@ class NodeTypesScopedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 2)
 
 
+class NotificationEndpoint(_messages.Message):
+  r"""A notification endpoint resource defines an endpoint to receive
+  notifications when there are status changes detected by the associated
+  health check service.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    grpcSettings: Settings of the gRPC notification endpoint including the
+      endpoint URL and the retry duration.
+    id: [Output Only] A unique identifier for this resource type. The server
+      generates this identifier.
+    kind: [Output Only] Type of the resource. Always
+      compute#notificationEndpoint for notification endpoints.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    region: [Output Only] URL of the region where the notification endpoint
+      resides. This field applies only to the regional resource. You must
+      specify this field as part of the HTTP request URL. It is not settable
+      as a field in the request body.
+    selfLink: [Output Only] Server-defined URL for the resource.
+  """
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  grpcSettings = _messages.MessageField('NotificationEndpointGrpcSettings', 3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'compute#notificationEndpoint')
+  name = _messages.StringField(6)
+  region = _messages.StringField(7)
+  selfLink = _messages.StringField(8)
+
+
+class NotificationEndpointGrpcSettings(_messages.Message):
+  r"""Represents a gRPC setting that describes one gRPC notification endpoint
+  and the retry duration attempting to send notification to this endpoint.
+
+  Fields:
+    endpoint: Endpoint to which gRPC notifications are sent. This must be a
+      valid gRPCLB DNS name.
+    payloadName: Optional. If specified, this field is used to populate the
+      ?name? field in gRPC requests.
+    retryDurationSec: How much time (in seconds) is spent attempting
+      notification retries until a successful response is received. Default is
+      30s. Limit is 20m (1200s). Must be a positive number.
+  """
+
+  endpoint = _messages.StringField(1)
+  payloadName = _messages.StringField(2)
+  retryDurationSec = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
+
+
+class NotificationEndpointList(_messages.Message):
+  r"""A NotificationEndpointList object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of NotificationEndpoint resources.
+    kind: [Output Only] Type of the resource. Always
+      compute#notificationEndpoint for notification endpoints.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('NotificationEndpoint', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#notificationEndpointList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
+
+
 class Operation(_messages.Message):
   r"""An Operation resource, used to manage asynchronous API requests. (==
   resource_for v1.globalOperations ==) (== resource_for beta.globalOperations
@@ -39127,6 +39793,14 @@ class RouterBgp(_messages.Message):
       ASN, either 16-bit or 32-bit. The value will be fixed for this router
       resource. All VPN tunnels that link to this router will have the same
       local ASN.
+    keepaliveInterval: The interval in seconds between BGP keepalive messages
+      that are sent to the peer. Hold time is three times the interval at
+      which keepalive messages are sent, and the hold time is the maximum
+      number of seconds allowed to elapse between successive keepalive
+      messages that BGP receives from a peer. BGP will use the smaller of
+      either the local hold time value or the peer?s hold time value as the
+      hold time for the BGP connection between the two peers. If set, this
+      value must be between 1 and 120. The default is 20.
   """
 
   class AdvertiseModeValueValuesEnum(_messages.Enum):
@@ -39155,6 +39829,7 @@ class RouterBgp(_messages.Message):
   advertisedGroups = _messages.EnumField('AdvertisedGroupsValueListEntryValuesEnum', 2, repeated=True)
   advertisedIpRanges = _messages.MessageField('RouterAdvertisedIpRange', 3, repeated=True)
   asn = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
+  keepaliveInterval = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
 
 
 class RouterBgpPeer(_messages.Message):
@@ -39164,6 +39839,10 @@ class RouterBgpPeer(_messages.Message):
     AdvertiseModeValueValuesEnum: User-specified flag to indicate which mode
       to use for advertisement.
     AdvertisedGroupsValueListEntryValuesEnum:
+    EnableValueValuesEnum: The status of the BGP peer connection. If set to
+      FALSE, any active session with the peer is terminated and all associated
+      routing information is removed. If set to TRUE, the peer connection can
+      be established with routing information. The default is TRUE.
     ManagementTypeValueValuesEnum: [Output Only] The resource that configures
       and manages this BGP peer. MANAGED_BY_USER is the default value and can
       be managed by you or other users; MANAGED_BY_ATTACHMENT is a BGP peer
@@ -39189,6 +39868,11 @@ class RouterBgpPeer(_messages.Message):
     advertisedRoutePriority: The priority of routes advertised to this BGP
       peer. In the case where there is more than one matching route of maximum
       length, the routes with lowest priority value win.
+    bfd: BFD configuration for the BGP peering.
+    enable: The status of the BGP peer connection. If set to FALSE, any active
+      session with the peer is terminated and all associated routing
+      information is removed. If set to TRUE, the peer connection can be
+      established with routing information. The default is TRUE.
     interfaceName: Name of the interface the BGP peer is associated with.
     ipAddress: IP address of the interface inside Google Cloud Platform. Only
       IPv4 is supported.
@@ -39229,6 +39913,19 @@ class RouterBgpPeer(_messages.Message):
     ALL_SUBNETS = 1
     ALL_VPC_SUBNETS = 2
 
+  class EnableValueValuesEnum(_messages.Enum):
+    r"""The status of the BGP peer connection. If set to FALSE, any active
+    session with the peer is terminated and all associated routing information
+    is removed. If set to TRUE, the peer connection can be established with
+    routing information. The default is TRUE.
+
+    Values:
+      FALSE: <no description>
+      TRUE: <no description>
+    """
+    FALSE = 0
+    TRUE = 1
+
   class ManagementTypeValueValuesEnum(_messages.Enum):
     r"""[Output Only] The resource that configures and manages this BGP peer.
     MANAGED_BY_USER is the default value and can be managed by you or other
@@ -39249,12 +39946,120 @@ class RouterBgpPeer(_messages.Message):
   advertisedGroups = _messages.EnumField('AdvertisedGroupsValueListEntryValuesEnum', 2, repeated=True)
   advertisedIpRanges = _messages.MessageField('RouterAdvertisedIpRange', 3, repeated=True)
   advertisedRoutePriority = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
-  interfaceName = _messages.StringField(5)
-  ipAddress = _messages.StringField(6)
-  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 7)
-  name = _messages.StringField(8)
-  peerAsn = _messages.IntegerField(9, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(10)
+  bfd = _messages.MessageField('RouterBgpPeerBfd', 5)
+  enable = _messages.EnumField('EnableValueValuesEnum', 6)
+  interfaceName = _messages.StringField(7)
+  ipAddress = _messages.StringField(8)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 9)
+  name = _messages.StringField(10)
+  peerAsn = _messages.IntegerField(11, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(12)
+
+
+class RouterBgpPeerBfd(_messages.Message):
+  r"""A RouterBgpPeerBfd object.
+
+  Enums:
+    ModeValueValuesEnum: The BFD session initiation mode for this BGP peer. If
+      set to ACTIVE, the Cloud Router will initiate the BFD session for this
+      BGP peer. If set to PASSIVE, the Cloud Router will wait for the peer
+      router to initiate the BFD session for this BGP peer. If set to
+      DISABLED, BFD is disabled for this BGP peer. The default is PASSIVE.
+    PacketModeValueValuesEnum: The BFD packet mode for this BGP peer. If set
+      to CONTROL_AND_ECHO, BFD echo mode is enabled for this BGP peer. In this
+      mode, if the peer router also has BFD echo mode enabled, BFD echo
+      packets will be sent to the other router. If the peer router does not
+      have BFD echo mode enabled, only control packets will be sent. If set to
+      CONTROL_ONLY, BFD echo mode is disabled for this BGP peer. If this
+      router and the peer router have a multihop connection, this should be
+      set to CONTROL_ONLY as BFD echo mode is only supported on singlehop
+      connections. The default is CONTROL_AND_ECHO.
+
+  Fields:
+    minReceiveInterval: The minimum interval, in milliseconds, between BFD
+      packets received from the peer router. The actual value is negotiated
+      between the two routers and is equal to the greater of this value and
+      the transmit interval of the other router. If BFD echo mode is enabled
+      on this router and the peer router, this value is used to negotiate the
+      interval between BFD echo packets transmitted by the peer router.
+      Otherwise, it will be used to determine the interval between BFD control
+      packets. If set, this value must be between 33 and 30000. The default is
+      300.
+    minTransmitInterval: The minimum interval, in milliseconds, between BFD
+      packets transmitted to the peer router. The actual value is negotiated
+      between the two routers and is equal to the greater of this value and
+      the corresponding receive interval of the other router. If BFD echo mode
+      is enabled on this router and the peer router, this value is used to
+      negotiate the interval between BFD echo packets transmitted by this
+      router. Otherwise, it will be used to determine the interval between BFD
+      control packets. If set, this value must be between 33 and 30000. The
+      default is 300.
+    mode: The BFD session initiation mode for this BGP peer. If set to ACTIVE,
+      the Cloud Router will initiate the BFD session for this BGP peer. If set
+      to PASSIVE, the Cloud Router will wait for the peer router to initiate
+      the BFD session for this BGP peer. If set to DISABLED, BFD is disabled
+      for this BGP peer. The default is PASSIVE.
+    multiplier: The number of consecutive BFD packets that must be missed
+      before BFD declares that a peer is unavailable. If set, the value must
+      be a value between 2 and 16. The default is 3.
+    packetMode: The BFD packet mode for this BGP peer. If set to
+      CONTROL_AND_ECHO, BFD echo mode is enabled for this BGP peer. In this
+      mode, if the peer router also has BFD echo mode enabled, BFD echo
+      packets will be sent to the other router. If the peer router does not
+      have BFD echo mode enabled, only control packets will be sent. If set to
+      CONTROL_ONLY, BFD echo mode is disabled for this BGP peer. If this
+      router and the peer router have a multihop connection, this should be
+      set to CONTROL_ONLY as BFD echo mode is only supported on singlehop
+      connections. The default is CONTROL_AND_ECHO.
+    slowTimerInterval: The minimum interval, in milliseconds, between BFD
+      control packets transmitted to and received from the peer router when
+      BFD echo mode is enabled on both routers. The actual transmit and
+      receive intervals are negotiated between the two routers and are equal
+      to the greater of this value and the corresponding interval on the other
+      router. If set, this value must be between 1000 and 30000. The default
+      is 5000.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""The BFD session initiation mode for this BGP peer. If set to ACTIVE,
+    the Cloud Router will initiate the BFD session for this BGP peer. If set
+    to PASSIVE, the Cloud Router will wait for the peer router to initiate the
+    BFD session for this BGP peer. If set to DISABLED, BFD is disabled for
+    this BGP peer. The default is PASSIVE.
+
+    Values:
+      ACTIVE: <no description>
+      DISABLED: <no description>
+      PASSIVE: <no description>
+    """
+    ACTIVE = 0
+    DISABLED = 1
+    PASSIVE = 2
+
+  class PacketModeValueValuesEnum(_messages.Enum):
+    r"""The BFD packet mode for this BGP peer. If set to CONTROL_AND_ECHO, BFD
+    echo mode is enabled for this BGP peer. In this mode, if the peer router
+    also has BFD echo mode enabled, BFD echo packets will be sent to the other
+    router. If the peer router does not have BFD echo mode enabled, only
+    control packets will be sent. If set to CONTROL_ONLY, BFD echo mode is
+    disabled for this BGP peer. If this router and the peer router have a
+    multihop connection, this should be set to CONTROL_ONLY as BFD echo mode
+    is only supported on singlehop connections. The default is
+    CONTROL_AND_ECHO.
+
+    Values:
+      CONTROL_AND_ECHO: <no description>
+      CONTROL_ONLY: <no description>
+    """
+    CONTROL_AND_ECHO = 0
+    CONTROL_ONLY = 1
+
+  minReceiveInterval = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  minTransmitInterval = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
+  mode = _messages.EnumField('ModeValueValuesEnum', 3)
+  multiplier = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
+  packetMode = _messages.EnumField('PacketModeValueValuesEnum', 5)
+  slowTimerInterval = _messages.IntegerField(6, variant=_messages.Variant.UINT32)
 
 
 class RouterInterface(_messages.Message):
@@ -48320,13 +49125,13 @@ class WeightedBackendService(_messages.Message):
       to take effect for the selected backendService. headerAction specified
       here take effect before headerAction in the enclosing HttpRouteRule,
       PathMatcher and UrlMap.
-    weight: Specifies the fraction of traffic sent to backendService. The sum
-      of all weights specified in weightedBackendServices within
-      HttpRouteAction must equal 100. The selection of a backend service is
-      determined only for new traffic. Once a user's request has been directed
-      to a backendService, subsequent requests will be sent to the same
-      backendService as determined by the BackendService's session affinity
-      policy.
+    weight: Specifies the fraction of traffic sent to backendService, computed
+      as weight / (sum of all weightedBackendService weights in routeAction) .
+      The selection of a backend service is determined only for new traffic.
+      Once a user's request has been directed to a backendService, subsequent
+      requests will be sent to the same backendService as determined by the
+      BackendService's session affinity policy. The value must be between 0
+      and 1000
   """
 
   backendService = _messages.StringField(1)

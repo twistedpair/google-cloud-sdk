@@ -1497,7 +1497,6 @@ class ServiceAccount(_messages.Message):
   Fields:
     description: Optional. A user-specified opaque description of the service
       account. Must be less than or equal to 256 UTF-8 bytes.
-    disabled: @OutputOnly A bool indicate if the service account is disabled.
     displayName: Optional. A user-specified name for the service account. Must
       be less than or equal to 100 UTF-8 bytes.
     email: @OutputOnly The email address of the service account.
@@ -1519,14 +1518,13 @@ class ServiceAccount(_messages.Message):
   """
 
   description = _messages.StringField(1)
-  disabled = _messages.BooleanField(2)
-  displayName = _messages.StringField(3)
-  email = _messages.StringField(4)
-  etag = _messages.BytesField(5)
-  name = _messages.StringField(6)
-  oauth2ClientId = _messages.StringField(7)
-  projectId = _messages.StringField(8)
-  uniqueId = _messages.StringField(9)
+  displayName = _messages.StringField(2)
+  email = _messages.StringField(3)
+  etag = _messages.BytesField(4)
+  name = _messages.StringField(5)
+  oauth2ClientId = _messages.StringField(6)
+  projectId = _messages.StringField(7)
+  uniqueId = _messages.StringField(8)
 
 
 class ServiceAccountIdentityBinding(_messages.Message):

@@ -134,7 +134,7 @@ completed crawler runs.
         method_id=u'datacatalog.projects.crawlers.create',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[],
+        query_params=[u'crawlerId'],
         relative_path=u'v1alpha3/{+parent}/crawlers',
         request_field=u'googleCloudDatacatalogV1alpha3Crawler',
         request_type_name=u'DatacatalogProjectsCrawlersCreateRequest',

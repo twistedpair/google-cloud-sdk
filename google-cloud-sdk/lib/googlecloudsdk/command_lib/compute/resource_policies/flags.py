@@ -38,16 +38,15 @@ def AddCycleFrequencyArgs(parser, flag_suffix, start_time_help,
                           has_restricted_start_times=False,
                           supports_weekly=False):
   """Add Cycle Frequency args for Resource Policies."""
-  freq_group = parser.add_argument_group('Cycle Frequency Group.',
-                                         required=True, mutex=True)
+  freq_group = parser.add_argument_group(
+      'Cycle Frequency Group.', required=True, mutex=True)
   if has_restricted_start_times:
     start_time_help += """\
         Valid choices are 00:00, 04:00, 08:00,12:00,
-        16:00 and 20:00 UTC. See $ gcloud topic datetimes for information on
-        time formats. For example, `--start-time="03:00-05"`
+        16:00 and 20:00 UTC. For example, `--start-time="03:00-05"`
         (which gets converted to 08:00 UTC)."""
   freq_flags_group = freq_group.add_group(
-      'From flags' if supports_weekly else '')
+      'From flags:' if supports_weekly else '')
   freq_flags_group.add_argument(
       '--start-time', required=True,
       type=arg_parsers.Datetime.Parse,
@@ -57,7 +56,7 @@ def AddCycleFrequencyArgs(parser, flag_suffix, start_time_help,
       '--daily-{}'.format(flag_suffix),
       dest='daily_cycle',
       action='store_true',
-      help='{} occurs daily at START_TIME.'.format(cadence_help))
+      help='{} starts daily at START_TIME.'.format(cadence_help))
 
   if supports_hourly:
     cadence_group.add_argument(
@@ -76,17 +75,16 @@ def AddCycleFrequencyArgs(parser, flag_suffix, start_time_help,
                  'saturday', 'sunday'],
         help_str='{} occurs weekly on WEEKLY_{} at START_TIME.'.format(
             cadence_help, flag_suffix.upper())).AddToParser(cadence_group)
-    freq_file_group = freq_group.add_group('From file')
+    freq_file_group = freq_group.add_group('From file:')
     freq_file_group.add_argument(
         '--weekly-{}-from-file'.format(flag_suffix),
         dest='weekly_cycle_from_file',
         type=arg_parsers.BufferedFileInput(),
         help="""\
-        A file which defines a weekly cadence with multiple days and start
-        times. The format is a JSON/YAML file containing a list of objects with
-        the following fields:
+        A JSON/YAML file which specifies a weekly schedule. It should be a
+        list of objects with the following fields:
 
-        day: Day of the week with the same choices as --weekly-{}.
+        day: Day of the week with the same choices as `--weekly-{}`.
         startTime: Start time of the snapshot schedule with the same format
             as --start-time.
         """.format(flag_suffix))

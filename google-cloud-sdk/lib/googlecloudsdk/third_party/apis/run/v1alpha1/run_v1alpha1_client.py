@@ -75,13 +75,13 @@ class RunV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/authorizeddomains',
+        flat_path=u'apis/domains.cloudrun.com/v1alpha1/namespaces/{namespacesId}/authorizeddomains',
         http_method=u'GET',
         method_id=u'run.namespaces.authorizeddomains.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
         query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'apis/domains.cloudrun.dev/v1alpha1/{+parent}/authorizeddomains',
+        relative_path=u'apis/domains.cloudrun.com/v1alpha1/{+parent}/authorizeddomains',
         request_field='',
         request_type_name=u'RunNamespacesAuthorizeddomainsListRequest',
         response_type_name=u'ListAuthorizedDomainsResponse',
@@ -176,13 +176,13 @@ class RunV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings',
+        flat_path=u'apis/domains.cloudrun.com/v1alpha1/namespaces/{namespacesId}/domainmappings',
         http_method=u'POST',
         method_id=u'run.namespaces.domainmappings.create',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
         query_params=[],
-        relative_path=u'apis/domains.cloudrun.dev/v1alpha1/{+parent}/domainmappings',
+        relative_path=u'apis/domains.cloudrun.com/v1alpha1/{+parent}/domainmappings',
         request_field=u'domainMapping',
         request_type_name=u'RunNamespacesDomainmappingsCreateRequest',
         response_type_name=u'DomainMapping',
@@ -203,13 +203,13 @@ class RunV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}',
+        flat_path=u'apis/domains.cloudrun.com/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}',
         http_method=u'DELETE',
         method_id=u'run.namespaces.domainmappings.delete',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[u'orphanDependents'],
-        relative_path=u'apis/domains.cloudrun.dev/v1alpha1/{+name}',
+        relative_path=u'apis/domains.cloudrun.com/v1alpha1/{+name}',
         request_field='',
         request_type_name=u'RunNamespacesDomainmappingsDeleteRequest',
         response_type_name=u'Empty',
@@ -230,13 +230,13 @@ class RunV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}',
+        flat_path=u'apis/domains.cloudrun.com/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}',
         http_method=u'GET',
         method_id=u'run.namespaces.domainmappings.get',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
-        relative_path=u'apis/domains.cloudrun.dev/v1alpha1/{+name}',
+        relative_path=u'apis/domains.cloudrun.com/v1alpha1/{+name}',
         request_field='',
         request_type_name=u'RunNamespacesDomainmappingsGetRequest',
         response_type_name=u'DomainMapping',
@@ -257,13 +257,13 @@ class RunV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings',
+        flat_path=u'apis/domains.cloudrun.com/v1alpha1/namespaces/{namespacesId}/domainmappings',
         http_method=u'GET',
         method_id=u'run.namespaces.domainmappings.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
         query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
-        relative_path=u'apis/domains.cloudrun.dev/v1alpha1/{+parent}/domainmappings',
+        relative_path=u'apis/domains.cloudrun.com/v1alpha1/{+parent}/domainmappings',
         request_field='',
         request_type_name=u'RunNamespacesDomainmappingsListRequest',
         response_type_name=u'ListDomainMappingsResponse',
@@ -272,11 +272,13 @@ class RunV1alpha1(base_api.BaseApiClient):
 
     def ReplaceDomainMapping(self, request, global_params=None):
       r"""Rpc to replace a domain mapping.
-Only the metadata and spec are modifiable but after the Replace request,
-Cloud Run will work to make the DomainMappingStatus match the
-requested DomainMappingSpec.
-May use metadata.resourceVersion to enforce update from last read for
-concurrency control.
+
+Only the spec and metadata labels and annotations are modifiable. After
+the Update request, Cloud Run will work to make the 'status'
+match the requested 'spec'.
+
+May provide metadata.resourceVersion to enforce update from last read for
+optimistic concurrency control.
 
       Args:
         request: (RunNamespacesDomainmappingsReplaceDomainMappingRequest) input message
@@ -289,13 +291,13 @@ concurrency control.
           config, request, global_params=global_params)
 
     ReplaceDomainMapping.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}',
+        flat_path=u'apis/domains.cloudrun.com/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}',
         http_method=u'PUT',
         method_id=u'run.namespaces.domainmappings.replaceDomainMapping',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
-        relative_path=u'apis/domains.cloudrun.dev/v1alpha1/{+name}',
+        relative_path=u'apis/domains.cloudrun.com/v1alpha1/{+name}',
         request_field=u'domainMapping',
         request_type_name=u'RunNamespacesDomainmappingsReplaceDomainMappingRequest',
         response_type_name=u'DomainMapping',
@@ -340,7 +342,7 @@ concurrency control.
     )
 
     def Get(self, request, global_params=None):
-      r"""Rpc to get informationabout a revision.
+      r"""Rpc to get information about a revision.
 
       Args:
         request: (RunNamespacesRevisionsGetRequest) input message
@@ -611,11 +613,13 @@ concurrency control.
 
     def ReplaceService(self, request, global_params=None):
       r"""Rpc to replace a service.
-Only the metadata and spec are modifiable but after the Replace request,
-Cloud Run will work to make the ServiceStatus match the
-requested ServiceSpec.
-May use metadata.resourceVersion to enforce update from last read for
-concurrency control.
+
+Only the spec and metadata labels and annotations are modifiable. After
+the Update request, Cloud Run will work to make the 'status'
+match the requested 'spec'.
+
+May provide metadata.resourceVersion to enforce update from last read for
+optimistic concurrency control.
 
       Args:
         request: (RunNamespacesServicesReplaceServiceRequest) input message
@@ -872,11 +876,13 @@ concurrency control.
 
     def ReplaceDomainMapping(self, request, global_params=None):
       r"""Rpc to replace a domain mapping.
-Only the metadata and spec are modifiable but after the Replace request,
-Cloud Run will work to make the DomainMappingStatus match the
-requested DomainMappingSpec.
-May use metadata.resourceVersion to enforce update from last read for
-concurrency control.
+
+Only the spec and metadata labels and annotations are modifiable. After
+the Update request, Cloud Run will work to make the 'status'
+match the requested 'spec'.
+
+May provide metadata.resourceVersion to enforce update from last read for
+optimistic concurrency control.
 
       Args:
         request: (RunProjectsLocationsDomainmappingsReplaceDomainMappingRequest) input message
@@ -940,7 +946,7 @@ concurrency control.
     )
 
     def Get(self, request, global_params=None):
-      r"""Rpc to get informationabout a revision.
+      r"""Rpc to get information about a revision.
 
       Args:
         request: (RunProjectsLocationsRevisionsGetRequest) input message
@@ -1239,11 +1245,13 @@ concurrency control.
 
     def ReplaceService(self, request, global_params=None):
       r"""Rpc to replace a service.
-Only the metadata and spec are modifiable but after the Replace request,
-Cloud Run will work to make the ServiceStatus match the
-requested ServiceSpec.
-May use metadata.resourceVersion to enforce update from last read for
-concurrency control.
+
+Only the spec and metadata labels and annotations are modifiable. After
+the Update request, Cloud Run will work to make the 'status'
+match the requested 'spec'.
+
+May provide metadata.resourceVersion to enforce update from last read for
+optimistic concurrency control.
 
       Args:
         request: (RunProjectsLocationsServicesReplaceServiceRequest) input message
@@ -1335,6 +1343,33 @@ There are no permissions required for making this API call.
       super(RunV1alpha1.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def List(self, request, global_params=None):
+      r"""Lists information about the supported locations for this service.
+
+      Args:
+        request: (RunProjectsLocationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLocationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations',
+        http_method=u'GET',
+        method_id=u'run.projects.locations.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v1alpha1/{+name}/locations',
+        request_field='',
+        request_type_name=u'RunProjectsLocationsListRequest',
+        response_type_name=u'ListLocationsResponse',
+        supports_download=False,
+    )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""

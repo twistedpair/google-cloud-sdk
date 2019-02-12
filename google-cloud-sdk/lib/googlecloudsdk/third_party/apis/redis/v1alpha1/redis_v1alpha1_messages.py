@@ -86,7 +86,7 @@ class Instance(_messages.Message):
     locationId: Optional. The zone where the instance will be provisioned. If
       not provided, the service will choose a zone for the instance. For
       standard tier, instances will be created across two zones for protection
-      against zonal failures. if [alternative_location_id] is also provided,
+      against zonal failures. If [alternative_location_id] is also provided,
       it must be different from [location_id].
     memorySizeGb: Required. Redis memory size in GB, up to 200GB.
     name: Required. Unique name of the resource in this scope including

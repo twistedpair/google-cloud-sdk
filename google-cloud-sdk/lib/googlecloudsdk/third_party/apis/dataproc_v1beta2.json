@@ -252,6 +252,10 @@
           "description": "Job is a SparkSql job.",
           "$ref": "SparkSqlJob"
         },
+        "prestoJob": {
+          "description": "Job is a Presto job",
+          "$ref": "PrestoJob"
+        },
         "status": {
           "description": "Output only. The job status. Additional application-specific status information may be contained in the <code>type_job<\/code> and <code>yarn_applications<\/code> fields.",
           "$ref": "JobStatus"
@@ -691,6 +695,47 @@
           "description": "Optional. HCFS URIs of jar files to be added to the Spark CLASSPATH.",
           "type": "array",
           "items": {
+            "type": "string"
+          }
+        },
+        "loggingConfig": {
+          "description": "Optional. The runtime log config for job execution.",
+          "$ref": "LoggingConfig"
+        }
+      }
+    },
+    "PrestoJob": {
+      "id": "PrestoJob",
+      "description": "A Cloud Dataproc job for running Presto (https:\/\/prestosql.io\/) queries",
+      "type": "object",
+      "properties": {
+        "queryFileUri": {
+          "description": "The HCFS URI of the script that contains SQL queries.",
+          "type": "string"
+        },
+        "queryList": {
+          "description": "A list of queries.",
+          "$ref": "QueryList"
+        },
+        "continueOnFailure": {
+          "description": "Optional. Whether to continue executing queries if a query fails. The default value is false. Setting to true can be useful when executing independent parallel queries.",
+          "type": "boolean"
+        },
+        "outputFormat": {
+          "description": "Optional. The format in which query output will be displayed. See the Presto documentation for supported output formats",
+          "type": "string"
+        },
+        "clientTags": {
+          "description": "Optional. Presto client tags to attach to this query",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "properties": {
+          "description": "Optional. A mapping of property names to values. Used to set Presto session properties (https:\/\/prestodb.io\/docs\/current\/sql\/set-session.html) Equivalent to using the --session flag in the Presto CLI",
+          "type": "object",
+          "additionalProperties": {
             "type": "string"
           }
         },
@@ -1437,6 +1482,10 @@
       "description": "Describes an autoscaling policy for Dataproc cluster autoscaler.",
       "type": "object",
       "properties": {
+        "id": {
+          "description": "Required. The policy id.The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). Cannot begin or end with underscore or hyphen. Must consist of between 3 and 50 characters.",
+          "type": "string"
+        },
         "name": {
           "description": "Output only. The \"resource name\" of the policy, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/autoscalingPolicies\/{policy_id}.",
           "type": "string"
@@ -1688,6 +1737,10 @@
         "sparkSqlJob": {
           "description": "Job is a SparkSql job.",
           "$ref": "SparkSqlJob"
+        },
+        "prestoJob": {
+          "description": "Job is a Presto job.",
+          "$ref": "PrestoJob"
         },
         "labels": {
           "description": "Optional. The labels to associate with this job.Label keys must be between 1 and 63 characters long, and must conform to the following regular expression: \\p{Ll}\\p{Lo}{0,62}Label values must be between 1 and 63 characters long, and must conform to the following regular expression: \\p{Ll}\\p{Lo}\\p{N}_-{0,63}No more than 32 labels can be associated with a given job.",

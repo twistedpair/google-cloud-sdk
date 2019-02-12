@@ -205,7 +205,7 @@
     },
     "ListMembershipsResponse": {
       "id": "ListMembershipsResponse",
-      "description": "Response message for the `MembershipService.ListMemberships` method.",
+      "description": "Response message for the `GkeHubMembershipService.ListMemberships` method.",
       "type": "object",
       "properties": {
         "resources": {
@@ -271,8 +271,8 @@
       "description": "MembershipEndpoint contains the information to reach a member.",
       "type": "object",
       "properties": {
-        "selfLink": {
-          "description": "If this API server is also a Google service provide its OnePlatform 'name'.\nFor example, the FQDN to a GKE Cluster that backs this Membership:\nhttps:\/\/container.googleapis.com\/v1\/projects\/x\/zones\/us-west1-a\/clusters\/c0\nIt can be at the most 1000 characters in length.",
+        "gcpResourceLink": {
+          "description": "If this API server is also a Google service provide the self link of its\nGCP resource.\nFor example, the FQDN to a GKE Cluster that backs this Membership:\nhttps:\/\/container.googleapis.com\/v1\/projects\/x\/zones\/us-west1-a\/clusters\/c0\nIt can be at the most 1000 characters in length.",
           "type": "string"
         },
         "resourceId": {

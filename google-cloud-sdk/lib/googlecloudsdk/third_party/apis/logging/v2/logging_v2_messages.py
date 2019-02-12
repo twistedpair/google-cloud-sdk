@@ -188,6 +188,21 @@ class Linear(_messages.Message):
   width = _messages.FloatField(3)
 
 
+class ListBucketsResponse(_messages.Message):
+  r"""The response from ListBuckets
+
+  Fields:
+    buckets: A list of buckets.
+    nextPageToken: If there might be more results than appear in this
+      response, then nextPageToken is included. To get the next set of
+      results, call the same method again using the value of nextPageToken as
+      pageToken.
+  """
+
+  buckets = _messages.MessageField('LogBucket', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListExclusionsResponse(_messages.Message):
   r"""Result returned from ListExclusions.
 
@@ -264,10 +279,13 @@ class ListLogEntriesResponse(_messages.Message):
       Alternatively, consider speeding up the search by changing your filter
       to specify a single log name or resource type, or to narrow the time
       range of the search.
+    viewNames: The list of views that were examined. e.g. "projects/my-
+      project/locations/my-location/buckets/my-bucket/views/my-view".
   """
 
   entries = _messages.MessageField('LogEntry', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  viewNames = _messages.StringField(3, repeated=True)
 
 
 class ListLogMetricsResponse(_messages.Message):
@@ -329,6 +347,71 @@ class ListSinksResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   sinks = _messages.MessageField('LogSink', 2, repeated=True)
+
+
+class LogBucket(_messages.Message):
+  r"""Describes a repository of logs.
+
+  Enums:
+    RetentionRuleResolutionValueValuesEnum: Describes how to choose the
+      retention period for logs that match multiple retention policies.
+
+  Fields:
+    createTime: Output only. The creation timestamp of the bucket.
+    description: Describes this bucket.
+    displayName: Display name of the bucket.
+    etag: etag is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a bucket from overwriting each other. It
+      is strongly suggested that systems make use of the etag in the read-
+      modify-write cycle to perform bucket updates in order to avoid race
+      conditions: An etag is returned in the response to getBucket, and
+      systems are expected to put that etag in the request to setIamPolicy to
+      ensure that their change will be applied to the same version of the
+      bucket.If no etag is provided in the call to UpdateBucket, then the
+      existing bucket is overwritten blindly.
+    locked: Whether the bucket has been locked. The retention period on a
+      locked bucket may not be changed. A locked bucket may not have any
+      retention rules. Logs may not be deleted from a locked bucket.
+    name: The resource name of the bucket. For example: "projects/my-project-
+      id/locations/my-location/buckets/my-bucket-id The supported locations
+      are:  "global"  "us-central1"For the location of global it is
+      unspecified where logs are actually stored. Once a bucket has been
+      created, the location can not be changed.
+    retentionPeriod: Logs will be retained by default for this amount of time,
+      after which they will automatically be deleted.
+    retentionRuleResolution: Describes how to choose the retention period for
+      logs that match multiple retention policies.
+    retentionRules: Fine grained retention rules that can override retention
+      period.
+    updateTime: Output only. The last update timestamp of the bucket.
+  """
+
+  class RetentionRuleResolutionValueValuesEnum(_messages.Enum):
+    r"""Describes how to choose the retention period for logs that match
+    multiple retention policies.
+
+    Values:
+      LOG_RETENTION_RULE_RESOLUTION_UNSPECIFIED: Unspecified. This value may
+        not be used.
+      MAX_RETENTION_PERIOD: Use the maximum retention period from matching
+        retention policies.
+      MIN_RETENTION_PERIOD: Use the minimum retention period from matching
+        retention policies.
+    """
+    LOG_RETENTION_RULE_RESOLUTION_UNSPECIFIED = 0
+    MAX_RETENTION_PERIOD = 1
+    MIN_RETENTION_PERIOD = 2
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  etag = _messages.BytesField(4)
+  locked = _messages.BooleanField(5)
+  name = _messages.StringField(6)
+  retentionPeriod = _messages.StringField(7)
+  retentionRuleResolution = _messages.EnumField('RetentionRuleResolutionValueValuesEnum', 8)
+  retentionRules = _messages.MessageField('LogRetentionRule', 9, repeated=True)
+  updateTime = _messages.StringField(10)
 
 
 class LogEntry(_messages.Message):
@@ -704,6 +787,9 @@ class LogMetric(_messages.Message):
       may not be present for older metrics.
     description: Optional. A description of this metric, which is used in
       documentation. The maximum length of the description is 8000 characters.
+    exclusions: Optional. Log entries that match any of the exclusion filters
+      will not be matched. If a log entry is matched by both filter and one of
+      exclusion_filters it will not be matched.
     filter: Required. An advanced logs filter which is used to match log
       entries. Example: "resource.type=gae_app AND severity>=ERROR" The
       maximum length of the filter is 20000 characters.
@@ -814,13 +900,32 @@ class LogMetric(_messages.Message):
   bucketOptions = _messages.MessageField('BucketOptions', 1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  filter = _messages.StringField(4)
-  labelExtractors = _messages.MessageField('LabelExtractorsValue', 5)
-  metricDescriptor = _messages.MessageField('MetricDescriptor', 6)
-  name = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
-  valueExtractor = _messages.StringField(9)
-  version = _messages.EnumField('VersionValueValuesEnum', 10)
+  exclusions = _messages.MessageField('LogExclusion', 4, repeated=True)
+  filter = _messages.StringField(5)
+  labelExtractors = _messages.MessageField('LabelExtractorsValue', 6)
+  metricDescriptor = _messages.MessageField('MetricDescriptor', 7)
+  name = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+  valueExtractor = _messages.StringField(10)
+  version = _messages.EnumField('VersionValueValuesEnum', 11)
+
+
+class LogRetentionRule(_messages.Message):
+  r"""Describes a rule for log retention.
+
+  Fields:
+    description: Describes this policy.
+    filter: Log entries to which this retention policy applies. The filter may
+      only contain a conjunction of log_id and source_name matches. If a log
+      entry is selected by more than one policy, the retention_rule_resolution
+      parameter of the containing bucket is used to resolve the conflict.
+    retentionPeriod: Logs matching this policy will be retained for this
+      amount of time, after which they will automatically be deleted.
+  """
+
+  description = _messages.StringField(1)
+  filter = _messages.StringField(2)
+  retentionPeriod = _messages.StringField(3)
 
 
 class LogSink(_messages.Message):
@@ -845,6 +950,9 @@ class LogSink(_messages.Message):
       sink's writer_identity, set when the sink is created, must have
       permission to write to the destination or else the log entries are not
       exported. For more information, see Exporting Logs with Sinks.
+    exclusions: Optional. Log entries that match any of the exclusion filters
+      will not be exported. If a log entry is matched by both filter and one
+      of exclusion_filters it will not be exported.
     filter: Optional. An advanced logs filter. The only exported log entries
       are those that are in the resource owning the sink and that match the
       filter. For example: logName="projects/[PROJECT_ID]/logs/[LOG_ID]" AND
@@ -897,12 +1005,26 @@ class LogSink(_messages.Message):
 
   createTime = _messages.StringField(1)
   destination = _messages.StringField(2)
-  filter = _messages.StringField(3)
-  includeChildren = _messages.BooleanField(4)
-  name = _messages.StringField(5)
-  outputVersionFormat = _messages.EnumField('OutputVersionFormatValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
-  writerIdentity = _messages.StringField(8)
+  exclusions = _messages.MessageField('LogExclusion', 3, repeated=True)
+  filter = _messages.StringField(4)
+  includeChildren = _messages.BooleanField(5)
+  name = _messages.StringField(6)
+  outputVersionFormat = _messages.EnumField('OutputVersionFormatValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
+  writerIdentity = _messages.StringField(9)
+
+
+class LoggingBillingAccountsBucketsGetRequest(_messages.Message):
+  r"""A LoggingBillingAccountsBucketsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the bucket:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id".
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class LoggingBillingAccountsExclusionsCreateRequest(_messages.Message):
@@ -991,6 +1113,80 @@ class LoggingBillingAccountsExclusionsPatchRequest(_messages.Message):
   """
 
   logExclusion = _messages.MessageField('LogExclusion', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class LoggingBillingAccountsLocationsBucketsCreateRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsBucketsCreateRequest object.
+
+  Fields:
+    bucketId: Required. The bucket_id to use for this bucket.
+    logBucket: A LogBucket resource to be passed as the request body.
+    parent: Required. The resource in which to create the bucket:
+      "projects/[PROJECT_ID]" Examples: "projects/my-logging-project",
+      "organizations/123456789".
+  """
+
+  bucketId = _messages.StringField(1)
+  logBucket = _messages.MessageField('LogBucket', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingBillingAccountsLocationsBucketsDeleteRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsBucketsDeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the bucket to delete.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingBillingAccountsLocationsBucketsListRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsBucketsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The parent resource whose buckets are to be listed:
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingBillingAccountsLocationsBucketsPatchRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsBucketsPatchRequest object.
+
+  Fields:
+    logBucket: A LogBucket resource to be passed as the request body.
+    name: Required. The full resource name of the bucket to update.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id". Also requires permission
+      "resourcemanager.projects.updateLiens" to set the locked property
+    updateMask: Optional. Field mask that specifies the fields in bucket that
+      need an update. A sink field will be overwritten if, and only if, it is
+      in the update mask. name and output only fields cannot be updated.For a
+      detailed FieldMask definition, see https://developers.google.com
+      /protocol-
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
+      updateMask=filter.
+  """
+
+  logBucket = _messages.MessageField('LogBucket', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
 
@@ -1189,6 +1385,64 @@ class LoggingBillingAccountsSinksUpdateRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class LoggingBucketsGetRequest(_messages.Message):
+  r"""A LoggingBucketsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the bucket:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingBucketsListRequest(_messages.Message):
+  r"""A LoggingBucketsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The parent resource whose buckets are to be listed:
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingBucketsPatchRequest(_messages.Message):
+  r"""A LoggingBucketsPatchRequest object.
+
+  Fields:
+    logBucket: A LogBucket resource to be passed as the request body.
+    name: Required. The full resource name of the bucket to update.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id". Also requires permission
+      "resourcemanager.projects.updateLiens" to set the locked property
+    updateMask: Optional. Field mask that specifies the fields in bucket that
+      need an update. A sink field will be overwritten if, and only if, it is
+      in the update mask. name and output only fields cannot be updated.For a
+      detailed FieldMask definition, see https://developers.google.com
+      /protocol-
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
+      updateMask=filter.
+  """
+
+  logBucket = _messages.MessageField('LogBucket', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class LoggingExclusionsCreateRequest(_messages.Message):
   r"""A LoggingExclusionsCreateRequest object.
 
@@ -1365,6 +1619,93 @@ class LoggingFoldersExclusionsPatchRequest(_messages.Message):
   """
 
   logExclusion = _messages.MessageField('LogExclusion', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class LoggingFoldersLocationsBucketsCreateRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsBucketsCreateRequest object.
+
+  Fields:
+    bucketId: Required. The bucket_id to use for this bucket.
+    logBucket: A LogBucket resource to be passed as the request body.
+    parent: Required. The resource in which to create the bucket:
+      "projects/[PROJECT_ID]" Examples: "projects/my-logging-project",
+      "organizations/123456789".
+  """
+
+  bucketId = _messages.StringField(1)
+  logBucket = _messages.MessageField('LogBucket', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingFoldersLocationsBucketsDeleteRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsBucketsDeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the bucket to delete.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingFoldersLocationsBucketsGetRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsBucketsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the bucket:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingFoldersLocationsBucketsListRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsBucketsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The parent resource whose buckets are to be listed:
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingFoldersLocationsBucketsPatchRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsBucketsPatchRequest object.
+
+  Fields:
+    logBucket: A LogBucket resource to be passed as the request body.
+    name: Required. The full resource name of the bucket to update.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id". Also requires permission
+      "resourcemanager.projects.updateLiens" to set the locked property
+    updateMask: Optional. Field mask that specifies the fields in bucket that
+      need an update. A sink field will be overwritten if, and only if, it is
+      in the update mask. name and output only fields cannot be updated.For a
+      detailed FieldMask definition, see https://developers.google.com
+      /protocol-
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
+      updateMask=filter.
+  """
+
+  logBucket = _messages.MessageField('LogBucket', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
 
@@ -1563,6 +1904,35 @@ class LoggingFoldersSinksUpdateRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class LoggingLocationsBucketsCreateRequest(_messages.Message):
+  r"""A LoggingLocationsBucketsCreateRequest object.
+
+  Fields:
+    bucketId: Required. The bucket_id to use for this bucket.
+    logBucket: A LogBucket resource to be passed as the request body.
+    parent: Required. The resource in which to create the bucket:
+      "projects/[PROJECT_ID]" Examples: "projects/my-logging-project",
+      "organizations/123456789".
+  """
+
+  bucketId = _messages.StringField(1)
+  logBucket = _messages.MessageField('LogBucket', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingLocationsBucketsDeleteRequest(_messages.Message):
+  r"""A LoggingLocationsBucketsDeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the bucket to delete.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class LoggingLogsDeleteRequest(_messages.Message):
   r"""A LoggingLogsDeleteRequest object.
 
@@ -1704,6 +2074,93 @@ class LoggingOrganizationsExclusionsPatchRequest(_messages.Message):
   """
 
   logExclusion = _messages.MessageField('LogExclusion', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class LoggingOrganizationsLocationsBucketsCreateRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsBucketsCreateRequest object.
+
+  Fields:
+    bucketId: Required. The bucket_id to use for this bucket.
+    logBucket: A LogBucket resource to be passed as the request body.
+    parent: Required. The resource in which to create the bucket:
+      "projects/[PROJECT_ID]" Examples: "projects/my-logging-project",
+      "organizations/123456789".
+  """
+
+  bucketId = _messages.StringField(1)
+  logBucket = _messages.MessageField('LogBucket', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingOrganizationsLocationsBucketsDeleteRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsBucketsDeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the bucket to delete.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingOrganizationsLocationsBucketsGetRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsBucketsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the bucket:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingOrganizationsLocationsBucketsListRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsBucketsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The parent resource whose buckets are to be listed:
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingOrganizationsLocationsBucketsPatchRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsBucketsPatchRequest object.
+
+  Fields:
+    logBucket: A LogBucket resource to be passed as the request body.
+    name: Required. The full resource name of the bucket to update.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id". Also requires permission
+      "resourcemanager.projects.updateLiens" to set the locked property
+    updateMask: Optional. Field mask that specifies the fields in bucket that
+      need an update. A sink field will be overwritten if, and only if, it is
+      in the update mask. name and output only fields cannot be updated.For a
+      detailed FieldMask definition, see https://developers.google.com
+      /protocol-
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
+      updateMask=filter.
+  """
+
+  logBucket = _messages.MessageField('LogBucket', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
 
@@ -1988,6 +2445,93 @@ class LoggingProjectsExclusionsPatchRequest(_messages.Message):
   """
 
   logExclusion = _messages.MessageField('LogExclusion', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class LoggingProjectsLocationsBucketsCreateRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsBucketsCreateRequest object.
+
+  Fields:
+    bucketId: Required. The bucket_id to use for this bucket.
+    logBucket: A LogBucket resource to be passed as the request body.
+    parent: Required. The resource in which to create the bucket:
+      "projects/[PROJECT_ID]" Examples: "projects/my-logging-project",
+      "organizations/123456789".
+  """
+
+  bucketId = _messages.StringField(1)
+  logBucket = _messages.MessageField('LogBucket', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingProjectsLocationsBucketsDeleteRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsBucketsDeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the bucket to delete.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingProjectsLocationsBucketsGetRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsBucketsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the bucket:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingProjectsLocationsBucketsListRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsBucketsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The parent resource whose buckets are to be listed:
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingProjectsLocationsBucketsPatchRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsBucketsPatchRequest object.
+
+  Fields:
+    logBucket: A LogBucket resource to be passed as the request body.
+    name: Required. The full resource name of the bucket to update.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id". Also requires permission
+      "resourcemanager.projects.updateLiens" to set the locked property
+    updateMask: Optional. Field mask that specifies the fields in bucket that
+      need an update. A sink field will be overwritten if, and only if, it is
+      in the update mask. name and output only fields cannot be updated.For a
+      detailed FieldMask definition, see https://developers.google.com
+      /protocol-
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
+      updateMask=filter.
+  """
+
+  logBucket = _messages.MessageField('LogBucket', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
 

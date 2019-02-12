@@ -671,7 +671,7 @@ def FormatRequiredUserAction(s):
 
 
 def ProgressBar(label, stream=log.status, total_ticks=60, first=True,
-                last=True):
+                last=True, screen_reader=False):
   """A simple progress bar for tracking completion of an action.
 
   This progress bar works without having to use any control characters.  It
@@ -691,6 +691,8 @@ def ProgressBar(label, stream=log.status, total_ticks=60, first=True,
     total_ticks: int, The number of ticks wide to make the progress bar.
     first: bool, True if this is the first bar in a stacked group.
     last: bool, True if this is the last bar in a stacked group.
+    screen_reader: bool, override for screen reader accessibility property
+      toggle.
 
   Returns:
     The progress bar.
@@ -700,6 +702,8 @@ def ProgressBar(label, stream=log.status, total_ticks=60, first=True,
     return NoOpProgressBar()
   elif style == properties.VALUES.core.InteractiveUXStyles.TESTING.name:
     return _StubProgressBar(label, stream)
+  elif screen_reader or properties.VALUES.accessibility.screen_reader.GetBool():
+    return _TextPercentageProgressBar(label, stream)
   else:
     return _NormalProgressBar(label, stream, total_ticks, first, last)
 
@@ -842,6 +846,50 @@ class _NormalProgressBar(object):
 
   def _Write(self, msg):
     self._stream.write(msg)
+
+  def __enter__(self):
+    self.Start()
+    return self
+
+  def __exit__(self, *args):
+    self.Finish()
+
+
+class _TextPercentageProgressBar(object):
+  """A progress bar that outputs nothing at all."""
+
+  def __init__(self, label, stream, percentage_display_increments=5.0):
+    """Creates a progress bar for the given action.
+
+    Args:
+      label: str, The action that is being performed.
+      stream: The output stream to write to, stderr by default.
+      percentage_display_increments: Minimum change in percetnage to display new
+        progress
+    """
+    self._label = label
+    self._stream = stream
+    self._last_percentage = 0
+    self._percentage_display_increments = percentage_display_increments / 100.0
+
+  def Start(self):
+    self._Write(self._label)
+
+  def SetProgress(self, progress_factor):
+    progress_factor = min(progress_factor, 1.0)
+    should_update_progress = (
+        progress_factor >
+        self._last_percentage + self._percentage_display_increments)
+    if (should_update_progress or progress_factor == 1.0):
+      self._Write('{0:.0f}%'.format(progress_factor * 100.0))
+      self._last_percentage = progress_factor
+
+  def Finish(self):
+    """Mark the progress as done."""
+    self.SetProgress(1)
+
+  def _Write(self, msg):
+    self._stream.write(msg + '\n')
 
   def __enter__(self):
     self.Start()

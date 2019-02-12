@@ -1227,8 +1227,9 @@ class TestMatrix(_messages.Message):
       MALFORMED_TEST_APK: The input test APK could not be parsed.
       NO_MANIFEST: The AndroidManifest.xml could not be found.
       NO_PACKAGE_NAME: The APK manifest does not declare a package name.
-      INVALID_PACKAGE_NAME: The APK package name is invalid. See also
-        https://developer.android.com/studio/build/application-id
+      INVALID_PACKAGE_NAME: The APK application ID (aka package name) is
+        invalid. See also https://developer.android.com/studio/build
+        /application-id
       TEST_SAME_AS_APP: The test package and app package are the same.
       NO_INSTRUMENTATION: The test apk does not declare an instrumentation.
       NO_SIGNATURE: The input app apk does not have a signature.

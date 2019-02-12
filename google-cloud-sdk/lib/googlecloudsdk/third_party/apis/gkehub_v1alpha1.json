@@ -557,12 +557,8 @@
             "DISCHARGED"
           ]
         },
-        "value": {
-          "description": "DEPRECATED. Use 'values' instead.",
-          "type": "string"
-        },
         "values": {
-          "description": "The objects of the condition. This is mutually exclusive with 'value'.",
+          "description": "The objects of the condition.",
           "type": "array",
           "items": {
             "type": "string"
@@ -910,7 +906,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "The parent project the connect agent  is associated with.\n`projects\/[project_id]\/locations\/global\/connectAgents`.",
+                          "description": "The parent project the connect agent is associated with.\n`projects\/[project_id]\/locations\/global\/connectAgents`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/global\/connectAgents$",
@@ -922,7 +918,7 @@
                           "type": "string"
                         },
                         "connectAgent.namespace": {
-                          "description": "Optional, if the user wishes the connect agent and dependent resources to\nbe run in different namespace than the default namespace\n`gke-connect-[project_id]-[connect_agent_id]`",
+                          "description": "Optional, if the user wishes the connect agent and dependent resources to\nbe run in different namespace than the default namespace\n`gke-connect-[project_id]`",
                           "location": "query",
                           "type": "string"
                         },

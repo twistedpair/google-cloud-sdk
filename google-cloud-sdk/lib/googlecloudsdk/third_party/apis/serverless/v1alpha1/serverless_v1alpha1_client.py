@@ -35,19 +35,9 @@ class ServerlessV1alpha1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.extensions_k8s_api_versions_v1 = self.ExtensionsK8sApiVersionsV1Service(self)
-    self.extensions_k8s_api_versions = self.ExtensionsK8sApiVersionsService(self)
-    self.extensions_k8s_api = self.ExtensionsK8sApiService(self)
-    self.extensions_k8s_apis = self.ExtensionsK8sApisService(self)
-    self.extensions_k8s_groups_servingknativedev = self.ExtensionsK8sGroupsServingknativedevService(self)
-    self.extensions_k8s_groups = self.ExtensionsK8sGroupsService(self)
-    self.extensions_k8s = self.ExtensionsK8sService(self)
-    self.extensions = self.ExtensionsService(self)
     self.namespaces_authorizeddomains = self.NamespacesAuthorizeddomainsService(self)
     self.namespaces_configurations = self.NamespacesConfigurationsService(self)
     self.namespaces_domainmappings = self.NamespacesDomainmappingsService(self)
-    self.namespaces_kube_system_services = self.NamespacesKubeSystemServicesService(self)
-    self.namespaces_kube_system = self.NamespacesKubeSystemService(self)
     self.namespaces_revisions = self.NamespacesRevisionsService(self)
     self.namespaces_routes = self.NamespacesRoutesService(self)
     self.namespaces_services = self.NamespacesServicesService(self)
@@ -60,191 +50,6 @@ class ServerlessV1alpha1(base_api.BaseApiClient):
     self.projects_locations_services = self.ProjectsLocationsServicesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
-    self.v1alpha1 = self.V1alpha1Service(self)
-
-  class ExtensionsK8sApiVersionsV1Service(base_api.BaseApiService):
-    """Service class for the extensions_k8s_api_versions_v1 resource."""
-
-    _NAME = u'extensions_k8s_api_versions_v1'
-
-    def __init__(self, client):
-      super(ServerlessV1alpha1.ExtensionsK8sApiVersionsV1Service, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""Lists v1 Api resources.
-
-      Args:
-        request: (ServerlessExtensionsK8sApiVersionsV1ListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ApiResourceList) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'serverless.extensions.k8s.api.versions.v1.list',
-        ordered_params=[],
-        path_params=[],
-        query_params=[u'timeout'],
-        relative_path=u'v1alpha1/extensions/k8s/api/versions/v1',
-        request_field='',
-        request_type_name=u'ServerlessExtensionsK8sApiVersionsV1ListRequest',
-        response_type_name=u'ApiResourceList',
-        supports_download=False,
-    )
-
-  class ExtensionsK8sApiVersionsService(base_api.BaseApiService):
-    """Service class for the extensions_k8s_api_versions resource."""
-
-    _NAME = u'extensions_k8s_api_versions'
-
-    def __init__(self, client):
-      super(ServerlessV1alpha1.ExtensionsK8sApiVersionsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-  class ExtensionsK8sApiService(base_api.BaseApiService):
-    """Service class for the extensions_k8s_api resource."""
-
-    _NAME = u'extensions_k8s_api'
-
-    def __init__(self, client):
-      super(ServerlessV1alpha1.ExtensionsK8sApiService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""Lists Api versions.
-
-      Args:
-        request: (ServerlessExtensionsK8sApiListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ApiVersions) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'serverless.extensions.k8s.api.list',
-        ordered_params=[],
-        path_params=[],
-        query_params=[u'timeout'],
-        relative_path=u'v1alpha1/extensions/k8s/api',
-        request_field='',
-        request_type_name=u'ServerlessExtensionsK8sApiListRequest',
-        response_type_name=u'ApiVersions',
-        supports_download=False,
-    )
-
-  class ExtensionsK8sApisService(base_api.BaseApiService):
-    """Service class for the extensions_k8s_apis resource."""
-
-    _NAME = u'extensions_k8s_apis'
-
-    def __init__(self, client):
-      super(ServerlessV1alpha1.ExtensionsK8sApisService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""Lists Apis.
-
-      Args:
-        request: (ServerlessExtensionsK8sApisListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ApiGroupList) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'serverless.extensions.k8s.apis.list',
-        ordered_params=[],
-        path_params=[],
-        query_params=[u'timeout'],
-        relative_path=u'v1alpha1/extensions/k8s/apis',
-        request_field='',
-        request_type_name=u'ServerlessExtensionsK8sApisListRequest',
-        response_type_name=u'ApiGroupList',
-        supports_download=False,
-    )
-
-  class ExtensionsK8sGroupsServingknativedevService(base_api.BaseApiService):
-    """Service class for the extensions_k8s_groups_servingknativedev resource."""
-
-    _NAME = u'extensions_k8s_groups_servingknativedev'
-
-    def __init__(self, client):
-      super(ServerlessV1alpha1.ExtensionsK8sGroupsServingknativedevService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""Lists serverless v1alpha1 resources.
-
-      Args:
-        request: (ServerlessExtensionsK8sGroupsServingknativedevListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ApiResourceList) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'serverless.extensions.k8s.groups.servingknativedev.list',
-        ordered_params=[],
-        path_params=[],
-        query_params=[u'labelSelector', u'timeout'],
-        relative_path=u'v1alpha1/extensions/k8s/groups/serving.knative.dev',
-        request_field='',
-        request_type_name=u'ServerlessExtensionsK8sGroupsServingknativedevListRequest',
-        response_type_name=u'ApiResourceList',
-        supports_download=False,
-    )
-
-  class ExtensionsK8sGroupsService(base_api.BaseApiService):
-    """Service class for the extensions_k8s_groups resource."""
-
-    _NAME = u'extensions_k8s_groups'
-
-    def __init__(self, client):
-      super(ServerlessV1alpha1.ExtensionsK8sGroupsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-  class ExtensionsK8sService(base_api.BaseApiService):
-    """Service class for the extensions_k8s resource."""
-
-    _NAME = u'extensions_k8s'
-
-    def __init__(self, client):
-      super(ServerlessV1alpha1.ExtensionsK8sService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-  class ExtensionsService(base_api.BaseApiService):
-    """Service class for the extensions resource."""
-
-    _NAME = u'extensions'
-
-    def __init__(self, client):
-      super(ServerlessV1alpha1.ExtensionsService, self).__init__(client)
-      self._upload_configs = {
-          }
 
   class NamespacesAuthorizeddomainsService(base_api.BaseApiService):
     """Service class for the namespaces_authorizeddomains resource."""
@@ -270,13 +75,13 @@ class ServerlessV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/authorizeddomains',
+        flat_path=u'apis/domains.cloudrun.com/v1alpha1/namespaces/{namespacesId}/authorizeddomains',
         http_method=u'GET',
         method_id=u'serverless.namespaces.authorizeddomains.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
         query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'apis/domains.cloudrun.dev/v1alpha1/{+parent}/authorizeddomains',
+        relative_path=u'apis/domains.cloudrun.com/v1alpha1/{+parent}/authorizeddomains',
         request_field='',
         request_type_name=u'ServerlessNamespacesAuthorizeddomainsListRequest',
         response_type_name=u'ListAuthorizedDomainsResponse',
@@ -371,13 +176,13 @@ class ServerlessV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings',
+        flat_path=u'apis/domains.cloudrun.com/v1alpha1/namespaces/{namespacesId}/domainmappings',
         http_method=u'POST',
         method_id=u'serverless.namespaces.domainmappings.create',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
         query_params=[],
-        relative_path=u'apis/domains.cloudrun.dev/v1alpha1/{+parent}/domainmappings',
+        relative_path=u'apis/domains.cloudrun.com/v1alpha1/{+parent}/domainmappings',
         request_field=u'domainMapping',
         request_type_name=u'ServerlessNamespacesDomainmappingsCreateRequest',
         response_type_name=u'DomainMapping',
@@ -398,13 +203,13 @@ class ServerlessV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}',
+        flat_path=u'apis/domains.cloudrun.com/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}',
         http_method=u'DELETE',
         method_id=u'serverless.namespaces.domainmappings.delete',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[u'orphanDependents'],
-        relative_path=u'apis/domains.cloudrun.dev/v1alpha1/{+name}',
+        relative_path=u'apis/domains.cloudrun.com/v1alpha1/{+name}',
         request_field='',
         request_type_name=u'ServerlessNamespacesDomainmappingsDeleteRequest',
         response_type_name=u'Empty',
@@ -425,13 +230,13 @@ class ServerlessV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}',
+        flat_path=u'apis/domains.cloudrun.com/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}',
         http_method=u'GET',
         method_id=u'serverless.namespaces.domainmappings.get',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
-        relative_path=u'apis/domains.cloudrun.dev/v1alpha1/{+name}',
+        relative_path=u'apis/domains.cloudrun.com/v1alpha1/{+name}',
         request_field='',
         request_type_name=u'ServerlessNamespacesDomainmappingsGetRequest',
         response_type_name=u'DomainMapping',
@@ -452,13 +257,13 @@ class ServerlessV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings',
+        flat_path=u'apis/domains.cloudrun.com/v1alpha1/namespaces/{namespacesId}/domainmappings',
         http_method=u'GET',
         method_id=u'serverless.namespaces.domainmappings.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
         query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
-        relative_path=u'apis/domains.cloudrun.dev/v1alpha1/{+parent}/domainmappings',
+        relative_path=u'apis/domains.cloudrun.com/v1alpha1/{+parent}/domainmappings',
         request_field='',
         request_type_name=u'ServerlessNamespacesDomainmappingsListRequest',
         response_type_name=u'ListDomainMappingsResponse',
@@ -467,11 +272,13 @@ class ServerlessV1alpha1(base_api.BaseApiClient):
 
     def ReplaceDomainMapping(self, request, global_params=None):
       r"""Rpc to replace a domain mapping.
-Only the metadata and spec are modifiable but after the Replace request,
-Cloud Run will work to make the DomainMappingStatus match the
-requested DomainMappingSpec.
-May use metadata.resourceVersion to enforce update from last read for
-concurrency control.
+
+Only the spec and metadata labels and annotations are modifiable. After
+the Update request, Cloud Run will work to make the 'status'
+match the requested 'spec'.
+
+May provide metadata.resourceVersion to enforce update from last read for
+optimistic concurrency control.
 
       Args:
         request: (ServerlessNamespacesDomainmappingsReplaceDomainMappingRequest) input message
@@ -484,64 +291,18 @@ concurrency control.
           config, request, global_params=global_params)
 
     ReplaceDomainMapping.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}',
+        flat_path=u'apis/domains.cloudrun.com/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}',
         http_method=u'PUT',
         method_id=u'serverless.namespaces.domainmappings.replaceDomainMapping',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
-        relative_path=u'apis/domains.cloudrun.dev/v1alpha1/{+name}',
+        relative_path=u'apis/domains.cloudrun.com/v1alpha1/{+name}',
         request_field=u'domainMapping',
         request_type_name=u'ServerlessNamespacesDomainmappingsReplaceDomainMappingRequest',
         response_type_name=u'DomainMapping',
         supports_download=False,
     )
-
-  class NamespacesKubeSystemServicesService(base_api.BaseApiService):
-    """Service class for the namespaces_kube_system_services resource."""
-
-    _NAME = u'namespaces_kube_system_services'
-
-    def __init__(self, client):
-      super(ServerlessV1alpha1.NamespacesKubeSystemServicesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""Lists serverless v1alpha1 resources.
-
-      Args:
-        request: (ServerlessNamespacesKubeSystemServicesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ApiResourceList) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'serverless.namespaces.kube-system.services.list',
-        ordered_params=[],
-        path_params=[],
-        query_params=[u'labelSelector', u'timeout'],
-        relative_path=u'apis/serving.knative.dev/v1alpha1/namespaces/kube-system/services',
-        request_field='',
-        request_type_name=u'ServerlessNamespacesKubeSystemServicesListRequest',
-        response_type_name=u'ApiResourceList',
-        supports_download=False,
-    )
-
-  class NamespacesKubeSystemService(base_api.BaseApiService):
-    """Service class for the namespaces_kube_system resource."""
-
-    _NAME = u'namespaces_kube_system'
-
-    def __init__(self, client):
-      super(ServerlessV1alpha1.NamespacesKubeSystemService, self).__init__(client)
-      self._upload_configs = {
-          }
 
   class NamespacesRevisionsService(base_api.BaseApiService):
     """Service class for the namespaces_revisions resource."""
@@ -581,7 +342,7 @@ concurrency control.
     )
 
     def Get(self, request, global_params=None):
-      r"""Rpc to get informationabout a revision.
+      r"""Rpc to get information about a revision.
 
       Args:
         request: (ServerlessNamespacesRevisionsGetRequest) input message
@@ -852,11 +613,13 @@ concurrency control.
 
     def ReplaceService(self, request, global_params=None):
       r"""Rpc to replace a service.
-Only the metadata and spec are modifiable but after the Replace request,
-Cloud Run will work to make the ServiceStatus match the
-requested ServiceSpec.
-May use metadata.resourceVersion to enforce update from last read for
-concurrency control.
+
+Only the spec and metadata labels and annotations are modifiable. After
+the Update request, Cloud Run will work to make the 'status'
+match the requested 'spec'.
+
+May provide metadata.resourceVersion to enforce update from last read for
+optimistic concurrency control.
 
       Args:
         request: (ServerlessNamespacesServicesReplaceServiceRequest) input message
@@ -1113,11 +876,13 @@ concurrency control.
 
     def ReplaceDomainMapping(self, request, global_params=None):
       r"""Rpc to replace a domain mapping.
-Only the metadata and spec are modifiable but after the Replace request,
-Cloud Run will work to make the DomainMappingStatus match the
-requested DomainMappingSpec.
-May use metadata.resourceVersion to enforce update from last read for
-concurrency control.
+
+Only the spec and metadata labels and annotations are modifiable. After
+the Update request, Cloud Run will work to make the 'status'
+match the requested 'spec'.
+
+May provide metadata.resourceVersion to enforce update from last read for
+optimistic concurrency control.
 
       Args:
         request: (ServerlessProjectsLocationsDomainmappingsReplaceDomainMappingRequest) input message
@@ -1181,7 +946,7 @@ concurrency control.
     )
 
     def Get(self, request, global_params=None):
-      r"""Rpc to get informationabout a revision.
+      r"""Rpc to get information about a revision.
 
       Args:
         request: (ServerlessProjectsLocationsRevisionsGetRequest) input message
@@ -1480,11 +1245,13 @@ concurrency control.
 
     def ReplaceService(self, request, global_params=None):
       r"""Rpc to replace a service.
-Only the metadata and spec are modifiable but after the Replace request,
-Cloud Run will work to make the ServiceStatus match the
-requested ServiceSpec.
-May use metadata.resourceVersion to enforce update from last read for
-concurrency control.
+
+Only the spec and metadata labels and annotations are modifiable. After
+the Update request, Cloud Run will work to make the 'status'
+match the requested 'spec'.
+
+May provide metadata.resourceVersion to enforce update from last read for
+optimistic concurrency control.
 
       Args:
         request: (ServerlessProjectsLocationsServicesReplaceServiceRequest) input message
@@ -1586,39 +1353,3 @@ There are no permissions required for making this API call.
       super(ServerlessV1alpha1.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
-
-  class V1alpha1Service(base_api.BaseApiService):
-    """Service class for the v1alpha1 resource."""
-
-    _NAME = u'v1alpha1'
-
-    def __init__(self, client):
-      super(ServerlessV1alpha1.V1alpha1Service, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""Lists serverless v1alpha1 resources.
-
-      Args:
-        request: (ServerlessListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ApiResourceList) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'serverless.list',
-        ordered_params=[],
-        path_params=[],
-        query_params=[u'labelSelector', u'timeout'],
-        relative_path=u'apis/serving.knative.dev/v1alpha1',
-        request_field='',
-        request_type_name=u'ServerlessListRequest',
-        response_type_name=u'ApiResourceList',
-        supports_download=False,
-    )

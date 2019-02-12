@@ -87,7 +87,8 @@ is no need to call DeleteOperation.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a specific Redis instance.
+      r"""Deletes a specific Redis instance.  Instance stops serving and data is.
+deleted.
 
       Args:
         request: (RedisProjectsLocationsInstancesDeleteRequest) input message

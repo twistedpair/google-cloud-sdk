@@ -376,7 +376,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a deployment and all of the resources described by the deployment manifest. This method supports patch semantics.
+      r"""Patches a deployment and all of the resources described by the deployment manifest.
 
       Args:
         request: (DeploymentmanagerDeploymentsPatchRequest) input message

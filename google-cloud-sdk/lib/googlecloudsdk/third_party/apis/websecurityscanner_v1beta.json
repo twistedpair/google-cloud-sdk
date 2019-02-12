@@ -111,7 +111,7 @@
   "schemas": {
     "ScanConfig": {
       "id": "ScanConfig",
-      "description": "A ScanConfig resource contains the configurations to launch a scan.",
+      "description": "A ScanConfig resource contains the configurations to launch a scan.\nnext id: 12",
       "type": "object",
       "properties": {
         "name": {
@@ -195,6 +195,10 @@
             "ENABLED",
             "DISABLED"
           ]
+        },
+        "latestRun": {
+          "description": "Latest ScanRun if available.",
+          "$ref": "ScanRun"
         }
       }
     },
@@ -262,38 +266,6 @@
           "type": "integer",
           "format": "int32"
         }
-      }
-    },
-    "Empty": {
-      "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "ListScanConfigsResponse": {
-      "id": "ListScanConfigsResponse",
-      "description": "Response for the `ListScanConfigs` method.",
-      "type": "object",
-      "properties": {
-        "scanConfigs": {
-          "description": "The list of ScanConfigs returned.",
-          "type": "array",
-          "items": {
-            "$ref": "ScanConfig"
-          }
-        },
-        "nextPageToken": {
-          "description": "Token to retrieve the next page of results, or empty if there are no\nmore results in the list.",
-          "type": "string"
-        }
-      }
-    },
-    "StartScanRunRequest": {
-      "id": "StartScanRunRequest",
-      "description": "Request for the `StartScanRun` method.",
-      "type": "object",
-      "properties": {
       }
     },
     "ScanRun": {
@@ -545,6 +517,38 @@
             "BLOCKED_BY_IAP"
           ]
         }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListScanConfigsResponse": {
+      "id": "ListScanConfigsResponse",
+      "description": "Response for the `ListScanConfigs` method.",
+      "type": "object",
+      "properties": {
+        "scanConfigs": {
+          "description": "The list of ScanConfigs returned.",
+          "type": "array",
+          "items": {
+            "$ref": "ScanConfig"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no\nmore results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "StartScanRunRequest": {
+      "id": "StartScanRunRequest",
+      "description": "Request for the `StartScanRun` method.",
+      "type": "object",
+      "properties": {
       }
     },
     "ListScanRunsResponse": {

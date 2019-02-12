@@ -95,6 +95,7 @@ import os
 import sys
 import unicodedata
 
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr_os
 from googlecloudsdk.core.console.style import text
 from googlecloudsdk.core.util import encoding as encoding_util
@@ -161,6 +162,18 @@ class BoxLineCharactersAscii(BoxLineCharacters):
   d_vh = '#'
   d_vl = '#'
   d_vr = '#'
+
+
+class BoxLineCharactersScreenReader(BoxLineCharactersAscii):
+  dl = ' '
+  dr = ' '
+  hd = ' '
+  hu = ' '
+  ul = ' '
+  ur = ' '
+  vh = ' '
+  vl = ' '
+  vr = ' '
 
 
 class ProgressTrackerSymbols(object):
@@ -265,17 +278,20 @@ class ConsoleAttr(object):
       self._font_italic = ''
 
     # Encoded character attributes.
-    if self._encoding == 'utf8':
+    is_screen_reader = properties.VALUES.accessibility.screen_reader.GetBool()
+    if self._encoding == 'utf8' and not is_screen_reader:
       self._box_line_characters = BoxLineCharactersUnicode()
       self._bullets = self._BULLETS_UNICODE
       self._progress_tracker_symbols = ProgressTrackerSymbolsUnicode()
-    elif self._encoding == 'cp437':
+    elif self._encoding == 'cp437' and not is_screen_reader:
       self._box_line_characters = BoxLineCharactersUnicode()
       self._bullets = self._BULLETS_WINDOWS
       # Windows does not suport the unicode characters used for the spinner.
       self._progress_tracker_symbols = ProgressTrackerSymbolsAscii()
     else:
       self._box_line_characters = BoxLineCharactersAscii()
+      if is_screen_reader:
+        self._box_line_characters = BoxLineCharactersScreenReader()
       self._bullets = self._BULLETS_ASCII
       self._progress_tracker_symbols = ProgressTrackerSymbolsAscii()
 

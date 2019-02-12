@@ -940,7 +940,7 @@ class MultiScopeLister(object):
       holder = base_classes.ComputeApiHolder(self.ReleaseTrack())
       client = holder.client
 
-      request_data = lister.ParseListCommandFlags(args, holder.resources)
+      request_data = lister.ParseMultiScopeFlags(args, holder.resources)
 
       list_implementation = lister.MultiScopeLister(
           client,

@@ -544,7 +544,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Resize(self, request, global_params=None):
-      r"""Resizes the allocation (applicable to standalone allocation only).
+      r"""Resizes the allocation (applicable to standalone allocations only).
 
       Args:
         request: (ComputeAllocationsResizeRequest) input message
@@ -4888,7 +4888,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Reset(self, request, global_params=None):
-      r"""Performs a reset on the instance. This is a hard reset; the VM does not do a graceful shutdown. For more information, see Resetting an instance.
+      r"""Performs a reset on the instance. This is a hard reset the VM does not do a graceful shutdown. For more information, see Resetting an instance.
 
       Args:
         request: (ComputeInstancesResetRequest) input message

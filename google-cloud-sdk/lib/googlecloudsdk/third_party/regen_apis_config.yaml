@@ -341,6 +341,12 @@ apis:
     v1beta1:
       discovery_doc: gkehub_v1beta1.json
       default: true
+  healthcare:
+    v1alpha:
+      discovery_doc: healthcare_v1alpha.json
+    v1alpha2:
+      discovery_doc: healthcare_v1alpha2.json
+      default: true
   oslogin:
     v1alpha:
       discovery_doc: oslogin_v1alpha.json

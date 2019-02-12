@@ -237,6 +237,8 @@ class _Sections(object):
   Attributes:
     access_context_manager: Section, The section containing access context
       manager properties for the Cloud SDK.
+    accessibility: Section, The section containing accessibility properties for
+      the Cloud SDK.
     api_client_overrides: Section, The section containing API client override
       properties for the Cloud SDK.
     api_endpoint_overrides: Section, The section containing API endpoint
@@ -299,6 +301,7 @@ class _Sections(object):
 
   def __init__(self):
     self.access_context_manager = _SectionAccessContextManager()
+    self.accessibility = _SectionAccessibility()
     self.api_client_overrides = _SectionApiClientOverrides()
     self.api_endpoint_overrides = _SectionApiEndpointOverrides()
     self.app = _SectionApp()
@@ -332,6 +335,7 @@ class _Sections(object):
 
     sections = [
         self.access_context_manager,
+        self.accessibility,
         self.api_client_overrides,
         self.api_endpoint_overrides,
         self.app,
@@ -736,6 +740,17 @@ class _SectionGcloudignore(_Section):
             'If True, do not upload `.gcloudignore` files (see `$ gcloud topic '
             'gcloudignore`). If False, turn off the gcloudignore mechanism '
             'entirely and upload all files.'))
+
+
+class _SectionAccessibility(_Section):
+  """Contains the properties for the 'accessibility' section."""
+
+  def __init__(self):
+    super(_SectionAccessibility, self).__init__('accessibility')
+    self.screen_reader = self._AddBool(
+        'screen_reader',
+        default=False,
+        help_text='Make gcloud more screen reader friendly.')
 
 
 class _SectionApp(_Section):
@@ -1503,7 +1518,6 @@ class _SectionApiEndpointOverrides(_Section):
         'api_endpoint_overrides', hidden=True)
     self.remotebuildexecution = self._Add('remotebuildexecution')
     self.accesscontextmanager = self._Add('accesscontextmanager')
-    self.apikeys = self._Add('apikeys')
     self.appengine = self._Add('appengine')
     self.bigtableadmin = self._Add('bigtableadmin')
     self.bigtableclusteradmin = self._Add('bigtableclusteradmin')

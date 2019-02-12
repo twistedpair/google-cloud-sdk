@@ -490,6 +490,7 @@ class Flag(_messages.Message):
     appliesTo: The database version this flag applies to. Can be MYSQL_5_5,
       MYSQL_5_6, or MYSQL_5_7. MYSQL_5_7 is applicable only to Second
       Generation instances.
+    inBeta: True if the flag is only released in Beta.
     kind: This is always sql#flag.
     maxValue: For INTEGER flags, the maximum allowed value.
     minValue: For INTEGER flags, the minimum allowed value.
@@ -504,12 +505,13 @@ class Flag(_messages.Message):
 
   allowedStringValues = _messages.StringField(1, repeated=True)
   appliesTo = _messages.StringField(2, repeated=True)
-  kind = _messages.StringField(3, default=u'sql#flag')
-  maxValue = _messages.IntegerField(4)
-  minValue = _messages.IntegerField(5)
-  name = _messages.StringField(6)
-  requiresRestart = _messages.BooleanField(7)
-  type = _messages.StringField(8)
+  inBeta = _messages.BooleanField(3)
+  kind = _messages.StringField(4, default=u'sql#flag')
+  maxValue = _messages.IntegerField(5)
+  minValue = _messages.IntegerField(6)
+  name = _messages.StringField(7)
+  requiresRestart = _messages.BooleanField(8)
+  type = _messages.StringField(9)
 
 
 class FlagsListResponse(_messages.Message):

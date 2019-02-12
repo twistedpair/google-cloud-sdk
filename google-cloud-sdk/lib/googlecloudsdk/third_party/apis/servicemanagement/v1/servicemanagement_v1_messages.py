@@ -3306,7 +3306,8 @@ class ServicemanagementServicesConfigsListRequest(_messages.Message):
   r"""A ServicemanagementServicesConfigsListRequest object.
 
   Fields:
-    pageSize: The max number of items to include in the response list.
+    pageSize: The max number of items to include in the response list. Page
+      size is 50 if not specified. Maximum value is 100.
     pageToken: The token of the page to retrieve.
     serviceName: The name of the service.  See the [overview](/service-
       management/overview) for naming requirements.  For example:
@@ -3615,7 +3616,8 @@ class ServicemanagementServicesListRequest(_messages.Message):
     consumerProjectId: Include services consumed by the specified project.  If
       project_settings is expanded, then this field controls which project
       project_settings is populated for.
-    pageSize: Requested size of the next page of data.
+    pageSize: The max number of items to include in the response list. Page
+      size is 50 if not specified. Maximum value is 100.
     pageToken: Token identifying which result to start with; returned by a
       previous list call.
     producerProjectId: Include services produced by the specified project.
@@ -3762,7 +3764,8 @@ class ServicemanagementServicesRolloutsListRequest(_messages.Message):
       use filter='status=SUCCESS'   -- To limit the results to those in
       [status](google.api.servicemanagement.v1.RolloutStatus) 'CANCELLED'
       or 'FAILED', use filter='status=CANCELLED OR status=FAILED'
-    pageSize: The max number of items to include in the response list.
+    pageSize: The max number of items to include in the response list. Page
+      size is 50 if not specified. Maximum value is 100.
     pageToken: The token of the page to retrieve.
     serviceName: The name of the service.  See the [overview](/service-
       management/overview) for naming requirements.  For example:

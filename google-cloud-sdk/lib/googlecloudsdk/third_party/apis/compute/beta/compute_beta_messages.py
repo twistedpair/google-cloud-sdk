@@ -1161,7 +1161,8 @@ class Allocation(_messages.Message):
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
-    description: A string attribute.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#allocations for
@@ -1175,12 +1176,13 @@ class Allocation(_messages.Message):
       character, which cannot be a dash.
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
-    specificAllocation: A AllocationSpecificSKUAllocation attribute.
+    specificAllocation: Allocation for instances with specific machine shapes.
     specificAllocationRequired: Indicates whether the allocation can be
       consumed by VMs with "any allocation" defined. If the field is set, then
       only VMs that target the allocation by name using --allocation-affinity
       can consume this allocation.
-    zone: A string attribute.
+    zone: Zone in which the allocation resides, must be provided if allocation
+      is created with commitment creation.
   """
 
   creationTimestamp = _messages.StringField(1)
@@ -1508,8 +1510,8 @@ class AllocationSpecificSKUAllocation(_messages.Message):
   Fields:
     count: Specifies number of resources that are allocated.
     inUseCount: [OutputOnly] Indicates how many resource are in use.
-    instanceProperties: A
-      AllocationSpecificSKUAllocationAllocatedInstanceProperties attribute.
+    instanceProperties: The instance properties for this specific sku
+      allocation.
   """
 
   count = _messages.IntegerField(1)
@@ -8522,7 +8524,7 @@ class ComputeInstancesAttachDiskRequest(_messages.Message):
   Fields:
     attachedDisk: A AttachedDisk resource to be passed as the request body.
     forceAttach: Whether to force attach the disk even if it's currently
-      attached to another instance. This is only available for regional disks.
+      attached to another instance.
     instance: The instance name for this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -17227,9 +17229,7 @@ class Condition(_messages.Message):
     svc: Trusted attributes discharged by the service.
     sys: Trusted attributes supplied by any service that owns resources and
       uses the IAM system for access control.
-    value: DEPRECATED. Use 'values' instead.
-    values: The objects of the condition. This is mutually exclusive with
-      'value'.
+    values: The objects of the condition.
   """
 
   class IamValueValuesEnum(_messages.Enum):
@@ -17291,8 +17291,7 @@ class Condition(_messages.Message):
   op = _messages.EnumField('OpValueValuesEnum', 2)
   svc = _messages.StringField(3)
   sys = _messages.EnumField('SysValueValuesEnum', 4)
-  value = _messages.StringField(5)
-  values = _messages.StringField(6, repeated=True)
+  values = _messages.StringField(5, repeated=True)
 
 
 class ConnectionDraining(_messages.Message):
@@ -19186,6 +19185,11 @@ class ForwardingRule(_messages.Message):
       When the load balancing scheme is INTERNAL and protocol is TCP/UDP,
       specify this field to allow packets addressed to any ports will be
       forwarded to the backends configured with this forwarding rule.
+    allowGlobalAccess: This field is used along with the backend_service field
+      for internal load balancing or with the target field for internal
+      TargetInstance. If the field is set to TRUE, clients can access ILB from
+      all regions. Otherwise only allows access from clients in the same
+      region as the internal load balancer.
     backendService: This field is only used for INTERNAL load balancing.  For
       internal load balancing, this field identifies the BackendService
       resource to receive the matched traffic.
@@ -19380,26 +19384,27 @@ class ForwardingRule(_messages.Message):
   IPAddress = _messages.StringField(1)
   IPProtocol = _messages.EnumField('IPProtocolValueValuesEnum', 2)
   allPorts = _messages.BooleanField(3)
-  backendService = _messages.StringField(4)
-  creationTimestamp = _messages.StringField(5)
-  description = _messages.StringField(6)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 8)
-  kind = _messages.StringField(9, default=u'compute#forwardingRule')
-  labelFingerprint = _messages.BytesField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 12)
-  name = _messages.StringField(13)
-  network = _messages.StringField(14)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 15)
-  portRange = _messages.StringField(16)
-  ports = _messages.StringField(17, repeated=True)
-  region = _messages.StringField(18)
-  selfLink = _messages.StringField(19)
-  serviceLabel = _messages.StringField(20)
-  serviceName = _messages.StringField(21)
-  subnetwork = _messages.StringField(22)
-  target = _messages.StringField(23)
+  allowGlobalAccess = _messages.BooleanField(4)
+  backendService = _messages.StringField(5)
+  creationTimestamp = _messages.StringField(6)
+  description = _messages.StringField(7)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 9)
+  kind = _messages.StringField(10, default=u'compute#forwardingRule')
+  labelFingerprint = _messages.BytesField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 13)
+  name = _messages.StringField(14)
+  network = _messages.StringField(15)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 16)
+  portRange = _messages.StringField(17)
+  ports = _messages.StringField(18, repeated=True)
+  region = _messages.StringField(19)
+  selfLink = _messages.StringField(20)
+  serviceLabel = _messages.StringField(21)
+  serviceName = _messages.StringField(22)
+  subnetwork = _messages.StringField(23)
+  target = _messages.StringField(24)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -21049,7 +21054,7 @@ class Image(_messages.Message):
         and not a runtime format. Provided by the client when the disk image
         is created.
       sha1Checksum: An optional SHA1 checksum of the disk image before
-        unpackaging; provided by the client when the disk image is created.
+        unpackaging provided by the client when the disk image is created.
       source: The full Google Cloud Storage URL where the disk image is
         stored. You must provide either this property or the sourceDisk
         property but not both.
@@ -23885,7 +23890,7 @@ class Interconnect(_messages.Message):
       Interconnect.
     googleIpAddress: [Output Only] IP address configured on the Google side of
       the Interconnect link. This can be used only for ping tests.
-    googleReferenceId: [Output Only] Google reference ID; to be used when
+    googleReferenceId: [Output Only] Google reference ID to be used when
       raising support tickets with Google or otherwise to debug backend
       connectivity issues.
     id: [Output Only] The unique identifier for the resource. This identifier

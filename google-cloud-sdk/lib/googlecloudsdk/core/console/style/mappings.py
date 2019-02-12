@@ -144,9 +144,11 @@ STYLE_MAPPINGS_TESTING = StyleMapping(dict([
 def GetStyleMappings(console_attributes=None):
   """Gets the style mappings based on the console and user properties."""
   console_attributes = console_attributes or console_attr.GetConsoleAttr()
+  is_screen_reader = properties.VALUES.accessibility.screen_reader.GetBool()
   if properties.VALUES.core.color_theme.Get() == 'testing':
     return STYLE_MAPPINGS_TESTING
-  elif (console_attributes.SupportsAnsi() and
+  elif (not is_screen_reader and
+        console_attributes.SupportsAnsi() and
         properties.VALUES.core.color_theme.Get() != 'off'):
     if console_attributes._term == 'xterm-256color':  # pylint: disable=protected-access
       return STYLE_MAPPINGS_ANSI_256

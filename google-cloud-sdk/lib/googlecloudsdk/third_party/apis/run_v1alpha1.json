@@ -109,6 +109,58 @@
     }
   },
   "schemas": {
+    "ListLocationsResponse": {
+      "id": "ListLocationsResponse",
+      "description": "The response message for Locations.ListLocations.",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Location"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Location": {
+      "id": "Location",
+      "description": "A resource that represents Google Cloud Platform location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name for the location, which may vary between implementations.\nFor example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name.\nFor example, \"Tokyo\".",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Cross-service attributes for the location. For example\n\n    {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "description": "Service-specific metadata. For example the available capacity at the given\nlocation.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
     "ListAuthorizedDomainsResponse": {
       "id": "ListAuthorizedDomainsResponse",
       "description": "A list of Authorized Domains.",
@@ -196,7 +248,7 @@
     },
     "Revision": {
       "id": "Revision",
-      "description": "Revision is an immutable snapshot of code and configuration.\nSee also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/overview.md#revision",
+      "description": "Revision is an immutable snapshot of code and configuration.  A revision\nreferences a container image. Revisions are created by updates to a\nConfiguration.\n\nCloud Run does not currently support referencing a build that is responsible\nfor materializing the container image from source.\n\nSee also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/overview.md#revision",
       "type": "object",
       "properties": {
         "apiVersion": {
@@ -227,15 +279,15 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Name must be unique within a namespace. Is required when creating\nresources, although some resources may allow a client to request the\ngeneration of an appropriate name automatically. Name is primarily intended\nfor creation idempotence and configuration definition. Cannot be updated.\nMore info: http:\/\/kubernetes.io\/docs\/user-guide\/identifiers#names\n+optional",
+          "description": "Name must be unique within a namespace, within a Cloud Run region.\nIs required when creating\nresources, although some resources may allow a client to request the\ngeneration of an appropriate name automatically. Name is primarily intended\nfor creation idempotence and configuration definition. Cannot be updated.\nMore info: http:\/\/kubernetes.io\/docs\/user-guide\/identifiers#names\n+optional",
           "type": "string"
         },
         "generateName": {
-          "description": "GenerateName is an optional prefix, used by the server, to generate a\nunique name ONLY IF the Name field has not been provided. If this field is\nused, the name returned to the client will be different than the name\npassed. This value will also be combined with a unique suffix. The provided\nvalue has the same validation rules as the Name field, and may be truncated\nby the length of the suffix required to make the value unique on the\nserver.\n\nIf this field is specified and the generated name exists, the server will\nNOT return a 409 - instead, it will either return 201 Created or 500 with\nReason ServerTimeout indicating a unique name could not be found in the\ntime allotted, and the client should retry (optionally after the time\nindicated in the Retry-After header).\n\nApplied only if Name is not specified.\nMore info:\nhttps:\/\/git.k8s.io\/community\/contributors\/devel\/api-conventions.md#idempotency\n+optional\n string generateName = 2;",
+          "description": "Not currently supported by Cloud Run.\n\nGenerateName is an optional prefix, used by the server, to generate a\nunique name ONLY IF the Name field has not been provided. If this field is\nused, the name returned to the client will be different than the name\npassed. This value will also be combined with a unique suffix. The provided\nvalue has the same validation rules as the Name field, and may be truncated\nby the length of the suffix required to make the value unique on the\nserver.\n\nIf this field is specified and the generated name exists, the server will\nNOT return a 409 - instead, it will either return 201 Created or 500 with\nReason ServerTimeout indicating a unique name could not be found in the\ntime allotted, and the client should retry (optionally after the time\nindicated in the Retry-After header).\n\nApplied only if Name is not specified.\nMore info:\nhttps:\/\/git.k8s.io\/community\/contributors\/devel\/api-conventions.md#idempotency\n+optional\n string generateName = 2;",
           "type": "string"
         },
         "namespace": {
-          "description": "Namespace defines the space within each name must be unique. In Cloud Run\nthis must be equal to either the project ID or project number.",
+          "description": "Namespace defines the space within each name must be unique, within a\nCloud Run region. In Cloud Run the namespace must be equal to either the\nproject ID or project number.",
           "type": "string"
         },
         "selfLink": {
@@ -287,23 +339,23 @@
           "format": "google-datetime"
         },
         "deletionGracePeriodSeconds": {
-          "description": "Number of seconds allowed for this object to gracefully terminate before\nit will be removed from the system. Only set when deletionTimestamp is also\nset. May only be shortened. Read-only. +optional",
+          "description": "Not currently supported by Cloud Run.\n\nNumber of seconds allowed for this object to gracefully terminate before\nit will be removed from the system. Only set when deletionTimestamp is also\nset. May only be shortened. Read-only. +optional",
           "type": "integer",
           "format": "int32"
         },
         "initializers": {
-          "description": "An initializer is a controller which enforces some system invariant at\nobject creation time. This field is a list of initializers that have not\nyet acted on this object. If nil or empty, this object has been completely\ninitialized. Otherwise, the object is considered uninitialized and is\nhidden (in list\/watch and get calls) from clients that haven't explicitly\nasked to observe uninitialized objects.\n\nWhen an object is created, the system will populate this list with the\ncurrent set of initializers. Only privileged users may set or modify this\nlist. Once it is empty, it may not be modified further by any user.",
+          "description": "Not currently supported by Cloud Run.\n\nAn initializer is a controller which enforces some system invariant at\nobject creation time. This field is a list of initializers that have not\nyet acted on this object. If nil or empty, this object has been completely\ninitialized. Otherwise, the object is considered uninitialized and is\nhidden (in list\/watch and get calls) from clients that haven't explicitly\nasked to observe uninitialized objects.\n\nWhen an object is created, the system will populate this list with the\ncurrent set of initializers. Only privileged users may set or modify this\nlist. Once it is empty, it may not be modified further by any user.",
           "$ref": "Initializers"
         },
         "finalizers": {
-          "description": "Must be empty before the object is deleted from the registry. Each entry\nis an identifier for the responsible component that will remove the entry\nfrom the list. If the deletionTimestamp of the object is non-nil, entries\nin this list can only be removed.\n+optional\n+patchStrategy=merge",
+          "description": "Not currently supported by Cloud Run.\n\nMust be empty before the object is deleted from the registry. Each entry\nis an identifier for the responsible component that will remove the entry\nfrom the list. If the deletionTimestamp of the object is non-nil, entries\nin this list can only be removed.\n+optional\n+patchStrategy=merge",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "clusterName": {
-          "description": "The name of the cluster which the object belongs to.\nThis is used to distinguish resources with same name and namespace in\ndifferent clusters. This field is not set anywhere right now and apiserver\nis going to ignore it if set in create or update request. +optional",
+          "description": "Not currently supported by Cloud Run.\n\nThe name of the cluster which the object belongs to.\nThis is used to distinguish resources with same name and namespace in\ndifferent clusters. This field is not set anywhere right now and apiserver\nis going to ignore it if set in create or update request. +optional",
           "type": "string"
         }
       }
@@ -370,7 +422,7 @@
       "type": "object",
       "properties": {
         "container": {
-          "description": "Container defines the unit of execution for this Revision.\nIn the context of a Revision, we disallow a number of the fields of\nthis Container, including: name, resources, ports, and volumeMounts.\nThe runtime contract is documented here:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/runtime-contract.md",
+          "description": "Container defines the unit of execution for this Revision.\nIn the context of a Revision, we disallow a number of the fields of\nthis Container, including: name, ports, and volumeMounts.\nThe runtime contract is documented here:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/runtime-contract.md",
           "$ref": "Container"
         },
         "concurrencyModel": {
@@ -383,21 +435,21 @@
           "format": "int32"
         },
         "timeoutSeconds": {
-          "description": "TimeoutSeconds holds the max duration the instance is allowed for\nresponding to a request. (not used by Cloud Run)",
+          "description": "TimeoutSeconds holds the max duration the instance is allowed for\nresponding to a request.\nNot currently used by Cloud Run.",
           "type": "integer",
           "format": "int32"
         },
         "serviceAccountName": {
-          "description": "ServiceAccountName holds the name of the Kubernetes service account\nas which the underlying K8s resources should be run. If unspecified\nthis will default to the \"default\" service account for the namespace\nin which the Revision exists.\nThis may be used to provide access to private container images by\nfollowing:\nhttps:\/\/kubernetes.io\/docs\/tasks\/configure-pod-container\/configure-service-account\/#add-imagepullsecrets-to-a-service-account",
+          "description": "Not currently used by Cloud Run.",
           "type": "string"
         },
         "servingState": {
-          "description": "ServingState holds a value describing the desired state the Kubernetes\nresources should be in for this Revision.\nUsers must not specify this when creating a revision. It is expected\nthat the system will manipulate this based on routability and load.",
+          "description": "ServingState holds a value describing the state the resources\nare in for this Revision.\nUsers must not specify this when creating a revision. It is expected\nthat the system will manipulate this based on routability and load.\n\nPopulated by the system.\nRead-only.",
           "enumDescriptions": [
             "The revision serving state hasn't been specified.",
-            "The revision is ready to serve traffic. It should have Kubernetes\nresources, and the Istio route should be pointed to the given resources.",
-            "The revision is not currently serving traffic, but could be made to serve\ntraffic quickly. It should have Kubernetes resources, but the Istio route\nshould be pointed to the activator.",
-            "The revision has been decommissioned and is not needed to serve traffic\nanymore. It should not have any Istio routes or Kubernetes resources.\nA Revision may be brought out of retirement, but it may take longer than\nit would from a \"Reserve\" state."
+            "The revision is ready to serve traffic.",
+            "The revision is not currently serving traffic, but could be made to serve\ntraffic quickly.\nNot currently used by Cloud Run.",
+            "The revision has been decommissioned and is not needed to serve traffic\nanymore. A Revision may be brought out of retirement, but it may take\nlonger than it would from a \"Reserve\" state."
           ],
           "type": "string",
           "enum": [
@@ -408,7 +460,7 @@
           ]
         },
         "generation": {
-          "description": "For open Knative: metadata.generation does not work yet, this\nis a stopgap way of specifying generation\n+optional",
+          "description": "Deprecated and not currently populated by Cloud Run. See\nmetadata.generation instead, which is the sequence number containing the\nlatest generation of the desired state.\n\nRead-only.",
           "type": "integer",
           "format": "int32"
         }
@@ -975,30 +1027,30 @@
           "type": "string"
         },
         "conditions": {
-          "description": "List of observed RevisionConditions, indicating the current state\nof the Revision. As a Revision is being prepared, it will incrementally\nupdate conditions \"ResourcesAvailable\", \"ContainerHealthy\", and \"Active\",\nwhich contribute to the overall \"Ready\" condition.",
+          "description": "Conditions communicates information about ongoing\/complete\nreconciliation processes that bring the \"spec\" inline with the observed\nstate of the world.\n\nAs a Revision is being prepared, it will incrementally\nupdate conditions \"ResourcesAvailable\", \"ContainerHealthy\", and \"Active\",\nwhich contribute to the overall \"Ready\" condition.",
           "type": "array",
           "items": {
             "$ref": "RevisionCondition"
           }
         },
         "serviceName": {
-          "description": "ServiceName holds the name of a core Kubernetes Service resource that\nload balances over the pods backing this Revision. When the Revision\nis Active, this service would be an appropriate ingress target for\ntargeting the revision.",
+          "description": "Not currently used by Cloud Run.",
           "type": "string"
         },
         "observedGeneration": {
-          "description": "ObservedGeneration is the 'Generation' of the Configuration that\nwas last processed by the controller. The observed generation is updated\neven if the controller failed to process the spec and create the Revision.",
+          "description": "ObservedGeneration is the 'Generation' of the Revision that\nwas last processed by the controller.\n\nClients polling for completed reconciliation should poll until\nobservedGeneration = metadata.generation, and the Ready condition's status\nis True or False.",
           "type": "integer",
           "format": "int32"
         },
         "imageDigest": {
-          "description": "ImageDigest holds the resolved digest for the image specified\nwithin .Spec.Container.Image. The digest is resolved during the creation\nof Revision. This field holds the digest value regardless of whether\na tag or digest was originally specified in the Container object. It\nmay be empty if the image comes from a registry listed to skip resolution.",
+          "description": "ImageDigest holds the resolved digest for the image specified\nwithin .Spec.Container.Image. The digest is resolved during the creation\nof Revision. This field holds the digest value regardless of whether\na tag or digest was originally specified in the Container object.",
           "type": "string"
         }
       }
     },
     "RevisionCondition": {
       "id": "RevisionCondition",
-      "description": "RevisionCondition defines a readiness condition for a Revision.\nSee:\nhttps:\/\/github.com\/kubernetes\/community\/blob\/master\/contributors\/devel\/api-conventions.md#typical-status-properties",
+      "description": "RevisionCondition defines a readiness condition for a Revision.",
       "type": "object",
       "properties": {
         "type": {
@@ -1097,11 +1149,11 @@
       "type": "object",
       "properties": {
         "revisionTemplate": {
-          "description": "RevisionTemplate holds the latest specification for the Revision to\nbe stamped out. If a Build specification is provided, then the\nRevisionTemplate's BuildName field will be populated with the name of\nthe Build object created to produce the container for the Revision.",
+          "description": "RevisionTemplate holds the latest specification for the Revision to\nbe stamped out. The template references the container image, and may also\ninclude labels and annotations that should be attached to the Revision.\nTo correlate a Revision, and\/or to force a Revision to be created when the\nspec doesn't otherwise change, a nonce label may be provided in the\ntemplate metadata. For more details, see:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/client-conventions.md#associate-modifications-with-revisions\n\nCloud Run does not currently support referencing a build that is\nresponsible for materializing the container image from source.",
           "$ref": "RevisionTemplate"
         },
         "generation": {
-          "description": "For open Knative: metadata.generation does not work yet, this\nis a stopgap way of specifying generation\n+optional",
+          "description": "Deprecated and not currently populated by Cloud Run. See\nmetadata.generation instead, which is the sequence number containing the\nlatest generation of the desired state.\n\nRead-only.",
           "type": "integer",
           "format": "int32"
         }
@@ -1136,7 +1188,7 @@
           "type": "string"
         },
         "observedGeneration": {
-          "description": "ObservedGeneration is the 'Generation' of the Configuration that\nwas last processed by the controller. The observed generation is updated\neven if the controller failed to process the spec and create the Revision.\nThe API version for this revision.",
+          "description": "ObservedGeneration is the 'Generation' of the Configuration that\nwas last processed by the controller. The observed generation is updated\neven if the controller failed to process the spec and create the Revision.\n\nClients polling for completed reconciliation should poll until\nobservedGeneration = metadata.generation, and the Ready condition's status\nis True or False.",
           "type": "integer",
           "format": "int32"
         },
@@ -1151,11 +1203,11 @@
     },
     "ConfigurationCondition": {
       "id": "ConfigurationCondition",
-      "description": "ConfigurationCondition defines a readiness condition for a Configuration.\nSee:\nhttps:\/\/github.com\/kubernetes\/community\/blob\/master\/contributors\/devel\/api-conventions.md#typical-status-properties",
+      "description": "ConfigurationCondition defines a readiness condition for a Configuration.",
       "type": "object",
       "properties": {
         "type": {
-          "description": "ConfigurationConditionType is used to communicate the status of the\nreconciliation process. See also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\nTypes include:\"LatestRevisionReady\"",
+          "description": "ConfigurationConditionType is used to communicate the status of the\nreconciliation process. See also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\nTypes include:\"Ready\"",
           "type": "string"
         },
         "status": {
@@ -1244,7 +1296,7 @@
           }
         },
         "observedGeneration": {
-          "description": "ObservedGeneration is the 'Generation' of the DomainMapping that\nwas last processed by the controller.",
+          "description": "ObservedGeneration is the 'Generation' of the DomainMapping that\nwas last processed by the controller.\n\nClients polling for completed reconciliation should poll until\nobservedGeneration = metadata.generation and the Ready condition's status\nis True or False.",
           "type": "integer",
           "format": "int32"
         },
@@ -1376,7 +1428,7 @@
     },
     "Route": {
       "id": "Route",
-      "description": "Route is responsible for configuring ingress over a collection of Revisions.\nSome of the Revisions a Route distributes traffic over may be specified by\nreferencing the Configuration responsible for creating them; in these cases\nthe Route is additionally responsible for monitoring the Configuration for\n\"latest ready\" revision changes, and smoothly rolling out latest revisions.\nSee also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/overview.md#route",
+      "description": "Route is responsible for configuring ingress over a collection of Revisions.\nSome of the Revisions a Route distributes traffic over may be specified by\nreferencing the Configuration responsible for creating them; in these cases\nthe Route is additionally responsible for monitoring the Configuration for\n\"latest ready\" revision changes, and smoothly rolling out latest revisions.\nSee also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/overview.md#route\n\nCloud Run currently supports referencing a single Configuration to\nautomatically deploy the \"latest ready\" Revision from that Configuration.",
       "type": "object",
       "properties": {
         "apiVersion": {
@@ -1407,14 +1459,14 @@
       "type": "object",
       "properties": {
         "traffic": {
-          "description": "Traffic specifies how to distribute traffic over a collection of Knative\nRevisions and Configurations.",
+          "description": "Traffic specifies how to distribute traffic over a collection of Knative\nRevisions and Configurations.\nCloud Run currently supports a single configurationName.",
           "type": "array",
           "items": {
             "$ref": "TrafficTarget"
           }
         },
         "generation": {
-          "description": "For open Knative: metadata.generation does not work yet, this\nis a stopgap way of specifying generation\n+optional",
+          "description": "Deprecated and not currently populated by Cloud Run. See\nmetadata.generation instead, which is the sequence number containing the\nlatest generation of the desired state.\n\nRead-only.",
           "type": "integer",
           "format": "int32"
         }
@@ -1426,19 +1478,19 @@
       "type": "object",
       "properties": {
         "configurationName": {
-          "description": "ConfigurationName of a configuration to whose latest revision we will\nsend this portion of traffic. When the \"status.latestReadyRevisionName\"\nof the referenced configuration changes, we will automatically migrate\ntraffic from the prior \"latest ready\" revision to the new one. This field\nis never set in Route's status, only its spec. This is mutually exclusive\nwith RevisionName.",
+          "description": "ConfigurationName of a configuration to whose latest revision we will\nsend this portion of traffic. When the \"status.latestReadyRevisionName\"\nof the referenced configuration changes, we will automatically migrate\ntraffic from the prior \"latest ready\" revision to the new one. This field\nis never set in Route's status, only its spec. This is mutually exclusive\nwith RevisionName.\n\nCloud Run currently supports a single ConfigurationName.",
           "type": "string"
         },
         "revisionName": {
-          "description": "RevisionName of a specific revision to which to send this portion of\ntraffic. This is mutually exclusive with ConfigurationName.",
+          "description": "RevisionName of a specific revision to which to send this portion of\ntraffic. This is mutually exclusive with ConfigurationName.\n\nProviding RevisionName in spec is not currently supported by Cloud Run.",
           "type": "string"
         },
         "name": {
-          "description": "Name is optionally used to expose a dedicated hostname for referencing this\ntarget exclusively. It has the form: {name}.${route.status.domain}\n+optional",
+          "description": "Name is optionally used to expose a dedicated hostname for referencing this\ntarget exclusively.\n\nNot currently supported by Cloud Run.\n+optional",
           "type": "string"
         },
         "percent": {
-          "description": "Percent specifies percent of the traffic to this Revision or Configuration.\nThis defaults to zero if unspecified.",
+          "description": "Percent specifies percent of the traffic to this Revision or Configuration.\nThis defaults to zero if unspecified.\n\nCloud Run currently requires 100 percent for a single ConfigurationName\nTrafficTarget entry.",
           "type": "integer",
           "format": "int32"
         }
@@ -1461,7 +1513,7 @@
           }
         },
         "observedGeneration": {
-          "description": "ObservedGeneration is the 'Generation' of the Configuration that\nwas last processed by the controller. The observed generation is updated\neven if the controller failed to process the spec and create the Revision.",
+          "description": "ObservedGeneration is the 'Generation' of the Route that\nwas last processed by the controller.\n\nClients polling for completed reconciliation should poll until\nobservedGeneration = metadata.generation and the Ready condition's status\nis True or False.\n\nNote that providing a trafficTarget that only has a configurationName will\nresult in a Route that does not increment either its metadata.generation or\nits observedGeneration, as new \"latest ready\" revisions from the\nConfiguration are processed without an update to the Route's spec.",
           "type": "integer",
           "format": "int32"
         },
@@ -1473,7 +1525,7 @@
           }
         },
         "domainInternal": {
-          "description": "DomainInternal holds the top-level domain that will distribute traffic over\nthe provided targets from inside the cluster. It generally has the form\n{route-name}.{route-namespace}.svc.cluster.local",
+          "description": "For Cloud Run, identifical to domain.",
           "type": "string"
         },
         "address": {
@@ -1484,11 +1536,11 @@
     },
     "RouteCondition": {
       "id": "RouteCondition",
-      "description": "RouteCondition defines a readiness condition.\nSee:\nhttps:\/\/github.com\/kubernetes\/community\/blob\/master\/contributors\/devel\/api-conventions.md#typical-status-properties",
+      "description": "RouteCondition defines a readiness condition for a Route.",
       "type": "object",
       "properties": {
         "type": {
-          "description": "RouteConditionType is used to communicate the status of the reconciliation\nprocess. See also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\nTypes include: \"RolloutInProgress\", \"TrafficDropped\".",
+          "description": "RouteConditionType is used to communicate the status of the reconciliation\nprocess. See also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\nTypes include: \"Ready\".",
           "type": "string"
         },
         "status": {
@@ -1555,7 +1607,7 @@
     },
     "Service": {
       "id": "Service",
-      "description": "Service is a convenience resource to create, group and manipulate a Route,\nConfiguration(s), and Revision(s) that represent a single function,\napplication, or microservice. The Service spec has several modes\/types that\nrepresent different patterns for interacting the underlying Knative\nresources, from always deploying the latest Revision, pinning specific\nrevisions, to canarying gradual rollouts.",
+      "description": "Service acts as a top-level container that manages a set of Routes and\nConfigurations which implement a network service. Service exists to provide a\nsingular abstraction which can be access controlled, reasoned about, and\nwhich encapsulates software lifecycle decisions such as rollout policy and\nteam resource ownership. Service acts only as an orchestrator of the\nunderlying Routes and Configurations (much as a kubernetes Deployment\norchestrates ReplicaSets).\n\nThe Service's controller will track the statuses of its owned Configuration\nand Route, reflecting their statuses and conditions as its own.\n\nSee also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/overview.md#service",
       "type": "object",
       "properties": {
         "apiVersion": {
@@ -1590,11 +1642,11 @@
           "$ref": "ServiceSpecRunLatest"
         },
         "pinned": {
-          "description": "Pins this service to a specific revision name. The revision must\nbe owned by the configuration provided.\n+optional",
+          "description": "Pins this service to a specific revision name. The revision must\nbe owned by the configuration provided.\n\nNot currently supported by Cloud Run.\n+optional",
           "$ref": "ServiceSpecPinnedType"
         },
         "generation": {
-          "description": "For open-source Knative metadata.generation does not work yet, this\nis a stopgap way of specifying generation\nIgnored by Cloud Run.\n+optional",
+          "description": "Deprecated and not currently populated by Cloud Run. See\nmetadata.generation instead, which is the sequence number containing the\nlatest generation of the desired state.\n\nRead-only.",
           "type": "integer",
           "format": "int32"
         }
@@ -1602,7 +1654,7 @@
     },
     "ServiceSpecRunLatest": {
       "id": "ServiceSpecRunLatest",
-      "description": "RunLatest defines a simple Service. It will automatically\nconfigure a route that keeps the latest ready revision\nfrom the supplied configuration running.",
+      "description": "ServiceSpecRunLatest contains the options for always having a route to the\nlatest configuration. See ServiceSpec for more details.",
       "type": "object",
       "properties": {
         "configuration": {
@@ -1613,7 +1665,7 @@
     },
     "ServiceSpecPinnedType": {
       "id": "ServiceSpecPinnedType",
-      "description": "Pins this service to a specific revision name. The revision must\nbe owned by the configuration provided.",
+      "description": "ServiceSpecPinnedType Pins this service to a specific revision name. The\nrevision must be owned by the configuration provided.\n\nNot currently supported by Cloud Run.",
       "type": "object",
       "properties": {
         "revisionName": {
@@ -1632,49 +1684,49 @@
       "type": "object",
       "properties": {
         "conditions": {
-          "description": "Array of observed ServiceCondition, indicating the current state\nof the Service.",
+          "description": "Conditions communicates information about ongoing\/complete\nreconciliation processes that bring the \"spec\" inline with the observed\nstate of the world.",
           "type": "array",
           "items": {
             "$ref": "ServiceCondition"
           }
         },
         "domain": {
-          "description": "The top-level domain from the underlying Route.",
+          "description": "From RouteStatus.\nDomain holds the top-level domain that will distribute traffic over the\nprovided targets. It generally has the form\nhttps:\/\/{route-hash}-{project-hash}-{cluster-level-suffix}.a.run.app",
           "type": "string"
         },
         "address": {
-          "description": "Similar to domain, information on where the service is available on HTTP.",
+          "description": "From RouteStatus.\nSimilar to domain, information on where the service is available on HTTP.",
           "$ref": "Addressable"
         },
         "observedGeneration": {
-          "description": "Generation of the service that was last processed by the controller.",
+          "description": "ObservedGeneration is the 'Generation' of the Route that\nwas last processed by the controller.\n\nClients polling for completed reconciliation should poll until\nobservedGeneration = metadata.generation and the Ready condition's status\nis True or False.",
           "type": "integer",
           "format": "int32"
         },
         "traffic": {
-          "description": "Traffic holds the configured traffic distribution from the related Route.\nThese entries will always contain RevisionName references.\nWhen ConfigurationName appears in the spec for runLatest, this will hold\nthe LatestReadyRevisionName that was last observed.",
+          "description": "From RouteStatus.\nTraffic holds the configured traffic distribution.\nThese entries will always contain RevisionName references.\nWhen ConfigurationName appears in the spec, this will hold the\nLatestReadyRevisionName that we last observed.",
           "type": "array",
           "items": {
             "$ref": "TrafficTarget"
           }
         },
         "latestReadyRevisionName": {
-          "description": "From ConfigurationStatus.\nLatestReadyRevisionName holds the name of the latest Revision stamped out\nfrom this Service's Configuration that has had its \"Ready\" condition become\n\"True\". +optional",
+          "description": "From ConfigurationStatus.\nLatestReadyRevisionName holds the name of the latest Revision stamped out\nfrom this Service's Configuration that has had its \"Ready\" condition become\n\"True\".",
           "type": "string"
         },
         "latestCreatedRevisionName": {
-          "description": "From ConfigurationStatus.\nLatestCreatedRevisionName is the last revision that was created from this\nService's Configuration. It might not be ready yet, for that use\nLatestReadyRevisionName. +optional",
+          "description": "From ConfigurationStatus.\nLatestCreatedRevisionName is the last revision that was created from this\nService's Configuration. It might not be ready yet, for that use\nLatestReadyRevisionName.",
           "type": "string"
         }
       }
     },
     "ServiceCondition": {
       "id": "ServiceCondition",
-      "description": "ServiceCondition defines a readiness condition.\nSee:\nhttps:\/\/github.com\/kubernetes\/community\/blob\/master\/contributors\/devel\/api-conventions.md#typical-status-properties",
+      "description": "ServiceCondition defines a readiness condition for a Service.",
       "type": "object",
       "properties": {
         "type": {
-          "description": "ServiceConditionType is used to communicate the status of the\nreconciliation process. See also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\nTypes include: \"Ready\", \"Failed\".",
+          "description": "ServiceConditionType is used to communicate the status of the\nreconciliation process. See also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\n\nTypes include: \"Ready\", \"ConfigurationsReady\", and \"RoutesReady\". \"Ready\"\nwill be true when the underlying Route and Configuration are ready.",
           "type": "string"
         },
         "status": {
@@ -1896,6 +1948,50 @@
     "projects": {
       "resources": {
         "locations": {
+          "methods": {
+            "list": {
+              "id": "run.projects.locations.list",
+              "path": "v1alpha1/{+name}/locations",
+              "flatPath": "v1alpha1/projects/{projectsId}/locations",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The resource that owns the locations collection, if applicable.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "The standard list filter.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The standard list page size.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "The standard list page token.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "ListLocationsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists information about the supported locations for this service."
+            }
+          }
+          ,
           "resources": {
             "authorizeddomains": {
               "methods": {
@@ -1959,12 +2055,12 @@
                       "format": "int32"
                     },
                     "includeUninitialized": {
-                      "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
+                      "description": "Not currently used by Cloud Run.",
                       "location": "query",
                       "type": "boolean"
                     },
                     "fieldSelector": {
-                      "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
+                      "description": "Allows to filter resources based on a specific value for a field name.\nSend this in a query string format. i.e. 'metadata.name%3Dlorem'.\nNot currently used by Cloud Run.",
                       "location": "query",
                       "type": "string"
                     },
@@ -1974,12 +2070,12 @@
                       "type": "string"
                     },
                     "resourceVersion": {
-                      "description": "The baseline resource version from which the list or watch operation should\nstart.",
+                      "description": "The baseline resource version from which the list or watch operation should\nstart. Not currently used by Cloud Run.",
                       "location": "query",
                       "type": "string"
                     },
                     "watch": {
-                      "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud run.",
+                      "description": "Flag that indicates that the client expects to watch this resource as well.\nNot currently used by Cloud Run.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -2007,7 +2103,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The name of the revision being retrieved.",
+                      "description": "The name of the revision being retrieved. If needed, replace\n{namespace_id} with the project ID.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/revisions\/[^\/]+$",
@@ -2023,7 +2119,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Rpc to get informationabout a revision."
+                  "description": "Rpc to get information about a revision."
                 },
                 "delete": {
                   "id": "run.projects.locations.revisions.delete",
@@ -2032,14 +2128,14 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "The name of the revision being deleted.",
+                      "description": "The name of the revision being deleted. If needed, replace\n{namespace_id} with the project ID.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/revisions\/[^\/]+$",
                       "type": "string"
                     },
                     "orphanDependents": {
-                      "description": "Kubernetes-compatible attribute that specifies the cascade behavior on\ndelete. Cloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
+                      "description": "Deprecated.\nSpecifies the cascade behavior on delete.\nCloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -2079,12 +2175,12 @@
                       "format": "int32"
                     },
                     "includeUninitialized": {
-                      "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
+                      "description": "Not currently used by Cloud Run.",
                       "location": "query",
                       "type": "boolean"
                     },
                     "fieldSelector": {
-                      "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
+                      "description": "Allows to filter resources based on a specific value for a field name.\nSend this in a query string format. i.e. 'metadata.name%3Dlorem'.\nNot currently used by Cloud Run.",
                       "location": "query",
                       "type": "string"
                     },
@@ -2094,12 +2190,12 @@
                       "type": "string"
                     },
                     "resourceVersion": {
-                      "description": "The baseline resource version from which the list or watch operation should\nstart.",
+                      "description": "The baseline resource version from which the list or watch operation should\nstart. Not currently used by Cloud Run.",
                       "location": "query",
                       "type": "string"
                     },
                     "watch": {
-                      "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud run.",
+                      "description": "Flag that indicates that the client expects to watch this resource as well.\nNot currently used by Cloud Run.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -2127,7 +2223,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The name of the configuration being retrieved.",
+                      "description": "The name of the configuration being retrieved. If needed, replace\n{namespace_id} with the project ID.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/configurations\/[^\/]+$",
@@ -2197,12 +2293,12 @@
                       "format": "int32"
                     },
                     "includeUninitialized": {
-                      "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
+                      "description": "Not currently used by Cloud Run.",
                       "location": "query",
                       "type": "boolean"
                     },
                     "fieldSelector": {
-                      "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
+                      "description": "Allows to filter resources based on a specific value for a field name.\nSend this in a query string format. i.e. 'metadata.name%3Dlorem'.\nNot currently used by Cloud Run.",
                       "location": "query",
                       "type": "string"
                     },
@@ -2212,12 +2308,12 @@
                       "type": "string"
                     },
                     "resourceVersion": {
-                      "description": "The baseline resource version from which the list or watch operation should\nstart.",
+                      "description": "The baseline resource version from which the list or watch operation should\nstart. Not currently used by Cloud Run.",
                       "location": "query",
                       "type": "string"
                     },
                     "watch": {
-                      "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud Run.",
+                      "description": "Flag that indicates that the client expects to watch this resource as well.\nNot currently used by Cloud Run.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -2245,7 +2341,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The name of the domain mapping being retrieved.",
+                      "description": "The name of the domain mapping being retrieved. If needed, replace\n{namespace_id} with the project ID.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/domainmappings\/[^\/]+$",
@@ -2270,7 +2366,7 @@
                   "httpMethod": "PUT",
                   "parameters": {
                     "name": {
-                      "description": "The name of the domain mapping being retrieved.",
+                      "description": "The name of the domain mapping being retrieved. If needed, replace\n{namespace_id} with the project ID.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/domainmappings\/[^\/]+$",
@@ -2289,7 +2385,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Rpc to replace a domain mapping.\nOnly the metadata and spec are modifiable but after the Replace request,\nCloud Run will work to make the DomainMappingStatus match the\nrequested DomainMappingSpec.\nMay use metadata.resourceVersion to enforce update from last read for\nconcurrency control."
+                  "description": "Rpc to replace a domain mapping.\n\nOnly the spec and metadata labels and annotations are modifiable. After\nthe Update request, Cloud Run will work to make the 'status'\nmatch the requested 'spec'.\n\nMay provide metadata.resourceVersion to enforce update from last read for\noptimistic concurrency control."
                 },
                 "delete": {
                   "id": "run.projects.locations.domainmappings.delete",
@@ -2298,14 +2394,14 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "The name of the domain mapping being deleted.",
+                      "description": "The name of the domain mapping being deleted. If needed, replace\n{namespace_id} with the project ID.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/domainmappings\/[^\/]+$",
                       "type": "string"
                     },
                     "orphanDependents": {
-                      "description": "Kubernetes-compatible attribute that specifies the cascade behavior on\ndelete. Cloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
+                      "description": "Deprecated.\nSpecifies the cascade behavior on delete.\nCloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -2345,12 +2441,12 @@
                       "format": "int32"
                     },
                     "includeUninitialized": {
-                      "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
+                      "description": "Not currently used by Cloud Run.",
                       "location": "query",
                       "type": "boolean"
                     },
                     "fieldSelector": {
-                      "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
+                      "description": "Allows to filter resources based on a specific value for a field name.\nSend this in a query string format. i.e. 'metadata.name%3Dlorem'.\nNot currently used by Cloud Run.",
                       "location": "query",
                       "type": "string"
                     },
@@ -2360,12 +2456,12 @@
                       "type": "string"
                     },
                     "resourceVersion": {
-                      "description": "The baseline resource version from which the list or watch operation should\nstart.",
+                      "description": "The baseline resource version from which the list or watch operation should\nstart. Not currently used by Cloud Run.",
                       "location": "query",
                       "type": "string"
                     },
                     "watch": {
-                      "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud Run.",
+                      "description": "Flag that indicates that the client expects to watch this resource as well.\nNot currently used by Cloud Run.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -2393,7 +2489,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The name of the route being retrieved.",
+                      "description": "The name of the route being retrieved. If needed, replace\n{namespace_id} with the project ID.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/routes\/[^\/]+$",
@@ -2435,12 +2531,12 @@
                       "format": "int32"
                     },
                     "includeUninitialized": {
-                      "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
+                      "description": "Not currently used by Cloud Run.",
                       "location": "query",
                       "type": "boolean"
                     },
                     "fieldSelector": {
-                      "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
+                      "description": "Allows to filter resources based on a specific value for a field name.\nSend this in a query string format. i.e. 'metadata.name%3Dlorem'.\nNot currently used by Cloud Run.",
                       "location": "query",
                       "type": "string"
                     },
@@ -2450,12 +2546,12 @@
                       "type": "string"
                     },
                     "resourceVersion": {
-                      "description": "The baseline resource version from which the list or watch operation should\nstart.",
+                      "description": "The baseline resource version from which the list or watch operation should\nstart. Not currently used by Cloud Run.",
                       "location": "query",
                       "type": "string"
                     },
                     "watch": {
-                      "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud Run.",
+                      "description": "Flag that indicates that the client expects to watch this resource as well.\nNot currently used by Cloud Run.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -2483,7 +2579,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The name of the service being retrieved.",
+                      "description": "The name of the service being retrieved. If needed, replace\n{namespace_id} with the project ID.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
@@ -2536,7 +2632,7 @@
                   "httpMethod": "PUT",
                   "parameters": {
                     "name": {
-                      "description": "The name of the service being replaced.",
+                      "description": "The name of the service being replaced. If needed, replace\n{namespace_id} with the project ID.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
@@ -2555,7 +2651,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Rpc to replace a service.\nOnly the metadata and spec are modifiable but after the Replace request,\nCloud Run will work to make the ServiceStatus match the\nrequested ServiceSpec.\nMay use metadata.resourceVersion to enforce update from last read for\nconcurrency control."
+                  "description": "Rpc to replace a service.\n\nOnly the spec and metadata labels and annotations are modifiable. After\nthe Update request, Cloud Run will work to make the 'status'\nmatch the requested 'spec'.\n\nMay provide metadata.resourceVersion to enforce update from last read for\noptimistic concurrency control."
                 },
                 "delete": {
                   "id": "run.projects.locations.services.delete",
@@ -2564,14 +2660,14 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "The name of the service being deleted.",
+                      "description": "The name of the service being deleted. If needed, replace\n{namespace_id} with the project ID.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "type": "string"
                     },
                     "orphanDependents": {
-                      "description": "Deprecated.\nKubernetes-compatible attribute that specifies the cascade behavior on\ndelete. Cloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
+                      "description": "Deprecated.\nSpecifies the cascade behavior on delete.\nCloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -2594,7 +2690,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The name of the service being patched.",
+                      "description": "The name of the service being patched. If needed, replace\n{namespace_id} with the project ID.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
@@ -2708,8 +2804,8 @@
           "methods": {
             "list": {
               "id": "run.namespaces.authorizeddomains.list",
-              "path": "apis/domains.cloudrun.dev/v1alpha1/{+parent}/authorizeddomains",
-              "flatPath": "apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/authorizeddomains",
+              "path": "apis/domains.cloudrun.com/v1alpha1/{+parent}/authorizeddomains",
+              "flatPath": "apis/domains.cloudrun.com/v1alpha1/namespaces/{namespacesId}/authorizeddomains",
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
@@ -2766,12 +2862,12 @@
                   "format": "int32"
                 },
                 "includeUninitialized": {
-                  "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
+                  "description": "Not currently used by Cloud Run.",
                   "location": "query",
                   "type": "boolean"
                 },
                 "fieldSelector": {
-                  "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
+                  "description": "Allows to filter resources based on a specific value for a field name.\nSend this in a query string format. i.e. 'metadata.name%3Dlorem'.\nNot currently used by Cloud Run.",
                   "location": "query",
                   "type": "string"
                 },
@@ -2781,12 +2877,12 @@
                   "type": "string"
                 },
                 "resourceVersion": {
-                  "description": "The baseline resource version from which the list or watch operation should\nstart.",
+                  "description": "The baseline resource version from which the list or watch operation should\nstart. Not currently used by Cloud Run.",
                   "location": "query",
                   "type": "string"
                 },
                 "watch": {
-                  "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud run.",
+                  "description": "Flag that indicates that the client expects to watch this resource as well.\nNot currently used by Cloud Run.",
                   "location": "query",
                   "type": "boolean"
                 },
@@ -2814,7 +2910,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The name of the revision being retrieved.",
+                  "description": "The name of the revision being retrieved. If needed, replace\n{namespace_id} with the project ID.",
                   "location": "path",
                   "required": true,
                   "pattern": "^namespaces\/[^\/]+\/revisions\/[^\/]+$",
@@ -2830,7 +2926,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Rpc to get informationabout a revision."
+              "description": "Rpc to get information about a revision."
             },
             "delete": {
               "id": "run.namespaces.revisions.delete",
@@ -2839,14 +2935,14 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "The name of the revision being deleted.",
+                  "description": "The name of the revision being deleted. If needed, replace\n{namespace_id} with the project ID.",
                   "location": "path",
                   "required": true,
                   "pattern": "^namespaces\/[^\/]+\/revisions\/[^\/]+$",
                   "type": "string"
                 },
                 "orphanDependents": {
-                  "description": "Kubernetes-compatible attribute that specifies the cascade behavior on\ndelete. Cloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
+                  "description": "Deprecated.\nSpecifies the cascade behavior on delete.\nCloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
                   "location": "query",
                   "type": "boolean"
                 }
@@ -2886,12 +2982,12 @@
                   "format": "int32"
                 },
                 "includeUninitialized": {
-                  "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
+                  "description": "Not currently used by Cloud Run.",
                   "location": "query",
                   "type": "boolean"
                 },
                 "fieldSelector": {
-                  "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
+                  "description": "Allows to filter resources based on a specific value for a field name.\nSend this in a query string format. i.e. 'metadata.name%3Dlorem'.\nNot currently used by Cloud Run.",
                   "location": "query",
                   "type": "string"
                 },
@@ -2901,12 +2997,12 @@
                   "type": "string"
                 },
                 "resourceVersion": {
-                  "description": "The baseline resource version from which the list or watch operation should\nstart.",
+                  "description": "The baseline resource version from which the list or watch operation should\nstart. Not currently used by Cloud Run.",
                   "location": "query",
                   "type": "string"
                 },
                 "watch": {
-                  "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud run.",
+                  "description": "Flag that indicates that the client expects to watch this resource as well.\nNot currently used by Cloud Run.",
                   "location": "query",
                   "type": "boolean"
                 },
@@ -2934,7 +3030,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The name of the configuration being retrieved.",
+                  "description": "The name of the configuration being retrieved. If needed, replace\n{namespace_id} with the project ID.",
                   "location": "path",
                   "required": true,
                   "pattern": "^namespaces\/[^\/]+\/configurations\/[^\/]+$",
@@ -2958,8 +3054,8 @@
           "methods": {
             "create": {
               "id": "run.namespaces.domainmappings.create",
-              "path": "apis/domains.cloudrun.dev/v1alpha1/{+parent}/domainmappings",
-              "flatPath": "apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings",
+              "path": "apis/domains.cloudrun.com/v1alpha1/{+parent}/domainmappings",
+              "flatPath": "apis/domains.cloudrun.com/v1alpha1/namespaces/{namespacesId}/domainmappings",
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
@@ -2986,8 +3082,8 @@
             },
             "list": {
               "id": "run.namespaces.domainmappings.list",
-              "path": "apis/domains.cloudrun.dev/v1alpha1/{+parent}/domainmappings",
-              "flatPath": "apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings",
+              "path": "apis/domains.cloudrun.com/v1alpha1/{+parent}/domainmappings",
+              "flatPath": "apis/domains.cloudrun.com/v1alpha1/namespaces/{namespacesId}/domainmappings",
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
@@ -3004,12 +3100,12 @@
                   "format": "int32"
                 },
                 "includeUninitialized": {
-                  "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
+                  "description": "Not currently used by Cloud Run.",
                   "location": "query",
                   "type": "boolean"
                 },
                 "fieldSelector": {
-                  "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
+                  "description": "Allows to filter resources based on a specific value for a field name.\nSend this in a query string format. i.e. 'metadata.name%3Dlorem'.\nNot currently used by Cloud Run.",
                   "location": "query",
                   "type": "string"
                 },
@@ -3019,12 +3115,12 @@
                   "type": "string"
                 },
                 "resourceVersion": {
-                  "description": "The baseline resource version from which the list or watch operation should\nstart.",
+                  "description": "The baseline resource version from which the list or watch operation should\nstart. Not currently used by Cloud Run.",
                   "location": "query",
                   "type": "string"
                 },
                 "watch": {
-                  "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud Run.",
+                  "description": "Flag that indicates that the client expects to watch this resource as well.\nNot currently used by Cloud Run.",
                   "location": "query",
                   "type": "boolean"
                 },
@@ -3047,12 +3143,12 @@
             },
             "get": {
               "id": "run.namespaces.domainmappings.get",
-              "path": "apis/domains.cloudrun.dev/v1alpha1/{+name}",
-              "flatPath": "apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}",
+              "path": "apis/domains.cloudrun.com/v1alpha1/{+name}",
+              "flatPath": "apis/domains.cloudrun.com/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}",
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The name of the domain mapping being retrieved.",
+                  "description": "The name of the domain mapping being retrieved. If needed, replace\n{namespace_id} with the project ID.",
                   "location": "path",
                   "required": true,
                   "pattern": "^namespaces\/[^\/]+\/domainmappings\/[^\/]+$",
@@ -3072,12 +3168,12 @@
             },
             "replaceDomainMapping": {
               "id": "run.namespaces.domainmappings.replaceDomainMapping",
-              "path": "apis/domains.cloudrun.dev/v1alpha1/{+name}",
-              "flatPath": "apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}",
+              "path": "apis/domains.cloudrun.com/v1alpha1/{+name}",
+              "flatPath": "apis/domains.cloudrun.com/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}",
               "httpMethod": "PUT",
               "parameters": {
                 "name": {
-                  "description": "The name of the domain mapping being retrieved.",
+                  "description": "The name of the domain mapping being retrieved. If needed, replace\n{namespace_id} with the project ID.",
                   "location": "path",
                   "required": true,
                   "pattern": "^namespaces\/[^\/]+\/domainmappings\/[^\/]+$",
@@ -3096,23 +3192,23 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Rpc to replace a domain mapping.\nOnly the metadata and spec are modifiable but after the Replace request,\nCloud Run will work to make the DomainMappingStatus match the\nrequested DomainMappingSpec.\nMay use metadata.resourceVersion to enforce update from last read for\nconcurrency control."
+              "description": "Rpc to replace a domain mapping.\n\nOnly the spec and metadata labels and annotations are modifiable. After\nthe Update request, Cloud Run will work to make the 'status'\nmatch the requested 'spec'.\n\nMay provide metadata.resourceVersion to enforce update from last read for\noptimistic concurrency control."
             },
             "delete": {
               "id": "run.namespaces.domainmappings.delete",
-              "path": "apis/domains.cloudrun.dev/v1alpha1/{+name}",
-              "flatPath": "apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}",
+              "path": "apis/domains.cloudrun.com/v1alpha1/{+name}",
+              "flatPath": "apis/domains.cloudrun.com/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}",
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "The name of the domain mapping being deleted.",
+                  "description": "The name of the domain mapping being deleted. If needed, replace\n{namespace_id} with the project ID.",
                   "location": "path",
                   "required": true,
                   "pattern": "^namespaces\/[^\/]+\/domainmappings\/[^\/]+$",
                   "type": "string"
                 },
                 "orphanDependents": {
-                  "description": "Kubernetes-compatible attribute that specifies the cascade behavior on\ndelete. Cloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
+                  "description": "Deprecated.\nSpecifies the cascade behavior on delete.\nCloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
                   "location": "query",
                   "type": "boolean"
                 }
@@ -3152,12 +3248,12 @@
                   "format": "int32"
                 },
                 "includeUninitialized": {
-                  "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
+                  "description": "Not currently used by Cloud Run.",
                   "location": "query",
                   "type": "boolean"
                 },
                 "fieldSelector": {
-                  "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
+                  "description": "Allows to filter resources based on a specific value for a field name.\nSend this in a query string format. i.e. 'metadata.name%3Dlorem'.\nNot currently used by Cloud Run.",
                   "location": "query",
                   "type": "string"
                 },
@@ -3167,12 +3263,12 @@
                   "type": "string"
                 },
                 "resourceVersion": {
-                  "description": "The baseline resource version from which the list or watch operation should\nstart.",
+                  "description": "The baseline resource version from which the list or watch operation should\nstart. Not currently used by Cloud Run.",
                   "location": "query",
                   "type": "string"
                 },
                 "watch": {
-                  "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud Run.",
+                  "description": "Flag that indicates that the client expects to watch this resource as well.\nNot currently used by Cloud Run.",
                   "location": "query",
                   "type": "boolean"
                 },
@@ -3200,7 +3296,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The name of the route being retrieved.",
+                  "description": "The name of the route being retrieved. If needed, replace\n{namespace_id} with the project ID.",
                   "location": "path",
                   "required": true,
                   "pattern": "^namespaces\/[^\/]+\/routes\/[^\/]+$",
@@ -3242,12 +3338,12 @@
                   "format": "int32"
                 },
                 "includeUninitialized": {
-                  "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
+                  "description": "Not currently used by Cloud Run.",
                   "location": "query",
                   "type": "boolean"
                 },
                 "fieldSelector": {
-                  "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
+                  "description": "Allows to filter resources based on a specific value for a field name.\nSend this in a query string format. i.e. 'metadata.name%3Dlorem'.\nNot currently used by Cloud Run.",
                   "location": "query",
                   "type": "string"
                 },
@@ -3257,12 +3353,12 @@
                   "type": "string"
                 },
                 "resourceVersion": {
-                  "description": "The baseline resource version from which the list or watch operation should\nstart.",
+                  "description": "The baseline resource version from which the list or watch operation should\nstart. Not currently used by Cloud Run.",
                   "location": "query",
                   "type": "string"
                 },
                 "watch": {
-                  "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud Run.",
+                  "description": "Flag that indicates that the client expects to watch this resource as well.\nNot currently used by Cloud Run.",
                   "location": "query",
                   "type": "boolean"
                 },
@@ -3290,7 +3386,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The name of the service being retrieved.",
+                  "description": "The name of the service being retrieved. If needed, replace\n{namespace_id} with the project ID.",
                   "location": "path",
                   "required": true,
                   "pattern": "^namespaces\/[^\/]+\/services\/[^\/]+$",
@@ -3343,7 +3439,7 @@
               "httpMethod": "PUT",
               "parameters": {
                 "name": {
-                  "description": "The name of the service being replaced.",
+                  "description": "The name of the service being replaced. If needed, replace\n{namespace_id} with the project ID.",
                   "location": "path",
                   "required": true,
                   "pattern": "^namespaces\/[^\/]+\/services\/[^\/]+$",
@@ -3362,7 +3458,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Rpc to replace a service.\nOnly the metadata and spec are modifiable but after the Replace request,\nCloud Run will work to make the ServiceStatus match the\nrequested ServiceSpec.\nMay use metadata.resourceVersion to enforce update from last read for\nconcurrency control."
+              "description": "Rpc to replace a service.\n\nOnly the spec and metadata labels and annotations are modifiable. After\nthe Update request, Cloud Run will work to make the 'status'\nmatch the requested 'spec'.\n\nMay provide metadata.resourceVersion to enforce update from last read for\noptimistic concurrency control."
             },
             "delete": {
               "id": "run.namespaces.services.delete",
@@ -3371,14 +3467,14 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "The name of the service being deleted.",
+                  "description": "The name of the service being deleted. If needed, replace\n{namespace_id} with the project ID.",
                   "location": "path",
                   "required": true,
                   "pattern": "^namespaces\/[^\/]+\/services\/[^\/]+$",
                   "type": "string"
                 },
                 "orphanDependents": {
-                  "description": "Deprecated.\nKubernetes-compatible attribute that specifies the cascade behavior on\ndelete. Cloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
+                  "description": "Deprecated.\nSpecifies the cascade behavior on delete.\nCloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
                   "location": "query",
                   "type": "boolean"
                 }
@@ -3401,7 +3497,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "The name of the service being patched.",
+                  "description": "The name of the service being patched. If needed, replace\n{namespace_id} with the project ID.",
                   "location": "path",
                   "required": true,
                   "pattern": "^namespaces\/[^\/]+\/services\/[^\/]+$",

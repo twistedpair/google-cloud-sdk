@@ -86,6 +86,9 @@ class AutoscalingPolicy(_messages.Message):
 
   Fields:
     basicAlgorithm: A BasicAutoscalingAlgorithm attribute.
+    id: Required. The policy id.The id must contain only letters (a-z, A-Z),
+      numbers (0-9), underscores (_), and hyphens (-). Cannot begin or end
+      with underscore or hyphen. Must consist of between 3 and 50 characters.
     name: Output only. The "resource name" of the policy, as described in
       https://cloud.google.com/apis/design/resource_names of the form
       projects/{project_id}/regions/{region}/autoscalingPolicies/{policy_id}.
@@ -96,9 +99,10 @@ class AutoscalingPolicy(_messages.Message):
   """
 
   basicAlgorithm = _messages.MessageField('BasicAutoscalingAlgorithm', 1)
-  name = _messages.StringField(2)
-  secondaryWorkerConfig = _messages.MessageField('InstanceGroupAutoscalingPolicyConfig', 3)
-  workerConfig = _messages.MessageField('InstanceGroupAutoscalingPolicyConfig', 4)
+  id = _messages.StringField(2)
+  name = _messages.StringField(3)
+  secondaryWorkerConfig = _messages.MessageField('InstanceGroupAutoscalingPolicyConfig', 4)
+  workerConfig = _messages.MessageField('InstanceGroupAutoscalingPolicyConfig', 5)
 
 
 class BasicAutoscalingAlgorithm(_messages.Message):
@@ -2044,6 +2048,7 @@ class Job(_messages.Message):
     pigJob: Job is a Pig job.
     placement: Required. Job information, including how, when, and where to
       run the job.
+    prestoJob: Job is a Presto job
     pysparkJob: Job is a Pyspark job.
     reference: Optional. The fully qualified reference to the job, which can
       be used to obtain the equivalent REST path of the job resource. If this
@@ -2102,16 +2107,17 @@ class Job(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 6)
   pigJob = _messages.MessageField('PigJob', 7)
   placement = _messages.MessageField('JobPlacement', 8)
-  pysparkJob = _messages.MessageField('PySparkJob', 9)
-  reference = _messages.MessageField('JobReference', 10)
-  scheduling = _messages.MessageField('JobScheduling', 11)
-  sparkJob = _messages.MessageField('SparkJob', 12)
-  sparkRJob = _messages.MessageField('SparkRJob', 13)
-  sparkSqlJob = _messages.MessageField('SparkSqlJob', 14)
-  status = _messages.MessageField('JobStatus', 15)
-  statusHistory = _messages.MessageField('JobStatus', 16, repeated=True)
-  submittedBy = _messages.StringField(17)
-  yarnApplications = _messages.MessageField('YarnApplication', 18, repeated=True)
+  prestoJob = _messages.MessageField('PrestoJob', 9)
+  pysparkJob = _messages.MessageField('PySparkJob', 10)
+  reference = _messages.MessageField('JobReference', 11)
+  scheduling = _messages.MessageField('JobScheduling', 12)
+  sparkJob = _messages.MessageField('SparkJob', 13)
+  sparkRJob = _messages.MessageField('SparkRJob', 14)
+  sparkSqlJob = _messages.MessageField('SparkSqlJob', 15)
+  status = _messages.MessageField('JobStatus', 16)
+  statusHistory = _messages.MessageField('JobStatus', 17, repeated=True)
+  submittedBy = _messages.StringField(18)
+  yarnApplications = _messages.MessageField('YarnApplication', 19, repeated=True)
 
 
 class JobPlacement(_messages.Message):
@@ -2675,6 +2681,7 @@ class OrderedJob(_messages.Message):
     prerequisiteStepIds: Optional. The optional list of prerequisite job
       step_ids. If not specified, the job will start at the beginning of
       workflow.
+    prestoJob: Job is a Presto job.
     pysparkJob: Job is a Pyspark job.
     scheduling: Optional. Job scheduling configuration.
     sparkJob: Job is a Spark job.
@@ -2722,12 +2729,13 @@ class OrderedJob(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 3)
   pigJob = _messages.MessageField('PigJob', 4)
   prerequisiteStepIds = _messages.StringField(5, repeated=True)
-  pysparkJob = _messages.MessageField('PySparkJob', 6)
-  scheduling = _messages.MessageField('JobScheduling', 7)
-  sparkJob = _messages.MessageField('SparkJob', 8)
-  sparkRJob = _messages.MessageField('SparkRJob', 9)
-  sparkSqlJob = _messages.MessageField('SparkSqlJob', 10)
-  stepId = _messages.StringField(11)
+  prestoJob = _messages.MessageField('PrestoJob', 6)
+  pysparkJob = _messages.MessageField('PySparkJob', 7)
+  scheduling = _messages.MessageField('JobScheduling', 8)
+  sparkJob = _messages.MessageField('SparkJob', 9)
+  sparkRJob = _messages.MessageField('SparkRJob', 10)
+  sparkSqlJob = _messages.MessageField('SparkSqlJob', 11)
+  stepId = _messages.StringField(12)
 
 
 class ParameterValidation(_messages.Message):
@@ -2871,6 +2879,64 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 1, repeated=True)
   etag = _messages.BytesField(2)
   version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class PrestoJob(_messages.Message):
+  r"""A Cloud Dataproc job for running Presto (https://prestosql.io/) queries
+
+  Messages:
+    PropertiesValue: Optional. A mapping of property names to values. Used to
+      set Presto session properties (https://prestodb.io/docs/current/sql/set-
+      session.html) Equivalent to using the --session flag in the Presto CLI
+
+  Fields:
+    clientTags: Optional. Presto client tags to attach to this query
+    continueOnFailure: Optional. Whether to continue executing queries if a
+      query fails. The default value is false. Setting to true can be useful
+      when executing independent parallel queries.
+    loggingConfig: Optional. The runtime log config for job execution.
+    outputFormat: Optional. The format in which query output will be
+      displayed. See the Presto documentation for supported output formats
+    properties: Optional. A mapping of property names to values. Used to set
+      Presto session properties (https://prestodb.io/docs/current/sql/set-
+      session.html) Equivalent to using the --session flag in the Presto CLI
+    queryFileUri: The HCFS URI of the script that contains SQL queries.
+    queryList: A list of queries.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PropertiesValue(_messages.Message):
+    r"""Optional. A mapping of property names to values. Used to set Presto
+    session properties (https://prestodb.io/docs/current/sql/set-session.html)
+    Equivalent to using the --session flag in the Presto CLI
+
+    Messages:
+      AdditionalProperty: An additional property for a PropertiesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type PropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  clientTags = _messages.StringField(1, repeated=True)
+  continueOnFailure = _messages.BooleanField(2)
+  loggingConfig = _messages.MessageField('LoggingConfig', 3)
+  outputFormat = _messages.StringField(4)
+  properties = _messages.MessageField('PropertiesValue', 5)
+  queryFileUri = _messages.StringField(6)
+  queryList = _messages.MessageField('QueryList', 7)
 
 
 class PySparkJob(_messages.Message):

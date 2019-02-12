@@ -283,7 +283,8 @@ class ListLocationsResponse(_messages.Message):
 
 
 class ListMembershipsResponse(_messages.Message):
-  r"""Response message for the `MembershipService.ListMemberships` method.
+  r"""Response message for the `GkeHubMembershipService.ListMemberships`
+  method.
 
   Fields:
     nextPageToken: A token to request the next page of resources from the
@@ -454,6 +455,11 @@ class MembershipEndpoint(_messages.Message):
   r"""MembershipEndpoint contains the information to reach a member.
 
   Fields:
+    gcpResourceLink: If this API server is also a Google service provide the
+      self link of its GCP resource. For example, the FQDN to a GKE Cluster
+      that backs this Membership:
+      https://container.googleapis.com/v1/projects/x/zones/us-
+      west1-a/clusters/c0 It can be at the most 1000 characters in length.
     oidcConfig: OIDC configuration to use to authenticate users against with
       this member.
     resourceId: Unique per-project identification for this endpoint (in space
@@ -461,15 +467,11 @@ class MembershipEndpoint(_messages.Message):
       is optional for endpoints that may not be on GCP, all membership
       endpoints must provide a unique resource_id string. It is not mutable
       after creation. It can be at the most 1000 characters in length.
-    selfLink: If this API server is also a Google service provide its
-      OnePlatform 'name'. For example, the FQDN to a GKE Cluster that backs
-      this Membership: https://container.googleapis.com/v1/projects/x/zones
-      /us-west1-a/clusters/c0 It can be at the most 1000 characters in length.
   """
 
-  oidcConfig = _messages.MessageField('OidcConfig', 1)
-  resourceId = _messages.StringField(2)
-  selfLink = _messages.StringField(3)
+  gcpResourceLink = _messages.StringField(1)
+  oidcConfig = _messages.MessageField('OidcConfig', 2)
+  resourceId = _messages.StringField(3)
 
 
 class MembershipState(_messages.Message):

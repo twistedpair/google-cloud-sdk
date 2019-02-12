@@ -383,10 +383,10 @@ class Condition(_messages.Message):
       is accepted whereas "2001:db8::1/32" is not. The originating IP of a
       request must be in one of the listed subnets in order for this Condition
       to be true. If empty, all IP addresses are allowed.
-    members: The signed-in user originating the request must be a part of one
-      of the provided members. Syntax: `user:{emailid}` `group:{emailid}`
+    members: The request must be made by one of the provided user or service
+      accounts. Groups are not supported. Syntax: `user:{emailid}`
       `serviceAccount:{emailid}` If not specified, a request may come from any
-      user (logged in/not logged in, not present in any groups, etc.).
+      user.
     negate: Whether to negate the Condition. If true, the Condition becomes a
       NAND over its non-empty fields, each field must be false for the
       Condition overall to be satisfied. Defaults to false.

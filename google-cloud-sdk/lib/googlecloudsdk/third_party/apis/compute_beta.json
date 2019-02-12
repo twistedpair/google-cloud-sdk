@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20190125",
+ "revision": "20190201",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1014,7 +1014,8 @@
      "description": "[Output Only] Creation timestamp in RFC3339 text format."
     },
     "description": {
-     "type": "string"
+     "type": "string",
+     "description": "An optional description of this resource. Provide this property when you create the resource."
     },
     "id": {
      "type": "string",
@@ -1041,14 +1042,16 @@
      "description": "[Output Only] Server-defined fully-qualified URL for this resource."
     },
     "specificAllocation": {
-     "$ref": "AllocationSpecificSKUAllocation"
+     "$ref": "AllocationSpecificSKUAllocation",
+     "description": "Allocation for instances with specific machine shapes."
     },
     "specificAllocationRequired": {
      "type": "boolean",
      "description": "Indicates whether the allocation can be consumed by VMs with \"any allocation\" defined. If the field is set, then only VMs that target the allocation by name using --allocation-affinity can consume this allocation."
     },
     "zone": {
-     "type": "string"
+     "type": "string",
+     "description": "Zone in which the allocation resides, must be provided if allocation is created with commitment creation."
     }
    }
   },
@@ -1325,7 +1328,8 @@
      "format": "int64"
     },
     "instanceProperties": {
-     "$ref": "AllocationSpecificSKUAllocationAllocatedInstanceProperties"
+     "$ref": "AllocationSpecificSKUAllocationAllocatedInstanceProperties",
+     "description": "The instance properties for this specific sku allocation."
     }
    }
   },
@@ -3604,13 +3608,9 @@
       ""
      ]
     },
-    "value": {
-     "type": "string",
-     "description": "DEPRECATED. Use 'values' instead."
-    },
     "values": {
      "type": "array",
-     "description": "The objects of the condition. This is mutually exclusive with 'value'.",
+     "description": "The objects of the condition.",
      "items": {
       "type": "string"
      }
@@ -5216,6 +5216,10 @@
      "type": "boolean",
      "description": "This field is used along with the backend_service field for internal load balancing or with the target field for internal TargetInstance. This field cannot be used with port or portRange fields.\n\nWhen the load balancing scheme is INTERNAL and protocol is TCP/UDP, specify this field to allow packets addressed to any ports will be forwarded to the backends configured with this forwarding rule."
     },
+    "allowGlobalAccess": {
+     "type": "boolean",
+     "description": "This field is used along with the backend_service field for internal load balancing or with the target field for internal TargetInstance. If the field is set to TRUE, clients can access ILB from all regions. Otherwise only allows access from clients in the same region as the internal load balancer."
+    },
     "backendService": {
      "type": "string",
      "description": "This field is only used for INTERNAL load balancing.\n\nFor internal load balancing, this field identifies the BackendService resource to receive the matched traffic."
@@ -6715,7 +6719,7 @@
       },
       "sha1Checksum": {
        "type": "string",
-       "description": "An optional SHA1 checksum of the disk image before unpackaging; provided by the client when the disk image is created.",
+       "description": "An optional SHA1 checksum of the disk image before unpackaging provided by the client when the disk image is created.",
        "pattern": "[a-f0-9]{40}"
       },
       "source": {
@@ -9271,7 +9275,7 @@
     },
     "googleReferenceId": {
      "type": "string",
-     "description": "[Output Only] Google reference ID; to be used when raising support tickets with Google or otherwise to debug backend connectivity issues."
+     "description": "[Output Only] Google reference ID to be used when raising support tickets with Google or otherwise to debug backend connectivity issues."
     },
     "id": {
      "type": "string",
@@ -23630,7 +23634,7 @@
      "id": "compute.allocations.resize",
      "path": "{project}/zones/{zone}/allocations/{allocation}/resize",
      "httpMethod": "POST",
-     "description": "Resizes the allocation (applicable to standalone allocation only)",
+     "description": "Resizes the allocation (applicable to standalone allocations only)",
      "parameters": {
       "allocation": {
        "type": "string",
@@ -29953,7 +29957,7 @@
      "parameters": {
       "forceAttach": {
        "type": "boolean",
-       "description": "Whether to force attach the disk even if it's currently attached to another instance. This is only available for regional disks.",
+       "description": "Whether to force attach the disk even if it's currently attached to another instance.",
        "location": "query"
       },
       "instance": {
@@ -30607,7 +30611,7 @@
      "id": "compute.instances.reset",
      "path": "{project}/zones/{zone}/instances/{instance}/reset",
      "httpMethod": "POST",
-     "description": "Performs a reset on the instance. This is a hard reset; the VM does not do a graceful shutdown. For more information, see Resetting an instance.",
+     "description": "Performs a reset on the instance. This is a hard reset the VM does not do a graceful shutdown. For more information, see Resetting an instance.",
      "parameters": {
       "instance": {
        "type": "string",

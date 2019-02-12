@@ -24,6 +24,7 @@ import os
 import os.path
 import tarfile
 
+from googlecloudsdk.api_lib.cloudbuild import metrics
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.command_lib.util import gcloudignore
 from googlecloudsdk.core import log
@@ -91,8 +92,9 @@ class Snapshot(object):
         path = os.path.join(relpath, fname)
         if os.path.islink(path) and not os.path.exists(path):
           # The file is a broken symlink; ignore it.
-          log.info('Ignoring [{}] which is a symlink to non-existent path',
-                   path)
+          log.info(
+              'Ignoring [{}] which is a symlink to non-existent path'.format(
+                  path))
           continue
         # Join file paths with Linux path separators, avoiding ./ prefix.
         # GCB workers are Linux VMs so os.path.join produces incorrect output.
@@ -147,25 +149,26 @@ class Snapshot(object):
     Returns:
       storage_v1_messages.Object, The written GCS object.
     """
-    with files.ChDir(self.src_dir):
-      with files.TemporaryDirectory() as tmp:
-        archive_path = os.path.join(tmp, 'file.tgz')
-        tf = self._MakeTarball(archive_path)
-        tf.close()
-        ignore_file_path = os.path.join(self.src_dir,
-                                        gcloudignore.IGNORE_FILE_NAME)
-        if self.any_files_ignored:
-          if os.path.exists(ignore_file_path):
-            log.info('Using gcloudignore file [{}]'.format(ignore_file_path))
-          else:
-            log.status.Print(_IGNORED_FILE_MESSAGE.format(
-                log_file=log.GetLogFilePath()))
-        log.status.write(
-            'Uploading tarball of [{src_dir}] to '
-            '[gs://{bucket}/{object}]\n'.format(
-                src_dir=self.src_dir,
-                bucket=gcs_object.bucket,
-                object=gcs_object.object,
-            ),
-        )
-        return storage_client.CopyFileToGCS(archive_path, gcs_object)
+    with metrics.record_duration(metrics.UPLOAD_SOURCE):
+      with files.ChDir(self.src_dir):
+        with files.TemporaryDirectory() as tmp:
+          archive_path = os.path.join(tmp, 'file.tgz')
+          tf = self._MakeTarball(archive_path)
+          tf.close()
+          ignore_file_path = os.path.join(self.src_dir,
+                                          gcloudignore.IGNORE_FILE_NAME)
+          if self.any_files_ignored:
+            if os.path.exists(ignore_file_path):
+              log.info('Using gcloudignore file [{}]'.format(ignore_file_path))
+            else:
+              log.status.Print(_IGNORED_FILE_MESSAGE.format(
+                  log_file=log.GetLogFilePath()))
+          log.status.write(
+              'Uploading tarball of [{src_dir}] to '
+              '[gs://{bucket}/{object}]\n'.format(
+                  src_dir=self.src_dir,
+                  bucket=gcs_object.bucket,
+                  object=gcs_object.object,
+              ),
+          )
+          return storage_client.CopyFileToGCS(archive_path, gcs_object)

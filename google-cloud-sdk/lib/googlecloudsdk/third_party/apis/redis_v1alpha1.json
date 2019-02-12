@@ -294,7 +294,7 @@
           }
         },
         "locationId": {
-          "description": "Optional. The zone where the instance will be provisioned. If not provided,\nthe service will choose a zone for the instance. For standard tier,\ninstances will be created across two zones for protection against zonal\nfailures. if [alternative_location_id] is also provided, it must be\ndifferent from [location_id].",
+          "description": "Optional. The zone where the instance will be provisioned. If not provided,\nthe service will choose a zone for the instance. For standard tier,\ninstances will be created across two zones for protection against zonal\nfailures. If [alternative_location_id] is also provided, it must be\ndifferent from [location_id].",
           "type": "string"
         },
         "alternativeLocationId": {
@@ -797,7 +797,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a specific Redis instance."
+                  "description": "Deletes a specific Redis instance.  Instance stops serving and data is\ndeleted."
                 }
               }
             }

@@ -241,7 +241,8 @@ class OutdatedLibrary(_messages.Message):
 
 
 class ScanConfig(_messages.Message):
-  r"""A ScanConfig resource contains the configurations to launch a scan.
+  r"""A ScanConfig resource contains the configurations to launch a scan. next
+  id: 12
 
   Enums:
     ExportToSecurityCommandCenterValueValuesEnum: Controls export of scan
@@ -257,6 +258,7 @@ class ScanConfig(_messages.Message):
     displayName: Required. The user provided display name of the ScanConfig.
     exportToSecurityCommandCenter: Controls export of scan configurations and
       results to Cloud Security Command Center.
+    latestRun: Latest ScanRun if available.
     maxQps: The maximum QPS during scanning. A valid value ranges from 5 to 20
       inclusively. If the field is unspecified or its value is set 0, server
       will default to 15. Other values outside of [5, 20] range will be
@@ -319,12 +321,13 @@ class ScanConfig(_messages.Message):
   blacklistPatterns = _messages.StringField(2, repeated=True)
   displayName = _messages.StringField(3)
   exportToSecurityCommandCenter = _messages.EnumField('ExportToSecurityCommandCenterValueValuesEnum', 4)
-  maxQps = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  name = _messages.StringField(6)
-  schedule = _messages.MessageField('Schedule', 7)
-  startingUrls = _messages.StringField(8, repeated=True)
-  targetPlatforms = _messages.EnumField('TargetPlatformsValueListEntryValuesEnum', 9, repeated=True)
-  userAgent = _messages.EnumField('UserAgentValueValuesEnum', 10)
+  latestRun = _messages.MessageField('ScanRun', 5)
+  maxQps = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  name = _messages.StringField(7)
+  schedule = _messages.MessageField('Schedule', 8)
+  startingUrls = _messages.StringField(9, repeated=True)
+  targetPlatforms = _messages.EnumField('TargetPlatformsValueListEntryValuesEnum', 10, repeated=True)
+  userAgent = _messages.EnumField('UserAgentValueValuesEnum', 11)
 
 
 class ScanConfigError(_messages.Message):
