@@ -519,6 +519,8 @@ class ClusterUpdate(_messages.Message):
       this node. This is used to create clusters using a custom image.
     desiredImageType: The desired image type for the node pool. NOTE: Set the
       "desired_node_pool" field as well.
+    desiredIntraNodeFlowLogsStatus: The desired status of Intra-node flow
+      logs.
     desiredLocations: The desired list of Google Compute Engine
       [zones](/compute/docs/zones#available) in which the cluster's nodes
       should be located. Changing the locations a cluster is in will result in
@@ -583,20 +585,21 @@ class ClusterUpdate(_messages.Message):
   desiredImage = _messages.StringField(7)
   desiredImageProject = _messages.StringField(8)
   desiredImageType = _messages.StringField(9)
-  desiredLocations = _messages.StringField(10, repeated=True)
-  desiredLoggingService = _messages.StringField(11)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 12)
-  desiredMasterVersion = _messages.StringField(13)
-  desiredMonitoringService = _messages.StringField(14)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 15)
-  desiredNodePoolId = _messages.StringField(16)
-  desiredNodeVersion = _messages.StringField(17)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 18)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 19)
-  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 20)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 21)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 22)
-  securityProfile = _messages.MessageField('SecurityProfile', 23)
+  desiredIntraNodeFlowLogsStatus = _messages.MessageField('IntraNodeFlowLogsStatus', 10)
+  desiredLocations = _messages.StringField(11, repeated=True)
+  desiredLoggingService = _messages.StringField(12)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 13)
+  desiredMasterVersion = _messages.StringField(14)
+  desiredMonitoringService = _messages.StringField(15)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 16)
+  desiredNodePoolId = _messages.StringField(17)
+  desiredNodeVersion = _messages.StringField(18)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 19)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 20)
+  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 21)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 22)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 23)
+  securityProfile = _messages.MessageField('SecurityProfile', 24)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1546,6 +1549,17 @@ class IPAllocationPolicy(_messages.Message):
   useIpAliases = _messages.BooleanField(14)
 
 
+class IntraNodeFlowLogsStatus(_messages.Message):
+  r"""IntraNodeFlowLogsStatus contains the desired state of the intra-node
+  flow logs on this cluster.
+
+  Fields:
+    enabled: Enables intra node flow logs for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class IstioConfig(_messages.Message):
   r"""Configuration options for Istio addon.
 
@@ -1835,6 +1849,8 @@ class NetworkConfig(_messages.Message):
     enableCloudNat: Whether GKE Cloud NAT is enabled for this cluster.
       Requires that the cluster has already set
       IPAllocationPolicy.use_ip_aliases to true.
+    enableIntraNodeFlowLogs: Whether Intra-node flow logs is enabled for this
+      cluster. This enables flow logs for same node pod to pod traffic.
     enablePrivateIpv6Access: Whether or not Private IPv6 access is enabled.
       This enables direct connectivity from GKE pods to Google Cloud services
       over gRPC.
@@ -1850,10 +1866,11 @@ class NetworkConfig(_messages.Message):
   """
 
   enableCloudNat = _messages.BooleanField(1)
-  enablePrivateIpv6Access = _messages.BooleanField(2)
-  enableSharedNetwork = _messages.BooleanField(3)
-  network = _messages.StringField(4)
-  subnetwork = _messages.StringField(5)
+  enableIntraNodeFlowLogs = _messages.BooleanField(2)
+  enablePrivateIpv6Access = _messages.BooleanField(3)
+  enableSharedNetwork = _messages.BooleanField(4)
+  network = _messages.StringField(5)
+  subnetwork = _messages.StringField(6)
 
 
 class NetworkPolicy(_messages.Message):

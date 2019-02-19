@@ -25,6 +25,7 @@ import re
 import ssl
 import sys
 from googlecloudsdk.api_lib.run import gke
+from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import flags
@@ -33,10 +34,6 @@ from googlecloudsdk.core import properties
 
 import six
 from six.moves.urllib import parse as urlparse
-
-
-_SERVERLESS_API_NAME = 'run'
-_SERVERLESS_API_VERSION = 'v1alpha1'
 
 
 @contextlib.contextmanager
@@ -66,11 +63,11 @@ class ConnectionInfo(six.with_metaclass(abc.ABCMeta)):
 
   @property
   def api_name(self):
-    return _SERVERLESS_API_NAME
+    return global_methods.SERVERLESS_API_NAME
 
   @property
   def api_version(self):
-    return _SERVERLESS_API_VERSION
+    return global_methods.SERVERLESS_API_VERSION
 
   @abc.abstractmethod
   def Connect(self):
@@ -177,8 +174,9 @@ class _RegionalConnectionContext(ConnectionInfo):
 
   @contextlib.contextmanager
   def Connect(self):
-    global_endpoint = apis.GetEffectiveApiEndpoint(_SERVERLESS_API_NAME,
-                                                   _SERVERLESS_API_VERSION)
+    global_endpoint = apis.GetEffectiveApiEndpoint(
+        global_methods.SERVERLESS_API_NAME,
+        global_methods.SERVERLESS_API_VERSION)
     scheme, netloc, path, params, query, fragment = urlparse.urlparse(
         global_endpoint)
     netloc = '{}-{}'.format(self.region, netloc)

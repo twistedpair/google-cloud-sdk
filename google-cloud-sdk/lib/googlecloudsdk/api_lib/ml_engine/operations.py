@@ -80,11 +80,6 @@ class OperationsClient(object):
         self.messages.MlProjectsOperationsCancelRequest(
             name=operation_ref.RelativeName()))
 
-  def Delete(self, operation_ref):
-    return self.client.projects_operations.Delete(
-        self.messages.MlProjectsOperationsDeleteRequest(
-            name=operation_ref.RelativeName()))
-
   def WaitForOperation(self, operation, message=None):
     """Wait until the operation is complete or times out.
 

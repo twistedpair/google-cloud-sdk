@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import atexit
+import contextlib
 import json
 import os
 import pickle
@@ -839,6 +840,24 @@ def CustomTimedEvent(event_name):
   collector = _MetricsCollector.GetCollector()
   if collector:
     collector.RecordTimedEvent(event_name)
+
+
+@contextlib.contextmanager
+def RecordDuration(span_name):
+  """Record duration of a span of time.
+
+  Two timestamps will be sent, and the duration in between will be considered as
+  the client side latency of this span.
+
+  Args:
+    span_name: str, The name of the span to time.
+
+  Yields:
+    None
+  """
+  CustomTimedEvent(span_name + '_start')
+  yield
+  CustomTimedEvent(span_name)
 
 
 @CaptureAndLogException

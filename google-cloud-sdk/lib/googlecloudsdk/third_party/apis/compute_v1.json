@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20190201",
+ "revision": "20190208",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -614,9 +614,11 @@
      "enum": [
       "DNS_RESOLVER",
       "GCE_ENDPOINT",
+      "NAT_AUTO",
       "VPC_PEERING"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       ""
@@ -10179,6 +10181,10 @@
     "lastAttempt": {
      "$ref": "ManagedInstanceLastAttempt",
      "description": "[Output Only] Information about the last attempt to create or delete the instance."
+    },
+    "version": {
+     "$ref": "ManagedInstanceVersion",
+     "description": "[Output Only] Intended version of this instance."
     }
    }
   },
@@ -10212,6 +10218,20 @@
        }
       }
      }
+    }
+   }
+  },
+  "ManagedInstanceVersion": {
+   "id": "ManagedInstanceVersion",
+   "type": "object",
+   "properties": {
+    "instanceTemplate": {
+     "type": "string",
+     "description": "[Output Only] The intended template of the instance. This field is empty when current_action is one of { DELETING, ABANDONING }."
+    },
+    "name": {
+     "type": "string",
+     "description": "[Output Only] Name of the version."
     }
    }
   },

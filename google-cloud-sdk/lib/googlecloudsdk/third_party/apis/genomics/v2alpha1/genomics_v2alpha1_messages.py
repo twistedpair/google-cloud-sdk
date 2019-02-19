@@ -113,8 +113,9 @@ class Action(_messages.Message):
       set to this name, making it useful for inter-container communication.
       The name must contain only upper and lowercase alphanumeric characters
       and hypens and cannot start with a hypen.
-    pidNamespace: The PID namespace to run the action inside. If unspecified,
-      a separate isolated namespace is used.
+    pidNamespace: An optional identifier for a PID namespace to run the action
+      inside. Multiple actions should use the same string to share a
+      namespace.  If unspecified, a separate isolated namespace is used.
     portMappings: A map of containers to host port mappings for this
       container. If the container already specifies exposed ports, use the
       `PUBLISH_EXPOSED_PORTS` flag instead.  The host port number must be less
@@ -732,8 +733,8 @@ class GenomicsProjectsOperationsListRequest(_messages.Message):
       `projectId = my-project AND labels.color = *` * `projectId = my-project
       AND labels.color = red`
     name: The name of the operation's parent resource.
-    pageSize: The maximum number of results to return. If unspecified,
-      defaults to 256. The maximum value is 2048.
+    pageSize: The maximum number of results to return. The maximum value is
+      256.
     pageToken: The standard list page token.
   """
 

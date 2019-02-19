@@ -201,6 +201,10 @@
         "audio": {
           "description": "*Required* The audio data to be recognized.",
           "$ref": "RecognitionAudio"
+        },
+        "name": {
+          "description": "*Optional* The name of the model to use for recognition.",
+          "type": "string"
         }
       }
     },
@@ -580,6 +584,10 @@
         "audio": {
           "description": "*Required* The audio data to be recognized.",
           "$ref": "RecognitionAudio"
+        },
+        "name": {
+          "description": "*Optional* The name of the model to use for recognition.",
+          "type": "string"
         }
       }
     },

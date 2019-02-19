@@ -8,7 +8,7 @@ class WebsecurityscannerV1beta(base_api.BaseApiClient):
   """Generated client library for service websecurityscanner version v1beta."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://test-websecurityscanner.sandbox.googleapis.com/'
+  BASE_URL = u'https://websecurityscanner.googleapis.com/'
 
   _PACKAGE = u'websecurityscanner'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

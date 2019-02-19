@@ -1,29 +1,41 @@
-region:
-  name: region
+location:
+  name: location
   collection: healthcare.projects.locations
   attributes:
-  - &region
+  - &location
     parameter_name: locationsId
-    attribute_name: region
-    help: Google Cloud region.
+    attribute_name: location
+    help: Google Cloud location.
 
 dataset:
   name: dataset
   collection: healthcare.projects.locations.datasets
   request_id_field: datasetId
   attributes:
-  - *region
+  - *location
   - &dataset
     parameter_name: datasetsId
     attribute_name: dataset
     help: Cloud Healthcare dataset.
+
+operation:
+  name: operation
+  collection: healthcare.projects.locations.datasets.operations
+  request_id_field: operationId
+  attributes:
+  - *location
+  - *dataset
+  - &operation
+    parameter_name: operationsId
+    attribute_name: operation
+    help: Cloud Healthcare Operation
 
 annotation_store:
   name: annotationStore
   collection: healthcare.projects.locations.datasets.annotationStores
   request_id_field: annotationStoreId
   attributes:
-  - *region
+  - *location
   - *dataset
   - &annotation-store
     parameter_name: annotationStoresId
@@ -35,7 +47,7 @@ dicom_store:
   collection: healthcare.projects.locations.datasets.dicomStores
   request_id_field: dicomStoreId
   attributes:
-  - *region
+  - *location
   - *dataset
   - &dicom-store
     parameter_name: dicomStoresId
@@ -47,7 +59,7 @@ fhir_store:
   collection: healthcare.projects.locations.datasets.fhirStores
   request_id_field: fhirStoreId
   attributes:
-  - *region
+  - *location
   - *dataset
   - &fhir-store
     parameter_name: fhirStoresId
@@ -59,7 +71,7 @@ hl7v2_store:
   collection: healthcare.projects.locations.datasets.hl7V2Stores
   request_id_field: hl7V2StoreId
   attributes:
-  - *region
+  - *location
   - *dataset
   - &hl7v2-store
     parameter_name: hl7V2StoresId

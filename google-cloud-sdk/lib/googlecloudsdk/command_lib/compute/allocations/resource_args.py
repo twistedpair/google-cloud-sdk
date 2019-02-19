@@ -23,6 +23,7 @@ from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
+# TODO(b/119257245): clean up this file and move it to reservations/.
 class RegionCommitmentsCompleter(compute_completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):
@@ -61,6 +62,22 @@ def GetAllocationResourceArg(positional=True):
   return compute_flags.ResourceArgument(
       name=name,
       resource_name='zonal allocation',
+      completer=ZoneAllocationsCompleter,
+      plural=False,
+      required=True,
+      zonal_collection='compute.allocations',
+      zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
+
+
+def GetReservationResourceArg(positional=True):
+  if positional:
+    name = 'reservation'
+  else:
+    name = '--reservation'
+
+  return compute_flags.ResourceArgument(
+      name=name,
+      resource_name='reservation',
       completer=ZoneAllocationsCompleter,
       plural=False,
       required=True,

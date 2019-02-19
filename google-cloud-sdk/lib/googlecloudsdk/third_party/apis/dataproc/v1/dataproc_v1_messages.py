@@ -2581,6 +2581,9 @@ class SetIamPolicyRequest(_messages.Message):
 class SoftwareConfig(_messages.Message):
   r"""Specifies the selection and config of software inside the cluster.
 
+  Enums:
+    OptionalComponentsValueListEntryValuesEnum:
+
   Messages:
     PropertiesValue: Optional. The properties to set on daemon config
       files.Property keys are specified in prefix:property format, such as
@@ -2595,6 +2598,8 @@ class SoftwareConfig(_messages.Message):
       must be one of the supported Cloud Dataproc Versions, such as "1.2"
       (including a subminor version, such as "1.2.29"), or the "preview"
       version. If unspecified, it defaults to the latest version.
+    optionalComponents: The set of optional components to activate on the
+      cluster.
     properties: Optional. The properties to set on daemon config
       files.Property keys are specified in prefix:property format, such as
       core:fs.defaultFS. The following are supported prefixes and their
@@ -2603,6 +2608,22 @@ class SoftwareConfig(_messages.Message):
       mapred: mapred-site.xml pig: pig.properties spark: spark-defaults.conf
       yarn: yarn-site.xmlFor more information, see Cluster properties.
   """
+
+  class OptionalComponentsValueListEntryValuesEnum(_messages.Enum):
+    r"""OptionalComponentsValueListEntryValuesEnum enum type.
+
+    Values:
+      COMPONENT_UNSPECIFIED: <no description>
+      JUPYTER: <no description>
+      HIVE_WEBHCAT: <no description>
+      ZEPPELIN: <no description>
+      ANACONDA: <no description>
+    """
+    COMPONENT_UNSPECIFIED = 0
+    JUPYTER = 1
+    HIVE_WEBHCAT = 2
+    ZEPPELIN = 3
+    ANACONDA = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
@@ -2635,7 +2656,8 @@ class SoftwareConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   imageVersion = _messages.StringField(1)
-  properties = _messages.MessageField('PropertiesValue', 2)
+  optionalComponents = _messages.EnumField('OptionalComponentsValueListEntryValuesEnum', 2, repeated=True)
+  properties = _messages.MessageField('PropertiesValue', 3)
 
 
 class SparkJob(_messages.Message):

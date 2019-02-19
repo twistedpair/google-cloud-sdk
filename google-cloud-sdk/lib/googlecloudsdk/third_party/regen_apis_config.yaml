@@ -42,9 +42,6 @@ apis:
     v1beta:
       discovery_doc: accesscontextmanager_v1beta.json
       default: true
-  apikeys:
-    v1:
-      discovery_doc: apikeys_v1.json
   appengine:
     v1alpha:
       discovery_doc: appengine_v1alpha.json
@@ -171,6 +168,8 @@ apis:
       discovery_doc: cloudresourcemanager_v2alpha1.json
     v2beta1:
       discovery_doc: cloudresourcemanager_v2beta1.json
+    v2:
+      discovery_doc: cloudresourcemanager_v2.json
   cloudresourcesearch:
     v1:
       discovery_doc: cloudresourcesearch_v1.json
@@ -305,6 +304,9 @@ apis:
       default: true
     v1beta2:
       discovery_doc: dns_v1beta2.json
+  edge:
+    v1alpha1:
+      discovery_doc: edge_v1alpha1.json
   eventflow:
     v1beta2:
       discovery_doc: eventflow_v1beta2.json
@@ -336,8 +338,6 @@ apis:
     v2alpha1:
       discovery_doc: genomics_v2alpha1.json
   gkehub:
-    v1alpha1:
-      discovery_doc: gkehub_v1alpha1.json
     v1beta1:
       discovery_doc: gkehub_v1beta1.json
       default: true
@@ -388,9 +388,6 @@ apis:
           path: projects/{project}/iap_web/{iapWebId}/services/{serviceId}
         projects.iap_web.services.versions:
           path: projects/{project}/iap_web/{iapWebId}/services/{serviceId}/versions/{versionId}
-  kubernetespolicy:
-    v1alpha1:
-      discovery_doc: kubernetespolicy_v1alpha1.json
   language:
     v1beta2:
       discovery_doc: language_v1beta2.json

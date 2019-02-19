@@ -5,6 +5,55 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 235.0.0 (2019-02-19)
+
+### App Engine
+
+* Fixed bug where deleting a service at the same time as deleting an app
+  version in an unrelated service caused deletion of the version to fail.
+* Updated the Python SDK to version 1.9.83.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/python/release-notes
+* Updated the Java SDK to version 1.9.72.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/java/release-notes
+
+### Cloud Composer
+
+*   Promoted `--airflow-version` and `--image-version` flags of
+    `gcloud composer environments create` to GA. These mutually exclusive flags
+    can be used to specify the airflow version or image version used within a
+    created environment.
+
+### Cloud IoT
+
+* Promoted `gcloud iot devices gateways` command group to GA.
+
+### Cloud Key Management Service
+
+* Exposed a new format of Cavium's attestation introduced in Cavium's new 3.2-08 version.
+
+### Compute Engine
+
+* Updated the `gcloud beta compute start-iap-tunnel` command for Cloud IAP TCP
+  Forwarding to listen on both IPv4 and IPv6 for localhost.
+* Updated Windows PuTTY executables to 0.70.
+* Promoted `gcloud compute networks peerings list-routes` command to beta.
+* Modified the output of `gcloud beta compute networks peerings list` to include
+  `IMPORT_CUSTOM_ROUTES`/`EXPORT_CUSTOM_ROUTES` columns.
+* Promoted `--resource-policies` of `gcloud compute disks create` to beta.
+* Promoted `--enable-logging` and `--logging-sample-rate` flags of
+  `gcloud compute backend-services <create|update>` to beta.
+* Promoted `--bandwidth` flag of `gcloud compute interconnects attachments dedicated <create|update>` to beta
+
+### Firebase Test Lab
+
+* Added an `ignore:` option to the `--robo-directives` flag of `gcloud beta firebase test android run` command. This option directs Robo to avoid interactions with a user-defined UI element.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 234.0.0 (2019-02-12)
 
 ### Cloud SDK
@@ -108,7 +157,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Compute Engine
 
 * Promoted the `--force-attach` flag of `compute instances attach-disk` to GA
-* Added <get|set>-iam-policy` and `<add|remove>-iam-policy-bindings` to `gcloud beta compute networks subnets`
+* Added `<get|set>-iam-policy` and `<add|remove>-iam-policy-bindings` to `gcloud beta compute networks subnets`
 * Promoted `gcloud compute instances get-shielded-identity` to beta.
 * Promoted `gcloud compute instance-groups managed update` to GA together with
   `--health-check`, `--initial-delay` and `--clear-autohealing` flags.
@@ -175,7 +224,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Python SDK to version 1.9.82.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/python/release-notes
+  https://cloud.google.com/appengine/docs/standard/python/release-notes
 
 ### BigQuery
 
@@ -281,10 +330,10 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Python SDK to version 1.9.81.
   Please visit the following release notes for details:
-  <https://cloud.google.com/appengine/docs/python/release-notes>
+  <https://cloud.google.com/appengine/docs/standard/python/release-notes>
 * Updated the Java SDK to version 1.9.71.
   Please visit the following release notes for details:
-  <https://cloud.google.com/appengine/docs/java/release-notes>
+  <https://cloud.google.com/appengine/docs/standard/java/release-notes>
 
 ### BigQuery
 
@@ -364,7 +413,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Java SDK to version 1.9.70.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/java/release-notes
+  https://cloud.google.com/appengine/docs/standard/java/release-notes
 
 ### Cloud Composer
 
@@ -432,7 +481,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Java SDK to version 1.9.69.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/java/release-notes
+  https://cloud.google.com/appengine/docs/standard/java/release-notes
 
 ### Cloud Bigtable
 
@@ -551,7 +600,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Python SDK to version 1.9.80.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/python/release-notes
+  https://cloud.google.com/appengine/docs/standard/python/release-notes
 
 ### BigQuery
 
@@ -603,10 +652,10 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Python SDK to version 1.9.79.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/python/release-notes
+  https://cloud.google.com/appengine/docs/standard/python/release-notes
 * Updated the Go SDK to version 1.9.70.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/go/release-notes
+  https://cloud.google.com/appengine/docs/standard/go/release-notes
 
 ### Compute Engine
 
@@ -622,11 +671,11 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Python SDK to version 1.9.78.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/python/release-notes
+  https://cloud.google.com/appengine/docs/standard/python/release-notes
 
 * Updated the Java SDK to version 1.9.68.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/java/release-notes
+  https://cloud.google.com/appengine/docs/standard/java/release-notes
 
 * Updated the Go SDK to version 1.9.69.
   Fix a bug in windows support for go.mod deployments for the Go 1.11 runtime
@@ -657,7 +706,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
   large.
 * Updated the Java SDK to version 1.9.67.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/java/release-notes
+  https://cloud.google.com/appengine/docs/standard/java/release-notes
 
 ### Cloud Build
 
@@ -800,10 +849,10 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Java SDK to version 1.9.66.
   Please visit the following release notes for details:
-  <https://cloud.google.com/appengine/docs/java/release-notes>
+  <https://cloud.google.com/appengine/docs/standard/java/release-notes>
 * Updated the Python SDK to version 1.9.77.
   Please visit the following release notes for details:
-  <https://cloud.google.com/appengine/docs/python/release-notes>
+  <https://cloud.google.com/appengine/docs/standard/python/release-notes>
 
 ### Cloud Build
 
@@ -856,7 +905,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Python SDK to version 1.9.76.
   Please visit the following release notes for details:
-  <https://cloud.google.com/appengine/docs/python/release-notes>
+  <https://cloud.google.com/appengine/docs/standard/python/release-notes>
 
 ### Compute Engine
 
@@ -961,7 +1010,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Java SDK to version 1.9.65.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/java/release-notes
+  https://cloud.google.com/appengine/docs/standard/java/release-notes
 
 ### Cloud SQL
 
@@ -995,7 +1044,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Go SDK to version 1.9.68.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/go/release-notes
+  https://cloud.google.com/appengine/docs/standard/go/release-notes
 
 ### Cloud Bigtable
 
@@ -1036,11 +1085,11 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Added python 3 support for gcloud app and gcloud domains.
 * Added the `--no-cache` flag to `gcloud beta app deploy` for
-  [Second Generation runtimes](/appengine/docs/standard/appengine-generation),
+  [Second Generation runtimes](/appengine/docs/standard/runtimes),
   to disable the build cache during deployment.
 * Updated the Python SDK to version 1.9.75.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/python/release-notes
+  https://cloud.google.com/appengine/docs/standard/python/release-notes
 
 ### Cloud Datalab
 
@@ -1170,7 +1219,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Python SDK to version 1.9.74.
   Please visit the following release notes for details:
-  <https://cloud.google.com/appengine/docs/python/release-notes>
+  <https://cloud.google.com/appengine/docs/standard/python/release-notes>
 
 ### Cloud Datastore
 
@@ -1354,10 +1403,10 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Go SDK to version 1.9.67.
   Please visit the following release notes for details:
-  <https://cloud.google.com/appengine/docs/go/release-notes>
+  <https://cloud.google.com/appengine/docs/standard/go/release-notes>
 * Updated the Python SDK to version 1.9.73.
   Please visit the following release notes for details:
-  <https://cloud.google.com/appengine/docs/python/release-notes>
+  <https://cloud.google.com/appengine/docs/standard/python/release-notes>
 
 ### Cloud Composer
 
@@ -1417,7 +1466,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Python SDK to version 1.9.72.
   Please visit the following release notes for details:
-  <https://cloud.google.com/appengine/docs/python/release-notes>
+  <https://cloud.google.com/appengine/docs/standard/python/release-notes>
 
 ### Cloud Dataproc
 
@@ -1500,10 +1549,10 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Python SDK to version 1.9.71.
   Please visit the following release notes for details:
-  <https://cloud.google.com/appengine/docs/python/release-notes>
+  <https://cloud.google.com/appengine/docs/standard/python/release-notes>
 * Updated the Go SDK to version 1.9.65.
   Please visit the following release notes for details:
-  <https://cloud.google.com/appengine/docs/go/release-notes>
+  <https://cloud.google.com/appengine/docs/standard/go/release-notes>
 
 ### App Engine Flexible Environment
 
@@ -1673,7 +1722,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Java SDK to version 1.9.64.
   Please visit the following release notes for details:
-  <https://cloud.google.com/appengine/docs/java/release-notes>
+  <https://cloud.google.com/appengine/docs/standard/java/release-notes>
 
 ### Cloud Endpoints
 
@@ -1792,7 +1841,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Python SDK to version 1.9.70.
   Please visit the following release notes for details:
-  <https://cloud.google.com/appengine/docs/python/release-notes>
+  <https://cloud.google.com/appengine/docs/standard/python/release-notes>
 
 ### Cloud Datastore Emulator
 
@@ -2011,7 +2060,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
   message about "copying files to App Engine".
 * Updated the Python SDK to version 1.9.69.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/python/release-notes
+  https://cloud.google.com/appengine/docs/standard/python/release-notes
 * Added [PyTz version 2017.3](https://pypi.python.org/pypi/pytz/2017.3) to the
   built-in third-party libraries.
 
@@ -2080,14 +2129,14 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Python SDK to version 1.9.68.
   Please visit the following release notes for details:
-  <https://cloud.google.com/appengine/docs/python/release-notes>
+  <https://cloud.google.com/appengine/docs/standard/python/release-notes>
 
 ### App Engine Flexible Environment
 
 * Added deprecation warning in `gcloud app deploy` for apps on the App Engine
 flexible environment using Python version 3.4. For more information about this
 deprecation, see
-<https://cloud.google.com/appengine/docs/deprecations/python34>.
+<https://cloud.google.com/appengine/docs/standard/deprecations/python34>.
 
 ### Cloud DNS
 
@@ -2363,7 +2412,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Java SDK to version 1.9.63.
   Please visit the following release notes for details:
-  [https://cloud.google.com/appengine/docs/java/release-notes](https://cloud.google.com/appengine/docs/java/release-notes)
+  [https://cloud.google.com/appengine/docs/standard/java/release-notes](https://cloud.google.com/appengine/docs/standard/java/release-notes)
 
 ### Compute Engine
 
@@ -2440,7 +2489,7 @@ date, apps will be blocked from deploying until you specify the SSL library
 
 * Updated the Go SDK to version 1.9.63.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/go/release-notes
+  https://cloud.google.com/appengine/docs/standard/go/release-notes
 
 ### Cloud Bigtable
 
@@ -2531,7 +2580,7 @@ date, apps will be blocked from deploying until you specify the SSL library
 
 * Updated the Python SDK to version 1.9.67.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/python/release-notes
+  https://cloud.google.com/appengine/docs/standard/python/release-notes
 * `gcloud app deploy` can now deploy App Engine Java Standard apps, by providing
   the path to appengine-web.xml.
 * Staging is now supported in appengine-web.xml. Information on staging tags is
@@ -2617,7 +2666,7 @@ date, apps will be blocked from deploying until you specify the SSL library
 
 * Updated the Java SDK to version 1.9.62.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/java/release-notes
+  https://cloud.google.com/appengine/docs/standard/java/release-notes
   * Fixed the [issue with missing QuickStartGenerator class](https://issuetracker.google.com/issues/72808542)
 * Changed `gcloud app deploy` to use a new runtime build pipeline to deploy apps for
   Go (in the Flexible Environment). This enables more robust and flexible
@@ -2748,7 +2797,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Java SDK to version 1.9.61.
   Please visit the following release notes for details:
-  [https://cloud.google.com/appengine/docs/java/release-notes](https://cloud.google.com/appengine/docs/java/release-notes)
+  [https://cloud.google.com/appengine/docs/standard/java/release-notes](https://cloud.google.com/appengine/docs/standard/java/release-notes)
 
 ### App Engine Flexible Environment
 
@@ -2922,7 +2971,7 @@ labels.
     to the built-in third-party libraries.
 * Updated Java SDK to version 1.9.60.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/java/release-notes
+  https://cloud.google.com/appengine/docs/standard/java/release-notes
 * Updated the Go SDK for App Engine to version 1.9.62
   * Includes internal updates for how applications are deployed.
 * Fixed inaccurate warning about "module" in `app.yaml` configuration file
@@ -3013,7 +3062,7 @@ Added support for `.gcloudignore` files to `container builds submit` command.
 
 *  Updated App Engine Python components to 1.9.64.
    Please visit the following release notes for details:
-   <https://cloud.google.com/appengine/docs/python/release-notes>
+   <https://cloud.google.com/appengine/docs/standard/python/release-notes>
 
 ### Cloud Dataproc
 
@@ -3238,7 +3287,7 @@ Added support for `.gcloudignore` files to `container builds submit` command.
 *   Updated components to 1.9.63.
 *   Added deprecation warning in `gcloud app deploy` for Python apps using the
     library `ssl 2.7`. For information about this deprecation, see
-    <https://cloud.google.com/appengine/docs/deprecations/python-ssl-27>.
+    <https://cloud.google.com/appengine/docs/standard/deprecations/python-ssl-27>.
 *   Fixed issue affecting the Go runtime in which `gcloud app deploy` failed at
     finding dependencies that are not required.
 *   Added `--go_debugging` flag to `dev_appserver.py` to enable delve debugging
@@ -3294,7 +3343,7 @@ Added support for `.gcloudignore` files to `container builds submit` command.
 
 *   Components updated to 1.9.59. Please visit the following release notes for
     details:
-    *   Java - https://cloud.google.com/appengine/docs/java/release-notes
+    *   Java - https://cloud.google.com/appengine/docs/standard/java/release-notes
 
 ### Firebase Test Lab
 
@@ -3406,7 +3455,7 @@ Added support for `.gcloudignore` files to `container builds submit` command.
 *   Go 1.8 is now generally available and the default Go runtime.
 *   Google App Engine components have been updated to 1.9.62.
     Please visit the following release notes for details:
-      *   Python - https://cloud.google.com/appengine/docs/python/release-notes
+      *   Python - https://cloud.google.com/appengine/docs/standard/python/release-notes
 
 ### Google Compute Engine
 
@@ -3466,7 +3515,7 @@ Added support for `.gcloudignore` files to `container builds submit` command.
 
 *   Components updated to 1.9.58. Please visit the following release notes
     for details:
-    *   Java - https://cloud.google.com/appengine/docs/java/release-notes
+    *   Java - https://cloud.google.com/appengine/docs/standard/java/release-notes
 
 ### Google Container Engine
 
@@ -3574,7 +3623,7 @@ Added support for `.gcloudignore` files to `container builds submit` command.
 
 *   App Engine components updated to 1.9.61. Please visit the following release
     notes for details:
-    https://cloud.google.com/appengine/docs/python/release-notes
+    https://cloud.google.com/appengine/docs/standard/python/release-notes
 *   The App Engine flexible environment now defaults to Python 3.6 when Python
     3 is requested. To revert to Python 3.5, specify `python_version: 3.5` in
     the `runtime_config` element of your
@@ -3592,11 +3641,11 @@ Added support for `.gcloudignore` files to `container builds submit` command.
     instances network-interfaces update`. Subnetwork secondary ranges can be
     modified using `gcloud beta compute networks subnets update`.
 *   Add `gcloud alpha compute sign-url` for generating Cloud CDN Signed URLs.
-*   Add *--signed-url-cache-max-age* flag to the following alpha commands
+*   Add `--signed-url-cache-max-age` flag to the following alpha commands
     related to Cloud CDN Signed URL:
     *   `gcloud alpha compute backend-buckets create`
     *   `gcloud alpha compute backend-buckets update`
-    *   `gcloud alpha compute backend-services create
+    *   `gcloud alpha compute backend-services create`
     *   `gcloud alpha compute backend-services update`
 *   Add alpha commands for adding and deleting Cloud CDN Signed URL keys to
     backend buckets and services:
@@ -3690,7 +3739,7 @@ Added support for `.gcloudignore` files to `container builds submit` command.
     config to `false`.
 *   Updated App Engine Java components to version 1.9.56. For more details, see
     the release notes at:
-    https://cloud.google.com/appengine/docs/java/release-notes.
+    https://cloud.google.com/appengine/docs/standard/java/release-notes.
 
 ### Google Container Registry
 
@@ -3769,10 +3818,10 @@ Added support for `.gcloudignore` files to `container builds submit` command.
 
 *   Updated App Engine components for Python to version 1.9.60.
     Please visit the release notes for details:
-    <https://cloud.google.com/appengine/docs/python/release-notes>.
+    <https://cloud.google.com/appengine/docs/standard/python/release-notes>.
 *   Updated App Engine components for Java to version 1.9.55.
     Please visit the following release notes for details:
-    <https://cloud.google.com/appengine/docs/java/release-notes>.
+    <https://cloud.google.com/appengine/docs/standard/java/release-notes>.
 *   Improved client-side traffic split validation in `gcloud app services
     set-traffic`.
 *   Promoted `gcloud app ssl-certificates` command group to GA and beta.
@@ -4317,7 +4366,7 @@ disabled on existing clusters via the
 
 *   Google App Engine components updated to 1.9.57. Please visit the following
     release notes for more details:
-    https://cloud.google.com/appengine/docs/python/release-notes.
+    https://cloud.google.com/appengine/docs/standard/python/release-notes.
 *   Added `gcloud beta app update` to support configuring an application's
     feature settings.
 *   `gcloud app deploy` now allows deployments of Go 1.8 apps on App Engine
@@ -4414,10 +4463,10 @@ disabled on existing clusters via the
     and are identical.
 *   Updated App Engine components for Python to version 1.9.55.
     Please visit the release notes for details:
-    <https://cloud.google.com/appengine/docs/python/release-notes>.
+    <https://cloud.google.com/appengine/docs/standard/python/release-notes>.
 *   Updated App Engine components for Java to version 1.9.54.
     Please visit the following release notes for details:
-    <https://cloud.google.com/appengine/docs/java/release-notes>.
+    <https://cloud.google.com/appengine/docs/standard/java/release-notes>.
 *   Added support for deploying Standard Environment Java applications to
     `gcloud beta app deploy`; use either `gcloud beta app deploy
     $APP_DIR/WEB-INF/appengine-web.xml` or `gcloud beta app deploy $APP_DIR`.
@@ -4694,8 +4743,8 @@ disabled on existing clusters via the
 
 *   Google App Engine components have been updated to 1.9.53.
     Please visit the following release notes for details:
-    *   Python: https://cloud.google.com/appengine/docs/python/release-notes
-    *   Java: https://cloud.google.com/appengine/docs/java/release-notes
+    *   Python: https://cloud.google.com/appengine/docs/standard/python/release-notes
+    *   Java: https://cloud.google.com/appengine/docs/standard/java/release-notes
 
 *   The App Engine Flexible environment includes Python 3.6 support (beta).
     To preview this runtime, specify `python_version: 3.6` in the
@@ -4915,7 +4964,7 @@ disabled on existing clusters via the
 
 *    Components updated to 1.9.52.
      *    Please visit the following release notes for details:
-          Python - https://cloud.google.com/appengine/docs/python/release-notes
+          Python - https://cloud.google.com/appengine/docs/standard/python/release-notes
 
 ### Google BiqQuery
 
@@ -5038,8 +5087,8 @@ disabled on existing clusters via the
     App Engine.
 *   Updated Google App Engine components to 1.9.51.
     Please visit the following release notes for details:
-    *    Java - https://cloud.google.com/appengine/docs/java/release-notes
-    *    Python - https://cloud.google.com/appengine/docs/python/release-notes
+    *    Java - https://cloud.google.com/appengine/docs/standard/java/release-notes
+    *    Python - https://cloud.google.com/appengine/docs/standard/python/release-notes
 
 ### Google Cloud Datalab
 
@@ -5348,7 +5397,7 @@ disabled on existing clusters via the
     entrypoints, to ensure signals are passed through to the application
     process.
 *   Java SDK updated to 1.9.50. For more details, please see
-    *   https://cloud.google.com/appengine/docs/java/release-notes
+    *   https://cloud.google.com/appengine/docs/standard/java/release-notes
 
 ### Google Cloud Bigtable
 
@@ -5500,7 +5549,7 @@ disabled on existing clusters via the
     yaml in the directory so that gcloud can check missing components and prompt
     to install.
 *   Java SDK updated to 1.9.49. For more details, please see
-    *   https://cloud.google.com/appengine/docs/java/release-notes
+    *   https://cloud.google.com/appengine/docs/standard/java/release-notes
 *   `gcloud app logs tail` is now available in GA.
 
 ### Google Cloud Datalab
@@ -5645,7 +5694,7 @@ disabled on existing clusters via the
 * Updated app-engine-go component to the 1.9.50 SDK.
 * Fixed a bug where `gcloud beta app deploy` failed while deploying Go apps.
 * Python SDK updated to 1.9.50. For more details, please see
-  https://cloud.google.com/appengine/docs/python/release-notes
+  https://cloud.google.com/appengine/docs/standard/python/release-notes
 
 ### Google Compute Engine
 
@@ -5998,9 +6047,9 @@ if a file upload is necessary.
 ### Google App Engine
 
 * Java SDK updated to 1.9.48. For more details, please see
-  https://cloud.google.com/appengine/docs/java/release-notes
+  https://cloud.google.com/appengine/docs/standard/java/release-notes
 * Python SDK updated to 1.9.49. For more details, please see
-  https://cloud.google.com/appengine/docs/python/release-notes
+  https://cloud.google.com/appengine/docs/standard/python/release-notes
 * `gcloud app describe` is now GA.
 * Added `gcloud beta app instances delete`, which deletes a specific App Engine
   instance.
@@ -6201,7 +6250,7 @@ if a file upload is necessary.
 
 * App Engine Java SDK updated to 1.9.46.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/java/release-notes
+  https://cloud.google.com/appengine/docs/standard/java/release-notes
 * Added `gcloud app create` command, which creates an App Engine app in the
   current project.
 * Added `gcloud app regions list` command, which lists support for App Engine
@@ -6306,7 +6355,7 @@ The alpha commands will remain, as is, until at least March of 2017.
 
 * App Engine updated to 1.9.45. Java SDK updated to 1.9.44.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/java/release-notes
+  https://cloud.google.com/appengine/docs/standard/java/release-notes
 
 * `gcloud config configurations create` will now automatically activate
   specified empty configuration. Use `gcloud config set` to populate its
@@ -7156,8 +7205,8 @@ The alpha commands will remain, as is, until at least March of 2017.
 
 *   Google App Engine components updated to 1.9.38.
     Please visit the following release notes for details:
-    *   Python - https://cloud.google.com/appengine/docs/python/release-notes
-    *   Java - https://cloud.google.com/appengine/docs/java/release-notes
+    *   Python - https://cloud.google.com/appengine/docs/standard/python/release-notes
+    *   Java - https://cloud.google.com/appengine/docs/standard/java/release-notes
 
 *   Added support for Managed VMs instances in
     `gcloud preview app instances enable-debug` and
@@ -7348,8 +7397,8 @@ The alpha commands will remain, as is, until at least March of 2017.
 
 *   Google App Engine components updated to 1.9.37.
     * Please visit the following release notes for details:
-      * Python - https://cloud.google.com/appengine/docs/python/release-notes
-      * Java - https://cloud.google.com/appengine/docs/java/release-notes
+      * Python - https://cloud.google.com/appengine/docs/standard/python/release-notes
+      * Java - https://cloud.google.com/appengine/docs/standard/java/release-notes
 *   Fixed issue with failed uploads in gcloud preview app-deploy
     (https://issuetracker.google.com/issues/35906909).
 *   Deprecated --server flag for app commands; its use is unsupported.
@@ -7428,8 +7477,8 @@ The alpha commands will remain, as is, until at least March of 2017.
 
 * Google App Engine components updated to 1.9.36.
  * Please visit the following release notes for details:
-   * Python - https://cloud.google.com/appengine/docs/python/release-notes
-   * Java - https://cloud.google.com/appengine/docs/java/release-notes
+   * Python - https://cloud.google.com/appengine/docs/standard/python/release-notes
+   * Java - https://cloud.google.com/appengine/docs/standard/java/release-notes
 
 ### Deployment Manager
 
@@ -7617,8 +7666,8 @@ The alpha commands will remain, as is, until at least March of 2017.
 
 * Updated Google App Engine components to 1.9.34.
   Please visit the following release notes for details:
-  * Python - https://cloud.google.com/appengine/docs/python/release-notes
-  * Java - https://cloud.google.com/appengine/docs/java/release-notes
+  * Python - https://cloud.google.com/appengine/docs/standard/python/release-notes
+  * Java - https://cloud.google.com/appengine/docs/standard/java/release-notes
 
 ### Google Compute Engine
 
@@ -7648,8 +7697,8 @@ command surface.
 ### Google App Engine
 
 * App Engine components updated to 1.9.34. Please visit
-  <https://cloud.google.com/appengine/docs/python/release-notes> for the Python
-  release notes and <https://cloud.google.com/appengine/docs/java/release-notes>
+  <https://cloud.google.com/appengine/docs/standard/python/release-notes> for the Python
+  release notes and <https://cloud.google.com/appengine/docs/standard/java/release-notes>
   for the Java release notes.
 
 ### Google BigQuery
@@ -7711,9 +7760,9 @@ command surface.
 ### Google App Engine
 
 * App Engine components updated to 1.9.33. Please visit
-  <https://cloud.google.com/appengine/docs/python/release-notes> for the Python
+  <https://cloud.google.com/appengine/docs/standard/python/release-notes> for the Python
   release notes and
-  <https://cloud.google.com/appengine/docs/java/release-notes> for the Java
+  <https://cloud.google.com/appengine/docs/standard/java/release-notes> for the Java
   release notes.
 
 * Added `gcloud preview app browse` command.
@@ -7802,8 +7851,8 @@ command surface.
 
 * Google App Engine components updated to 1.9.32. Please visit the following
   release notes for details:
-  Python - https://cloud.google.com/appengine/docs/python/release-notes
-  Java - https://cloud.google.com/appengine/docs/java/release-notes
+  Python - https://cloud.google.com/appengine/docs/standard/python/release-notes
+  Java - https://cloud.google.com/appengine/docs/standard/java/release-notes
 
 * The `gcloud preview app gen-config` command now offers to automatically update
   the runtime field in app.yaml if necessary.
@@ -7899,8 +7948,8 @@ command surface.
 
 * Google App Engine components updated to 1.9.31. Please visit the following
   release notes for details:
-  Python - https://cloud.google.com/appengine/docs/python/release-notes
-  Java - https://cloud.google.com/appengine/docs/java/release-notes
+  Python - https://cloud.google.com/appengine/docs/standard/python/release-notes
+  Java - https://cloud.google.com/appengine/docs/standard/java/release-notes
 
 * Added `--runtime` flag to `gcloud preview app gen-config` to specify a runtime
   when a directory identifies as multiple runtimes. This flag can be used in
@@ -8103,8 +8152,8 @@ command surface.
 
 * Components updated to 1.9.30.
   Please visit the following release notes for details:
-  * Python - https://cloud.google.com/appengine/docs/python/release-notes
-  * Java - https://cloud.google.com/appengine/docs/java/release-notes
+  * Python - https://cloud.google.com/appengine/docs/standard/python/release-notes
+  * Java - https://cloud.google.com/appengine/docs/standard/java/release-notes
 * Fixed a bug caused by uploading invalid file names for vm: true applications.
 
 ### Compute
@@ -8346,7 +8395,7 @@ command surface.
     but if you experience any issues and would like to revert to the old
     behavior, please run `gcloud config set app/use_appengine_api false`.
 
-    See <https://cloud.google.com/appengine/docs/admin-api/> for more
+    See <https://cloud.google.com/appengine/docs/standard/admin-api/> for more
     information about this API.
 
 *   With `env: 2`, valid python runtimes are `python` and `python-compat`.
@@ -8391,8 +8440,8 @@ command surface.
 
 *   App Engine components updated to 1.9.27. Please see the following release
     notes for details:
-    *   Python: <https://cloud.google.com/appengine/docs/python/release-notes>
-    *   Java: <https://cloud.google.com/appengine/docs/java/release-notes>
+    *   Python: <https://cloud.google.com/appengine/docs/standard/python/release-notes>
+    *   Java: <https://cloud.google.com/appengine/docs/standard/java/release-notes>
 *   The `gcloud preview app deploy` command now requires that users specify or
     omit the runtime: field from app.yaml if a Dockerfile is also specified.
 *   The `gcloud preview app deploy` command now supports the "engines" field in

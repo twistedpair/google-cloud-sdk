@@ -974,10 +974,12 @@ class RoboDirective(_messages.Message):
         specified element is not clickable.
       ENTER_TEXT: Direct Robo to enter text on the specified element. No-op if
         specified element is not enabled or does not allow text entry.
+      IGNORE: Direct Robo to ignore interactions with a specific element.
     """
     ACTION_TYPE_UNSPECIFIED = 0
     SINGLE_CLICK = 1
     ENTER_TEXT = 2
+    IGNORE = 3
 
   actionType = _messages.EnumField('ActionTypeValueValuesEnum', 1)
   inputText = _messages.StringField(2)
@@ -990,10 +992,12 @@ class RoboStartingIntent(_messages.Message):
   Fields:
     launcherActivity: A LauncherActivityIntent attribute.
     startActivity: A StartActivityIntent attribute.
+    timeout: Timeout in seconds for each intent.
   """
 
   launcherActivity = _messages.MessageField('LauncherActivityIntent', 1)
   startActivity = _messages.MessageField('StartActivityIntent', 2)
+  timeout = _messages.StringField(3)
 
 
 class StandardQueryParameters(_messages.Message):

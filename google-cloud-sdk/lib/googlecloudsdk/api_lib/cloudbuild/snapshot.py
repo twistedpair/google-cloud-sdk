@@ -24,10 +24,11 @@ import os
 import os.path
 import tarfile
 
-from googlecloudsdk.api_lib.cloudbuild import metrics
+from googlecloudsdk.api_lib.cloudbuild import metric_names
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.command_lib.util import gcloudignore
 from googlecloudsdk.core import log
+from googlecloudsdk.core import metrics
 from googlecloudsdk.core.util import files
 
 _IGNORED_FILE_MESSAGE = """\
@@ -149,7 +150,7 @@ class Snapshot(object):
     Returns:
       storage_v1_messages.Object, The written GCS object.
     """
-    with metrics.record_duration(metrics.UPLOAD_SOURCE):
+    with metrics.RecordDuration(metric_names.UPLOAD_SOURCE):
       with files.ChDir(self.src_dir):
         with files.TemporaryDirectory() as tmp:
           archive_path = os.path.join(tmp, 'file.tgz')

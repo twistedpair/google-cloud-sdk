@@ -628,13 +628,15 @@
           "enumDescriptions": [
             "DO NOT USE. For proto versioning only.",
             "Direct Robo to click on the specified element. No-op if specified element\nis not clickable.",
-            "Direct Robo to enter text on the specified element. No-op if specified\nelement is not enabled or does not allow text entry."
+            "Direct Robo to enter text on the specified element. No-op if specified\nelement is not enabled or does not allow text entry.",
+            "Direct Robo to ignore interactions with a specific element."
           ],
           "type": "string",
           "enum": [
             "ACTION_TYPE_UNSPECIFIED",
             "SINGLE_CLICK",
-            "ENTER_TEXT"
+            "ENTER_TEXT",
+            "IGNORE"
           ]
         }
       }
@@ -649,6 +651,11 @@
         },
         "startActivity": {
           "$ref": "StartActivityIntent"
+        },
+        "timeout": {
+          "description": "Timeout in seconds for each intent.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },

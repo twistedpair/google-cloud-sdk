@@ -438,11 +438,11 @@ def ValidateRoboDirectivesList(args):
   duplicates = set()
   for key, value in six.iteritems((args.robo_directives or {})):
     (action_type, resource_name) = util.ParseRoboDirectiveKey(key)
-    if action_type == 'click' and value:
+    if action_type in ['click', 'ignore'] and value:
       raise test_exceptions.InvalidArgException(
           'robo_directives',
-          'Input value not allowed for click action: [{0}={1}]'.format(
-              key, value))
+          'Input value not allowed for click or ignore actions: [{0}={1}]'
+          .format(key, value))
 
     # Validate resource_name validity
     if not resource_name:

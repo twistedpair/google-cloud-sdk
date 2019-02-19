@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1",
-  "revision": "20190201",
+  "revision": "20190208",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development.\n",
   "ownerDomain": "google.com",

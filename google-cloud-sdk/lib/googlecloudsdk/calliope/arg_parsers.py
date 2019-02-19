@@ -817,8 +817,9 @@ class ArgList(ArgType):
         delim, arg_value = arg_value[1:].split(self.ALT_DELIM_CHAR, 1)
         if not delim:
           raise ArgumentTypeError(
-              'Invalid delimiter. Please see `gcloud topic escaping` for '
-              'information on escaping list or dictionary flag values.')
+              'Invalid delimeter. Please see `gcloud topic flags-file` or '
+              '`gcloud topic escaping` for information on providing list or '
+              'dictionary flag values with special characters.')
       arg_list = _TokenizeQuotedList(arg_value, delim=delim)
 
     # TODO(b/35944028): These exceptions won't present well to the user.
@@ -965,9 +966,10 @@ class ArgDict(ArgList):
     """Converts and validates <key,value> and returns (key,value)."""
     if (not op or value is None) and not self.allow_key_only:
       raise ArgumentTypeError(
-          'Bad syntax for dict arg: [{0}]. Please see `gcloud topic '
-          'escaping` if you would like information on escaping list or '
-          'dictionary flag values.'.format(key))
+          'Bad syntax for dict arg: [{0}]. Please see '
+          '`gcloud topic flags-file` or `gcloud topic escaping` for '
+          'information on providing list or dictionary flag values with '
+          'special characters.'.format(key))
     if self.key_type:
       try:
         key = self.key_type(key)

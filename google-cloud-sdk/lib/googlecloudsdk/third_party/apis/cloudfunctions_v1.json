@@ -279,7 +279,7 @@
           "format": "int32"
         },
         "serviceAccountEmail": {
-          "description": "Output only. The email of the function's service account.",
+          "description": "The email of the function's service account. If empty, defaults to\n{project_id}@appspot.gserviceaccount.com.",
           "type": "string"
         },
         "updateTime": {

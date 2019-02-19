@@ -126,12 +126,4 @@ def AddOperationArgs(parser):
   parser.add_argument(
       'id',
       metavar='OPERATION_NAME',
-      help='Name of the operation to describe. Operation name looks like '
-           'projects/<project_id>/operations/ExportAssets/<operation_id> or '
-           'organizations/<organization_id>/operations/ExportAssets/'
-           '<operation_id>.',
-      type=arg_parsers.RegexpValidator(
-          r'^(projects|organizations)/[^/]+/operations/ExportAssets/[^/]+',
-          'Operation name must be "projects/<project_id>/operations/'
-          'ExportAssets/<operation_id>" or "organizations/<organization_id>/'
-          'operations/ExportAssets/<operation_id>"'))
+      help='Name of the operation to describe.')

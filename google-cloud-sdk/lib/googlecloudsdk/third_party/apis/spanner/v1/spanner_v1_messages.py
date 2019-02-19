@@ -1487,6 +1487,18 @@ class OperationProgress(_messages.Message):
   startTime = _messages.StringField(3)
 
 
+class OptimizeRestoredDatabaseMetadata(_messages.Message):
+  r"""A OptimizeRestoredDatabaseMetadata object.
+
+  Fields:
+    name: Name of the restored database being optimized.
+    progress: The progress of the post-restore optimizations.
+  """
+
+  name = _messages.StringField(1)
+  progress = _messages.MessageField('OperationProgress', 2)
+
+
 class PartialResultSet(_messages.Message):
   r"""Partial results from a streaming read or SQL query. Streaming reads and
   SQL queries better tolerate large result sets, large rows, and large values,
@@ -2083,6 +2095,51 @@ class ReplicaInfo(_messages.Message):
   defaultLeaderLocation = _messages.BooleanField(1)
   location = _messages.StringField(2)
   type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
+class RestoreDatabaseMetadata(_messages.Message):
+  r"""A RestoreDatabaseMetadata object.
+
+  Enums:
+    SourceTypeValueValuesEnum: The type of the restore source.
+
+  Fields:
+    backupInfo: Information about the backup used to restore the database.
+    cancelTime: The time at which this operation was cancelled. If set, this
+      operation is in the process of undoing itself (which is guaranteed to
+      succeed) and cannot be cancelled again.
+    name: Name of the database being created and restored to.
+    optimizeDatabaseOperationName: If exists, the name of the long-running
+      operation that will be used to track the post-restore optimization
+      process to optimize the performance of the restored database, and remove
+      the dependency on the restore source. The name is of the form `projects/
+      <project>/instances/<instance>/databases/<database>/operations/<operatio
+      n> where the <database> is the name of database being created and
+      restored to. The metadata type of the  long-running operation is
+      OptimizeRestoreDatabaseMetadata. This long-running operation will be
+      automatically created by the system after the RestoreDatabase long-
+      running operation completes successfully. This operation will not be
+      created if the restore was not successful.
+    progress: The progress of the RestoreDatabase operation.
+    sourceType: The type of the restore source.
+  """
+
+  class SourceTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the restore source.
+
+    Values:
+      TYPE_UNSPECIFIED: No restore associated.
+      BACKUP: A backup was used as the source of the restore.
+    """
+    TYPE_UNSPECIFIED = 0
+    BACKUP = 1
+
+  backupInfo = _messages.MessageField('BackupInfo', 1)
+  cancelTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  optimizeDatabaseOperationName = _messages.StringField(4)
+  progress = _messages.MessageField('OperationProgress', 5)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 6)
 
 
 class RestoreDatabaseRequest(_messages.Message):

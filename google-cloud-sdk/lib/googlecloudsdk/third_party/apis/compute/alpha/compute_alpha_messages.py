@@ -1937,6 +1937,8 @@ class AttachedDiskInitializeParams(_messages.Message):
     labels: Labels to apply to this disk. These can be later modified by the
       disks.setLabels method. This field is only applicable for persistent
       disks.
+    replicaZones: URLs of the zones where the disk should be replicated to.
+      Only applicable for regional resources.
     sourceImage: The source image to create this disk. When creating a new
       instance, one of initializeParams.sourceImage or disks.source is
       required except for local SSD.  To create a disk with one of the public
@@ -1999,10 +2001,11 @@ class AttachedDiskInitializeParams(_messages.Message):
   diskType = _messages.StringField(4)
   guestOsFeatures = _messages.MessageField('GuestOsFeature', 5, repeated=True)
   labels = _messages.MessageField('LabelsValue', 6)
-  sourceImage = _messages.StringField(7)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 8)
-  sourceSnapshot = _messages.StringField(9)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 10)
+  replicaZones = _messages.StringField(7, repeated=True)
+  sourceImage = _messages.StringField(8)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 9)
+  sourceSnapshot = _messages.StringField(10)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 11)
 
 
 class AuditConfig(_messages.Message):
@@ -32916,8 +32919,10 @@ class NetworkEndpointGroup(_messages.Message):
 
     Values:
       GCE_VM_IP_PORT: <no description>
+      NON_GCP_PRIVATE_IP_PORT: <no description>
     """
     GCE_VM_IP_PORT = 0
+    NON_GCP_PRIVATE_IP_PORT = 1
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Specify the type of this network endpoint group. Only LOAD_BALANCING

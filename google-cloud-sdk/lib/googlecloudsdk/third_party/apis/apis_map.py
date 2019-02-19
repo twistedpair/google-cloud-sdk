@@ -81,14 +81,6 @@ MAP = {
             default_version=True
         ),
     },
-    'apikeys': {
-        'v1': APIDef(
-            class_path='googlecloudsdk.third_party.apis.apikeys.v1',
-            client_classpath='apikeys_v1_client.ApikeysV1',
-            messages_modulepath='apikeys_v1_messages',
-            default_version=True
-        ),
-    },
     'appengine': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.appengine.v1',
@@ -250,6 +242,12 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.cloudresourcemanager.v1beta1',
             client_classpath='cloudresourcemanager_v1beta1_client.CloudresourcemanagerV1beta1',
             messages_modulepath='cloudresourcemanager_v1beta1_messages',
+            default_version=False
+        ),
+        'v2': APIDef(
+            class_path='googlecloudsdk.third_party.apis.cloudresourcemanager.v2',
+            client_classpath='cloudresourcemanager_v2_client.CloudresourcemanagerV2',
+            messages_modulepath='cloudresourcemanager_v2_messages',
             default_version=False
         ),
         'v2alpha1': APIDef(
@@ -483,6 +481,14 @@ MAP = {
             default_version=False
         ),
     },
+    'edge': {
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.edge.v1alpha1',
+            client_classpath='edge_v1alpha1_client.EdgeV1alpha1',
+            messages_modulepath='edge_v1alpha1_messages',
+            default_version=True
+        ),
+    },
     'eventflow': {
         'v1beta2': APIDef(
             class_path='googlecloudsdk.third_party.apis.eventflow.v1beta2',
@@ -552,12 +558,6 @@ MAP = {
         ),
     },
     'gkehub': {
-        'v1alpha1': APIDef(
-            class_path='googlecloudsdk.third_party.apis.gkehub.v1alpha1',
-            client_classpath='gkehub_v1alpha1_client.GkehubV1alpha1',
-            messages_modulepath='gkehub_v1alpha1_messages',
-            default_version=False
-        ),
         'v1beta1': APIDef(
             class_path='googlecloudsdk.third_party.apis.gkehub.v1beta1',
             client_classpath='gkehub_v1beta1_client.GkehubV1beta1',
@@ -566,6 +566,12 @@ MAP = {
         ),
     },
     'healthcare': {
+        'v1alpha': APIDef(
+            class_path='googlecloudsdk.third_party.apis.healthcare.v1alpha',
+            client_classpath='healthcare_v1alpha_client.HealthcareV1alpha',
+            messages_modulepath='healthcare_v1alpha_messages',
+            default_version=False
+        ),
         'v1alpha2': APIDef(
             class_path='googlecloudsdk.third_party.apis.healthcare.v1alpha2',
             client_classpath='healthcare_v1alpha2_client.HealthcareV1alpha2',
@@ -594,14 +600,6 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.iap.v1beta1',
             client_classpath='iap_v1beta1_client.IapV1beta1',
             messages_modulepath='iap_v1beta1_messages',
-            default_version=True
-        ),
-    },
-    'kubernetespolicy': {
-        'v1alpha1': APIDef(
-            class_path='googlecloudsdk.third_party.apis.kubernetespolicy.v1alpha1',
-            client_classpath='kubernetespolicy_v1alpha1_client.KubernetespolicyV1alpha1',
-            messages_modulepath='kubernetespolicy_v1alpha1_messages',
             default_version=True
         ),
     },

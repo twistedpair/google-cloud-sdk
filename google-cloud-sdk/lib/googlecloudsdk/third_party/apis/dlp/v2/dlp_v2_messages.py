@@ -596,6 +596,21 @@ class DlpProjectsInspectTemplatesPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class DlpProjectsJobTriggersActivateRequest(_messages.Message):
+  r"""A DlpProjectsJobTriggersActivateRequest object.
+
+  Fields:
+    googlePrivacyDlpV2ActivateJobTriggerRequest: A
+      GooglePrivacyDlpV2ActivateJobTriggerRequest resource to be passed as the
+      request body.
+    name: Resource name of the trigger to activate, for example `projects/dlp-
+      test-project/jobTriggers/53234423`.
+  """
+
+  googlePrivacyDlpV2ActivateJobTriggerRequest = _messages.MessageField('GooglePrivacyDlpV2ActivateJobTriggerRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class DlpProjectsJobTriggersCreateRequest(_messages.Message):
   r"""A DlpProjectsJobTriggersCreateRequest object.
 
@@ -789,6 +804,10 @@ class GooglePrivacyDlpV2Action(_messages.Message):
   pubSub = _messages.MessageField('GooglePrivacyDlpV2PublishToPubSub', 2)
   publishSummaryToCscc = _messages.MessageField('GooglePrivacyDlpV2PublishSummaryToCscc', 3)
   saveFindings = _messages.MessageField('GooglePrivacyDlpV2SaveFindings', 4)
+
+
+class GooglePrivacyDlpV2ActivateJobTriggerRequest(_messages.Message):
+  r"""Request message for ActivateJobTrigger."""
 
 
 class GooglePrivacyDlpV2AnalyzeDataSourceRiskDetails(_messages.Message):

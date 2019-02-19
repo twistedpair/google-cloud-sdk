@@ -32,7 +32,7 @@ from googlecloudsdk.api_lib.run import build_template
 from googlecloudsdk.api_lib.run import configuration
 from googlecloudsdk.api_lib.run import domain_mapping
 from googlecloudsdk.api_lib.run import k8s_object
-from googlecloudsdk.api_lib.run import metrics
+from googlecloudsdk.api_lib.run import metric_names
 from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import route
 from googlecloudsdk.api_lib.run import service
@@ -45,6 +45,7 @@ from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import pretty_print
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import metrics
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import retry
@@ -446,8 +447,6 @@ class ServerlessOperations(object):
         not function_entrypoint):
       return source_deployable.ServerlessApp(source_ref, template)
 
-    raise serverless_exceptions.UnknownDeployableError()
-
   def GetRevision(self, revision_ref):
     """Get the revision.
 
@@ -462,7 +461,7 @@ class ServerlessOperations(object):
     request = messages.RunNamespacesRevisionsGetRequest(
         name=revision_name)
     try:
-      with metrics.record_duration(metrics.GET_REVISION):
+      with metrics.RecordDuration(metric_names.GET_REVISION):
         response = self._client.namespaces_revisions.Get(request)
       return revision.Revision(response, messages)
     except api_exceptions.HttpNotFoundError:
@@ -487,7 +486,7 @@ class ServerlessOperations(object):
     )
 
     try:
-      with metrics.record_duration(metrics.GET_ROUTE):
+      with metrics.RecordDuration(metric_names.GET_ROUTE):
         route_get_response = self._client.namespaces_routes.Get(
             route_get_request)
       return route.Route(route_get_response, messages)
@@ -589,7 +588,7 @@ class ServerlessOperations(object):
     messages = self._messages_module
     request = messages.RunNamespacesServicesListRequest(
         parent=namespace_ref.RelativeName())
-    with metrics.record_duration(metrics.LIST_SERVICES):
+    with metrics.RecordDuration(metric_names.LIST_SERVICES):
       response = self._client.namespaces_services.List(request)
     return [service.Service(item, messages) for item in response.items]
 
@@ -597,7 +596,7 @@ class ServerlessOperations(object):
     messages = self._messages_module
     request = messages.RunNamespacesConfigurationsListRequest(
         parent=namespace_ref.RelativeName())
-    with metrics.record_duration(metrics.LIST_CONFIGURATIONS):
+    with metrics.RecordDuration(metric_names.LIST_CONFIGURATIONS):
       response = self._client.namespaces_configurations.List(request)
     return [configuration.Configuration(item, messages)
             for item in response.items]
@@ -606,7 +605,7 @@ class ServerlessOperations(object):
     messages = self._messages_module
     request = messages.RunNamespacesRoutesListRequest(
         parent=namespace_ref.RelativeName())
-    with metrics.record_duration(metrics.LIST_ROUTES):
+    with metrics.RecordDuration(metric_names.LIST_ROUTES):
       response = self._client.namespaces_routes.List(request)
     return [route.Route(item, messages) for item in response.items]
 
@@ -617,7 +616,7 @@ class ServerlessOperations(object):
         name=service_ref.RelativeName())
 
     try:
-      with metrics.record_duration(metrics.GET_SERVICE):
+      with metrics.RecordDuration(metric_names.GET_SERVICE):
         service_get_response = self._client.namespaces_services.Get(
             service_get_request)
       return service.Service(service_get_response, messages)
@@ -641,7 +640,7 @@ class ServerlessOperations(object):
             name=name))
 
     try:
-      with metrics.record_duration(metrics.GET_CONFIGURATION):
+      with metrics.RecordDuration(metric_names.GET_CONFIGURATION):
         configuration_get_response = self._client.namespaces_configurations.Get(
             configuration_get_request)
       return configuration.Configuration(configuration_get_response, messages)
@@ -665,7 +664,7 @@ class ServerlessOperations(object):
             name=name))
 
     try:
-      with metrics.record_duration(metrics.GET_ROUTE):
+      with metrics.RecordDuration(metric_names.GET_ROUTE):
         route_get_response = self._client.namespaces_routes.Get(
             route_get_request)
       return route.Route(route_get_response, messages)
@@ -688,7 +687,7 @@ class ServerlessOperations(object):
     )
 
     try:
-      with metrics.record_duration(metrics.DELETE_SERVICE):
+      with metrics.RecordDuration(metric_names.DELETE_SERVICE):
         self._client.namespaces_services.Delete(service_delete_request)
     except api_exceptions.HttpNotFoundError:
       raise serverless_exceptions.ServiceNotFoundError(
@@ -708,7 +707,7 @@ class ServerlessOperations(object):
     request = messages.RunNamespacesRevisionsDeleteRequest(
         name=revision_name)
     try:
-      with metrics.record_duration(metrics.DELETE_REVISION):
+      with metrics.RecordDuration(metric_names.DELETE_REVISION):
         self._client.namespaces_revisions.Delete(request)
     except api_exceptions.HttpNotFoundError:
       raise serverless_exceptions.RevisionNotFoundError(
@@ -825,7 +824,7 @@ class ServerlessOperations(object):
             messages.RunNamespacesServicesReplaceServiceRequest(
                 service=serv.Message(),
                 name=serv_name))
-        with metrics.record_duration(metrics.UPDATE_SERVICE):
+        with metrics.RecordDuration(metric_names.UPDATE_SERVICE):
           updated = self._client.namespaces_services.ReplaceService(
               serv_update_req)
         return service.Service(updated, messages)
@@ -848,7 +847,7 @@ class ServerlessOperations(object):
             messages.RunNamespacesServicesCreateRequest(
                 service=new_serv.Message(),
                 parent=parent))
-        with metrics.record_duration(metrics.CREATE_SERVICE):
+        with metrics.RecordDuration(metric_names.CREATE_SERVICE):
           raw_service = self._client.namespaces_services.Create(
               serv_create_req)
         return service.Service(raw_service, messages)
@@ -907,7 +906,7 @@ class ServerlessOperations(object):
       # 'service-less' operation.
       request.labelSelector = 'serving.knative.dev/service = {}'.format(
           service_name)
-    with metrics.record_duration(metrics.LIST_REVISIONS):
+    with metrics.RecordDuration(metric_names.LIST_REVISIONS):
       response = self._client.namespaces_revisions.List(request)
     return [revision.Revision(item, messages) for item in response.items]
 
@@ -923,7 +922,7 @@ class ServerlessOperations(object):
     messages = self._messages_module
     request = messages.RunNamespacesDomainmappingsListRequest(
         parent=namespace_ref.RelativeName())
-    with metrics.record_duration(metrics.LIST_DOMAIN_MAPPINGS):
+    with metrics.RecordDuration(metric_names.LIST_DOMAIN_MAPPINGS):
       response = self._client.namespaces_domainmappings.List(request)
     return [domain_mapping.DomainMapping(item, messages)
             for item in response.items]
@@ -947,7 +946,7 @@ class ServerlessOperations(object):
     request = messages.RunNamespacesDomainmappingsCreateRequest(
         domainMapping=new_mapping.Message(),
         parent=domain_mapping_ref.Parent().RelativeName())
-    with metrics.record_duration(metrics.CREATE_DOMAIN_MAPPING):
+    with metrics.RecordDuration(metric_names.CREATE_DOMAIN_MAPPING):
       response = self._client.namespaces_domainmappings.Create(request)
     return domain_mapping.DomainMapping(response, messages)
 
@@ -961,21 +960,21 @@ class ServerlessOperations(object):
 
     request = messages.RunNamespacesDomainmappingsDeleteRequest(
         name=domain_mapping_ref.RelativeName())
-    with metrics.record_duration(metrics.DELETE_DOMAIN_MAPPING):
+    with metrics.RecordDuration(metric_names.DELETE_DOMAIN_MAPPING):
       self._client.namespaces_domainmappings.Delete(request)
 
-  def GetDomainMapping(self, domain_name):
+  def GetDomainMapping(self, domain_mapping_ref):
     """Get a domain mapping.
 
     Args:
-      domain_name: str, domain name.
+      domain_mapping_ref: Resource, domainmapping resource.
 
     Returns:
       A domain_mapping.DomainMapping object.
     """
     messages = self._messages_module
     request = messages.RunNamespacesDomainmappingsGetRequest(
-        name=domain_name)
-    with metrics.record_duration(metrics.GET_DOMAIN_MAPPING):
+        name=domain_mapping_ref.RelativeName())
+    with metrics.RecordDuration(metric_names.GET_DOMAIN_MAPPING):
       response = self._client.namespaces_domainmappings.Get(request)
-    return domain_mapping.DomainMapping(response)
+    return domain_mapping.DomainMapping(response, messages)

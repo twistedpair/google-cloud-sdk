@@ -285,7 +285,7 @@
           }
         },
         "pidNamespace": {
-          "description": "The PID namespace to run the action inside. If unspecified, a separate\nisolated namespace is used.",
+          "description": "An optional identifier for a PID namespace to run the action inside.\nMultiple actions should use the same string to share a namespace.  If\nunspecified, a separate isolated namespace is used.",
           "type": "string"
         },
         "flags": {
@@ -1085,7 +1085,7 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of results to return. If unspecified, defaults to\n256. The maximum value is 2048.",
+                  "description": "The maximum number of results to return. The maximum value is 256.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"

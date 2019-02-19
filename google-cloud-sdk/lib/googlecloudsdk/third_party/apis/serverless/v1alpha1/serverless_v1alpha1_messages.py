@@ -638,68 +638,6 @@ class Handler(_messages.Message):
   tcpSocket = _messages.MessageField('TCPSocketAction', 3)
 
 
-class HttpBody(_messages.Message):
-  r"""Message that represents an arbitrary HTTP body. It should only be used
-  for payload formats that can't be represented as JSON, such as raw binary or
-  an HTML page.   This message can be used both in streaming and non-streaming
-  API methods in the request as well as the response.  It can be used as a
-  top-level request field, which is convenient if one wants to extract
-  parameters from either the URL or HTTP template into the request fields and
-  also want access to the raw HTTP body.  Example:      message
-  GetResourceRequest {       // A unique request id.       string request_id =
-  1;        // The raw HTTP body is bound to this field.
-  google.api.HttpBody http_body = 2;     }      service ResourceService {
-  rpc GetResource(GetResourceRequest) returns (google.api.HttpBody);       rpc
-  UpdateResource(google.api.HttpBody) returns (google.protobuf.Empty);     }
-  Example with streaming methods:      service CaldavService {       rpc
-  GetCalendar(stream google.api.HttpBody)         returns (stream
-  google.api.HttpBody);       rpc UpdateCalendar(stream google.api.HttpBody)
-  returns (stream google.api.HttpBody);     }  Use of this type only changes
-  how the request and response bodies are handled, all other features will
-  continue to work unchanged.
-
-  Messages:
-    ExtensionsValueListEntry: A ExtensionsValueListEntry object.
-
-  Fields:
-    contentType: The HTTP Content-Type header value specifying the content
-      type of the body.
-    data: The HTTP request/response body as raw binary.
-    extensions: Application specific response metadata. Must be set in the
-      first response for streaming APIs.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ExtensionsValueListEntry(_messages.Message):
-    r"""A ExtensionsValueListEntry object.
-
-    Messages:
-      AdditionalProperty: An additional property for a
-        ExtensionsValueListEntry object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ExtensionsValueListEntry object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  contentType = _messages.StringField(1)
-  data = _messages.BytesField(2)
-  extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
-
-
 class Initializer(_messages.Message):
   r"""Initializer is information about an initializer that has not yet
   completed.
@@ -816,6 +754,19 @@ class ListDomainMappingsResponse(_messages.Message):
   metadata = _messages.MessageField('ListMeta', 4)
 
 
+class ListLocationsResponse(_messages.Message):
+  r"""The response message for Locations.ListLocations.
+
+  Fields:
+    locations: A list of locations that matches the specified filter in the
+      request.
+    nextPageToken: The standard List next-page token.
+  """
+
+  locations = _messages.MessageField('Location', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListMeta(_messages.Message):
   r"""ListMeta describes metadata that synthetic resources must have,
   including lists and various status objects. A resource may have only one of
@@ -910,6 +861,86 @@ class LocalObjectReference(_messages.Message):
   """
 
   name = _messages.StringField(1)
+
+
+class Location(_messages.Message):
+  r"""A resource that represents Google Cloud Platform location.
+
+  Messages:
+    LabelsValue: Cross-service attributes for the location. For example
+      {"cloud.googleapis.com/region": "us-east1"}
+    MetadataValue: Service-specific metadata. For example the available
+      capacity at the given location.
+
+  Fields:
+    displayName: The friendly name for this location, typically a nearby city
+      name. For example, "Tokyo".
+    labels: Cross-service attributes for the location. For example
+      {"cloud.googleapis.com/region": "us-east1"}
+    locationId: The canonical id for this location. For example: `"us-east1"`.
+    metadata: Service-specific metadata. For example the available capacity at
+      the given location.
+    name: Resource name for the location, which may vary between
+      implementations. For example: `"projects/example-project/locations/us-
+      east1"`
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Cross-service attributes for the location. For example
+    {"cloud.googleapis.com/region": "us-east1"}
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Service-specific metadata. For example the available capacity at the
+    given location.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  displayName = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  locationId = _messages.StringField(3)
+  metadata = _messages.MessageField('MetadataValue', 4)
+  name = _messages.StringField(5)
 
 
 class ObjectMeta(_messages.Message):
@@ -2093,19 +2124,6 @@ class ServerlessNamespacesServicesListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
-class ServerlessNamespacesServicesPatchRequest(_messages.Message):
-  r"""A ServerlessNamespacesServicesPatchRequest object.
-
-  Fields:
-    httpBody: A HttpBody resource to be passed as the request body.
-    name: The name of the service being patched. If needed, replace
-      {namespace_id} with the project ID.
-  """
-
-  httpBody = _messages.MessageField('HttpBody', 1)
-  name = _messages.StringField(2, required=True)
-
-
 class ServerlessNamespacesServicesReplaceServiceRequest(_messages.Message):
   r"""A ServerlessNamespacesServicesReplaceServiceRequest object.
 
@@ -2256,6 +2274,22 @@ class ServerlessProjectsLocationsDomainmappingsReplaceDomainMappingRequest(_mess
 
   domainMapping = _messages.MessageField('DomainMapping', 1)
   name = _messages.StringField(2, required=True)
+
+
+class ServerlessProjectsLocationsListRequest(_messages.Message):
+  r"""A ServerlessProjectsLocationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The resource that owns the locations collection, if applicable.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class ServerlessProjectsLocationsRevisionsDeleteRequest(_messages.Message):
@@ -2436,19 +2470,6 @@ class ServerlessProjectsLocationsServicesListRequest(_messages.Message):
   parent = _messages.StringField(6, required=True)
   resourceVersion = _messages.StringField(7)
   watch = _messages.BooleanField(8)
-
-
-class ServerlessProjectsLocationsServicesPatchRequest(_messages.Message):
-  r"""A ServerlessProjectsLocationsServicesPatchRequest object.
-
-  Fields:
-    httpBody: A HttpBody resource to be passed as the request body.
-    name: The name of the service being patched. If needed, replace
-      {namespace_id} with the project ID.
-  """
-
-  httpBody = _messages.MessageField('HttpBody', 1)
-  name = _messages.StringField(2, required=True)
 
 
 class ServerlessProjectsLocationsServicesReplaceServiceRequest(_messages.Message):

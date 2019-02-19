@@ -19,6 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 
+# TODO(b/119257245): clean up this file and move it to reservations/.
+
+
 def MakeSpecificSKUAllocationMessage(
     messages, vm_count, accelerators, local_ssds, machine_type,
     min_cpu_platform):

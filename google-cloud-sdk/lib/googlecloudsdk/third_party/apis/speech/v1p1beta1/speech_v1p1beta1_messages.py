@@ -286,10 +286,12 @@ class LongRunningRecognizeRequest(_messages.Message):
     audio: *Required* The audio data to be recognized.
     config: *Required* Provides information to the recognizer that specifies
       how to process the request.
+    name: *Optional* The name of the model to use for recognition.
   """
 
   audio = _messages.MessageField('RecognitionAudio', 1)
   config = _messages.MessageField('RecognitionConfig', 2)
+  name = _messages.StringField(3)
 
 
 class LongRunningRecognizeResponse(_messages.Message):
@@ -813,10 +815,12 @@ class RecognizeRequest(_messages.Message):
     audio: *Required* The audio data to be recognized.
     config: *Required* Provides information to the recognizer that specifies
       how to process the request.
+    name: *Optional* The name of the model to use for recognition.
   """
 
   audio = _messages.MessageField('RecognitionAudio', 1)
   config = _messages.MessageField('RecognitionConfig', 2)
+  name = _messages.StringField(3)
 
 
 class RecognizeResponse(_messages.Message):

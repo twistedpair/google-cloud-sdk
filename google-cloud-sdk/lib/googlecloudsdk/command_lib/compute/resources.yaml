@@ -113,6 +113,18 @@ node_template:
     attribute_name: node_template
     help: The name of the Google Compute Engine node template.
 
+reservation:
+  name: reservation
+  collection: compute.allocations
+  attributes:
+  - *project
+  - *zone
+  - &reservation
+    parameter_name: allocation
+    attribute_name: reservation
+    help:
+      The name of the Google Compute Engine reservation.
+
 subnet:
   name: subnetwork
   collection: compute.subnetworks

@@ -161,11 +161,11 @@ def AddAndroidTestArgs(parser):
       --environment-variables numShards=4,shardIndex=0
       ```
 
-      Enable code coverage and provide a file path to store the coverage
+      Enable code coverage and provide a directory to store the coverage
       results when using Android Test Orchestrator (`--use-orchestrator`):
 
       ```
-      --environment-variables clearPackageData=true,coverage=true,coverageFile=/sdcard/coverage.ec
+      --environment-variables clearPackageData=true,coverage=true,coverageFilePath=/sdcard/
       ```
 
       Enable code coverage and provide a file path to store the coverage
@@ -273,23 +273,28 @@ def AddAndroidTestArgs(parser):
       help='A comma-separated (`<type>:<key>=<value>`) map of '
       '`robo_directives` that you can use to customize the behavior of Robo '
       'test. The `type` specifies the action type of the directive, which may '
-      'take on values `click` or `text`. If no `type` is provided, `text` will '
-      'be used by default. Each key should be the Android resource name of a '
-      'target UI element and each value should be the text input for that '
-      'element. Values are only permitted for `text` type elements, so no '
-      'value should be specified for `click` type elements. For example, use'
+      'take on values `click`, `text` or `ignore`. If no `type` is provided, '
+      '`text` will be used by default. Each key should be the Android resource '
+      'name of a target UI element and each value should be the text input for '
+      'that element. Values are only permitted for `text` type elements, so no '
+      'value should be specified for `click` and `ignore` type elements.'
+      '\n\n'
+      'To provide custom login credentials for your app, use'
       '\n\n'
       '    --robo-directives text:username_resource=username,'
       'text:password_resource=password'
       '\n\n'
-      'to provide custom login credentials for your app, or'
+      'To instruct Robo to click on the sign-in button, use'
       '\n\n'
       '    --robo-directives click:sign_in_button='
       '\n\n'
-      'to instruct Robo to click on the sign in button. To learn more about '
-      'Robo test and robo_directives, see '
-      'https://firebase.google.com/docs/test-lab/android/command-line'
-      '#custom_login_and_text_input_with_robo_test.'
+      'To instruct Robo to ignore any UI elements with resource names which '
+      'equal or start with the user-defined value, use'
+      '\n\n'
+      '  --robo-directives ignore:ignored_ui_element_resource_name='
+      '\n\n'
+      'To learn more about Robo test and robo_directives, see '
+      'https://firebase.google.com/docs/test-lab/android/command-line#custom_login_and_text_input_with_robo_test.'
       '\n\n'
       'Caution: You should only use credentials for test accounts that are not '
       'associated with real users.')

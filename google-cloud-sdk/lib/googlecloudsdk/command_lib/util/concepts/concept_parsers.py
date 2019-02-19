@@ -54,7 +54,6 @@ class ConceptParser(object):
     """
     self._specs = {}
     self._all_args = []
-    self._runtime_handler = handlers.RuntimeHandler()
     for spec in specs:
       self._AddSpec(spec)
     self._command_level_fallthroughs = self._ValidateAndFormatFallthroughsMap(
@@ -212,11 +211,14 @@ class ConceptParser(object):
     Args:
       parser: the parser for a Calliope command.
     """
-    parser.add_concepts(self._runtime_handler)
+    runtime_handler = parser.data.concept_handler
+    if not runtime_handler:
+      runtime_handler = handlers.RuntimeHandler()
+      parser.add_concepts(runtime_handler)
     for spec_name, spec in six.iteritems(self._specs):
       concept_info = self.GetInfo(spec_name)
       concept_info.AddToParser(parser)
-      self._runtime_handler.AddConcept(
+      runtime_handler.AddConcept(
           util.NormalizeFormat(spec_name),
           concept_info,
           required=spec.required)

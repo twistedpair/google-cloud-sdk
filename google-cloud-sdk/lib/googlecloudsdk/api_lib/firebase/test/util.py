@@ -251,7 +251,7 @@ def ParseRoboDirectiveKey(key):
   else:
     # Format: '<type>:<resource_name>=<input_value>'
     action_type = parts[0]
-    supported_action_types = ['text', 'click']
+    supported_action_types = ['text', 'click', 'ignore']
     if action_type not in supported_action_types:
       raise exceptions.InvalidArgException(
           'robo_directives',

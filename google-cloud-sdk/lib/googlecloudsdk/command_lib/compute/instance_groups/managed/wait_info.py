@@ -28,38 +28,6 @@ _CURRENT_ACTION_TYPES = ['abandoning', 'creating', 'creatingWithoutRetries',
 _PENDING_ACTION_TYPES = ['creating', 'deleting', 'restarting', 'recreating']
 
 
-def IsGroupStable(igm_ref):
-  """Checks if IGM is stable.
-
-  Args:
-    igm_ref: reference to the Instance Group Manager.
-  Returns:
-    True if IGM is stable, false otherwise.
-  """
-
-  # TODO(b/110828064): don't check for status existence once status API is v1
-  status = getattr(igm_ref, 'status', None)
-  if status is not None:
-    return status.isStable
-
-  has_current_actions = any(
-      getattr(igm_ref.currentActions, action, 0)
-      for action in _CURRENT_ACTION_TYPES)
-  if has_current_actions:
-    return False
-
-  # Pending actions are populated in alpha and beta only, so we need to check
-  # for their existence.
-  pending_actions = getattr(igm_ref, 'pendingActions', None)
-  if pending_actions is not None:
-    has_pending_actions = any(
-        getattr(pending_actions, action, 0) for action in _PENDING_ACTION_TYPES)
-    if has_pending_actions:
-      return False
-
-  return True
-
-
 def CreateWaitText(igm_ref):
   """Creates text presented at each wait operation.
 

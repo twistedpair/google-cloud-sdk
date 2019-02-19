@@ -1193,6 +1193,34 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
       self._upload_configs = {
           }
 
+    def Activate(self, request, global_params=None):
+      r"""Activate a job trigger. Causes the immediate execute of a trigger.
+instead of waiting on the trigger event to occur.
+
+      Args:
+        request: (DlpProjectsJobTriggersActivateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2DlpJob) The response message.
+      """
+      config = self.GetMethodConfig('Activate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Activate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/jobTriggers/{jobTriggersId}:activate',
+        http_method=u'POST',
+        method_id=u'dlp.projects.jobTriggers.activate',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}:activate',
+        request_field=u'googlePrivacyDlpV2ActivateJobTriggerRequest',
+        request_type_name=u'DlpProjectsJobTriggersActivateRequest',
+        response_type_name=u'GooglePrivacyDlpV2DlpJob',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a job trigger to run DLP actions such as scanning storage for.
 sensitive information on a set schedule.

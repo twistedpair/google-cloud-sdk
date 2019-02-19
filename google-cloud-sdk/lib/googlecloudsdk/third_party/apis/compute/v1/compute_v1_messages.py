@@ -659,11 +659,13 @@ class Address(_messages.Message):
     Values:
       DNS_RESOLVER: <no description>
       GCE_ENDPOINT: <no description>
+      NAT_AUTO: <no description>
       VPC_PEERING: <no description>
     """
     DNS_RESOLVER = 0
     GCE_ENDPOINT = 1
-    VPC_PEERING = 2
+    NAT_AUTO = 2
+    VPC_PEERING = 3
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the address, which can be one of
@@ -22681,6 +22683,7 @@ class ManagedInstance(_messages.Message):
       empty when the instance does not exist.
     lastAttempt: [Output Only] Information about the last attempt to create or
       delete the instance.
+    version: [Output Only] Intended version of this instance.
   """
 
   class CurrentActionValueValuesEnum(_messages.Enum):
@@ -22753,6 +22756,7 @@ class ManagedInstance(_messages.Message):
   instance = _messages.StringField(3)
   instanceStatus = _messages.EnumField('InstanceStatusValueValuesEnum', 4)
   lastAttempt = _messages.MessageField('ManagedInstanceLastAttempt', 5)
+  version = _messages.MessageField('ManagedInstanceVersion', 6)
 
 
 class ManagedInstanceLastAttempt(_messages.Message):
@@ -22796,6 +22800,20 @@ class ManagedInstanceLastAttempt(_messages.Message):
     errors = _messages.MessageField('ErrorsValueListEntry', 1, repeated=True)
 
   errors = _messages.MessageField('ErrorsValue', 1)
+
+
+class ManagedInstanceVersion(_messages.Message):
+  r"""A ManagedInstanceVersion object.
+
+  Fields:
+    instanceTemplate: [Output Only] The intended template of the instance.
+      This field is empty when current_action is one of { DELETING, ABANDONING
+      }.
+    name: [Output Only] Name of the version.
+  """
+
+  instanceTemplate = _messages.StringField(1)
+  name = _messages.StringField(2)
 
 
 class Metadata(_messages.Message):

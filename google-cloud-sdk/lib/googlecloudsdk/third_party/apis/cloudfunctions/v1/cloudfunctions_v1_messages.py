@@ -186,8 +186,8 @@ class CloudFunction(_messages.Message):
       alpha, available only for whitelisted users.
     runtime: The runtime in which the function is going to run. If empty,
       defaults to Node.js 6.
-    serviceAccountEmail: Output only. The email of the function's service
-      account.
+    serviceAccountEmail: The email of the function's service account. If
+      empty, defaults to {project_id}@appspot.gserviceaccount.com.
     sourceArchiveUrl: The Google Cloud Storage URL, starting with gs://,
       pointing to the zip archive which contains the function.
     sourceRepository: **Beta Feature**  The source repository where a function

@@ -443,6 +443,27 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "optionalComponents": {
+          "description": "The set of optional components to activate on the cluster.",
+          "enumDescriptions": [
+            "Unspecified component.",
+            "The Jupyter Notebook.",
+            "The Hive Web HCatalog (the REST service for accessing HCatalog).",
+            "The Zeppelin notebook.",
+            "The Anaconda python distribution."
+          ],
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "COMPONENT_UNSPECIFIED",
+              "JUPYTER",
+              "HIVE_WEBHCAT",
+              "ZEPPELIN",
+              "ANACONDA"
+            ]
+          }
         }
       }
     },

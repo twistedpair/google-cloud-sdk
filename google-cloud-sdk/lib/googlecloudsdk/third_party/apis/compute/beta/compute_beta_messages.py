@@ -3066,11 +3066,13 @@ class BackendService(_messages.Message):
     Values:
       EXTERNAL: <no description>
       INTERNAL: <no description>
+      INTERNAL_SELF_MANAGED: <no description>
       INVALID_LOAD_BALANCING_SCHEME: <no description>
     """
     EXTERNAL = 0
     INTERNAL = 1
-    INVALID_LOAD_BALANCING_SCHEME = 2
+    INTERNAL_SELF_MANAGED = 2
+    INVALID_LOAD_BALANCING_SCHEME = 3
 
   class ProtocolValueValuesEnum(_messages.Enum):
     r"""The protocol this BackendService uses to communicate with backends.
@@ -5926,6 +5928,141 @@ class ComputeDisksTestIamPermissionsRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeExternalVpnGatewaysDeleteRequest(_messages.Message):
+  r"""A ComputeExternalVpnGatewaysDeleteRequest object.
+
+  Fields:
+    externalVpnGateway: Name of the externalVpnGateways to delete.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  externalVpnGateway = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class ComputeExternalVpnGatewaysGetRequest(_messages.Message):
+  r"""A ComputeExternalVpnGatewaysGetRequest object.
+
+  Fields:
+    externalVpnGateway: Name of the externalVpnGateway to return.
+    project: Project ID for this request.
+  """
+
+  externalVpnGateway = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeExternalVpnGatewaysInsertRequest(_messages.Message):
+  r"""A ComputeExternalVpnGatewaysInsertRequest object.
+
+  Fields:
+    externalVpnGateway: A ExternalVpnGateway resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  externalVpnGateway = _messages.MessageField('ExternalVpnGateway', 1)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class ComputeExternalVpnGatewaysListRequest(_messages.Message):
+  r"""A ComputeExternalVpnGatewaysListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeExternalVpnGatewaysSetLabelsRequest(_messages.Message):
+  r"""A ComputeExternalVpnGatewaysSetLabelsRequest object.
+
+  Fields:
+    globalSetLabelsRequest: A GlobalSetLabelsRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  globalSetLabelsRequest = _messages.MessageField('GlobalSetLabelsRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
+class ComputeExternalVpnGatewaysTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeExternalVpnGatewaysTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
 class ComputeFirewallsDeleteRequest(_messages.Message):
   r"""A ComputeFirewallsDeleteRequest object.
 
@@ -6254,6 +6391,34 @@ class ComputeForwardingRulesListRequest(_messages.Message):
   region = _messages.StringField(6, required=True)
 
 
+class ComputeForwardingRulesPatchRequest(_messages.Message):
+  r"""A ComputeForwardingRulesPatchRequest object.
+
+  Fields:
+    forwardingRule: Name of the ForwardingRule resource to patch.
+    forwardingRuleResource: A ForwardingRule resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  forwardingRule = _messages.StringField(1, required=True)
+  forwardingRuleResource = _messages.MessageField('ForwardingRule', 2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+
+
 class ComputeForwardingRulesSetLabelsRequest(_messages.Message):
   r"""A ComputeForwardingRulesSetLabelsRequest object.
 
@@ -6565,6 +6730,32 @@ class ComputeGlobalForwardingRulesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+
+
+class ComputeGlobalForwardingRulesPatchRequest(_messages.Message):
+  r"""A ComputeGlobalForwardingRulesPatchRequest object.
+
+  Fields:
+    forwardingRule: Name of the ForwardingRule resource to patch.
+    forwardingRuleResource: A ForwardingRule resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  forwardingRule = _messages.StringField(1, required=True)
+  forwardingRuleResource = _messages.MessageField('ForwardingRule', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeGlobalForwardingRulesSetLabelsRequest(_messages.Message):
@@ -16873,6 +17064,192 @@ class ComputeUrlMapsValidateRequest(_messages.Message):
   urlMapsValidateRequest = _messages.MessageField('UrlMapsValidateRequest', 3)
 
 
+class ComputeVpnGatewaysAggregatedListRequest(_messages.Message):
+  r"""A ComputeVpnGatewaysAggregatedListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeVpnGatewaysDeleteRequest(_messages.Message):
+  r"""A ComputeVpnGatewaysDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    vpnGateway: Name of the VPN gateway to delete.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  vpnGateway = _messages.StringField(4, required=True)
+
+
+class ComputeVpnGatewaysGetRequest(_messages.Message):
+  r"""A ComputeVpnGatewaysGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    vpnGateway: Name of the VPN gateway to return.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  vpnGateway = _messages.StringField(3, required=True)
+
+
+class ComputeVpnGatewaysInsertRequest(_messages.Message):
+  r"""A ComputeVpnGatewaysInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    vpnGateway: A VpnGateway resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  vpnGateway = _messages.MessageField('VpnGateway', 4)
+
+
+class ComputeVpnGatewaysListRequest(_messages.Message):
+  r"""A ComputeVpnGatewaysListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+
+
+class ComputeVpnGatewaysSetLabelsRequest(_messages.Message):
+  r"""A ComputeVpnGatewaysSetLabelsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The region for this request.
+    regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
+      the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetLabelsRequest = _messages.MessageField('RegionSetLabelsRequest', 3)
+  requestId = _messages.StringField(4)
+  resource = _messages.StringField(5, required=True)
+
+
 class ComputeVpnTunnelsAggregatedListRequest(_messages.Message):
   r"""A ComputeVpnTunnelsAggregatedListRequest object.
 
@@ -18774,6 +19151,253 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class ExternalVpnGateway(_messages.Message):
+  r"""External VPN gateway is the on-premises VPN gateway(s) or another cloud
+  provider?s VPN gateway that connects to your Google Cloud VPN gateway. To
+  create a highly available VPN from Google Cloud to your on-premises side or
+  another Cloud provider's VPN gateway, you must create a external VPN gateway
+  resource in GCP, which provides the information to GCP about your external
+  VPN gateway.
+
+  Enums:
+    RedundancyTypeValueValuesEnum: Indicates the user-supplied redundancy type
+      of this external VPN gateway.
+
+  Messages:
+    LabelsValue: Labels to apply to this ExternalVpnGateway resource. These
+      can be later modified by the setLabels method. Each label key/value must
+      comply with RFC1035. Label values may be empty.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    interfaces: List of interfaces for this external VPN gateway.
+    kind: [Output Only] Type of the resource. Always
+      compute#externalVpnGateway for externalVpnGateways.
+    labelFingerprint: A fingerprint for the labels being applied to this
+      ExternalVpnGateway, which is essentially a hash of the labels set used
+      for optimistic locking. The fingerprint is initially generated by
+      Compute Engine and changes after every request to modify or update
+      labels. You must always provide an up-to-date fingerprint hash in order
+      to update or change labels, otherwise the request will fail with error
+      412 conditionNotMet.  To see the latest fingerprint, make a get()
+      request to retrieve an ExternalVpnGateway.
+    labels: Labels to apply to this ExternalVpnGateway resource. These can be
+      later modified by the setLabels method. Each label key/value must comply
+      with RFC1035. Label values may be empty.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    redundancyType: Indicates the user-supplied redundancy type of this
+      external VPN gateway.
+    selfLink: [Output Only] Server-defined URL for the resource.
+  """
+
+  class RedundancyTypeValueValuesEnum(_messages.Enum):
+    r"""Indicates the user-supplied redundancy type of this external VPN
+    gateway.
+
+    Values:
+      FOUR_IPS_REDUNDANCY: <no description>
+      SINGLE_IP_INTERNALLY_REDUNDANT: <no description>
+      TWO_IPS_REDUNDANCY: <no description>
+    """
+    FOUR_IPS_REDUNDANCY = 0
+    SINGLE_IP_INTERNALLY_REDUNDANT = 1
+    TWO_IPS_REDUNDANCY = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels to apply to this ExternalVpnGateway resource. These can be
+    later modified by the setLabels method. Each label key/value must comply
+    with RFC1035. Label values may be empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  interfaces = _messages.MessageField('ExternalVpnGatewayInterface', 4, repeated=True)
+  kind = _messages.StringField(5, default=u'compute#externalVpnGateway')
+  labelFingerprint = _messages.BytesField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  redundancyType = _messages.EnumField('RedundancyTypeValueValuesEnum', 9)
+  selfLink = _messages.StringField(10)
+
+
+class ExternalVpnGatewayInterface(_messages.Message):
+  r"""The interface for the external VPN gateway.
+
+  Fields:
+    id: The numeric ID of this interface. The allowed input values for this id
+      for different redundancy types of external VPN gateway:
+      SINGLE_IP_INTERNALLY_REDUNDANT - 0 TWO_IPS_REDUNDANCY - 0, 1
+      FOUR_IPS_REDUNDANCY - 0, 1, 2, 3
+    ipAddress: IP address of the interface in the external VPN gateway. Only
+      IPv4 is supported. This IP address can be either from your on-premise
+      gateway or another Cloud provider?s VPN gateway, it cannot be an IP
+      address from Google Compute Engine.
+  """
+
+  id = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  ipAddress = _messages.StringField(2)
+
+
+class ExternalVpnGatewayList(_messages.Message):
+  r"""Response to the list request, and contains a list of
+  externalVpnGateways.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    etag: A string attribute.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of ExternalVpnGateway resources.
+    kind: [Output Only] Type of resource. Always
+      compute#externalVpnGatewayList  for lists of externalVpnGateways.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  etag = _messages.StringField(1)
+  id = _messages.StringField(2)
+  items = _messages.MessageField('ExternalVpnGateway', 3, repeated=True)
+  kind = _messages.StringField(4, default=u'compute#externalVpnGatewayList')
+  nextPageToken = _messages.StringField(5)
+  selfLink = _messages.StringField(6)
+  warning = _messages.MessageField('WarningValue', 7)
+
+
 class Firewall(_messages.Message):
   r"""Represents a Firewall resource.
 
@@ -19197,6 +19821,12 @@ class ForwardingRule(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    fingerprint: Fingerprint of this resource. A hash of the contents stored
+      in this object. This field is used in optimistic locking. This field
+      will be ignored when inserting a ForwardingRule. Include the fingerprint
+      in patch request to ensure that you do not overwrite changes that were
+      applied from another concurrent request.  To see the latest fingerprint,
+      make a get() request to retrieve a ForwardingRule.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     ipVersion: The IP Version that will be used by this forwarding rule. Valid
@@ -19334,11 +19964,13 @@ class ForwardingRule(_messages.Message):
     Values:
       EXTERNAL: <no description>
       INTERNAL: <no description>
+      INTERNAL_SELF_MANAGED: <no description>
       INVALID: <no description>
     """
     EXTERNAL = 0
     INTERNAL = 1
-    INVALID = 2
+    INTERNAL_SELF_MANAGED = 2
+    INVALID = 3
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     r"""This signifies the networking tier used for configuring this load
@@ -19388,23 +20020,24 @@ class ForwardingRule(_messages.Message):
   backendService = _messages.StringField(5)
   creationTimestamp = _messages.StringField(6)
   description = _messages.StringField(7)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 9)
-  kind = _messages.StringField(10, default=u'compute#forwardingRule')
-  labelFingerprint = _messages.BytesField(11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 13)
-  name = _messages.StringField(14)
-  network = _messages.StringField(15)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 16)
-  portRange = _messages.StringField(17)
-  ports = _messages.StringField(18, repeated=True)
-  region = _messages.StringField(19)
-  selfLink = _messages.StringField(20)
-  serviceLabel = _messages.StringField(21)
-  serviceName = _messages.StringField(22)
-  subnetwork = _messages.StringField(23)
-  target = _messages.StringField(24)
+  fingerprint = _messages.BytesField(8)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 10)
+  kind = _messages.StringField(11, default=u'compute#forwardingRule')
+  labelFingerprint = _messages.BytesField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 14)
+  name = _messages.StringField(15)
+  network = _messages.StringField(16)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 17)
+  portRange = _messages.StringField(18)
+  ports = _messages.StringField(19, repeated=True)
+  region = _messages.StringField(20)
+  selfLink = _messages.StringField(21)
+  serviceLabel = _messages.StringField(22)
+  serviceName = _messages.StringField(23)
+  subnetwork = _messages.StringField(24)
+  target = _messages.StringField(25)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -38361,6 +38994,489 @@ class VmEndpointNatMappingsList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class VpnGateway(_messages.Message):
+  r"""Represents a VPN gateway resource.
+
+  Messages:
+    LabelsValue: Labels to apply to this VpnGateway resource. These can be
+      later modified by the setLabels method. Each label key/value must comply
+      with RFC1035. Label values may be empty.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output Only] Type of resource. Always compute#vpnGateway for VPN
+      gateways.
+    labelFingerprint: A fingerprint for the labels being applied to this
+      VpnGateway, which is essentially a hash of the labels set used for
+      optimistic locking. The fingerprint is initially generated by Compute
+      Engine and changes after every request to modify or update labels. You
+      must always provide an up-to-date fingerprint hash in order to update or
+      change labels, otherwise the request will fail with error 412
+      conditionNotMet.  To see the latest fingerprint, make a get() request to
+      retrieve an VpnGateway.
+    labels: Labels to apply to this VpnGateway resource. These can be later
+      modified by the setLabels method. Each label key/value must comply with
+      RFC1035. Label values may be empty.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    network: URL of the network to which this VPN gateway is attached.
+      Provided by the client when the VPN gateway is created.
+    region: [Output Only] URL of the region where the VPN gateway resides.
+    selfLink: [Output Only] Server-defined URL for the resource.
+    vpnInterfaces: [Output Only] A list of interfaces on this VPN gateway.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels to apply to this VpnGateway resource. These can be later
+    modified by the setLabels method. Each label key/value must comply with
+    RFC1035. Label values may be empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(4, default=u'compute#vpnGateway')
+  labelFingerprint = _messages.BytesField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  region = _messages.StringField(9)
+  selfLink = _messages.StringField(10)
+  vpnInterfaces = _messages.MessageField('VpnGatewayVpnGatewayInterface', 11, repeated=True)
+
+
+class VpnGatewayAggregatedList(_messages.Message):
+  r"""A VpnGatewayAggregatedList object.
+
+  Messages:
+    ItemsValue: A list of VpnGateway resources.
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of VpnGateway resources.
+    kind: [Output Only] Type of resource. Always compute#vpnGateway for VPN
+      gateways.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ItemsValue(_messages.Message):
+    r"""A list of VpnGateway resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a ItemsValue object.
+
+    Fields:
+      additionalProperties: [Output Only] Name of the scope containing this
+        set of VPN gateways.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ItemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A VpnGatewaysScopedList attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('VpnGatewaysScopedList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('ItemsValue', 2)
+  kind = _messages.StringField(3, default=u'compute#vpnGatewayAggregatedList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
+
+
+class VpnGatewayList(_messages.Message):
+  r"""Contains a list of VpnGateway resources.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of VpnGateway resources.
+    kind: [Output Only] Type of resource. Always compute#vpnGateway for VPN
+      gateways.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('VpnGateway', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#vpnGatewayList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
+
+
+class VpnGatewayVpnGatewayInterface(_messages.Message):
+  r"""A VPN gateway interface.
+
+  Fields:
+    id: The numeric ID of this VPN gateway interface.
+    ipAddress: The external IP address for this VPN gateway interface.
+  """
+
+  id = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  ipAddress = _messages.StringField(2)
+
+
+class VpnGatewaysScopedList(_messages.Message):
+  r"""A VpnGatewaysScopedList object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning which replaces the list
+      of addresses when the list is empty.
+
+  Fields:
+    vpnGateways: [Output Only] A list of VPN gateways contained in this scope.
+    warning: [Output Only] Informational warning which replaces the list of
+      addresses when the list is empty.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning which replaces the list of
+    addresses when the list is empty.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  vpnGateways = _messages.MessageField('VpnGateway', 1, repeated=True)
+  warning = _messages.MessageField('WarningValue', 2)
+
+
 class VpnTunnel(_messages.Message):
   r"""VPN tunnel resource. (== resource_for beta.vpnTunnels ==) (==
   resource_for v1.vpnTunnels ==)
@@ -38436,6 +39552,12 @@ class VpnTunnel(_messages.Message):
     status: [Output Only] The status of the VPN tunnel.
     targetVpnGateway: URL of the Target VPN gateway with which this VPN tunnel
       is associated. Provided by the client when the VPN tunnel is created.
+    vpnGateway: URL of the VPN gateway with which this VPN tunnel is
+      associated. Provided by the client when the VPN tunnel is created. This
+      must be used (instead of target_vpn_gateway) if a High Availability VPN
+      gateway resource is created.
+    vpnGatewayInterface: The interface ID of the VPN gateway with which this
+      VPN tunnel is associated.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -38516,6 +39638,8 @@ class VpnTunnel(_messages.Message):
   sharedSecretHash = _messages.StringField(20)
   status = _messages.EnumField('StatusValueValuesEnum', 21)
   targetVpnGateway = _messages.StringField(22)
+  vpnGateway = _messages.StringField(23)
+  vpnGatewayInterface = _messages.IntegerField(24, variant=_messages.Variant.INT32)
 
 
 class VpnTunnelAggregatedList(_messages.Message):

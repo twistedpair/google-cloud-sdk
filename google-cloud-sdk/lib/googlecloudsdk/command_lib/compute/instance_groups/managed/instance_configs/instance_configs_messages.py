@@ -61,6 +61,47 @@ def GetDiskOverride(messages, stateful_disk, disk_getter):
   )
 
 
+def MakePreservedStateFromOverrides(messages, disk_overrides,
+                                    metadata_overrides):
+  """Make PreservedState from ManagedInstanceOverrides."""
+  disk_mode_map = {
+      messages.ManagedInstanceOverrideDiskOverride.ModeValueValuesEnum.READ_ONLY
+      : messages.PreservedStatePreservedDisk.ModeValueValuesEnum.READ_ONLY,
+      messages.ManagedInstanceOverrideDiskOverride\
+          .ModeValueValuesEnum.READ_WRITE
+      : messages.PreservedStatePreservedDisk.ModeValueValuesEnum.READ_WRITE,
+  }
+  preserved_state = messages.PreservedState()
+
+  # Add disks from disk_overrides
+  disks_map = messages.PreservedState.DisksValue()
+  disks_map.additionalProperties = []
+  for override_disk in disk_overrides:
+    preserved_disk = \
+        messages.PreservedStatePreservedDisk(
+            autoDelete=messages.PreservedStatePreservedDisk \
+              .AutoDeleteValueValuesEnum.NEVER,
+            source=override_disk.source,
+            mode=disk_mode_map[override_disk.mode])
+    disks_map.additionalProperties.append(
+        messages.PreservedState.DisksValue.AdditionalProperty(
+            key=override_disk.deviceName, value=preserved_disk))
+  preserved_state.disks = disks_map
+
+  # Add metadata from metadata_overrides
+  metadata_additional_properties = []
+  for metadata_override in metadata_overrides:
+    metadata_additional_properties.append(
+        messages.PreservedState.MetadataValue.AdditionalProperty(
+            key=metadata_override.key,
+            value=metadata_override.value
+        )
+    )
+  preserved_state.metadata = messages.PreservedState.MetadataValue(
+      additionalProperties=metadata_additional_properties)
+  return preserved_state
+
+
 def CallPerInstanceConfigUpdate(holder, igm_ref, per_instance_config_message):
   """Calls proper (zonal or regional) resource for instance config update."""
   messages = holder.client.messages

@@ -217,7 +217,7 @@ def ParseMultipleIndexDefinitions(document):
     document: Yaml document as a string or file-like stream.
 
   Returns:
-    A list of datstore_index.IndexDefinitions objects, one for each document.
+    A list of datastore_index.IndexDefinitions objects, one for each document.
   """
   return yaml_object.BuildObjects(IndexDefinitions, document)
 

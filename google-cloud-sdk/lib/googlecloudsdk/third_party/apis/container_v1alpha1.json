@@ -1269,6 +1269,10 @@
         "enablePrivateIpv6Access": {
           "description": "Whether or not Private IPv6 access is enabled. This enables direct\nconnectivity from GKE pods to Google Cloud services over gRPC.",
           "type": "boolean"
+        },
+        "enableIntraNodeFlowLogs": {
+          "description": "Whether Intra-node flow logs is enabled for this cluster.\nThis enables flow logs for same node pod to pod traffic.",
+          "type": "boolean"
         }
       }
     },
@@ -1740,6 +1744,10 @@
           "description": "The desired private cluster configuration.",
           "$ref": "PrivateClusterConfig"
         },
+        "desiredIntraNodeFlowLogsStatus": {
+          "description": "The desired status of Intra-node flow logs.",
+          "$ref": "IntraNodeFlowLogsStatus"
+        },
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to.\n\nUsers may specify either explicit versions offered by\nKubernetes Engine or version aliases, which have the following behavior:\n\n- \"latest\": picks the highest valid Kubernetes version\n- \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version\n- \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version\n- \"1.X.Y-gke.N\": picks an explicit Kubernetes version\n- \"-\": picks the default Kubernetes version",
           "type": "string"
@@ -1776,6 +1784,17 @@
       "properties": {
         "enabled": {
           "description": "Enables private IPv6 access to Google cloud services for this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "IntraNodeFlowLogsStatus": {
+      "id": "IntraNodeFlowLogsStatus",
+      "description": "IntraNodeFlowLogsStatus contains the desired state of the intra-node\nflow logs on this cluster.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enables intra node flow logs for this cluster.",
           "type": "boolean"
         }
       }

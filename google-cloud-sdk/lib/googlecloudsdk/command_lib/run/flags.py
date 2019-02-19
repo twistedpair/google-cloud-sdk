@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 import os
 import re
 
+from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.command_lib.functions.deploy import env_vars_util
 from googlecloudsdk.command_lib.run import config_changes
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
@@ -32,9 +33,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
-
-# TODO(b/72568833): Use API to list available regions when available.
-REGIONS = ['us-central1']
+from googlecloudsdk.core.util import times
 
 
 _VISIBILITY_MODES = {
@@ -102,7 +101,7 @@ def AddRegionArg(parser):
       'Alternatively, set the property [run/region].')
 
 
-# TODO(b/118339293): Stop hardcoding regions.
+# TODO(b/118339293): When global list endpoint ready, stop hardcoding regions.
 def AddRegionArgWithDefault(parser):
   """Add a region arg which defaults to us-central1.
 
@@ -163,6 +162,15 @@ def AddConcurrencyFlag(parser):
                       'provide the special value `default`.')
 
 
+def AddTimeoutFlag(parser):
+  parser.add_argument(
+      '--timeout',
+      help='Set the maximum request execution time (timeout). It is specified '
+      'as a duration; for example, "10m5s" is ten minutes, and five seconds. '
+      'If you don\'t specify a unit, seconds is assumed. For example, "10" is '
+      '10 seconds.')
+
+
 def _HasEnvChanges(args):
   """True iff any of the env var flags are set."""
   env_flags = ['update_env_vars', 'set_env_vars',
@@ -195,9 +203,6 @@ def GetConfigurationChanges(args):
     changes.append(_GetEnvChanges(args))
 
   if 'memory' in args and args.memory:
-    if args.CONCEPTS.cluster.Parse():
-      raise ArgumentError('The --memory argument is not yet supported for '
-                          'Cloud Run on Kubernetes Engine.')
     changes.append(config_changes.ResourceChanges(memory=args.memory))
   if 'concurrency' in args and args.concurrency:
     try:
@@ -208,6 +213,17 @@ def GetConfigurationChanges(args):
         log.warning('Specifying concurrency as Single or Multi is deprecated; '
                     'an integer is preferred.')
     changes.append(config_changes.ConcurrencyChanges(concurrency=c))
+  if 'timeout' in args and args.timeout:
+    try:
+      # A bare number is interpreted as seconds.
+      timeout_secs = int(args.timeout)
+    except ValueError:
+      timeout_duration = times.ParseDuration(args.timeout)
+      timeout_secs = int(timeout_duration.total_seconds)
+    if timeout_secs <= 0:
+      raise ArgumentError(
+          'The --timeout argument must be a positive time duration.')
+    changes.append(config_changes.TimeoutChanges(timeout=timeout_secs))
   return changes
 
 
@@ -279,9 +295,10 @@ def GetRegion(args, prompt=False):
   if properties.VALUES.compute.region.IsExplicitlySet():
     return properties.VALUES.compute.region.Get()
   if prompt and console_io.CanPrompt():
+    all_regions = global_methods.ListRegions()
     idx = console_io.PromptChoice(
-        REGIONS, message='Please specify a region:\n', cancel_option=True)
-    region = REGIONS[idx]
+        all_regions, message='Please specify a region:\n', cancel_option=True)
+    region = all_regions[idx]
     log.status.Print(
         'To make this the default region, run '
         '`gcloud config set run/region {}`.\n'.format(region))

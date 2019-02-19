@@ -96,3 +96,15 @@ class ConcurrencyChanges(ConfigChanger):
     else:
       config.deprecated_string_concurrency = self._concurrency
       config.concurrency = None
+
+
+class TimeoutChanges(ConfigChanger):
+  """Represents the user-intent to update request duration."""
+
+  def __init__(self, timeout):
+    self._timeout = timeout
+
+  def AdjustConfiguration(self, config, metadata):
+    """Mutates the given config's timeout to match what's desired."""
+    del metadata  # Unused, but required by ConfigChanger's signature.
+    config.timeout = self._timeout

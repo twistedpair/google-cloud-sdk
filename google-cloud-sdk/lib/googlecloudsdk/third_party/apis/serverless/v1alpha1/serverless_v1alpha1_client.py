@@ -244,7 +244,7 @@ class ServerlessV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Rpc to list domain mappings..
+      r"""Rpc to list domain mappings.
 
       Args:
         request: (ServerlessNamespacesDomainmappingsListRequest) input message
@@ -579,38 +579,6 @@ child entities like Routes, Configurations and Revisions.
         supports_download=False,
     )
 
-    def Patch(self, request, global_params=None):
-      r"""Rpc to update a service.
-Only the metadata and spec are modifiable but after the Update request,
-Cloud Run will work to make the ServiceStatus match the
-requested ServiceSpec.
-May use metadata.resourceVersion to enforce update from last read for
-concurrency control.
-
-      Args:
-        request: (ServerlessNamespacesServicesPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Service) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/serving.knative.dev/v1alpha1/namespaces/{namespacesId}/services/{servicesId}',
-        http_method=u'PATCH',
-        method_id=u'serverless.namespaces.services.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'apis/serving.knative.dev/v1alpha1/{+name}',
-        request_field=u'httpBody',
-        request_type_name=u'ServerlessNamespacesServicesPatchRequest',
-        response_type_name=u'Service',
-        supports_download=False,
-    )
-
     def ReplaceService(self, request, global_params=None):
       r"""Rpc to replace a service.
 
@@ -848,7 +816,7 @@ optimistic concurrency control.
     )
 
     def List(self, request, global_params=None):
-      r"""Rpc to list domain mappings..
+      r"""Rpc to list domain mappings.
 
       Args:
         request: (ServerlessProjectsLocationsDomainmappingsListRequest) input message
@@ -1211,38 +1179,6 @@ Cloud Run service. This result does not include any inherited policies.
         supports_download=False,
     )
 
-    def Patch(self, request, global_params=None):
-      r"""Rpc to update a service.
-Only the metadata and spec are modifiable but after the Update request,
-Cloud Run will work to make the ServiceStatus match the
-requested ServiceSpec.
-May use metadata.resourceVersion to enforce update from last read for
-concurrency control.
-
-      Args:
-        request: (ServerlessProjectsLocationsServicesPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Service) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}',
-        http_method=u'PATCH',
-        method_id=u'serverless.projects.locations.services.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'httpBody',
-        request_type_name=u'ServerlessProjectsLocationsServicesPatchRequest',
-        response_type_name=u'Service',
-        supports_download=False,
-    )
-
     def ReplaceService(self, request, global_params=None):
       r"""Rpc to replace a service.
 
@@ -1343,6 +1279,33 @@ There are no permissions required for making this API call.
       super(ServerlessV1alpha1.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def List(self, request, global_params=None):
+      r"""Lists information about the supported locations for this service.
+
+      Args:
+        request: (ServerlessProjectsLocationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLocationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations',
+        http_method=u'GET',
+        method_id=u'serverless.projects.locations.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v1alpha1/{+name}/locations',
+        request_field='',
+        request_type_name=u'ServerlessProjectsLocationsListRequest',
+        response_type_name=u'ListLocationsResponse',
+        supports_download=False,
+    )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""

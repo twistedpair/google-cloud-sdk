@@ -1065,9 +1065,12 @@ class KeyOperationAttestation(_messages.Message):
       CAVIUM_V1_COMPRESSED: Cavium HSM attestation compressed with gzip. Note
         that this format is defined by Cavium and subject to change at any
         time.
+      CAVIUM_V2_COMPRESSED: Cavium HSM attestation V2 compressed with gzip.
+        This is a new format Introduced in Cavium's version 3.2-08
     """
     ATTESTATION_FORMAT_UNSPECIFIED = 0
     CAVIUM_V1_COMPRESSED = 1
+    CAVIUM_V2_COMPRESSED = 2
 
   content = _messages.BytesField(1)
   format = _messages.EnumField('FormatValueValuesEnum', 2)

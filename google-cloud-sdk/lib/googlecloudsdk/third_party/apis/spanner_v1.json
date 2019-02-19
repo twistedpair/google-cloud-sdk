@@ -2097,32 +2097,6 @@
         }
       }
     },
-    "UpdateDatabaseDdlMetadata": {
-      "id": "UpdateDatabaseDdlMetadata",
-      "description": "Metadata type for the operation returned by\nUpdateDatabaseDdl.",
-      "type": "object",
-      "properties": {
-        "database": {
-          "description": "The database being modified.",
-          "type": "string"
-        },
-        "statements": {
-          "description": "For an update this list contains all the statements. For an\nindividual statement, this list contains only that statement.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "commitTimestamps": {
-          "description": "Reports the commit timestamps of all statements that have\nsucceeded so far, where `commit_timestamps[i]` is the commit\ntimestamp for the statement `statements[i]`.",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "google-datetime"
-          }
-        }
-      }
-    },
     "CreateInstanceMetadata": {
       "id": "CreateInstanceMetadata",
       "description": "Metadata type for the operation returned by\nCreateInstance.",
@@ -2146,6 +2120,85 @@
           "description": "The time at which this operation failed or was completed successfully.",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "OptimizeRestoredDatabaseMetadata": {
+      "id": "OptimizeRestoredDatabaseMetadata",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the restored database being optimized.",
+          "type": "string"
+        },
+        "progress": {
+          "description": "The progress of the post-restore optimizations.",
+          "$ref": "OperationProgress"
+        }
+      }
+    },
+    "RestoreDatabaseMetadata": {
+      "id": "RestoreDatabaseMetadata",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the database being created and restored to.",
+          "type": "string"
+        },
+        "sourceType": {
+          "description": "The type of the restore source.",
+          "enumDescriptions": [
+            "No restore associated.",
+            "A backup was used as the source of the restore."
+          ],
+          "type": "string",
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "BACKUP"
+          ]
+        },
+        "backupInfo": {
+          "description": "Information about the backup used to restore the database.",
+          "$ref": "BackupInfo"
+        },
+        "progress": {
+          "description": "The progress of the\nRestoreDatabase\noperation.",
+          "$ref": "OperationProgress"
+        },
+        "cancelTime": {
+          "description": "The time at which this operation was cancelled. If set, this operation is\nin the process of undoing itself (which is guaranteed to succeed) and\ncannot be cancelled again.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "optimizeDatabaseOperationName": {
+          "description": "If exists, the name of the long-running operation that will be used to\ntrack the post-restore optimization process to optimize the performance of\nthe restored database, and remove the dependency on the restore source.\nThe name is of the form\n`projects\/<project>\/instances\/<instance>\/databases\/<database>\/operations\/<operation>\nwhere the <database> is the name of database being created and restored to.\nThe metadata type of the  long-running operation is\nOptimizeRestoreDatabaseMetadata. This long-running operation will be\nautomatically created by the system after the RestoreDatabase long-running\noperation completes successfully. This operation will not be created if the\nrestore was not successful.",
+          "type": "string"
+        }
+      }
+    },
+    "UpdateDatabaseDdlMetadata": {
+      "id": "UpdateDatabaseDdlMetadata",
+      "description": "Metadata type for the operation returned by\nUpdateDatabaseDdl.",
+      "type": "object",
+      "properties": {
+        "database": {
+          "description": "The database being modified.",
+          "type": "string"
+        },
+        "statements": {
+          "description": "For an update this list contains all the statements. For an\nindividual statement, this list contains only that statement.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "commitTimestamps": {
+          "description": "Reports the commit timestamps of all statements that have\nsucceeded so far, where `commit_timestamps[i]` is the commit\ntimestamp for the statement `statements[i]`.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "google-datetime"
+          }
         }
       }
     },

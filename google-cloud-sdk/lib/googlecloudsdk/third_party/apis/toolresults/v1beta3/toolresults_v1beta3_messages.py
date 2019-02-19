@@ -554,6 +554,40 @@ class InconclusiveDetail(_messages.Message):
   infrastructureFailure = _messages.BooleanField(2)
 
 
+class IndividualOutcome(_messages.Message):
+  r"""Step Id and outcome of each individual step that was run as a group with
+  other steps with the same configuration.
+
+  Enums:
+    OutcomeSummaryValueValuesEnum:
+
+  Fields:
+    outcomeSummary: A OutcomeSummaryValueValuesEnum attribute.
+    stepId: A string attribute.
+  """
+
+  class OutcomeSummaryValueValuesEnum(_messages.Enum):
+    r"""OutcomeSummaryValueValuesEnum enum type.
+
+    Values:
+      failure: <no description>
+      flaky: <no description>
+      inconclusive: <no description>
+      skipped: <no description>
+      success: <no description>
+      unset: <no description>
+    """
+    failure = 0
+    flaky = 1
+    inconclusive = 2
+    skipped = 3
+    success = 4
+    unset = 5
+
+  outcomeSummary = _messages.EnumField('OutcomeSummaryValueValuesEnum', 1)
+  stepId = _messages.StringField(2)
+
+
 class ListExecutionsResponse(_messages.Message):
   r"""A ListExecutionsResponse object.
 
@@ -664,6 +698,23 @@ class MemoryInfo(_messages.Message):
 
   memoryCapInKibibyte = _messages.IntegerField(1)
   memoryTotalInKibibyte = _messages.IntegerField(2)
+
+
+class MultiStep(_messages.Message):
+  r"""Details when multiple steps are run with the same configuration as a
+  group.
+
+  Fields:
+    multistepNumber: Unique int given to each step. Ranges from 0(inclusive)
+      to total number of steps(exclusive). The primary step is 0.
+    primaryStep: Present if it is a primary (original) step.
+    primaryStepId: Step Id of the primary (original) step, which might be this
+      step.
+  """
+
+  multistepNumber = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  primaryStep = _messages.MessageField('PrimaryStep', 2)
+  primaryStepId = _messages.StringField(3)
 
 
 class Outcome(_messages.Message):
@@ -801,6 +852,43 @@ class PerfSampleSeries(_messages.Message):
   projectId = _messages.StringField(4)
   sampleSeriesId = _messages.StringField(5)
   stepId = _messages.StringField(6)
+
+
+class PrimaryStep(_messages.Message):
+  r"""Stores rollup test status of multiple steps that were run as a group and
+  outcome of each individual step.
+
+  Enums:
+    RollUpValueValuesEnum: Rollup test status of multiple steps that were run
+      with the same configuration as a group.
+
+  Fields:
+    individualOutcome: Step Id and outcome of each individual step.
+    rollUp: Rollup test status of multiple steps that were run with the same
+      configuration as a group.
+  """
+
+  class RollUpValueValuesEnum(_messages.Enum):
+    r"""Rollup test status of multiple steps that were run with the same
+    configuration as a group.
+
+    Values:
+      failure: <no description>
+      flaky: <no description>
+      inconclusive: <no description>
+      skipped: <no description>
+      success: <no description>
+      unset: <no description>
+    """
+    failure = 0
+    flaky = 1
+    inconclusive = 2
+    skipped = 3
+    success = 4
+    unset = 5
+
+  individualOutcome = _messages.MessageField('IndividualOutcome', 1, repeated=True)
+  rollUp = _messages.EnumField('RollUpValueValuesEnum', 2)
 
 
 class ProjectSettings(_messages.Message):
@@ -1065,6 +1153,12 @@ class Step(_messages.Message):
       In create request: optional - In update request: optional; any new
       key/value pair will be added to the map, and any new value for an
       existing key will update that key's value
+    multiStep: Details when multiple steps are run with the same configuration
+      as a group. These details can be used identify which group this step is
+      part of. It also identifies the groups 'primary step' which indexes all
+      the group members.  - In response: present if previously set. - In
+      create request: optional, set iff this step was performed more than
+      once. - In update request: optional
     name: A short human-readable name to display in the UI. Maximum of 100
       characters. For example: Clean build  A PRECONDITION_FAILED will be
       returned upon creating a new step if it shares its name and
@@ -1129,13 +1223,14 @@ class Step(_messages.Message):
   dimensionValue = _messages.MessageField('StepDimensionValueEntry', 5, repeated=True)
   hasImages = _messages.BooleanField(6)
   labels = _messages.MessageField('StepLabelsEntry', 7, repeated=True)
-  name = _messages.StringField(8)
-  outcome = _messages.MessageField('Outcome', 9)
-  runDuration = _messages.MessageField('Duration', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  stepId = _messages.StringField(12)
-  testExecutionStep = _messages.MessageField('TestExecutionStep', 13)
-  toolExecutionStep = _messages.MessageField('ToolExecutionStep', 14)
+  multiStep = _messages.MessageField('MultiStep', 8)
+  name = _messages.StringField(9)
+  outcome = _messages.MessageField('Outcome', 10)
+  runDuration = _messages.MessageField('Duration', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  stepId = _messages.StringField(13)
+  testExecutionStep = _messages.MessageField('TestExecutionStep', 14)
+  toolExecutionStep = _messages.MessageField('ToolExecutionStep', 15)
 
 
 class StepDimensionValueEntry(_messages.Message):

@@ -256,6 +256,26 @@ def AddDatabaseFlags(parser, update=False):
       help=help_)
 
 
+def AddDatabaseVersion(parser, restrict_choices=True):
+  """Adds `--database-version` to the parser with choices restricted or not."""
+  choices = ['MYSQL_5_5', 'MYSQL_5_6', 'MYSQL_5_7', 'POSTGRES_9_6']
+  help_text = (
+      'The database engine type and version. If left unspecified, the API '
+      'defaults will be used.')
+  if not restrict_choices:
+    help_text = ' '.join([
+        help_text,
+        'See the list of database versions at '
+        'https://cloud.google.com/sql/docs/mysql/admin-api/v1beta4/instances'
+        '#databaseVersion'
+    ])
+  parser.add_argument(
+      '--database-version',
+      required=False,
+      choices=choices if restrict_choices else None,
+      help=help_text)
+
+
 def AddCPU(parser):
   parser.add_argument(
       '--cpu',

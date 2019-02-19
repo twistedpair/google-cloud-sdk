@@ -84,6 +84,9 @@ SUBCOMMAND_WHITELIST = [
     'version',
 ]
 
+NAMESPACE_ARG_NAME = '--namespace'
+NAMESPACE_ARG_ALIAS = '-n'
+
 
 class Error(core_exceptions.Error):
   """Class for errors raised by Composer commands."""
@@ -308,8 +311,14 @@ def RunKubectlCommand(args, out_func=None, err_func=None):
     raise Error(MISSING_KUBECTL_MSG)
 
   try:
+    # All kubectl requests will execute within the scope of the 'default'
+    # namespace, unless the namespace scope has been explicitly set within the
+    # args.
     retval = execution_utils.Exec(
-        execution_utils.ArgsForExecutableTool(kubectl_path, *args),
+        AddKubectlNamespace(
+            'default',
+            execution_utils.ArgsForExecutableTool(kubectl_path, *args)
+        ),
         no_exit=True,
         out_func=out_func,
         err_func=err_func,
@@ -319,6 +328,34 @@ def RunKubectlCommand(args, out_func=None, err_func=None):
     raise KubectlError(six.text_type(e))
   if retval:
     raise KubectlError('kubectl returned non-zero status code.')
+
+
+def AddKubectlNamespace(namespace, kubectl_args):
+  """Adds namespace arguments to the provided list of kubectl args.
+
+  If a namespace arg is not already present, insert `--namespace <namespace>`
+  after the `kubectl` command and before all other arg elements.
+
+  Resulting in this general format:
+    ['kubectl', '--namespace', 'namespace_foo', ... <remaining args> ... ]
+
+  Args:
+    namespace: name of the namespace scope
+    kubectl_args: list of kubectl command arguments. Expects that the first
+      element will be the `kubectl` command, followed by all additional
+      arguments.
+
+  Returns:
+    list of kubectl args with the additional namespace args (if necessary).
+  """
+  # Checks for existing namespace args before adding new ones.
+  if {NAMESPACE_ARG_NAME, NAMESPACE_ARG_ALIAS}.isdisjoint(set(kubectl_args)):
+    # Inserts new namespace arguments to a fixed index of the kubectl_args list,
+    # so the list of new args will be inserted in reverse.
+    for new_arg in [namespace, NAMESPACE_ARG_NAME]:
+      # Expects `kubectl` command to be the first argument.
+      kubectl_args.insert(1, new_arg)
+  return kubectl_args
 
 
 def ParseRequirementsFile(requirements_file_path):

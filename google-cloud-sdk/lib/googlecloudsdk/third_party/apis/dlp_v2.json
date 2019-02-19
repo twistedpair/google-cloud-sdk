@@ -2697,42 +2697,122 @@
         }
       }
     },
-    "GooglePrivacyDlpV2CreateDlpJobRequest": {
-      "id": "GooglePrivacyDlpV2CreateDlpJobRequest",
-      "description": "Request message for CreateDlpJobRequest. Used to initiate long running\njobs such as calculating risk metrics or inspecting Google Cloud\nStorage.",
+    "GooglePrivacyDlpV2ActivateJobTriggerRequest": {
+      "id": "GooglePrivacyDlpV2ActivateJobTriggerRequest",
+      "description": "Request message for ActivateJobTrigger.",
       "type": "object",
       "properties": {
-        "inspectJob": {
-          "$ref": "GooglePrivacyDlpV2InspectJobConfig"
-        },
-        "riskJob": {
-          "$ref": "GooglePrivacyDlpV2RiskAnalysisJobConfig"
-        },
-        "jobId": {
-          "description": "The job id can contain uppercase and lowercase letters,\nnumbers, and hyphens; that is, it must match the regular\nexpression: `[a-zA-Z\\\\d-]+`. The maximum length is 100\ncharacters. Can be empty to allow the system to generate one.",
+      }
+    },
+    "GooglePrivacyDlpV2DlpJob": {
+      "id": "GooglePrivacyDlpV2DlpJob",
+      "description": "Combines all of the information about a DLP job.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name.",
           "type": "string"
+        },
+        "type": {
+          "description": "The type of job.",
+          "enumDescriptions": [
+            "",
+            "The job inspected Google Cloud for sensitive data.",
+            "The job executed a Risk Analysis computation."
+          ],
+          "type": "string",
+          "enum": [
+            "DLP_JOB_TYPE_UNSPECIFIED",
+            "INSPECT_JOB",
+            "RISK_ANALYSIS_JOB"
+          ]
+        },
+        "state": {
+          "description": "State of a job.",
+          "enumDescriptions": [
+            "",
+            "The job has not yet started.",
+            "The job is currently running.",
+            "The job is no longer running.",
+            "The job was canceled before it could complete.",
+            "The job had an error and did not complete."
+          ],
+          "type": "string",
+          "enum": [
+            "JOB_STATE_UNSPECIFIED",
+            "PENDING",
+            "RUNNING",
+            "DONE",
+            "CANCELED",
+            "FAILED"
+          ]
+        },
+        "riskDetails": {
+          "description": "Results from analyzing risk of a data source.",
+          "$ref": "GooglePrivacyDlpV2AnalyzeDataSourceRiskDetails"
+        },
+        "inspectDetails": {
+          "description": "Results from inspecting a data source.",
+          "$ref": "GooglePrivacyDlpV2InspectDataSourceDetails"
+        },
+        "createTime": {
+          "description": "Time when the job was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "startTime": {
+          "description": "Time when the job started.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Time when the job finished.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "jobTriggerName": {
+          "description": "If created by a job trigger, the resource name of the trigger that\ninstantiated the job.",
+          "type": "string"
+        },
+        "errors": {
+          "description": "A stream of errors encountered running the job.",
+          "type": "array",
+          "items": {
+            "$ref": "GooglePrivacyDlpV2Error"
+          }
         }
       }
     },
-    "GooglePrivacyDlpV2RiskAnalysisJobConfig": {
-      "id": "GooglePrivacyDlpV2RiskAnalysisJobConfig",
-      "description": "Configuration for a risk analysis job. See\nhttps:\/\/cloud.google.com\/dlp\/docs\/concepts-risk-analysis to learn more.",
+    "GooglePrivacyDlpV2AnalyzeDataSourceRiskDetails": {
+      "id": "GooglePrivacyDlpV2AnalyzeDataSourceRiskDetails",
+      "description": "Result of a risk analysis operation request.",
       "type": "object",
       "properties": {
-        "privacyMetric": {
+        "requestedPrivacyMetric": {
           "description": "Privacy metric to compute.",
           "$ref": "GooglePrivacyDlpV2PrivacyMetric"
         },
-        "sourceTable": {
+        "requestedSourceTable": {
           "description": "Input dataset to compute metrics over.",
           "$ref": "GooglePrivacyDlpV2BigQueryTable"
         },
-        "actions": {
-          "description": "Actions to execute at the completion of the job. Are executed in the order\nprovided.",
-          "type": "array",
-          "items": {
-            "$ref": "GooglePrivacyDlpV2Action"
-          }
+        "numericalStatsResult": {
+          "$ref": "GooglePrivacyDlpV2NumericalStatsResult"
+        },
+        "categoricalStatsResult": {
+          "$ref": "GooglePrivacyDlpV2CategoricalStatsResult"
+        },
+        "kAnonymityResult": {
+          "$ref": "GooglePrivacyDlpV2KAnonymityResult"
+        },
+        "lDiversityResult": {
+          "$ref": "GooglePrivacyDlpV2LDiversityResult"
+        },
+        "kMapEstimationResult": {
+          "$ref": "GooglePrivacyDlpV2KMapEstimationResult"
+        },
+        "deltaPresenceEstimationResult": {
+          "$ref": "GooglePrivacyDlpV2DeltaPresenceEstimationResult"
         }
       }
     },
@@ -2992,118 +3072,6 @@
         },
         "customTag": {
           "type": "string"
-        }
-      }
-    },
-    "GooglePrivacyDlpV2DlpJob": {
-      "id": "GooglePrivacyDlpV2DlpJob",
-      "description": "Combines all of the information about a DLP job.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The server-assigned name.",
-          "type": "string"
-        },
-        "type": {
-          "description": "The type of job.",
-          "enumDescriptions": [
-            "",
-            "The job inspected Google Cloud for sensitive data.",
-            "The job executed a Risk Analysis computation."
-          ],
-          "type": "string",
-          "enum": [
-            "DLP_JOB_TYPE_UNSPECIFIED",
-            "INSPECT_JOB",
-            "RISK_ANALYSIS_JOB"
-          ]
-        },
-        "state": {
-          "description": "State of a job.",
-          "enumDescriptions": [
-            "",
-            "The job has not yet started.",
-            "The job is currently running.",
-            "The job is no longer running.",
-            "The job was canceled before it could complete.",
-            "The job had an error and did not complete."
-          ],
-          "type": "string",
-          "enum": [
-            "JOB_STATE_UNSPECIFIED",
-            "PENDING",
-            "RUNNING",
-            "DONE",
-            "CANCELED",
-            "FAILED"
-          ]
-        },
-        "riskDetails": {
-          "description": "Results from analyzing risk of a data source.",
-          "$ref": "GooglePrivacyDlpV2AnalyzeDataSourceRiskDetails"
-        },
-        "inspectDetails": {
-          "description": "Results from inspecting a data source.",
-          "$ref": "GooglePrivacyDlpV2InspectDataSourceDetails"
-        },
-        "createTime": {
-          "description": "Time when the job was created.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "startTime": {
-          "description": "Time when the job started.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "endTime": {
-          "description": "Time when the job finished.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "jobTriggerName": {
-          "description": "If created by a job trigger, the resource name of the trigger that\ninstantiated the job.",
-          "type": "string"
-        },
-        "errors": {
-          "description": "A stream of errors encountered running the job.",
-          "type": "array",
-          "items": {
-            "$ref": "GooglePrivacyDlpV2Error"
-          }
-        }
-      }
-    },
-    "GooglePrivacyDlpV2AnalyzeDataSourceRiskDetails": {
-      "id": "GooglePrivacyDlpV2AnalyzeDataSourceRiskDetails",
-      "description": "Result of a risk analysis operation request.",
-      "type": "object",
-      "properties": {
-        "requestedPrivacyMetric": {
-          "description": "Privacy metric to compute.",
-          "$ref": "GooglePrivacyDlpV2PrivacyMetric"
-        },
-        "requestedSourceTable": {
-          "description": "Input dataset to compute metrics over.",
-          "$ref": "GooglePrivacyDlpV2BigQueryTable"
-        },
-        "numericalStatsResult": {
-          "$ref": "GooglePrivacyDlpV2NumericalStatsResult"
-        },
-        "categoricalStatsResult": {
-          "$ref": "GooglePrivacyDlpV2CategoricalStatsResult"
-        },
-        "kAnonymityResult": {
-          "$ref": "GooglePrivacyDlpV2KAnonymityResult"
-        },
-        "lDiversityResult": {
-          "$ref": "GooglePrivacyDlpV2LDiversityResult"
-        },
-        "kMapEstimationResult": {
-          "$ref": "GooglePrivacyDlpV2KMapEstimationResult"
-        },
-        "deltaPresenceEstimationResult": {
-          "$ref": "GooglePrivacyDlpV2DeltaPresenceEstimationResult"
         }
       }
     },
@@ -3534,6 +3502,45 @@
           "description": "Number of findings for this infoType.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2CreateDlpJobRequest": {
+      "id": "GooglePrivacyDlpV2CreateDlpJobRequest",
+      "description": "Request message for CreateDlpJobRequest. Used to initiate long running\njobs such as calculating risk metrics or inspecting Google Cloud\nStorage.",
+      "type": "object",
+      "properties": {
+        "inspectJob": {
+          "$ref": "GooglePrivacyDlpV2InspectJobConfig"
+        },
+        "riskJob": {
+          "$ref": "GooglePrivacyDlpV2RiskAnalysisJobConfig"
+        },
+        "jobId": {
+          "description": "The job id can contain uppercase and lowercase letters,\nnumbers, and hyphens; that is, it must match the regular\nexpression: `[a-zA-Z\\\\d-]+`. The maximum length is 100\ncharacters. Can be empty to allow the system to generate one.",
+          "type": "string"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2RiskAnalysisJobConfig": {
+      "id": "GooglePrivacyDlpV2RiskAnalysisJobConfig",
+      "description": "Configuration for a risk analysis job. See\nhttps:\/\/cloud.google.com\/dlp\/docs\/concepts-risk-analysis to learn more.",
+      "type": "object",
+      "properties": {
+        "privacyMetric": {
+          "description": "Privacy metric to compute.",
+          "$ref": "GooglePrivacyDlpV2PrivacyMetric"
+        },
+        "sourceTable": {
+          "description": "Input dataset to compute metrics over.",
+          "$ref": "GooglePrivacyDlpV2BigQueryTable"
+        },
+        "actions": {
+          "description": "Actions to execute at the completion of the job. Are executed in the order\nprovided.",
+          "type": "array",
+          "items": {
+            "$ref": "GooglePrivacyDlpV2Action"
+          }
         }
       }
     },
@@ -4317,6 +4324,34 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Deletes a job trigger.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-job-triggers to learn more."
+            },
+            "activate": {
+              "id": "dlp.projects.jobTriggers.activate",
+              "path": "v2/{+name}:activate",
+              "flatPath": "v2/projects/{projectsId}/jobTriggers/{jobTriggersId}:activate",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Resource name of the trigger to activate, for example\n`projects\/dlp-test-project\/jobTriggers\/53234423`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/jobTriggers\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GooglePrivacyDlpV2ActivateJobTriggerRequest"
+              },
+              "response": {
+                "$ref": "GooglePrivacyDlpV2DlpJob"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Activate a job trigger. Causes the immediate execute of a trigger\ninstead of waiting on the trigger event to occur."
             }
           }
         },

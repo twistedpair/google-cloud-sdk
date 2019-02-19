@@ -211,7 +211,7 @@ def GetForwardingTargetsArg():
       required=False,
       metavar='IP_ADDRESSES',
       help=('List of IPv4 addresses of target name servers that the zone '
-            'will forward queries to. Ignored for `private` visibility.'))
+            'will forward queries to. Ignored for `public` visibility.'))
 
 
 # Policy Flags

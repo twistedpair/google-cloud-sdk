@@ -53,7 +53,7 @@ class DnsV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Atomically update the ResourceRecordSet collection.
+      r"""Create method for the changes service.
 
       Args:
         request: (DnsChangesCreateRequest) input message
@@ -79,7 +79,7 @@ class DnsV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Fetch the representation of an existing Change.
+      r"""Get method for the changes service.
 
       Args:
         request: (DnsChangesGetRequest) input message
@@ -105,7 +105,7 @@ class DnsV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Enumerate Changes to a ResourceRecordSet collection.
+      r"""List method for the changes service.
 
       Args:
         request: (DnsChangesListRequest) input message
@@ -141,7 +141,7 @@ class DnsV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Fetch the representation of an existing DnsKey.
+      r"""Get method for the dnsKeys service.
 
       Args:
         request: (DnsDnsKeysGetRequest) input message
@@ -167,7 +167,7 @@ class DnsV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Enumerate DnsKeys to a ResourceRecordSet collection.
+      r"""List method for the dnsKeys service.
 
       Args:
         request: (DnsDnsKeysListRequest) input message
@@ -203,7 +203,7 @@ class DnsV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Fetch the representation of an existing Operation.
+      r"""Get method for the managedZoneOperations service.
 
       Args:
         request: (DnsManagedZoneOperationsGetRequest) input message
@@ -229,7 +229,7 @@ class DnsV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Enumerate Operations for the given ManagedZone.
+      r"""List method for the managedZoneOperations service.
 
       Args:
         request: (DnsManagedZoneOperationsListRequest) input message
@@ -265,7 +265,7 @@ class DnsV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create a new ManagedZone.
+      r"""Create method for the managedZones service.
 
       Args:
         request: (DnsManagedZonesCreateRequest) input message
@@ -291,7 +291,7 @@ class DnsV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete a previously created ManagedZone.
+      r"""Delete method for the managedZones service.
 
       Args:
         request: (DnsManagedZonesDeleteRequest) input message
@@ -317,7 +317,7 @@ class DnsV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Fetch the representation of an existing ManagedZone.
+      r"""Get method for the managedZones service.
 
       Args:
         request: (DnsManagedZonesGetRequest) input message
@@ -343,7 +343,7 @@ class DnsV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Enumerate ManagedZones that have been created but not yet deleted.
+      r"""List method for the managedZones service.
 
       Args:
         request: (DnsManagedZonesListRequest) input message
@@ -369,7 +369,7 @@ class DnsV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Apply a partial update to an existing ManagedZone.
+      r"""Patch method for the managedZones service.
 
       Args:
         request: (DnsManagedZonesPatchRequest) input message
@@ -395,7 +395,7 @@ class DnsV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Update an existing ManagedZone.
+      r"""Update method for the managedZones service.
 
       Args:
         request: (DnsManagedZonesUpdateRequest) input message
@@ -431,7 +431,7 @@ class DnsV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Fetch the representation of an existing Project.
+      r"""Get method for the projects service.
 
       Args:
         request: (DnsProjectsGetRequest) input message
@@ -467,7 +467,7 @@ class DnsV1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Enumerate ResourceRecordSets that have been created but not yet deleted.
+      r"""List method for the resourceRecordSets service.
 
       Args:
         request: (DnsResourceRecordSetsListRequest) input message

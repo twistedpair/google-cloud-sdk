@@ -23,8 +23,8 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
-from googlecloudsdk.command_lib.compute.allocations import flags as allocation_flags
 from googlecloudsdk.command_lib.compute.allocations import resource_args
+from googlecloudsdk.command_lib.compute.reservations import flags as reservation_flags
 from googlecloudsdk.command_lib.util.apis import arg_utils
 
 
@@ -120,41 +120,41 @@ def GetTypeMapperFlag(messages):
       include_filter=lambda x: x != 'TYPE_UNSPECIFIED')
 
 
-def AddAllocationArgGroup(parser):
-  """Adds all flags needed for allocation(s) creation."""
-  allocations_manage_group = parser.add_group(
-      'Manage the allocations to be created with the commitment.', mutex=True)
+def AddReservationArgGroup(parser):
+  """Adds all flags needed for reservations creation."""
+  reservations_manage_group = parser.add_group(
+      'Manage the reservations to be created with the commitment.', mutex=True)
 
-  allocations_manage_group.add_argument(
-      '--allocations-from-file',
+  reservations_manage_group.add_argument(
+      '--reservations-from-file',
       type=arg_parsers.BufferedFileInput(),
-      help='The path to a YAML file of multiple allocations\' configuration.')
+      help='The path to a YAML file of multiple reservations\' configuration.')
 
-  single_allocation_group = allocations_manage_group.add_argument_group(
-      help='Manage the allocation to be created with the commitment.')
-  resource_args.GetAllocationResourceArg(
-      positional=False).AddArgument(single_allocation_group)
-  single_allocation_group.add_argument(
-      '--allocation-type',
+  single_reservation_group = reservations_manage_group.add_argument_group(
+      help='Manage the reservation to be created with the commitment.')
+  resource_args.GetReservationResourceArg(
+      positional=False).AddArgument(single_reservation_group)
+  single_reservation_group.add_argument(
+      '--reservation-type',
       hidden=True,
       choices=['specific'],
       default='specific',
-      help='The type of the allocation to be created.')
+      help='The type of the reservation to be created.')
 
-  specific_sku_allocation_group = single_allocation_group.add_argument_group(
-      help='Manage the specific SKU allocation properties to create.')
-  AddFlagsToSpecificSkuGroup(specific_sku_allocation_group)
+  specific_sku_reservation_group = single_reservation_group.add_argument_group(
+      help='Manage the specific SKU reservation properties to create.')
+  AddFlagsToSpecificSkuGroup(specific_sku_reservation_group)
 
 
 def AddFlagsToSpecificSkuGroup(group):
   """Adds flags needed for a specific sku zonal allocation."""
   args = [
-      allocation_flags.GetRequireSpecificAllocation(),
-      allocation_flags.GetVmCountFlag(required=False),
-      allocation_flags.GetMinCpuPlatform(),
-      allocation_flags.GetMachineType(required=False),
-      allocation_flags.GetLocalSsdFlag(),
-      allocation_flags.GetAcceleratorFlag(),
+      reservation_flags.GetRequireSpecificAllocation(),
+      reservation_flags.GetVmCountFlag(required=False),
+      reservation_flags.GetMinCpuPlatform(),
+      reservation_flags.GetMachineType(required=False),
+      reservation_flags.GetLocalSsdFlag(),
+      reservation_flags.GetAcceleratorFlag(),
   ]
 
   for arg in args:

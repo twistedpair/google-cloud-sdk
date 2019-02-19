@@ -17,13 +17,20 @@
 import enum
 
 
-BASE_URL = 'https://test-websecurityscanner.sandbox.googleapis.com/v1beta/'
+BASE_URL = 'https://websecurityscanner.googleapis.com/v1beta/'
 DOCS_URL = 'https://cloud.google.com/security-scanner/'
 
 
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  PROJECTS = (
+      'projects',
+      'projects/{projectsId}',
+      {},
+      [u'projectsId'],
+      True
+  )
   PROJECTS_SCANCONFIGS = (
       'projects.scanConfigs',
       '{+name}',
@@ -45,6 +52,14 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  PROJECTS_SCANCONFIGS_SCANRUNS_CRAWLEDURLS = (
+      'projects.scanConfigs.scanRuns.crawledUrls',
+      'projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns/'
+      '{scanRunsId}',
+      {},
+      [u'projectsId', u'scanConfigsId', u'scanRunsId'],
+      False
+  )
   PROJECTS_SCANCONFIGS_SCANRUNS_FINDINGS = (
       'projects.scanConfigs.scanRuns.findings',
       '{+name}',
@@ -55,21 +70,6 @@ class Collections(enum.Enum):
       },
       [u'name'],
       True
-  )
-  PROJECTS = (
-      'projects',
-      'projects/{projectsId}',
-      {},
-      [u'projectsId'],
-      True
-  )
-  PROJECTS_SCANCONFIGS_SCANRUNS_CRAWLEDURLS = (
-      'projects.scanConfigs.scanRuns.crawledUrls',
-      'projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns/'
-      '{scanRunsId}',
-      {},
-      [u'projectsId', u'scanConfigsId', u'scanRunsId'],
-      False
   )
 
   def __init__(self, collection_name, path, flat_paths, params,

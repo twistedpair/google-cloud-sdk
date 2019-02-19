@@ -155,11 +155,18 @@ class BigquerydatatransferProjectsLocationsTransferConfigsCreateRequest(_message
       will fail.
     transferConfig: A TransferConfig resource to be passed as the request
       body.
+    versionInfo: Optional version info. If users want to find a very recent
+      access token, that is, immediately after approving access, users have to
+      set the version_info claim in the token request. To obtain the
+      version_info, users must use the "none+gsession" response type. which be
+      return a version_info back in the authorization response which be be put
+      in a JWT claim in the token request.
   """
 
   authorizationCode = _messages.StringField(1)
   parent = _messages.StringField(2, required=True)
   transferConfig = _messages.MessageField('TransferConfig', 3)
+  versionInfo = _messages.StringField(4)
 
 
 class BigquerydatatransferProjectsLocationsTransferConfigsDeleteRequest(_messages.Message):
@@ -238,12 +245,19 @@ class BigquerydatatransferProjectsLocationsTransferConfigsPatchRequest(_messages
     transferConfig: A TransferConfig resource to be passed as the request
       body.
     updateMask: Required list of fields to be updated in this request.
+    versionInfo: Optional version info. If users want to find a very recent
+      access token, that is, immediately after approving access, users have to
+      set the version_info claim in the token request. To obtain the
+      version_info, users must use the "none+gsession" response type. which be
+      return a version_info back in the authorization response which be be put
+      in a JWT claim in the token request.
   """
 
   authorizationCode = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   transferConfig = _messages.MessageField('TransferConfig', 3)
   updateMask = _messages.StringField(4)
+  versionInfo = _messages.StringField(5)
 
 
 class BigquerydatatransferProjectsLocationsTransferConfigsRunsDeleteRequest(_messages.Message):
@@ -413,11 +427,18 @@ class BigquerydatatransferProjectsTransferConfigsCreateRequest(_messages.Message
       will fail.
     transferConfig: A TransferConfig resource to be passed as the request
       body.
+    versionInfo: Optional version info. If users want to find a very recent
+      access token, that is, immediately after approving access, users have to
+      set the version_info claim in the token request. To obtain the
+      version_info, users must use the "none+gsession" response type. which be
+      return a version_info back in the authorization response which be be put
+      in a JWT claim in the token request.
   """
 
   authorizationCode = _messages.StringField(1)
   parent = _messages.StringField(2, required=True)
   transferConfig = _messages.MessageField('TransferConfig', 3)
+  versionInfo = _messages.StringField(4)
 
 
 class BigquerydatatransferProjectsTransferConfigsDeleteRequest(_messages.Message):
@@ -493,12 +514,19 @@ class BigquerydatatransferProjectsTransferConfigsPatchRequest(_messages.Message)
     transferConfig: A TransferConfig resource to be passed as the request
       body.
     updateMask: Required list of fields to be updated in this request.
+    versionInfo: Optional version info. If users want to find a very recent
+      access token, that is, immediately after approving access, users have to
+      set the version_info claim in the token request. To obtain the
+      version_info, users must use the "none+gsession" response type. which be
+      return a version_info back in the authorization response which be be put
+      in a JWT claim in the token request.
   """
 
   authorizationCode = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   transferConfig = _messages.MessageField('TransferConfig', 3)
   updateMask = _messages.StringField(4)
+  versionInfo = _messages.StringField(5)
 
 
 class BigquerydatatransferProjectsTransferConfigsRunsDeleteRequest(_messages.Message):

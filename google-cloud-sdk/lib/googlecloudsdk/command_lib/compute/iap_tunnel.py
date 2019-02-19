@@ -109,8 +109,9 @@ def _SendLocalDataCallback(local_conn, data):
     local_conn.send(data)
 
 
-def _OpenLocalTcpSocket(local_host, local_port):
-  """Attempt to open a local socket listening on specified host and port."""
+def _OpenLocalTcpSockets(local_host, local_port):
+  """Attempt to open a local socket(s) listening on specified host and port."""
+  open_sockets = []
   for res in socket.getaddrinfo(
       local_host, local_port, socket.AF_UNSPEC, socket.SOCK_STREAM, 0,
       socket.AI_PASSIVE):
@@ -122,12 +123,15 @@ def _OpenLocalTcpSocket(local_host, local_port):
     try:
       s.bind(sock_addr)
       s.listen(1)
-      return s
+      open_sockets.append(s)
     except EnvironmentError:
       try:
         s.close()
       except socket.error:
         pass
+
+  if open_sockets:
+    return open_sockets
 
   raise UnableToOpenPortError('Unable to open socket on port [%d].' %
                               local_port)
@@ -383,7 +387,7 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
         args, project, zone, instance, interface, port)
     self._local_host = local_host
     self._local_port = local_port
-    self._server_socket = None
+    self._server_sockets = []
     self._connections = []
 
   def __del__(self):
@@ -392,8 +396,8 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
   def StartProxyServer(self):
     """Start accepting connections."""
     self._TestConnection()
-    self._server_socket = _OpenLocalTcpSocket(self._local_host,
-                                              self._local_port)
+    self._server_sockets = _OpenLocalTcpSockets(self._local_host,
+                                                self._local_port)
     log.out.Print('Listening on port [%d].' % self._local_port)
 
     try:
@@ -424,10 +428,10 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
     ready_sockets = [()]
     while not ready_sockets[0]:
       # 0.2 second timeout
-      ready_sockets = select.select((self._server_socket,), (), (), 0.2)
+      ready_sockets = select.select(self._server_sockets, (), (), 0.2)
 
-    conn, socket_address = self._server_socket.accept()
-    log.info('New connection from [%r]', socket_address)
+    ready_read_sockets = ready_sockets[0]
+    conn, socket_address = ready_read_sockets[0].accept()
     new_thread = threading.Thread(target=self._HandleNewConnection,
                                   args=(conn, socket_address))
     new_thread.daemon = True
@@ -437,8 +441,8 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
   def _CloseServerSocket(self):
     log.debug('Stopping server.')
     try:
-      if self._server_socket:
-        self._server_socket.close()
+      for server_socket in self._server_sockets:
+        server_socket.close()
     except EnvironmentError:
       pass
 
@@ -475,7 +479,7 @@ class IapTunnelConnectionHelper(_BaseIapTunnelHelper):
     super(IapTunnelConnectionHelper, self).__init__(
         args, project, zone, instance, interface, port)
     self._local_port = DetermineLocalPort()
-    self._server_socket = None
+    self._server_sockets = []
     self._listen_thread = None
 
   def __del__(self):
@@ -483,7 +487,7 @@ class IapTunnelConnectionHelper(_BaseIapTunnelHelper):
 
   def StartListener(self, accept_multiple_connections=False):
     """Start a server socket and listener thread."""
-    self._server_socket = _OpenLocalTcpSocket('localhost', self._local_port)
+    self._server_sockets = _OpenLocalTcpSockets('localhost', self._local_port)
     self._listen_thread = threading.Thread(
         target=functools.partial(self._ListenAndConnect,
                                  accept_multiple_connections))
@@ -501,13 +505,12 @@ class IapTunnelConnectionHelper(_BaseIapTunnelHelper):
     """Accept and handle one connection."""
     conn = None
     try:
-      conn, client_socket_address = self._server_socket.accept()
+      conn, client_socket_address = self._server_sockets[0].accept()
       try:
         self._RunReceiveLocalData(conn, repr(client_socket_address))
       except Exception as e:  # pylint: disable=broad-except
         if isinstance(e, EnvironmentError):
-          log.debug('Socket error [%s] while receiving from client.',
-                    str(e))
+          log.debug('Socket error [%s] while receiving from client.', str(e))
         else:
           log.debug('Error while receiving from client.', exc_info=True)
         raise
@@ -521,8 +524,8 @@ class IapTunnelConnectionHelper(_BaseIapTunnelHelper):
   def _CloseServerSocket(self):
     log.debug('Stopping server.')
     try:
-      if self._server_socket:
-        self._server_socket.close()
+      for server_socket in self._server_sockets:
+        server_socket.close()
     except EnvironmentError:
       pass
 

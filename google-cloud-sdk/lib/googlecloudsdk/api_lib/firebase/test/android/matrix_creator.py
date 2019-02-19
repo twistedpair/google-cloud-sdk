@@ -106,7 +106,8 @@ class MatrixCreator(object):
     action_types = self._messages.RoboDirective.ActionTypeValueValuesEnum
     action_type_mapping = {
         'click': action_types.SINGLE_CLICK,
-        'text': action_types.ENTER_TEXT
+        'text': action_types.ENTER_TEXT,
+        'ignore': action_types.IGNORE
     }
     for key, value in six.iteritems((robo_directives_dict or {})):
       (action_type, resource_name) = util.ParseRoboDirectiveKey(key)

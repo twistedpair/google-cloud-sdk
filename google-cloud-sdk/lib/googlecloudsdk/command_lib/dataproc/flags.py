@@ -117,7 +117,7 @@ def AddMinCpuPlatformArgs(parser, track):
       help=help_text)
 
 
-def AddComponentFlag(parser):
+def AddComponentFlag(parser, hidden=False):
   """Add optional components flag."""
   help_text = """\
       List of optional components to be installed on cluster machines.
@@ -131,6 +131,7 @@ def AddComponentFlag(parser):
       metavar='COMPONENT',
       type=arg_parsers.ArgList(element_type=lambda val: val.upper()),
       dest='components',
+      hidden=hidden,
       help=help_text)
 
 

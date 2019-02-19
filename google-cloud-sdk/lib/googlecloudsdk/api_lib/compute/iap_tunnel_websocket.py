@@ -254,7 +254,20 @@ class IapTunnelWebSocket(object):
       if self._HasConnected():
         return
       time.sleep(0.01)
-    raise ConnectionCreationError('Error while establishing WebSocket.')
+
+    if (self._websocket_helper and self._websocket_helper.IsClosed() and
+        self._websocket_helper.ErrorMsg()):
+      extra_msg = ''
+      # Error messages like 'Handshake status 400' or 'Handshake status 404'
+      # may often indicate missing permissions.
+      if self._websocket_helper.ErrorMsg().startswith('Handshake status 40'):
+        extra_msg = ' (May be due to missing permissions)'
+      error_msg = ('Error while connecting [%s].%s' %
+                   (self._websocket_helper.ErrorMsg(), extra_msg))
+      raise ConnectionCreationError(error_msg)
+
+    raise ConnectionCreationError('Unexpected error while connecting. Check '
+                                  'logs for more details.')
 
   def _OnClose(self):
     self._StopConnectionAsync()

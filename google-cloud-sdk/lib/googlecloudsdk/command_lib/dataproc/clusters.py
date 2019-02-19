@@ -57,6 +57,7 @@ def ArgsForClusterRef(parser, beta=False, include_deprecated=True): \
   # 30m is backend timeout + 5m for safety buffer.
   flags.AddTimeoutFlag(parser, default='35m')
   flags.AddZoneFlag(parser, short_flags=include_deprecated)
+  flags.AddComponentFlag(parser, not beta)  # Hidden in GA track.
 
   parser.add_argument(
       '--metadata',
@@ -347,17 +348,15 @@ def _AddDiskArgsDeprecated(parser):
 
 def BetaArgsForClusterRef(parser):
   """Register beta-only flags for creating a Dataproc cluster."""
-  flags.AddComponentFlag(parser)
   flags.AddMinCpuPlatformArgs(parser, base.ReleaseTrack.BETA)
 
   parser.add_argument(
-      '--enable-http-port-access',
+      '--enable-component-gateway',
       hidden=True,
       action='store_true',
       help="""\
-        Enable access to selected http ports on the cluster. This allows
-        interactive access to the UIs of certain components on the cluster
-        without an ssh tunnel or SOCKS proxy.
+        Enable access to the web UIs of selected components on the cluster
+        through the component gateway.
         """)
 
   parser.add_argument(
@@ -509,12 +508,11 @@ def GetClusterConfig(args,
     software_config.properties = encoding.DictToAdditionalPropertyMessage(
         args.properties, dataproc.messages.SoftwareConfig.PropertiesValue)
 
-  if beta:
-    if args.components:
-      software_config_cls = dataproc.messages.SoftwareConfig
-      software_config.optionalComponents.extend(list(map(
-          software_config_cls.OptionalComponentsValueListEntryValuesEnum,
-          args.components)))
+  if args.components:
+    software_config_cls = dataproc.messages.SoftwareConfig
+    software_config.optionalComponents.extend(list(map(
+        software_config_cls.OptionalComponentsValueListEntryValuesEnum,
+        args.components)))
 
   gce_cluster_config = dataproc.messages.GceClusterConfig(
       networkUri=network_ref and network_ref.SelfLink(),
@@ -580,9 +578,9 @@ def GetClusterConfig(args,
   )
 
   if beta:
-    if args.enable_http_port_access:
+    if args.enable_component_gateway:
       cluster_config.endpointConfig = dataproc.messages.EndpointConfig(
-          enableHttpPortAccess=args.enable_http_port_access)
+          enableHttpPortAccess=args.enable_component_gateway)
 
   if beta:
     cluster_config.masterConfig.minCpuPlatform = args.master_min_cpu_platform
