@@ -90,15 +90,15 @@ class ContainerState(_messages.Message):
       `ERROR`.
 
   Fields:
-    configVersion: Version number of deployed edge container config. This
-      value should be matched to the version of Container of the latest
-      deployed config.
     container: Name of the container. For example, `projects/p1/locations/us-
       central1/registries/registry0/devices/dev0/containers/c1`.
     dockerImageUri: URI of the deployed container in Google Container
       Registry. This value should be matched to the docker_image_uri field of
       Container message.
     state: State of the container, For example, `RUNNING` or `ERROR`.
+    version: Version number of deployed edge container config. This value
+      should be matched to the version of Container of the latest deployed
+      config.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -113,10 +113,10 @@ class ContainerState(_messages.Message):
     RUNNING = 1
     ERROR = 2
 
-  configVersion = _messages.IntegerField(1)
-  container = _messages.StringField(2)
-  dockerImageUri = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  container = _messages.StringField(1)
+  dockerImageUri = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  version = _messages.IntegerField(4)
 
 
 class DeployableFunction(_messages.Message):
@@ -542,15 +542,15 @@ class FunctionState(_messages.Message):
       `ERROR`.
 
   Fields:
-    configVersion: Version number of deployed edge function config. This value
-      should be matched to the version of Function of the latest deployed
-      config.
     dockerImageUri: URI of the deployed container in Google Container
       Registry. This value should be matched to the docker_image_uri field of
       Function message.
     function: Name of the function. For example, `projects/p1/locations/us-
       central1/registries/registry0/devices/dev0/functions/f1`.
     state: State of the function, For example, `RUNNING` or `ERROR`.
+    version: Version number of deployed edge function config. This value
+      should be matched to the version of Function of the latest deployed
+      config.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -565,10 +565,10 @@ class FunctionState(_messages.Message):
     RUNNING = 1
     ERROR = 2
 
-  configVersion = _messages.IntegerField(1)
-  dockerImageUri = _messages.StringField(2)
-  function = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  dockerImageUri = _messages.StringField(1)
+  function = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  version = _messages.IntegerField(4)
 
 
 class InitAsEdgeDeviceRequest(_messages.Message):
@@ -646,8 +646,6 @@ class MlModel(_messages.Message):
     requestTimeout: Timeout for one request to this ML model.
     updateTime: Output only. Last updated time of this ml model config. This
       is assigned by Edge Manager API.
-    useGpu: If use_gpu flag is true, Edge runtime will try to use GPU.
-    useTpu: If use_tpu flag is true, Edge runtime will try to use Edge TPU.
     version: Output only. Version of this ML model config. This is assigned by
       Edge Manager API.
   """
@@ -680,18 +678,16 @@ class MlModel(_messages.Message):
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 1)
   description = _messages.StringField(2)
   framework = _messages.EnumField('FrameworkValueValuesEnum', 3)
-  inputTensors = _messages.MessageField('TensorRef', 4, repeated=True)
+  inputTensors = _messages.MessageField('TensorInfo', 4, repeated=True)
   inputTopics = _messages.MessageField('TopicInfo', 5, repeated=True)
   modelUri = _messages.StringField(6)
   name = _messages.StringField(7)
   numTfliteThreads = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  outputTensors = _messages.MessageField('TensorRef', 9, repeated=True)
+  outputTensors = _messages.MessageField('TensorInfo', 9, repeated=True)
   outputTopics = _messages.MessageField('TopicInfo', 10, repeated=True)
   requestTimeout = _messages.StringField(11)
   updateTime = _messages.StringField(12)
-  useGpu = _messages.BooleanField(13)
-  useTpu = _messages.BooleanField(14)
-  version = _messages.IntegerField(15)
+  version = _messages.IntegerField(13)
 
 
 class MlModelState(_messages.Message):
@@ -702,14 +698,13 @@ class MlModelState(_messages.Message):
       `ERROR`.
 
   Fields:
-    configVersion: Version number of deployed ML model config. This value
-      should be matched to the version of MlModel of the latest deployed
-      config.
     mlModel: Name of the ML model. For example, `projects/p1/locations/us-
       central1/registries/registry0/devices/dev0/mlModels/m1`.
     modelUri: URI that points to ML model file in Google Cloud Storage. This
       value should be matched to the model_uri field of MlModel message.
     state: State of the ML model, For example, `RUNNING` or `ERROR`.
+    version: Version number of deployed ML model config. This value should be
+      matched to the version of MlModel of the latest deployed config.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -724,10 +719,10 @@ class MlModelState(_messages.Message):
     RUNNING = 1
     ERROR = 2
 
-  configVersion = _messages.IntegerField(1)
-  mlModel = _messages.StringField(2)
-  modelUri = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  mlModel = _messages.StringField(1)
+  modelUri = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  version = _messages.IntegerField(4)
 
 
 class Rule(_messages.Message):
@@ -902,6 +897,7 @@ class TensorInfo(_messages.Message):
 
   Fields:
     dimensions: Dimension description of the tensor.
+    index: Index of the tensor in the input or output layer.
     inferenceType: Type of the tensor.
     tensorName: Name of the tensor.
   """
@@ -920,20 +916,9 @@ class TensorInfo(_messages.Message):
     FLOAT_32 = 2
 
   dimensions = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
-  inferenceType = _messages.EnumField('InferenceTypeValueValuesEnum', 2)
-  tensorName = _messages.StringField(3)
-
-
-class TensorRef(_messages.Message):
-  r"""Reference information of tensor.
-
-  Fields:
-    index: Index of the tensor in the input or output layer.
-    tensorInfo: Information about the tensor.
-  """
-
-  index = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  tensorInfo = _messages.MessageField('TensorInfo', 2)
+  index = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  inferenceType = _messages.EnumField('InferenceTypeValueValuesEnum', 3)
+  tensorName = _messages.StringField(4)
 
 
 class TopicBridgingTable(_messages.Message):

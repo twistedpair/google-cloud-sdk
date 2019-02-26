@@ -20,7 +20,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
-
 from apitools.base.py import encoding
 
 from googlecloudsdk.api_lib.compute import utils as api_utils
@@ -33,18 +32,19 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute.instances import flags as instances_flags
 from googlecloudsdk.command_lib.dataproc import flags
+from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import yaml
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import times
-
 
 GENERATED_LABEL_PREFIX = 'goog-dataproc-'
 
 
 # beta is unused but still useful when we add new beta features
-def ArgsForClusterRef(parser, beta=False, include_deprecated=True): \
-    # pylint: disable=unused-argument
+def ArgsForClusterRef(parser, beta=False, include_deprecated=True):
   """Register flags for creating a dataproc cluster.
 
   Args:
@@ -350,6 +350,8 @@ def BetaArgsForClusterRef(parser):
   """Register beta-only flags for creating a Dataproc cluster."""
   flags.AddMinCpuPlatformArgs(parser, base.ReleaseTrack.BETA)
 
+  AddKerberosGroup(parser)
+
   parser.add_argument(
       '--enable-component-gateway',
       hidden=True,
@@ -576,6 +578,22 @@ def GetClusterConfig(args,
       initializationActions=init_actions,
       softwareConfig=software_config,
   )
+
+  if beta:
+    if args.kerberos_config_file or args.kerberos_root_principal_password_uri:
+      cluster_config.securityConfig = dataproc.messages.SecurityConfig()
+      if args.kerberos_config_file:
+        cluster_config.securityConfig.kerberosConfig = ParseKerberosConfigFile(
+            dataproc, args.kerberos_config_file)
+      else:
+        kerberos_config = dataproc.messages.KerberosConfig()
+        kerberos_config.enableKerberos = True
+        if args.kerberos_root_principal_password_uri:
+          kerberos_config.rootPrincipalPasswordUri = \
+            args.kerberos_root_principal_password_uri
+          kerberos_kms_ref = args.CONCEPTS.kerberos_kms_key.Parse()
+          kerberos_config.kmsKeyUri = kerberos_kms_ref.RelativeName()
+        cluster_config.securityConfig.kerberosConfig = kerberos_config
 
   if beta:
     if args.enable_component_gateway:
@@ -805,3 +823,154 @@ def GetAllocationAffinity(args, client):
       key=allocation_key,
       values=allocation_values)
 
+
+def AddKerberosGroup(parser):
+  """Adds the argument group to handle Kerberos configurations."""
+  kerberos_group = parser.add_argument_group(
+      mutex=True,
+      help='Specifying these flags will enable Kerberos for the cluster.')
+  # Not mutually exclusive
+  kerberos_flag_group = kerberos_group.add_argument_group()
+  kerberos_flag_group.add_argument(
+      '--kerberos-root-principal-password-uri',
+      required=True,
+      help="""\
+        Google Cloud Storage URI of a KMS encrypted file containing
+        the root principal password. Must be a URL beginning with 'gs://'.
+        """)
+  # Add kerberos-kms-key args
+  kerberos_kms_flag_overrides = \
+      {'kms-key': '--kerberos-kms-key',
+       'kms-keyring': '--kerberos-kms-key-keyring',
+       'kms-location': '--kerberos-kms-key-location',
+       'kms-project': '--kerberos-kms-key-project'}
+  kms_resource_args.AddKmsKeyResourceArg(
+      kerberos_flag_group,
+      'password',
+      flag_overrides=kerberos_kms_flag_overrides,
+      required=True,
+      name='--kerberos-kms-key')
+
+  kerberos_group.add_argument(
+      '--kerberos-config-file',
+      help="""\
+Path to a YAML (or JSON) file containing the configuration for Kerberos on the
+cluster. If you pass `-` as the value of the flag the file content will be read
+from stdin.
+
+The YAML file is formatted as follows:
+
+```
+  # Optional. Flag to indicate whether to Kerberize the cluster.
+  # The default value is true.
+  enable_kerberos: true
+
+  # Required. The Google Cloud Storage URI of a KMS encrypted file
+  # containing the root principal password.
+  root_principal_password_uri: gs://bucket/password.encrypted
+
+  # Required. The URI of the KMS key used to encrypt various
+  # sensitive files.
+  kms_key_uri:
+    projects/myproject/locations/global/keyRings/mykeyring/cryptoKeys/my-key
+
+  # Configuration of SSL encryption. If specified, all sub-fields
+  # are required. Otherwise, Dataproc will provide a self-signed
+  # certificate and generate the passwords.
+  ssl:
+    # Optional. The Google Cloud Storage URI of the keystore file.
+    keystore_uri: gs://bucket/keystore.jks
+
+    # Optional. The Google Cloud Storage URI of a KMS encrypted
+    # file containing the password to the keystore.
+    keystore_password_uri: gs://bucket/keystore_password.encrypted
+
+    # Optional. The Google Cloud Storage URI of a KMS encrypted
+    # file containing the password to the user provided key.
+    key_password_uri: gs://bucket/key_password.encrypted
+
+    # Optional. The Google Cloud Storage URI of the truststore
+    # file.
+    truststore_uri: gs://bucket/truststore.jks
+
+    # Optional. The Google Cloud Storage URI of a KMS encrypted
+    # file containing the password to the user provided
+    # truststore.
+    truststore_password_uri:
+      gs://bucket/truststore_password.encrypted
+
+  # Configuration of cross realm trust.
+  cross_realm_trust:
+    # Optional. The remote realm the Dataproc on-cluster KDC will
+    # trust, should the user enable cross realm trust.
+    realm: REMOTE.REALM
+
+    # Optional. The KDC (IP or hostname) for the remote trusted
+    # realm in a cross realm trust relationship.
+    kdc: kdc.remote.realm
+
+    # Optional. The admin server (IP or hostname) for the remote
+    # trusted realm in a cross realm trust relationship.
+    admin_server: admin-server.remote.realm
+
+    # Optional. The Google Cloud Storage URI of a KMS encrypted
+    # file containing the shared password between the on-cluster
+    # Kerberos realm and the remote trusted realm, in a cross
+    # realm trust relationship.
+    shared_password_uri:
+      gs://bucket/cross-realm.password.encrypted
+
+  # Optional. The Google Cloud Storage URI of a KMS encrypted file
+  # containing the master key of the KDC database.
+  kdc_db_key_uri: gs://bucket/kdc_db_key.encrypted
+
+  # Optional. The lifetime of the ticket granting ticket, in
+  # hours. If not specified, or user specifies 0, then default
+  # value 10 will be used.
+  tgt_lifetime_hours: 1
+```
+        """)
+
+
+def ParseKerberosConfigFile(dataproc, kerberos_config_file):
+  """Parse a kerberos-config-file into the KerberosConfig message."""
+  data = console_io.ReadFromFileOrStdin(kerberos_config_file, binary=False)
+  try:
+    kerberos_config_data = yaml.load(data)
+  except Exception as e:
+    raise exceptions.ParseError('Cannot parse YAML:[{0}]'.format(e))
+
+  ssl_config = kerberos_config_data.get('ssl', {})
+  keystore_uri = ssl_config.get('keystore_uri')
+  truststore_uri = ssl_config.get('truststore_uri')
+  keystore_password_uri = ssl_config.get('keystore_password_uri')
+  key_password_uri = ssl_config.get('key_password_uri')
+  truststore_password_uri = ssl_config.get('truststore_password_uri')
+
+  cross_realm_trust_config = kerberos_config_data.get('cross_realm_trust', {})
+  cross_realm_trust_realm = cross_realm_trust_config.get('realm')
+  cross_realm_trust_kdc = cross_realm_trust_config.get('kdc')
+  cross_realm_trust_admin_server = cross_realm_trust_config.get('admin_server')
+  cross_realm_trust_shared_password_uri = cross_realm_trust_config.get(
+      'shared_password_uri')
+  kerberos_config_msg = dataproc.messages.KerberosConfig(
+      # Unless user explicitly disable kerberos in kerberos config,
+      # consider the existence of the kerberos config is enabling
+      # kerberos, explicitly or implicitly.
+      enableKerberos=kerberos_config_data.get('enable_kerberos', True),
+      rootPrincipalPasswordUri=kerberos_config_data.get(
+          'root_principal_password_uri'),
+      kmsKeyUri=kerberos_config_data.get('kms_key_uri'),
+      kdcDbKeyUri=kerberos_config_data.get('kdc_db_key_uri'),
+      tgtLifetimeHours=kerberos_config_data.get('tgt_lifetime_hours'),
+      keystoreUri=keystore_uri,
+      keystorePasswordUri=keystore_password_uri,
+      keyPasswordUri=key_password_uri,
+      truststoreUri=truststore_uri,
+      truststorePasswordUri=truststore_password_uri,
+      crossRealmTrustRealm=cross_realm_trust_realm,
+      crossRealmTrustKdc=cross_realm_trust_kdc,
+      crossRealmTrustAdminServer=cross_realm_trust_admin_server,
+      crossRealmTrustSharedPasswordUri=cross_realm_trust_shared_password_uri)
+
+  return kerberos_config_msg

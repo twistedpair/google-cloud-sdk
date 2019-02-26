@@ -28,6 +28,19 @@ def AddOrganizationArgs(parser):
       help='The ID of the organization which is the root asset.')
 
 
+def AddFolderArgs(parser):
+  parser.add_argument(
+      '--folder',
+      metavar='FOLDER_ID',
+      help='The ID of the folder which is the root asset.')
+
+
+def AddParentArgs(parser):
+  parent_group = parser.add_group(mutex=True, help='The root asset')
+  AddOrganizationArgs(parent_group)
+  AddFolderArgs(parent_group)
+
+
 def AddSnapshotTimeArgs(parser):
   parser.add_argument(
       '--snapshot-time',

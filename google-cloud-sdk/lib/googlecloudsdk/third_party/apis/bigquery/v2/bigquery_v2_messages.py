@@ -214,6 +214,8 @@ class BigqueryJobsListRequest(_messages.Message):
       are returned
     pageToken: Page token, returned by a previous call, to request the next
       page of results
+    parentJobId: If set, retrieves only jobs whose parent is this job.
+      Otherwise, retrieves only jobs which have no parent.
     projectId: Project ID of the jobs to list
     projection: Restrict information returned to a set of selected fields
     stateFilter: Filter for job state
@@ -246,9 +248,10 @@ class BigqueryJobsListRequest(_messages.Message):
   maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
   minCreationTime = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   pageToken = _messages.StringField(5)
-  projectId = _messages.StringField(6, required=True)
-  projection = _messages.EnumField('ProjectionValueValuesEnum', 7)
-  stateFilter = _messages.EnumField('StateFilterValueValuesEnum', 8, repeated=True)
+  parentJobId = _messages.StringField(6)
+  projectId = _messages.StringField(7, required=True)
+  projection = _messages.EnumField('ProjectionValueValuesEnum', 8)
+  stateFilter = _messages.EnumField('StateFilterValueValuesEnum', 9, repeated=True)
 
 
 class BigqueryJobsQueryRequest(_messages.Message):
@@ -1756,6 +1759,8 @@ class JobStatistics(_messages.Message):
       epoch. This field will be present whenever a job is in the DONE state.
     extract: [Output-only] Statistics for an extract job.
     load: [Output-only] Statistics for a load job.
+    numChildJobs: [Output-only] Number of child jobs executed.
+    parentJobId: [Output-only] If this is a child job, the id of the parent.
     query: [Output-only] Statistics for a query job.
     quotaDeferments: [Output-only] Quotas which delayed this job's start time.
     reservationUsage: [Output-only] Job resource usage breakdown by
@@ -1786,12 +1791,14 @@ class JobStatistics(_messages.Message):
   endTime = _messages.IntegerField(3)
   extract = _messages.MessageField('JobStatistics4', 4)
   load = _messages.MessageField('JobStatistics3', 5)
-  query = _messages.MessageField('JobStatistics2', 6)
-  quotaDeferments = _messages.StringField(7, repeated=True)
-  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 8, repeated=True)
-  startTime = _messages.IntegerField(9)
-  totalBytesProcessed = _messages.IntegerField(10)
-  totalSlotMs = _messages.IntegerField(11)
+  numChildJobs = _messages.IntegerField(6)
+  parentJobId = _messages.StringField(7)
+  query = _messages.MessageField('JobStatistics2', 8)
+  quotaDeferments = _messages.StringField(9, repeated=True)
+  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 10, repeated=True)
+  startTime = _messages.IntegerField(11)
+  totalBytesProcessed = _messages.IntegerField(12)
+  totalSlotMs = _messages.IntegerField(13)
 
 
 class JobStatistics2(_messages.Message):

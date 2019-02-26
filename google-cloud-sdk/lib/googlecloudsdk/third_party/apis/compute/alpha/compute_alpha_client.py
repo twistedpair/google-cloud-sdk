@@ -633,32 +633,6 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def UpdateResourceShape(self, request, global_params=None):
-      r"""Updates the shape of an allocation.
-
-      Args:
-        request: (ComputeAllocationsUpdateResourceShapeRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('UpdateResourceShape')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    UpdateResourceShape.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.allocations.updateResourceShape',
-        ordered_params=[u'project', u'zone', u'allocation'],
-        path_params=[u'allocation', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/allocations/{allocation}/updateResourceShape',
-        request_field=u'allocationsUpdateResourceShapeRequest',
-        request_type_name=u'ComputeAllocationsUpdateResourceShapeRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
   class AutoscalersService(base_api.BaseApiService):
     """Service class for the autoscalers resource."""
 
@@ -8733,7 +8707,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id=u'compute.organizationSecurityPolicies.addAssociation',
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
-        query_params=[u'requestId'],
+        query_params=[u'replaceExistingAssociation', u'requestId'],
         relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/addAssociation',
         request_field=u'securityPolicyAssociation',
         request_type_name=u'ComputeOrganizationSecurityPoliciesAddAssociationRequest',
@@ -8972,6 +8946,32 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field='',
         request_type_name=u'ComputeOrganizationSecurityPoliciesMoveRequest',
         response_type_name=u'ComputeOrganizationSecurityPoliciesMoveResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patches the specified policy with the data included in the request.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.organizationSecurityPolicies.patch',
+        ordered_params=[u'securityPolicy'],
+        path_params=[u'securityPolicy'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}',
+        request_field=u'securityPolicyResource',
+        request_type_name=u'ComputeOrganizationSecurityPoliciesPatchRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 

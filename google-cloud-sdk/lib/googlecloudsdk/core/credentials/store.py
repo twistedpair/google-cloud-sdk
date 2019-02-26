@@ -504,12 +504,18 @@ def Revoke(account=None):
         'This comes from your browser session and will not persist outside'
         'of your connected Cloud Shell session.')
 
-  rv = True
+  rv = False
   try:
-    RevokeCredentials(credentials)
+    if not account.endswith('.gserviceaccount.com'):
+      RevokeCredentials(credentials)
+      rv = True
   except client.TokenRevokeError as e:
     if e.args[0] == 'invalid_token':
-      rv = False
+      # Malformed or already revoked
+      pass
+    elif e.args[0] == 'invalid_request':
+      # Service account token
+      pass
     else:
       raise
 

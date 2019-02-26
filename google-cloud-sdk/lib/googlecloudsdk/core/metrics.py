@@ -36,6 +36,7 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
@@ -289,9 +290,11 @@ class _MetricsCollector(object):
         # cd6 passed as argument to _GAEvent - cd6 = Flag Names
         ('cd7', 'environment_version',
          properties.VALUES.metrics.environment_version.Get()),
-        ('cd12', 'from_script', console_io.IsRunFromShellScript()),
         # cd8 passed as argument to _GAEvent - cd8 = Error
         # cd9 passed as argument to _GAEvent - cd9 = Error Extra Info
+        ('cd12', 'from_script', console_io.IsRunFromShellScript()),
+        ('cd13', 'term',
+         console_attr.GetConsoleAttr().GetTermIdentifier()),
     ]
 
     self._ga_event_params = [

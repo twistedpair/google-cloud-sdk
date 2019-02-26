@@ -25,18 +25,6 @@ from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
-INSTANCES_LIST_FORMAT_ALPHA = """\
-    table(
-      name.basename():label=INSTANCE_NAME:sort=1,
-      name.segment(3):label=LOCATION,
-      tier,
-      volumes[0].capacityGb:label=CAPACITY_GB,
-      volumes[0].name:label=FILE_SHARE_NAME,
-      networks[0].ipAddresses[0]:label=IP_ADDRESS,
-      state,
-      createTime.date()
-    )"""
-
 INSTANCES_LIST_FORMAT = """\
     table(
       name.basename():label=INSTANCE_NAME:sort=1,

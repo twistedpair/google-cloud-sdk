@@ -247,7 +247,7 @@ class ConsoleAttr(object):
   _BULLETS_WINDOWS = ('■', '≡', '∞', 'Φ', '·')  # cp437 compatible unicode
   _BULLETS_ASCII = ('o', '*', '+', '-')
 
-  def __init__(self, encoding=None):
+  def __init__(self, encoding=None, suppress_output=False):
     """Constructor.
 
     Args:
@@ -255,6 +255,8 @@ class ConsoleAttr(object):
         ascii -- ASCII art. This is the default.
         utf8 -- UTF-8 unicode.
         win -- Windows code page 437.
+      suppress_output: True to create a ConsoleAttr that doesn't want to output
+        anything.
     """
     # Normalize the encoding name.
     if not encoding:
@@ -262,7 +264,7 @@ class ConsoleAttr(object):
     elif encoding == 'win':
       encoding = 'cp437'
     self._encoding = encoding or 'ascii'
-    self._term = os.getenv('TERM', '').lower()
+    self._term = '' if suppress_output else os.getenv('TERM', '').lower()
 
     # ANSI "standard" attributes.
     if self.SupportsAnsi():
@@ -297,7 +299,8 @@ class ConsoleAttr(object):
 
     # OS specific attributes.
     self._get_raw_key = [console_attr_os.GetRawKeyFunction()]
-    self._term_size = console_attr_os.GetTermSize()
+    self._term_size = (
+        (0, 0) if suppress_output else console_attr_os.GetTermSize())
 
     self._display_width_cache = {}
 
@@ -451,6 +454,14 @@ class ConsoleAttr(object):
       character.
     """
     return self._get_raw_key[0]()
+
+  def GetTermIdentifier(self):
+    """Returns the TERM envrionment variable for the console.
+
+    Returns:
+      str: A str that describes the console's text capabilities
+    """
+    return self._term
 
   def GetTermSize(self):
     """Returns the terminal (x, y) dimensions in characters.

@@ -87,6 +87,10 @@ class DeploymentFailedError(exceptions.Error):
   pass
 
 
+class DomainMappingCreationError(exceptions.Error):
+  """An error was encountered during the creation of a domain mapping."""
+
+
 class BadImageError(exceptions_util.HttpException):
   """Invalid image provided in the revision template."""
 

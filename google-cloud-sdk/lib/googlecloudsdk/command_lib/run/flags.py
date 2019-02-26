@@ -73,11 +73,12 @@ def AddAsyncFlag(parser):
 
 
 def AddEndpointVisibilityEnum(parser):
-  """Add the --endpoint=[external|internal] flag."""
+  """Add the --connectivity=[external|internal] flag."""
   parser.add_argument(
-      '--endpoint',
+      '--connectivity',
       choices=_VISIBILITY_MODES,
-      help='Set endpoint visibility to public or private.')
+      help=('If \'external\', the service can be invoked through the internet, '
+            'in addition to through the cluster network.'))
 
 
 def AddServiceFlag(parser):

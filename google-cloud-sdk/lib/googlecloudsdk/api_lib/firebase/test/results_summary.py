@@ -50,8 +50,21 @@ class TestOutcome(collections.namedtuple(
   """
 
 
+class FlakyAttemptsTestOutcome(
+    collections.namedtuple('TestOutcome',
+                           ['outcome', 'axis_value', 'passed_executions'])):
+  """A tuple to hold the outcome for a single test axis value with flaky reruns.
+
+  Fields:
+    outcome: string containing the test outcome (e.g. 'Passed')
+    axis_value: string representing one axis value within the matrix.
+    passed_executions: string with number of passed attempts out of total number
+  """
+
+
 # Human-freindly test outcome names
 _SUCCESS = 'Passed'
+_FLAKY = 'Flaky'
 _FAILURE = 'Failed'
 _SKIPPED = 'Skipped'
 _INCONCLUSIVE = 'Inconclusive'
@@ -59,15 +72,21 @@ _INCONCLUSIVE = 'Inconclusive'
 # Relative sort weightings for test outcomes
 _OUTCOME_SORTING = {
     _FAILURE: 10,
-    _SUCCESS: 20,
-    _INCONCLUSIVE: 30,
-    _SKIPPED: 40,
+    _FLAKY: 20,
+    _SUCCESS: 30,
+    _INCONCLUSIVE: 40,
+    _SKIPPED: 50,
 }
 
 
 def _TestOutcomeSortKey(x):
   """Transform a TestOutcome to a tuple yielding the desired sort order."""
   return tuple([_OUTCOME_SORTING[x.outcome], x.test_details, x.axis_value])
+
+
+def _FlakyAttemptsTestOutcomeSortKey(x):
+  """Transform a TestOutcome to a tuple yielding the desired sort order."""
+  return tuple([_OUTCOME_SORTING[x.outcome], x.passed_executions, x.axis_value])
 
 
 class ToolResultsSummaryFetcher(object):
@@ -93,6 +112,11 @@ class ToolResultsSummaryFetcher(object):
         messages.Outcome.SummaryValueValuesEnum.failure: _FAILURE,
         messages.Outcome.SummaryValueValuesEnum.skipped: _SKIPPED,
         messages.Outcome.SummaryValueValuesEnum.inconclusive: _INCONCLUSIVE,
+        messages.PrimaryStep.RollUpValueValuesEnum.success: _SUCCESS,
+        messages.PrimaryStep.RollUpValueValuesEnum.flaky: _FLAKY,
+        messages.PrimaryStep.RollUpValueValuesEnum.failure: _FAILURE,
+        messages.PrimaryStep.RollUpValueValuesEnum.skipped: _SKIPPED,
+        messages.PrimaryStep.RollUpValueValuesEnum.inconclusive: _INCONCLUSIVE,
     }
 
   def FetchMatrixRollupOutcome(self):
@@ -138,14 +162,7 @@ class ToolResultsSummaryFetcher(object):
       return outcomes
 
     for step in steps:
-      axes = {}
-      for dimension in step.dimensionValue:
-        axes[dimension.key] = dimension.value
-      axis_value = ('{m}-{v}-{l}-{o}'
-                    .format(m=axes.get('Model', '?'),
-                            v=axes.get('Version', '?'),
-                            l=axes.get('Locale', '?'),
-                            o=axes.get('Orientation', '?')))
+      axis_value = self._GetAxisValue(step)
       # It's a bug in Tool Results if we get no outcome, but this guard
       # prevents a stack trace if it should happen.
       if not step.outcome:
@@ -165,6 +182,67 @@ class ToolResultsSummaryFetcher(object):
                         test_details=details))
 
     return sorted(outcomes, key=_TestOutcomeSortKey)
+
+  def CreateFlakyAttemptsMatrixOutcomeSummary(self):
+    """Fetches test results and creates a test outcome summary.
+
+    Lists all the primary steps in an execution and creates a high-level rollup
+    outcome summary for each group of steps (pass/flaky/fail/inconclusive). Each
+    primary step represents a combination of a test execution (e.g. running the
+    tests on a Nexus 5 in portrait mode using the en locale and API level 18).
+
+    Returns:
+      A list of TestOutcome objects.
+
+    Raises:
+      HttpException if the Tool Results service reports a back-end error.
+    """
+    outcomes = []
+    steps = self._ListAllSteps()
+    if not steps:
+      log.warning(
+          'No results found, something went wrong. Try re-running the tests.')
+      return outcomes
+
+    summary_enum = self._messages.Outcome.SummaryValueValuesEnum
+    pass_counter = collections.Counter()
+    total_counter = collections.Counter()
+    for step in steps:
+      axis_value = self._GetAxisValue(step)
+      total_counter[axis_value] += 1
+      if step.outcome and step.outcome.summary == summary_enum.success:
+        pass_counter[axis_value] += 1
+
+    for step in steps:
+      # It's a bug in Tool Results if we get no outcome, but this guard
+      # prevents a stack trace if it should happen.
+      if not step.outcome:
+        log.warning('Step for [{0}] had no outcome value.'.format(axis_value))
+      elif not step.multiStep or step.multiStep.multistepNumber < 1:
+        axis_value = self._GetAxisValue(step)
+        pass_ratio = pass_counter[axis_value] / total_counter[axis_value]
+        passed_str = '{:.0%} ({p} of {t})'.format(
+            pass_ratio, p=pass_counter[axis_value], t=total_counter[axis_value])
+        outcome_str = self._GetOutcomeSummaryDisplayName(
+            step.multiStep.primaryStep.rollUp if step.multiStep.primaryStep
+            else step.outcome.summary)
+        outcomes.append(
+            FlakyAttemptsTestOutcome(
+                outcome=outcome_str,
+                axis_value=axis_value,
+                passed_executions=passed_str))
+
+    return sorted(outcomes, key=_FlakyAttemptsTestOutcomeSortKey)
+
+  def _GetAxisValue(self, step):
+    axes = {}
+    for dimension in step.dimensionValue:
+      axes[dimension.key] = dimension.value
+    return ('{m}-{v}-{l}-{o}'.format(
+        m=axes.get('Model', '?'),
+        v=axes.get('Version', '?'),
+        l=axes.get('Locale', '?'),
+        o=axes.get('Orientation', '?')))
 
   def _ListAllSteps(self):
     """Lists all steps for a test execution using the Tool Results service.

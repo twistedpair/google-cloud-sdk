@@ -6,7 +6,7 @@
   "canonicalName": "Cloud IoT Edge Manager",
   "version": "v1alpha1",
   "revision": "0",
-  "title": "Cloud IoT Edge Manager API",
+  "title": "Edge API",
   "description": "Provides Cloud IoT Edge devices control APIs\n",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -188,7 +188,7 @@
           "description": "URI that points to ML model file in Google Cloud Storage. This value should\nbe matched to the model_uri field of MlModel message.",
           "type": "string"
         },
-        "configVersion": {
+        "version": {
           "description": "Version number of deployed ML model config. This value should be matched\nto the version of MlModel of the latest deployed config.",
           "type": "string",
           "format": "int64"
@@ -222,7 +222,7 @@
           "description": "URI of the deployed container in Google Container Registry. This value\nshould be matched to the docker_image_uri field of Function message.",
           "type": "string"
         },
-        "configVersion": {
+        "version": {
           "description": "Version number of deployed edge function config. This value should be\nmatched to the version of Function of the latest deployed config.",
           "type": "string",
           "format": "int64"
@@ -256,7 +256,7 @@
           "description": "URI of the deployed container in Google Container Registry. This value\nshould be matched to the docker_image_uri field of Container message.",
           "type": "string"
         },
-        "configVersion": {
+        "version": {
           "description": "Version number of deployed edge container config. This value should be\nmatched to the version of Container of the latest deployed config.",
           "type": "string",
           "format": "int64"
@@ -600,14 +600,6 @@
           "description": "URI that points to ML model file of Google Cloud Storage.",
           "type": "string"
         },
-        "useTpu": {
-          "description": "If use_tpu flag is true, Edge runtime will try to use Edge TPU.",
-          "type": "boolean"
-        },
-        "useGpu": {
-          "description": "If use_gpu flag is true, Edge runtime will try to use GPU.",
-          "type": "boolean"
-        },
         "numTfliteThreads": {
           "description": "Number of threads that are spawned by TF Lite.",
           "type": "integer",
@@ -617,14 +609,14 @@
           "description": "List of input tensors.",
           "type": "array",
           "items": {
-            "$ref": "TensorRef"
+            "$ref": "TensorInfo"
           }
         },
         "outputTensors": {
           "description": "List of output tensors.",
           "type": "array",
           "items": {
-            "$ref": "TensorRef"
+            "$ref": "TensorInfo"
           }
         },
         "inputTopics": {
@@ -686,22 +678,6 @@
         }
       }
     },
-    "TensorRef": {
-      "id": "TensorRef",
-      "description": "Reference information of tensor.",
-      "type": "object",
-      "properties": {
-        "index": {
-          "description": "Index of the tensor in the input or output layer.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "tensorInfo": {
-          "description": "Information about the tensor.",
-          "$ref": "TensorInfo"
-        }
-      }
-    },
     "TensorInfo": {
       "id": "TensorInfo",
       "description": "Indicates the info of input or output tensors of ML models.",
@@ -732,6 +708,11 @@
             "QUANTIZED_UINT_8",
             "FLOAT_32"
           ]
+        },
+        "index": {
+          "description": "Index of the tensor in the input or output layer.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

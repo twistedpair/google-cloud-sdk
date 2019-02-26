@@ -1960,29 +1960,6 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
-class OperationMetadata(_messages.Message):
-  r"""Metadata for the given google.longrunning.Operation.
-
-  Fields:
-    endTime: Timestamp that this operation completed.@OutputOnly
-    insertTime: Timestamp that this operation was created.@OutputOnly
-    method: API method that initiated this operation. Example:
-      google.appengine.v1beta4.Version.CreateVersion.@OutputOnly
-    operationType: Type of this operation. Deprecated, use method field
-      instead. Example: "create_version".@OutputOnly
-    target: Name of the resource that this operation is acting on. Example:
-      apps/myapp/modules/default.@OutputOnly
-    user: User who requested this operation.@OutputOnly
-  """
-
-  endTime = _messages.StringField(1)
-  insertTime = _messages.StringField(2)
-  method = _messages.StringField(3)
-  operationType = _messages.StringField(4)
-  target = _messages.StringField(5)
-  user = _messages.StringField(6)
-
-
 class OperationMetadataV1(_messages.Message):
   r"""Metadata for the given google.longrunning.Operation.
 
@@ -2065,26 +2042,6 @@ class OperationMetadataV1Beta(_messages.Message):
   target = _messages.StringField(6)
   user = _messages.StringField(7)
   warning = _messages.StringField(8, repeated=True)
-
-
-class OperationMetadataV1Beta5(_messages.Message):
-  r"""Metadata for the given google.longrunning.Operation.
-
-  Fields:
-    endTime: Timestamp that this operation completed.@OutputOnly
-    insertTime: Timestamp that this operation was created.@OutputOnly
-    method: API method name that initiated this operation. Example:
-      google.appengine.v1beta5.Version.CreateVersion.@OutputOnly
-    target: Name of the resource that this operation is acting on. Example:
-      apps/myapp/services/default.@OutputOnly
-    user: User who requested this operation.@OutputOnly
-  """
-
-  endTime = _messages.StringField(1)
-  insertTime = _messages.StringField(2)
-  method = _messages.StringField(3)
-  target = _messages.StringField(4)
-  user = _messages.StringField(5)
 
 
 class ReadinessCheck(_messages.Message):
@@ -2824,7 +2781,7 @@ class Version(_messages.Message):
     vm: Whether to deploy this version in a container on a virtual machine.
     vpcAccessConnector: Enables VPC connectivity for standard apps.
     zones: The Google Compute Engine zones that are supported by this version
-      in the App Engine flexible environment.
+      in the App Engine flexible environment. Deprecated.
   """
 
   class InboundServicesValueListEntryValuesEnum(_messages.Enum):

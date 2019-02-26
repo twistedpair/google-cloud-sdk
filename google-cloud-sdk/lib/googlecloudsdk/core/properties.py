@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Read and write properties for the CloudSDK."""
 
 from __future__ import absolute_import
@@ -36,13 +35,11 @@ from googlecloudsdk.core.util import times
 
 import six
 
-
 # Try to parse the command line flags at import time to see if someone provided
 # the --configuration flag.  If they did, this could affect the value of the
 # properties defined in that configuration.  Since some libraries (like logging)
 # use properties at startup, we want to use the correct configuration for that.
 named_configs.FLAG_OVERRIDE_STACK.PushFromArgs(sys.argv)
-
 
 _SET_PROJECT_HELP = """\
 To set your project, run:
@@ -52,7 +49,6 @@ To set your project, run:
 or to unset it, run:
 
   $ gcloud config unset project"""
-
 
 _VALID_PROJECT_REGEX = re.compile(
     r'^'
@@ -68,9 +64,7 @@ _VALID_PROJECT_REGEX = re.compile(
     # We also allow a leading digit as some legacy project ids can have
     # a leading digit.
     r'(?:(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))'
-    r'$'
-)
-
+    r'$')
 
 _VALID_ENDPOINT_OVERRIDE_REGEX = re.compile(
     r'^'
@@ -98,7 +92,8 @@ _VALID_ENDPOINT_OVERRIDE_REGEX = re.compile(
     r'(?::\d+)?'
     # require trailing slash, fragment optional
     r'(?:/|[/?]\S+/)'
-    r'$', re.IGNORECASE)
+    r'$',
+    re.IGNORECASE)
 
 _PUBSUB_NOTICE_URL = (
     'https://cloud.google.com/functions/docs/writing/background#event_parameter'
@@ -130,9 +125,9 @@ def _BooleanValidator(property_name, value):
   Raises:
     InvalidValueError: if value is not boolean
   """
-  accepted_strings = ['true', '1', 'on', 'yes', 'y',
-                      'false', '0', 'off', 'no', 'n',
-                      '', 'none']
+  accepted_strings = [
+      'true', '1', 'on', 'yes', 'y', 'false', '0', 'off', 'no', 'n', '', 'none'
+  ]
   if Stringize(value).lower() not in accepted_strings:
     raise InvalidValueError(
         'The [{0}] value [{1}] is not valid. Possible values: [{2}]. '
@@ -194,8 +189,7 @@ class InvalidProjectError(InvalidValueError):
   """An exception for bad project names, with a little user help."""
 
   def __init__(self, given):
-    super(InvalidProjectError, self).__init__(
-        given + '\n' + _SET_PROJECT_HELP)
+    super(InvalidProjectError, self).__init__(given + '\n' + _SET_PROJECT_HELP)
 
 
 class RequiredPropertyError(Error):
@@ -220,11 +214,11 @@ The required property [{property_name}] is not currently set.
 
   $ gcloud config set {section}{property_name} VALUE
 
-or it can be set temporarily by the environment variable [{env_var}]"""
-           .format(property_name=prop.name,
-                   flag_msg=flag_msg,
-                   section=section,
-                   env_var=prop.EnvironmentName()))
+or it can be set temporarily by the environment variable [{env_var}]""".format(
+    property_name=prop.name,
+    flag_msg=flag_msg,
+    section=section,
+    env_var=prop.EnvironmentName()))
     if extra_msg:
       msg += '\n\n' + extra_msg
     super(RequiredPropertyError, self).__init__(msg)
@@ -276,6 +270,8 @@ class _Sections(object):
       Cloud SDK.
     gcloudignore: Section, The section containing gcloudignore properties for
       the Cloud SDK.
+    healthcare: Section, The section containing healthcare properties for the
+      Cloud SDK.
     interactive: Section, The section containing interactive properties for the
       Cloud SDK.
     metrics: Section, The section containing metrics properties for the Cloud
@@ -322,6 +318,7 @@ class _Sections(object):
     self.filestore = _SectionFilestore()
     self.functions = _SectionFunctions()
     self.gcloudignore = _SectionGcloudignore()
+    self.healthcare = _SectionHealthcare()
     self.interactive = _SectionInteractive()
     self.metrics = _SectionMetrics()
     self.ml_engine = _SectionMlEngine()
@@ -356,6 +353,7 @@ class _Sections(object):
         self.filestore,
         self.functions,
         self.gcloudignore,
+        self.healthcare,
         self.interactive,
         self.metrics,
         self.ml_engine,
@@ -387,9 +385,9 @@ class _Sections(object):
     Args:
       prop: _Property, The property with an explicit value.
       value: str, The value that should be returned while this command is
-          running.
-      flag: str, The flag that a user can use to set the property, reported
-          if it was required at some point but not set by the command line.
+        running.
+      flag: str, The flag that a user can use to set the property, reported if
+        it was required at some point but not set by the command line.
     """
     value_flags = self.GetLatestInvocationValues()
     if value:
@@ -417,8 +415,8 @@ class _Sections(object):
     try:
       return self.__sections[section]
     except KeyError:
-      raise NoSuchPropertyError('Section "{section}" does not exist.'.format(
-          section=section))
+      raise NoSuchPropertyError(
+          'Section "{section}" does not exist.'.format(section=section))
 
   def AllSections(self, include_hidden=False):
     """Gets a list of all registered section names.
@@ -429,33 +427,39 @@ class _Sections(object):
     Returns:
       [str], The section names.
     """
-    return [name for name, value in six.iteritems(self.__sections)
-            if not value.is_hidden or include_hidden]
+    return [
+        name for name, value in six.iteritems(self.__sections)
+        if not value.is_hidden or include_hidden
+    ]
 
-  def AllValues(self, list_unset=False, include_hidden=False,
-                properties_file=None, only_file_contents=False):
+  def AllValues(self,
+                list_unset=False,
+                include_hidden=False,
+                properties_file=None,
+                only_file_contents=False):
     """Gets the entire collection of property values for all sections.
 
     Args:
       list_unset: bool, If True, include unset properties in the result.
-      include_hidden: bool, True to include hidden properties in the result.
-        If a property has a value set but is hidden, it will be included
-        regardless of this setting.
+      include_hidden: bool, True to include hidden properties in the result. If
+        a property has a value set but is hidden, it will be included regardless
+        of this setting.
       properties_file: PropertyFile, the file to read settings from.  If None
         the active property file will be used.
-      only_file_contents: bool, True if values should be taken only from
-        the properties file, false if flags, env vars, etc. should
-        be consulted too.  Mostly useful for listing file contents.
+      only_file_contents: bool, True if values should be taken only from the
+        properties file, false if flags, env vars, etc. should be consulted too.
+        Mostly useful for listing file contents.
 
     Returns:
       {str:{str:str}}, A dict of sections to dicts of properties to values.
     """
     result = {}
     for section in self:
-      section_result = section.AllValues(list_unset=list_unset,
-                                         include_hidden=include_hidden,
-                                         properties_file=properties_file,
-                                         only_file_contents=only_file_contents)
+      section_result = section.AllValues(
+          list_unset=list_unset,
+          include_hidden=include_hidden,
+          properties_file=properties_file,
+          only_file_contents=only_file_contents)
       if section_result:
         result[section.name] = section_result
     return result
@@ -470,16 +474,18 @@ class _Sections(object):
     sections = [self.default_section]
     default_section_name = self.default_section.name
     sections.extend(
-        sorted([s for name, s in six.iteritems(self.__sections)
-                if name != default_section_name and not s.is_hidden]))
+        sorted([
+            s for name, s in six.iteritems(self.__sections)
+            if name != default_section_name and not s.is_hidden
+        ]))
     for section in sections:
       props = sorted([p for p in section if not p.is_hidden])
       if not props:
         continue
       messages.append('_{section}_::'.format(section=section.name))
       for prop in props:
-        messages.append(
-            '*{prop}*:::\n\n{text}'.format(prop=prop.name, text=prop.help_text))
+        messages.append('*{prop}*:::\n\n{text}'.format(
+            prop=prop.name, text=prop.help_text))
     return '\n\n\n'.join(messages)
 
 
@@ -528,22 +534,46 @@ class _Section(object):
   def __le__(self, other):
     return self.name <= other.name
 
-  def _Add(self, name, help_text=None, internal=False, hidden=False,
-           callbacks=None, default=None, validator=None, choices=None,
+  def _Add(self,  # pylint: disable=missing-docstring
+           name,
+           help_text=None,
+           internal=False,
+           hidden=False,
+           callbacks=None,
+           default=None,
+           validator=None,
+           choices=None,
            completer=None):
     prop = _Property(
-        section=self.__name, name=name, help_text=help_text, internal=internal,
-        hidden=(self.is_hidden or hidden), callbacks=callbacks, default=default,
-        validator=validator, choices=choices, completer=completer)
+        section=self.__name,
+        name=name,
+        help_text=help_text,
+        internal=internal,
+        hidden=(self.is_hidden or hidden),
+        callbacks=callbacks,
+        default=default,
+        validator=validator,
+        choices=choices,
+        completer=completer)
     self.__properties[name] = prop
     return prop
 
-  def _AddBool(self, name, help_text=None, internal=False, hidden=False,
-               callbacks=None, default=None):
-    return self._Add(name=name, help_text=help_text, internal=internal,
-                     hidden=hidden, callbacks=callbacks, default=default,
-                     validator=functools.partial(_BooleanValidator, name),
-                     choices=('true', 'false'))
+  def _AddBool(self,
+               name,
+               help_text=None,
+               internal=False,
+               hidden=False,
+               callbacks=None,
+               default=None):
+    return self._Add(
+        name=name,
+        help_text=help_text,
+        internal=internal,
+        hidden=hidden,
+        callbacks=callbacks,
+        default=default,
+        validator=functools.partial(_BooleanValidator, name),
+        choices=('true', 'false'))
 
   def Property(self, property_name):
     """Gets a property from this section, given its name.
@@ -560,10 +590,8 @@ class _Section(object):
     try:
       return self.__properties[property_name]
     except KeyError:
-      raise NoSuchPropertyError(
-          'Section [{s}] has no property [{p}].'.format(
-              s=self.__name,
-              p=property_name))
+      raise NoSuchPropertyError('Section [{s}] has no property [{p}].'.format(
+          s=self.__name, p=property_name))
 
   def HasProperty(self, property_name):
     """True iff section has given property.
@@ -585,38 +613,42 @@ class _Section(object):
     Returns:
       [str], The property names.
     """
-    return [name for name, prop in six.iteritems(self.__properties)
-            if include_hidden or not prop.is_hidden]
+    return [
+        name for name, prop in six.iteritems(self.__properties)
+        if include_hidden or not prop.is_hidden
+    ]
 
-  def AllValues(self, list_unset=False, include_hidden=False,
-                properties_file=None, only_file_contents=False):
+  def AllValues(self,
+                list_unset=False,
+                include_hidden=False,
+                properties_file=None,
+                only_file_contents=False):
     """Gets all the properties and their values for this section.
 
     Args:
       list_unset: bool, If True, include unset properties in the result.
-      include_hidden: bool, True to include hidden properties in the result.
-        If a property has a value set but is hidden, it will be included
-        regardless of this setting.
+      include_hidden: bool, True to include hidden properties in the result. If
+        a property has a value set but is hidden, it will be included regardless
+        of this setting.
       properties_file: properties_file.PropertiesFile, the file to read settings
         from.  If None the active property file will be used.
-      only_file_contents: bool, True if values should be taken only from
-        the properties file, false if flags, env vars, etc. should
-        be consulted too.  Mostly useful for listing file contents.
+      only_file_contents: bool, True if values should be taken only from the
+        properties file, false if flags, env vars, etc. should be consulted too.
+        Mostly useful for listing file contents.
 
     Returns:
       {str:str}, The dict of {property:value} for this section.
     """
-    properties_file = (properties_file or
-                       named_configs.ActivePropertiesFile.Load())
+    properties_file = (
+        properties_file or named_configs.ActivePropertiesFile.Load())
 
     result = {}
     for prop in self:
       if prop.is_internal:
         # Never show internal properties, ever.
         continue
-      if (prop.is_hidden
-          and not include_hidden
-          and _GetPropertyWithoutCallback(prop, properties_file) is None):
+      if (prop.is_hidden and not include_hidden and
+          _GetPropertyWithoutCallback(prop, properties_file) is None):
         continue
 
       if only_file_contents:
@@ -701,9 +733,7 @@ class _SectionCompute(_Section):
         completer=('googlecloudsdk.command_lib.compute.completers:'
                    'RegionsCompleter'))
     self.gce_metadata_read_timeout_sec = self._Add(
-        'gce_metadata_read_timeout_sec',
-        default=1,
-        hidden=True)
+        'gce_metadata_read_timeout_sec', default=1, hidden=True)
     self.use_new_list_usable_subnets_api = self._AddBool(
         'use_new_list_usable_subnets_api',
         default=False,
@@ -742,6 +772,24 @@ class _SectionGcloudignore(_Section):
             'entirely and upload all files.'))
 
 
+class _SectionHealthcare(_Section):
+  """Contains the properties for the 'healthcare' section."""
+
+  def __init__(self):
+    super(_SectionHealthcare, self).__init__('healthcare')
+    self.location = self._Add(
+        'location',
+        default='us-central1',
+        help_text='Default location to use when working with Cloud Healthcare  '
+        'resources. When a `--location` flag is required but not provided, the  '
+        'command will fall back to this value.')
+    self.dataset = self._Add(
+        'dataset',
+        help_text='Default dataset to use when working with Cloud Healthcare '
+        'resources. When a `--dataset` flag is required but not provided, the '
+        'command will fall back to this value, if set.')
+
+
 class _SectionAccessibility(_Section):
   """Contains the properties for the 'accessibility' section."""
 
@@ -772,23 +820,19 @@ class _SectionApp(_Section):
         'be stopped manually.',
         default=True)
     self.trigger_build_server_side = self._AddBool(
-        'trigger_build_server_side',
-        hidden=True,
-        default=None)
+        'trigger_build_server_side', hidden=True, default=None)
     self.cloud_build_timeout = self._Add(
         'cloud_build_timeout',
         validator=_BuildTimeoutValidator,
         help_text='Timeout, in seconds, to wait for Docker builds to '
-                  'complete during deployments. All Docker builds now use the '
-                  'Cloud Build API.')
+        'complete during deployments. All Docker builds now use the '
+        'Cloud Build API.')
     self.container_builder_image = self._Add(
         'container_builder_image',
         default='gcr.io/cloud-builders/docker',
         hidden=True)
     self.use_appengine_api = self._AddBool(
-        'use_appengine_api',
-        default=True,
-        hidden=True)
+        'use_appengine_api', default=True, hidden=True)
     # This property is currently ignored except on OS X Sierra or beta
     # deployments.
     # There's a theoretical benefit to exceeding the number of cores available,
@@ -796,9 +840,7 @@ class _SectionApp(_Section):
     # mini-benchmarks validated this (I got speedup from 4 threads to 8 on a
     # 4-core machine).
     self.num_file_upload_threads = self._Add(
-        'num_file_upload_threads',
-        default=None,
-        hidden=True)
+        'num_file_upload_threads', default=None, hidden=True)
 
     def GetRuntimeRoot():
       sdk_root = config.Paths().sdk_root
@@ -808,9 +850,7 @@ class _SectionApp(_Section):
         return os.path.join(config.Paths().sdk_root, 'platform', 'ext-runtime')
 
     self.runtime_root = self._Add(
-        'runtime_root',
-        callbacks=[GetRuntimeRoot],
-        hidden=True)
+        'runtime_root', callbacks=[GetRuntimeRoot], hidden=True)
 
     # Whether or not to use the (currently under-development) Flex Runtime
     # Builders, as opposed to Externalized Runtimes.
@@ -829,9 +869,7 @@ class _SectionApp(_Section):
     # "<PREFIX>/<runtime>-<version>.yaml", with an additional
     # "<PREFIX>/runtime.version" indicating the latest version.
     self.runtime_builders_root = self._Add(
-        'runtime_builders_root',
-        default='gs://runtime-builders/',
-        hidden=True)
+        'runtime_builders_root', default='gs://runtime-builders/', hidden=True)
 
 
 class _SectionBuilds(_Section):
@@ -875,7 +913,8 @@ class _SectionContainer(_Section):
   def __init__(self):
     super(_SectionContainer, self).__init__('container')
     self.cluster = self._Add(
-        'cluster', help_text='Name of the cluster to use by default when '
+        'cluster',
+        help_text='Name of the cluster to use by default when '
         'working with Kubernetes Engine.')
     self.use_client_certificate = self._AddBool(
         'use_client_certificate',
@@ -933,7 +972,7 @@ class _SectionCore(_Section):
         'disable_collection_path_deprecation_warning',
         hidden=True,
         help_text='If False, any usage of collection paths will result in '
-                  'deprecation warning. Set it to False to disable it.')
+        'deprecation warning. Set it to False to disable it.')
     self.default_regional_backend_service = self._AddBool(
         'default_regional_backend_service',
         help_text='If True, backend services in `gcloud compute '
@@ -944,8 +983,7 @@ class _SectionCore(_Section):
         help_text='If True, color will not be used when printing messages in '
         'the terminal.')
     self.disable_command_lazy_loading = self._AddBool(
-        'disable_command_lazy_loading',
-        hidden=True)
+        'disable_command_lazy_loading', hidden=True)
     self.disable_prompts = self._AddBool(
         'disable_prompts',
         help_text='If True, the default answer will be assumed for all user '
@@ -965,7 +1003,7 @@ class _SectionCore(_Section):
         default=False,
         hidden=True,
         help_text='If True, the parser for gcloud Resource Identifiers will be'
-                  'enabled when interpreting resource arguments.')
+        'enabled when interpreting resource arguments.')
     self.resource_completion_style = self._Add(
         'resource_completion_style',
         choices=('flags', 'gri'),
@@ -995,9 +1033,7 @@ class _SectionCore(_Section):
         'The pattern names are source specific. Consult the source for '
         'details.')
     self.api_host = self._Add(
-        'api_host',
-        hidden=True,
-        default='https://www.googleapis.com')
+        'api_host', hidden=True, default='https://www.googleapis.com')
     self.verbosity = self._Add(
         'verbosity',
         help_text='Default logging verbosity for `gcloud` commands.  This is '
@@ -1012,7 +1048,7 @@ class _SectionCore(_Section):
     self.interactive_ux_style = self._Add(
         'interactive_ux_style',
         help_text='How to display interactive UX elements like progress bars '
-                  'and trackers.',
+        'and trackers.',
         hidden=True,
         default=_SectionCore.InteractiveUXStyles.NORMAL,
         choices=[x.name for x in list(_SectionCore.InteractiveUXStyles)])
@@ -1028,44 +1064,31 @@ class _SectionCore(_Section):
         ' This property does not have effect unless log_http is true.',
         default=True,
         hidden=True)
-    self.http_timeout = self._Add(
-        'http_timeout',
-        hidden=True)
+    self.http_timeout = self._Add('http_timeout', hidden=True)
     self.check_gce_metadata = self._AddBool(
-        'check_gce_metadata',
-        hidden=True,
-        default=True)
+        'check_gce_metadata', hidden=True, default=True)
     self.print_completion_tracebacks = self._AddBool(
         'print_completion_tracebacks',
         hidden=True,
         help_text='If True, print actual completion exceptions with traceback '
         'instead of the nice UX scrubbed exceptions.')
     self.print_unhandled_tracebacks = self._AddBool(
-        'print_unhandled_tracebacks',
-        hidden=True)
+        'print_unhandled_tracebacks', hidden=True)
     self.print_handled_tracebacks = self._AddBool(
-        'print_handled_tracebacks',
-        hidden=True)
+        'print_handled_tracebacks', hidden=True)
     self.trace_token = self._Add(
         'trace_token',
         help_text='Token used to route traces of service requests for '
         'investigation of issues. This token will be provided by Google '
         'support.')
-    self.trace_email = self._Add(
-        'trace_email',
-        hidden=True)
-    self.trace_log = self._Add(
-        'trace_log',
-        default=False,
-        hidden=True)
-    self.request_reason = self._Add(
-        'request_reason',
-        hidden=True)
+    self.trace_email = self._Add('trace_email', hidden=True)
+    self.trace_log = self._Add('trace_log', default=False, hidden=True)
+    self.request_reason = self._Add('request_reason', hidden=True)
     self.pass_credentials_to_gsutil = self._AddBool(
         'pass_credentials_to_gsutil',
         default=True,
         help_text='If True, pass the configured Cloud SDK authentication '
-                  'to gsutil.')
+        'to gsutil.')
     self.api_key = self._Add(
         'api_key',
         hidden=True,
@@ -1113,19 +1136,17 @@ class _SectionCore(_Section):
             *   `log` - Only log messages as JSON if stderr is a file
             *    `terminal` - Only log messages as JSON if stderr is a terminal
 
-        If unset, default is `never`."""
-    )
+        If unset, default is `never`.""")
 
     def MaxLogDaysValidator(max_log_days):
       if max_log_days is None:
         return
       try:
         if int(max_log_days) < 0:
-          raise InvalidValueError(
-              'Max number of days must be at least 0')
+          raise InvalidValueError('Max number of days must be at least 0')
       except ValueError:
-        raise InvalidValueError(
-            'Max number of days must be an integer')
+        raise InvalidValueError('Max number of days must be an integer')
+
     self.max_log_days = self._Add(
         'max_log_days',
         validator=MaxLogDaysValidator,
@@ -1142,6 +1163,7 @@ class _SectionCore(_Section):
         raise InvalidValueError('The provided path must exist.')
       if not os.path.isabs(file_path):
         raise InvalidValueError('The provided path must be absolute.')
+
     self.custom_ca_certs_file = self._Add(
         'custom_ca_certs_file',
         validator=ExistingAbsoluteFilepathValidator,
@@ -1183,8 +1205,7 @@ class _SectionCore(_Section):
         completer=('googlecloudsdk.command_lib.resource_manager.completers:'
                    'ProjectCompleter'))
     self.credentialed_hosted_repo_domains = self._Add(
-        'credentialed_hosted_repo_domains',
-        hidden=True)
+        'credentialed_hosted_repo_domains', hidden=True)
 
 
 class _SectionAuth(_Section):
@@ -1193,26 +1214,28 @@ class _SectionAuth(_Section):
   def __init__(self):
     super(_SectionAuth, self).__init__('auth')
     self.auth_host = self._Add(
-        'auth_host', hidden=True,
+        'auth_host',
+        hidden=True,
         default='https://accounts.google.com/o/oauth2/auth')
     self.disable_credentials = self._AddBool(
-        'disable_credentials', default=False,
+        'disable_credentials',
+        default=False,
         help_text='If True, `gcloud` will not attempt to load any credentials '
         'or authenticate any requests. This is useful when behind a proxy '
         'that adds authentication to requests.')
     self.token_host = self._Add(
-        'token_host', hidden=True,
+        'token_host',
+        hidden=True,
         default='https://www.googleapis.com/oauth2/v4/token')
     self.disable_ssl_validation = self._AddBool(
         'disable_ssl_validation', hidden=True)
     self.client_id = self._Add(
-        'client_id', hidden=True,
-        default=config.CLOUDSDK_CLIENT_ID)
+        'client_id', hidden=True, default=config.CLOUDSDK_CLIENT_ID)
     self.client_secret = self._Add(
-        'client_secret', hidden=True,
+        'client_secret',
+        hidden=True,
         default=config.CLOUDSDK_CLIENT_NOTSOSECRET)
-    self.authority_selector = self._Add(
-        'authority_selector', hidden=True)
+    self.authority_selector = self._Add('authority_selector', hidden=True)
     self.authorization_token_file = self._Add(
         'authorization_token_file', hidden=True)
     self.credential_file_override = self._Add(
@@ -1231,7 +1254,8 @@ class _SectionBilling(_Section):
     super(_SectionBilling, self).__init__('billing')
 
     self.quota_project = self._Add(
-        'quota_project', default=_SectionBilling.CURRENT_PROJECT,
+        'quota_project',
+        default=_SectionBilling.CURRENT_PROJECT,
         help_text="""\
         Project that will be charged quota for the
         operations performed in `gcloud`. When unset, the default is
@@ -1242,8 +1266,7 @@ class _SectionBilling(_Section):
 
         If you need to operate on one project, but
         need quota against a different project, you can use this property to
-        specify the alternate project."""
-    )
+        specify the alternate project.""")
 
 
 class _SectionMetrics(_Section):
@@ -1280,8 +1303,7 @@ class _SectionExperimental(_Section):
   def __init__(self):
     super(_SectionExperimental, self).__init__('experimental', hidden=True)
     self.fast_component_update = self._AddBool(
-        'fast_component_update',
-        default=False)
+        'fast_component_update', default=False)
 
 
 class _SectionFilestore(_Section):
@@ -1302,8 +1324,8 @@ class _SectionTest(_Section):
   def __init__(self):
     super(_SectionTest, self).__init__('test')
     self.results_base_url = self._Add('results_base_url', hidden=True)
-    self.matrix_status_interval = self._Add('matrix_status_interval',
-                                            hidden=True)
+    self.matrix_status_interval = self._Add(
+        'matrix_status_interval', hidden=True)
 
 
 class _SectionMlEngine(_Section):
@@ -1312,12 +1334,14 @@ class _SectionMlEngine(_Section):
   def __init__(self):
     super(_SectionMlEngine, self).__init__('ml_engine')
     self.polling_interval = self._Add(
-        'polling_interval', default=60,
+        'polling_interval',
+        default=60,
         help_text=('Interval (in seconds) at which to poll logs from your '
                    'Cloud ML Engine jobs. Note that making it much faster than '
                    'the default (60) will quickly use all of your quota.'))
     self.local_python = self._Add(
-        'local_python', default=None,
+        'local_python',
+        default=None,
         help_text=('Full path to the Python interpreter to use for '
                    'Cloud ML Engine local predict/train jobs. If not '
                    'specified, the default path is the one to the Python '
@@ -1330,7 +1354,8 @@ class _SectionPubsub(_Section):
   def __init__(self):
     super(_SectionPubsub, self).__init__('pubsub')
     self.legacy_output = self._AddBool(
-        'legacy_output', default=False,
+        'legacy_output',
+        default=False,
         help_text=('Use the legacy output for beta pubsub commands. The legacy '
                    'output from beta is being deprecated. This property will '
                    'eventually be removed.'))
@@ -1389,50 +1414,63 @@ class _SectionInteractive(_Section):
   def __init__(self):
     super(_SectionInteractive, self).__init__('interactive')
     self.bottom_bindings_line = self._AddBool(
-        'bottom_bindings_line', default=True,
+        'bottom_bindings_line',
+        default=True,
         help_text='If True, display the bottom key bindings line.')
     self.bottom_status_line = self._AddBool(
-        'bottom_status_line', default=False,
+        'bottom_status_line',
+        default=False,
         help_text='If True, display the bottom status line.')
     self.completion_menu_lines = self._Add(
-        'completion_menu_lines', default=4,
+        'completion_menu_lines',
+        default=4,
         help_text='Number of lines in the completion menu.')
     self.context = self._Add(
-        'context', default='',
-        help_text='Command context string.')
+        'context', default='', help_text='Command context string.')
     self.debug = self._AddBool(
-        'debug', default=False, hidden=True,
+        'debug',
+        default=False,
+        hidden=True,
         help_text='If True, enable the debugging display.')
     self.fixed_prompt_position = self._Add(
-        'fixed_prompt_position', default=False,
+        'fixed_prompt_position',
+        default=False,
         help_text='If True, display the prompt at the same position.')
     self.help_lines = self._Add(
-        'help_lines', default=10,
+        'help_lines',
+        default=10,
         help_text='Maximum number of help snippet lines.')
     self.hidden = self._AddBool(
-        'hidden', default=False,
+        'hidden',
+        default=False,
         help_text='If True, expose hidden commands/flags.')
     self.justify_bottom_lines = self._AddBool(
-        'justify_bottom_lines', default=False,
+        'justify_bottom_lines',
+        default=False,
         help_text='If True, left- and right-justify bottom toolbar lines.')
     self.manpage_generator = self._Add(
-        'manpage_generator', default=True,
+        'manpage_generator',
+        default=True,
         help_text=('If True, use the manpage CLI tree generator for '
                    'unsupported commands.'))
     self.multi_column_completion_menu = self._AddBool(
-        'multi_column_completion_menu', default=False,
+        'multi_column_completion_menu',
+        default=False,
         help_text='If True, display the completions as a multi-column menu.')
     self.obfuscate = self._AddBool(
-        'obfuscate', default=False, hidden=True,
+        'obfuscate',
+        default=False,
+        hidden=True,
         help_text='If True, obfuscate status PII.')
     self.prompt = self._Add(
-        'prompt', default='$ ',
-        help_text='Command prompt string.')
+        'prompt', default='$ ', help_text='Command prompt string.')
     self.show_help = self._AddBool(
-        'show_help', default=True,
+        'show_help',
+        default=True,
         help_text='If True, show help as command args are being entered.')
     self.suggest = self._AddBool(
-        'suggest', default=False,
+        'suggest',
+        default=False,
         help_text='If True, add command line suggestions based on history.')
 
 
@@ -1442,11 +1480,9 @@ class _SectionProxy(_Section):
   def __init__(self):
     super(_SectionProxy, self).__init__('proxy')
     self.address = self._Add(
-        'address',
-        help_text='Hostname or IP address of proxy server.')
+        'address', help_text='Hostname or IP address of proxy server.')
     self.port = self._Add(
-        'port',
-        help_text='Port to use when connected to the proxy server.')
+        'port', help_text='Port to use when connected to the proxy server.')
     self.rdns = self._Add(
         'rdns',
         default=True,
@@ -1463,12 +1499,14 @@ class _SectionProxy(_Section):
         'requires authentication.')
 
     valid_proxy_types = sorted(http_proxy_types.PROXY_TYPE_MAP.keys())
+
     def ProxyTypeValidator(proxy_type):
       if proxy_type is not None and proxy_type not in valid_proxy_types:
         raise InvalidValueError(
             'The proxy type property value [{0}] is not valid. '
-            'Possible values: [{1}].'.format(
-                proxy_type, ', '.join(valid_proxy_types)))
+            'Possible values: [{1}].'.format(proxy_type,
+                                             ', '.join(valid_proxy_types)))
+
     self.proxy_type = self._Add(
         'type',
         help_text='Type of proxy being used.  Supported proxy types are:'
@@ -1489,11 +1527,9 @@ class _SectionDevshell(_Section):
   def __init__(self):
     super(_SectionDevshell, self).__init__('devshell')
     self.image = self._Add(
-        'image', hidden=True,
-        default=const_lib.DEFAULT_DEVSHELL_IMAGE)
+        'image', hidden=True, default=const_lib.DEFAULT_DEVSHELL_IMAGE)
     self.metadata_image = self._Add(
-        'metadata_image', hidden=True,
-        default=const_lib.METADATA_IMAGE)
+        'metadata_image', hidden=True, default=const_lib.METADATA_IMAGE)
 
 
 class _SectionDiagnostics(_Section):
@@ -1502,7 +1538,8 @@ class _SectionDiagnostics(_Section):
   def __init__(self):
     super(_SectionDiagnostics, self).__init__('diagnostics', hidden=True)
     self.hidden_property_whitelist = self._Add(
-        'hidden_property_whitelist', internal=True,
+        'hidden_property_whitelist',
+        internal=True,
         help_text=('Comma separated list of hidden properties that should be '
                    'allowed by the hidden properties diagnostic.'))
 
@@ -1549,6 +1586,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.file = self._Add('file')
     self.firestore = self._Add('firestore')
     self.genomics = self._Add('genomics')
+    self.gkehub = self._Add('gkehub')
     self.iam = self._Add('iam')
     self.kubernetespolicy = self._Add('kubernetespolicy')
     self.language = self._Add('language')
@@ -1586,8 +1624,7 @@ class _SectionApiEndpointOverrides(_Section):
       raise InvalidValueError(
           'The endpoint_overrides property must be an absolute URI beginning '
           'with http:// or https:// and ending with a trailing \'/\'. '
-          '[{value}] is not a valid endpoint override.'
-          .format(value=value))
+          '[{value}] is not a valid endpoint override.'.format(value=value))
 
   def _Add(self, name):
     return super(_SectionApiEndpointOverrides, self)._Add(
@@ -1620,20 +1657,20 @@ class _SectionEmulator(_Section):
     super(_SectionEmulator, self).__init__('emulator', hidden=True)
     self.datastore_data_dir = self._Add('datastore_data_dir')
     self.pubsub_data_dir = self._Add('pubsub_data_dir')
-    self.datastore_host_port = self._Add('datastore_host_port',
-                                         default='localhost:8081')
-    self.pubsub_host_port = self._Add('pubsub_host_port',
-                                      default='localhost:8085')
-    self.bigtable_host_port = self._Add('bigtable_host_port',
-                                        default='localhost:8086')
+    self.datastore_host_port = self._Add(
+        'datastore_host_port', default='localhost:8081')
+    self.pubsub_host_port = self._Add(
+        'pubsub_host_port', default='localhost:8085')
+    self.bigtable_host_port = self._Add(
+        'bigtable_host_port', default='localhost:8086')
 
 
 class _SectionAccessContextManager(_Section):
   """Contains the properties for the 'access_context_manager' section."""
 
   def __init__(self):
-    super(_SectionAccessContextManager, self).__init__('access_context_manager',
-                                                       hidden=True)
+    super(_SectionAccessContextManager, self).__init__(
+        'access_context_manager', hidden=True)
     self.policy = self._Add(
         'policy',
         help_text=('ID of the policy resource to operate on. Can be found '
@@ -1662,14 +1699,14 @@ class _SectionStorage(_Section):
         'chunk_size',
         default=104857600,  # gsutil's default chunksize (1024 * 1024 * 100)
         help_text='Chunk size used for uploading and downloading from '
-                  'Cloud Storage.')
+        'Cloud Storage.')
     # TODO(b/109938541): Remove this after implementation seems stable.
     self.use_gsutil = self._AddBool(
         'use_gsutil',
         default=False,
         hidden=True,
         help_text='If True, use the deprecated upload implementation which '
-                  'uses gsutil.')
+        'uses gsutil.')
 
 
 class _Property(object):
@@ -1692,16 +1729,24 @@ class _Property(object):
       The default value is never shown when listing properties regardless of
       whether the property is hidden or not.
     validator: func(str), A function that is called on the value when .Set()'d
-      or .Get()'d. For valid values, the function should do nothing. For
-      invalid values, it should raise InvalidValueError with an
-      explanation of why it was invalid.
-    choices: [str], The allowable values for this property.  This is included
-      in the help text and used in tab completion.
+      or .Get()'d. For valid values, the function should do nothing. For invalid
+      values, it should raise InvalidValueError with an explanation of why it
+      was invalid.
+    choices: [str], The allowable values for this property.  This is included in
+      the help text and used in tab completion.
   """
 
-  def __init__(self, section, name, help_text=None, hidden=False,
-               internal=False, callbacks=None, default=None, validator=None,
-               choices=None, completer=None):
+  def __init__(self,
+               section,
+               name,
+               help_text=None,
+               hidden=False,
+               internal=False,
+               callbacks=None,
+               default=None,
+               validator=None,
+               choices=None,
+               completer=None):
     self.__section = section
     self.__name = name
     self.__help_text = help_text
@@ -1792,7 +1837,7 @@ class _Property(object):
     Args:
       required: bool, True to raise an exception if the property is not set.
       validate: bool, Whether or not to run the fetched value through the
-          validation function.
+        validation function.
 
     Returns:
       str, The value for this property.
@@ -1841,7 +1886,7 @@ class _Property(object):
     Args:
       required: bool, True to raise an exception if the property is not set.
       validate: bool, Whether or not to run the fetched value through the
-          validation function.
+        validation function.
 
     Returns:
       bool, The boolean value for this property, or None if it is not set.
@@ -1849,8 +1894,11 @@ class _Property(object):
     Raises:
       InvalidValueError: if value is not boolean
     """
-    value = _GetBoolProperty(self, named_configs.ActivePropertiesFile.Load(),
-                             required, validate=validate)
+    value = _GetBoolProperty(
+        self,
+        named_configs.ActivePropertiesFile.Load(),
+        required,
+        validate=validate)
     return value
 
   def GetInt(self, required=False, validate=True):
@@ -1862,7 +1910,7 @@ class _Property(object):
     Args:
       required: bool, True to raise an exception if the property is not set.
       validate: bool, Whether or not to run the fetched value through the
-          validation function.
+        validation function.
 
     Returns:
       int, The integer value for this property.
@@ -1961,8 +2009,7 @@ class _ScopeInfo(object):
 
 
 class Scope(object):
-  """An enum class for the different types of property files that can be used.
-  """
+  """An enum class for the different types of property files that can be used."""
 
   INSTALLATION = _ScopeInfo(
       id='installation',
@@ -2015,8 +2062,8 @@ class Scope(object):
 
   @staticmethod
   def GetHelpString():
-    return '\n\n'.join(['*{0}*::: {1}'.format(s.id, s.description)
-                        for s in Scope.AllValues()])
+    return '\n\n'.join(
+        ['*{0}*::: {1}'.format(s.id, s.description) for s in Scope.AllValues()])
 
 
 def PersistProperty(prop, value, scope=None):
@@ -2032,13 +2079,11 @@ def PersistProperty(prop, value, scope=None):
     value: str, The value to set for the property. If None, the property is
       removed.
     scope: Scope, The config location to set the property in.  If given, only
-      this location will be updated and it is an error if that location does
-      not exist.  If not given, it will attempt to update the property in the
-      first of the following places that exists:
-        - the active named config
-        - user level config
-      It will never fall back to installation properties; you must
-      use that scope explicitly to set that value.
+      this location will be updated and it is an error if that location does not
+      exist.  If not given, it will attempt to update the property in the
+      first of the following places that exists: - the active named config -
+        user level config It will never fall back to installation properties;
+        you must use that scope explicitly to set that value.
 
   Raises:
     MissingInstallationConfig: If you are trying to set the installation config,
@@ -2221,8 +2266,8 @@ def _GetIntProperty(prop, properties_file, required):
     return int(value)
   except ValueError:
     raise InvalidValueError(
-        'The property [{prop}] must have an integer value: [{value}]'
-        .format(prop=prop, value=value))
+        'The property [{prop}] must have an integer value: [{value}]'.format(
+            prop=prop, value=value))
 
 
 def GetMetricsEnvironment():

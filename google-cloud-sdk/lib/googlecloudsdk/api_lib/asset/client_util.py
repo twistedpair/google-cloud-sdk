@@ -89,7 +89,7 @@ def MakeGetAssetsHistoryHttpRequests(args, api_version=DEFAULT_API_VERSION):
   if args.IsSpecified('end_time'):
     query_params.extend([('readTimeWindow.endTime',
                           times.FormatDateTime(args.end_time))])
-  parent = asset_utils.GetParentName(args.organization, args.project)
+  parent = asset_utils.GetParentName(args.organization, args.project, None)
   url_base = '{0}/{1}/{2}:{3}'.format(BASE_URL, api_version, parent,
                                       'batchGetAssetsHistory')
   url_query = six.moves.urllib.parse.urlencode(query_params)
@@ -159,3 +159,11 @@ class AssetOrganizationExportClient(AssetExportClient):
     super(AssetOrganizationExportClient, self).__init__(parent, api_version)
     self.service = GetClient(api_version).organizations
     self.export_message = self.message_module.CloudassetOrganizationsExportAssetsRequest  # pylint: disable=line-too-long
+
+
+class AssetFolderExportClient(AssetExportClient):
+
+  def __init__(self, parent, api_version=DEFAULT_API_VERSION):
+    super(AssetFolderExportClient, self).__init__(parent, api_version)
+    self.service = GetClient(api_version).folders
+    self.export_message = self.message_module.CloudassetFoldersExportAssetsRequest  # pylint: disable=line-too-long

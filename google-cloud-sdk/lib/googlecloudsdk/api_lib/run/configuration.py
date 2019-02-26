@@ -205,6 +205,20 @@ class Configuration(k8s_object.KubernetesObject):
     self.spec.revisionTemplate.spec.containerConcurrency = value
 
   @property
+  def timeout(self):
+    """The timeout number in the revisionTemplate.
+
+    The lib can accept either a duration format like '1m20s' or integer like
+    '80' to set the timeout. The returned object is an integer value, which
+    assumes second the unit, e.g., 80.
+    """
+    return self.spec.revisionTemplate.spec.timeoutSeconds
+
+  @timeout.setter
+  def timeout(self, value):
+    self.spec.revisionTemplate.spec.timeoutSeconds = value
+
+  @property
   def build_template_arguments(self):
     """Returns a mutable, dict-like object to manage build template args.
 

@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import collections
 import contextlib
 import copy
 import functools
@@ -43,6 +42,7 @@ from googlecloudsdk.command_lib.run import config_changes as config_changes_mod
 from googlecloudsdk.command_lib.run import deployable as deployable_pkg
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import pretty_print
+from googlecloudsdk.command_lib.run import stages
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
@@ -65,17 +65,6 @@ MAX_WAIT_MS = 660000
 
 class UnknownAPIError(exceptions.Error):
   pass
-
-
-# Because some terminals cannot update multiple lines of output simultaneously,
-# the order of conditions in this dictionary should match the order in which we
-# expect cloud run resources to complete deployment.
-def _ServiceStages():
-  """Return a new mapping from conditions to Stages."""
-  return collections.OrderedDict([
-      ('ConfigurationsReady', progress_tracker.Stage(
-          'Creating Revision...')),
-      ('RoutesReady', progress_tracker.Stage('Routing traffic...'))])
 
 
 @contextlib.contextmanager
@@ -101,37 +90,52 @@ def Connect(conn_context):
 
 
 class ConditionPoller(waiter.OperationPoller):
-  """A poller for serverless deployment.
+  """A poller for CloudRun resource creation or update.
 
   Takes in a reference to a StagedProgressTracker, and updates it with progress.
   """
 
-  def __init__(self, resource_getter, tracker, stages, dependencies=None):
+  def __init__(self, resource_getter, tracker, dependencies=None):
     """Initialize the ConditionPoller.
 
     Start any unblocked stages in the tracker immediately.
 
     Arguments:
       resource_getter: function, returns a resource with conditions.
-      tracker: a StagedProgressTracker to keep updated
-      stages: List[Stage], the stages in the tracker
-      dependencies: Dict[str, Set[str]], The dependencies between conditions.
-        The condition represented by each key can only start when the set of
-        conditions in the corresponding value have all completed.
+      tracker: a StagedProgressTracker to keep updated. It must contain a stage
+        for each condition in the dependencies map, if the dependencies map
+        is provided.
+
+        The stage represented by each key can only start when the set of
+        conditions in the corresponding value have all completed. If a condition
+        should be managed by this ConditionPoller but depends on nothing, it
+        should map to an empty set. Conditions in the tracker but *not*
+        managed by the ConditionPoller should not appear in the dict.
+
+      dependencies: Dict[str, Set[str]], The dependencies between conditions
+        that are managed by this ConditionPoller. The values are the set of
+        conditions that must become true before the key begins being worked on
+        by the server.
+
+        If the entire dependencies dict is None, the poller will assume that
+        all keys in the tracker are relevant and none have dependencies.
     """
     # _dependencies is a map of condition -> {preceding conditions}
     # It is meant to be checked off as we finish things.
-    self._dependencies = copy.deepcopy(dependencies) if dependencies else {}
-    self._stages = stages
+    self._dependencies = (
+        copy.deepcopy(dependencies) if dependencies is not None
+        else {k: set() for k in tracker})
+    for k in self._dependencies:
+      if k not in tracker:
+        raise ValueError(
+            'Condition {} is not in the dependency tracker.'.format(k))
     self._resource_getter = resource_getter
     self._tracker = tracker
-    self._completed_stages = set()
-    self._started_stages = set()
-    self._failed_stages = set()
+    self._resource_fail_type = exceptions.Error
     self._StartUnblocked()
 
   def _IsBlocked(self, condition):
-    return condition in self._dependencies
+    return condition in self._dependencies and self._dependencies[condition]
 
   def IsDone(self, conditions):
     """Overrides.
@@ -166,6 +170,8 @@ class ConditionPoller(waiter.OperationPoller):
       self._tracker.UpdateHeaderMessage(ready_message)
 
     for condition in conditions.TerminalSubconditions():
+      if condition not in self._dependencies:
+        continue
       message = conditions[condition]['message']
       status = conditions[condition]['status']
       self._PossiblyUpdateMessage(condition, message, ready_message)
@@ -181,7 +187,7 @@ class ConditionPoller(waiter.OperationPoller):
       # TODO(b/120679874): Should not have to manually call Tick()
       self._tracker.Tick()
     elif conditions.IsFailed():
-      raise serverless_exceptions.DeploymentFailedError(ready_message)
+      raise self._resource_fail_type(ready_message)
 
     return conditions
 
@@ -193,29 +199,24 @@ class ConditionPoller(waiter.OperationPoller):
       message: str, The new message to display
       ready_message: str, The ready message we're displaying.
     """
-    if condition in self._completed_stages or not message:
+
+    if self._tracker.IsComplete(condition):
       return
 
     if self._IsBlocked(condition):
       return
 
     if message != ready_message:
-      self._tracker.UpdateStage(self._stages[condition], message)
+      self._tracker.UpdateStage(condition, message)
 
-  def _RecordStageComplete(self, condition):
+  def _RecordConditionComplete(self, condition):
     """Take care of the internal-to-this-class bookkeeping stage complete."""
-    self._completed_stages.add(condition)
     # Unblock anything that was blocked on this.
-    unblocked = []
+
     # Strategy: "check off" each dependency as we complete it by removing from
-    # the set in the value. When the set of dependencies is empty, remove the
-    # entry from the dict.
-    for other_condition, requirements in self._dependencies.items():
+    # the set in the value.
+    for requirements in self._dependencies.values():
       requirements.discard(condition)
-      if not requirements:
-        unblocked.append(other_condition)
-    for other_condition in unblocked:
-      del self._dependencies[other_condition]
 
   def _PossiblyCompleteStage(self, condition, message, ready):
     """Complete the stage if it's not already complete.
@@ -227,18 +228,18 @@ class ConditionPoller(waiter.OperationPoller):
       message: str, The detailed message for the condition.
       ready: boolean, True if the Ready condition is true.
     """
-    if condition in self._completed_stages:
+    if self._tracker.IsComplete(condition):
       return
     # A blocked condition is likely to remain True (indicating the previous
     # operation concerning it was successful) until the blocking condition(s)
     # finish and it's time to switch to Unknown (the current operation
     # concerning it is in progress). Don't mark those done before they switch to
     # Unknown.
-    if condition not in self._started_stages:
+    if not self._tracker.IsRunning(condition):
       return
-    self._RecordStageComplete(condition)
+    self._RecordConditionComplete(condition)
     self._StartUnblocked()
-    self._tracker.CompleteStage(self._stages[condition], message)
+    self._tracker.CompleteStage(condition, message)
 
   def _StartUnblocked(self):
 
@@ -247,12 +248,10 @@ class ConditionPoller(waiter.OperationPoller):
     Record the fact that they're started in our internal bookkeeping.
     """
     # The set of stages that aren't marked started and don't have unsatisfied
-    # dependencies are "newly unblocked".
-    newly_unblocked = (set(self._stages.keys())
-                       - self._started_stages - set(self._dependencies.keys()))
-    for unblocked in newly_unblocked:
-      self._started_stages.add(unblocked)
-      self._tracker.StartStage(self._stages[unblocked])
+    # dependencies are newly unblocked.
+    for c in self._dependencies:
+      if self._tracker.IsWaiting(c) and not self._IsBlocked(c):
+        self._tracker.StartStage(c)
     # TODO(b/120679874): Should not have to manually call Tick()
     self._tracker.Tick()
 
@@ -267,14 +266,12 @@ class ConditionPoller(waiter.OperationPoller):
       DeploymentFailedError: If the 'Ready' condition failed.
     """
     # Don't fail an already failed stage.
-    if condition in self._failed_stages:
+    if self._tracker.IsComplete(condition):
       return
 
-    stage = self._stages[condition]
-    self._failed_stages.add(condition)
     self._tracker.FailStage(
-        stage,
-        serverless_exceptions.DeploymentFailedError(message),
+        condition,
+        self._resource_fail_type(message),
         message)
 
   def GetResult(self, conditions):
@@ -300,6 +297,22 @@ class ConditionPoller(waiter.OperationPoller):
     if resource is None:
       return None
     return resource.conditions
+
+
+class ServiceConditionPoller(ConditionPoller):
+
+  def __init__(self, getter, tracker):
+    super(ServiceConditionPoller, self).__init__(
+        getter, tracker, stages.ServiceDependencies())
+    self._resource_fail_type = serverless_exceptions.DeploymentFailedError
+
+
+class DomainMappingConditionPoller(ConditionPoller):
+
+  def __init__(self, getter, tracker):
+    super(DomainMappingConditionPoller, self).__init__(
+        getter, tracker, stages.DomainMappingDependencies())
+    self._resource_fail_type = serverless_exceptions.DomainMappingCreationError
 
 
 def _Nonce():
@@ -511,31 +524,33 @@ class ServerlessOperations(object):
         return templ
     return None
 
-  def WaitForCondition(self, getter):
-    """Wait for a configuration to be ready in latest revision."""
-    stages = _ServiceStages()
-    with progress_tracker.StagedProgressTracker(
-        'Deploying...',
-        stages.values(),
-        failure_message='Deployment failed') as tracker:
-      config_poller = ConditionPoller(getter, tracker, stages, dependencies={
-          'RoutesReady': {'ConfigurationsReady'},
-      })
-      try:
-        conditions = waiter.PollUntilDone(
-            config_poller, None,
-            wait_ceiling_ms=1000)
-      except retry.RetryException as err:
-        conditions = config_poller.GetConditions()
-        # err.message already indicates timeout. Check ready_cond_type for more
-        # information.
-        msg = conditions.DescriptiveMessage() if conditions else None
-        if msg:
-          log.error('Still waiting: {}'.format(msg))
-        raise err
-      if not conditions.IsReady():
-        raise serverless_exceptions.ConfigurationError(
-            conditions.DescriptiveMessage())
+  def WaitForCondition(self, poller):
+    """Wait for a configuration to be ready in latest revision.
+
+    Args:
+      poller: A ConditionPoller object.
+
+    Returns:
+      A condition.Conditions object.
+
+    Raises:
+      RetryException: Max retry limit exceeded.
+      ConfigurationError: configuration failed to
+    """
+
+    try:
+      return waiter.PollUntilDone(poller, None, wait_ceiling_ms=1000)
+    except retry.RetryException as err:
+      conditions = poller.GetConditions()
+      # err.message already indicates timeout. Check ready_cond_type for more
+      # information.
+      msg = conditions.DescriptiveMessage() if conditions else None
+      if msg:
+        log.error('Still waiting: {}'.format(msg))
+      raise err
+    if not conditions.IsReady():
+      raise serverless_exceptions.ConfigurationError(
+          conditions.DescriptiveMessage())
 
   def GetServiceUrl(self, service_ref):
     """Return the main URL for the service."""
@@ -866,8 +881,8 @@ class ServerlessOperations(object):
           'region was invalid. Set the `run/region` property to a valid '
           'region and retry. Ex: `gcloud config set run/region us-central1`')
 
-  def ReleaseService(self, service_ref, config_changes, asyn=False,
-                     private_endpoint=None):
+  def ReleaseService(self, service_ref, config_changes, tracker=None,
+                     asyn=False, private_endpoint=None):
     """Change the given service in prod using the given config_changes.
 
     Ensures a new revision is always created, even if the spec of the revision
@@ -876,16 +891,20 @@ class ServerlessOperations(object):
     Arguments:
       service_ref: Resource, the service to release
       config_changes: list, objects that implement AdjustConfiguration().
-      asyn: bool, if True release asyncronously
+      tracker: StagedProgressTracker, to report on the progress of releasing.
+      asyn: bool, if True, release asyncronously
       private_endpoint:
     """
+    if tracker is None:
+      tracker = progress_tracker.NoOpStagedProgressTracker(
+          stages.ServiceStages(), interruptable=True, aborted_message='aborted')
     with_code = any(
         isinstance(c, deployable_pkg.Deployable) for c in config_changes)
     self._UpdateOrCreateService(
         service_ref, config_changes, with_code, private_endpoint)
     if not asyn:
       getter = functools.partial(self.GetService, service_ref)
-      self.WaitForCondition(getter)
+      self.WaitForCondition(ServiceConditionPoller(getter, tracker))
 
   def ListRevisions(self, namespace_ref, service_name):
     """List all revisions for the given service.
@@ -948,6 +967,14 @@ class ServerlessOperations(object):
         parent=domain_mapping_ref.Parent().RelativeName())
     with metrics.RecordDuration(metric_names.CREATE_DOMAIN_MAPPING):
       response = self._client.namespaces_domainmappings.Create(request)
+
+    # 'run domain-mappings create' is synchronous. Poll for its completion.
+    getter = functools.partial(self.GetDomainMapping, domain_mapping_ref)
+    with progress_tracker.StagedProgressTracker(
+        'Creating...',
+        stages.DomainMappingStages(),
+        failure_message='Domain mapping failed') as tracker:
+      self.WaitForCondition(DomainMappingConditionPoller(getter, tracker))
     return domain_mapping.DomainMapping(response, messages)
 
   def DeleteDomainMapping(self, domain_mapping_ref):

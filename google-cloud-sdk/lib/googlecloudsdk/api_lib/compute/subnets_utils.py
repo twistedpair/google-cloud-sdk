@@ -33,7 +33,8 @@ def MakeSubnetworkUpdateRequest(client,
                                 metadata=None,
                                 set_role_active=None,
                                 drain_timeout_seconds=None,
-                                enable_private_ipv6_access=None):
+                                enable_private_ipv6_access=None,
+                                private_ipv6_google_access_type=None):
   """Make the appropriate update request for the args.
 
   Args:
@@ -54,6 +55,8 @@ def MakeSubnetworkUpdateRequest(client,
       the active subnet to the backup subnet with set_role_active=True.
     enable_private_ipv6_access: Enable/disable private IPv6 access for the
       subnet.
+    private_ipv6_google_access_type: The private IPv6 google access type for the
+      VMs in this subnet.
 
   Returns:
     response, result of sending the update request for the subnetwork
@@ -153,6 +156,18 @@ def MakeSubnetworkUpdateRequest(client,
         convert_to_enum(metadata))
     return client.MakeRequests(
         [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
+  elif private_ipv6_google_access_type is not None:
+    subnetwork = client.MakeRequests([
+        (client.apitools_client.subnetworks, 'Get',
+         client.messages.ComputeSubnetworksGetRequest(**subnet_ref.AsDict()))
+    ])[0]
+
+    subnetwork.privateIpv6GoogleAccess = (
+        client.messages.Subnetwork.PrivateIpv6GoogleAccessValueValuesEnum(
+            ConvertPrivateIpv6GoogleAccess(
+                convert_to_enum(private_ipv6_google_access_type))))
+    return client.MakeRequests(
+        [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
   elif enable_private_ipv6_access is not None:
     subnetwork = client.MakeRequests([
         (client.apitools_client.subnetworks, 'Get',
@@ -160,6 +175,7 @@ def MakeSubnetworkUpdateRequest(client,
     ])[0]
 
     subnetwork.enablePrivateV6Access = enable_private_ipv6_access
+    subnetwork.privateIpv6GoogleAccess = None
     return client.MakeRequests(
         [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
   elif set_role_active is not None:
@@ -188,3 +204,12 @@ def CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork_resource):
       region=subnet_ref.region,
       subnetworkResource=subnetwork_resource)
   return (client.apitools_client.subnetworks, 'Patch', patch_request)
+
+
+def ConvertPrivateIpv6GoogleAccess(choice):
+  choices_to_enum = {
+      'DISABLE': 'DISABLE_GOOGLE_ACCESS',
+      'ENABLE_BIDIRECTIONAL_ACCESS': 'ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE',
+      'ENABLE_OUTBOUND_VM_ACCESS': 'ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE'
+  }
+  return choices_to_enum.get(choice)

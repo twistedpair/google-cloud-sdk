@@ -59,7 +59,8 @@ def ExitCodeFromRollupOutcome(outcome, summary_enum):
   if not outcome or not outcome.summary:
     log.warning('Tool Results service did not provide a roll-up test outcome.')
     return INCONCLUSIVE
-  if outcome.summary == summary_enum.success:
+  if (outcome.summary == summary_enum.success
+      or outcome.summary == summary_enum.flaky):
     return ROLLUP_SUCCESS
   if outcome.summary == summary_enum.failure:
     return ROLLUP_FAILURE

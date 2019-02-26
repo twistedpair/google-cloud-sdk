@@ -62,16 +62,19 @@ class TopicsClient(object):
     self.messages = messages or GetMessagesModule(client)
     self._service = self.client.projects_topics
 
-  def Create(self, topic_ref, labels=None):
+  def Create(self, topic_ref, labels=None, kms_key=None):
     """Creates a Topic.
 
     Args:
       topic_ref (Resource): Resource reference to the Topic to create.
       labels (LabelsValue): Labels for the topic to create.
+      kms_key (str): Full resource name of kms_key to set on Topic or None.
     Returns:
       Topic: The created topic.
     """
     topic = self.messages.Topic(name=topic_ref.RelativeName(), labels=labels)
+    if kms_key:
+      topic.kmsKeyName = kms_key
     return self._service.Create(topic)
 
   def Get(self, topic_ref):

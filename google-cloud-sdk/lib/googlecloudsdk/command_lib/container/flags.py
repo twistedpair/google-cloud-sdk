@@ -761,7 +761,7 @@ def AddNetworkPolicyFlags(parser, hidden=False):
       '--update-addons=NetworkPolicy=ENABLED flag.')
 
 
-def AddPrivateClusterFlags(parser, with_deprecated=False):
+def AddPrivateClusterFlags(parser, with_deprecated=False, with_alpha=False):
   """Adds flags related to private clusters to parser."""
   group = parser.add_argument_group('Private Clusters')
   if with_deprecated:
@@ -787,12 +787,25 @@ def AddPrivateClusterFlags(parser, with_deprecated=False):
             'API endpoint.'),
       default=None,
       action='store_true')
+  if with_alpha:
+    AddPeeringRouteSharingFlag(group)
   group.add_argument(
       '--master-ipv4-cidr',
       help=('IPv4 CIDR range to use for the master network.  This should have '
             'a netmask of size /28 and should be used in conjunction with the '
             '--enable-private-nodes flag.'),
       default=None)
+
+
+def AddPeeringRouteSharingFlag(group):
+  group.add_argument(
+      '--enable-peering-route-sharing',
+      help=(
+          'Enable custom route sharing between the master and node VPCs, which '
+          'ensures clients running in networks connected via a Cloud Router, '
+          'VPN, or Interconnect can reach the API server.'),
+      default=None,
+      action='store_true')
 
 
 def AddEnableLegacyAuthorizationFlag(parser, hidden=False):

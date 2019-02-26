@@ -30,7 +30,7 @@ from googlecloudsdk.core import resources
 
 API_NAME = 'file'
 V1_API_VERSION = 'v1'
-ALPHA_API_VERSION = 'v1alpha1'
+ALPHA_API_VERSION = 'v1p1alpha1'
 BETA_API_VERSION = 'v1beta1'
 
 INSTANCES_COLLECTION = 'file.projects.locations.instances'
@@ -221,9 +221,9 @@ class FilestoreClient(object):
 
   def ValidateFileShares(self, instance):
     """Validate the file share configs on the instance."""
-    for volume in self._adapter.FileSharesFromInstance(instance):
-      if volume.capacityGb:
-        self._ValidateFileShare(instance.tier, volume.capacityGb)
+    for file_share in self._adapter.FileSharesFromInstance(instance):
+      if file_share.capacityGb:
+        self._ValidateFileShare(instance.tier, file_share.capacityGb)
 
   def ParseFilestoreConfig(self, tier=None, description=None, file_share=None,
                            network=None, labels=None):
@@ -311,17 +311,17 @@ class AlphaFilestoreAdapter(object):
 
   def ParseFileShareIntoInstance(self, instance, file_share):
     """Parse specified file share configs into an instance message."""
-    if instance.volumes is None:
-      instance.volumes = []
+    if instance.fileShares is None:
+      instance.fileShares = []
     if file_share:
-      file_share_config = self.messages.VolumeConfig(
+      file_share_config = self.messages.FileShareConfig(
           name=file_share.get('name'),
           capacityGb=utils.BytesToGb(file_share.get('capacity')))
-      instance.volumes.append(file_share_config)
+      instance.fileShares.append(file_share_config)
 
   def FileSharesFromInstance(self, instance):
     """Get file share configs from instance message."""
-    return instance.volumes
+    return instance.fileShares
 
   def UpdateInstance(self, instance_ref, instance_config, update_mask):
     # Not supported by alpha API.

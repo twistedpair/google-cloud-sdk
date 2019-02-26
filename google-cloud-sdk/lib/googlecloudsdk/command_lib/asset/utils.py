@@ -21,21 +21,28 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import exceptions as gcloud_exceptions
 
 
-def VerifyParent(organization, project, attribute='root cloud asset'):
+def VerifyParent(organization, project, folder, attribute='root cloud asset'):
   """Verify the parent name."""
-  if organization is None and project is None:
+  if organization is None and project is None and folder is None:
     raise gcloud_exceptions.RequiredArgumentException(
-        '--organization or --project',
-        'Should specify the project or organization name for {0}.'.format(
-            attribute))
+        '--organization or --project or --folder',
+        'Should specify the project, or organization name, or the folder for '
+        '{0}.'.format(attribute))
   if organization and project:
     raise gcloud_exceptions.ConflictingArgumentsException(
         'organization', 'project')
+  if organization and folder:
+    raise gcloud_exceptions.ConflictingArgumentsException(
+        'organization', 'folder')
+  if project and folder:
+    raise gcloud_exceptions.ConflictingArgumentsException('project', 'folder')
 
 
-def GetParentName(organization, project, attribute='root cloud asset'):
-  """Gets the parent name from organization name or project name."""
-  VerifyParent(organization, project, attribute)
+def GetParentName(organization, project, folder, attribute='root cloud asset'):
+  """Gets the parent name from organization Id, project Id, or folder Id."""
+  VerifyParent(organization, project, folder, attribute)
   if organization:
     return 'organizations/{0}'.format(organization)
+  if folder:
+    return 'folders/{0}'.format(folder)
   return 'projects/{0}'.format(project)

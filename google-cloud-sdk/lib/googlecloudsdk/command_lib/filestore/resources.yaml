@@ -1,0 +1,9 @@
+project:
+  name: project
+  collection: file.projects
+  attributes:
+  - parameter_name: projectsId
+    attribute_name: project
+    help: |
+      The project name.
+    property: core/project

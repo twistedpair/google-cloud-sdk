@@ -6,6 +6,7 @@ location:
     parameter_name: locationsId
     attribute_name: location
     help: Google Cloud location.
+    property: healthcare/location
 
 dataset:
   name: dataset

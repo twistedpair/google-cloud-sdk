@@ -381,6 +381,7 @@ class CreateClusterOptions(object):
                private_cluster=None,
                enable_private_nodes=None,
                enable_private_endpoint=None,
+               enable_peering_route_sharing=None,
                master_ipv4_cidr=None,
                tpu_ipv4_cidr=None,
                enable_tpu=None,
@@ -458,6 +459,7 @@ class CreateClusterOptions(object):
     self.private_cluster = private_cluster
     self.enable_private_nodes = enable_private_nodes
     self.enable_private_endpoint = enable_private_endpoint
+    self.enable_peering_route_sharing = enable_peering_route_sharing
     self.master_ipv4_cidr = master_ipv4_cidr
     self.tpu_ipv4_cidr = tpu_ipv4_cidr
     self.enable_tpu_service_networking = enable_tpu_service_networking
@@ -1294,6 +1296,12 @@ class APIAdapter(object):
           name=options.security_profile)
       update = self.messages.ClusterUpdate(
           securityProfile=security_profile)
+    elif options.enable_peering_route_sharing is not None:
+      # For update, we can either enable or disable.
+      private_cluster_config = self.messages.PrivateClusterConfig(
+          enablePeeringRouteSharing=options.enable_peering_route_sharing)
+      update = self.messages.ClusterUpdate(
+          desiredPrivateClusterConfig=private_cluster_config)
 
     if not update:
       # if reached here, it's possible:
@@ -2131,6 +2139,14 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if options.enable_private_ipv6_access is not None:
       cluster.networkConfig = self.messages.NetworkConfig(
           enablePrivateIpv6Access=options.enable_private_ipv6_access)
+    if options.enable_peering_route_sharing is not None:
+      if not options.enable_private_nodes:
+        raise util.Error(
+            PREREQUISITE_OPTION_ERROR_MSG.format(
+                prerequisite='enable-private-nodes',
+                opt='enable-peering-route-sharing'))
+      cluster.privateClusterConfig.enablePeeringRouteSharing = \
+        options.enable_peering_route_sharing
 
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),

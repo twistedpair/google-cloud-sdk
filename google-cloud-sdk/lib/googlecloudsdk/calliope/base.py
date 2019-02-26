@@ -36,26 +36,23 @@ from googlecloudsdk.core.resource import resource_printer
 
 import six
 
-# gcloud category constants
-GCLOUD_AI_AND_MACHINE_LEARNING_CATEGORY = 'AI and Machine Learning'
-GCLOUD_API_PLATFORM_AND_ECOSYSTEMS_CATEGORY = 'API Platform and Ecosystems'
-GCLOUD_COMPUTE_CATEGORY = 'Compute'
-GCLOUD_DATA_ANALYTICS_CATEGORY = 'Data Analytics'
-GCLOUD_DATABASES_CATEGORY = 'Databases'
-GCLOUD_IDENTITY_AND_SECURITY_CATEGORY = 'Identity and Security'
-GCLOUD_INTERNET_OF_THINGS_CATEGORY = 'Internet of Things'
-GCLOUD_MANAGEMENT_TOOLS_CATEGORY = 'Management Tools'
-GCLOUD_MOBILE_CATEGORY = 'Mobile'
-GCLOUD_NETWORKING_CATEGORY = 'Networking'
-GCLOUD_SDK_TOOLS_CATEGORY = 'SDK Tools'
-
-# gcloud compute category constants
-COMPUTE_DISKS_CATEGORY = 'Disks'
-COMPUTE_INFO_CATEGORY = 'Info'
-COMPUTE_INSTANCES_CATEGORY = 'Instances'
-COMPUTE_LOAD_BALANCING_CATEGORY = 'Load Balancing'
-COMPUTE_NETWORKING_CATEGORY = 'Networking'
-COMPUTE_TOOLS_CATEGORY = 'Tools'
+# Category constants
+AI_AND_MACHINE_LEARNING_CATEGORY = 'AI and Machine Learning'
+API_PLATFORM_AND_ECOSYSTEMS_CATEGORY = 'API Platform and Ecosystems'
+COMPUTE_CATEGORY = 'Compute'
+DATA_ANALYTICS_CATEGORY = 'Data Analytics'
+DATABASES_CATEGORY = 'Databases'
+IDENTITY_AND_SECURITY_CATEGORY = 'Identity and Security'
+INTERNET_OF_THINGS_CATEGORY = 'Internet of Things'
+MANAGEMENT_TOOLS_CATEGORY = 'Management Tools'
+MOBILE_CATEGORY = 'Mobile'
+NETWORKING_CATEGORY = 'Networking'
+SDK_TOOLS_CATEGORY = 'SDK Tools'
+DISKS_CATEGORY = 'Disks'
+INFO_CATEGORY = 'Info'
+INSTANCES_CATEGORY = 'Instances'
+LOAD_BALANCING_CATEGORY = 'Load Balancing'
+TOOLS_CATEGORY = 'Tools'
 
 
 # Common markdown.

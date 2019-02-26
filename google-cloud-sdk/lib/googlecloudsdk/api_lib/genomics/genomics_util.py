@@ -78,28 +78,6 @@ def GetGenomicsMessages(version='v1'):
   return core_apis.GetMessagesModule('genomics', version)
 
 
-def GetDataset(dataset_id):
-  apitools_client = GetGenomicsClient()
-  genomics_messages = GetGenomicsMessages()
-
-  request = genomics_messages.GenomicsDatasetsGetRequest(
-      datasetId=str(dataset_id),
-  )
-
-  return apitools_client.datasets.Get(request)
-
-
-def GetCallSet(call_set_id):
-  apitools_client = GetGenomicsClient()
-  genomics_messages = GetGenomicsMessages()
-
-  request = genomics_messages.GenomicsCallsetsGetRequest(
-      callSetId=str(call_set_id),
-  )
-
-  return apitools_client.callsets.Get(request)
-
-
 def GetProjectId():
   return properties.VALUES.core.project.Get(required=True)
 

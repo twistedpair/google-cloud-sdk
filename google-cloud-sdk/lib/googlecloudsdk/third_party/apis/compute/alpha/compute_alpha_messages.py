@@ -1176,9 +1176,8 @@ class Allocation(_messages.Message):
   r"""Allocation resource
 
   Fields:
-    commitment: Full or partial url for commitment in which this allocation is
-      to be created. This field is ignored when allocations are created during
-      committment creation.
+    commitment: [OutputOnly] Full or partial url for parent commitment for
+      allocations which are tied to a commitment.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -1722,25 +1721,6 @@ class AllocationsScopedList(_messages.Message):
 
   allocations = _messages.MessageField('Allocation', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
-
-
-class AllocationsUpdateResourceShapeRequest(_messages.Message):
-  r"""A AllocationsUpdateResourceShapeRequest object.
-
-  Fields:
-    count: Number of allocated resources which are to be updated with minimum
-      = 1 and maximum = 100.
-    destinationAllocation: The name of destination allocation where the
-      modified machines are added. If existing, its machine spec must match
-      the modified machine spec. If non existing, new allocation with this
-      name and modified machine spec is created automatically.
-    updatedResourceProperties: A
-      AllocationSpecificSKUAllocationAllocatedInstanceProperties attribute.
-  """
-
-  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  destinationAllocation = _messages.StringField(2)
-  updatedResourceProperties = _messages.MessageField('AllocationSpecificSKUAllocationAllocatedInstanceProperties', 3)
 
 
 class AttachedDisk(_messages.Message):
@@ -5395,35 +5375,6 @@ class ComputeAllocationsTestIamPermissionsRequest(_messages.Message):
   resource = _messages.StringField(2, required=True)
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
   zone = _messages.StringField(4, required=True)
-
-
-class ComputeAllocationsUpdateResourceShapeRequest(_messages.Message):
-  r"""A ComputeAllocationsUpdateResourceShapeRequest object.
-
-  Fields:
-    allocation: Name of the allocation to update.
-    allocationsUpdateResourceShapeRequest: A
-      AllocationsUpdateResourceShapeRequest resource to be passed as the
-      request body.
-    project: Project ID for this request.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.  The request
-      ID must be a valid UUID with the exception that zero UUID is not
-      supported (00000000-0000-0000-0000-000000000000).
-    zone: Name of the zone for this request.
-  """
-
-  allocation = _messages.StringField(1, required=True)
-  allocationsUpdateResourceShapeRequest = _messages.MessageField('AllocationsUpdateResourceShapeRequest', 2)
-  project = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  zone = _messages.StringField(5, required=True)
 
 
 class ComputeAutoscalersAggregatedListRequest(_messages.Message):
@@ -13258,6 +13209,9 @@ class ComputeOrganizationSecurityPoliciesAddAssociationRequest(_messages.Message
   r"""A ComputeOrganizationSecurityPoliciesAddAssociationRequest object.
 
   Fields:
+    replaceExistingAssociation: Indicates whether or not to replace it if an
+      association of the attachment already exists. This is false by default,
+      in which case an error will be returned if an assocation already exists.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
@@ -13273,9 +13227,10 @@ class ComputeOrganizationSecurityPoliciesAddAssociationRequest(_messages.Message
       passed as the request body.
   """
 
-  requestId = _messages.StringField(1)
-  securityPolicy = _messages.StringField(2, required=True)
-  securityPolicyAssociation = _messages.MessageField('SecurityPolicyAssociation', 3)
+  replaceExistingAssociation = _messages.BooleanField(1)
+  requestId = _messages.StringField(2)
+  securityPolicy = _messages.StringField(3, required=True)
+  securityPolicyAssociation = _messages.MessageField('SecurityPolicyAssociation', 4)
 
 
 class ComputeOrganizationSecurityPoliciesAddRuleRequest(_messages.Message):
@@ -13477,6 +13432,30 @@ class ComputeOrganizationSecurityPoliciesMoveRequest(_messages.Message):
 
 class ComputeOrganizationSecurityPoliciesMoveResponse(_messages.Message):
   r"""An empty ComputeOrganizationSecurityPoliciesMove response."""
+
+
+class ComputeOrganizationSecurityPoliciesPatchRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesPatchRequest object.
+
+  Fields:
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: Name of the security policy to update.
+    securityPolicyResource: A SecurityPolicy resource to be passed as the
+      request body.
+  """
+
+  requestId = _messages.StringField(1)
+  securityPolicy = _messages.StringField(2, required=True)
+  securityPolicyResource = _messages.MessageField('SecurityPolicy', 3)
 
 
 class ComputeOrganizationSecurityPoliciesPatchRuleRequest(_messages.Message):
@@ -21232,11 +21211,12 @@ class DeprecationStatus(_messages.Message):
 
   Enums:
     StateValueValuesEnum: The deprecation state of this resource. This can be
-      DEPRECATED, OBSOLETE, or DELETED. Operations which create a new resource
-      using a DEPRECATED resource will return successfully, but with a warning
-      indicating the deprecated resource and recommending its replacement.
-      Operations which use OBSOLETE or DELETED resources will be rejected and
-      result in an error.
+      ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate
+      the end of life date for an image, can use ACTIVE. Operations which
+      create a new resource using a DEPRECATED resource will return
+      successfully, but with a warning indicating the deprecated resource and
+      recommending its replacement. Operations which use OBSOLETE or DELETED
+      resources will be rejected and result in an error.
 
   Fields:
     deleted: An optional RFC3339 timestamp on or after which the state of this
@@ -21253,30 +21233,34 @@ class DeprecationStatus(_messages.Message):
     replacement: The URL of the suggested replacement for a deprecated
       resource. The suggested replacement resource must be the same kind of
       resource as the deprecated resource.
-    state: The deprecation state of this resource. This can be DEPRECATED,
-      OBSOLETE, or DELETED. Operations which create a new resource using a
-      DEPRECATED resource will return successfully, but with a warning
-      indicating the deprecated resource and recommending its replacement.
-      Operations which use OBSOLETE or DELETED resources will be rejected and
-      result in an error.
+    state: The deprecation state of this resource. This can be ACTIVE
+      DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end
+      of life date for an image, can use ACTIVE. Operations which create a new
+      resource using a DEPRECATED resource will return successfully, but with
+      a warning indicating the deprecated resource and recommending its
+      replacement. Operations which use OBSOLETE or DELETED resources will be
+      rejected and result in an error.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The deprecation state of this resource. This can be DEPRECATED,
-    OBSOLETE, or DELETED. Operations which create a new resource using a
-    DEPRECATED resource will return successfully, but with a warning
+    r"""The deprecation state of this resource. This can be ACTIVE DEPRECATED,
+    OBSOLETE, or DELETED. Operations which communicate the end of life date
+    for an image, can use ACTIVE. Operations which create a new resource using
+    a DEPRECATED resource will return successfully, but with a warning
     indicating the deprecated resource and recommending its replacement.
     Operations which use OBSOLETE or DELETED resources will be rejected and
     result in an error.
 
     Values:
+      ACTIVE: <no description>
       DELETED: <no description>
       DEPRECATED: <no description>
       OBSOLETE: <no description>
     """
-    DELETED = 0
-    DEPRECATED = 1
-    OBSOLETE = 2
+    ACTIVE = 0
+    DELETED = 1
+    DEPRECATED = 2
+    OBSOLETE = 3
 
   deleted = _messages.StringField(1)
   deprecated = _messages.StringField(2)
@@ -27396,10 +27380,17 @@ class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
       group from recreating its instances prematurely. This value must be from
       range [0, 3600].
     maxUnavailable: Maximum number of instances that can be unavailable when
-      autohealing. The instance is considered available if all of the
-      following conditions are satisfied: 1. Instance's status is RUNNING. 2.
-      Instance's liveness health check result was observed to be HEALTHY at
-      least once. By default, a percent value of 100% is used.
+      autohealing. When 'percent' is used, the value is rounded UP. The
+      instance is considered available if all of the following conditions are
+      satisfied: 1. Instance's status is RUNNING. 2. Instance's currentAction
+      is NONE (in particular its liveness health check result was observed to
+      be HEALTHY at least once as it passed VERIFYING). 3. There is no
+      outgoing action on an instance triggered by IGM.  By default, number of
+      concurrently autohealed instances is smaller than the managed instance
+      group target size. However, if a zonal managed instance group has only
+      one instance, or a regional managed instance group has only one instance
+      per zone, autohealing will recreate these instances when they become
+      unhealthy.
   """
 
   healthCheck = _messages.StringField(1)
@@ -27596,6 +27587,8 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       However, if the Updater determines that the minimal action you specify
       is not enough to perform the update, it might perform a more disruptive
       action.
+    ReplacementMethodValueValuesEnum: What action should be used to replace
+      instances. See minimal_action.REPLACE
     TypeValueValuesEnum:
 
   Fields:
@@ -27628,6 +27621,8 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       the Updater will attempt to perform that action only. However, if the
       Updater determines that the minimal action you specify is not enough to
       perform the update, it might perform a more disruptive action.
+    replacementMethod: What action should be used to replace instances. See
+      minimal_action.REPLACE
     type: A TypeValueValuesEnum attribute.
   """
 
@@ -27660,6 +27655,17 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
     REPLACE = 2
     RESTART = 3
 
+  class ReplacementMethodValueValuesEnum(_messages.Enum):
+    r"""What action should be used to replace instances. See
+    minimal_action.REPLACE
+
+    Values:
+      RECREATE: <no description>
+      SUBSTITUTE: <no description>
+    """
+    RECREATE = 0
+    SUBSTITUTE = 1
+
   class TypeValueValuesEnum(_messages.Enum):
     r"""TypeValueValuesEnum enum type.
 
@@ -27675,7 +27681,8 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
   maxUnavailable = _messages.MessageField('FixedOrPercent', 3)
   minReadySec = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 5)
-  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  replacementMethod = _messages.EnumField('ReplacementMethodValueValuesEnum', 6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
 
 
 class InstanceGroupManagerVersion(_messages.Message):
@@ -33777,7 +33784,16 @@ class NetworkPeering(_messages.Message):
       when the peering state is ACTIVE. Otherwise, user needs to create routes
       manually to route packets to peer network.
     exportCustomRoutes: Whether to export the custom routes to peer network.
+    exportSubnetRoutesWithPublicIp: Whether subnet routes with public IP range
+      are exported. The default value is true, all subnet routes are exported.
+      The IPv4 special-use ranges
+      (https://en.wikipedia.org/wiki/IPv4#Special_addresses) are always
+      exported to peers and are not controlled by this field.
     importCustomRoutes: Whether to import the custom routes from peer network.
+    importSubnetRoutesWithPublicIp: Whether subnet routes with public IP range
+      are imported. The default value is false. The IPv4 special-use ranges
+      (https://en.wikipedia.org/wiki/IPv4#Special_addresses) are always
+      imported from peers and are not controlled by this field.
     name: Name of this peering. Provided by the client when the peering is
       created. The name must comply with RFC1035. Specifically, the name must
       be 1-63 characters long and match regular expression
@@ -33808,11 +33824,13 @@ class NetworkPeering(_messages.Message):
   autoCreateRoutes = _messages.BooleanField(2)
   exchangeSubnetRoutes = _messages.BooleanField(3)
   exportCustomRoutes = _messages.BooleanField(4)
-  importCustomRoutes = _messages.BooleanField(5)
-  name = _messages.StringField(6)
-  network = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  stateDetails = _messages.StringField(9)
+  exportSubnetRoutesWithPublicIp = _messages.BooleanField(5)
+  importCustomRoutes = _messages.BooleanField(6)
+  importSubnetRoutesWithPublicIp = _messages.BooleanField(7)
+  name = _messages.StringField(8)
+  network = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  stateDetails = _messages.StringField(11)
 
 
 class NetworkRoutingConfig(_messages.Message):
@@ -41339,6 +41357,9 @@ class SecurityPolicyRule(_messages.Message):
       priority must be a positive value between 0 and 2147483647. Rules are
       evaluated from highest to lowest priority where 0 is the highest
       priority and 2147483647 is the lowest prority.
+    rateLimitOptions: Must be specified if the action is
+      "rate_based_blacklist" or "throttle". Cannot be specified for any other
+      actions.
     targetResources: A list of network resource URLs to which this rule
       applies. This field allows you to control which network?s VMs get this
       rule. If this field is left blank, all VMs within the organization will
@@ -41365,7 +41386,8 @@ class SecurityPolicyRule(_messages.Message):
   match = _messages.MessageField('SecurityPolicyRuleMatcher', 6)
   preview = _messages.BooleanField(7)
   priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  targetResources = _messages.StringField(9, repeated=True)
+  rateLimitOptions = _messages.MessageField('SecurityPolicyRuleRateLimitOptions', 9)
+  targetResources = _messages.StringField(10, repeated=True)
 
 
 class SecurityPolicyRuleMatcher(_messages.Message):
@@ -41443,6 +41465,53 @@ class SecurityPolicyRuleMatcherConfigDestinationPort(_messages.Message):
 
   ipProtocol = _messages.StringField(1)
   ports = _messages.StringField(2, repeated=True)
+
+
+class SecurityPolicyRuleRateLimitOptions(_messages.Message):
+  r"""A SecurityPolicyRuleRateLimitOptions object.
+
+  Enums:
+    EnforceOnKeyValueValuesEnum: Determines the key to enforce the
+      threshold_rps limit on. If key is "IP", each IP has this limit enforced
+      separately, whereas "ALL_IPs" means a single limit is applied to all
+      requests matching this rule.
+
+  Fields:
+    blockDuration: Can only be specifed if the action for the rule is
+      "rate_based_blacklist" If specified, determines the time (in seconds)
+      the traffic will continue to be blocked by the rate limit after the rate
+      falls below the threshold. The default value is 0 seconds.
+    conformAction: Action to take when requests are under the given threshold.
+      When requests are throttled, this is also the action for all requests
+      which are not dropped. Valid options are "allow", "fairshare", and
+      "drop_overload".
+    enforceOnKey: Determines the key to enforce the threshold_rps limit on. If
+      key is "IP", each IP has this limit enforced separately, whereas
+      "ALL_IPs" means a single limit is applied to all requests matching this
+      rule.
+    exceedAction: When a request is denied, returns the HTTP response code
+      specified. Valid options are "deny()" where valid values for status are
+      403, 404, 429, and 502.
+    thresholdRps: Rate in requests per second at which to begin ratelimiting.
+  """
+
+  class EnforceOnKeyValueValuesEnum(_messages.Enum):
+    r"""Determines the key to enforce the threshold_rps limit on. If key is
+    "IP", each IP has this limit enforced separately, whereas "ALL_IPs" means
+    a single limit is applied to all requests matching this rule.
+
+    Values:
+      ALL_IPS: <no description>
+      IP: <no description>
+    """
+    ALL_IPS = 0
+    IP = 1
+
+  blockDuration = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  conformAction = _messages.StringField(2)
+  enforceOnKey = _messages.EnumField('EnforceOnKeyValueValuesEnum', 3)
+  exceedAction = _messages.StringField(4)
+  thresholdRps = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class SecuritySettings(_messages.Message):

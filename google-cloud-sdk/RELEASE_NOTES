@@ -5,6 +5,43 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 236.0.0 (2019-02-26)
+
+### Cloud SDK
+
+- Handle errors from service account token revocation for `gcloud auth revoke` and print a friendly error message with more detailed instructions on how to revoke a service account token
+
+### Cloud Asset Inventory
+
+* Added `--folder` flag to `gcloud beta asset export` command.
+
+### Cloud Dataproc
+
+Added `--kerberos-root-principal-password-uri`, `--kerberos-kms-key`, and
+`--kerberos-config-file` flags to `gcloud beta dataproc clusters create`
+and `gcloud beta dataproc workflow-templates set-managed-cluster`.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore Emulator version 1.4.0
+  * Add support for the `debug(...)` function in security rules
+  * Simplify security rule evaluation and rule coverage reports
+
+### Cloud Services
+
+* Promoted `services vpc-peerings` command group to GA.
+
+### Compute Engine
+
+* Removed auto-create-routes column from default output of `gcloud beta compute
+  networks peerings list`.
+* Promoted `--enable-logging` and `--log-filter` flags of
+  `gcloud compute routers nats` to beta.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 235.0.0 (2019-02-19)
 
 ### App Engine

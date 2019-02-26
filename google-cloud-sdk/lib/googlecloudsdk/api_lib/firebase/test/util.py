@@ -37,6 +37,14 @@ OUTCOMES_FORMAT = """
           )
 """
 
+FLAKY_ATTEMPTS_OUTCOMES_FORMAT = """
+          table[box](
+            outcome.color(red=Fail, green=Pass, blue=Flaky, yellow=Inconclusive),
+            axis_value:label=TEST_AXIS_VALUE,
+            passed_executions:label=PASSED_EXECUTIONS
+          )
+"""
+
 
 def GetError(error):
   """Returns a ready-to-print string representation from the http response.

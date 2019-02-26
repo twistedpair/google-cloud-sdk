@@ -70,7 +70,7 @@ def AddCommonNatArgs(parser, for_create=False, with_logging=False):
   _AddTimeoutsArgs(parser, for_create)
   _AddMinPortsPerVmArg(parser, for_create)
   if with_logging:
-    _AddLoggingArgs(parser, for_create)
+    _AddLoggingArgs(parser)
 
 
 def _AddIpAllocationArgs(parser, for_create=False):
@@ -165,7 +165,7 @@ def _AddMinPortsPerVmArg(parser, for_create=False):
       'Clear minimum ports to be allocated to a VM')
 
 
-def _AddLoggingArgs(parser, for_create=False):
+def _AddLoggingArgs(parser):
   """Adds arguments to configure NAT logging."""
   enable_logging_help_text = textwrap.dedent("""\
     Enable logging for the NAT. Logs will be exported to Stackdriver. NAT
@@ -174,25 +174,17 @@ def _AddLoggingArgs(parser, for_create=False):
     $ {parent_command} update MY-NAT --no-enable-logging --router ROUTER
       --region REGION""")
   log_filter_help_text = textwrap.dedent("""\
-    Specify a filter for logs exported to stackdriver. This can be one of the
-    following:
-    ERRORS_ONLY - export logs for connection failures only.
-    TRANSLATIONS_ONLY - export logs for successful connections only.
-    Without a filter, logs (if enabled) will be exported for all connections
-    handled by this NAT.
+    Filter for logs exported to stackdriver.
+
+    The default is ALL.
 
     If logging is not enabled, filter settings will be persisted but will have
     no effect.
-    Use --[no-]enable-logging to enable and disable logging.
 
-    To clear the filter, use
-    $ {parent_command} update MY-NAT --clear-log-filter --router ROUTER
-      --region REGION""")
-  clear_log_filter_help_text = textwrap.dedent("""\
-    Clear the filter for logs exported to stackdriver.
-    Without a filter, logs (if enabled) will be exported for all connections
-    handled by this NAT.""")
+    Use --[no-]enable-logging to enable and disable logging.
+""")
   filter_choices = {
+      'ALL': 'Export logs for all connections handled by this NAT.',
       'ERRORS_ONLY': 'Export logs for connection failures only.',
       'TRANSLATIONS_ONLY': 'Export logs for successful connections only.',
   }
@@ -201,9 +193,8 @@ def _AddLoggingArgs(parser, for_create=False):
       action='store_true',
       default=None,
       help=enable_logging_help_text)
-  _AddClearableArgument(parser, for_create, 'log-filter', None,
-                        log_filter_help_text, clear_log_filter_help_text,
-                        filter_choices)
+  parser.add_argument(
+      '--log-filter', help=log_filter_help_text, choices=filter_choices)
 
 
 def _AddClearableArgument(parser,

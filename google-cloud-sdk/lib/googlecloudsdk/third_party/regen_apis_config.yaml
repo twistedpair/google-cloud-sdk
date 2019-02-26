@@ -311,8 +311,8 @@ apis:
     v1beta2:
       discovery_doc: eventflow_v1beta2.json
   file:
-    v1alpha1:
-      discovery_doc: file_v1alpha1.json
+    v1p1alpha1:
+      discovery_doc: file_v1p1alpha1.json
       default: true
     v1beta1:
       discovery_doc: file_v1beta1.json

@@ -22,7 +22,7 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import resources
 
 
-FOLDERS_API_VERSION = 'v2beta1'
+FOLDERS_API_VERSION = 'v2'
 
 
 def FoldersClient():
@@ -65,7 +65,7 @@ def GetIamPolicy(folder_id):
 
 
 def SetIamPolicy(folder_id, policy, update_mask=None):
-  """Calls /google.cloud.resourcemanager.v2beta1.Folders.SetIamPolicy."""
+  """Calls /google.cloud.resourcemanager.v2.Folders.SetIamPolicy."""
   messages = FoldersMessages()
   set_iam_policy_request = messages.SetIamPolicyRequest(
       policy=policy, updateMask=update_mask)
