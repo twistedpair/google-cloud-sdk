@@ -134,9 +134,16 @@ class Configuration(k8s_object.KubernetesObject):
     self._EnsureBuild()
     self._m.spec.build.template.name = value
 
+  def _EnsureRevisionMeta(self):
+    revision_meta = self.spec.revisionTemplate.metadata
+    if revision_meta is None:
+      revision_meta = self._messages.ObjectMeta()
+      self.spec.revisionTemplate.metadata = revision_meta
+    return revision_meta
+
   @property
   def revision_labels(self):
-    revision_meta = self.spec.revisionTemplate.metadata
+    revision_meta = self._EnsureRevisionMeta()
     if revision_meta.labels is None:
       revision_meta.labels = self._messages.ObjectMeta.LabelsValue()
     return k8s_object.ListAsDictionaryWrapper(
@@ -148,7 +155,7 @@ class Configuration(k8s_object.KubernetesObject):
 
   @property
   def revision_annotations(self):
-    revision_meta = self.spec.revisionTemplate.metadata
+    revision_meta = revision_meta = self._EnsureRevisionMeta()
     return k8s_object.AnnotationsFromMetadata(self._messages, revision_meta)
 
   @property

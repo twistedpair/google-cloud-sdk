@@ -5,11 +5,63 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 237.0.0 (2019-03-05)
+
+### Cloud SDK
+
+* Fixed issue affecting users overwriting an existing Cloud SDK install via the
+  Windows installer, in which certain gcloud commands crashed with a "gcloud
+  crashed (LayoutException): Multiple definitions for release track" error. This
+  issue can be tracked at <https://issuetracker.google.com/123390310>.
+
+### BigQuery
+
+* Fixes bug in formatting pre-1900 timestamps.
+
+### Cloud Dataproc
+
+* Fixed a bug where several fields were hidden from `gcloud dataproc clusters
+<import|export>` in all release tracks. Note that these fields were always
+available in `gcloud dataproc clusters <create-from-file|describe>`.
+
+### Cloud Storage
+
+* 
+* Updated gsutil component to 4.37.
+
+### Compute Engine
+
+* Promoted the `--server-binding` flag of `gcloud compute sole-tenancy
+  node-templates create` to beta.
+* Reduced lower bound for data disk sizes from 10GB to 1GB for
+  `gcloud compute instances create`.
+* Added `resources-accelerator` to `gcloud beta compute commitments create`.
+* Promoted `all` option of `--ports` flag for `gcloud compute forwarding-rules`
+  to GA.
+* Added INSTANCE_TEMPLATE and VERSION_NAME columns to output of `gcloud compute
+  instance-groups managed list-instances`.
+
+### Kubernetes Engine
+
+* Updated Google Kubernetes Engine's kubectl from version 1.10.7 to 1.11.7.
+* Added extra Google Kubernetes Engine kubectl versions:
+  * kubectl.1.9
+  * kubectl.1.10
+  * kubectl.1.11
+  * kubectl.1.12
+  * kubectl.1.13
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 236.0.0 (2019-02-26)
 
 ### Cloud SDK
 
-- Handle errors from service account token revocation for `gcloud auth revoke` and print a friendly error message with more detailed instructions on how to revoke a service account token
+* Modified error handling for `gcloud auth revoke` when revoking a service
+  account token to print a friendly error message with more detailed
+  instructions on how to revoke the token.
 
 ### Cloud Asset Inventory
 
@@ -17,15 +69,15 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Dataproc
 
-Added `--kerberos-root-principal-password-uri`, `--kerberos-kms-key`, and
-`--kerberos-config-file` flags to `gcloud beta dataproc clusters create`
-and `gcloud beta dataproc workflow-templates set-managed-cluster`.
+* Added `--kerberos-root-principal-password-uri`, `--kerberos-kms-key`, and
+  `--kerberos-config-file` flags to `gcloud beta dataproc clusters create`
+  and `gcloud beta dataproc workflow-templates set-managed-cluster`.
 
 ### Cloud Firestore Emulator
 
-* Release Cloud Firestore Emulator version 1.4.0
-  * Add support for the `debug(...)` function in security rules
-  * Simplify security rule evaluation and rule coverage reports
+*   Released Cloud Firestore Emulator version 1.4.0:
+    *   Added support for the `debug(...)` function in security rules.
+    *   Simplified security rule evaluation and rule coverage reports.
 
 ### Cloud Services
 
@@ -175,7 +227,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
   * `--parameter-server-accelerator`
   * `--parameter-server-image-uri`
 
-### Cloud PubSub
+### Cloud Pub/Sub
 
 *   Promoted Snapshot & Seek features to GA. These features allow users to
     create snapshots of subscription backlog state, and later restore that
@@ -271,7 +323,8 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Cloud Datastore Emulator
 
 * Release Cloud Datastore Emulator version 2.1.0
-  * Implement export/import for emulator.
+  * Implement export/import for emulator. For details, refer to
+    <https://cloud.google.com/datastore/docs/tools/emulator-export-import>.
 
 ### Cloud SQL
 
@@ -2819,9 +2872,9 @@ date, apps will be blocked from deploying until you specify the SSL library
 
 ### Miscellaneous
 
-* Updated the Pubsub Emulator
-  * Pubsub emulator now spams the console less.
-  * Pubsub emulator properly sets the default value for Subscription.message_retention_duration.
+* Updated the Pub/Sub Emulator
+  * Pub/Sub emulator now spams the console less.
+  * Pub/Sub emulator properly sets the default value for Subscription.message_retention_duration.
 
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
@@ -5244,7 +5297,7 @@ disabled on existing clusters via the
 
 ### Emulators
 
-*   Datastore emulator now defaults to port 8081, and pubsub emulator to 8085.
+*   Datastore emulator now defaults to port 8081, and Pub/Sub emulator to 8085.
 
 
 ## 149.0.0 (2017-03-29)
@@ -5744,7 +5797,7 @@ disabled on existing clusters via the
 
 ### Google Cloud Pub/Sub
 
-* The pubsub emulator now adheres to the documented topic and subscription
+* The Pub/Sub emulator now adheres to the documented topic and subscription
 name constraints, including support for '+' and '%25' in names via
 REST.
 
@@ -5905,7 +5958,7 @@ if a file upload is necessary.
 
 ### Emulators
 
-* The pubsub emulator now accepts web-safe Base64 encoded data.
+* The Pub/Sub emulator now accepts web-safe Base64 encoded data.
 
 
 ## 139.0.1 (2017-01-12)

@@ -32,6 +32,19 @@ properties:
       version, such as "1.2.29"), or the "preview" version. If unspecified, it
       defaults to the latest version.
     type: string
+  optionalComponents:
+    description: The set of optional components to activate on the cluster.
+    type: array
+    items:
+      type: string
+      enum:
+      - ANACONDA
+      - HIVE_WEBHCAT
+      - JUPYTER
+      - KERBEROS
+      - PRESTO
+      - ZEPPELIN
+      - ZOOKEEPER
   properties:
     description: |-
       The properties to set on daemon config files.Property keys are specified

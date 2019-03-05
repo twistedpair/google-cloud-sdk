@@ -109,7 +109,9 @@ class BasicAutoscalingAlgorithm(_messages.Message):
   r"""Basic algorithm for autoscaling.
 
   Fields:
-    cooldownPeriod: Required. Cooldown time in between scaling.
+    cooldownPeriod: Optional. Cooldown period in between scaling. Note that a
+      cooldown period begins after a scaling operation has completed.Default:
+      120s.
     yarnConfig: Required. YARN autoscaling configuration.
   """
 
@@ -163,9 +165,9 @@ class Binding(_messages.Message):
       serviceAccount:{emailid}: An email address that represents a service
       account. For example, my-other-app@appspot.gserviceaccount.com.
       group:{emailid}: An email address that represents a Google group.  For
-      example, admins@example.com. domain:{domain}: A Google Apps domain name
-      that represents all the  users of that domain. For example, google.com
-      or example.com.
+      example, admins@example.com. domain:{domain}: The G Suite domain
+      (primary) that represents all the  users of that domain. For example,
+      google.com or example.com.
     role: Role that is assigned to members. For example, roles/viewer,
       roles/editor, or roles/owner.
   """
@@ -603,6 +605,19 @@ class DataprocProjectsLocationsAutoscalingPoliciesDeleteRequest(_messages.Messag
   name = _messages.StringField(1, required=True)
 
 
+class DataprocProjectsLocationsAutoscalingPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsAutoscalingPoliciesGetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  resource = _messages.StringField(1, required=True)
+
+
 class DataprocProjectsLocationsAutoscalingPoliciesGetRequest(_messages.Message):
   r"""A DataprocProjectsLocationsAutoscalingPoliciesGetRequest object.
 
@@ -632,6 +647,38 @@ class DataprocProjectsLocationsAutoscalingPoliciesListRequest(_messages.Message)
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class DataprocProjectsLocationsAutoscalingPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsAutoscalingPoliciesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DataprocProjectsLocationsAutoscalingPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsAutoscalingPoliciesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class DataprocProjectsLocationsWorkflowTemplatesCreateRequest(_messages.Message):
@@ -811,6 +858,21 @@ class DataprocProjectsRegionsAutoscalingPoliciesDeleteRequest(_messages.Message)
   name = _messages.StringField(1, required=True)
 
 
+class DataprocProjectsRegionsAutoscalingPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsAutoscalingPoliciesGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class DataprocProjectsRegionsAutoscalingPoliciesGetRequest(_messages.Message):
   r"""A DataprocProjectsRegionsAutoscalingPoliciesGetRequest object.
 
@@ -840,6 +902,37 @@ class DataprocProjectsRegionsAutoscalingPoliciesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class DataprocProjectsRegionsAutoscalingPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsAutoscalingPoliciesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DataprocProjectsRegionsAutoscalingPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsAutoscalingPoliciesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class DataprocProjectsRegionsClustersCreateRequest(_messages.Message):

@@ -1587,6 +1587,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.firestore = self._Add('firestore')
     self.genomics = self._Add('genomics')
     self.gkehub = self._Add('gkehub')
+    self.healthcare = self._Add('healthcare')
     self.iam = self._Add('iam')
     self.kubernetespolicy = self._Add('kubernetespolicy')
     self.language = self._Add('language')

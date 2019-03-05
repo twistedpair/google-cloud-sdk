@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.compute import managed_instance_groups_utils
+from googlecloudsdk.api_lib.compute import path_simplifier
 
 
 class InstanceConfigsGetterWithSimpleCache(object):
@@ -70,7 +71,8 @@ class InstanceConfigsGetterWithSimpleCache(object):
 
   def _do_get_instance_config(self, igm_ref, instance_ref):
     """Returns instance config for given instance."""
-    filter_param = 'instance eq {0}'.format(instance_ref)
+    instance_name = path_simplifier.Name(str(instance_ref))
+    filter_param = 'name eq {0}'.format(instance_name)
     if igm_ref.Collection() == 'compute.instanceGroupManagers':
       service = self._client.apitools_client.instanceGroupManagers
       request = (self._client.messages.

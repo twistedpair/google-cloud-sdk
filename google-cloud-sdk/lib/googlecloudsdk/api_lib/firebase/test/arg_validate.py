@@ -75,6 +75,8 @@ def ValidateArgFromFile(arg_internal_name, arg_value):
 POSITIVE_INT_PARSER = arg_parsers.BoundedInt(1, sys.maxsize)
 NONNEGATIVE_INT_PARSER = arg_parsers.BoundedInt(0, sys.maxsize)
 TIMEOUT_PARSER = arg_parsers.Duration(lower_bound='1m', upper_bound='6h')
+TIMEOUT_PARSER_US = arg_parsers.Duration(
+    lower_bound='1m', upper_bound='6h', parsed_unit='us')
 ORIENTATION_LIST = ['portrait', 'landscape', 'default']
 
 
@@ -126,6 +128,19 @@ def _ValidateDuration(arg_internal_name, arg_value):
       return TIMEOUT_PARSER(arg_value)
     elif isinstance(arg_value, int):
       return TIMEOUT_PARSER(str(arg_value))
+  except arg_parsers.ArgumentTypeError as e:
+    raise test_exceptions.InvalidArgException(arg_internal_name,
+                                              six.text_type(e))
+  raise test_exceptions.InvalidArgException(arg_internal_name, arg_value)
+
+
+def _ValidateDurationUs(arg_internal_name, arg_value):
+  """Validates an argument which should have Duration value in microseconds."""
+  try:
+    if isinstance(arg_value, six.string_types):
+      return TIMEOUT_PARSER_US(arg_value)
+    elif isinstance(arg_value, int):
+      return TIMEOUT_PARSER_US(str(arg_value))
   except arg_parsers.ArgumentTypeError as e:
     raise test_exceptions.InvalidArgException(arg_internal_name,
                                               six.text_type(e))
@@ -265,6 +280,7 @@ _FILE_ARG_VALIDATORS = {
     'scenario_numbers': _ValidatePositiveIntList,
     'test_targets': ValidateStringList,
     'timeout': _ValidateDuration,
+    'timeout_us': _ValidateDurationUs,
     'use_orchestrator': _ValidateBool,
 }
 

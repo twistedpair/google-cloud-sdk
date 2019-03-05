@@ -82,6 +82,10 @@ class ConnectionInfo(six.with_metaclass(abc.ABCMeta)):
     pass
 
   @abc.abstractproperty
+  def supports_one_platform(self):
+    pass
+
+  @abc.abstractproperty
   def location_label(self):
     pass
 
@@ -127,6 +131,7 @@ class _GKEConnectionContext(ConnectionInfo):
   def __init__(self, cluster_ref):
     super(_GKEConnectionContext, self).__init__()
     self.cluster_ref = cluster_ref
+    self.region = None
 
   @property
   def ns_label(self):
@@ -150,6 +155,10 @@ class _GKEConnectionContext(ConnectionInfo):
         self.endpoint = 'https://{}/'.format(endpoint)
         with _OverrideEndpointOverrides(self.endpoint):
           yield self
+
+  @property
+  def supports_one_platform(self):
+    return False
 
 
 class _RegionalConnectionContext(ConnectionInfo):
@@ -184,6 +193,10 @@ class _RegionalConnectionContext(ConnectionInfo):
         (scheme, netloc, path, params, query, fragment))
     with _OverrideEndpointOverrides(self.endpoint):
       yield self
+
+  @property
+  def supports_one_platform(self):
+    return True
 
 
 def GetConnectionContext(args):

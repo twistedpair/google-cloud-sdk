@@ -116,6 +116,34 @@ deleted.
         supports_download=False,
     )
 
+    def Failover(self, request, global_params=None):
+      r"""Failover the master role to current replica node against a specific.
+STANDARD tier redis instance.
+
+      Args:
+        request: (RedisProjectsLocationsInstancesFailoverRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Failover')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Failover.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:failover',
+        http_method=u'POST',
+        method_id=u'redis.projects.locations.instances.failover',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:failover',
+        request_field=u'failoverInstanceRequest',
+        request_type_name=u'RedisProjectsLocationsInstancesFailoverRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets the details of a specific Redis instance.
 

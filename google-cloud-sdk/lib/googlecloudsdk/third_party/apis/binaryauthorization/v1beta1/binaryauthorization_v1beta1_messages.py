@@ -43,18 +43,22 @@ class AdmissionRule(_messages.Message):
     rule.
 
     Values:
-      ENFORCEMENT_MODE_UNSPECIFIED: Mandatory.
+      ENFORCEMENT_MODE_UNSPECIFIED: Do not use.
       ENFORCED_BLOCK_AND_AUDIT_LOG: Enforce the admission rule by blocking the
         pod creation.
+      DRYRUN_AUDIT_LOG_ONLY: Dryrun mode: Audit logging only.  This will allow
+        the pod creation as if the admission request had specified break-
+        glass.
     """
     ENFORCEMENT_MODE_UNSPECIFIED = 0
     ENFORCED_BLOCK_AND_AUDIT_LOG = 1
+    DRYRUN_AUDIT_LOG_ONLY = 2
 
   class EvaluationModeValueValuesEnum(_messages.Enum):
     r"""Required. How this admission rule will be evaluated.
 
     Values:
-      EVALUATION_MODE_UNSPECIFIED: Mandatory.
+      EVALUATION_MODE_UNSPECIFIED: Do not use.
       ALWAYS_ALLOW: This rule allows all all pod creations.
       REQUIRE_ATTESTATION: This rule allows a pod creation if all the
         attestors listed in 'require_attestations_by' have valid attestations
@@ -291,8 +295,8 @@ class Binding(_messages.Message):
       service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: A Google Apps domain name that represents all the
-      users of that domain. For example, `google.com` or `example.com`.
+      * `domain:{domain}`: The G Suite domain (primary) that represents all
+      the    users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """

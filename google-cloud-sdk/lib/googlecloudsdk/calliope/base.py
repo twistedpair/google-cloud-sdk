@@ -53,6 +53,7 @@ INFO_CATEGORY = 'Info'
 INSTANCES_CATEGORY = 'Instances'
 LOAD_BALANCING_CATEGORY = 'Load Balancing'
 TOOLS_CATEGORY = 'Tools'
+STORAGE_CATEGORY = 'Storage'
 
 
 # Common markdown.

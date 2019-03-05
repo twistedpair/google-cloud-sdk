@@ -28,7 +28,7 @@ class DomainMapping(k8s_object.KubernetesObject):
   nested Kubernetes-style fields.
   """
 
-  API_CATEGORY = 'serving.knative.dev'
+  API_CATEGORY = 'domains.cloudrun.com'
   KIND = 'DomainMapping'
 
   @property

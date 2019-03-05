@@ -108,6 +108,18 @@ def AddNonProjectArgs(parser, help_string):
       help='{0} associated with this billing account.'.format(help_string))
 
 
+def AddBucketLocationArg(parser, required, help_string):
+  """Adds a location argument.
+
+  Args:
+    parser: parser to which to add args.
+    required: whether the arguments is required.
+    help_string: the help string.
+  """
+  parser.add_argument(
+      '--location', required=required, metavar='LOCATION', help=help_string)
+
+
 def GetParentResourceFromArgs(args):
   """Returns the parent resource derived from the given args.
 
@@ -145,6 +157,23 @@ def GetParentFromArgs(args):
     The relative path. e.g. 'projects/foo', 'folders/1234'.
   """
   return GetParentResourceFromArgs(args).RelativeName()
+
+
+def GetBucketLocationFromArgs(args):
+  """Returns the relative path to the bucket location from args.
+
+  Args:
+    args: command line args.
+
+  Returns:
+    The relative path. e.g. 'projects/foo/locations/bar'.
+  """
+  if args.location:
+    location = args.location
+  else:
+    location = '-'
+
+  return CreateResourceName(GetParentFromArgs(args), 'locations', location)
 
 
 def GetIdFromArgs(args):
@@ -313,4 +342,3 @@ def UpdateLogMetric(metric, description=None, log_filter=None, data=None):
     for field_name in update_data:
       setattr(metric, field_name, getattr(metric_diff, field_name))
   return metric
-

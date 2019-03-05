@@ -342,7 +342,7 @@
     },
     "KeyOperationAttestation": {
       "id": "KeyOperationAttestation",
-      "description": "Contains an HSM-generated attestation about a key operation.",
+      "description": "Contains an HSM-generated attestation about a key operation. For more\ninformation, see [Verifying attestations]\n(https:\/\/cloud.google.com\/kms\/docs\/attest-key).",
       "type": "object",
       "properties": {
         "format": {
@@ -350,7 +350,7 @@
           "enumDescriptions": [
             "Not specified.",
             "Cavium HSM attestation compressed with gzip. Note that this format is\ndefined by Cavium and subject to change at any time.",
-            "Cavium HSM attestation V2 compressed with gzip. This is a new format\nIntroduced in Cavium's version 3.2-08"
+            "Cavium HSM attestation V2 compressed with gzip. This is a new format\nintroduced in Cavium's version 3.2-08."
           ],
           "type": "string",
           "enum": [
@@ -766,7 +766,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"

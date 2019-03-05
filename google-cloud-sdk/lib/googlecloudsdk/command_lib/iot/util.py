@@ -59,8 +59,9 @@ MAX_METADATA_SIZE = 1024 * 256
 # TODO (b/124063772): Remove this mapping fix once apitools base fix is applied
 # pylint: disable=line-too-long, for readability.
 _CUSTOM_JSON_FIELD_MAPPINGS = {
+    'gatewayListOptions_gatewayType': 'gatewayListOptions.gatewayType',
     'gatewayListOptions_associationsGatewayId': 'gatewayListOptions.associationsGatewayId',
-    'gatewayListOptions_associationsDeviceId': 'gatewayListOptions.gatewayType'
+    'gatewayListOptions_associationsDeviceId': 'gatewayListOptions.associationsDeviceId',
 }
 # pylint: enable=line-too-long
 

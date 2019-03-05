@@ -57,6 +57,7 @@ class InvalidCommandError(exceptions.Error):
         '{cmd}: command not found'.format(cmd=cmd))
 
 
+# Doesn't work in par or stub files.
 def GetPythonExecutable():
   """Gets the path to the Python interpreter that should be used."""
   cloudsdk_python = encoding.GetEncodedValue(os.environ, 'CLOUDSDK_PYTHON')
@@ -156,6 +157,7 @@ def _GetToolEnv(env=None):
   return env
 
 
+# Doesn't work in par or stub files.
 def ArgsForPythonTool(executable_path, *args, **kwargs):
   """Constructs an argument list for calling the Python interpreter.
 
@@ -209,6 +211,17 @@ def ArgsForExecutableTool(executable_path, *args):
     An argument list to execute the native binary
   """
   return _GetToolArgs(None, None, executable_path, *args)
+
+
+# Works in regular installs as well as hermetic par and stub files. Doesn't work
+# in classic par and stub files.
+def ArgsForGcloud():
+  """Constructs an argument list to run gcloud."""
+  if not sys.executable:
+    # In hermetic par/stub files sys.executable is None. In regular installs,
+    # and in classic par/stub files it is a non-empty string.
+    return _GetToolArgs(None, None, sys.argv[0])
+  return ArgsForPythonTool(config.GcloudPath())
 
 
 class _ProcessHolder(object):

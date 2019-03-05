@@ -34,16 +34,16 @@ class Dataproc(object):
   def __init__(self, release_track=base.ReleaseTrack.GA):
     super(Dataproc, self).__init__()
     if release_track == base.ReleaseTrack.GA:
-      self._api_version = 'v1'
+      self.api_version = 'v1'
     else:
-      self._api_version = 'v1beta2'
+      self.api_version = 'v1beta2'
     self._client = None
     self._resources = None
 
   @property
   def client(self):
     if self._client is None:
-      self._client = apis.GetClientInstance('dataproc', self._api_version)
+      self._client = apis.GetClientInstance('dataproc', self.api_version)
     return self._client
 
   @property
@@ -54,7 +54,7 @@ class Dataproc(object):
   def resources(self):
     if self._resources is None:
       self._resources = resources.REGISTRY.Clone()
-      self._resources.RegisterApiByName('dataproc', self._api_version)
+      self._resources.RegisterApiByName('dataproc', self.api_version)
     return self._resources
 
   @property

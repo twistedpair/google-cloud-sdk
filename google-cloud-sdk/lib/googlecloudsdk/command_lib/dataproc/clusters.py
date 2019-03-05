@@ -350,6 +350,10 @@ def BetaArgsForClusterRef(parser):
   """Register beta-only flags for creating a Dataproc cluster."""
   flags.AddMinCpuPlatformArgs(parser, base.ReleaseTrack.BETA)
 
+  autoscaling_group = parser.add_argument_group(hidden=True)
+  flags.AddAutoscalingPolicyResourceArgForCluster(
+      autoscaling_group, api_version='v1beta2')
+
   AddKerberosGroup(parser)
 
   parser.add_argument(
@@ -599,12 +603,13 @@ def GetClusterConfig(args,
     if args.enable_component_gateway:
       cluster_config.endpointConfig = dataproc.messages.EndpointConfig(
           enableHttpPortAccess=args.enable_component_gateway)
+    if args.autoscaling_policy:
+      cluster_config.autoscalingConfig = dataproc.messages.AutoscalingConfig(
+          policyUri=args.CONCEPTS.autoscaling_policy.Parse().RelativeName())
 
-  if beta:
     cluster_config.masterConfig.minCpuPlatform = args.master_min_cpu_platform
     cluster_config.workerConfig.minCpuPlatform = args.worker_min_cpu_platform
 
-  if beta:
     lifecycle_config = dataproc.messages.LifecycleConfig()
     changed_config = False
     if args.max_age is not None:

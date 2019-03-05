@@ -363,19 +363,30 @@ def CustomFunctionValidator(fn, description, parser=None):
   return Parse
 
 
-def Duration(default_unit='s', lower_bound='0', upper_bound=None):
+def Duration(default_unit='s',
+             lower_bound='0',
+             upper_bound=None,
+             parsed_unit='s'):
   """Returns a function that can parse time durations.
 
   See times.ParseDuration() for details. If the unit is omitted, seconds is
-  assumed. The parsed result is in seconds. For example:
+  assumed. The parsed unit is assumed to be seconds, but can be specified as
+  ms or us.
+  For example:
 
     parser = Duration()
     assert parser('10s') == 10
+    parser = Duration(parsed_unit='ms')
+    assert parser('10s') == 10000
+    parser = Duration(parsed_unit='us')
+    assert parser('10s') == 10000000
 
   Args:
     default_unit: str, The default duration unit.
     lower_bound: str, An inclusive lower bound for values.
     upper_bound: str, An inclusive upper bound for values.
+    parsed_unit: str, The unit that the result should be returned as. Can be
+    's', 'ms', or 'us'.
 
   Raises:
     ArgumentTypeError: If either the lower_bound or upper_bound
@@ -390,10 +401,19 @@ def Duration(default_unit='s', lower_bound='0', upper_bound=None):
   """
 
   def Parse(value):
-    """Parses a duration from value and returns integer seconds."""
+    """Parses a duration from value and returns integer of the parsed_unit."""
+    if parsed_unit == 'ms':
+      multiplier = 1000
+    elif parsed_unit == 'us':
+      multiplier = 1000000
+    elif parsed_unit == 's':
+      multiplier = 1
+    else:
+      raise ArgumentTypeError(
+          _GenerateErrorMessage('parsed_unit must be one of s, ms, us.'))
     try:
-      return int(
-          times.ParseDuration(value, default_suffix=default_unit).total_seconds)
+      duration = times.ParseDuration(value, default_suffix=default_unit)
+      return int(duration.total_seconds * multiplier)
     except times.Error as e:
       message = six.text_type(e).rstrip('.')
       raise ArgumentTypeError(_GenerateErrorMessage(

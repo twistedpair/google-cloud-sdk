@@ -7,7 +7,7 @@
   "version": "v1",
   "revision": "0",
   "title": "BigQuery Data Transfer API",
-  "description": "Transfers data from partner SaaS applications to Google BigQuery on a scheduled, managed basis.",
+  "description": "Schedule queries or transfer external data from SaaS applications to Google BigQuery on a regular basis.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

@@ -31,8 +31,11 @@ properties:
       Feature: This feature is still under development. It may be changed before
       final release.
     type: array
-    items: {$ref: "AcceleratorConfig.yaml"}
-  diskConfig: {$ref: "DiskConfig.yaml"}
+    items:
+      $ref: AcceleratorConfig.yaml
+  diskConfig:
+    description: Disk option config settings.
+    $ref: DiskConfig.yaml
   imageUri:
     description: |-
       The Compute Engine image resource used for cluster instances. It can

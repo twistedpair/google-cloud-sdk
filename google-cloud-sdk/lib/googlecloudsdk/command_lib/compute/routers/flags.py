@@ -39,6 +39,29 @@ _GROUP_CHOICES = {
     'ALL_SUBNETS': 'Automatically advertise all available subnets.',
 }
 
+_BFD_MODE_CHOICES = {
+    'ACTIVE':
+        'The Cloud Router will initiate the BFD session for this BGP peer.',
+    'PASSIVE':
+        'The Cloud Router will wait for the peer router to initiate the BFD '
+        'session for this BGP peer.',
+    'DISABLED':
+        'BFD is disabled for this BGP peer.',
+}
+
+_BFD_PACKET_MODE_CHOICES = {
+    'CONTROL_AND_ECHO':
+        'BFD echo mode is enabled for this BGP peer. If the peer router also '
+        'has BFD echo mode enabled, BFD echo packets will be sent to the other'
+        ' router. If the peer router does not have BFD echo mode enabled, only'
+        ' control packets will be sent.',
+    'CONTROL_ONLY':
+        'BFD echo mode is disabled for this BGP peer. If this router and the '
+        'peer router have a multi-hop connection, BFD_PACKET_MODE should be '
+        'set to CONTROL_ONLY as BFD echo mode is only supported on single hop '
+        'connections.',
+}
+
 
 class RoutersCompleter(compute_completers.ListCommandCompleter):
 
@@ -106,26 +129,34 @@ def AddCreateRouterArgs(parser):
 
   parser.add_argument(
       '--asn',
-      required=True,
-      type=int,
-      help='The BGP autonomous system number (ASN) for this router. '
-      'Must be a 16-bit or 32-bit private ASN as defined in '
-      'https://tools.ietf.org/html/rfc6996, for example `--asn=64512`.')
-
-
-def AddCreateRouterArgsForAlpha(parser):
-  """Adds common arguments for creating routers. It is only used in alpha."""
-
-  parser.add_argument(
-      '--description', help='An optional description of this router.')
-
-  parser.add_argument(
-      '--asn',
       required=False,
       type=int,
       help='The optional BGP autonomous system number (ASN) for this router. '
       'Must be a 16-bit or 32-bit private ASN as defined in '
       'https://tools.ietf.org/html/rfc6996, for example `--asn=64512`.')
+
+
+def AddKeepaliveIntervalArg(parser):
+  """Adds keepalive interval argument for routers."""
+  parser.add_argument(
+      '--keepalive-interval',
+      type=arg_parsers.Duration(
+          default_unit='s', lower_bound='1s', upper_bound='120s'),
+      hidden=True,
+      help='The interval between BGP keepalive messages that are sent to the '
+      'peer. If set, this value must be between 1 and 120 seconds. The default '
+      'is 20 seconds. See $ gcloud topic datetimes for information on duration '
+      'formats.\n\n'
+      'BGP systems exchange keepalive messages to determine whether a link or '
+      'host has failed or is no longer available. Hold time is the length of '
+      'time in seconds that the BGP session is considered operational without '
+      'any activity. After the hold time expires, the session is dropped.\n\n'
+      'Hold time is three times the interval at which keepalive messages are '
+      'sent, and the hold time is the maximum number of seconds allowed to '
+      'elapse between successive keepalive messages that BGP receives from a '
+      'peer. BGP will use the smaller of either the local hold time value or '
+      'the peer\'s  hold time value as the hold time for the BGP connection '
+      'between the two peers.')
 
 
 def AddInterfaceArgs(parser, for_update=False):
@@ -153,7 +184,11 @@ def AddInterfaceArgs(parser, for_update=False):
       'the subnet defined by this link-local range.')
 
 
-def AddBgpPeerArgs(parser, for_add_bgp_peer=False):
+def AddBgpPeerArgs(parser,
+                   for_add_bgp_peer=False,
+                   support_bfd=False,
+                   support_enable=False,
+                   is_update=False):
   """Adds common arguments for managing BGP peers."""
 
   operation = 'updated'
@@ -201,6 +236,100 @@ def AddBgpPeerArgs(parser, for_add_bgp_peer=False):
       'where there is more than one matching route of maximum length, '
       'the routes with lowest priority value win. 0 <= priority <= '
       '65535. If not specified, will use Google-managed priorities.')
+
+  if support_bfd:
+    bfd_group_help = (
+        'Arguments to {0} BFD (Bidirectional Forwarding Detection) '
+        'settings:'.format('update' if is_update else 'configure'))
+    bfd_group = parser.add_group(help=bfd_group_help,
+                                 hidden=True)
+    bfd_group.add_argument(
+        '--bfd-mode',
+        choices=_BFD_MODE_CHOICES,
+        type=lambda mode: mode.upper(),
+        metavar='BFD_MODE',
+        hidden=True,
+        help='The BFD session initiation mode for this BGP peer. Must be one '
+        'of:\n\n'
+        'ACTIVE - The Cloud Router will initiate the BFD session for this BGP '
+        'peer.\n\n'
+        'PASSIVE - The Cloud Router will wait for the peer router to initiate '
+        'the BFD session for this BGP peer.\n\n'
+        'DISABLED - BFD is disabled for this BGP peer.')
+
+    bfd_group.add_argument(
+        '--bfd-min-transmit-interval',
+        type=arg_parsers.Duration(
+            default_unit='ms',
+            lower_bound='33ms',
+            upper_bound='30000ms',
+            parsed_unit='ms'),
+        hidden=True,
+        help='The minimum transmit interval between BFD packets. If BFD echo '
+        'mode is enabled on both this router and the peer router this sets the '
+        'minimum transmit interval of BFD echo packets. Otherwise, this sets '
+        'the minimum transmit interval of BFD control packets. The default is '
+        '300 milliseconds. See $ gcloud topic datetimes for information on '
+        'duration formats.')
+    bfd_group.add_argument(
+        '--bfd-min-receive-interval',
+        type=arg_parsers.Duration(
+            default_unit='ms',
+            lower_bound='33ms',
+            upper_bound='30000ms',
+            parsed_unit='ms'),
+        hidden=True,
+        help='The minimum receive interval between BFD packets. If BFD echo '
+        'mode is enabled on both this router and the peer router this sets the '
+        'minimum receive interval of BFD echo packets. Otherwise, this sets '
+        'the minimum receive interval of BFD control packets. The default is '
+        '300 milliseconds. See $ gcloud topic datetimes for information on '
+        'duration formats.')
+    bfd_group.add_argument(
+        '--bfd-multiplier',
+        type=int,
+        hidden=True,
+        help='The number of consecutive BFD control packets that must be '
+        'missed before BFD declares that a peer is unavailable.')
+    bfd_group.add_argument(
+        '--bfd-packet-mode',
+        choices=_BFD_PACKET_MODE_CHOICES,
+        type=lambda mode: mode.upper(),
+        metavar='BFD_PACKET_MODE',
+        hidden=True,
+        help='The BGP packet mode for this BGP peer. Must be one of:\n\n'
+        'CONTROL_AND_ECHO - BFD echo mode is enabled for this BGP peer. If the '
+        'peer router also has BFD echo mode enabled, BFD echo packets will be '
+        'sent to the other router. If the peer router does not have BFD echo '
+        'mode enabled, only control packets will be sent.\n\n'
+        'CONTROL_ONLY - BFD echo mode is disabled for this BGP peer. If this '
+        'router and the peer router have a multi-hop connection, '
+        'BFD_PACKET_MODE should be set to CONTROL_ONLY as BFD echo mode is '
+        'only supported on single hop connections.')
+    bfd_group.add_argument(
+        '--bfd-slow-timer-interval',
+        type=arg_parsers.Duration(
+            default_unit='ms',
+            lower_bound='1000ms',
+            upper_bound='30000ms',
+            parsed_unit='ms'),
+        hidden=True,
+        help='The transmit and receive interval between BFD control packets in '
+        'milliseconds if echo mode is enabled on both this router and the peer '
+        'router. The default is 5000 milliseconds. See $ gcloud topic '
+        'datetimes for information on duration formats.')
+    enabled_display_help = (
+        'If enabled, the peer connection can be established with routing '
+        'information. If disabled, any active session with the peer is '
+        'terminated and all associated routing information is removed.')
+  if support_enable:
+    if not is_update:
+      enabled_display_help += ' Enabled by default.'
+    parser.add_argument(
+        '--enabled',
+        hidden=True,
+        action=arg_parsers.StoreTrueFalseAction,
+        help=enabled_display_help)
 
 
 def AddUpdateCustomAdvertisementArgs(parser, resource_str):

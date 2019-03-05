@@ -68,6 +68,12 @@ class APIDef(object):
 
 MAP = {
     'accesscontextmanager': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.accesscontextmanager.v1',
+            client_classpath='accesscontextmanager_v1_client.AccesscontextmanagerV1',
+            messages_modulepath='accesscontextmanager_v1_messages',
+            default_version=False
+        ),
         'v1alpha': APIDef(
             class_path='googlecloudsdk.third_party.apis.accesscontextmanager.v1alpha',
             client_classpath='accesscontextmanager_v1alpha_client.AccesscontextmanagerV1alpha',
@@ -489,6 +495,14 @@ MAP = {
             default_version=True
         ),
     },
+    'edgeml': {
+        'v1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.edgeml.v1beta1',
+            client_classpath='edgeml_v1beta1_client.EdgemlV1beta1',
+            messages_modulepath='edgeml_v1beta1_messages',
+            default_version=True
+        ),
+    },
     'eventflow': {
         'v1beta2': APIDef(
             class_path='googlecloudsdk.third_party.apis.eventflow.v1beta2',
@@ -710,6 +724,14 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.runtimeconfig.v1beta1',
             client_classpath='runtimeconfig_v1beta1_client.RuntimeconfigV1beta1',
             messages_modulepath='runtimeconfig_v1beta1_messages',
+            default_version=True
+        ),
+    },
+    'securitycenter': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.securitycenter.v1',
+            client_classpath='securitycenter_v1_client.SecuritycenterV1',
+            messages_modulepath='securitycenter_v1_messages',
             default_version=True
         ),
     },

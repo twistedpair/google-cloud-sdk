@@ -23,9 +23,13 @@ from googlecloudsdk.calliope import exceptions
 import six
 
 
-def GetMode(messages, mode):
-  """Returns mode message basing on short user friendly string."""
-  enum_class = messages.ManagedInstanceOverrideDiskOverride.ModeValueValuesEnum
+def GetMode(messages, mode, preserved_state_mode=False):
+  """Returns mode message based on short user friendly string."""
+  if preserved_state_mode:
+    enum_class = messages.PreservedStatePreservedDisk.ModeValueValuesEnum
+  else:
+    enum_class =\
+        messages.ManagedInstanceOverrideDiskOverride.ModeValueValuesEnum
   if isinstance(mode, six.string_types):
     return {
         'ro': enum_class.READ_ONLY,
@@ -61,14 +65,80 @@ def GetDiskOverride(messages, stateful_disk, disk_getter):
   )
 
 
+def MakePreservedStateDiskEntry(messages, stateful_disk_data, disk_getter):
+  """Prepares disk preserved state entry, combining with params from the instance."""
+  if stateful_disk_data.get('source'):
+    source = stateful_disk_data.get('source')
+    mode = stateful_disk_data.get('mode', 'rw')
+  else:
+    disk = disk_getter.get_disk(
+        device_name=stateful_disk_data.get('device-name'))
+    if disk is None:
+      if disk_getter.instance_exists:
+        error_message = ('[source] must be given while defining stateful disks'
+                         ' in instance configs for non existing disks in given'
+                         ' instance')
+      else:
+        error_message = ('[source] must be given while defining stateful disks'
+                         ' in instance configs for non existing instances')
+      raise exceptions.BadArgumentException('source', error_message)
+    source = disk.source
+    mode = disk.mode
+  preserved_disk = \
+      messages.PreservedStatePreservedDisk(
+          autoDelete=messages.PreservedStatePreservedDisk \
+            .AutoDeleteValueValuesEnum.NEVER,
+          source=source,
+          mode=GetMode(messages, mode, preserved_state_mode=True))
+  return messages.PreservedState.DisksValue.AdditionalProperty(
+      key=stateful_disk_data.get('device-name'), value=preserved_disk)
+
+
+def MakePreservedStateMetadataEntry(messages, key, value):
+  return messages.PreservedState.MetadataValue.AdditionalProperty(
+      key=key,
+      value=value
+  )
+
+
+def MakeOverridesFromPreservedState(messages, preserved_state):
+  """Make ManagedInstanceOverrides from PreservedState."""
+  disk_mode_map = {
+      messages.PreservedStatePreservedDisk.ModeValueValuesEnum.READ_ONLY
+      : messages.ManagedInstanceOverrideDiskOverride
+        .ModeValueValuesEnum.READ_ONLY,
+      messages.PreservedStatePreservedDisk.ModeValueValuesEnum.READ_WRITE
+      : messages.ManagedInstanceOverrideDiskOverride\
+        .ModeValueValuesEnum.READ_WRITE,
+  }
+  overrides = messages.ManagedInstanceOverride()
+  override_disks = []
+  for preserved_state_disk in \
+      (preserved_state.disks.additionalProperties or []):
+    override_disks.append(
+        messages.ManagedInstanceOverrideDiskOverride(
+            deviceName=preserved_state_disk.key,
+            source=preserved_state_disk.value.source,
+            mode=disk_mode_map[preserved_state_disk.value.mode],
+        )
+    )
+  overrides.disks = override_disks
+  overrides.metadata = [
+      messages.ManagedInstanceOverride.MetadataValueListEntry(
+          key=metadata.key, value=metadata.value)
+      for metadata in (preserved_state.metadata.additionalProperties or [])
+  ]
+  return overrides
+
+
 def MakePreservedStateFromOverrides(messages, disk_overrides,
                                     metadata_overrides):
   """Make PreservedState from ManagedInstanceOverrides."""
   disk_mode_map = {
       messages.ManagedInstanceOverrideDiskOverride.ModeValueValuesEnum.READ_ONLY
       : messages.PreservedStatePreservedDisk.ModeValueValuesEnum.READ_ONLY,
-      messages.ManagedInstanceOverrideDiskOverride\
-          .ModeValueValuesEnum.READ_WRITE
+      messages.ManagedInstanceOverrideDiskOverride \
+        .ModeValueValuesEnum.READ_WRITE
       : messages.PreservedStatePreservedDisk.ModeValueValuesEnum.READ_WRITE,
   }
   preserved_state = messages.PreservedState()

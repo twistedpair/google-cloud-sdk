@@ -503,48 +503,32 @@ def AddDescription(parser):
       help='Optional textual description for the forwarding rule.')
 
 
-def AddPortsAndPortRange(parser, supports_flex_port=False):
+def AddPortsAndPortRange(parser):
   """Adds ports and port range flags."""
 
   ports_scope = parser.add_mutually_exclusive_group()
-  if supports_flex_port:
-    ports_metavar = 'ALL | [PORT | START_PORT-END_PORT],[...]'
-    ports_help = """\
-    List of comma separated ports and/or port ranges or the value `all`.
-    If a list is provided, only packets addressed to ports in the list
-    will be forwarded. If unspecified or `all` for regional forwarding
-    rules, all ports are matched. This flag is required for global
-    forwarding rules and accepts a single set of contiguous ports (i.e.
-    `--ports=80,82` is not valid because 80 and 82 are not contiguous).
+  ports_metavar = 'ALL | [PORT | START_PORT-END_PORT],[...]'
+  ports_help = """\
+  List of comma separated ports and/or port ranges or the value `all`.
+  If a list is provided, only packets addressed to ports in the list
+  will be forwarded. If unspecified or `all` for regional forwarding
+  rules, all ports are matched. This flag is required for global
+  forwarding rules and accepts a single set of contiguous ports (i.e.
+  `--ports=80,82` is not valid because 80 and 82 are not contiguous).
 
-    A list can consist of individual ports and ranges. For example,
-    `--ports 8000-8004` or `--ports 80`.
+  A list can consist of individual ports and ranges. For example,
+  `--ports 8000-8004` or `--ports 80`.
 
-    Some forwarding targets have restriction on acceptable ports, e.g., if
-    --target-http-proxy is specified, the acceptable values for --ports
-    are: 80, 8080. For internal load balancing, the allowed ports can be
-    `all` or a set of at most 5 ports.
-    """
-  else:
-    ports_metavar = '[PORT | START_PORT-END_PORT],[...]'
-    ports_help = """\
-    If specified, only packets addressed to ports in the specified
-    list will be forwarded. If not specified for regional forwarding
-    rules, all ports are matched. This flag is required for global
-    forwarding rules and accepts a single continuous set of ports.
-
-    Some forwarding targets have restriction on acceptable ports, e.g., if
-    --target-http-proxy is specified, the acceptable values for --ports are:
-    80, 8080.
-
-    Individual ports and ranges can be specified,
-    for example (`--ports 8000-8004` or `--ports 80`).
-    """
+  Some forwarding targets have restriction on acceptable ports, e.g., if
+  --target-http-proxy is specified, the acceptable values for --ports
+  are: 80, 8080. For internal load balancing, the allowed ports can be
+  `all` or a set of at most 5 ports.
+  """
 
   ports_scope.add_argument(
       '--ports',
       metavar=ports_metavar,
-      type=PortRangesWithAll.CreateParser(support_all=supports_flex_port),
+      type=PortRangesWithAll.CreateParser(),
       default=None,
       help=ports_help)
 
@@ -588,19 +572,18 @@ def AddNetworkTier(parser, supports_network_tier_flag, for_update):
 
 
 class PortRangesWithAll(object):
-  """particular keyword or Range of integer values"""
+  """Particular keyword 'all' or a range of integer values."""
 
   def __init__(self, all_specified, ranges):
     self.all_specified = all_specified
     self.ranges = ranges
 
   @staticmethod
-  def CreateParser(support_all=False):
+  def CreateParser():
     """Creates parser to parse keyword 'all' first before parse range."""
 
     def _Parse(string_value):
-      lower_string_value = string_value.lower()
-      if support_all and lower_string_value == 'all':
+      if string_value.lower() == 'all':
         return PortRangesWithAll(True, [])
       else:
         type_parse = arg_parsers.ArgList(

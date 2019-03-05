@@ -26,6 +26,8 @@ from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.dataproc import exceptions
 from googlecloudsdk.api_lib.dataproc import storage_helpers
+from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.export import util as export_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
@@ -504,3 +506,88 @@ def ParseRegion(dataproc):
       },
       collection='dataproc.projects.regions')
   return ref
+
+
+def ReadAutoscalingPolicy(dataproc, policy_id, policy_file_name=None):
+  """Returns autoscaling policy read from YAML file.
+
+  Validates it using the schema for the API version corresponding to the
+  dataproc instance, and backfills necessary fields.
+
+  Args:
+    dataproc: wrapper for dataproc resources, client and messages.
+    policy_id: The autoscaling policy id (last piece of the resource name).
+    policy_file_name: if set, location of the YAML file to read from. Otherwise,
+      reads from stdin.
+
+  Raises:
+    argparse.ArgumentError if duration formats are invalid or out of bounds.
+  """
+  # Read template from YAML file, validate it using the schema for the
+  # API version corresponding to the dataproc instance.
+  data = console_io.ReadFromFileOrStdin(policy_file_name or '-', binary=False)
+  schema_path = export_util.GetSchemaPath(
+      'dataproc', dataproc.api_version, 'AutoscalingPolicy', for_help=False)
+  policy = export_util.Import(
+      message_type=dataproc.messages.AutoscalingPolicy,
+      stream=data,
+      schema_path=schema_path)
+
+  # Ignore user set id in the file (if any), and overwrite with the policy_ref
+  # provided with this command
+  policy.id = policy_id
+
+  # Similarly, ignore the set resource name. This field is OUTPUT_ONLY, so we
+  # can just clear it.
+  policy.name = None
+
+  # Set duration fields to their seconds values
+  policy.basicAlgorithm.cooldownPeriod = str(
+      arg_parsers.Duration(lower_bound='2m', upper_bound='1d')(
+          policy.basicAlgorithm.cooldownPeriod)) + 's'
+  policy.basicAlgorithm.yarnConfig.gracefulDecommissionTimeout = str(
+      arg_parsers.Duration(lower_bound='0s', upper_bound='1d')(
+          policy.basicAlgorithm.yarnConfig.gracefulDecommissionTimeout)) + 's'
+
+  return policy
+
+
+def CreateAutoscalingPolicy(dataproc, name, policy):
+  """Returns the server-resolved policy after creating the given policy.
+
+  Args:
+    dataproc: wrapper for dataproc resources, client and messages.
+    name: The autoscaling policy resource name.
+    policy: The AutoscalingPolicy message to create.
+  """
+  # TODO(b/109837200) make the dataproc discovery doc parameters consistent
+  # Parent() fails for the collection because of projectId/projectsId and
+  # regionId/regionsId inconsistencies.
+  # parent = template_ref.Parent().RelativePath()
+  parent = '/'.join(name.split('/')[0:4])
+
+  request = \
+    dataproc.messages.DataprocProjectsRegionsAutoscalingPoliciesCreateRequest(
+        parent=parent,
+        autoscalingPolicy=policy)
+  policy = dataproc.client.projects_regions_autoscalingPolicies.Create(request)
+  log.status.Print('Created [{0}].'.format(policy.id))
+  return policy
+
+
+def UpdateAutoscalingPolicy(dataproc, name, policy):
+  """Returns the server-resolved policy after updating the given policy.
+
+  Args:
+    dataproc: wrapper for dataproc resources, client and messages.
+    name: The autoscaling policy resource name.
+    policy: The AutoscalingPolicy message to create.
+  """
+  # Though the name field is OUTPUT_ONLY in the API, the Update() method of the
+  # gcloud generated dataproc client expects it to be set.
+  policy.name = name
+
+  policy = \
+    dataproc.client.projects_regions_autoscalingPolicies.Update(policy)
+  log.status.Print('Updated [{0}].'.format(policy.id))
+  return policy

@@ -65,6 +65,15 @@ def _AddImageArg(parser):
       help='The path to the GCR container to deploy.')
 
 
+def AddAllowUnauthenticatedFlag(parser):
+  """Add the --allow-unauthenticated flag."""
+  parser.add_argument(
+      '--allow-unauthenticated',
+      default=False,
+      action='store_true',
+      help='True to allow unauthenticated access to the service.')
+
+
 def AddAsyncFlag(parser):
   """Add an async flag."""
   parser.add_argument(

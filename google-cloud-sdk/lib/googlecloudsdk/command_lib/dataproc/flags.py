@@ -22,6 +22,7 @@ from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.command_lib.export import util as export_util
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
@@ -31,7 +32,7 @@ def AddZoneFlag(parser, short_flags=True):
   """Add zone flag."""
   parser.add_argument(
       '--zone',
-      *['-z'] if short_flags else [],
+      *(['-z'] if short_flags else []),
       help="""
             The compute zone (e.g. us-central1-a) for the cluster. If empty
             and --region is set to a value other than `global`, the server will
@@ -198,6 +199,72 @@ def AddTemplateResourceArg(parser, verb, api_version, positional=True):
       GetTemplateResourceSpec(api_version=api_version),
       'The name of the workflow template to {}.'.format(verb),
       required=True).AddToParser(parser)
+
+
+def _AutoscalingPolicyResourceSpec(api_version):
+  return concepts.ResourceSpec(
+      'dataproc.projects.regions.autoscalingPolicies',
+      api_version=api_version,
+      resource_name='autoscaling policy',
+      disable_auto_completers=False,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      regionsId=RegionAttributeConfig(),
+      autoscalingPoliciesId=concepts.ResourceParameterAttributeConfig(
+          name='autoscaling_policy',
+          help_text='The autoscaling policy id.',
+      ),
+  )
+
+
+def AddAutoscalingPolicyResourceArg(parser, verb, api_version):
+  """Adds a workflow template resource argument.
+
+  Args:
+    parser: the argparse parser for the command.
+    verb: str, the verb to apply to the resource, such as 'to update'.
+    api_version: api version, for example v1 or v1beta2
+  """
+  concept_parsers.ConceptParser.ForResource(
+      'autoscaling_policy',
+      _AutoscalingPolicyResourceSpec(api_version),
+      'The autoscaling policy to {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def AddAutoscalingPolicyResourceArgForCluster(parser, api_version):
+  """Adds a workflow template resource argument.
+
+  Args:
+    parser: the argparse parser for the command.
+    api_version: api version, for example v1 or v1beta2
+  """
+  concept_parsers.ConceptParser.ForResource(
+      '--autoscaling-policy',
+      _AutoscalingPolicyResourceSpec(api_version),
+      'The autoscaling policy to use.',
+      command_level_fallthroughs={
+          'region': '--region'
+      },
+      flag_name_overrides={
+          'region': ''
+      },
+      required=False).AddToParser(parser)
+
+
+def AddImportArgs(parser, verb, api_version, resource_message_name):
+  AddAutoscalingPolicyResourceArg(parser, verb, api_version)
+
+  schema_path = export_util.GetSchemaPath(
+      'dataproc', api_version, resource_message_name, for_help=True)
+  export_util.AddImportFlags(parser, schema_path)
+
+
+def AddExportArgs(parser, verb, api_version, resource_message_name):
+  AddAutoscalingPolicyResourceArg(parser, verb, api_version)
+
+  schema_path = export_util.GetSchemaPath(
+      'dataproc', api_version, resource_message_name, for_help=True)
+  export_util.AddExportFlags(parser, schema_path)
 
 
 def AddListOperationsFormat(parser):

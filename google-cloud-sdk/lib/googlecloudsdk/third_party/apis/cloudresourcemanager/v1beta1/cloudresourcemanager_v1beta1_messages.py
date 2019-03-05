@@ -109,8 +109,8 @@ class Binding(_messages.Message):
       service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: A Google Apps domain name that represents all the
-      users of that domain. For example, `google.com` or `example.com`.
+      * `domain:{domain}`: The G Suite domain (primary) that represents all
+      the    users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -626,10 +626,11 @@ class Project(_messages.Message):
       not depend on specific characters being disallowed.  Example:
       <code>"environment" : "dev"</code> Read-write.
     lifecycleState: The Project lifecycle state.  Read-only.
-    name: The user-assigned display name of the Project. It must be 4 to 30
-      characters. Allowed characters are: lowercase and uppercase letters,
-      numbers, hyphen, single-quote, double-quote, space, and exclamation
-      point.  Example: <code>My Project</code> Read-write.
+    name: The optional user-assigned display name of the Project. When present
+      it must be between 4 to 30 characters. Allowed characters are: lowercase
+      and uppercase letters, numbers, hyphen, single-quote, double-quote,
+      space, and exclamation point.  Example: <code>My Project</code> Read-
+      write.
     parent: An optional reference to a parent Resource.  Supported parent
       types include "organization" and "folder". Once set, the parent cannot
       be cleared. The `parent` can be set on creation or using the

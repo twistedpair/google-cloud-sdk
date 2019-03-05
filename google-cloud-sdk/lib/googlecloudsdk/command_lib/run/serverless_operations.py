@@ -41,7 +41,7 @@ from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.run import config_changes as config_changes_mod
 from googlecloudsdk.command_lib.run import deployable as deployable_pkg
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
-from googlecloudsdk.command_lib.run import pretty_print
+from googlecloudsdk.command_lib.run import resource_name_conversion
 from googlecloudsdk.command_lib.run import stages
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -81,12 +81,30 @@ def Connect(conn_context):
   Yields:
     A ServerlessOperations instance.
   """
+
+  # The One Platform client is required for making requests against
+  # endpoints that do not supported Kubernetes-style resource naming
+  # conventions. The One Platform client must be initialized outside of a
+  # connection context so that it does not pick up the api_endpoint_overrides
+  # values from the connection context.
+  # pylint: disable=protected-access
+  op_client = apis_internal._GetClientInstance(
+      conn_context.api_name,
+      conn_context.api_version,
+      ca_certs=conn_context.ca_certs)
+  # pylint: enable=protected-access
+
   with conn_context as conn_info:
+    # pylint: disable=protected-access
+    client = apis_internal._GetClientInstance(
+        conn_info.api_name, conn_info.api_version, ca_certs=conn_info.ca_certs)
+    # pylint: enable=protected-access
     yield ServerlessOperations(
-        apis_internal._GetClientInstance(  # pylint: disable=protected-access
-            conn_info.api_name, conn_info.api_version,
-            ca_certs=conn_info.ca_certs),
-        conn_info.api_name, conn_info.api_version)
+        client,
+        conn_info.api_name,
+        conn_info.api_version,
+        conn_info.region,
+        op_client)
 
 
 class ConditionPoller(waiter.OperationPoller):
@@ -379,11 +397,24 @@ class ServerlessOperations(object):
   """Client used by Serverless to communicate with the actual Serverless API.
   """
 
-  def __init__(self, client, api_name, api_version):
+  def __init__(self, client, api_name, api_version, region, op_client):
+    """Inits ServerlessOperations with given API clients.
+
+    Args:
+      client: The API client for interacting with Kubernetes Cloud Run APIs.
+      api_name: str, The name of the Cloud Run API.
+      api_version: str, The version of the Cloud Run API.
+      region: str, The region of the control plane if operating against
+        hosted Cloud Run, else None.
+      op_client: The API client for interacting with One Platform APIs. Or
+        None if interacting with Cloud Run on GKE.
+    """
     self._client = client
     self._registry = resources.REGISTRY.Clone()
     self._registry.RegisterApiByName(api_name, api_version)
     self._temporary_build_template_registry = {}
+    self._op_client = op_client
+    self._region = region
 
   @property
   def _messages_module(self):
@@ -852,8 +883,6 @@ class ServerlessOperations(object):
         new_serv = service.Service.New(self._client, service_ref.namespacesId,
                                        private_endpoint)
         new_serv.name = service_ref.servicesId
-        pretty_print.Info('Creating new service [{bold}{service}{reset}]',
-                          service=new_serv.name)
         parent = service_ref.Parent().RelativeName()
         for config_change in config_changes:
           config_change.AdjustConfiguration(new_serv.configuration,
@@ -882,7 +911,8 @@ class ServerlessOperations(object):
           'region and retry. Ex: `gcloud config set run/region us-central1`')
 
   def ReleaseService(self, service_ref, config_changes, tracker=None,
-                     asyn=False, private_endpoint=None):
+                     asyn=False, private_endpoint=None,
+                     allow_unauthenticated=False):
     """Change the given service in prod using the given config_changes.
 
     Ensures a new revision is always created, even if the spec of the revision
@@ -893,7 +923,13 @@ class ServerlessOperations(object):
       config_changes: list, objects that implement AdjustConfiguration().
       tracker: StagedProgressTracker, to report on the progress of releasing.
       asyn: bool, if True, release asyncronously
-      private_endpoint:
+      private_endpoint: bool, True if creating a new Service for
+        Cloud Run on GKE that should only be addressable from within the
+        cluster. False if it should be publicly addressable. None if
+        its existing visibility should remain unchanged.
+      allow_unauthenticated: bool, True if creating a hosted Cloud Run
+        service which should also have its IAM policy set to allow
+        unauthenticated access.
     """
     if tracker is None:
       tracker = progress_tracker.NoOpStagedProgressTracker(
@@ -902,6 +938,8 @@ class ServerlessOperations(object):
         isinstance(c, deployable_pkg.Deployable) for c in config_changes)
     self._UpdateOrCreateService(
         service_ref, config_changes, with_code, private_endpoint)
+    if allow_unauthenticated:
+      self._AllowUnauthenticated(service_ref)
     if not asyn:
       getter = functools.partial(self.GetService, service_ref)
       self.WaitForCondition(ServiceConditionPoller(getter, tracker))
@@ -1005,3 +1043,25 @@ class ServerlessOperations(object):
     with metrics.RecordDuration(metric_names.GET_DOMAIN_MAPPING):
       response = self._client.namespaces_domainmappings.Get(request)
     return domain_mapping.DomainMapping(response, messages)
+
+  def _GetIamPolicy(self, service_name):
+    """Gets the IAM policy for the service."""
+    messages = self._messages_module
+    request = messages.RunProjectsLocationsServicesGetIamPolicyRequest(
+        resource=str(service_name))
+    response = self._op_client.projects_locations_services.GetIamPolicy(request)
+    return response
+
+  def _AllowUnauthenticated(self, service_ref):
+    """Sets an IAM policy on the service to allow unauthenticated access."""
+    messages = self._messages_module
+    oneplatform_service = resource_name_conversion.K8sToOnePlatform(
+        service_ref, self._region)
+    policy = self._GetIamPolicy(oneplatform_service)
+    policy.bindings.append(
+        messages.Binding(members=['allUsers'], role='roles/run.invoker'))
+    request = messages.RunProjectsLocationsServicesSetIamPolicyRequest(
+        resource=str(oneplatform_service),
+        setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy))
+    self._op_client.projects_locations_services.SetIamPolicy(request)
+

@@ -194,6 +194,7 @@ def EnsureSDKWriteAccess(sdk_root_override=None):
     raise exceptions.RequiresAdminRightsError(sdk_root)
 
 
+# Doesn't work in par or stub files.
 def GcloudPath():
   """Gets the path the main gcloud entrypoint.
 

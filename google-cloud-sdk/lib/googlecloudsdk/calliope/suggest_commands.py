@@ -19,7 +19,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
+import os
+import re
+
 from googlecloudsdk.command_lib.static_completion import lookup
+from googlecloudsdk.core import log
+from googlecloudsdk.core.util import files
 import six
 
 
@@ -48,6 +54,37 @@ SYNONYMS = {
 MIN_RATIO = 0.7  # Minimum score/top_score ratio of accepted suggestions.
 MIN_SUGGESTED_GROUPS = 4  # Check for group prefix if less groups than this.
 MAX_SUGGESTIONS = 10  # Maximum number of suggestions.
+# Factor to multiply logged command frequencies by before incrementing
+# canonical command scores.
+FREQUENCY_FACTOR = 100
+
+
+def _GetSurfaceHistoryFrequencies(logs_dir):
+  """Load the last 100 surfaces user used today from local command history.
+
+  Args:
+    logs_dir: str, the path to today's logs directory
+
+  Returns:
+    dict mapping surfaces to normalized frequencies.
+  """
+  surfaces_count = collections.defaultdict(int)
+  if not logs_dir:
+    return surfaces_count
+  total = 0
+  last_100_invocations = sorted(os.listdir(logs_dir), reverse=True)[:100]
+  for filename in last_100_invocations:
+    file_path = os.path.join(logs_dir, filename)
+    with files.FileReader(file_path) as log_file:
+      for line in log_file:
+        match = re.search(log.USED_SURFACE_PATTERN, line)
+        if match:
+          surface = match.group(1)
+          total += 1
+          surfaces_count[surface] += 1
+  # normalize surface frequencies
+  return {surface: count / total
+          for surface, count in six.iteritems(surfaces_count)}
 
 
 def _GetCanonicalCommandsHelper(tree, results, prefix):
@@ -169,6 +206,7 @@ def _GetScoredCommandsContaining(command_words):
       the same score appear in lexicographic order.
   """
   root = lookup.LoadCompletionCliTree()
+  surface_history = _GetSurfaceHistoryFrequencies(log.GetLogDir())
   normalized_command_words = [command_word.lower().replace('_', '-')
                               for command_word in command_words]
   scored_commands = []
@@ -198,9 +236,11 @@ def _GetScoredCommandsContaining(command_words):
     # Prefer all command words to match.
     if len(matched) == len(normalized_command_words):
       score += 10
-
     # 0 score is always ignored, no need to save.
     if score > 0:
+      surface = '.'.join(canonical_command_words[:-1])
+      if surface in surface_history:
+        score += int(surface_history[surface] * FREQUENCY_FACTOR)
       scored_commands.append((canonical_command_words, score))
 
   # Sort scores descending, commands ascending.

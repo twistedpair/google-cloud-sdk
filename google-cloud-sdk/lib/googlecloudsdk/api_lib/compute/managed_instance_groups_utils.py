@@ -1184,9 +1184,11 @@ def CreateInstanceReferences(holder, igm_ref, instance_names):
 
 def GetDeviceNamesFromStatefulPolicy(stateful_policy):
   """Returns a list of device names from given StatefulPolicy message."""
-  if not stateful_policy or not stateful_policy.preservedResources:
+  if not stateful_policy or not stateful_policy.preservedState \
+      or not stateful_policy.preservedState.disks:
     return []
-  return [disk.deviceName for disk in stateful_policy.preservedResources.disks]
+  return [disk.key
+          for disk in stateful_policy.preservedState.disks.additionalProperties]
 
 
 def IsAutoscalerNew(autoscaler):

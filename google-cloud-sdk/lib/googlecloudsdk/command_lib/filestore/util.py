@@ -15,11 +15,20 @@
 
 """Common utility functions for all Cloud Filestore commands."""
 
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
-FILESTORE_API_VERSION = 'v1alpha1'
-LIST_FORMAT = """
-    table(
-      name:sort=1,
-      description
-    )
-"""
+
+from googlecloudsdk.core import properties
+
+PARENT_TEMPLATE = 'projects/{}/locations/{}'
+LOCATION_WILDCARD = '-'
+
+
+def AddDefaultRegionToListRequest(ref, args, req):
+  """Python hook for yaml commands to wildcard the region in list requests."""
+  del ref
+  project = properties.VALUES.core.project.Get(required=True)
+  location = args.region or LOCATION_WILDCARD
+  req.parent = PARENT_TEMPLATE.format(project, location)
+  return req
