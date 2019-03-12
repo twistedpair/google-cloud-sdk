@@ -238,11 +238,10 @@
           }
         },
         "description": {
-          "description": "An optional description of this membership, limited to 2048 characters.",
+          "description": "A required description of this membership, limited to 63 characters.",
           "type": "string"
         },
         "endpoint": {
-          "description": "Endpoint information to reach this member.",
           "$ref": "MembershipEndpoint"
         },
         "state": {
@@ -273,10 +272,6 @@
       "properties": {
         "gcpResourceLink": {
           "description": "If this API server is also a Google service provide the self link of its\nGCP resource.\nFor example, the FQDN to a GKE Cluster that backs this Membership:\nhttps:\/\/container.googleapis.com\/v1\/projects\/x\/zones\/us-west1-a\/clusters\/c0\nIt can be at the most 1000 characters in length.",
-          "type": "string"
-        },
-        "resourceId": {
-          "description": "Unique per-project identification for this endpoint (in space and time) to\nbe provided by the user at creation time. While a self_link is optional for\nendpoints that may not be on GCP, all membership endpoints must provide a\nunique resource_id string. It is not mutable after creation. It can be at\nthe most 1000 characters in length.",
           "type": "string"
         },
         "oidcConfig": {

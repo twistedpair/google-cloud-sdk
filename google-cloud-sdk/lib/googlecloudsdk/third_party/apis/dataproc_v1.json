@@ -246,11 +246,11 @@
       "type": "object",
       "properties": {
         "configBucket": {
-          "description": "Optional. A Cloud Storage staging bucket used for sharing generated SSH keys and config. If you do not specify a staging bucket, Cloud Dataproc will determine an appropriate Cloud Storage location (US, ASIA, or EU) for your cluster's staging bucket according to the Google Compute Engine zone where your cluster is deployed, and then it will create and manage this project-level, per-location bucket for you.",
+          "description": "Optional. A Google Cloud Storage bucket used to stage job dependencies, config files, and job driver console output. If you do not specify a staging bucket, Cloud Dataproc will determine a Cloud Storage location (US, ASIA, or EU) for your cluster's staging bucket according to the Google Compute Engine zone where your cluster is deployed, and then create and manage this project-level, per-location bucket (see Cloud Dataproc staging bucket).",
           "type": "string"
         },
         "gceClusterConfig": {
-          "description": "Required. The shared Compute Engine config settings for all instances in a cluster.",
+          "description": "Optional. The shared Compute Engine config settings for all instances in a cluster.",
           "$ref": "GceClusterConfig"
         },
         "masterConfig": {
@@ -438,7 +438,7 @@
           "type": "string"
         },
         "properties": {
-          "description": "Optional. The properties to set on daemon config files.Property keys are specified in prefix:property format, such as core:fs.defaultFS. The following are supported prefixes and their mappings:\ncapacity-scheduler: capacity-scheduler.xml\ncore: core-site.xml\ndistcp: distcp-default.xml\nhdfs: hdfs-site.xml\nhive: hive-site.xml\nmapred: mapred-site.xml\npig: pig.properties\nspark: spark-defaults.conf\nyarn: yarn-site.xmlFor more information, see Cluster properties.",
+          "description": "Optional. The properties to set on daemon config files.Property keys are specified in prefix:property format, for example core:hadoop.tmp.dir. The following are supported prefixes and their mappings:\ncapacity-scheduler: capacity-scheduler.xml\ncore: core-site.xml\ndistcp: distcp-default.xml\nhdfs: hdfs-site.xml\nhive: hive-site.xml\nmapred: mapred-site.xml\npig: pig.properties\nspark: spark-defaults.conf\nyarn: yarn-site.xmlFor more information, see Cluster properties.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -454,7 +454,8 @@
             "The Kerberos security feature.",
             "The Presto query engine.",
             "The Zeppelin notebook.",
-            "The Zookeeper service."
+            "The Zookeeper service.",
+            "The Druid query engine."
           ],
           "type": "array",
           "items": {
@@ -467,7 +468,8 @@
               "KERBEROS",
               "PRESTO",
               "ZEPPELIN",
-              "ZOOKEEPER"
+              "ZOOKEEPER",
+              "DRUID"
             ]
           }
         }

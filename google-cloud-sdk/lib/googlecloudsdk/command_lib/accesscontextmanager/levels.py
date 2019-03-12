@@ -30,15 +30,14 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import yaml
 
-
 COLLECTION = 'accesscontextmanager.accessPolicies.accessLevels'
 
 
 class ParseError(exceptions.Error):
 
   def __init__(self, path, reason):
-    super(ParseError, self).__init__(
-        'Issue parsing file [{}]: {}'.format(path, reason))
+    super(ParseError, self).__init__('Issue parsing file [{}]: {}'.format(
+        path, reason))
 
 
 class InvalidFormatError(ParseError):
@@ -46,16 +45,16 @@ class InvalidFormatError(ParseError):
   def __init__(self, path, reason, message_class):
     valid_fields = [f.name for f in message_class.all_fields()]
     super(InvalidFormatError, self).__init__(
-        path,
-        ('Invalid format: {}\n\n'
-         'An access level condition file is a YAML-formatted list of '
-         'conditions, which are YAML objects with the fields [{}]. For '
-         'example:\n\n'
-         ' - ipSubnetworks:\n'
-         '   - 192.168.100.14/24\n'
-         '   - 2001:db8::/48\n'
-         ' - members:\n'
-         '   - user:user@example.com').format(reason, ', '.join(valid_fields)))
+        path, ('Invalid format: {}\n\n'
+               'An access level condition file is a YAML-formatted list of '
+               'conditions, which are YAML objects with the fields [{}]. For '
+               'example:\n\n'
+               ' - ipSubnetworks:\n'
+               '   - 192.168.100.14/24\n'
+               '   - 2001:db8::/48\n'
+               ' - members:\n'
+               '   - user:user@example.com').format(reason,
+                                                    ', '.join(valid_fields)))
 
 
 def _LoadData(path):
@@ -80,10 +79,19 @@ def _ValidateAllFieldsRecognized(path, conditions):
 
 
 def ParseBasicLevelConditions(path):
+  return ParseBasicLevelConditionsBase(path, version='v1')
+
+
+def ParseBasicLevelConditionsBeta(path):
+  return ParseBasicLevelConditionsBase(path, version='v1beta')
+
+
+def ParseBasicLevelConditionsBase(path, version=None):
   """Parse a YAML representation of basic level conditions..
 
   Args:
     path: str, path to file containing basic level conditions
+    version: str, api version of ACM to use for proto messages
 
   Returns:
     list of Condition objects.
@@ -96,7 +104,7 @@ def ParseBasicLevelConditions(path):
   if not data:
     raise ParseError(path, 'File is empty')
 
-  messages = util.GetMessages()
+  messages = util.GetMessages(version=version)
   message_class = messages.Condition
   try:
     conditions = [encoding.DictToMessage(c, message_class) for c in data]
@@ -109,9 +117,7 @@ def ParseBasicLevelConditions(path):
 
 def GetAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='level',
-      help_text='The ID of the access level.'
-  )
+      name='level', help_text='The ID of the access level.')
 
 
 def GetResourceSpec():
@@ -138,28 +144,32 @@ def AddResourceArg(parser, verb):
       required=True).AddToParser(parser)
 
 
-def GetCombineFunctionEnumMapper():
+def GetCombineFunctionEnumMapper(version=None):
   return arg_utils.ChoiceEnumMapper(
       '--combine-function',
-      util.GetMessages().BasicLevel.CombiningFunctionValueValuesEnum,
-      custom_mappings={'AND': 'and', 'OR': 'or'},
+      util.GetMessages(
+          version=version).BasicLevel.CombiningFunctionValueValuesEnum,
+      custom_mappings={
+          'AND': 'and',
+          'OR': 'or'
+      },
       required=False,
       help_str='For a basic level, determines how conditions are combined.',
   )
 
 
-def AddLevelArgs(parser):
+def AddLevelArgs(parser, version=None):
   """Add common args for level create/update commands."""
   args = [
       common.GetDescriptionArg('access level'),
       common.GetTitleArg('access level'),
-      GetCombineFunctionEnumMapper().choice_arg
+      GetCombineFunctionEnumMapper(version=version).choice_arg
   ]
   for arg in args:
     arg.AddToParser(parser)
 
 
-def AddLevelSpecArgs(parser):
+def AddLevelSpecArgs(parser, version=None):
   """Add arguments for in-file level specifications."""
   basic_level_help_text = (
       'Path to a file containing a list of basic access level conditions.\n\n'
@@ -173,11 +183,16 @@ def AddLevelSpecArgs(parser):
       '     - members\n'
       '       - user:user@example.com\n'
       '    ```')
+  basic_map = {
+      'v1': ParseBasicLevelConditions,
+      'v1beta': ParseBasicLevelConditionsBeta,
+      'v1alpha': ParseBasicLevelConditionsBeta
+  }
   args = [
       base.Argument(
           '--basic-level-spec',
           help=basic_level_help_text,
-          type=ParseBasicLevelConditions)
+          type=basic_map.get(version, ParseBasicLevelConditions))
   ]
   for arg in args:
     arg.AddToParser(parser)

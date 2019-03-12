@@ -92,7 +92,7 @@ class AutoscalingPolicy(_messages.Message):
     name: Output only. The "resource name" of the policy, as described in
       https://cloud.google.com/apis/design/resource_names of the form
       projects/{project_id}/regions/{region}/autoscalingPolicies/{policy_id}.
-    secondaryWorkerConfig: Required. Describes how the autoscaler will operate
+    secondaryWorkerConfig: Optional. Describes how the autoscaler will operate
       for secondary workers.
     workerConfig: Required. Describes how the autoscaler will operate for
       primary workers.
@@ -109,9 +109,9 @@ class BasicAutoscalingAlgorithm(_messages.Message):
   r"""Basic algorithm for autoscaling.
 
   Fields:
-    cooldownPeriod: Optional. Cooldown period in between scaling. Note that a
-      cooldown period begins after a scaling operation has completed.Default:
-      120s.
+    cooldownPeriod: Optional. Duration between scaling events. A scaling
+      period starts after the update operation from the previous event has
+      completed.Bounds: 2m, 1d. Default: 2m.
     yarnConfig: Required. YARN autoscaling configuration.
   """
 
@@ -123,21 +123,35 @@ class BasicYarnAutoscalingConfig(_messages.Message):
   r"""Basic autoscaling configurations for YARN.
 
   Fields:
-    gracefulDecommissionTimeout: Optional. Timeout used during an autoscaling
-      event (cluster update) between 0 seconds (no graceful decommission) and
-      1 day.Default: 0s.
-    scaleDownFactor: Optional. Fraction of suggested decrease in workers to
-      scale down by between 0 and 1. Suggested decrease when scaling down is
-      determined by the amount of average available memory since the last
-      cooldown period.Default: 1.0.
-    scaleDownMinWorkerFraction: Optional. Minimum workers as a fraction of the
-      current cluster size to to scale down by between 0 and 1.Default: 0.0.
-    scaleUpFactor: Required. Fraction of suggested increase in workers to
-      scale up by between 0 and 1. Suggested increase when scaling up is
-      determined by the amount of average pending memory since the last
-      cooldown period.
-    scaleUpMinWorkerFraction: Optional. Minimum workers as a fraction of the
-      current cluster size to to scale up by between 0 and 1.Default: 0.0.
+    gracefulDecommissionTimeout: Required. Timeout for YARN graceful
+      decommissioning of Node Managers. Specifies the duration to wait for
+      jobs to complete before forcefully removing workers (and potentially
+      interrupting jobs). Only applicable to downscaling operations.Bounds:
+      0s, 1d.
+    scaleDownFactor: Required. Fraction of average pending memory in the last
+      cooldown period for which to remove workers. A scale-down factor of 1
+      will result in scaling down so that there is no available memory
+      remaining after the update (more aggressive scaling). A scale-down
+      factor of 0 disables removing workers, which can be beneficial for
+      autoscaling a single job.Bounds: 0.0, 1.0.
+    scaleDownMinWorkerFraction: Optional. Minimum scale-down threshold as a
+      fraction of total cluster size before scaling occurs. For example, in a
+      20-worker cluster, a threshold of 0.1 means the autoscaler must
+      recommend at least a 2 worker scale-down for the cluster to scale. A
+      threshold of 0 means the autoscaler will scale down on any recommended
+      change.Bounds: 0.0, 1.0. Default: 0.0.
+    scaleUpFactor: Required. Fraction of average pending memory in the last
+      cooldown period for which to add workers. A scale-up factor of 1.0 will
+      result in scaling up so that there is no pending memory remaining after
+      the update (more aggressive scaling). A scale-up factor closer to 0 will
+      result in a smaller magnitude of scaling up (less aggressive
+      scaling).Bounds: 0.0, 1.0.
+    scaleUpMinWorkerFraction: Optional. Minimum scale-up threshold as a
+      fraction of total cluster size before scaling occurs. For example, in a
+      20-worker cluster, a threshold of 0.1 means the autoscaler must
+      recommend at least a 2-worker scale-up for the cluster to scale. A
+      threshold of 0 means the autoscaler will scale up on any recommended
+      change.Bounds: 0.0, 1.0. Default: 0.0.
   """
 
   gracefulDecommissionTimeout = _messages.StringField(1)
@@ -260,15 +274,16 @@ class ClusterConfig(_messages.Message):
   Fields:
     autoscalingConfig: Optional. Autoscaling config for the policy associated
       with the cluster. Cluster does not autoscale if this field is unset.
-    configBucket: Optional. A Cloud Storage staging bucket used for sharing
-      generated SSH keys and config. If you do not specify a staging bucket,
-      Cloud Dataproc will determine an appropriate Cloud Storage location (US,
-      ASIA, or EU) for your cluster's staging bucket according to the Google
-      Compute Engine zone where your cluster is deployed, and then it will
-      create and manage this project-level, per-location bucket for you.
+    configBucket: Optional. A Google Cloud Storage bucket used to stage job
+      dependencies, config files, and job driver console output. If you do not
+      specify a staging bucket, Cloud Dataproc will determine a Cloud Storage
+      location (US, ASIA, or EU) for your cluster's staging bucket according
+      to the Google Compute Engine zone where your cluster is deployed, and
+      then create and manage this project-level, per-location bucket (see
+      Cloud Dataproc staging bucket).
     encryptionConfig: Optional. Encryption settings for the cluster.
     endpointConfig: Optional. Port/endpoint configuration for this cluster
-    gceClusterConfig: Required. The shared Compute Engine config settings for
+    gceClusterConfig: Optional. The shared Compute Engine config settings for
       all instances in a cluster.
     initializationActions: Optional. Commands to execute on each node after
       config is completed. By default, executables are run on master and all
@@ -1991,19 +2006,26 @@ class InstanceGroupAutoscalingPolicyConfig(_messages.Message):
   proportional size to other groups.
 
   Fields:
-    maxInstances: Required. Maximum number of instances for this group. Must
-      be >= min_instances.
-    minInstances: Optional. Minimum number of instances for this group.Default
-      for primary workers is 2, default for secondary workers is 0.
+    maxInstances: Optional. Maximum number of instances for this group.
+      Required for primary workers. Note that by default, clusters will not
+      use secondary workers. Required for secondary workers if the minimum
+      secondary instances is set.Primary workers - Bounds: [min_instances, ).
+      Secondary workers - Bounds: [min_instances, ). Default: 0.
+    minInstances: Optional. Minimum number of instances for this group.Primary
+      workers - Bounds: 2, max_instances. Default: 2. Secondary workers -
+      Bounds: 0, max_instances. Default: 0.
     weight: Optional. Weight for instance group. Determines fraction of total
       workers in cluster that will be composed of instances from this instance
       group (e.g. if primary workers have weight 2 and secondary workers have
       weight 1, then the cluster should have approximately 2 primary workers
       to each secondary worker. Cluster may not reach these exact weights if
-      constrained by min/max bounds or other autoscaling
-      configurations.Default 1. Note that all groups have equal an equal
-      weight by default, so the cluster will attempt to maintain an equal
-      number of workers in each group within configured size bounds per group.
+      constrained by min/max bounds or other autoscaling configurations.Note
+      that all groups have an equal weight by default, so the cluster will
+      attempt to maintain an equal number of workers in each group within
+      configured size bounds per group. The cluster may not reach this balance
+      of weights if not allowed by worker-count bounds. For example, if
+      max_instances for secondary workers is 0, only primary workers will be
+      added. The cluster can also be out of balance when created.Default: 1.
   """
 
   maxInstances = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3161,8 +3183,8 @@ class SoftwareConfig(_messages.Message):
 
   Messages:
     PropertiesValue: Optional. The properties to set on daemon config
-      files.Property keys are specified in prefix:property format, such as
-      core:fs.defaultFS. The following are supported prefixes and their
+      files.Property keys are specified in prefix:property format, for example
+      core:hadoop.tmp.dir. The following are supported prefixes and their
       mappings: capacity-scheduler: capacity-scheduler.xml core: core-site.xml
       distcp: distcp-default.xml hdfs: hdfs-site.xml hive: hive-site.xml
       mapred: mapred-site.xml pig: pig.properties spark: spark-defaults.conf
@@ -3176,8 +3198,8 @@ class SoftwareConfig(_messages.Message):
     optionalComponents: The set of optional components to activate on the
       cluster.
     properties: Optional. The properties to set on daemon config
-      files.Property keys are specified in prefix:property format, such as
-      core:fs.defaultFS. The following are supported prefixes and their
+      files.Property keys are specified in prefix:property format, for example
+      core:hadoop.tmp.dir. The following are supported prefixes and their
       mappings: capacity-scheduler: capacity-scheduler.xml core: core-site.xml
       distcp: distcp-default.xml hdfs: hdfs-site.xml hive: hive-site.xml
       mapred: mapred-site.xml pig: pig.properties spark: spark-defaults.conf
@@ -3195,6 +3217,8 @@ class SoftwareConfig(_messages.Message):
       KERBEROS: <no description>
       PRESTO: <no description>
       ZEPPELIN: <no description>
+      ZOOKEEPER: <no description>
+      DRUID: <no description>
     """
     COMPONENT_UNSPECIFIED = 0
     ANACONDA = 1
@@ -3203,16 +3227,18 @@ class SoftwareConfig(_messages.Message):
     KERBEROS = 4
     PRESTO = 5
     ZEPPELIN = 6
+    ZOOKEEPER = 7
+    DRUID = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
     r"""Optional. The properties to set on daemon config files.Property keys
-    are specified in prefix:property format, such as core:fs.defaultFS. The
-    following are supported prefixes and their mappings: capacity-scheduler:
-    capacity-scheduler.xml core: core-site.xml distcp: distcp-default.xml
-    hdfs: hdfs-site.xml hive: hive-site.xml mapred: mapred-site.xml pig:
-    pig.properties spark: spark-defaults.conf yarn: yarn-site.xmlFor more
-    information, see Cluster properties.
+    are specified in prefix:property format, for example core:hadoop.tmp.dir.
+    The following are supported prefixes and their mappings: capacity-
+    scheduler: capacity-scheduler.xml core: core-site.xml distcp: distcp-
+    default.xml hdfs: hdfs-site.xml hive: hive-site.xml mapred: mapred-
+    site.xml pig: pig.properties spark: spark-defaults.conf yarn: yarn-
+    site.xmlFor more information, see Cluster properties.
 
     Messages:
       AdditionalProperty: An additional property for a PropertiesValue object.

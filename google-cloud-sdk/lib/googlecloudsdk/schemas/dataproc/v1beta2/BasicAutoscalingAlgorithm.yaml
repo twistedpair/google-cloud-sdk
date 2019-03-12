@@ -29,8 +29,9 @@ properties:
       type: string
   cooldownPeriod:
     description: |-
-      Cooldown period in between scaling. Note that a cooldown period begins
-      after a scaling operation has completed.Default: 120s.
+      Duration between scaling events. A scaling period starts after the update
+      operation from the previous event has completed.Bounds: 2m, 1d. Default:
+      2m.
     type: string
   yarnConfig:
     description: YARN autoscaling configuration.

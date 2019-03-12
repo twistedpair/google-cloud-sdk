@@ -382,6 +382,10 @@
             "type": "string"
           }
         },
+        "serviceKmsKeyName": {
+          "description": "If set, contains the Cloud KMS key identifier used to encrypt data\nat rest, AKA a Customer Managed Encryption Key (CMEK).\n\nFormat:\n  projects\/PROJECT_ID\/locations\/LOCATION\/keyRings\/KEY_RING\/cryptoKeys\/KEY",
+          "type": "string"
+        },
         "workerPools": {
           "description": "The worker pools. At least one \"harness\" worker pool must be\nspecified in order for the job to have workers.",
           "type": "array",

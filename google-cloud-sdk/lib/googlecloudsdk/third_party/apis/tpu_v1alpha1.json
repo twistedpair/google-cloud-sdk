@@ -312,7 +312,10 @@
             "TPU node is currently stopping.",
             "TPU node is currently starting.",
             "TPU node has been preempted. Only applies to Preemptible TPU Nodes.",
-            "TPU node has been terminated due to maintenance or has reached the end of\nits life cycle (for preemptible nodes)."
+            "TPU node has been terminated due to maintenance or has reached the end of\nits life cycle (for preemptible nodes).",
+            "TPU node is currently hiding.",
+            "TPU node has been hidden.",
+            "TPU node is currently unhiding."
           ],
           "type": "string",
           "enum": [
@@ -327,7 +330,10 @@
             "STOPPING",
             "STARTING",
             "PREEMPTED",
-            "TERMINATED"
+            "TERMINATED",
+            "HIDING",
+            "HIDDEN",
+            "UNHIDING"
           ]
         },
         "healthDescription": {

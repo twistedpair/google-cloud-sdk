@@ -939,7 +939,7 @@ class ServerlessOperations(object):
     self._UpdateOrCreateService(
         service_ref, config_changes, with_code, private_endpoint)
     if allow_unauthenticated:
-      self._AllowUnauthenticated(service_ref)
+      self.AddIamPolicyBinding(service_ref, ['allUsers'], 'roles/run.invoker')
     if not asyn:
       getter = functools.partial(self.GetService, service_ref)
       self.WaitForCondition(ServiceConditionPoller(getter, tracker))
@@ -1052,16 +1052,38 @@ class ServerlessOperations(object):
     response = self._op_client.projects_locations_services.GetIamPolicy(request)
     return response
 
-  def _AllowUnauthenticated(self, service_ref):
-    """Sets an IAM policy on the service to allow unauthenticated access."""
+  def AddIamPolicyBinding(self, service_ref, members=None, role=None):
+    """Add the given IAM policy binding to the provided service.
+
+    If no members or role are provided, set the IAM policy to the current IAM
+    policy. This is useful for checking whether the authenticated user has
+    the appropriate permissions for setting policies.
+
+    Args:
+      service_ref: str, The service to which to add the IAM policy.
+      members: [str], The users for which the binding applies.
+      role: str, The role to grant the provided members.
+
+    Returns:
+      The IAM policy with the newly added binding.
+    """
     messages = self._messages_module
     oneplatform_service = resource_name_conversion.K8sToOnePlatform(
         service_ref, self._region)
     policy = self._GetIamPolicy(oneplatform_service)
-    policy.bindings.append(
-        messages.Binding(members=['allUsers'], role='roles/run.invoker'))
+    if members and role:
+      policy.bindings.append(
+          messages.Binding(members=members, role=role))
     request = messages.RunProjectsLocationsServicesSetIamPolicyRequest(
         resource=str(oneplatform_service),
         setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy))
-    self._op_client.projects_locations_services.SetIamPolicy(request)
+    return self._op_client.projects_locations_services.SetIamPolicy(request)
+
+  def CanAddIamPolicyBinding(self, service_ref):
+    try:
+      self.AddIamPolicyBinding(service_ref)
+      return True
+    except api_exceptions.HttpError:
+      return False
+
 

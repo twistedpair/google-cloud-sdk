@@ -702,13 +702,15 @@ class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
   Fields:
     dockerCacheHit: Indicates whether we are using a cached Docker image
       (true) or had to pull the Docker image (false) for this command.
+    inputCacheMiss: The input cache miss ratio.
     numErrors: The number of errors reported.
     numWarnings: The number of warnings reported.
   """
 
   dockerCacheHit = _messages.BooleanField(1)
-  numErrors = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
-  numWarnings = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  inputCacheMiss = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  numErrors = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  numWarnings = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateInstanceRequest(_messages.Message):
@@ -918,9 +920,10 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
       `g1-small` are not yet supported.
     minCpuPlatform: Minimum CPU platform to use when creating the worker. See
       [CPU Platforms](https://cloud.google.com/compute/docs/cpu-platforms).
-    reserved: Determines whether the worker is reserved (and therefore won't
-      be preempted). See [Preemptible VMs](https://cloud.google.com
-      /preemptible-vms/) for more details.
+    reserved: Determines whether the worker is reserved (equivalent to a
+      Compute Engine on-demand VM and therefore won't be preempted). See
+      [Preemptible VMs](https://cloud.google.com/preemptible-vms/) for more
+      details.
   """
 
   diskSizeGb = _messages.IntegerField(1)

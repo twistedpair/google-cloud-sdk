@@ -286,7 +286,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The full name of the asset. For example: `\/\/compute.googleapis.com\/projects\/my_project_123\/zones\/zone1\/instances\/instance1`.\nSee [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name)\nfor more information.",
+          "description": "The full name of the asset. For example:\n`\/\/compute.googleapis.com\/projects\/my_project_123\/zones\/zone1\/instances\/instance1`.\nSee [Resource\nNames](https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name)\nfor more information.",
           "type": "string"
         },
         "assetType": {
@@ -298,7 +298,7 @@
           "$ref": "Resource"
         },
         "iamPolicy": {
-          "description": "Representation of the actual Cloud IAM policy set on a cloud resource. For each\nresource, there must be at most one Cloud IAM policy set on it.",
+          "description": "Representation of the actual Cloud IAM policy set on a cloud resource. For\neach resource, there must be at most one Cloud IAM policy set on it.",
           "$ref": "Policy"
         }
       }
@@ -325,7 +325,7 @@
           "type": "string"
         },
         "parent": {
-          "description": "The full name of the immediate parent of this resource. See\n[Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name)\nfor more information.\n\nFor GCP assets, it is the parent resource defined in the [Cloud IAM policy\nhierarchy](https:\/\/cloud.google.com\/iam\/docs\/overview#policy_hierarchy).\nFor example: `\"\/\/cloudresourcemanager.googleapis.com\/projects\/my_project_123\"`.\n\nFor third-party assets, it is up to the users to define.",
+          "description": "The full name of the immediate parent of this resource. See\n[Resource\nNames](https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name)\nfor more information.\n\nFor GCP assets, it is the parent resource defined in the [Cloud IAM policy\nhierarchy](https:\/\/cloud.google.com\/iam\/docs\/overview#policy_hierarchy).\nFor example:\n`\"\/\/cloudresourcemanager.googleapis.com\/projects\/my_project_123\"`.\n\nFor third-party assets, it is up to the users to define.",
           "type": "string"
         },
         "data": {
@@ -508,7 +508,7 @@
               "type": "string"
             },
             "assetNames": {
-              "description": "A list of the full names of the assets. For example:\n`\/\/compute.googleapis.com\/projects\/my_project_123\/zones\/zone1\/instances\/instance1`.\nSee [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name)\nfor more info.\n\nThe request becomes a no-op if the asset name list is empty, and the max\nsize of the asset name list is 100 in one request.",
+              "description": "A list of the full names of the assets. For example:\n`\/\/compute.googleapis.com\/projects\/my_project_123\/zones\/zone1\/instances\/instance1`.\nSee [Resource\nNames](https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name)\nfor more info.\n\nThe request becomes a no-op if the asset name list is empty, and the max\nsize of the asset name list is 100 in one request.",
               "location": "query",
               "repeated": true,
               "type": "string"
@@ -689,7 +689,7 @@
               "type": "string"
             },
             "assetNames": {
-              "description": "A list of the full names of the assets. For example:\n`\/\/compute.googleapis.com\/projects\/my_project_123\/zones\/zone1\/instances\/instance1`.\nSee [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name)\nfor more info.\n\nThe request becomes a no-op if the asset name list is empty, and the max\nsize of the asset name list is 100 in one request.",
+              "description": "A list of the full names of the assets. For example:\n`\/\/compute.googleapis.com\/projects\/my_project_123\/zones\/zone1\/instances\/instance1`.\nSee [Resource\nNames](https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name)\nfor more info.\n\nThe request becomes a no-op if the asset name list is empty, and the max\nsize of the asset name list is 100 in one request.",
               "location": "query",
               "repeated": true,
               "type": "string"

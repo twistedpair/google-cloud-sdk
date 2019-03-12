@@ -195,8 +195,8 @@ class Binding(_messages.Message):
       service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: A Google Apps domain name that represents all the
-      users of that domain. For example, `google.com` or `example.com`.
+      * `domain:{domain}`: The G Suite domain (primary) that represents all
+      the    users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -1453,23 +1453,23 @@ class Layer(_messages.Message):
 
     Values:
       DIRECTIVE_UNSPECIFIED: Default value for unsupported/missing directive
-      MAINTAINER: https://docs.docker.com/reference/builder/#maintainer
-      RUN: https://docs.docker.com/reference/builder/#run
-      CMD: https://docs.docker.com/reference/builder/#cmd
-      LABEL: https://docs.docker.com/reference/builder/#label
-      EXPOSE: https://docs.docker.com/reference/builder/#expose
-      ENV: https://docs.docker.com/reference/builder/#env
-      ADD: https://docs.docker.com/reference/builder/#add
+      MAINTAINER: https://docs.docker.com/engine/reference/builder/
+      RUN: https://docs.docker.com/engine/reference/builder/
+      CMD: https://docs.docker.com/engine/reference/builder/
+      LABEL: https://docs.docker.com/engine/reference/builder/
+      EXPOSE: https://docs.docker.com/engine/reference/builder/
+      ENV: https://docs.docker.com/engine/reference/builder/
+      ADD: https://docs.docker.com/engine/reference/builder/
       COPY: https://docs.docker.com/reference/builder/#copy
-      ENTRYPOINT: https://docs.docker.com/reference/builder/#entrypoint
-      VOLUME: https://docs.docker.com/reference/builder/#volume
-      USER: https://docs.docker.com/reference/builder/#user
-      WORKDIR: https://docs.docker.com/reference/builder/#workdir
-      ARG: https://docs.docker.com/reference/builder/#arg
-      ONBUILD: https://docs.docker.com/reference/builder/#onbuild
-      STOPSIGNAL: https://docs.docker.com/reference/builder/#stopsignal
-      HEALTHCHECK: https://docs.docker.com/reference/builder/#healthcheck
-      SHELL: https://docs.docker.com/reference/builder/#shell
+      ENTRYPOINT: https://docs.docker.com/engine/reference/builder/
+      VOLUME: https://docs.docker.com/engine/reference/builder/
+      USER: https://docs.docker.com/engine/reference/builder/
+      WORKDIR: https://docs.docker.com/engine/reference/builder/
+      ARG: https://docs.docker.com/engine/reference/builder/
+      ONBUILD: https://docs.docker.com/engine/reference/builder/
+      STOPSIGNAL: https://docs.docker.com/engine/reference/builder/
+      HEALTHCHECK: https://docs.docker.com/engine/reference/builder/
+      SHELL: https://docs.docker.com/engine/reference/builder/
     """
     DIRECTIVE_UNSPECIFIED = 0
     MAINTAINER = 1
@@ -1847,8 +1847,7 @@ class PackageIssue(_messages.Message):
   Fields:
     affectedLocation: The location of the vulnerability.
     fixedLocation: The location of the available fix for vulnerability.
-    severityName: The severity (eg: distro assigned severity) for this
-      vulnerability.
+    severityName: A string attribute.
   """
 
   affectedLocation = _messages.MessageField('VulnerabilityLocation', 1)

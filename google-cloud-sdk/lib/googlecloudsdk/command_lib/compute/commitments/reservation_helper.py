@@ -65,4 +65,4 @@ def _MakeSingleReservation(args, messages, holder):
           args,
           holder.resources,
           scope_lister=compute_flags.GetDefaultScopeLister(holder.client))
-  return util.MakeAllocationMessageFromArgs(messages, args, reservation_ref)
+  return util.MakeReservationMessageFromArgs(messages, args, reservation_ref)

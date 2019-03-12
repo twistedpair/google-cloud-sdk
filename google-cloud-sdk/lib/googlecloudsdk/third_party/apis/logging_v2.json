@@ -157,7 +157,7 @@
           "type": "string"
         },
         "createTime": {
-          "description": "Output only. The creation timestamp of the bucket.",
+          "description": "Output only. The creation timestamp of the bucket. This is not set for any of the default buckets.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -167,7 +167,7 @@
           "format": "google-datetime"
         },
         "retentionPeriod": {
-          "description": "Logs will be retained by default for this amount of time, after which they will automatically be deleted.",
+          "description": "Logs will be retained by default for this amount of time, after which they will automatically be deleted. The minimum retention period is 1 day.",
           "type": "string",
           "format": "google-duration"
         },
@@ -551,7 +551,7 @@
           "format": "int64"
         },
         "userAgent": {
-          "description": "The user agent sent by the client. Example: \"Mozilla\/4.0 (compatible; MSIE 6.0; Windows 98; Q312461; .NET CLR 1.0.3705)\".",
+          "description": "The user agent sent by the client. Example: \"Mozilla\/4.0 (compatible; MSIE 6.0; Windows 98; Q312461; .NET\nCLR 1.0.3705)\".",
           "type": "string"
         },
         "remoteIp": {
@@ -672,7 +672,7 @@
       "type": "object",
       "properties": {
         "projectIds": {
-          "description": "Deprecated. Use resource_names instead. One or more project identifiers or project numbers from which to retrieve log entries. Example: \"my-project-1A\". If present, these project identifiers are converted to resource name format and added to the list of resources in resource_names.",
+          "description": "Deprecated. Use resource_names instead. One or more project identifiers or project numbers from which to retrieve log entries. Example: \"my-project-1A\".",
           "type": "array",
           "items": {
             "type": "string"
@@ -1346,7 +1346,7 @@
           "httpMethod": "GET",
           "parameters": {
             "parent": {
-              "description": "Required. The parent resource whose buckets are to be listed:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\n",
+              "description": "Required. The parent resource whose buckets are to be listed:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\"\n",
               "location": "path",
               "required": true,
               "pattern": "^[^\/]+\/[^\/]+$",
@@ -1385,7 +1385,7 @@
           "httpMethod": "GET",
           "parameters": {
             "name": {
-              "description": "Required. The resource name of the bucket:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+              "description": "Required. The resource name of the bucket:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
               "location": "path",
               "required": true,
               "pattern": "^[^\/]+\/[^\/]+\/buckets\/[^\/]+$",
@@ -1413,7 +1413,7 @@
           "httpMethod": "PATCH",
           "parameters": {
             "name": {
-              "description": "Required. The full resource name of the bucket to update.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\". Also requires permission \"resourcemanager.projects.updateLiens\" to set the locked property",
+              "description": "Required. The full resource name of the bucket to update.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\". Also requires permission \"resourcemanager.projects.updateLiens\" to set the locked property",
               "location": "path",
               "required": true,
               "pattern": "^[^\/]+\/[^\/]+\/buckets\/[^\/]+$",
@@ -1456,7 +1456,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource whose buckets are to be listed:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\n",
+                      "description": "Required. The parent resource whose buckets are to be listed:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\"\n",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1495,7 +1495,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the bucket:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                      "description": "Required. The resource name of the bucket:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
@@ -1523,7 +1523,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The resource in which to create the bucket:\n\"projects\/[PROJECT_ID]\"\nExamples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
+                      "description": "Required. The resource in which to create the bucket:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\"\nExample: \"projects\/my-logging-project\/locations\/global\"",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1557,7 +1557,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. The full resource name of the bucket to update.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\". Also requires permission \"resourcemanager.projects.updateLiens\" to set the locked property",
+                      "description": "Required. The full resource name of the bucket to update.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\". Also requires permission \"resourcemanager.projects.updateLiens\" to set the locked property",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
@@ -1592,7 +1592,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The full resource name of the bucket to delete.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                      "description": "Required. The full resource name of the bucket to delete.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
@@ -2229,7 +2229,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource whose buckets are to be listed:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\n",
+                      "description": "Required. The parent resource whose buckets are to be listed:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\"\n",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
@@ -2268,7 +2268,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the bucket:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                      "description": "Required. The resource name of the bucket:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
@@ -2296,7 +2296,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The resource in which to create the bucket:\n\"projects\/[PROJECT_ID]\"\nExamples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
+                      "description": "Required. The resource in which to create the bucket:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\"\nExample: \"projects\/my-logging-project\/locations\/global\"",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
@@ -2330,7 +2330,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. The full resource name of the bucket to update.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\". Also requires permission \"resourcemanager.projects.updateLiens\" to set the locked property",
+                      "description": "Required. The full resource name of the bucket to update.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\". Also requires permission \"resourcemanager.projects.updateLiens\" to set the locked property",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
@@ -2365,7 +2365,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The full resource name of the bucket to delete.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                      "description": "Required. The full resource name of the bucket to delete.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
@@ -2844,7 +2844,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource whose buckets are to be listed:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\n",
+                      "description": "Required. The parent resource whose buckets are to be listed:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\"\n",
                       "location": "path",
                       "required": true,
                       "pattern": "^folders\/[^\/]+\/locations\/[^\/]+$",
@@ -2883,7 +2883,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the bucket:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                      "description": "Required. The resource name of the bucket:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
                       "location": "path",
                       "required": true,
                       "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
@@ -2911,7 +2911,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The resource in which to create the bucket:\n\"projects\/[PROJECT_ID]\"\nExamples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
+                      "description": "Required. The resource in which to create the bucket:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\"\nExample: \"projects\/my-logging-project\/locations\/global\"",
                       "location": "path",
                       "required": true,
                       "pattern": "^folders\/[^\/]+\/locations\/[^\/]+$",
@@ -2945,7 +2945,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. The full resource name of the bucket to update.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\". Also requires permission \"resourcemanager.projects.updateLiens\" to set the locked property",
+                      "description": "Required. The full resource name of the bucket to update.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\". Also requires permission \"resourcemanager.projects.updateLiens\" to set the locked property",
                       "location": "path",
                       "required": true,
                       "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
@@ -2980,7 +2980,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The full resource name of the bucket to delete.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                      "description": "Required. The full resource name of the bucket to delete.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
                       "location": "path",
                       "required": true,
                       "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
@@ -3459,7 +3459,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource whose buckets are to be listed:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\n",
+                      "description": "Required. The parent resource whose buckets are to be listed:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\"\n",
                       "location": "path",
                       "required": true,
                       "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+$",
@@ -3498,7 +3498,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The resource in which to create the bucket:\n\"projects\/[PROJECT_ID]\"\nExamples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
+                      "description": "Required. The resource in which to create the bucket:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\"\nExample: \"projects\/my-logging-project\/locations\/global\"",
                       "location": "path",
                       "required": true,
                       "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+$",
@@ -3532,7 +3532,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. The full resource name of the bucket to update.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\". Also requires permission \"resourcemanager.projects.updateLiens\" to set the locked property",
+                      "description": "Required. The full resource name of the bucket to update.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\". Also requires permission \"resourcemanager.projects.updateLiens\" to set the locked property",
                       "location": "path",
                       "required": true,
                       "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
@@ -3567,7 +3567,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The full resource name of the bucket to delete.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                      "description": "Required. The full resource name of the bucket to delete.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
                       "location": "path",
                       "required": true,
                       "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
@@ -3599,7 +3599,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. The resource name of the bucket:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                  "description": "Required. The resource name of the bucket:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
                   "location": "path",
                   "required": true,
                   "pattern": "^billingAccounts\/[^\/]+\/buckets\/[^\/]+$",
@@ -4076,7 +4076,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The resource in which to create the bucket:\n\"projects\/[PROJECT_ID]\"\nExamples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
+                  "description": "Required. The resource in which to create the bucket:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\"\nExample: \"projects\/my-logging-project\/locations\/global\"",
                   "location": "path",
                   "required": true,
                   "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+$",
@@ -4110,7 +4110,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "Required. The full resource name of the bucket to delete.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                  "description": "Required. The full resource name of the bucket to delete.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
                   "location": "path",
                   "required": true,
                   "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",

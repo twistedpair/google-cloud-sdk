@@ -48,25 +48,9 @@ class ZoneAllocationsCompleter(compute_completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):
     super(ZoneAllocationsCompleter, self).__init__(
-        collection='compute.allocations',
-        list_command='alpha compute allocations list --uri',
+        collection='compute.reservations',
+        list_command='alpha compute reservations list --uri',
         **kwargs)
-
-
-def GetAllocationResourceArg(positional=True):
-  if positional:
-    name = 'ALLOCATION'
-  else:
-    name = '--allocation'
-
-  return compute_flags.ResourceArgument(
-      name=name,
-      resource_name='zonal allocation',
-      completer=ZoneAllocationsCompleter,
-      plural=False,
-      required=True,
-      zonal_collection='compute.allocations',
-      zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
 
 
 def GetReservationResourceArg(positional=True):
@@ -81,5 +65,5 @@ def GetReservationResourceArg(positional=True):
       completer=ZoneAllocationsCompleter,
       plural=False,
       required=True,
-      zonal_collection='compute.allocations',
+      zonal_collection='compute.reservations',
       zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)

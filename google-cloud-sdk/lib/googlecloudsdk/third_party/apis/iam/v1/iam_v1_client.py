@@ -841,6 +841,62 @@ and returns it.
         supports_download=False,
     )
 
+    def Disable(self, request, global_params=None):
+      r"""Disables a ServiceAccount.
+The API is currently in alpha phase.
+
+      Args:
+        request: (IamProjectsServiceAccountsDisableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Disable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Disable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:disable',
+        http_method=u'POST',
+        method_id=u'iam.projects.serviceAccounts.disable',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:disable',
+        request_field=u'disableServiceAccountRequest',
+        request_type_name=u'IamProjectsServiceAccountsDisableRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Enable(self, request, global_params=None):
+      r"""Enables a ServiceAccount.
+ The API is currently in alpha phase.
+
+      Args:
+        request: (IamProjectsServiceAccountsEnableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Enable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Enable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:enable',
+        http_method=u'POST',
+        method_id=u'iam.projects.serviceAccounts.enable',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:enable',
+        request_field=u'enableServiceAccountRequest',
+        request_type_name=u'IamProjectsServiceAccountsEnableRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets a ServiceAccount.
 
@@ -869,8 +925,20 @@ and returns it.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Returns the IAM access control policy for a.
+      r"""Returns the Cloud IAM access control policy for a.
 ServiceAccount.
+
+Note: Service accounts are both
+[resources and identities](/iam/docs/service-accounts#service_account_permissions).
+This method treats the service account as a resource. It returns the Cloud
+IAM policy that reflects what members have access to the service account.
+
+This method does not return what resources the service account has access
+to. To see if a service account has access to a resource, call the
+`getIamPolicy` method on the target resource. For example, to view grants
+for a project, call the
+[projects.getIamPolicy](/resource-manager/reference/rest/v1/projects/getIamPolicy)
+method.
 
       Args:
         request: (IamProjectsServiceAccountsGetIamPolicyRequest) input message
@@ -929,7 +997,7 @@ ServiceAccount.
 Currently, only the following fields are updatable:
 `display_name` and `description`.
 
-Only fields specified in the request are garaunteed to be returned in
+Only fields specified in the request are guaranteed to be returned in
 the response. Other fields in the response may be empty.
 
 Note: The field mask is required.
@@ -959,8 +1027,22 @@ Note: The field mask is required.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the IAM access control policy for a.
+      r"""Sets the Cloud IAM access control policy for a.
 ServiceAccount.
+
+Note: Service accounts are both
+[resources and identities](/iam/docs/service-accounts#service_account_permissions).
+This method treats the service account as a resource. Use it to grant
+members access to the service account, such as when they need to
+impersonate it.
+
+This method does not grant the service account access to other resources,
+such as projects. To grant a service account access to resources, include
+the service account in the Cloud IAM policy for the desired resource, then
+call the appropriate `setIamPolicy` method on the target resource. For
+example, to grant a service account access to a project, call the
+[projects.setIamPolicy](/resource-manager/reference/rest/v1/projects/setIamPolicy)
+method.
 
       Args:
         request: (IamProjectsServiceAccountsSetIamPolicyRequest) input message
@@ -1080,8 +1162,40 @@ for a ServiceAccount.
         supports_download=False,
     )
 
+    def Undelete(self, request, global_params=None):
+      r"""Restores a deleted ServiceAccount.
+This is to be used as an action of last resort.  A service account may
+not always be restorable.
+
+      Args:
+        request: (IamProjectsServiceAccountsUndeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (UndeleteServiceAccountResponse) The response message.
+      """
+      config = self.GetMethodConfig('Undelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:undelete',
+        http_method=u'POST',
+        method_id=u'iam.projects.serviceAccounts.undelete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:undelete',
+        request_field=u'undeleteServiceAccountRequest',
+        request_type_name=u'IamProjectsServiceAccountsUndeleteRequest',
+        response_type_name=u'UndeleteServiceAccountResponse',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
-      r"""Updates a ServiceAccount.
+      r"""Note: This method is in the process of being deprecated. Use.
+PatchServiceAccount instead.
+
+Updates a ServiceAccount.
 
 Currently, only the following fields are updatable:
 `display_name` .

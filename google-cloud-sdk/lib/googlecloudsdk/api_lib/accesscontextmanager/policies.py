@@ -29,8 +29,8 @@ from googlecloudsdk.core import resources
 class Client(object):
   """Client for Access Context Manager Access Policies service."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or util.GetClient()
+  def __init__(self, client=None, messages=None, version=None):
+    self.client = client or util.GetClient(version=version)
     self.messages = messages or self.client.MESSAGES_MODULE
 
   def List(self, organization_ref, limit=None):

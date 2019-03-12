@@ -328,7 +328,7 @@
           "format": "int64"
         },
         "sourceSnapshot": {
-          "description": "The resource name of the snapshot, in the format\nprojects\/{project_id}\/locations\/{location_id}\/snapshots\/{snapshot_id}, that\nthis file share has been restored from. Empty, if the file share is created from\nscratch and not restored from a snapshot.",
+          "description": "The resource name of the snapshot, in the format\nprojects\/{project_id}\/locations\/{location_id}\/snapshots\/{snapshot_id}, that\nthis file share has been restored from. Empty, if the file share is created\nfrom scratch and not restored from a snapshot.",
           "type": "string"
         }
       }
@@ -358,11 +358,11 @@
           }
         },
         "reservedIpRange": {
-          "description": "A \/29 CIDR block in one of the\n[internal IP address ranges](https:\/\/www.arin.net\/knowledge\/address_filters.html)\nthat identifies the range of IP addresses reserved for this\ninstance. For example, 10.0.0.0\/29 or 192.168.0.0\/29. The range you specify\ncan't overlap with either existing subnets or assigned IP address ranges\nfor other Cloud Filestore instances in the selected VPC network.",
+          "description": "A \/29 CIDR block in one of the\n[internal IP address\nranges](https:\/\/www.arin.net\/knowledge\/address_filters.html) that\nidentifies the range of IP addresses reserved for this instance. For\nexample, 10.0.0.0\/29 or 192.168.0.0\/29. The range you specify can't overlap\nwith either existing subnets or assigned IP address ranges for other Cloud\nFilestore instances in the selected VPC network.",
           "type": "string"
         },
         "ipAddresses": {
-          "description": "Output only.\nIPv4 addresses in the format\n{octet 1}.{octet 2}.{octet 3}.{octet 4} or IPv6 addresses in the format\n{block 1}:{block 2}:{block 3}:{block 4}:{block 5}:{block 6}:{block 7}:{block 8}.",
+          "description": "Output only.\nIPv4 addresses in the format\n{octet 1}.{octet 2}.{octet 3}.{octet 4} or IPv6 addresses in the format\n{block 1}:{block 2}:{block 3}:{block 4}:{block 5}:{block 6}:{block\n7}:{block 8}.",
           "type": "array",
           "items": {
             "type": "string"

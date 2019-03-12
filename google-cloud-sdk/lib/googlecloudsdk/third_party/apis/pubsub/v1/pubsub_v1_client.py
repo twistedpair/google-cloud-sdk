@@ -59,11 +59,7 @@ operations, which allow
 you to manage message acknowledgments in bulk. That is, you can set the
 acknowledgment state of messages in an existing subscription to the state
 captured by a snapshot.
-<br><br>
-<b>BETA:</b> This feature is part of a beta release. This API might be
-changed in backward-incompatible ways and is not recommended for production
-use. It is not subject to any SLA or deprecation policy.<br><br>
-If the snapshot already exists, returns `ALREADY_EXISTS`.
+<br><br>If the snapshot already exists, returns `ALREADY_EXISTS`.
 If the requested subscription doesn't exist, returns `NOT_FOUND`.
 If the backlog in the subscription is too old -- and the resulting snapshot
 would expire in less than 1 hour -- then `FAILED_PRECONDITION` is returned.
@@ -106,9 +102,6 @@ operations, which allow
 you to manage message acknowledgments in bulk. That is, you can set the
 acknowledgment state of messages in an existing subscription to the state
 captured by a snapshot.<br><br>
-<b>BETA:</b> This feature is part of a beta release. This API might be
-changed in backward-incompatible ways and is not recommended for production
-use. It is not subject to any SLA or deprecation policy.
 When the snapshot is deleted, all messages retained in the snapshot
 are immediately dropped. After a snapshot is deleted, a new one may be
 created with the same name, but the new one has no association with the old
@@ -143,10 +136,7 @@ snapshot or its subscription, unless the same subscription is specified.
 <a href="https://cloud.google.com/pubsub/docs/replay-overview">Seek</a>
 operations, which allow you to manage message acknowledgments in bulk. That
 is, you can set the acknowledgment state of messages in an existing
-subscription to the state captured by a snapshot.<br><br>
-<b>BETA:</b> This feature is part of a beta release. This API might be
-changed in backward-incompatible ways and is not recommended for production
-use. It is not subject to any SLA or deprecation policy.
+subscription to the state captured by a snapshot.
 
       Args:
         request: (PubsubProjectsSnapshotsGetRequest) input message
@@ -207,10 +197,7 @@ set.
 operations, which allow
 you to manage message acknowledgments in bulk. That is, you can set the
 acknowledgment state of messages in an existing subscription to the state
-captured by a snapshot.<br><br>
-<b>BETA:</b> This feature is part of a beta release. This API might be
-changed in backward-incompatible ways and is not recommended for production
-use. It is not subject to any SLA or deprecation policy.
+captured by a snapshot.
 
       Args:
         request: (PubsubProjectsSnapshotsListRequest) input message
@@ -242,11 +229,7 @@ use. It is not subject to any SLA or deprecation policy.
 operations, which allow
 you to manage message acknowledgments in bulk. That is, you can set the
 acknowledgment state of messages in an existing subscription to the state
-captured by a snapshot.<br><br>
-<b>BETA:</b> This feature is part of a beta release. This API might be
-changed in backward-incompatible ways and is not recommended for production
-use. It is not subject to any SLA or deprecation policy.
-Note that certain properties of a snapshot are not modifiable.
+captured by a snapshot.
 
       Args:
         request: (PubsubProjectsSnapshotsPatchRequest) input message
@@ -656,10 +639,7 @@ operations, which allow
 you to manage message acknowledgments in bulk. That is, you can set the
 acknowledgment state of messages in an existing subscription to the state
 captured by a snapshot. Note that both the subscription and the snapshot
-must be on the same topic.<br><br>
-<b>BETA:</b> This feature is part of a beta release. This API might be
-changed in backward-incompatible ways and is not recommended for production
-use. It is not subject to any SLA or deprecation policy.
+must be on the same topic.
 
       Args:
         request: (PubsubProjectsSubscriptionsSeekRequest) input message
@@ -762,10 +742,7 @@ may "fail open" without warning.
 operations, which allow
 you to manage message acknowledgments in bulk. That is, you can set the
 acknowledgment state of messages in an existing subscription to the state
-captured by a snapshot.<br><br>
-<b>BETA:</b> This feature is part of a beta release. This API might be
-changed in backward-incompatible ways and is not recommended for production
-use. It is not subject to any SLA or deprecation policy.
+captured by a snapshot.
 
       Args:
         request: (PubsubProjectsTopicsSnapshotsListRequest) input message

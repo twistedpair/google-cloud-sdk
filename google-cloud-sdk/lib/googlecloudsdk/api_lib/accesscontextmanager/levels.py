@@ -26,12 +26,16 @@ from googlecloudsdk.core import resources
 
 class Client(object):
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or util.GetClient()
+  def __init__(self, client=None, messages=None, version=None):
+    self.client = client or util.GetClient(version=version)
     self.messages = messages or self.client.MESSAGES_MODULE
 
-  def Patch(self, level_ref, description=None, title=None,
-            combine_function=None, basic_level_conditions=None):
+  def Patch(self,
+            level_ref,
+            description=None,
+            title=None,
+            combine_function=None,
+            basic_level_conditions=None):
     """Patch an access level.
 
     Args:

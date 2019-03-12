@@ -1444,9 +1444,7 @@ it.
     )
 
     def ExecuteBundle(self, request, global_params=None):
-      r"""Executes all the requests in the given Bundle.  Conforms to.
-http://hl7.org/fhir/http.html#transaction except that only the transaction
-update is supported.
+      r"""Executes all the requests in the given Bundle.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresExecuteBundleRequest) input message

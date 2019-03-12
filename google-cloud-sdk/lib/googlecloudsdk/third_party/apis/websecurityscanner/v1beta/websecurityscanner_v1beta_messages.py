@@ -88,6 +88,8 @@ class Finding(_messages.Message):
     findingType: Output only. The type of the Finding. Detailed and up-to-date
       information on findings can be found here: https://cloud.google.com
       /security-scanner/docs/scan-result-details
+    form: Output only. An addon containing information reported for a
+      vulnerability with an HTML form, if any.
     frameUrl: Output only. If the vulnerability was originated from nested
       IFrame, the immediate parent IFrame is reported.
     fuzzedUrl: Output only. The URL produced by the server-side fuzzer and
@@ -120,17 +122,18 @@ class Finding(_messages.Message):
   description = _messages.StringField(2)
   finalUrl = _messages.StringField(3)
   findingType = _messages.StringField(4)
-  frameUrl = _messages.StringField(5)
-  fuzzedUrl = _messages.StringField(6)
-  httpMethod = _messages.StringField(7)
-  name = _messages.StringField(8)
-  outdatedLibrary = _messages.MessageField('OutdatedLibrary', 9)
-  reproductionUrl = _messages.StringField(10)
-  trackingId = _messages.StringField(11)
-  violatingResource = _messages.MessageField('ViolatingResource', 12)
-  vulnerableHeaders = _messages.MessageField('VulnerableHeaders', 13)
-  vulnerableParameters = _messages.MessageField('VulnerableParameters', 14)
-  xss = _messages.MessageField('Xss', 15)
+  form = _messages.MessageField('Form', 5)
+  frameUrl = _messages.StringField(6)
+  fuzzedUrl = _messages.StringField(7)
+  httpMethod = _messages.StringField(8)
+  name = _messages.StringField(9)
+  outdatedLibrary = _messages.MessageField('OutdatedLibrary', 10)
+  reproductionUrl = _messages.StringField(11)
+  trackingId = _messages.StringField(12)
+  violatingResource = _messages.MessageField('ViolatingResource', 13)
+  vulnerableHeaders = _messages.MessageField('VulnerableHeaders', 14)
+  vulnerableParameters = _messages.MessageField('VulnerableParameters', 15)
+  xss = _messages.MessageField('Xss', 16)
 
 
 class FindingTypeStats(_messages.Message):
@@ -145,6 +148,18 @@ class FindingTypeStats(_messages.Message):
 
   findingCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   findingType = _messages.StringField(2)
+
+
+class Form(_messages.Message):
+  r"""! Information about a vulnerability with an HTML.
+
+  Fields:
+    actionUri: ! The URI where to send the form when it's submitted.
+    fields: ! The names of form fields related to the vulnerability.
+  """
+
+  actionUri = _messages.StringField(1)
+  fields = _messages.StringField(2, repeated=True)
 
 
 class GoogleAccount(_messages.Message):

@@ -1201,10 +1201,12 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
       FILE_TYPE_UNSPECIFIED: <no description>
       BINARY_FILE: <no description>
       TEXT_FILE: <no description>
+      IMAGE: <no description>
     """
     FILE_TYPE_UNSPECIFIED = 0
     BINARY_FILE = 1
     TEXT_FILE = 2
+    IMAGE = 3
 
   class SampleMethodValueValuesEnum(_messages.Enum):
     r"""SampleMethodValueValuesEnum enum type.
@@ -1298,8 +1300,10 @@ class GooglePrivacyDlpV2Color(_messages.Message):
 
 class GooglePrivacyDlpV2Condition(_messages.Message):
   r"""The field type of `value` and `field` do not need to match to be
-  considered equal, but not all comparisons are possible.  A `value` of type:
-  - `string` can be compared against all other types - `boolean` can only be
+  considered equal, but not all comparisons are possible. EQUAL_TO and
+  NOT_EQUAL_TO attempt to compare even with incompatible types, but all other
+  comparisons are invalid with incompatible types. A `value` of type:  -
+  `string` can be compared against all other types - `boolean` can only be
   compared against other booleans - `integer` can be compared against doubles
   or a string if the string value can be parsed as an integer. - `double` can
   be compared against integers or a string if the string can be parsed as a
@@ -1326,8 +1330,9 @@ class GooglePrivacyDlpV2Condition(_messages.Message):
 
     Values:
       RELATIONAL_OPERATOR_UNSPECIFIED: <no description>
-      EQUAL_TO: Equal.
-      NOT_EQUAL_TO: Not equal to.
+      EQUAL_TO: Equal. Attempts to match even with incompatible types.
+      NOT_EQUAL_TO: Not equal to. Attempts to match even with incompatible
+        types.
       GREATER_THAN: Greater than.
       LESS_THAN: Less than.
       GREATER_THAN_OR_EQUALS: Greater than or equals.
@@ -1515,14 +1520,9 @@ class GooglePrivacyDlpV2CryptoKey(_messages.Message):
 
 
 class GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig(_messages.Message):
-  r"""Replaces an identifier with a surrogate using FPE with the FFX mode of
-  operation; however when used in the `ReidentifyContent` API method, it
-  serves the opposite function by reversing the surrogate back into the
-  original identifier. The identifier must be encoded as ASCII. For a given
-  crypto key and context, the same identifier will be replaced with the same
-  surrogate. Identifiers must be at least two characters long. In the case
-  that the identifier is the empty string, it will be skipped. See
-  https://cloud.google.com/dlp/docs/pseudonymization to learn more.
+  r"""Note: We recommend using  CryptoDeterministicConfig for all use cases
+  which do not require preserving the input alphabet space and size, plus
+  warrant referential integrity.
 
   Enums:
     CommonAlphabetValueValuesEnum:
@@ -2282,11 +2282,11 @@ class GooglePrivacyDlpV2FindingLimits(_messages.Message):
       specified infoTypes.
     maxFindingsPerItem: Max number of findings that will be returned for each
       item scanned. When set within `InspectDataSourceRequest`, the maximum
-      returned is 1000 regardless if this is set higher. When set within
+      returned is 2000 regardless if this is set higher. When set within
       `InspectContentRequest`, this field is ignored.
     maxFindingsPerRequest: Max number of findings that will be returned per
       request/job. When set within `InspectContentRequest`, the maximum
-      returned is 1000 regardless if this is set higher.
+      returned is 2000 regardless if this is set higher.
   """
 
   maxFindingsPerInfoType = _messages.MessageField('GooglePrivacyDlpV2InfoTypeLimit', 1, repeated=True)
@@ -3689,7 +3689,8 @@ class GooglePrivacyDlpV2RequestedOptions(_messages.Message):
 
 
 class GooglePrivacyDlpV2Result(_messages.Message):
-  r"""A GooglePrivacyDlpV2Result object.
+  r"""All result fields mentioned below are updated while the job is
+  processing.
 
   Fields:
     infoTypeStats: Statistics of how many instances of each info type were
@@ -4068,7 +4069,7 @@ class GooglePrivacyDlpV2TransformationOverview(_messages.Message):
 
 
 class GooglePrivacyDlpV2TransformationSummary(_messages.Message):
-  r"""Summary of a single tranformation. Only one of 'transformation',
+  r"""Summary of a single transformation. Only one of 'transformation',
   'field_transformation', or 'record_suppress' will be set.
 
   Fields:
@@ -4123,7 +4124,7 @@ class GooglePrivacyDlpV2UnwrappedCryptoKey(_messages.Message):
   the key. Choose another type of key if possible.
 
   Fields:
-    key: The AES 128/192/256 bit key. [required]
+    key: A 128/192/256/512 bit key. [required]
   """
 
   key = _messages.BytesField(1)

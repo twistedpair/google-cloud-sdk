@@ -120,6 +120,52 @@ def AddBucketLocationArg(parser, required, help_string):
       '--location', required=required, metavar='LOCATION', help=help_string)
 
 
+def GetProjectResource():
+  """Returns the resource for the current project."""
+  return resources.REGISTRY.Parse(
+      properties.VALUES.core.project.Get(required=True),
+      collection='cloudresourcemanager.projects')
+
+
+def GetOrganizationResource(organization):
+  """Returns the resource for the organization.
+
+  Args:
+    organization: organization.
+
+  Returns:
+    The resource.
+  """
+  return resources.REGISTRY.Parse(
+      organization, collection='cloudresourcemanager.organizations')
+
+
+def GetFolderResource(folder):
+  """Returns the resource for the folder.
+
+  Args:
+    folder: folder.
+
+  Returns:
+    The resource.
+  """
+  return folders.FoldersRegistry().Parse(
+      folder, collection='cloudresourcemanager.folders')
+
+
+def GetBillingAccountResource(billing_account):
+  """Returns the resource for the billing_account.
+
+  Args:
+    billing_account: billing account.
+
+  Returns:
+    The resource.
+  """
+  return resources.REGISTRY.Parse(
+      billing_account, collection='cloudbilling.billingAccounts')
+
+
 def GetParentResourceFromArgs(args):
   """Returns the parent resource derived from the given args.
 
@@ -130,21 +176,13 @@ def GetParentResourceFromArgs(args):
     The parent resource.
   """
   if args.organization:
-    return resources.REGISTRY.Parse(
-        args.organization,
-        collection='cloudresourcemanager.organizations')
+    return GetOrganizationResource(args.organization)
   elif args.folder:
-    return folders.FoldersRegistry().Parse(
-        args.folder,
-        collection='cloudresourcemanager.folders')
+    return GetFolderResource(args.folder)
   elif args.billing_account:
-    return resources.REGISTRY.Parse(
-        args.billing_account,
-        collection='cloudbilling.billingAccounts')
+    return GetBillingAccountResource(args.billing_account)
   else:
-    return resources.REGISTRY.Parse(
-        properties.VALUES.core.project.Get(required=True),
-        collection='cloudresourcemanager.projects')
+    return GetProjectResource()
 
 
 def GetParentFromArgs(args):

@@ -130,7 +130,7 @@
           "enumDescriptions": [
             "Unspecified state.  This is only used\/useful for distinguishing\nunset values.",
             "The normal and active state.",
-            "The project has been marked for deletion by the user\n(by invoking DeleteProject)\nor by the system (Google Cloud Platform).\nThis can generally be reversed by invoking UndeleteProject.",
+            "The project has been marked for deletion by the user\n(by invoking\nDeleteProject)\nor by the system (Google Cloud Platform).\nThis can generally be reversed by invoking UndeleteProject.",
             "This lifecycle state is no longer used and is not returned by the API."
           ],
           "type": "string",

@@ -291,10 +291,10 @@ class CloudschedulerProjectsLocationsJobsPatchRequest(_messages.Message):
 
   Fields:
     job: A Job resource to be passed as the request body.
-    name: The job name. For example:
+    name: Optionally caller-specified in CreateJob, after which it becomes
+      output only.  The job name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/jobs/JOB_ID`.  The maximum
-      allowed length for `JOB_ID` is 500 characters. Caller-specified in
-      CreateJobRequest, after which it becomes output only.
+      allowed length for `JOB_ID` is 500 characters.
     updateMask: A  mask used to specify which fields of the job are being
       updated.
   """
@@ -492,14 +492,15 @@ class Job(_messages.Message):
 
   Fields:
     appEngineHttpTarget: App Engine Http target.
-    description: A human-readable description for the job. This string must
-      not contain more than 500 characters.
+    description: Optionally caller-specified in CreateJob or UpdateJob.  A
+      human-readable description for the job. This string must not contain
+      more than 500 characters.
     httpTarget: Http target.
     lastAttemptTime: Output only. The time the last job attempt started.
-    name: The job name. For example:
+    name: Optionally caller-specified in CreateJob, after which it becomes
+      output only.  The job name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/jobs/JOB_ID`.  The maximum
-      allowed length for `JOB_ID` is 500 characters. Caller-specified in
-      CreateJobRequest, after which it becomes output only.
+      allowed length for `JOB_ID` is 500 characters.
     nextScheduleTime: Output only. The next time the job is scheduled. Note
       that this may be a retry of a previously failed attempt or the next
       execution time according to the schedule.

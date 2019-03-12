@@ -261,10 +261,6 @@
           "description": "Configuration for exporting resource usages. Resource usage export is\ndisabled when this config unspecified.",
           "$ref": "ResourceUsageExportConfig"
         },
-        "authenticatorGroupsConfig": {
-          "description": "Configuration controlling RBAC group membership information.",
-          "$ref": "AuthenticatorGroupsConfig"
-        },
         "privateClusterConfig": {
           "description": "Configuration for private cluster.",
           "$ref": "PrivateClusterConfig"
@@ -272,6 +268,14 @@
         "verticalPodAutoscaling": {
           "description": "Cluster-level Vertical Pod Autoscaling configuration.",
           "$ref": "VerticalPodAutoscaling"
+        },
+        "shieldedContainers": {
+          "description": "Shielded Containers configuration.",
+          "$ref": "ShieldedContainers"
+        },
+        "workloadIdentityConfig": {
+          "description": "Configuration for the use of Kubernetes Service Accounts in GCP IAM\npolicies.",
+          "$ref": "WorkloadIdentityConfig"
         },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
@@ -1151,21 +1155,6 @@
         }
       }
     },
-    "AuthenticatorGroupsConfig": {
-      "id": "AuthenticatorGroupsConfig",
-      "description": "Configuration for returning group information from authenticators.",
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "description": "Whether this cluster should return group membership lookups\nduring authentication using a group of security groups.",
-          "type": "boolean"
-        },
-        "securityGroup": {
-          "description": "The name of the security group-of-groups to be used. Only relevant\nif enabled = true.",
-          "type": "string"
-        }
-      }
-    },
     "PrivateClusterConfig": {
       "id": "PrivateClusterConfig",
       "description": "Configuration options for private clusters.",
@@ -1201,6 +1190,28 @@
         "enabled": {
           "description": "Enables vertical pod autoscaling.",
           "type": "boolean"
+        }
+      }
+    },
+    "ShieldedContainers": {
+      "id": "ShieldedContainers",
+      "description": "Configuration of Shielded Containers feature.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether Shielded Containers features are enabled on all nodes in this\ncluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "WorkloadIdentityConfig": {
+      "id": "WorkloadIdentityConfig",
+      "description": "Configuration for the use of Kubernetes Service Accounts in GCP IAM\npolicies.",
+      "type": "object",
+      "properties": {
+        "identityNamespace": {
+          "description": "IAM Identity Namespace to attach all Kubernetes Service Accounts to.",
+          "type": "string"
         }
       }
     },

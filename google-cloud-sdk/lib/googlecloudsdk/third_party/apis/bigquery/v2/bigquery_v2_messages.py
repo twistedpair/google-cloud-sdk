@@ -668,9 +668,13 @@ class Dataset(_messages.Message):
         access to. Maps to IAM policy member "group:GROUP".
       iamMember: [Pick one] Some other type of member that appears in the IAM
         Policy but isn't a user, group, domain, or special group.
-      role: [Required] Describes the rights granted to the user specified by
-        the other member of the access object. The following string values are
-        supported: READER, WRITER, OWNER.
+      role: [Required] An IAM role ID that should be granted to the user,
+        group, or domain specified in this access entry. The following legacy
+        mappings will be applied: OWNER  roles/bigquery.dataOwner WRITER
+        roles/bigquery.dataEditor READER  roles/bigquery.dataViewer This field
+        will accept any of the above formats, but will return only the legacy
+        format. For example, if you set this field to
+        "roles/bigquery.dataOwner", it will be returned back as "OWNER".
       specialGroup: [Pick one] A special group to grant access to. Possible
         values include: projectOwners: Owners of the enclosing project.
         projectReaders: Readers of the enclosing project. projectWriters:
@@ -1858,7 +1862,7 @@ class JobStatistics2(_messages.Message):
       totalBytesProcessed is an estimate and this field specifies the accuracy
       of the estimate. Possible values can be: UNKNOWN: accuracy of the
       estimate is unknown. PRECISE: estimate is precise. LOWER_BOUND: estimate
-      is lower bound of what the query would cost. UPPER_BOUND: estiamte is
+      is lower bound of what the query would cost. UPPER_BOUND: estimate is
       upper bound of what the query would cost.
     totalPartitionsProcessed: [Output-only] Total number of partitions
       processed from all partitioned tables referenced in the job.

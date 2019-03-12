@@ -155,7 +155,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -367,7 +367,7 @@
     },
     "ListTopicSnapshotsResponse": {
       "id": "ListTopicSnapshotsResponse",
-      "description": "Response for the `ListTopicSnapshots` method.<br><br>\n<b>BETA:<\/b> This feature is part of a beta release. This API might be\nchanged in backward-incompatible ways and is not recommended for production\nuse. It is not subject to any SLA or deprecation policy.",
+      "description": "Response for the `ListTopicSnapshots` method.",
       "type": "object",
       "properties": {
         "snapshots": {
@@ -413,11 +413,11 @@
           "format": "int32"
         },
         "retainAckedMessages": {
-          "description": "Indicates whether to retain acknowledged messages. If true, then\nmessages are not expunged from the subscription's backlog, even if they are\nacknowledged, until they fall out of the `message_retention_duration`\nwindow. This must be true if you would like to\n<a href=\"https:\/\/cloud.google.com\/pubsub\/docs\/replay-overview#seek_to_a_time\">\nSeek to a timestamp<\/a>.\n<br><br>\n<b>BETA:<\/b> This feature is part of a beta release. This API might be\nchanged in backward-incompatible ways and is not recommended for production\nuse. It is not subject to any SLA or deprecation policy.",
+          "description": "Indicates whether to retain acknowledged messages. If true, then\nmessages are not expunged from the subscription's backlog, even if they are\nacknowledged, until they fall out of the `message_retention_duration`\nwindow. This must be true if you would like to\n<a href=\"https:\/\/cloud.google.com\/pubsub\/docs\/replay-overview#seek_to_a_time\">\nSeek to a timestamp<\/a>.",
           "type": "boolean"
         },
         "messageRetentionDuration": {
-          "description": "How long to retain unacknowledged messages in the subscription's backlog,\nfrom the moment a message is published.\nIf `retain_acked_messages` is true, then this also configures the retention\nof acknowledged messages, and thus configures how far back in time a `Seek`\ncan be done. Defaults to 7 days. Cannot be more than 7 days or less than 10\nminutes.<br><br>\n<b>BETA:<\/b> This feature is part of a beta release. This API might be\nchanged in backward-incompatible ways and is not recommended for production\nuse. It is not subject to any SLA or deprecation policy.",
+          "description": "How long to retain unacknowledged messages in the subscription's backlog,\nfrom the moment a message is published.\nIf `retain_acked_messages` is true, then this also configures the retention\nof acknowledged messages, and thus configures how far back in time a `Seek`\ncan be done. Defaults to 7 days. Cannot be more than 7 days or less than 10\nminutes.",
           "type": "string",
           "format": "google-duration"
         },
@@ -608,7 +608,7 @@
     },
     "Snapshot": {
       "id": "Snapshot",
-      "description": "A snapshot resource. Snapshots are used in\n<a href=\"https:\/\/cloud.google.com\/pubsub\/docs\/replay-overview\">Seek<\/a>\noperations, which allow\nyou to manage message acknowledgments in bulk. That is, you can set the\nacknowledgment state of messages in an existing subscription to the state\ncaptured by a snapshot.<br><br>\n<b>BETA:<\/b> This feature is part of a beta release. This API might be\nchanged in backward-incompatible ways and is not recommended for production\nuse. It is not subject to any SLA or deprecation policy.",
+      "description": "A snapshot resource. Snapshots are used in\n<a href=\"https:\/\/cloud.google.com\/pubsub\/docs\/replay-overview\">Seek<\/a>\noperations, which allow\nyou to manage message acknowledgments in bulk. That is, you can set the\nacknowledgment state of messages in an existing subscription to the state\ncaptured by a snapshot.",
       "type": "object",
       "properties": {
         "name": {
@@ -635,7 +635,7 @@
     },
     "ListSnapshotsResponse": {
       "id": "ListSnapshotsResponse",
-      "description": "Response for the `ListSnapshots` method.<br><br>\n<b>BETA:<\/b> This feature is part of a beta release. This API might be\nchanged in backward-incompatible ways and is not recommended for production\nuse. It is not subject to any SLA or deprecation policy.",
+      "description": "Response for the `ListSnapshots` method.",
       "type": "object",
       "properties": {
         "snapshots": {
@@ -653,7 +653,7 @@
     },
     "CreateSnapshotRequest": {
       "id": "CreateSnapshotRequest",
-      "description": "Request for the `CreateSnapshot` method.<br><br>\n<b>BETA:<\/b> This feature is part of a beta release. This API might be changed in\nbackward-incompatible ways and is not recommended for production use.\nIt is not subject to any SLA or deprecation policy.",
+      "description": "Request for the `CreateSnapshot` method.",
       "type": "object",
       "properties": {
         "subscription": {
@@ -671,7 +671,7 @@
     },
     "UpdateSnapshotRequest": {
       "id": "UpdateSnapshotRequest",
-      "description": "Request for the UpdateSnapshot method.<br><br>\n<b>BETA:<\/b> This feature is part of a beta release. This API might be\nchanged in backward-incompatible ways and is not recommended for production\nuse. It is not subject to any SLA or deprecation policy.",
+      "description": "Request for the UpdateSnapshot method.",
       "type": "object",
       "properties": {
         "snapshot": {
@@ -687,7 +687,7 @@
     },
     "SeekRequest": {
       "id": "SeekRequest",
-      "description": "Request for the `Seek` method. <br><br>\n<b>BETA:<\/b> This feature is part of a beta release. This API might be\nchanged in backward-incompatible ways and is not recommended for production\nuse. It is not subject to any SLA or deprecation policy.",
+      "description": "Request for the `Seek` method.",
       "type": "object",
       "properties": {
         "time": {
@@ -1055,7 +1055,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/pubsub"
                   ],
-                  "description": "Lists the names of the snapshots on this topic. Snapshots are used in\n<a href=\"https:\/\/cloud.google.com\/pubsub\/docs\/replay-overview\">Seek<\/a>\noperations, which allow\nyou to manage message acknowledgments in bulk. That is, you can set the\nacknowledgment state of messages in an existing subscription to the state\ncaptured by a snapshot.<br><br>\n<b>BETA:<\/b> This feature is part of a beta release. This API might be\nchanged in backward-incompatible ways and is not recommended for production\nuse. It is not subject to any SLA or deprecation policy."
+                  "description": "Lists the names of the snapshots on this topic. Snapshots are used in\n<a href=\"https:\/\/cloud.google.com\/pubsub\/docs\/replay-overview\">Seek<\/a>\noperations, which allow\nyou to manage message acknowledgments in bulk. That is, you can set the\nacknowledgment state of messages in an existing subscription to the state\ncaptured by a snapshot."
                 }
               }
             }
@@ -1437,7 +1437,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/pubsub"
               ],
-              "description": "Seeks an existing subscription to a point in time or to a given snapshot,\nwhichever is provided in the request. Snapshots are used in\n<a href=\"https:\/\/cloud.google.com\/pubsub\/docs\/replay-overview\">Seek<\/a>\noperations, which allow\nyou to manage message acknowledgments in bulk. That is, you can set the\nacknowledgment state of messages in an existing subscription to the state\ncaptured by a snapshot. Note that both the subscription and the snapshot\nmust be on the same topic.<br><br>\n<b>BETA:<\/b> This feature is part of a beta release. This API might be\nchanged in backward-incompatible ways and is not recommended for production\nuse. It is not subject to any SLA or deprecation policy."
+              "description": "Seeks an existing subscription to a point in time or to a given snapshot,\nwhichever is provided in the request. Snapshots are used in\n<a href=\"https:\/\/cloud.google.com\/pubsub\/docs\/replay-overview\">Seek<\/a>\noperations, which allow\nyou to manage message acknowledgments in bulk. That is, you can set the\nacknowledgment state of messages in an existing subscription to the state\ncaptured by a snapshot. Note that both the subscription and the snapshot\nmust be on the same topic."
             }
           }
         },
@@ -1551,7 +1551,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/pubsub"
               ],
-              "description": "Gets the configuration details of a snapshot. Snapshots are used in\n<a href=\"https:\/\/cloud.google.com\/pubsub\/docs\/replay-overview\">Seek<\/a>\noperations, which allow you to manage message acknowledgments in bulk. That\nis, you can set the acknowledgment state of messages in an existing\nsubscription to the state captured by a snapshot.<br><br>\n<b>BETA:<\/b> This feature is part of a beta release. This API might be\nchanged in backward-incompatible ways and is not recommended for production\nuse. It is not subject to any SLA or deprecation policy."
+              "description": "Gets the configuration details of a snapshot. Snapshots are used in\n<a href=\"https:\/\/cloud.google.com\/pubsub\/docs\/replay-overview\">Seek<\/a>\noperations, which allow you to manage message acknowledgments in bulk. That\nis, you can set the acknowledgment state of messages in an existing\nsubscription to the state captured by a snapshot."
             },
             "list": {
               "id": "pubsub.projects.snapshots.list",
@@ -1588,7 +1588,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/pubsub"
               ],
-              "description": "Lists the existing snapshots. Snapshots are used in\n<a href=\"https:\/\/cloud.google.com\/pubsub\/docs\/replay-overview\">Seek<\/a>\noperations, which allow\nyou to manage message acknowledgments in bulk. That is, you can set the\nacknowledgment state of messages in an existing subscription to the state\ncaptured by a snapshot.<br><br>\n<b>BETA:<\/b> This feature is part of a beta release. This API might be\nchanged in backward-incompatible ways and is not recommended for production\nuse. It is not subject to any SLA or deprecation policy."
+              "description": "Lists the existing snapshots. Snapshots are used in\n<a href=\"https:\/\/cloud.google.com\/pubsub\/docs\/replay-overview\">Seek<\/a>\noperations, which allow\nyou to manage message acknowledgments in bulk. That is, you can set the\nacknowledgment state of messages in an existing subscription to the state\ncaptured by a snapshot."
             },
             "create": {
               "id": "pubsub.projects.snapshots.create",
@@ -1617,7 +1617,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/pubsub"
               ],
-              "description": "Creates a snapshot from the requested subscription. Snapshots are used in\n<a href=\"https:\/\/cloud.google.com\/pubsub\/docs\/replay-overview\">Seek<\/a>\noperations, which allow\nyou to manage message acknowledgments in bulk. That is, you can set the\nacknowledgment state of messages in an existing subscription to the state\ncaptured by a snapshot.\n<br><br>\n<b>BETA:<\/b> This feature is part of a beta release. This API might be\nchanged in backward-incompatible ways and is not recommended for production\nuse. It is not subject to any SLA or deprecation policy.<br><br>\nIf the snapshot already exists, returns `ALREADY_EXISTS`.\nIf the requested subscription doesn't exist, returns `NOT_FOUND`.\nIf the backlog in the subscription is too old -- and the resulting snapshot\nwould expire in less than 1 hour -- then `FAILED_PRECONDITION` is returned.\nSee also the `Snapshot.expire_time` field. If the name is not provided in\nthe request, the server will assign a random\nname for this snapshot on the same project as the subscription, conforming\nto the\n[resource name format](https:\/\/cloud.google.com\/pubsub\/docs\/admin#resource_names).\nThe generated name is populated in the returned Snapshot object. Note that\nfor REST API requests, you must specify a name in the request."
+              "description": "Creates a snapshot from the requested subscription. Snapshots are used in\n<a href=\"https:\/\/cloud.google.com\/pubsub\/docs\/replay-overview\">Seek<\/a>\noperations, which allow\nyou to manage message acknowledgments in bulk. That is, you can set the\nacknowledgment state of messages in an existing subscription to the state\ncaptured by a snapshot.\n<br><br>If the snapshot already exists, returns `ALREADY_EXISTS`.\nIf the requested subscription doesn't exist, returns `NOT_FOUND`.\nIf the backlog in the subscription is too old -- and the resulting snapshot\nwould expire in less than 1 hour -- then `FAILED_PRECONDITION` is returned.\nSee also the `Snapshot.expire_time` field. If the name is not provided in\nthe request, the server will assign a random\nname for this snapshot on the same project as the subscription, conforming\nto the\n[resource name format](https:\/\/cloud.google.com\/pubsub\/docs\/admin#resource_names).\nThe generated name is populated in the returned Snapshot object. Note that\nfor REST API requests, you must specify a name in the request."
             },
             "patch": {
               "id": "pubsub.projects.snapshots.patch",
@@ -1646,7 +1646,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/pubsub"
               ],
-              "description": "Updates an existing snapshot. Snapshots are used in\n<a href=\"https:\/\/cloud.google.com\/pubsub\/docs\/replay-overview\">Seek<\/a>\noperations, which allow\nyou to manage message acknowledgments in bulk. That is, you can set the\nacknowledgment state of messages in an existing subscription to the state\ncaptured by a snapshot.<br><br>\n<b>BETA:<\/b> This feature is part of a beta release. This API might be\nchanged in backward-incompatible ways and is not recommended for production\nuse. It is not subject to any SLA or deprecation policy.\nNote that certain properties of a snapshot are not modifiable."
+              "description": "Updates an existing snapshot. Snapshots are used in\n<a href=\"https:\/\/cloud.google.com\/pubsub\/docs\/replay-overview\">Seek<\/a>\noperations, which allow\nyou to manage message acknowledgments in bulk. That is, you can set the\nacknowledgment state of messages in an existing subscription to the state\ncaptured by a snapshot."
             },
             "delete": {
               "id": "pubsub.projects.snapshots.delete",
@@ -1672,7 +1672,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/pubsub"
               ],
-              "description": "Removes an existing snapshot. Snapshots are used in\n<a href=\"https:\/\/cloud.google.com\/pubsub\/docs\/replay-overview\">Seek<\/a>\noperations, which allow\nyou to manage message acknowledgments in bulk. That is, you can set the\nacknowledgment state of messages in an existing subscription to the state\ncaptured by a snapshot.<br><br>\n<b>BETA:<\/b> This feature is part of a beta release. This API might be\nchanged in backward-incompatible ways and is not recommended for production\nuse. It is not subject to any SLA or deprecation policy.\nWhen the snapshot is deleted, all messages retained in the snapshot\nare immediately dropped. After a snapshot is deleted, a new one may be\ncreated with the same name, but the new one has no association with the old\nsnapshot or its subscription, unless the same subscription is specified."
+              "description": "Removes an existing snapshot. Snapshots are used in\n<a href=\"https:\/\/cloud.google.com\/pubsub\/docs\/replay-overview\">Seek<\/a>\noperations, which allow\nyou to manage message acknowledgments in bulk. That is, you can set the\nacknowledgment state of messages in an existing subscription to the state\ncaptured by a snapshot.<br><br>\nWhen the snapshot is deleted, all messages retained in the snapshot\nare immediately dropped. After a snapshot is deleted, a new one may be\ncreated with the same name, but the new one has no association with the old\nsnapshot or its subscription, unless the same subscription is specified."
             }
           }
         }

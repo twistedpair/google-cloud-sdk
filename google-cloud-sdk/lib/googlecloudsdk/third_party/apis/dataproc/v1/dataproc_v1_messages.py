@@ -145,14 +145,15 @@ class ClusterConfig(_messages.Message):
   r"""The cluster config.
 
   Fields:
-    configBucket: Optional. A Cloud Storage staging bucket used for sharing
-      generated SSH keys and config. If you do not specify a staging bucket,
-      Cloud Dataproc will determine an appropriate Cloud Storage location (US,
-      ASIA, or EU) for your cluster's staging bucket according to the Google
-      Compute Engine zone where your cluster is deployed, and then it will
-      create and manage this project-level, per-location bucket for you.
+    configBucket: Optional. A Google Cloud Storage bucket used to stage job
+      dependencies, config files, and job driver console output. If you do not
+      specify a staging bucket, Cloud Dataproc will determine a Cloud Storage
+      location (US, ASIA, or EU) for your cluster's staging bucket according
+      to the Google Compute Engine zone where your cluster is deployed, and
+      then create and manage this project-level, per-location bucket (see
+      Cloud Dataproc staging bucket).
     encryptionConfig: Optional. Encryption settings for the cluster.
-    gceClusterConfig: Required. The shared Compute Engine config settings for
+    gceClusterConfig: Optional. The shared Compute Engine config settings for
       all instances in a cluster.
     initializationActions: Optional. Commands to execute on each node after
       config is completed. By default, executables are run on master and all
@@ -2589,8 +2590,8 @@ class SoftwareConfig(_messages.Message):
 
   Messages:
     PropertiesValue: Optional. The properties to set on daemon config
-      files.Property keys are specified in prefix:property format, such as
-      core:fs.defaultFS. The following are supported prefixes and their
+      files.Property keys are specified in prefix:property format, for example
+      core:hadoop.tmp.dir. The following are supported prefixes and their
       mappings: capacity-scheduler: capacity-scheduler.xml core: core-site.xml
       distcp: distcp-default.xml hdfs: hdfs-site.xml hive: hive-site.xml
       mapred: mapred-site.xml pig: pig.properties spark: spark-defaults.conf
@@ -2604,8 +2605,8 @@ class SoftwareConfig(_messages.Message):
     optionalComponents: The set of optional components to activate on the
       cluster.
     properties: Optional. The properties to set on daemon config
-      files.Property keys are specified in prefix:property format, such as
-      core:fs.defaultFS. The following are supported prefixes and their
+      files.Property keys are specified in prefix:property format, for example
+      core:hadoop.tmp.dir. The following are supported prefixes and their
       mappings: capacity-scheduler: capacity-scheduler.xml core: core-site.xml
       distcp: distcp-default.xml hdfs: hdfs-site.xml hive: hive-site.xml
       mapred: mapred-site.xml pig: pig.properties spark: spark-defaults.conf
@@ -2624,6 +2625,7 @@ class SoftwareConfig(_messages.Message):
       PRESTO: <no description>
       ZEPPELIN: <no description>
       ZOOKEEPER: <no description>
+      DRUID: <no description>
     """
     COMPONENT_UNSPECIFIED = 0
     ANACONDA = 1
@@ -2633,16 +2635,17 @@ class SoftwareConfig(_messages.Message):
     PRESTO = 5
     ZEPPELIN = 6
     ZOOKEEPER = 7
+    DRUID = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
     r"""Optional. The properties to set on daemon config files.Property keys
-    are specified in prefix:property format, such as core:fs.defaultFS. The
-    following are supported prefixes and their mappings: capacity-scheduler:
-    capacity-scheduler.xml core: core-site.xml distcp: distcp-default.xml
-    hdfs: hdfs-site.xml hive: hive-site.xml mapred: mapred-site.xml pig:
-    pig.properties spark: spark-defaults.conf yarn: yarn-site.xmlFor more
-    information, see Cluster properties.
+    are specified in prefix:property format, for example core:hadoop.tmp.dir.
+    The following are supported prefixes and their mappings: capacity-
+    scheduler: capacity-scheduler.xml core: core-site.xml distcp: distcp-
+    default.xml hdfs: hdfs-site.xml hive: hive-site.xml mapred: mapred-
+    site.xml pig: pig.properties spark: spark-defaults.conf yarn: yarn-
+    site.xmlFor more information, see Cluster properties.
 
     Messages:
       AdditionalProperty: An additional property for a PropertiesValue object.

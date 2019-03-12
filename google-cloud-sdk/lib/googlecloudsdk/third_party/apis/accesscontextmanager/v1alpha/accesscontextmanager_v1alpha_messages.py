@@ -98,32 +98,18 @@ class AccessZone(_messages.Message):
     resources: A list of GCP resources that are inside of the access zone.
       Currently only projects are allowed. Format: `projects/{project_number}`
     restrictedServices: GCP services that Access Zone restrictions will be
-      applied to. May contain list of services or a single wildcard "*". Only
-      resources for services matching the restricted_services will be subject
-      to access zone protection. For example, if `storage.googleapis.com` is
-      specified, then storage buckets that belong to the access zone could be
-      accessed through Storage service only if access conditions are met.
-      Wildcard means that unless explicitly specified by
-      "unrestricted_services" list, any service is treated as restricted. One
-      of the fields "restricted_services", "unrestricted_services" must
-      contain a wildcard "*", otherwise the Access Zone specification is
-      invalid. It also means that both field being empty is invalid as well.
-      "restricted_services" can be empty if and only if
-      "unrestricted_services" list contains a "*" wildcard. For bridge access
+      applied to. Must contain list of services. Only resources for services
+      matching the restricted_services will be subject to access zone
+      protection. For example, if `storage.googleapis.com` is specified, then
+      storage buckets that belong to the access zone could be accessed through
+      Storage service only if access conditions are met.  For bridge access
       zones, must be empty.
     title: Human readable title. Must be unique within the Policy.
     unrestrictedServices: GCP services exempt from the Access Zone
-      restrictions. May contain list of services or a single wildcard "*".
-      Services matching the unrestricted_services are excluded from Access
-      Zone restrictions. For example, if `logging.googleapis.com` is
-      unrestricted, users can read logs in projects from anywhere, even though
-      the projects are inside access zone. Wildcard means that unless
-      explicitly specified by "restricted_services" list, any service is
-      treated as unrestricted. One of the fields "restricted_services",
-      "unrestricted_services" must contain a wildcard "*", otherwise the
-      Access Zone specification is invalid. It also means that both field
-      being empty is invalid as well. "unrestricted_services" can be empty if
-      and only if "restricted_services" list contains a "*" wildcard. For
+      restrictions. Deprecated. Must be the single wildcard "*". Services
+      matching the unrestricted_services are excluded from Access Zone
+      restrictions.  Wildcard means that unless explicitly specified by
+      "restricted_services" list, any service is treated as unrestricted.  For
       bridge access zones, must be empty.
     updateTime: Output only. Time the `AccessZone` was updated in UTC.
     zoneType: Zone type indicator. A single project is allowed to be a member
@@ -725,16 +711,12 @@ class OsConstraint(_messages.Message):
       DESKTOP_WINDOWS: A desktop Windows operating system.
       DESKTOP_LINUX: A desktop Linux operating system.
       DESKTOP_CHROME_OS: A desktop ChromeOS operating system.
-      ANDROID: An Android operating system.
-      IOS: An iOS operating system.
     """
     OS_UNSPECIFIED = 0
     DESKTOP_MAC = 1
     DESKTOP_WINDOWS = 2
     DESKTOP_LINUX = 3
     DESKTOP_CHROME_OS = 4
-    ANDROID = 5
-    IOS = 6
 
   minimumVersion = _messages.StringField(1)
   osType = _messages.EnumField('OsTypeValueValuesEnum', 2)

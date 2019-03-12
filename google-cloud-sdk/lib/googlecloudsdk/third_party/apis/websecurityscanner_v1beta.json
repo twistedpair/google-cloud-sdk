@@ -671,6 +671,10 @@
           "description": "Output only.\nThe tracking ID uniquely identifies a vulnerability instance across\nmultiple ScanRuns.\nThis is the public version of TestResult.dna field.",
           "type": "string"
         },
+        "form": {
+          "description": "Output only.\nAn addon containing information reported for a vulnerability with an HTML\nform, if any.",
+          "$ref": "Form"
+        },
         "outdatedLibrary": {
           "description": "Output only.\nAn addon containing information about outdated libraries.",
           "$ref": "OutdatedLibrary"
@@ -690,6 +694,24 @@
         "xss": {
           "description": "Output only.\nAn addon containing information reported for an XSS, if any.",
           "$ref": "Xss"
+        }
+      }
+    },
+    "Form": {
+      "id": "Form",
+      "description": "! Information about a vulnerability with an HTML.",
+      "type": "object",
+      "properties": {
+        "actionUri": {
+          "description": "! The URI where to send the form when it's submitted.",
+          "type": "string"
+        },
+        "fields": {
+          "description": "! The names of form fields related to the vulnerability.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

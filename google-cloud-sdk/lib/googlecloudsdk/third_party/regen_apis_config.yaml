@@ -41,10 +41,10 @@ apis:
       default: false
     v1beta:
       discovery_doc: accesscontextmanager_v1beta.json
-      default: true
+      default: false
     v1:
       discovery_doc: accesscontextmanager_v1.json
-      default: false
+      default: true
   appengine:
     v1alpha:
       discovery_doc: appengine_v1alpha.json

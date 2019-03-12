@@ -40,6 +40,7 @@ device:
 function:
   name: function
   collection: edge.projects.locations.registries.devices.functions
+  request_id_field: function.name
   attributes:
   - *region
   - *registry
@@ -53,6 +54,7 @@ function:
 container:
   name: container
   collection: edge.projects.locations.registries.devices.containers
+  request_id_field: container.name
   attributes:
   - *region
   - *registry
@@ -66,6 +68,7 @@ container:
 mlModel:
   name: ML Model
   collection: edge.projects.locations.registries.devices.mlModels
+  request_id_field: mlModel.name
   attributes:
   - *region
   - *registry

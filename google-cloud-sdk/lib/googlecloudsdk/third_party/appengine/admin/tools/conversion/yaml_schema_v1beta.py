@@ -150,7 +150,7 @@ SCHEMA = s.Message(
     libraries=s.RepeatedField(element=s.Message(
         version=s.Value(converter=c.ToJsonString),
         name=s.Value(converter=c.ToJsonString))),
-    main=s.Value('main_executable_path', converter=c.ToJsonString),
+    main=s.Value('runtime_main_executable_path', converter=c.ToJsonString),
     manual_scaling=s.Message(
         instances=s.Value(converter=c.StringToInt())),
     network=s.Message(

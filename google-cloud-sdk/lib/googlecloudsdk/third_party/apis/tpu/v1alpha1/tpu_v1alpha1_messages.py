@@ -297,6 +297,9 @@ class Node(_messages.Message):
         Nodes.
       TERMINATED: TPU node has been terminated due to maintenance or has
         reached the end of its life cycle (for preemptible nodes).
+      HIDING: TPU node is currently hiding.
+      HIDDEN: TPU node has been hidden.
+      UNHIDING: TPU node is currently unhiding.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -310,6 +313,9 @@ class Node(_messages.Message):
     STARTING = 9
     PREEMPTED = 10
     TERMINATED = 11
+    HIDING = 12
+    HIDDEN = 13
+    UNHIDING = 14
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

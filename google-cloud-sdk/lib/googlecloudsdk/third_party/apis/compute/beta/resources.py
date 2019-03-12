@@ -38,13 +38,6 @@ class Collections(enum.Enum):
       [u'project', u'region', u'address'],
       True
   )
-  ALLOCATIONS = (
-      'allocations',
-      'projects/{project}/zones/{zone}/allocations/{allocation}',
-      {},
-      [u'project', u'zone', u'allocation'],
-      True
-  )
   AUTOSCALERS = (
       'autoscalers',
       'projects/{project}/zones/{zone}/autoscalers/{autoscaler}',
@@ -334,6 +327,13 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}',
       {},
       [u'project', u'region'],
+      True
+  )
+  RESERVATIONS = (
+      'reservations',
+      'projects/{project}/zones/{zone}/reservations/{reservation}',
+      {},
+      [u'project', u'zone', u'reservation'],
       True
   )
   RESOURCEPOLICIES = (

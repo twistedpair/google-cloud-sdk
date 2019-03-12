@@ -220,30 +220,16 @@ Path to Python archives used for training. These can be local paths
 Storage bucket given by `--staging-bucket`, or Cloud Storage URLs
 (`gs://bucket-name/path/to/package.tar.gz`).
 """)
-# As of Alpha/Beta release, the backend service processes this as a string
-# (despite having only 2 valid values). It is a string here since there is no
-# enum validation but can be refactored if that changes before GA.
 MACHINE_TYPE = base.Argument(
     '--machine-type',
     required=False,
+    choices=['mls1-c1-m2', 'mls1-c4-m2'],
     help="""\
 Type of machine on which to serve the model. Currently only applies to
 online prediction. Currently supported machine_types are:
 
 * `mls1-c1-m2` - A virtual machine with 1 core and 2 Gb RAM (default).
 * `mls1-c4-m2` - A virtual machine with 4 core and 2 Gb RAM.
-""")
-ALPHA_MACHINE_TYPE = base.Argument(
-    '--machine-type',
-    required=False,
-    help="""\
-Type of machine on which to serve the model. Currently only applies to
-online prediction. Currently supported machine_types are:
-
-* `mls1-c1-m2` - A virtual machine with 1 core and 2 Gb RAM (default).
-* `mls1-c4-m2` - A virtual machine with 4 core and 2 Gb RAM.
-* `mls1-highmem-1` - A virtual machine with 1 core and 2 Gb RAM (will be deprecated soon).
-* `mls1-highcpu-4` - A virtual machine with 4 core and 2 Gb RAM (will be deprecated soon).
 """)
 
 

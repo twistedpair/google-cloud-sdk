@@ -19,9 +19,12 @@ class AuthorizeEnvironmentRequest(_messages.Message):
   Fields:
     accessToken: The OAuth access token that should be sent to the
       environment.
+    expireTime: The time when the token expires. If not set, defaults to one
+      hour from when the server received the request.
   """
 
   accessToken = _messages.StringField(1)
+  expireTime = _messages.StringField(2)
 
 
 class CloudshellUsersEnvironmentsAuthorizeRequest(_messages.Message):

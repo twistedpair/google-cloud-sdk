@@ -36,6 +36,7 @@ class CloudassetV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.operations = self.OperationsService(self)
+    self.v1 = self.V1Service(self)
 
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
@@ -72,6 +73,79 @@ service.
         relative_path=u'v1/{+name}',
         request_field='',
         request_type_name=u'CloudassetOperationsGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class V1Service(base_api.BaseApiService):
+    """Service class for the v1 resource."""
+
+    _NAME = u'v1'
+
+    def __init__(self, client):
+      super(CloudassetV1.V1Service, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def BatchGetAssetsHistory(self, request, global_params=None):
+      r"""Batch gets the update history of assets that overlap a time window.
+For RESOURCE content, this API outputs history with asset in both
+non-delete or deleted status.
+For IAM_POLICY content, this API outputs history when the asset and its
+attached IAM POLICY both exist. This can create gaps in the output history.
+If a specified asset does not exist, this API returns an INVALID_ARGUMENT
+error.
+
+      Args:
+        request: (CloudassetBatchGetAssetsHistoryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BatchGetAssetsHistoryResponse) The response message.
+      """
+      config = self.GetMethodConfig('BatchGetAssetsHistory')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchGetAssetsHistory.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/{v1Id}/{v1Id1}:batchGetAssetsHistory',
+        http_method=u'GET',
+        method_id=u'cloudasset.batchGetAssetsHistory',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'assetNames', u'contentType', u'readTimeWindow_endTime', u'readTimeWindow_startTime'],
+        relative_path=u'v1/{+parent}:batchGetAssetsHistory',
+        request_field='',
+        request_type_name=u'CloudassetBatchGetAssetsHistoryRequest',
+        response_type_name=u'BatchGetAssetsHistoryResponse',
+        supports_download=False,
+    )
+
+    def ExportAssets(self, request, global_params=None):
+      r"""Exports assets with time and resource types to a given Cloud Storage.
+location. The output format is newline-delimited JSON.
+This API implements the google.longrunning.Operation API allowing you
+to keep track of the export.
+
+      Args:
+        request: (CloudassetExportAssetsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ExportAssets')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExportAssets.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/{v1Id}/{v1Id1}:exportAssets',
+        http_method=u'POST',
+        method_id=u'cloudasset.exportAssets',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1/{+parent}:exportAssets',
+        request_field=u'exportAssetsRequest',
+        request_type_name=u'CloudassetExportAssetsRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

@@ -27,9 +27,14 @@ from googlecloudsdk.core import resources as core_resources
 class Client(object):
   """High-level API client for access context access zones."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or util.GetClient()
+  def __init__(self, client=None, messages=None, version='v1'):
+    self.client = client or util.GetClient(version=version)
     self.messages = messages or self.client.MESSAGES_MODULE
+    self.include_unrestricted_services = {
+        'v1': False,
+        'v1alpha': True,
+        'v1beta': True
+    }[version]
 
   def Get(self, zone_ref):
     return self.client.accessPolicies_servicePerimeters.Get(
@@ -90,7 +95,7 @@ class Client(object):
       update_mask.append('status.resources')
       status.resources = resources
       status_mutated = True
-    if unrestricted_services is not None:
+    if self.include_unrestricted_services and unrestricted_services is not None:
       update_mask.append('status.unrestrictedServices')
       status.unrestrictedServices = unrestricted_services
       status_mutated = True

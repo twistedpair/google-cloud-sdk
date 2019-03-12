@@ -288,10 +288,13 @@ class Color(_messages.Message):
   "java.awt.Color" in Java; it can also be trivially provided to UIColor's
   "+colorWithRed:green:blue:alpha" method in iOS; and, with just a little
   work, it can be easily formatted into a CSS "rgba()" string in JavaScript,
-  as well. Here are some examples:  Example (Java):       import
-  com.google.type.Color;       // ...      public static java.awt.Color
-  fromProto(Color protocolor) {        float alpha = protocolor.hasAlpha()
-  ? protocolor.getAlpha().getValue()            : 1.0;         return new
+  as well.  Note: this proto does not carry information about the absolute
+  color space that should be used to interpret the RGB value (e.g. sRGB, Adobe
+  RGB, DCI-P3, BT.2020, etc.). By default, applications SHOULD assume the sRGB
+  color space.  Example (Java):       import com.google.type.Color;       //
+  ...      public static java.awt.Color fromProto(Color protocolor) {
+  float alpha = protocolor.hasAlpha()            ?
+  protocolor.getAlpha().getValue()            : 1.0;         return new
   java.awt.Color(            protocolor.getRed(),
   protocolor.getGreen(),            protocolor.getBlue(),            alpha);
   }       public static Color toProto(java.awt.Color color) {        float red

@@ -18,7 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from os import linesep
+import os
 import time
 
 from apitools.base.py import exceptions as apitools_exceptions
@@ -157,10 +157,11 @@ DASHBOARD = 'KubernetesDashboard'
 CLOUDRUN = 'CloudRun'
 ISTIO = 'Istio'
 NETWORK_POLICY = 'NetworkPolicy'
+NODELOCALDNS = 'NodeLocalDNS'
 DEFAULT_ADDONS = [INGRESS, HPA]
 ADDONS_OPTIONS = DEFAULT_ADDONS + [DASHBOARD, ISTIO, NETWORK_POLICY]
 BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [CLOUDRUN]
-ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS
+ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS + [NODELOCALDNS]
 
 UNSPECIFIED = 'UNSPECIFIED'
 SECURE = 'SECURE'
@@ -318,6 +319,7 @@ def ExpandScopeURIs(scopes):
 
 
 class CreateClusterOptions(object):
+  """Options to pass to CreateCluster."""
 
   def __init__(self,
                node_machine_type=None,
@@ -398,7 +400,9 @@ class CreateClusterOptions(object):
                security_profile_runtime_rules=None,
                database_encryption=None,
                metadata=None,
-               enable_network_egress_metering=None):
+               enable_network_egress_metering=None,
+               enable_workload_identity=None,
+               enable_shielded_containers=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -478,9 +482,12 @@ class CreateClusterOptions(object):
     self.database_encryption = database_encryption
     self.metadata = metadata
     self.enable_network_egress_metering = enable_network_egress_metering
+    self.enable_workload_identity = enable_workload_identity
+    self.enable_shielded_containers = enable_shielded_containers
 
 
 class UpdateClusterOptions(object):
+  """Options to pass to UpdateCluster."""
 
   def __init__(self,
                version=None,
@@ -553,6 +560,7 @@ class SetNetworkPolicyOptions(object):
 
 
 class CreateNodePoolOptions(object):
+  """Options to pass to CreateNodePool."""
 
   def __init__(self,
                machine_type=None,
@@ -751,11 +759,11 @@ class APIAdapter(object):
         if np.name == pool_name:
           return np
       msg = NO_SUCH_NODE_POOL_ERROR_MSG.format(cluster=cluster.name,
-                                               name=pool_name) + linesep
+                                               name=pool_name) + os.linesep
     elif len(cluster.nodePools) == 1:
       return cluster.nodePools[0]
     # Couldn't find a node pool with that name or a node pool was not specified.
-    msg += NO_NODE_POOL_SELECTED_ERROR_MSG + linesep.join(
+    msg += NO_NODE_POOL_SELECTED_ERROR_MSG + os.linesep.join(
         [np.name for np in cluster.nodePools])
     raise util.Error(msg)
 
@@ -845,7 +853,9 @@ class APIAdapter(object):
           disable_hpa=HPA not in options.addons,
           disable_dashboard=DASHBOARD not in options.addons,
           disable_network_policy=(
-              NETWORK_POLICY not in options.addons))
+              NETWORK_POLICY not in options.addons),
+          enable_node_local_dns=(NODELOCALDNS in options.addons),
+          )
       cluster.addonsConfig = addons
 
     self.ParseMasterAuthorizedNetworkOptions(options, cluster)
@@ -892,6 +902,9 @@ class APIAdapter(object):
           self.messages.AuthenticatorGroupsConfig(
               enabled=True,
               securityGroup=options.security_group))
+    if options.enable_shielded_containers:
+      cluster.shieldedContainers = self.messages.ShieldedContainers(
+          enabled=True)
 
     self.ParseIPAliasOptions(options, cluster)
     self.ParseAllowRouteOverlapOptions(options, cluster)
@@ -1355,7 +1368,8 @@ class APIAdapter(object):
                     disable_ingress=None,
                     disable_hpa=None,
                     disable_dashboard=None,
-                    disable_network_policy=None):
+                    disable_network_policy=None,
+                    enable_node_local_dns=None):
     """Generates an AddonsConfig object given specific parameters.
 
     Args:
@@ -1363,6 +1377,7 @@ class APIAdapter(object):
       disable_hpa: whether to disable the horizontal pod autoscaling controller.
       disable_dashboard: whether to disable the Kuberntes Dashboard.
       disable_network_policy: whether to disable NetworkPolicy enforcement.
+      enable_node_local_dns: whether to enable NodeLocalDNS cache.
 
     Returns:
       An AddonsConfig object that contains the options defining what addons to
@@ -1382,6 +1397,9 @@ class APIAdapter(object):
     if disable_network_policy is not None:
       addons.networkPolicyConfig = self.messages.NetworkPolicyConfig(
           disabled=disable_network_policy)
+    if enable_node_local_dns:
+      addons.dnsCacheConfig = self.messages.DnsCacheConfig(
+          enabled=True)
     return addons
 
   def _AddLocalSSDVolumeConfigsToNodeConfig(self, node_config, options):
@@ -1933,6 +1951,9 @@ class V1Beta1Adapter(V1Adapter):
       cluster.databaseEncryption = self.messages.DatabaseEncryption(
           keyName=options.database_encryption,
           state=self.messages.DatabaseEncryption.StateValueValuesEnum.ENCRYPTED)
+    if options.enable_workload_identity:
+      cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
+          identityNamespace='{}.svc.id.goog'.format(cluster_ref.projectId))
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)
@@ -2126,6 +2147,9 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           federatingServiceAccount=options.federating_service_account)
     elif options.federating_service_account is not None:
       raise util.Error(ENABLE_MPI_EMPTY_ERROR_MSG)
+    if options.enable_workload_identity:
+      cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
+          identityNamespace='{}.svc.id.goog'.format(cluster_ref.projectId))
     if options.security_profile is not None:
       cluster.securityProfile = self.messages.SecurityProfile(
           name=options.security_profile)
@@ -2289,6 +2313,7 @@ def _AddNodeLabelsToNodeConfig(node_config, options):
 
 
 def _AddWorkloadMetadataToNodeConfig(node_config, options, messages):
+  """Adds WorkLoadMetadata to NodeConfig."""
   if options.workload_metadata_from_node:
     option = options.workload_metadata_from_node
     if option == UNSPECIFIED:

@@ -281,6 +281,11 @@
         "accessToken": {
           "description": "The OAuth access token that should be sent to the environment.",
           "type": "string"
+        },
+        "expireTime": {
+          "description": "The time when the token expires. If not set, defaults to one hour from when\nthe server received the request.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

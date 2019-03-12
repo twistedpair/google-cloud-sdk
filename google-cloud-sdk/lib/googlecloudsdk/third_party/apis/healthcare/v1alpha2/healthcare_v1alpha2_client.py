@@ -985,6 +985,34 @@ http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.7
         supports_download=False,
     )
 
+    def SearchForStudies(self, request, global_params=None):
+      r"""SearchForStudies returns a list of matching studies. See.
+http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.7
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebSearchForStudiesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('SearchForStudies')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchForStudies.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies',
+        http_method=u'GET',
+        method_id=u'healthcare.projects.locations.datasets.dicomStores.dicomWeb.searchForStudies',
+        ordered_params=[u'parent', u'dicomWebPath'],
+        path_params=[u'dicomWebPath', u'parent'],
+        query_params=[],
+        relative_path=u'v1alpha2/{+parent}/dicomWeb/{+dicomWebPath}',
+        request_field='',
+        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresDicomWebSearchForStudiesRequest',
+        response_type_name=u'HttpBody',
+        supports_download=False,
+    )
+
     def Series(self, request, global_params=None):
       r"""SearchForSeries returns a list of matching series. See.
 http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.7
@@ -1244,7 +1272,7 @@ OperationMetadata.
         method_id=u'healthcare.projects.locations.datasets.dicomStores.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
         relative_path=u'v1alpha2/{+parent}/dicomStores',
         request_field='',
         request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresListRequest',
@@ -1481,6 +1509,7 @@ deleted versions) from the FHIR store.
 
     def ConditionalDeleteResource(self, request, global_params=None):
       r"""Deletes FHIR resources matching a search query.
+
 Note: unless resource versioning is disabled by setting the
 disable_resource_versioning flag
 on the FHIR store, the deleted resources will be moved to a history
@@ -1597,6 +1626,7 @@ search criteria specified via query parameters.
 
     def Delete(self, request, global_params=None):
       r"""Deletes a FHIR resource.
+
 Note: unless resource versioning is disabled by setting the
 disable_resource_versioning flag
 on the FHIR store, the deleted resources will be moved to a history
@@ -1631,7 +1661,7 @@ method.
     def Delete_purge(self, request, global_params=None):
       r"""Deletes all the historical versions of a resource (excluding current.
 version) from the FHIR store. To remove all versions of a resource, first
-delete the current version and call this API.
+delete the current version and call this method.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresFhirDeletePurgeRequest) input message
@@ -1685,7 +1715,8 @@ delete the current version and call this API.
     )
 
     def GetMetadata(self, request, global_params=None):
-      r"""Gets the capabilities statement for the store.
+      r"""Gets the FHIR capability statement for the store, which contains a.
+description of functionality supported by the server.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresFhirGetMetadataRequest) input message
@@ -1907,8 +1938,7 @@ Authorization requires the Google IAM permission
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the FHIR store and removes all resources that are contained within.
-it.
+      r"""Deletes the specified FHIR store and removes all resources within it.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresDeleteRequest) input message
@@ -1936,14 +1966,18 @@ it.
 
     def Export(self, request, global_params=None):
       r"""Export resources from the FHIR store to the specified destination.
-Fatal errors will be populated in the
+
+This method returns an Operation that can
+be used to track the status of the export by calling
+GetOperation.
+
+Immediate fatal errors appear in the
 error field.
-Otherwise a detailed response will be returned as of type
-ExportResourcesResponse contained in the
-response field when the operation
-finishes.
-The metadata field type is
-OperationMetadata.
+Otherwise, when the operation finishes, a detailed response of type
+ExportResourcesResponse is returned in the
+response field.
+The metadata field type for this
+operation is OperationMetadata.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresExportRequest) input message
@@ -1970,9 +2004,7 @@ OperationMetadata.
     )
 
     def Fhir(self, request, global_params=None):
-      r"""Executes all the requests in the given Bundle.  Conforms to.
-http://hl7.org/fhir/http.html#transaction except that only the transaction
-update is supported.
+      r"""Executes all the requests in the given Bundle.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresFhirRequest) input message
@@ -1999,7 +2031,7 @@ update is supported.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the specified FHIR store.
+      r"""Gets the configuration of the specified FHIR store.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresGetRequest) input message
@@ -2059,7 +2091,8 @@ Authorization requires the Google IAM permission
     )
 
     def GetMetadata(self, request, global_params=None):
-      r"""Gets the capabilities statement for the store.
+      r"""Gets the FHIR capability statement for the store, which contains a.
+description of functionality supported by the server.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresGetMetadataRequest) input message
@@ -2088,14 +2121,18 @@ Authorization requires the Google IAM permission
     def Import(self, request, global_params=None):
       r"""Import resources to the FHIR store by loading data from the specified.
 sources.
-Fatal errors will be populated in the
+
+This method returns an Operation that can
+be used to track the status of the import by calling
+GetOperation.
+
+Immediate fatal errors appear in the
 error field.
-Otherwise a detailed response will be returned as of type
-ImportResourcesResponse contained in the
-response field when the operation
-finishes.
-The metadata field type is
-OperationMetadata.
+Otherwise, when the operation finishes, a detailed response of type
+ImportResourcesResponse is returned in the
+response field.
+The metadata field type for this
+operation is OperationMetadata.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresImportRequest) input message
@@ -2140,7 +2177,7 @@ OperationMetadata.
         method_id=u'healthcare.projects.locations.datasets.fhirStores.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
         relative_path=u'v1alpha2/{+parent}/fhirStores',
         request_field='',
         request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresListRequest',
@@ -2149,7 +2186,7 @@ OperationMetadata.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the FHIR store.
+      r"""Updates the configuration of the specified FHIR store.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresPatchRequest) input message
@@ -2559,7 +2596,7 @@ set.
         method_id=u'healthcare.projects.locations.datasets.hl7V2Stores.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
         relative_path=u'v1alpha2/{+parent}/hl7V2Stores',
         request_field='',
         request_type_name=u'HealthcareProjectsLocationsDatasetsHl7V2StoresListRequest',

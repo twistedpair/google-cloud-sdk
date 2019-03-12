@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager V2Beta",
  "version": "v2beta",
- "revision": "20190208",
+ "revision": "20190304",
  "title": "Google Cloud Deployment Manager API V2Beta Methods",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -204,7 +204,7 @@
     },
     "members": {
      "type": "array",
-     "description": "Specifies the identities requesting access for a Cloud Platform resource. `members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@gmail.com` .\n\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`.\n\n\n\n* `domain:{domain}`: A Google Apps domain name that represents all the users of that domain. For example, `google.com` or `example.com`.",
+     "description": "Specifies the identities requesting access for a Cloud Platform resource. `members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@gmail.com` .\n\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`.\n\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`.",
      "items": {
       "type": "string"
      }
@@ -249,7 +249,7 @@
     },
     "labels": {
      "type": "array",
-     "description": "Map of labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?",
+     "description": "Map of labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)? TODO(b/124441274): clean up label after migration to op is complete",
      "items": {
       "$ref": "CompositeTypeLabelEntry"
      }
@@ -278,15 +278,12 @@
   "CompositeTypeLabelEntry": {
    "id": "CompositeTypeLabelEntry",
    "type": "object",
-   "description": "Label object for CompositeTypes",
    "properties": {
     "key": {
-     "type": "string",
-     "description": "Key of the label"
+     "type": "string"
     },
     "value": {
-     "type": "string",
-     "description": "Value of the label"
+     "type": "string"
     }
    }
   },
@@ -392,7 +389,7 @@
     },
     "labels": {
      "type": "array",
-     "description": "Map of One Platform labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?",
+     "description": "Map of labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)? TODO(b/124441274): clean up label after migration to op is complete",
      "items": {
       "$ref": "DeploymentLabelEntry"
      }
@@ -430,15 +427,12 @@
   "DeploymentLabelEntry": {
    "id": "DeploymentLabelEntry",
    "type": "object",
-   "description": "Label object for Deployments",
    "properties": {
     "key": {
-     "type": "string",
-     "description": "Key of the label"
+     "type": "string"
     },
     "value": {
-     "type": "string",
-     "description": "Value of the label"
+     "type": "string"
     }
    }
   },
@@ -453,7 +447,7 @@
     },
     "labels": {
      "type": "array",
-     "description": "Map of One Platform labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?",
+     "description": "Output only. Map of labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)? TODO(b/124441274): clean up label after migration to op is complete",
      "items": {
       "$ref": "DeploymentUpdateLabelEntry"
      }
@@ -467,15 +461,12 @@
   "DeploymentUpdateLabelEntry": {
    "id": "DeploymentUpdateLabelEntry",
    "type": "object",
-   "description": "Label object for DeploymentUpdate",
    "properties": {
     "key": {
-     "type": "string",
-     "description": "Key of the label"
+     "type": "string"
     },
     "value": {
-     "type": "string",
-     "description": "Value of the label"
+     "type": "string"
     }
    }
   },
@@ -1379,7 +1370,7 @@
     },
     "labels": {
      "type": "array",
-     "description": "Map of One Platform labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?",
+     "description": "Map of labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)? TODO(b/124441274): clean up label after migration to op is complete",
      "items": {
       "$ref": "TypeLabelEntry"
      }
@@ -1451,15 +1442,12 @@
   "TypeLabelEntry": {
    "id": "TypeLabelEntry",
    "type": "object",
-   "description": "Label object for Types",
    "properties": {
     "key": {
-     "type": "string",
-     "description": "Key of the label"
+     "type": "string"
     },
     "value": {
-     "type": "string",
-     "description": "Value of the label"
+     "type": "string"
     }
    }
   },
@@ -1498,7 +1486,7 @@
     },
     "labels": {
      "type": "array",
-     "description": "Map of One Platform labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?",
+     "description": "Map of labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)? TODO(b/124441274): clean up label after migration to op is complete",
      "items": {
       "$ref": "TypeProviderLabelEntry"
      }
@@ -1524,15 +1512,12 @@
   "TypeProviderLabelEntry": {
    "id": "TypeProviderLabelEntry",
    "type": "object",
-   "description": "Label object for TypeProviders",
    "properties": {
     "key": {
-     "type": "string",
-     "description": "Key of the label"
+     "type": "string"
     },
     "value": {
-     "type": "string",
-     "description": "Value of the label"
+     "type": "string"
     }
    }
   },

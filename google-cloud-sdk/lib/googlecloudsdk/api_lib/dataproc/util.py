@@ -30,6 +30,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.export import util as export_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import yaml_validator
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
@@ -528,10 +529,14 @@ def ReadAutoscalingPolicy(dataproc, policy_id, policy_file_name=None):
   data = console_io.ReadFromFileOrStdin(policy_file_name or '-', binary=False)
   schema_path = export_util.GetSchemaPath(
       'dataproc', dataproc.api_version, 'AutoscalingPolicy', for_help=False)
-  policy = export_util.Import(
-      message_type=dataproc.messages.AutoscalingPolicy,
-      stream=data,
-      schema_path=schema_path)
+
+  try:
+    policy = export_util.Import(
+        message_type=dataproc.messages.AutoscalingPolicy,
+        stream=data,
+        schema_path=schema_path)
+  except yaml_validator.ValidationError as e:
+    raise exceptions.ValidationError(e.message)
 
   # Ignore user set id in the file (if any), and overwrite with the policy_ref
   # provided with this command
@@ -542,12 +547,14 @@ def ReadAutoscalingPolicy(dataproc, policy_id, policy_file_name=None):
   policy.name = None
 
   # Set duration fields to their seconds values
-  policy.basicAlgorithm.cooldownPeriod = str(
-      arg_parsers.Duration(lower_bound='2m', upper_bound='1d')(
-          policy.basicAlgorithm.cooldownPeriod)) + 's'
-  policy.basicAlgorithm.yarnConfig.gracefulDecommissionTimeout = str(
-      arg_parsers.Duration(lower_bound='0s', upper_bound='1d')(
-          policy.basicAlgorithm.yarnConfig.gracefulDecommissionTimeout)) + 's'
+  if policy.basicAlgorithm.cooldownPeriod is not None:
+    policy.basicAlgorithm.cooldownPeriod = str(
+        arg_parsers.Duration(lower_bound='2m', upper_bound='1d')(
+            policy.basicAlgorithm.cooldownPeriod)) + 's'
+  if policy.basicAlgorithm.yarnConfig.gracefulDecommissionTimeout is not None:
+    policy.basicAlgorithm.yarnConfig.gracefulDecommissionTimeout = str(
+        arg_parsers.Duration(lower_bound='0s', upper_bound='1d')(
+            policy.basicAlgorithm.yarnConfig.gracefulDecommissionTimeout)) + 's'
 
   return policy
 

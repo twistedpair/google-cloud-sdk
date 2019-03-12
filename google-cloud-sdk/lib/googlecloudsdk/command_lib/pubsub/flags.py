@@ -137,11 +137,26 @@ def AddPullFlags(parser, add_deprecated=False, add_wait=False):
              'subscription, if there are none.')
 
 
-def AddPushEndpointFlag(parser, required=False):
+def AddPushConfigFlags(parser, track, required=False):
+  """Adds flags for push subscriptions to the parser."""
   parser.add_argument(
       '--push-endpoint', required=required,
       help='A URL to use as the endpoint for this subscription. This will '
            'also automatically set the subscription type to PUSH.')
+  if track in [base.ReleaseTrack.ALPHA]:
+    parser.add_argument(
+        '--push-auth-service-account',
+        required=False,
+        dest='SERVICE_ACCOUNT_EMAIL',
+        help='Service account email used as the identity for the generated '
+        'Open ID Connect token for authenticated push.')
+    parser.add_argument(
+        '--push-auth-token-audience',
+        required=False,
+        dest='OPTIONAL_AUDIENCE_OVERRIDE',
+        help='Audience used in the generated Open ID Connect token for '
+        'authenticated push. If not specified, it will be set to the '
+        'push-endpoint.')
 
 
 def AddAckDeadlineFlag(parser, required=False):
@@ -211,7 +226,7 @@ def ParseExpirationPeriodWithNeverSentinel(value):
 
 def AddSubscriptionSettingsFlags(parser, track, is_update=False):
   AddAckDeadlineFlag(parser)
-  AddPushEndpointFlag(parser)
+  AddPushConfigFlags(parser, track)
   AddMessageRetentionFlags(parser, is_update)
   if track in [base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA]:
     parser.add_argument(

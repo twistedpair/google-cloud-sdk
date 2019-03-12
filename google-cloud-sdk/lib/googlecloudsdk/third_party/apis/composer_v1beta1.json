@@ -278,6 +278,10 @@
           "description": "The configuration used for the Kubernetes Engine cluster.",
           "$ref": "NodeConfig"
         },
+        "privateEnvironmentConfig": {
+          "description": "The configuration used for the private Composer environment.",
+          "$ref": "PrivateEnvironmentConfig"
+        },
         "airflowUri": {
           "description": "Output only.\nThe URI of the Apache Airflow Web UI hosted within this environment (see\n[Airflow web interface](\/composer\/docs\/how-to\/accessing\/airflow-web-interface)).",
           "type": "string"
@@ -363,6 +367,67 @@
           "items": {
             "type": "string"
           }
+        },
+        "ipAllocationPolicy": {
+          "description": "Optional. The IPAllocationPolicy fields for the GKE cluster.",
+          "$ref": "IPAllocationPolicy"
+        }
+      }
+    },
+    "IPAllocationPolicy": {
+      "id": "IPAllocationPolicy",
+      "description": "Configuration for controlling how IPs are allocated in the\nGKE cluster.",
+      "type": "object",
+      "properties": {
+        "useIpAliases": {
+          "description": "Optional. Whether or not to enable Alias IPs in the GKE cluster.\nIf true or if left blank, a VPC-native cluster is created.",
+          "type": "boolean"
+        },
+        "clusterSecondaryRangeName": {
+          "description": "Optional. The name of the cluster's secondary range used to allocate\nIP addresses to pods. Specify either `cluster_secondary_range_name`\nor `cluster_ipv4_cidr_block` but not both.",
+          "type": "string"
+        },
+        "servicesSecondaryRangeName": {
+          "description": "Optional. The name of the services' secondary range used to allocate\nIP addresses to the cluster. Specify either `services_secondary_range_name`\nor `services_ipv4_cidr_block` but not both.",
+          "type": "string"
+        },
+        "clusterIpv4CidrBlock": {
+          "description": "Optional. The IP address range used to allocate IP addresses to pods in\nthe cluster.\n\nThis field is applicable only when `use_ip_aliases` is true.\n\nSet to blank to have GKE choose a range with the default size.\n\nSet to \/netmask (e.g. `\/14`) to have GKE choose a range with a specific\nnetmask.\n\nSet to a\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.\nSpecify `cluster_secondary_range_name` or `cluster_ipv4_cidr_block`\nbut not both.",
+          "type": "string"
+        },
+        "servicesIpv4CidrBlock": {
+          "description": "Optional. The IP address range of the services IP addresses in this\ncluster.\n\nThis field is applicable only when `use_ip_aliases` is true.\n\nSet to blank to have GKE choose a range with the default size.\n\nSet to \/netmask (e.g. `\/14`) to have GKE choose a range with a specific\nnetmask.\n\nSet to a\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.\nSpecify `services_secondary_range_name` or `services_ipv4_cidr_block`\nbut not both.",
+          "type": "string"
+        }
+      }
+    },
+    "PrivateEnvironmentConfig": {
+      "id": "PrivateEnvironmentConfig",
+      "description": "The configuration information for configuring a private Composer environment.",
+      "type": "object",
+      "properties": {
+        "enablePrivateEnvironment": {
+          "description": "Optional. If `true`, a private Composer environment is created.",
+          "type": "boolean"
+        },
+        "privateClusterConfig": {
+          "description": "Optional. Configuration for private cluster for a private Composer\nenvironment.",
+          "$ref": "PrivateClusterConfig"
+        }
+      }
+    },
+    "PrivateClusterConfig": {
+      "id": "PrivateClusterConfig",
+      "description": "Configuration options for private cluster of Composer environment.",
+      "type": "object",
+      "properties": {
+        "enablePrivateEndpoint": {
+          "description": "Optional. If true, access to public endpoint of gke cluster will be denied.\n`IPAllocationPolicy.use_ip_aliases` must be true if this field is\nset to true. Default value is false.",
+          "type": "boolean"
+        },
+        "masterIpv4CidrBlock": {
+          "description": "The IP range in CIDR notation to use for the hosted master network. This\nrange will be used for assigning internal IP addresses to the cluster\nmaster or set of masters, as well as the ILB VIP (Internal Load Balance\nVirtual IP).This range must not overlap with any other ranges in use\nwithin the cluster's network. If left blank, default value of\n'172.16.0.0\/28' will be used.",
+          "type": "string"
         }
       }
     },

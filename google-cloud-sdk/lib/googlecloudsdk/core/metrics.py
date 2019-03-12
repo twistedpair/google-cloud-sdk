@@ -82,8 +82,48 @@ class _GAEvent(object):
     self.custom_dimensions = kwargs
 
 
-def _GetTimeMillis(time_secs=None):
+def GetTimeMillis(time_secs=None):
   return int(round((time_secs or time.time()) * 1000))
+
+
+def _GenerateCID(uuid_path):
+  cid = uuid.uuid4().hex  # A random UUID
+  files.MakeDir(os.path.dirname(uuid_path))
+  files.WriteFileContents(uuid_path, cid)
+  return cid
+
+
+def GetCID():
+  """Gets the client id from the config file, or generates a new one.
+
+  Returns:
+    str, The hex string of the client id.
+  """
+  uuid_path = config.Paths().analytics_cid_path
+  try:
+    cid = files.ReadFileContents(uuid_path)
+    if cid:
+      return cid
+  except files.Error:
+    pass
+  return _GenerateCID(uuid_path)
+
+
+def GetUserAgent(current_platform=None):
+  """Constructs a user agent string from config and platform fragments.
+
+  Args:
+    current_platform: Optional platforms.Platform for pulling
+      platform-specific user agent details.
+
+  Returns:
+    str, The user agent for the current client.
+  """
+  current_platform = current_platform or platforms.Platform.Current()
+
+  return 'CloudSDK/{version} {fragment}'.format(
+      version=config.CLOUD_SDK_VERSION,
+      fragment=current_platform.UserAgentFragment())
 
 
 class _TimedEvent(object):
@@ -116,7 +156,7 @@ class _CommandTimer(object):
     return self.__action
 
   def Event(self, name, event_time=None):
-    time_millis = _GetTimeMillis(event_time)
+    time_millis = GetTimeMillis(event_time)
 
     if name is _START_EVENT:
       self.__start = time_millis
@@ -270,13 +310,13 @@ class _MetricsCollector(object):
               Defaults to _GA_TID.
     """
     current_platform = platforms.Platform.Current()
-    self._user_agent = _MetricsCollector._GetUserAgent(current_platform)
+    self._user_agent = GetUserAgent(current_platform)
     self._async_popen_args = current_platform.AsyncPopenArgs()
     self._project_ids = {}
 
     hostname = socket.gethostname()
     install_type = 'Google' if hostname.endswith('.google.com') else 'External'
-    cid = _MetricsCollector._GetCID()
+    cid = GetCID()
 
     # Table of common params to send to both GA and CSI.
     # First column is GA name, second column is CSI name, third is the value.
@@ -347,42 +387,6 @@ class _MetricsCollector(object):
     self._action_level = 0
 
     log.debug('Metrics collector initialized...')
-
-  @staticmethod
-  def _GetCID():
-    """Gets the client id from the config file, or generates a new one.
-
-    Returns:
-      str, The hex string of the client id.
-    """
-    uuid_path = config.Paths().analytics_cid_path
-    cid = None
-    if os.path.exists(uuid_path):
-      cid = files.ReadFileContents(uuid_path)
-      if cid:
-        return cid
-
-    cid = uuid.uuid4().hex  # A random UUID
-    files.MakeDir(os.path.dirname(uuid_path))
-    files.WriteFileContents(uuid_path, cid)
-    return cid
-
-  @staticmethod
-  def _GetUserAgent(current_platform=None):
-    """Constructs a user agent string from config and platform fragments.
-
-    Args:
-      current_platform: Optional platforms.Platform for pulling
-        platform-specific user agent details.
-
-    Returns:
-      str, The user agent for the current client.
-    """
-    current_platform = current_platform or platforms.Platform.Current()
-
-    return 'CloudSDK/{version} {fragment}'.format(
-        version=config.CLOUD_SDK_VERSION,
-        fragment=current_platform.UserAgentFragment())
 
   def IncrementActionLevel(self):
     self._action_level += 1
@@ -478,12 +482,12 @@ class _MetricsCollector(object):
         self._clearcut_concord_event_metadata)
     concord_event[_CLEARCUT_EVENT_METADATA_KEY].extend(event_metadata)  # pytype: disable=attribute-error
     self._clearcut_concord_timed_events.append((concord_event,
-                                                _GetTimeMillis()))
+                                                GetTimeMillis()))
 
   def CollectClearcutMetric(self):
     """Collect the required clearcut HTTP beacon."""
     clearcut_request = dict(self._clearcut_request_params)
-    clearcut_request['request_time_ms'] = _GetTimeMillis()
+    clearcut_request['request_time_ms'] = GetTimeMillis()
 
     event_latency, sub_event_latencies = self._timer.GetClearcutParams()
     command_latency_set = False
@@ -656,7 +660,7 @@ def GetCIDIfMetricsEnabled():
     # We directly set an environment variable with the return value of this
     # function, and so return the empty string rather than None.
     return ''
-  return _MetricsCollector._GetCID()
+  return GetCID()
   # pylint: enable=protected-access
 
 
@@ -668,7 +672,7 @@ def GetUserAgentIfMetricsEnabled():
   """
   # pylint: disable=protected-access
   if not _MetricsCollector._IsDisabled():
-    return _MetricsCollector._GetUserAgent()
+    return GetUserAgent()
   return None
   # pylint: enable=protected-access
 
@@ -872,7 +876,7 @@ def RPCDuration(duration_in_secs):
   """
   collector = _MetricsCollector.GetCollector()
   if collector:
-    collector.RecordRPCDuration(_GetTimeMillis(duration_in_secs))
+    collector.RecordRPCDuration(GetTimeMillis(duration_in_secs))
 
 
 @CaptureAndLogException

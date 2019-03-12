@@ -32,7 +32,19 @@ from googlecloudsdk.core import resources
 REGISTRY = resources.REGISTRY
 
 
-def AddAccessLevels(ref, args, req):
+def AddAccessLevelsGA(ref, args, req):
+  return AddAccessLevelsBase(ref, args, req, version='v1')
+
+
+def AddAccessLevelsBeta(ref, args, req):
+  return AddAccessLevelsBase(ref, args, req, version='v1beta')
+
+
+def AddAccessLevelsAlpha(ref, args, req):
+  return AddAccessLevelsBase(ref, args, req, version='v1alpha')
+
+
+def AddAccessLevelsBase(ref, args, req, version=None):
   """Hook to add access levels to request."""
   if args.IsSpecified('access_levels'):
     access_levels = []
@@ -44,19 +56,14 @@ def AddAccessLevels(ref, args, req):
     service_perimeter_config = req.servicePerimeter.status
     if not service_perimeter_config:
       service_perimeter_config = (
-          util.GetMessages(version='v1beta').ServicePerimeterConfig)
+          util.GetMessages(version=version).ServicePerimeterConfig)
     service_perimeter_config.accessLevels = access_levels
     req.servicePerimeter.status = service_perimeter_config
   return req
 
 
-def AddImplicitServiceWildcard(ref, args, req):
-  """Add an implicit wildcard for services if they are modified.
-
-  If either restricted services or unrestricted services is given, the other
-  must also be provided as a wildcard (`*`).
-
-  If neither is given, this is a no-op.
+def AddImplicitUnrestrictedServiceWildcard(ref, args, req):
+  """Add wildcard for unrestricted services to message.
 
   Args:
     ref: resources.Resource, the (unused) resource
@@ -66,15 +73,12 @@ def AddImplicitServiceWildcard(ref, args, req):
   Returns:
     The modified request.
   """
-  del ref  # Unused in AddImplicitServiceWildcard
+  del ref, args  # Unused in AddImplicitServiceWildcard
   service_perimeter_config = req.servicePerimeter.status
   if not service_perimeter_config:
     service_perimeter_config = util.GetMessages(
         version='v1beta').ServicePerimeterConfig
-  if args.IsSpecified('restricted_services'):
-    service_perimeter_config.unrestrictedServices = ['*']
-  elif args.IsSpecified('unrestricted_services'):
-    service_perimeter_config.restrictedServices = ['*']
+  service_perimeter_config.unrestrictedServices = ['*']
   req.servicePerimeter.status = service_perimeter_config
   return req
 
@@ -104,14 +108,15 @@ def AddResourceArg(parser, verb):
   concept_parsers.ConceptParser.ForResource(
       'perimeter',
       _GetResourceSpec(),
-      'The service perimemter {}.'.format(verb),
+      'The service perimeter {}.'.format(verb),
       required=True).AddToParser(parser)
 
 
-def GetTypeEnumMapper():
+def GetTypeEnumMapper(version=None):
   return arg_utils.ChoiceEnumMapper(
       '--type',
-      util.GetMessages().ServicePerimeter.PerimeterTypeValueValuesEnum,
+      util.GetMessages(
+          version=version).ServicePerimeter.PerimeterTypeValueValuesEnum,
       custom_mappings={
           'PERIMETER_TYPE_REGULAR': 'regular',
           'PERIMETER_TYPE_BRIDGE': 'bridge'
@@ -133,17 +138,16 @@ def GetTypeEnumMapper():
   )
 
 
-def AddPerimeterUpdateArgs(parser):
+def AddPerimeterUpdateArgs(parser, version=None):
   """Add args for perimeters update command."""
   args = [
       common.GetDescriptionArg('service perimeter'),
       common.GetTitleArg('service perimeter'),
-      GetTypeEnumMapper().choice_arg
+      GetTypeEnumMapper(version=version).choice_arg
   ]
   for arg in args:
     arg.AddToParser(parser)
   _AddResources(parser)
-  _AddUnrestrictedServices(parser)
   _AddRestrictedServices(parser)
   _AddLevelsUpdate(parser)
 
@@ -163,27 +167,6 @@ def ParseResources(args, perimeter_result):
       args, 'resources', lambda: perimeter_result.Get().status.resources)
 
 
-def _AddUnrestrictedServices(parser):
-  repeated.AddPrimitiveArgs(
-      parser,
-      'perimemter',
-      'unrestricted-services',
-      'unrestricted services',
-      metavar='SERVICE',
-      additional_help=(
-          'The perimeter boundary DOES NOT apply to these services (for '
-          'example, `storage.googleapis.com`). A wildcard (```*```) may be '
-          'given to denote all services.\n\n'
-          'If restricted services are set, unrestricted services must be a '
-          'wildcard.'))
-
-
-def ParseUnrestrictedServices(args, perimeter_result):
-  return repeated.ParsePrimitiveArgs(
-      args, 'unrestricted_services',
-      lambda: perimeter_result.Get().status.restrictedServices)
-
-
 def _AddRestrictedServices(parser):
   repeated.AddPrimitiveArgs(
       parser,
@@ -193,10 +176,7 @@ def _AddRestrictedServices(parser):
       metavar='SERVICE',
       additional_help=(
           'The perimeter boundary DOES apply to these services (for example, '
-          '`storage.googleapis.com`). A wildcard (```*```) may be given to '
-          'denote all services.\n\n'
-          'If unrestricted services are set, restricted services must be a '
-          'wildcard.'))
+          '`storage.googleapis.com`).'))
 
 
 def ParseRestrictedServices(args, perimeter_result):

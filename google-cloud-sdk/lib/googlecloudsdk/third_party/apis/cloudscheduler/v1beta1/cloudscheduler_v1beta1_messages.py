@@ -285,7 +285,8 @@ class CloudschedulerProjectsLocationsJobsPatchRequest(_messages.Message):
 
   Fields:
     job: A Job resource to be passed as the request body.
-    name: The job name. For example:
+    name: Optionally caller-specified in CreateJob, after which it becomes
+      output only.  The job name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/jobs/JOB_ID`.  * `PROJECT_ID`
       can contain letters ([A-Za-z]), numbers ([0-9]),    hyphens (-), colons
       (:), or periods (.).    For more information, see    [Identifying
@@ -492,11 +493,13 @@ class Job(_messages.Message):
 
   Fields:
     appEngineHttpTarget: App Engine HTTP target.
-    description: A human-readable description for the job. This string must
-      not contain more than 500 characters.
+    description: Optionally caller-specified in CreateJob or UpdateJob.  A
+      human-readable description for the job. This string must not contain
+      more than 500 characters.
     httpTarget: HTTP target.
     lastAttemptTime: Output only. The time the last job attempt started.
-    name: The job name. For example:
+    name: Optionally caller-specified in CreateJob, after which it becomes
+      output only.  The job name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/jobs/JOB_ID`.  * `PROJECT_ID`
       can contain letters ([A-Za-z]), numbers ([0-9]),    hyphens (-), colons
       (:), or periods (.).    For more information, see    [Identifying
@@ -509,8 +512,12 @@ class Job(_messages.Message):
       The maximum length is 500 characters.
     pubsubTarget: Pub/Sub target.
     retryConfig: Settings that determine the retry behavior.
-    schedule: Required.  Describes the schedule on which the job will be
-      executed.  As a general rule, execution `n + 1` of a job will not begin
+    schedule: Required, except when used with UpdateJob.  Describes the
+      schedule on which the job will be executed.  The schedule can be either
+      of the following types:  *
+      [Crontab](http://en.wikipedia.org/wiki/Cron#Overview) * English-like
+      [schedule](https://cloud.google.com/scheduler/docs/configuring/cron-job-
+      schedules)  As a general rule, execution `n + 1` of a job will not begin
       until execution `n` has finished. Cloud Scheduler will never allow two
       simultaneously outstanding executions. For example, this implies that if
       the `n+1`th execution is scheduled to run at 16:00 but the `n`th
@@ -519,10 +526,7 @@ class Job(_messages.Message):
       execution has not ended when its scheduled time occurs.  If retry_count
       > 0 and a job attempt fails, the job will be tried a total of
       retry_count times, with exponential backoff, until the next scheduled
-      start time.  The schedule can be either of the following types:  *
-      [Crontab](http://en.wikipedia.org/wiki/Cron#Overview) * English-like
-      [schedule](https://cloud.google.com/scheduler/docs/configuring/cron-job-
-      schedules)
+      start time.
     scheduleTime: Output only. The next time the job is scheduled. Note that
       this may be a retry of a previously failed attempt or the next execution
       time according to the schedule.

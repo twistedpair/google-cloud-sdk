@@ -258,7 +258,7 @@
           "$ref": "MaxPodsConstraint"
         },
         "managedPodIdentityConfig": {
-          "description": "Configuration for the use of GCP IAM Service Accounts in applications in\nthis cluster.",
+          "description": "Configuration for the use of GCP IAM Service Accounts in applications in\nthis cluster.\n\nDeprecated, use WorkloadIdentityConfig instead.",
           "$ref": "ManagedPodIdentityConfig"
         },
         "resourceUsageExportConfig": {
@@ -298,6 +298,22 @@
         "verticalPodAutoscaling": {
           "description": "Cluster-level Vertical Pod Autoscaling configuration.",
           "$ref": "VerticalPodAutoscaling"
+        },
+        "shieldedContainers": {
+          "description": "Shielded Containers configuration.",
+          "$ref": "ShieldedContainers"
+        },
+        "releaseChannel": {
+          "description": "Release channel configuration.",
+          "$ref": "ReleaseChannel"
+        },
+        "workloadIdentityConfig": {
+          "description": "Configuration for the use of k8s Service Accounts in GCP IAM policies.",
+          "$ref": "WorkloadIdentityConfig"
+        },
+        "staging": {
+          "description": "Staging cluster configuration.",
+          "$ref": "Staging"
         },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
@@ -510,6 +526,10 @@
         "nodeGroup": {
           "description": "The optional node group. Setting this field will assign instances of this\npool to run on the specified node group. This is useful for running\nworkloads on [sole tenant nodes](\/compute\/docs\/nodes\/)",
           "type": "string"
+        },
+        "reservationAffinity": {
+          "description": "The optional reservation affinity. Setting this field will apply\nthe specified [Zonal Compute\nReservation](\/compute\/docs\/instances\/reserving-zonal-resources)\nto this node pool.",
+          "$ref": "ReservationAffinity"
         }
       }
     },
@@ -638,6 +658,40 @@
         "sandboxType": {
           "description": "Type of the sandbox to use for the node (e.g. 'gvisor')",
           "type": "string"
+        }
+      }
+    },
+    "ReservationAffinity": {
+      "id": "ReservationAffinity",
+      "description": "[ReservationAffinity](\/compute\/docs\/instances\/reserving-zonal-resources) is\nthe configuration of desired reservation which instances could take\ncapacity from.",
+      "type": "object",
+      "properties": {
+        "consumeReservationType": {
+          "description": "Corresponds to the type of reservation consumption.",
+          "enumDescriptions": [
+            "Default value. This should not be used.",
+            "Do not consume from any reserved capacity.",
+            "Consume any reservation available.",
+            "Must consume from a specific reservation. Must specify key value fields\nfor specifying the reservations."
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED",
+            "NO_RESERVATION",
+            "ANY_RESERVATION",
+            "SPECIFIC_RESERVATION"
+          ]
+        },
+        "key": {
+          "description": "Corresponds to the label key of reservation resource. Must be\n\"googleapis.com\/allocation\" since GCE API only accepts it for now.",
+          "type": "string"
+        },
+        "values": {
+          "description": "Corresponds to the label value(s) of reservation resource(s).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1155,6 +1209,10 @@
         "window": {
           "description": "Specifies the maintenance window in which maintenance may be performed.",
           "$ref": "MaintenanceWindow"
+        },
+        "stagingCluster": {
+          "description": "Specifies a staging cluster to link this cluster to.\nThe linked staging cluster receives cluster upgrades first and provides\nan environment to validate incoming updates. The linked staging cluster\nmust have enabled [Staging](#Cluster.Staging).",
+          "$ref": "StagingClusterLink"
         }
       }
     },
@@ -1180,6 +1238,17 @@
         },
         "duration": {
           "description": "[Output only] Duration of the time window, automatically chosen to be\nsmallest possible in the given scenario.",
+          "type": "string"
+        }
+      }
+    },
+    "StagingClusterLink": {
+      "id": "StagingClusterLink",
+      "description": "StagingClusterLink represents a link to a staging cluster resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The staging cluster resource to link to, in the format\n'projects\/*\/locations\/*\/clusters\/*'.",
           "type": "string"
         }
       }
@@ -1221,6 +1290,18 @@
           "items": {
             "$ref": "ResourceLimit"
           }
+        },
+        "autoscalingProfile": {
+          "description": "Defines autoscaling behaviour.",
+          "enumDescriptions": [
+            "Use default (balanced) autoscaling configuration.",
+            "Prioritize optimizing utilization of resources."
+          ],
+          "type": "string",
+          "enum": [
+            "PROFILE_UNSPECIFIED",
+            "OPTIMIZE_UTILIZATION"
+          ]
         }
       }
     },
@@ -1270,19 +1351,19 @@
           "description": "Whether or not Private IPv6 access is enabled. This enables direct\nconnectivity from GKE pods to Google Cloud services over gRPC.",
           "type": "boolean"
         },
-        "enableIntraNodeFlowLogs": {
-          "description": "Whether Intra-node flow logs is enabled for this cluster.\nThis enables flow logs for same node pod to pod traffic.",
+        "enableIntraNodeVisibility": {
+          "description": "Whether Intra-node visibility is enabled for this cluster.\nThis enables flow logs for same node pod to pod traffic.",
           "type": "boolean"
         }
       }
     },
     "ManagedPodIdentityConfig": {
       "id": "ManagedPodIdentityConfig",
-      "description": "Configuration for the use of GCP IAM Service Accounts in applications in\nthis cluster.",
+      "description": "Configuration for the use of GCP IAM Service Accounts in applications in\nthis cluster.\n\nDeprecated, use WorkloadIdentityConfig instead.",
       "type": "object",
       "properties": {
         "enabled": {
-          "description": "Enable the use of GCP IAM Service Accounts in applications in this cluster.",
+          "description": "[Output only] Deprecated. This field has no effect. To enable Managed Pod\nIdentity, specify a federating service account.",
           "type": "boolean"
         },
         "federatingServiceAccount": {
@@ -1410,6 +1491,58 @@
       "properties": {
         "enabled": {
           "description": "Enables vertical pod autoscaling.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ShieldedContainers": {
+      "id": "ShieldedContainers",
+      "description": "Configuration of Shielded Containers feature.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether Shielded Containers features are enabled on all nodes in this\ncluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ReleaseChannel": {
+      "id": "ReleaseChannel",
+      "description": "ReleaseChannel indicates which release channel a cluster is\nsubscribed to. Release channels are arranged in order of risk and\nfrequency of updates; RAPID channel clusters are the first to\nreceive the latest releases of Kubernetes and other components.\n\nWhen a cluster is subscribed to a release channel, Google maintains\nboth the master version and the node version. Node auto-upgrade\ndefaults to true and cannot be disabled. Updates to version related\nfields (e.g. current_master_version) return an error.",
+      "type": "object",
+      "properties": {
+        "channel": {
+          "description": "channel specified which release channel the cluster is subscribed to.",
+          "enumDescriptions": [
+            "No channel specified.",
+            "Clusters subscribed to RAPID receive the latest qualified\ncomponents, before any other channel."
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED",
+            "RAPID"
+          ]
+        }
+      }
+    },
+    "WorkloadIdentityConfig": {
+      "id": "WorkloadIdentityConfig",
+      "description": "Configuration for the use of k8s Service Accounts in GCP IAM policies.",
+      "type": "object",
+      "properties": {
+        "identityNamespace": {
+          "description": "IAM Identity Namespace to attach all k8s Service Accounts to.",
+          "type": "string"
+        }
+      }
+    },
+    "Staging": {
+      "id": "Staging",
+      "description": "Staging indicates whether a cluster is designated as staging.\nA staging cluster receives cluster upgrades first and provides\nan environment to validate incoming updates.\n\nYou can guarantee that a production cluster is upgraded after a staging\ncluster by specifying a [StagingClusterLink](#Cluster.StagingClusterLink)\nin [MaintenancePolicy.staging_cluster](#Cluster.MaintenancePolicy).",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether this cluster is designated as a staging environment.",
           "type": "boolean"
         }
       }
@@ -1744,9 +1877,9 @@
           "description": "The desired private cluster configuration.",
           "$ref": "PrivateClusterConfig"
         },
-        "desiredIntraNodeFlowLogsStatus": {
-          "description": "The desired status of Intra-node flow logs.",
-          "$ref": "IntraNodeFlowLogsStatus"
+        "desiredIntraNodeVisibilityConfig": {
+          "description": "The desired config of Intra-node visibility.",
+          "$ref": "IntraNodeVisibilityConfig"
         },
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to.\n\nUsers may specify either explicit versions offered by\nKubernetes Engine or version aliases, which have the following behavior:\n\n- \"latest\": picks the highest valid Kubernetes version\n- \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version\n- \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version\n- \"1.X.Y-gke.N\": picks an explicit Kubernetes version\n- \"-\": picks the default Kubernetes version",
@@ -1788,13 +1921,13 @@
         }
       }
     },
-    "IntraNodeFlowLogsStatus": {
-      "id": "IntraNodeFlowLogsStatus",
-      "description": "IntraNodeFlowLogsStatus contains the desired state of the intra-node\nflow logs on this cluster.",
+    "IntraNodeVisibilityConfig": {
+      "id": "IntraNodeVisibilityConfig",
+      "description": "IntraNodeVisibilityConfig contains the desired config of the intra-node\nvisibility on this cluster.",
       "type": "object",
       "properties": {
         "enabled": {
-          "description": "Enables intra node flow logs for this cluster.",
+          "description": "Enables intra node visibility for this cluster.",
           "type": "boolean"
         }
       }
@@ -2600,7 +2733,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"

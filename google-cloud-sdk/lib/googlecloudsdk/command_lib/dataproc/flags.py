@@ -118,13 +118,13 @@ def AddMinCpuPlatformArgs(parser, track):
       help=help_text)
 
 
-def AddComponentFlag(parser, hidden=False):
+def AddComponentFlag(parser):
   """Add optional components flag."""
   help_text = """\
       List of optional components to be installed on cluster machines.
 
       The following page documents the optional components that can be
-      installed.
+      installed:
       https://cloud.google.com/dataproc/docs/concepts/configuring-clusters/optional-components.
       """
   parser.add_argument(
@@ -132,7 +132,6 @@ def AddComponentFlag(parser, hidden=False):
       metavar='COMPONENT',
       type=arg_parsers.ArgList(element_type=lambda val: val.upper()),
       dest='components',
-      hidden=hidden,
       help=help_text)
 
 
@@ -156,7 +155,7 @@ def RegionAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='region',
       help_text=(
-          'The Cloud DataProc region for the {resource}. Each Cloud Dataproc '
+          'Cloud Dataproc region for the {resource}. Each Cloud Dataproc '
           'region constitutes an independent resource namespace constrained to '
           'deploying instances into Google Compute Engine zones inside the '
           'region. The default value of `global` is a special multi-region '

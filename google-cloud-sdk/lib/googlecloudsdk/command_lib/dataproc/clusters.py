@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Utilities for building the dataproc clusters CLI."""
 
 from __future__ import absolute_import
@@ -44,6 +43,7 @@ GENERATED_LABEL_PREFIX = 'goog-dataproc-'
 
 
 # beta is unused but still useful when we add new beta features
+# pylint: disable=unused-argument
 def ArgsForClusterRef(parser, beta=False, include_deprecated=True):
   """Register flags for creating a dataproc cluster.
 
@@ -57,7 +57,7 @@ def ArgsForClusterRef(parser, beta=False, include_deprecated=True):
   # 30m is backend timeout + 5m for safety buffer.
   flags.AddTimeoutFlag(parser, default='35m')
   flags.AddZoneFlag(parser, short_flags=include_deprecated)
-  flags.AddComponentFlag(parser, not beta)  # Hidden in GA track.
+  flags.AddComponentFlag(parser)
 
   parser.add_argument(
       '--metadata',
@@ -516,9 +516,10 @@ def GetClusterConfig(args,
 
   if args.components:
     software_config_cls = dataproc.messages.SoftwareConfig
-    software_config.optionalComponents.extend(list(map(
-        software_config_cls.OptionalComponentsValueListEntryValuesEnum,
-        args.components)))
+    software_config.optionalComponents.extend(
+        list(
+            map(software_config_cls.OptionalComponentsValueListEntryValuesEnum,
+                args.components)))
 
   gce_cluster_config = dataproc.messages.GceClusterConfig(
       networkUri=network_ref and network_ref.SelfLink(),
@@ -562,12 +563,9 @@ def GetClusterConfig(args,
           imageUri=image_ref and image_ref.SelfLink(),
           machineTypeUri=args.master_machine_type,
           accelerators=master_accelerators,
-          diskConfig=GetDiskConfig(
-              dataproc,
-              args.master_boot_disk_type,
-              master_boot_disk_size_gb,
-              args.num_master_local_ssds
-          )),
+          diskConfig=GetDiskConfig(dataproc, args.master_boot_disk_type,
+                                   master_boot_disk_size_gb,
+                                   args.num_master_local_ssds)),
       workerConfig=dataproc.messages.InstanceGroupConfig(
           numInstances=args.num_workers,
           imageUri=image_ref and image_ref.SelfLink(),
@@ -664,10 +662,7 @@ def GetClusterConfig(args,
   return cluster_config
 
 
-def GetDiskConfig(dataproc,
-                  boot_disk_type,
-                  boot_disk_size,
-                  num_local_ssds):
+def GetDiskConfig(dataproc, boot_disk_type, boot_disk_size, num_local_ssds):
   """Get dataproc cluster disk configuration.
 
   Args:
@@ -769,9 +764,8 @@ def DeleteGeneratedLabels(cluster, dataproc):
 def AddAllocationAffinityGroup(parser):
   """Adds the argument group to handle allocation affinity configurations."""
   group = parser.add_group(help='Manage the configuration of desired'
-                                'allocation which this instance could'
-                                'take capacity from.'
-                          )
+                           'allocation which this instance could'
+                           'take capacity from.')
   group.add_argument(
       '--allocation-affinity',
       choices=['any', 'none', 'specific'],
@@ -803,8 +797,8 @@ def GetAllocationAffinity(args, client):
   if not args.IsSpecified('allocation_affinity'):
     return None
 
-  type_msgs = (client.messages.
-               AllocationAffinity.ConsumeAllocationTypeValueValuesEnum)
+  type_msgs = (
+      client.messages.AllocationAffinity.ConsumeAllocationTypeValueValuesEnum)
 
   if args.allocation_affinity == 'none':
     allocation_type = type_msgs.NO_ALLOCATION

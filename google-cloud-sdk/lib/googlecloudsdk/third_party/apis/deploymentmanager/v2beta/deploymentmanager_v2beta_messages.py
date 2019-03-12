@@ -130,9 +130,9 @@ class Binding(_messages.Message):
       * `serviceAccount:{emailid}`: An email address that represents a service
       account. For example, `my-other-app@appspot.gserviceaccount.com`.  *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`.    * `domain:{domain}`: A Google Apps
-      domain name that represents all the users of that domain. For example,
-      `google.com` or `example.com`.
+      example, `admins@example.com`.    * `domain:{domain}`: The G Suite
+      domain (primary) that represents all the users of that domain. For
+      example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -169,7 +169,8 @@ class CompositeType(_messages.Message):
       long and must conform to the following regular expression:
       [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63
       characters long and must conform to the regular expression
-      ([a-z]([-a-z0-9]*[a-z0-9])?)?
+      ([a-z]([-a-z0-9]*[a-z0-9])?)? TODO(b/124441274): clean up label after
+      migration to op is complete
     name: Name of the composite type, must follow the expression:
       [a-z]([-a-z0-9_.]{0,61}[a-z0-9])?.
     operation: Output only. The Operation that most recently ran, or is
@@ -191,11 +192,11 @@ class CompositeType(_messages.Message):
 
 
 class CompositeTypeLabelEntry(_messages.Message):
-  r"""Label object for CompositeTypes
+  r"""A CompositeTypeLabelEntry object.
 
   Fields:
-    key: Key of the label
-    value: Value of the label
+    key: A string attribute.
+    value: A string attribute.
   """
 
   key = _messages.StringField(1)
@@ -276,12 +277,13 @@ class Deployment(_messages.Message):
       latest fingerprint value, perform a get() request to a deployment.
     id: A string attribute.
     insertTime: Output only. Creation timestamp in RFC3339 text format.
-    labels: Map of One Platform labels; provided by the client when the
-      resource is created or updated. Specifically: Label keys must be between
-      1 and 63 characters long and must conform to the following regular
-      expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0
-      and 63 characters long and must conform to the regular expression
-      ([a-z]([-a-z0-9]*[a-z0-9])?)?
+    labels: Map of labels; provided by the client when the resource is created
+      or updated. Specifically: Label keys must be between 1 and 63 characters
+      long and must conform to the following regular expression:
+      [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63
+      characters long and must conform to the regular expression
+      ([a-z]([-a-z0-9]*[a-z0-9])?)? TODO(b/124441274): clean up label after
+      migration to op is complete
     manifest: Output only. URL of the manifest representing the last manifest
       that was successfully deployed.
     name: Name of the resource; provided by the client when the resource is
@@ -317,11 +319,11 @@ class Deployment(_messages.Message):
 
 
 class DeploymentLabelEntry(_messages.Message):
-  r"""Label object for Deployments
+  r"""A DeploymentLabelEntry object.
 
   Fields:
-    key: Key of the label
-    value: Value of the label
+    key: A string attribute.
+    value: A string attribute.
   """
 
   key = _messages.StringField(1)
@@ -334,12 +336,13 @@ class DeploymentUpdate(_messages.Message):
   Fields:
     description: Output only. An optional user-provided description of the
       deployment after the current update has been applied.
-    labels: Map of One Platform labels; provided by the client when the
+    labels: Output only. Map of labels; provided by the client when the
       resource is created or updated. Specifically: Label keys must be between
       1 and 63 characters long and must conform to the following regular
       expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0
       and 63 characters long and must conform to the regular expression
-      ([a-z]([-a-z0-9]*[a-z0-9])?)?
+      ([a-z]([-a-z0-9]*[a-z0-9])?)? TODO(b/124441274): clean up label after
+      migration to op is complete
     manifest: Output only. URL of the manifest representing the update
       configuration of this deployment.
   """
@@ -350,11 +353,11 @@ class DeploymentUpdate(_messages.Message):
 
 
 class DeploymentUpdateLabelEntry(_messages.Message):
-  r"""Label object for DeploymentUpdate
+  r"""A DeploymentUpdateLabelEntry object.
 
   Fields:
-    key: Key of the label
-    value: Value of the label
+    key: A string attribute.
+    value: A string attribute.
   """
 
   key = _messages.StringField(1)
@@ -2042,12 +2045,13 @@ class Type(_messages.Message):
       the client when the resource is created.
     id: A string attribute.
     insertTime: Output only. Creation timestamp in RFC3339 text format.
-    labels: Map of One Platform labels; provided by the client when the
-      resource is created or updated. Specifically: Label keys must be between
-      1 and 63 characters long and must conform to the following regular
-      expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0
-      and 63 characters long and must conform to the regular expression
-      ([a-z]([-a-z0-9]*[a-z0-9])?)?
+    labels: Map of labels; provided by the client when the resource is created
+      or updated. Specifically: Label keys must be between 1 and 63 characters
+      long and must conform to the following regular expression:
+      [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63
+      characters long and must conform to the regular expression
+      ([a-z]([-a-z0-9]*[a-z0-9])?)? TODO(b/124441274): clean up label after
+      migration to op is complete
     name: Name of the type.
     operation: Output only. The Operation that most recently ran, or is
       currently running, on this type.
@@ -2107,11 +2111,11 @@ class TypeInfoSchemaInfo(_messages.Message):
 
 
 class TypeLabelEntry(_messages.Message):
-  r"""Label object for Types
+  r"""A TypeLabelEntry object.
 
   Fields:
-    key: Key of the label
-    value: Value of the label
+    key: A string attribute.
+    value: A string attribute.
   """
 
   key = _messages.StringField(1)
@@ -2130,12 +2134,13 @@ class TypeProvider(_messages.Message):
     descriptorUrl: Descriptor Url for the this type provider.
     id: Output only. Unique identifier for the resource defined by the server.
     insertTime: Output only. Creation timestamp in RFC3339 text format.
-    labels: Map of One Platform labels; provided by the client when the
-      resource is created or updated. Specifically: Label keys must be between
-      1 and 63 characters long and must conform to the following regular
-      expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0
-      and 63 characters long and must conform to the regular expression
-      ([a-z]([-a-z0-9]*[a-z0-9])?)?
+    labels: Map of labels; provided by the client when the resource is created
+      or updated. Specifically: Label keys must be between 1 and 63 characters
+      long and must conform to the following regular expression:
+      [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63
+      characters long and must conform to the regular expression
+      ([a-z]([-a-z0-9]*[a-z0-9])?)? TODO(b/124441274): clean up label after
+      migration to op is complete
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -2163,11 +2168,11 @@ class TypeProvider(_messages.Message):
 
 
 class TypeProviderLabelEntry(_messages.Message):
-  r"""Label object for TypeProviders
+  r"""A TypeProviderLabelEntry object.
 
   Fields:
-    key: Key of the label
-    value: Value of the label
+    key: A string attribute.
+    value: A string attribute.
   """
 
   key = _messages.StringField(1)

@@ -689,12 +689,12 @@
           }
         },
         "startCursor": {
-          "description": "A starting point for the query results. Query cursors are\nreturned in query result batches and\n[can only be used to continue the same query](https:\/\/cloud.google.com\/datastore\/docs\/concepts\/queries#cursors_limits_and_offsets).",
+          "description": "A starting point for the query results. Query cursors are\nreturned in query result batches and\n[can only be used to continue the same\nquery](https:\/\/cloud.google.com\/datastore\/docs\/concepts\/queries#cursors_limits_and_offsets).",
           "type": "string",
           "format": "byte"
         },
         "endCursor": {
-          "description": "An ending point for the query results. Query cursors are\nreturned in query result batches and\n[can only be used to limit the same query](https:\/\/cloud.google.com\/datastore\/docs\/concepts\/queries#cursors_limits_and_offsets).",
+          "description": "An ending point for the query results. Query cursors are\nreturned in query result batches and\n[can only be used to limit the same\nquery](https:\/\/cloud.google.com\/datastore\/docs\/concepts\/queries#cursors_limits_and_offsets).",
           "type": "string",
           "format": "byte"
         },
@@ -848,7 +848,7 @@
     },
     "GqlQuery": {
       "id": "GqlQuery",
-      "description": "A [GQL query](https:\/\/cloud.google.com\/datastore\/docs\/apis\/gql\/gql_reference).",
+      "description": "A [GQL\nquery](https:\/\/cloud.google.com\/datastore\/docs\/apis\/gql\/gql_reference).",
       "type": "object",
       "properties": {
         "queryString": {

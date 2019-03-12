@@ -143,7 +143,7 @@ SCHEMA = s.Message(
     libraries=s.RepeatedField(element=s.Message(
         version=s.Value(converter=c.ToJsonString),
         name=s.Value(converter=c.ToJsonString))),
-    main=s.Value('main_executable_path', converter=c.ToJsonString),
+    main=s.Value('runtime_main_executable_path', converter=c.ToJsonString),
     manual_scaling=s.Message(
         instances=s.Value(converter=c.StringToInt())),
     network=s.Message(
@@ -151,7 +151,9 @@ SCHEMA = s.Message(
         name=s.Value(converter=c.ToJsonString),
         subnetwork_name=s.Value(converter=c.ToJsonString),
         forwarded_ports=s.RepeatedField(element=s.Value(converter=
-                                                        c.ToJsonString))),
+                                                        c.ToJsonString)),
+        session_affinity=s.Value()
+    ),
     zones=s.RepeatedField(element=s.Value(converter=c.ToJsonString)),
     nobuild_files=s.Value('nobuild_files_regex', converter=c.ToJsonString),
     resources=s.Message(

@@ -23,6 +23,7 @@ import errno
 import getpass
 import os
 import re
+import string
 import enum
 
 from googlecloudsdk.api_lib.oslogin import client as oslogin_client
@@ -80,6 +81,10 @@ class InvalidConfigurationError(core_exceptions.Error):
     super(InvalidConfigurationError, self).__init__(
         msg + '  Got sources: {}, destination: {}'
         .format(sources, destination))
+
+
+class BadCharacterError(core_exceptions.Error):
+  """Indicates a character was found that couldn't be escaped."""
 
 
 class Suite(enum.Enum):
@@ -817,6 +822,148 @@ class Remote(object):
     return self.ToArg()
 
 
+def _EscapeProxyCommandArg(s, env):
+  """Returns s escaped such that it can be a ProxyCommand arg.
+
+  Args:
+    s: str, Argument to escape. Must be non-empty.
+    env: Environment, data about the ssh client.
+  Raises:
+    BadCharacterError: If s contains a bad character.
+  """
+  for c in s:
+    if not 0x20 <= ord(c) < 0x7f:
+      # For ease of implementation we ban control characters and non-ASCII.
+      raise BadCharacterError(
+          ('Special character %r (part of %r) couldn\'t be escaped for '
+           'ProxyCommand') % (c, s))
+  if env.suite is Suite.PUTTY:
+    # When using proxycmd with putty or plink, 3 unescapes happen:
+    # 1 putty/plink does command line -> argv unescape.
+    # 2 putty/plink does backslash and percent unescape.
+    # 3 Inner gcloud python binary does command line -> argv unescape.
+    #
+    # We reverse this, doing escapes in reverse order, doing 3, 2.
+    # We don't do the 1 escape here because that's done later inside the
+    # subprocess.Popen() function.
+    s = _EscapeWindowsArgvElement(s)
+    s = _EscapePuttyBackslashPercent(s)
+    return s
+  # When using ProxyCommand with OpenSSH, 2 unescapes happen:
+  # 1 OpenSSH does percent unescape.
+  # 2 bash does unescape.
+  # We do the corresponding escapes in reverse.
+  return _EscapeForBash(s).replace('%', '%%')
+
+
+def _EscapeWindowsArgvElement(s):
+  """Returns s escaped such that it can be passed to a windows executable.
+
+  Args:
+    s: str, What to escape. Must be ASCII and non-control.
+  """
+  # Each Windows binary can unescape its commandline arguments to argv how it
+  # wants, but they tend to behave like this:
+  # https://docs.microsoft.com/en-us/cpp/cpp/parsing-cpp-command-line-arguments?view=vs-2017
+  # We escape in that format because that format is similar to how python (of
+  # the inner gcloud) does it. The primary difference is what happens when
+  # inside a doublequoted string there is an even number of backslashes
+  # (possibly 0) then at least 2 doublequotes. This function never returns a
+  # string like that, so it avoids the ambiguity.
+  #
+  # We escape in reverse, because that's easiest.
+  result = []
+  # Whether (in the reversed input) we are following a non-broken chain of
+  # backslashes (possibly 0-length) after a doublequote.
+  # The final output will have a doublequote appended to the end, so the first
+  # character of the reversed input is considered to follow a doublequote.
+  following_quote = True
+  for c in s[::-1]:
+    if c == '"':
+      result.append('"\\')
+      following_quote = True
+    elif c == '\\':
+      if following_quote:
+        result.append('\\\\')
+      else:
+        result.append('\\')
+    else:
+      result.append(c)
+      following_quote = False
+  return '"' + ''.join(result)[::-1] + '"'
+
+
+def _EscapePuttyBackslashPercent(s):
+  # s must be ASCII and non-control.
+  # The putty unescaping is documented at
+  # https://the.earth.li/~sgtatham/putty/0.70/htmldoc/Chapter4.html#config-proxy-command
+  return s.replace('\\', '\\\\').replace('%', '%%')
+
+
+def _EscapeForBash(s):
+  """Returns s escaped so it can be used as a single bash argument.
+
+  Args:
+    s: str, What to escape. Must be ASCII, non-control, and non-empty.
+  """
+  # From https://stackoverflow.com/q/15783701
+  good_chars = set(string.ascii_letters + string.digits + '%+-./:=@_')
+  result = []
+  for c in s:
+    if c in good_chars:
+      result.append(c)
+    else:
+      result.append('\\' + c)
+  return ''.join(result)
+
+
+def _BuildIapTunnelProxyCommandArgs(iap_tunnel_args, env):
+  """Calculate the ProxyCommand flags for IAP Tunnel if necessary.
+
+  IAP Tunnel with ssh runs an second inner version of gcloud by passing a
+  command to do so as a ProxyCommand argument to OpenSSH/Putty.
+
+  Args:
+    iap_tunnel_args: iap_tunnel.SshTunnelArgs or None, options about IAP Tunnel.
+    env: Environment, data about the ssh client.
+  Returns:
+    [str], the additional arguments for OpenSSH or Putty.
+  """
+  if not iap_tunnel_args:
+    return []
+
+  gcloud_command = execution_utils.ArgsForGcloud()
+  # Applying _EscapeProxyCommandArg to the first item (the python executable
+  # path) doesn't make 100% sense on Windows, because the full unescaping only
+  # happens to arguments, not to the executable path. But this escaping will be
+  # correct as long as the python executable path doesn't contain a doublequote
+  # or end with a backslash, which should never happen.
+  gcloud_command = [_EscapeProxyCommandArg(x, env) for x in gcloud_command]
+  # track, project, zone, instance, interface, verbosity should only contain
+  # characters that don't need escaping, so don't bother escaping them.
+  if iap_tunnel_args.track:
+    gcloud_command.append(iap_tunnel_args.track)
+  port_token = '%port' if env.suite is Suite.PUTTY else '%p'
+  gcloud_command.extend([
+      'compute', 'start-iap-tunnel', iap_tunnel_args.instance, port_token,
+      '--listen-on-stdin',
+      '--project=' + iap_tunnel_args.project,
+      '--zone=' + iap_tunnel_args.zone,
+      '--network-interface=' + iap_tunnel_args.interface])
+  for arg in iap_tunnel_args.pass_through_args:
+    gcloud_command.append(_EscapeProxyCommandArg(arg, env))
+
+  verbosity = log.GetVerbosityName()
+  if verbosity:
+    gcloud_command.append('--verbosity=' + verbosity)
+
+  if env.suite is Suite.PUTTY:
+    return ['-proxycmd', ' '.join(gcloud_command)]
+  else:
+    return ['-o', ' '.join(['ProxyCommand'] + gcloud_command),
+            '-o', 'ProxyUseFdpass=no']
+
+
 class KeygenCommand(object):
   """Platform independent SSH client key generation command.
 
@@ -911,7 +1058,7 @@ class SSHCommand(object):
 
   def __init__(self, remote, port=None, identity_file=None,
                options=None, extra_flags=None, remote_command=None, tty=None,
-               remainder=None):
+               iap_tunnel_args=None, remainder=None):
     """Construct a suite independent SSH command.
 
     Note that `extra_flags` and `remote_command` arguments are lists of strings:
@@ -929,6 +1076,8 @@ class SSHCommand(object):
       remote_command: [str], command to run remotely.
       tty: bool, launch a terminal. If None, determine automatically based on
         presence of remote command.
+      iap_tunnel_args: iap_tunnel.SshTunnelArgs or None, options about IAP
+        Tunnel.
       remainder: [str], NOT RECOMMENDED. Arguments to be appended directly to
         the native tool invocation, after the `[user@]host` part but prior to
         the remote command. On PuTTY, this can only be a remote command. On
@@ -943,6 +1092,7 @@ class SSHCommand(object):
     self.extra_flags = extra_flags or []
     self.remote_command = remote_command or []
     self.tty = tty
+    self.iap_tunnel_args = iap_tunnel_args
     self.remainder = remainder
 
   def Build(self, env=None):
@@ -978,6 +1128,8 @@ class SSHCommand(object):
       # Always, always deterministic order
       for key, value in sorted(six.iteritems(self.options)):
         args.extend(['-o', '{k}={v}'.format(k=key, v=value)])
+
+    args.extend(_BuildIapTunnelProxyCommandArgs(self.iap_tunnel_args, env))
     args.extend(self.extra_flags)
     args.append(self.remote.ToArg())
 
@@ -1057,7 +1209,8 @@ class SCPCommand(object):
   """
 
   def __init__(self, sources, destination, recursive=False, compress=False,
-               port=None, identity_file=None, options=None, extra_flags=None):
+               port=None, identity_file=None, options=None, extra_flags=None,
+               iap_tunnel_args=None):
     """Construct a suite independent SCP command.
 
     Args:
@@ -1073,6 +1226,8 @@ class SCPCommand(object):
       options: {str: str}, options (`-o`) for OpenSSH, see `ssh_config(5)`.
       extra_flags: [str], extra flags to append to scp invocation. Both binary
         style flags `['-b']` and flags with values `['-k', 'v']` are accepted.
+      iap_tunnel_args: iap_tunnel.SshTunnelArgs or None, options about IAP
+        Tunnel.
     """
     self.sources = [sources] if isinstance(sources, FileReference) else sources
     self.destination = destination
@@ -1082,6 +1237,7 @@ class SCPCommand(object):
     self.identity_file = identity_file
     self.options = options or {}
     self.extra_flags = extra_flags or []
+    self.iap_tunnel_args = iap_tunnel_args
 
   @classmethod
   def Verify(cls, sources, destination, single_remote=False, env=None):
@@ -1170,6 +1326,7 @@ class SCPCommand(object):
       for key, value in sorted(six.iteritems(self.options)):
         args.extend(['-o', '{k}={v}'.format(k=key, v=value)])
 
+    args.extend(_BuildIapTunnelProxyCommandArgs(self.iap_tunnel_args, env))
     args.extend(self.extra_flags)
 
     # Positionals
@@ -1216,7 +1373,7 @@ class SSHPoller(object):
 
   def __init__(self, remote, port=None, identity_file=None,
                options=None, extra_flags=None, max_wait_ms=60*1000,
-               sleep_ms=5*1000):
+               sleep_ms=5*1000, iap_tunnel_args=None):
     """Construct a poller for an SSH connection.
 
     Args:
@@ -1228,10 +1385,13 @@ class SSHPoller(object):
         style flags `['-b']` and flags with values `['-k', 'v']` are accepted.
       max_wait_ms: int, number of ms to wait before raising.
       sleep_ms: int, time between trials.
+      iap_tunnel_args: iap_tunnel.SshTunnelArgs or None, information about IAP
+        Tunnel.
     """
     self.ssh_command = SSHCommand(
         remote, port=port, identity_file=identity_file, options=options,
-        extra_flags=extra_flags, remote_command=['true'], tty=False)
+        extra_flags=extra_flags, remote_command=['true'], tty=False,
+        iap_tunnel_args=iap_tunnel_args)
     self._sleep_ms = sleep_ms
     self._retryer = retry.Retryer(max_wait_ms=max_wait_ms, jitter_ms=0)
 

@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import print_function
 from __future__ import unicode_literals
 
 import time
@@ -28,6 +29,8 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr_os
 from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.util import encoding
+
+import httplib2
 
 
 class NoLogsBucketException(exceptions.Error):
@@ -99,14 +102,26 @@ class LogTailer(object):
     """Poll the GCS object and print any new bytes to the console.
 
     Args:
-      is_last: True if this is the last poll operation.
+      is_last: True if this is the final poll operation.
 
     Raises:
       api_exceptions.HttpError: if there is trouble connecting to GCS.
+      api_exceptions.CommunicationError: if there is trouble reaching the server
+          and is_last=True.
     """
-    (res, body) = self.http.request(
-        self.url, method='GET',
-        headers={'Range': 'bytes={0}-'.format(self.cursor)})
+    try:
+      (res, body) = self.http.request(
+          self.url,
+          method='GET',
+          headers={'Range': 'bytes={0}-'.format(self.cursor)})
+    except httplib2.HttpLib2Error as e:
+      # Sometimes this request fails due to read timeouts (b/121307719). When
+      # this happens we should just proceed and rely on the next poll to pick
+      # up any missed logs. If this is the last request, there won't be another
+      # request, and we can just fail.
+      if is_last:
+        raise api_exceptions.CommunicationError('Failed to connect: %s' % e)
+      return
 
     if res.status == 404:  # Not Found
       # Logfile hasn't been written yet (ie, build hasn't started).

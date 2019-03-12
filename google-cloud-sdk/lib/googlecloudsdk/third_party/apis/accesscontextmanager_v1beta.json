@@ -399,9 +399,7 @@
             "A desktop Mac operating system.",
             "A desktop Windows operating system.",
             "A desktop Linux operating system.",
-            "A desktop ChromeOS operating system.",
-            "An Android operating system.",
-            "An iOS operating system."
+            "A desktop ChromeOS operating system."
           ],
           "type": "string",
           "enum": [
@@ -409,9 +407,7 @@
             "DESKTOP_MAC",
             "DESKTOP_WINDOWS",
             "DESKTOP_LINUX",
-            "DESKTOP_CHROME_OS",
-            "ANDROID",
-            "IOS"
+            "DESKTOP_CHROME_OS"
           ]
         },
         "minimumVersion": {
@@ -503,14 +499,14 @@
           }
         },
         "unrestrictedServices": {
-          "description": "GCP services that are not subject to the Service Perimeter restrictions.\nMay contain a list of services or a single wildcard \"*\". For example, if\n`logging.googleapis.com` is unrestricted, users can access logs inside the\nperimeter as if the perimeter doesn't exist, and it also means VMs inside\nthe perimeter can access logs outside the perimeter.\n\nThe wildcard means that unless explicitly specified by\n\"restricted_services\" list, any service is treated as unrestricted. One of\nthe fields \"restricted_services\", \"unrestricted_services\" must contain a\nwildcard \"*\", otherwise the Service Perimeter specification is invalid. It\nalso means that both field being empty is invalid as well.\n\"unrestricted_services\" can be empty if and only if \"restricted_services\"\nlist contains a \"*\" wildcard.",
+          "description": "GCP services that are not subject to the Service Perimeter\nrestrictions. Deprecated. Must be set to a single wildcard \"*\".\n\nThe wildcard means that unless explicitly specified by\n\"restricted_services\" list, any service is treated as unrestricted.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "restrictedServices": {
-          "description": "GCP services that are subject to the Service Perimeter restrictions. May\ncontain a list of services or a single wildcard \"*\". For example, if\n`storage.googleapis.com` is specified, access to the storage buckets\ninside the perimeter must meet the perimeter's access restrictions.\n\nWildcard means that unless explicitly specified by \"unrestricted_services\"\nlist, any service is treated as restricted. One of the fields\n\"restricted_services\", \"unrestricted_services\" must contain a wildcard \"*\",\notherwise the Service Perimeter specification is invalid. It also means\nthat both field being empty is invalid as well. \"restricted_services\" can\nbe empty if and only if \"unrestricted_services\" list contains a \"*\"\nwildcard.",
+          "description": "GCP services that are subject to the Service Perimeter restrictions. Must\ncontain a list of services. For example, if\n`storage.googleapis.com` is specified, access to the storage buckets\ninside the perimeter must meet the perimeter's access restrictions.",
           "type": "array",
           "items": {
             "type": "string"

@@ -4,7 +4,6 @@ title: dataproc v1beta2 AutoscalingPolicy export schema
 description: A gcloud export/import command YAML validation schema.
 type: object
 required:
-- secondaryWorkerConfig
 - workerConfig
 additionalProperties: false
 properties:

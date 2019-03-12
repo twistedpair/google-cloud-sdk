@@ -198,6 +198,8 @@
             "A main launcher activity could not be found.",
             "The app declares one or more permissions that are not allowed.",
             "There is a conflict in the provided robo_directives.",
+            "There is at least one invalid resource name in the provided\nrobo directives",
+            "Invalid definition of action in the robo directives\n(e.g. a click or ignore action includes an input text field)",
             "There there is no test loop intent filter, or the one that is given is\nnot formatted correctly.",
             "The request contains a scenario label that was not declared in the\nmanifest.",
             "There was an error when parsing a label's value.",
@@ -232,6 +234,8 @@
             "NO_LAUNCHER_ACTIVITY",
             "FORBIDDEN_PERMISSIONS",
             "INVALID_ROBO_DIRECTIVES",
+            "INVALID_RESOURCE_NAME",
+            "INVALID_DIRECTIVE_ACTION",
             "TEST_LOOP_INTENT_FILTER_NOT_FOUND",
             "SCENARIO_LABEL_NOT_DECLARED",
             "SCENARIO_LABEL_MALFORMED",
@@ -736,7 +740,7 @@
           "$ref": "FileReference"
         },
         "xcodeVersion": {
-          "description": "The Xcode version that should be used for the test.\nUse the EnvironmentDiscoveryService to get supported options.\nDefaults to the latest Xcode version Firebase Test Lab supports.",
+          "description": "The Xcode version that should be used for the test.\nUse the TestEnvironmentDiscoveryService to get supported options.\nDefaults to the latest Xcode version Firebase Test Lab supports.",
           "type": "string"
         },
         "appBundleId": {
@@ -770,28 +774,28 @@
       "type": "object",
       "properties": {
         "androidModelIds": {
-          "description": "Required. The ids of the set of Android device to be used.\nUse the EnvironmentDiscoveryService to get supported options.",
+          "description": "Required. The ids of the set of Android device to be used.\nUse the TestEnvironmentDiscoveryService to get supported options.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "androidVersionIds": {
-          "description": "Required. The ids of the set of Android OS version to be used.\nUse the EnvironmentDiscoveryService to get supported options.",
+          "description": "Required. The ids of the set of Android OS version to be used.\nUse the TestEnvironmentDiscoveryService to get supported options.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "locales": {
-          "description": "Required. The set of locales the test device will enable for testing.\nUse the EnvironmentDiscoveryService to get supported options.",
+          "description": "Required. The set of locales the test device will enable for testing.\nUse the TestEnvironmentDiscoveryService to get supported options.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "orientations": {
-          "description": "Required. The set of orientations to test with.\nUse the EnvironmentDiscoveryService to get supported options.",
+          "description": "Required. The set of orientations to test with.\nUse the TestEnvironmentDiscoveryService to get supported options.",
           "type": "array",
           "items": {
             "type": "string"
@@ -819,19 +823,19 @@
       "type": "object",
       "properties": {
         "androidModelId": {
-          "description": "Required. The id of the Android device to be used.\nUse the EnvironmentDiscoveryService to get supported options.",
+          "description": "Required. The id of the Android device to be used.\nUse the TestEnvironmentDiscoveryService to get supported options.",
           "type": "string"
         },
         "androidVersionId": {
-          "description": "Required. The id of the Android OS version to be used.\nUse the EnvironmentDiscoveryService to get supported options.",
+          "description": "Required. The id of the Android OS version to be used.\nUse the TestEnvironmentDiscoveryService to get supported options.",
           "type": "string"
         },
         "locale": {
-          "description": "Required. The locale the test device used for testing.\nUse the EnvironmentDiscoveryService to get supported options.",
+          "description": "Required. The locale the test device used for testing.\nUse the TestEnvironmentDiscoveryService to get supported options.",
           "type": "string"
         },
         "orientation": {
-          "description": "Required. How the device is oriented during the test.\nUse the EnvironmentDiscoveryService to get supported options.",
+          "description": "Required. How the device is oriented during the test.\nUse the TestEnvironmentDiscoveryService to get supported options.",
           "type": "string"
         }
       }
@@ -856,19 +860,19 @@
       "type": "object",
       "properties": {
         "iosModelId": {
-          "description": "Required. The id of the iOS device to be used.\nUse the EnvironmentDiscoveryService to get supported options.",
+          "description": "Required. The id of the iOS device to be used.\nUse the TestEnvironmentDiscoveryService to get supported options.",
           "type": "string"
         },
         "iosVersionId": {
-          "description": "Required. The id of the iOS major software version to be used.\nUse the EnvironmentDiscoveryService to get supported options.",
+          "description": "Required. The id of the iOS major software version to be used.\nUse the TestEnvironmentDiscoveryService to get supported options.",
           "type": "string"
         },
         "locale": {
-          "description": "Required. The locale the test device used for testing.\nUse the EnvironmentDiscoveryService to get supported options.",
+          "description": "Required. The locale the test device used for testing.\nUse the TestEnvironmentDiscoveryService to get supported options.",
           "type": "string"
         },
         "orientation": {
-          "description": "Required. How the device is oriented during the test.\nUse the EnvironmentDiscoveryService to get supported options.",
+          "description": "Required. How the device is oriented during the test.\nUse the TestEnvironmentDiscoveryService to get supported options.",
           "type": "string"
         }
       }

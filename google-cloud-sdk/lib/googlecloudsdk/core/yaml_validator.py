@@ -53,7 +53,15 @@ class RefError(Error):
 
 
 class ValidationError(Error):
-  """Validation error -- YAML data does not match the schema."""
+  """Validation error -- YAML data does not match the schema.
+
+  Attributes:
+      message: A user-readable error message describing the validation error.
+  """
+
+  def __init__(self, error):
+    super(ValidationError, self).__init__(error)
+    self.message = error.message
 
 
 class Validator(object):

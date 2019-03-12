@@ -244,9 +244,7 @@ class ListLogEntriesRequest(_messages.Message):
       parameters should be identical to those in the previous call.
     projectIds: Deprecated. Use resource_names instead. One or more project
       identifiers or project numbers from which to retrieve log entries.
-      Example: "my-project-1A". If present, these project identifiers are
-      converted to resource name format and added to the list of resources in
-      resource_names.
+      Example: "my-project-1A".
     resourceNames: Required. Names of one or more parent resources from which
       to retrieve log entries: "projects/[PROJECT_ID]"
       "organizations/[ORGANIZATION_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]"
@@ -357,7 +355,8 @@ class LogBucket(_messages.Message):
       retention period for logs that match multiple retention policies.
 
   Fields:
-    createTime: Output only. The creation timestamp of the bucket.
+    createTime: Output only. The creation timestamp of the bucket. This is not
+      set for any of the default buckets.
     description: Describes this bucket.
     displayName: Display name of the bucket.
     etag: etag is used for optimistic concurrency control as a way to help
@@ -378,7 +377,8 @@ class LogBucket(_messages.Message):
       unspecified where logs are actually stored. Once a bucket has been
       created, the location can not be changed.
     retentionPeriod: Logs will be retained by default for this amount of time,
-      after which they will automatically be deleted.
+      after which they will automatically be deleted. The minimum retention
+      period is 1 day.
     retentionRuleResolution: Describes how to choose the retention period for
       logs that match multiple retention policies.
     retentionRules: Fine grained retention rules that can override retention
@@ -1019,7 +1019,11 @@ class LoggingBillingAccountsBucketsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the bucket:
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
       Example: "projects/my-project-id/locations/my-location/buckets/my-
       bucket-id".
   """
@@ -1124,8 +1128,11 @@ class LoggingBillingAccountsLocationsBucketsCreateRequest(_messages.Message):
     bucketId: Required. The bucket_id to use for this bucket.
     logBucket: A LogBucket resource to be passed as the request body.
     parent: Required. The resource in which to create the bucket:
-      "projects/[PROJECT_ID]" Examples: "projects/my-logging-project",
-      "organizations/123456789".
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" Example: "projects/my-
+      logging-project/locations/global"
   """
 
   bucketId = _messages.StringField(1)
@@ -1138,7 +1145,11 @@ class LoggingBillingAccountsLocationsBucketsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The full resource name of the bucket to delete.
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
       Example: "projects/my-project-id/locations/my-location/buckets/my-
       bucket-id".
   """
@@ -1158,8 +1169,10 @@ class LoggingBillingAccountsLocationsBucketsListRequest(_messages.Message):
       nextPageToken from the previous response. The values of other method
       parameters should be identical to those in the previous call.
     parent: Required. The parent resource whose buckets are to be listed:
-      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1173,7 +1186,11 @@ class LoggingBillingAccountsLocationsBucketsPatchRequest(_messages.Message):
   Fields:
     logBucket: A LogBucket resource to be passed as the request body.
     name: Required. The full resource name of the bucket to update.
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
       Example: "projects/my-project-id/locations/my-location/buckets/my-
       bucket-id". Also requires permission
       "resourcemanager.projects.updateLiens" to set the locked property
@@ -1390,7 +1407,11 @@ class LoggingBucketsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the bucket:
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
       Example: "projects/my-project-id/locations/my-location/buckets/my-
       bucket-id".
   """
@@ -1410,8 +1431,10 @@ class LoggingBucketsListRequest(_messages.Message):
       nextPageToken from the previous response. The values of other method
       parameters should be identical to those in the previous call.
     parent: Required. The parent resource whose buckets are to be listed:
-      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1425,7 +1448,11 @@ class LoggingBucketsPatchRequest(_messages.Message):
   Fields:
     logBucket: A LogBucket resource to be passed as the request body.
     name: Required. The full resource name of the bucket to update.
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
       Example: "projects/my-project-id/locations/my-location/buckets/my-
       bucket-id". Also requires permission
       "resourcemanager.projects.updateLiens" to set the locked property
@@ -1630,8 +1657,11 @@ class LoggingFoldersLocationsBucketsCreateRequest(_messages.Message):
     bucketId: Required. The bucket_id to use for this bucket.
     logBucket: A LogBucket resource to be passed as the request body.
     parent: Required. The resource in which to create the bucket:
-      "projects/[PROJECT_ID]" Examples: "projects/my-logging-project",
-      "organizations/123456789".
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" Example: "projects/my-
+      logging-project/locations/global"
   """
 
   bucketId = _messages.StringField(1)
@@ -1644,7 +1674,11 @@ class LoggingFoldersLocationsBucketsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The full resource name of the bucket to delete.
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
       Example: "projects/my-project-id/locations/my-location/buckets/my-
       bucket-id".
   """
@@ -1657,7 +1691,11 @@ class LoggingFoldersLocationsBucketsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the bucket:
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
       Example: "projects/my-project-id/locations/my-location/buckets/my-
       bucket-id".
   """
@@ -1677,8 +1715,10 @@ class LoggingFoldersLocationsBucketsListRequest(_messages.Message):
       nextPageToken from the previous response. The values of other method
       parameters should be identical to those in the previous call.
     parent: Required. The parent resource whose buckets are to be listed:
-      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1692,7 +1732,11 @@ class LoggingFoldersLocationsBucketsPatchRequest(_messages.Message):
   Fields:
     logBucket: A LogBucket resource to be passed as the request body.
     name: Required. The full resource name of the bucket to update.
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
       Example: "projects/my-project-id/locations/my-location/buckets/my-
       bucket-id". Also requires permission
       "resourcemanager.projects.updateLiens" to set the locked property
@@ -1911,8 +1955,11 @@ class LoggingLocationsBucketsCreateRequest(_messages.Message):
     bucketId: Required. The bucket_id to use for this bucket.
     logBucket: A LogBucket resource to be passed as the request body.
     parent: Required. The resource in which to create the bucket:
-      "projects/[PROJECT_ID]" Examples: "projects/my-logging-project",
-      "organizations/123456789".
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" Example: "projects/my-
+      logging-project/locations/global"
   """
 
   bucketId = _messages.StringField(1)
@@ -1925,7 +1972,11 @@ class LoggingLocationsBucketsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The full resource name of the bucket to delete.
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
       Example: "projects/my-project-id/locations/my-location/buckets/my-
       bucket-id".
   """
@@ -2085,8 +2136,11 @@ class LoggingOrganizationsLocationsBucketsCreateRequest(_messages.Message):
     bucketId: Required. The bucket_id to use for this bucket.
     logBucket: A LogBucket resource to be passed as the request body.
     parent: Required. The resource in which to create the bucket:
-      "projects/[PROJECT_ID]" Examples: "projects/my-logging-project",
-      "organizations/123456789".
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" Example: "projects/my-
+      logging-project/locations/global"
   """
 
   bucketId = _messages.StringField(1)
@@ -2099,7 +2153,11 @@ class LoggingOrganizationsLocationsBucketsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The full resource name of the bucket to delete.
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
       Example: "projects/my-project-id/locations/my-location/buckets/my-
       bucket-id".
   """
@@ -2112,7 +2170,11 @@ class LoggingOrganizationsLocationsBucketsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the bucket:
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
       Example: "projects/my-project-id/locations/my-location/buckets/my-
       bucket-id".
   """
@@ -2132,8 +2194,10 @@ class LoggingOrganizationsLocationsBucketsListRequest(_messages.Message):
       nextPageToken from the previous response. The values of other method
       parameters should be identical to those in the previous call.
     parent: Required. The parent resource whose buckets are to be listed:
-      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2147,7 +2211,11 @@ class LoggingOrganizationsLocationsBucketsPatchRequest(_messages.Message):
   Fields:
     logBucket: A LogBucket resource to be passed as the request body.
     name: Required. The full resource name of the bucket to update.
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
       Example: "projects/my-project-id/locations/my-location/buckets/my-
       bucket-id". Also requires permission
       "resourcemanager.projects.updateLiens" to set the locked property
@@ -2456,8 +2524,11 @@ class LoggingProjectsLocationsBucketsCreateRequest(_messages.Message):
     bucketId: Required. The bucket_id to use for this bucket.
     logBucket: A LogBucket resource to be passed as the request body.
     parent: Required. The resource in which to create the bucket:
-      "projects/[PROJECT_ID]" Examples: "projects/my-logging-project",
-      "organizations/123456789".
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" Example: "projects/my-
+      logging-project/locations/global"
   """
 
   bucketId = _messages.StringField(1)
@@ -2470,7 +2541,11 @@ class LoggingProjectsLocationsBucketsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The full resource name of the bucket to delete.
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
       Example: "projects/my-project-id/locations/my-location/buckets/my-
       bucket-id".
   """
@@ -2483,7 +2558,11 @@ class LoggingProjectsLocationsBucketsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the bucket:
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
       Example: "projects/my-project-id/locations/my-location/buckets/my-
       bucket-id".
   """
@@ -2503,8 +2582,10 @@ class LoggingProjectsLocationsBucketsListRequest(_messages.Message):
       nextPageToken from the previous response. The values of other method
       parameters should be identical to those in the previous call.
     parent: Required. The parent resource whose buckets are to be listed:
-      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2518,7 +2599,11 @@ class LoggingProjectsLocationsBucketsPatchRequest(_messages.Message):
   Fields:
     logBucket: A LogBucket resource to be passed as the request body.
     name: Required. The full resource name of the bucket to update.
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
       Example: "projects/my-project-id/locations/my-location/buckets/my-
       bucket-id". Also requires permission
       "resourcemanager.projects.updateLiens" to set the locked property

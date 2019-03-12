@@ -115,12 +115,24 @@ def TopicUriFunc(topic):
   return ParseTopic(name).SelfLink()
 
 
-def ParsePushConfig(push_endpoint, client=None):
+def ParsePushConfig(args, client=None):
+  """Parses configs of push subscription from args."""
+  push_endpoint = args.push_endpoint
+  if push_endpoint is None:
+    return None
+
   client = client or subscriptions.SubscriptionsClient()
-  push_config = None
-  if push_endpoint is not None:
-    push_config = client.messages.PushConfig(pushEndpoint=push_endpoint)
-  return push_config
+  oidc_token = None
+  service_account_email = getattr(args, 'SERVICE_ACCOUNT_EMAIL', None)
+
+  # Only set oidc_token when service_account_email is set.
+  if service_account_email is not None:
+    audience = getattr(args, 'OPTIONAL_AUDIENCE_OVERRIDE', None)
+    oidc_token = client.messages.OidcToken(
+        serviceAccountEmail=service_account_email, audience=audience)
+
+  return client.messages.PushConfig(
+      pushEndpoint=push_endpoint, oidcToken=oidc_token)
 
 
 def FormatSeekTime(time):
@@ -262,4 +274,3 @@ def ListSnapshotDisplayDict(snapshot):
   result['topicId'] = topic_ref.topicsId
   result['expireTime'] = snapshot.expireTime
   return result
-

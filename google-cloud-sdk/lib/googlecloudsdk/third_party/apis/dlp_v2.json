@@ -220,12 +220,12 @@
       "type": "object",
       "properties": {
         "maxFindingsPerItem": {
-          "description": "Max number of findings that will be returned for each item scanned.\nWhen set within `InspectDataSourceRequest`,\nthe maximum returned is 1000 regardless if this is set higher.\nWhen set within `InspectContentRequest`, this field is ignored.",
+          "description": "Max number of findings that will be returned for each item scanned.\nWhen set within `InspectDataSourceRequest`,\nthe maximum returned is 2000 regardless if this is set higher.\nWhen set within `InspectContentRequest`, this field is ignored.",
           "type": "integer",
           "format": "int32"
         },
         "maxFindingsPerRequest": {
-          "description": "Max number of findings that will be returned per request\/job.\nWhen set within `InspectContentRequest`, the maximum returned is 1000\nregardless if this is set higher.",
+          "description": "Max number of findings that will be returned per request\/job.\nWhen set within `InspectContentRequest`, the maximum returned is 2000\nregardless if this is set higher.",
           "type": "integer",
           "format": "int32"
         },
@@ -1451,7 +1451,7 @@
     },
     "GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig": {
       "id": "GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig",
-      "description": "Replaces an identifier with a surrogate using FPE with the FFX\nmode of operation; however when used in the `ReidentifyContent` API method,\nit serves the opposite function by reversing the surrogate back into\nthe original identifier.\nThe identifier must be encoded as ASCII.\nFor a given crypto key and context, the same identifier will be\nreplaced with the same surrogate.\nIdentifiers must be at least two characters long.\nIn the case that the identifier is the empty string, it will be skipped.\nSee https:\/\/cloud.google.com\/dlp\/docs\/pseudonymization to learn more.",
+      "description": "Note: We recommend using  CryptoDeterministicConfig for all use cases which\ndo not require preserving the input alphabet space and size, plus warrant\nreferential integrity.",
       "type": "object",
       "properties": {
         "cryptoKey": {
@@ -1527,7 +1527,7 @@
       "type": "object",
       "properties": {
         "key": {
-          "description": "The AES 128\/192\/256 bit key. [required]",
+          "description": "A 128\/192\/256\/512 bit key. [required]",
           "type": "string",
           "format": "byte"
         }
@@ -1768,7 +1768,7 @@
     },
     "GooglePrivacyDlpV2Condition": {
       "id": "GooglePrivacyDlpV2Condition",
-      "description": "The field type of `value` and `field` do not need to match to be\nconsidered equal, but not all comparisons are possible.\n\nA `value` of type:\n\n- `string` can be compared against all other types\n- `boolean` can only be compared against other booleans\n- `integer` can be compared against doubles or a string if the string value\ncan be parsed as an integer.\n- `double` can be compared against integers or a string if the string can\nbe parsed as a double.\n- `Timestamp` can be compared against strings in RFC 3339 date string\nformat.\n- `TimeOfDay` can be compared against timestamps and strings in the format\nof 'HH:mm:ss'.\n\nIf we fail to compare do to type mismatch, a warning will be given and\nthe condition will evaluate to false.",
+      "description": "The field type of `value` and `field` do not need to match to be\nconsidered equal, but not all comparisons are possible.\nEQUAL_TO and NOT_EQUAL_TO attempt to compare even with incompatible types,\nbut all other comparisons are invalid with incompatible types.\nA `value` of type:\n\n- `string` can be compared against all other types\n- `boolean` can only be compared against other booleans\n- `integer` can be compared against doubles or a string if the string value\ncan be parsed as an integer.\n- `double` can be compared against integers or a string if the string can\nbe parsed as a double.\n- `Timestamp` can be compared against strings in RFC 3339 date string\nformat.\n- `TimeOfDay` can be compared against timestamps and strings in the format\nof 'HH:mm:ss'.\n\nIf we fail to compare do to type mismatch, a warning will be given and\nthe condition will evaluate to false.",
       "type": "object",
       "properties": {
         "field": {
@@ -1779,8 +1779,8 @@
           "description": "Operator used to compare the field or infoType to the value. [required]",
           "enumDescriptions": [
             "",
-            "Equal.",
-            "Not equal to.",
+            "Equal. Attempts to match even with incompatible types.",
+            "Not equal to. Attempts to match even with incompatible types.",
             "Greater than.",
             "Less than.",
             "Greater than or equals.",
@@ -1852,7 +1852,7 @@
     },
     "GooglePrivacyDlpV2TransformationSummary": {
       "id": "GooglePrivacyDlpV2TransformationSummary",
-      "description": "Summary of a single tranformation.\nOnly one of 'transformation', 'field_transformation', or 'record_suppress'\nwill be set.",
+      "description": "Summary of a single transformation.\nOnly one of 'transformation', 'field_transformation', or 'record_suppress'\nwill be set.",
       "type": "object",
       "properties": {
         "infoType": {
@@ -2361,7 +2361,8 @@
           "enumDescriptions": [
             "Includes all files.",
             "Includes all file extensions not covered by text file types.",
-            "Included file extensions:\n  asc, brf, c, cc, cpp, csv, cxx, c++, cs, css, dart, eml, go, h, hh, hpp,\n  hxx, h++, hs, html, htm, shtml, shtm, xhtml, lhs, ini, java, js, json,\n  ocaml, md, mkd, markdown, m, ml, mli, pl, pm, php, phtml, pht, py, pyw,\n  rb, rbw, rs, rc, scala, sh, sql, tex, txt, text, tsv, vcard, vcs, wml,\n  xml, xsl, xsd, yml, yaml."
+            "Included file extensions:\n  asc, brf, c, cc, cpp, csv, cxx, c++, cs, css, dart, eml, go, h, hh, hpp,\n  hxx, h++, hs, html, htm, shtml, shtm, xhtml, lhs, ini, java, js, json,\n  ocaml, md, mkd, markdown, m, ml, mli, pl, pm, php, phtml, pht, py, pyw,\n  rb, rbw, rs, rc, scala, sh, sql, tex, txt, text, tsv, vcard, vcs, wml,\n  xml, xsl, xsd, yml, yaml.",
+            "Included file extensions:\n  bmp, gif, jpg, jpeg, jpe, png.\nbytes_limit_per_file has no effect on image files."
           ],
           "type": "array",
           "items": {
@@ -2369,7 +2370,8 @@
             "enum": [
               "FILE_TYPE_UNSPECIFIED",
               "BINARY_FILE",
-              "TEXT_FILE"
+              "TEXT_FILE",
+              "IMAGE"
             ]
           }
         },
@@ -2524,7 +2526,7 @@
           "$ref": "GooglePrivacyDlpV2PublishSummaryToCscc"
         },
         "jobNotificationEmails": {
-          "description": "Enable email notification to project owners and editors on job\u2018s\ncompletion\/failure.",
+          "description": "Enable email notification to project owners and editors on job's\ncompletion\/failure.",
           "$ref": "GooglePrivacyDlpV2JobNotificationEmails"
         }
       }
@@ -3468,6 +3470,7 @@
     },
     "GooglePrivacyDlpV2Result": {
       "id": "GooglePrivacyDlpV2Result",
+      "description": "All result fields mentioned below are updated while the job is processing.",
       "type": "object",
       "properties": {
         "processedBytes": {

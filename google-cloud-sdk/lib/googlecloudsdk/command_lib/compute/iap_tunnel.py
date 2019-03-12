@@ -64,7 +64,7 @@ def _AddBaseArgs(parser):
       help='Disables checking certificates on the WebSocket connection.')
 
 
-def AddConnectionHelperArgs(parser, tunnel_through_iap_scope):
+def AddSshTunnelArgs(parser, tunnel_through_iap_scope):
   _AddBaseArgs(parser)
   tunnel_through_iap_scope.add_argument(
       '--tunnel-through-iap',
@@ -76,6 +76,80 @@ def AddConnectionHelperArgs(parser, tunnel_through_iap_scope):
 
 def AddProxyServerHelperArgs(parser):
   _AddBaseArgs(parser)
+
+
+class SshTunnelArgs(object):
+  """A class to hold some options for IAP Tunnel SSH/SCP.
+
+  Attributes:
+    track: str/None, the prefix of the track for the inner gcloud.
+    project: str, the project id (string with dashes).
+    zone: str, the zone name.
+    instance: str, the instance name.
+    interface: str, the interface name.
+    pass_through_args: [str], additional args to be passed to the inner gcloud.
+  """
+
+  def __init__(self):
+    self.track = None
+    self.project = ''
+    self.zone = ''
+    self.instance = ''
+    self.interface = ''
+    self.pass_through_args = []
+
+  @staticmethod
+  def FromArgs(args, track, instance_ref, interface):
+    """Construct an SshTunnelArgs from command line args and values.
+
+    Args:
+      args: The parsed commandline arguments. May or may not have had
+        AddSshTunnelArgs called.
+      track: ReleaseTrack, The currently running release track.
+      instance_ref: The target instance reference object.
+      interface: The target interface resource object.
+    Returns:
+      SshTunnelArgs or None if IAP Tunnel is disabled.
+    """
+    if not getattr(args, 'tunnel_through_iap', False):
+      return None
+
+    res = SshTunnelArgs()
+
+    res.track = track.prefix
+    res.project = instance_ref.project
+    res.zone = instance_ref.zone
+    res.instance = instance_ref.instance
+    res.interface = interface.name
+
+    # The tunnel_through_iap attribute existed, so these must too.
+    if args.IsSpecified('iap_tunnel_url_override'):
+      res.pass_through_args.append(
+          '--iap-tunnel-url-override=' + args.iap_tunnel_url_override)
+    if args.iap_tunnel_insecure_disable_websocket_cert_check:
+      res.pass_through_args.append(
+          '--iap-tunnel-insecure-disable-websocket-cert-check')
+    return res
+
+  def _Members(self):
+    return (
+        self.track,
+        self.project,
+        self.zone,
+        self.instance,
+        self.interface,
+        self.pass_through_args,
+    )
+
+  def __eq__(self, other):
+    # pylint: disable=protected-access
+    return self._Members() == other._Members()
+
+  def __ne__(self, other):
+    return not self == other
+
+  def __repr__(self):
+    return 'SshTunnelArgs<%r>' % (self._Members(),)
 
 
 def DetermineLocalPort(port_arg=0):
@@ -467,81 +541,6 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
       log.info('Socket error [%s] while receiving from client.', str(e))
     except:  # pylint: disable=bare-except
       log.exception('Error while receiving from client.')
-
-
-# TODO(b/119212951): Investigate alternatives to opening a local port like
-#                    ssh_config ProxyCommand and PuTTY plink.exe
-# TODO(b/119622656): Implement as context manager
-class IapTunnelConnectionHelper(_BaseIapTunnelHelper):
-  """Facilitates connections by opening a port and connecting through IAP."""
-
-  def __init__(self, args, project, zone, instance, interface, port):
-    super(IapTunnelConnectionHelper, self).__init__(
-        args, project, zone, instance, interface, port)
-    self._local_port = DetermineLocalPort()
-    self._server_sockets = []
-    self._listen_thread = None
-
-  def __del__(self):
-    self._CloseServerSocket()
-
-  def StartListener(self, accept_multiple_connections=False):
-    """Start a server socket and listener thread."""
-    self._server_sockets = _OpenLocalTcpSockets('localhost', self._local_port)
-    self._listen_thread = threading.Thread(
-        target=functools.partial(self._ListenAndConnect,
-                                 accept_multiple_connections))
-    self._listen_thread.daemon = True
-    self._listen_thread.start()
-
-  def StopListener(self):
-    self._CloseServerSocket()
-    self._shutdown = True
-
-  def GetLocalPort(self):
-    return self._local_port
-
-  def _AcceptAndHandleNewConnection(self):
-    """Accept and handle one connection."""
-    conn = None
-    try:
-      conn, client_socket_address = self._server_sockets[0].accept()
-      try:
-        self._RunReceiveLocalData(conn, repr(client_socket_address))
-      except Exception as e:  # pylint: disable=broad-except
-        if isinstance(e, EnvironmentError):
-          log.debug('Socket error [%s] while receiving from client.', str(e))
-        else:
-          log.debug('Error while receiving from client.', exc_info=True)
-        raise
-    finally:
-      try:
-        if conn:
-          conn.close()
-      except EnvironmentError:
-        pass
-
-  def _CloseServerSocket(self):
-    log.debug('Stopping server.')
-    try:
-      for server_socket in self._server_sockets:
-        server_socket.close()
-    except EnvironmentError:
-      pass
-
-  def _ListenAndConnect(self, accept_multiple_connections):
-    """Listen for connection and connect WebSocket IAP Tunnel."""
-    try:
-      if accept_multiple_connections:
-        while not self._shutdown:
-          try:
-            self._AcceptAndHandleNewConnection()
-          except:  # pylint: disable=bare-except
-            pass
-      else:
-        self._AcceptAndHandleNewConnection()
-    finally:
-      self._CloseServerSocket()
 
 
 class IapTunnelStdinHelper(_BaseIapTunnelHelper):

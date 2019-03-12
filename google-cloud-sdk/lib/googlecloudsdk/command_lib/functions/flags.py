@@ -108,6 +108,15 @@ def AddSourceFlag(parser):
       * Reference to source repository or,
       * Local filesystem path (root directory of function source).
 
+      Note that if you do not specify the `--source` flag:
+
+      * Current directory will be used for new function deployments.
+      * If the function is previously deployed using a local filesystem path,
+      then function's source code will be updated using the current directory.
+      * If the function is previously deployed using a Google Cloud Storage
+      location or a source repository, then the function's source code will not
+      be updated.
+
       The value of the flag will be interpreted as a Cloud Storage location, if
       it starts with `gs://`.
 
@@ -153,9 +162,6 @@ def AddSourceFlag(parser):
       moveable-aliases/alternate-branch/paths/path-to=source
       ```
 
-      If the source location is not explicitly set, new functions will deploy
-      from the current directory. Existing functions keep their old source.
-
       """)
 
 
@@ -165,9 +171,12 @@ def AddStageBucketFlag(parser):
       '--stage-bucket',
       help=('When deploying a function from a local directory, this flag\'s '
             'value is the name of the Google Cloud Storage bucket in which '
-            'source code will be stored. Note that to use this flag '
-            'successfully, the account in use must have permissions to write '
-            'to this bucket. For help granting access, refer to this guide: '
+            'source code will be stored. Note that if you set the '
+            '`--stage-bucket` flag when deploying a function, you will need to '
+            'specify `--source` or `--stage-bucket` in subsequent deployments '
+            'to update your source code. To use this flag successfully, the '
+            'account in use must have permissions to write to this bucket. For '
+            'help granting access, refer to this guide: '
             'https://cloud.google.com/storage/docs/access-control/'),
       type=api_util.ValidateAndStandarizeBucketUriOrRaise)
 
@@ -224,23 +233,16 @@ def AddMaxInstancesFlag(parser):
   mutex_group.add_argument(
       '--max-instances',
       type=arg_parsers.BoundedInt(lower_bound=1),
-      hidden=True,
       help="""\
-      Sets the maximum number of instances for the function. There may be
-      per-region and/or per-function upper limits for max-instances. The
-      deploy fails if the upper limit is exceeded.
-
-      A function execution that would exceed max-instances times out.
+        Sets the maximum number of instances for the function. A function
+        execution that would exceed max-instances times out.
       """
   )
   mutex_group.add_argument(
       '--clear-max-instances',
       action='store_true',
-      hidden=True,
       help="""\
-      Sets the maximum number of instances for the function to the Cloud
-      Functions default value. The default value is determined by the Cloud
-      Platform.
+        Clears the maximum instances setting for the function.
       """
   )
 

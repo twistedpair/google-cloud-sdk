@@ -1762,9 +1762,19 @@ specified in the annotation.
 """
   parser.add_argument(
       '--enable-managed-pod-identity',
-      action='store_true',
+      action=actions.DeprecationAction(
+          '--[no-]enable-managed-pod-identity',
+          warn="""\
+Alpha flag `--[no-]enable-managed-pod-identity` is deprecated and will be removed
+in a future release.
+
+Instead, use the beta `--enable-workload-identity` flag:
+
+    gcloud beta container clusters create --enable-workload-identity
+""",
+          removed=False,
+          action='store_true'),
       default=False,
-      # TODO(b/109942548): unhide this flag for Beta
       hidden=True,
       help=enable_help_text)
   sa_help_text = """\
@@ -1777,10 +1787,37 @@ Must be set with `--enable-managed-pod-identity`.
 """
   parser.add_argument(
       '--federating-service-account',
+      action=actions.DeprecationAction(
+          '--federating-service-account',
+          warn="""\
+Alpha flag `--federating-service-account` is deprecated and will be removed
+in a future release.
+
+Instead, use the beta `--enable-workload-identity` flag:
+
+    gcloud beta container clusters create --enable-workload-identity
+""",
+          removed=False),
       default=None,
-      # TODO(b/109942548): unhide this flag for Beta
       hidden=True,
       help=sa_help_text)
+
+
+def AddWorkloadIdentityFlags(parser):
+  """Adds Workload Identity flags to the parser."""
+  # TODO(b/126751755): Once we have a beta docs page, update the documentation
+  # link in the help text.
+  parser.add_argument(
+      '--enable-workload-identity',
+      default=False,
+      action='store_true',
+      hidden=True,
+      help="""\
+Enable Workload Identity on the cluster.
+
+When enabled, Kubernetes service accounts will be able to act as Cloud IAM
+Service Accounts.
+""")
 
 
 def AddResourceUsageExportFlags(parser, add_clear_flag=False, hidden=False):
@@ -2103,3 +2140,16 @@ def AddMetadataFlags(parser):
       default={},
       help=metadata_from_file_help,
       metavar='KEY=LOCAL_FILE_PATH')
+
+
+def AddEnableShieldedContainersFlags(parser):
+  """Adds a --enable-shielded-containers flag to the given parser."""
+  help_text = """\
+Enable shielded containers for this cluster. Enabling shielded containers
+will enable a more secure Node credential bootstrapping implementation.
+"""
+  parser.add_argument(
+      '--enable-shielded-containers',
+      action='store_true',
+      help=help_text,
+      hidden=True)

@@ -1,10 +1,11 @@
 """Generated message classes for datacatalog version v1alpha3.
 
-DataCatalog APIs provides features to attach metadata to Google Cloud Platform
-resources like Bigquery Tables.<br> Key critical resources include -<br>     -
-Entries  (Datahub representation of a cloud resource)<br>     - Tag Templates
-(Definition of columns and value types for attaching metadata)<br>     - Tags
-(Values associated with Tag templates and attached to Entries.)<br> Datahub
+Google Cloud Data Catalog API provides features to attach metadata to Google
+Cloud Platform resources like BigQuery Tables.<br> Key critical resources
+include: <ul>     <li>Entries  (Datahub representation of a cloud
+resource)</li>     <li>Tag Templates (Definition of columns and value types
+for attaching metadata)</li>     <li>Tags (Values associated with Tag
+templates and attached to Entries.)</li> </ul> Google Cloud Data Catalog API
 also provides rich search functionality to search resources for Entries and
 tags.
 """

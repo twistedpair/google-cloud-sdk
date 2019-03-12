@@ -192,8 +192,8 @@ class Binding(_messages.Message):
       service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: A Google Apps domain name that represents all the
-      users of that domain. For example, `google.com` or `example.com`.
+      * `domain:{domain}`: The G Suite domain (primary) that represents all
+      the    users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -310,7 +310,25 @@ class DicomConfig(_messages.Message):
 class DicomStore(_messages.Message):
   r"""Represents a DICOM store.
 
+  Messages:
+    LabelsValue: User-supplied key-value pairs used to organize DICOM stores.
+      Label keys must be between 1 and 63 characters long, have a UTF-8
+      encoding of maximum 128 bytes, and must conform to the following PCRE
+      regular expression: \p{Ll}\p{Lo}{0,62}  Label values are optional, must
+      be between 1 and 63 characters long, have a UTF-8 encoding of maximum
+      128 bytes, and must conform to the following PCRE regular expression:
+      [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated
+      with a given store.
+
   Fields:
+    labels: User-supplied key-value pairs used to organize DICOM stores.
+      Label keys must be between 1 and 63 characters long, have a UTF-8
+      encoding of maximum 128 bytes, and must conform to the following PCRE
+      regular expression: \p{Ll}\p{Lo}{0,62}  Label values are optional, must
+      be between 1 and 63 characters long, have a UTF-8 encoding of maximum
+      128 bytes, and must conform to the following PCRE regular expression:
+      [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated
+      with a given store.
     name: Output only. Resource name of the DICOM store, of the form `projects
       /{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores/
       {dicom_store_id}`.
@@ -318,8 +336,40 @@ class DicomStore(_messages.Message):
       Supplied by the client.
   """
 
-  name = _messages.StringField(1)
-  notificationConfig = _messages.MessageField('NotificationConfig', 2)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""User-supplied key-value pairs used to organize DICOM stores.  Label
+    keys must be between 1 and 63 characters long, have a UTF-8 encoding of
+    maximum 128 bytes, and must conform to the following PCRE regular
+    expression: \p{Ll}\p{Lo}{0,62}  Label values are optional, must be between
+    1 and 63 characters long, have a UTF-8 encoding of maximum 128 bytes, and
+    must conform to the following PCRE regular expression:
+    [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated with
+    a given store.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+  name = _messages.StringField(2)
+  notificationConfig = _messages.MessageField('NotificationConfig', 3)
 
 
 class Empty(_messages.Message):
@@ -373,12 +423,7 @@ class ExportResourcesRequest(_messages.Message):
     bigqueryDestination: The BigQuery output destination.  The BigQuery
       location requires two IAM roles: `roles/bigquery.dataEditor` and
       `roles/bigquery.jobUser`.  The output will be one BigQuery table per
-      resource type. The server implements a data-driven FHIR-to-SQL schema
-      mapping in support of analytics workloads with BigQuery. Incompatible
-      changes to the output schema may be introduced in the future as a result
-      of continuous collaboration with the FHIR community to refine the
-      [desired SQL projection of FHIR resources](https://github.com/rbrush
-      /sql-on-fhir/blob/master/sql-on-fhir.md).
+      resource type.
     gcsDestination: The Cloud Storage output destination.  The Cloud Storage
       location requires the `roles/storage.objectAdmin` Cloud IAM role.  The
       exported outputs are organized by FHIR resource types. The server will
@@ -421,6 +466,16 @@ class FhirConfig(_messages.Message):
 class FhirStore(_messages.Message):
   r"""Represents a FHIR store.
 
+  Messages:
+    LabelsValue: User-supplied key-value pairs used to organize FHIR stores.
+      Label keys must be between 1 and 63 characters long, have a UTF-8
+      encoding of maximum 128 bytes, and must conform to the following PCRE
+      regular expression: \p{Ll}\p{Lo}{0,62}  Label values are optional, must
+      be between 1 and 63 characters long, have a UTF-8 encoding of maximum
+      128 bytes, and must conform to the following PCRE regular expression:
+      [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated
+      with a given store.
+
   Fields:
     disableReferentialIntegrity: Whether to disable referential integrity in
       this FHIR store. This field is immutable after FHIR store creation. The
@@ -438,6 +493,12 @@ class FhirStore(_messages.Message):
       cannot be updated. If set to true, no historical versions will be kept.
       The server will send back errors for attempts to read the historical
       versions.
+    enableHistoryImport: Whether to allow the bulk import API to accept
+      history bundles and directly insert historical resource versions into
+      the FHIR store. Importing resource histories creates resource
+      interactions that appear to have occurred in the past, which clients may
+      not want to allow. If set to false, history bundles within an import
+      will fail with an error.
     enableUpdateCreate: Whether this FHIR store has the [updateCreate
       capability](https://www.hl7.org/fhir/capabilitystatement-
       definitions.html#CapabilityStatement.rest.resource.updateCreate). This
@@ -449,6 +510,14 @@ class FhirStore(_messages.Message):
       sensitive data such as patient identifiers, those IDs will be part of
       the FHIR resource path recorded in Cloud audit logs and Cloud Pub/Sub
       notifications.
+    labels: User-supplied key-value pairs used to organize FHIR stores.  Label
+      keys must be between 1 and 63 characters long, have a UTF-8 encoding of
+      maximum 128 bytes, and must conform to the following PCRE regular
+      expression: \p{Ll}\p{Lo}{0,62}  Label values are optional, must be
+      between 1 and 63 characters long, have a UTF-8 encoding of maximum 128
+      bytes, and must conform to the following PCRE regular expression:
+      [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated
+      with a given store.
     name: Output only. Resource name of the FHIR store, of the form
       `projects/{project_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}`
       .
@@ -458,11 +527,44 @@ class FhirStore(_messages.Message):
       has triggered the notification, e.g. "action":"CreateResource".
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""User-supplied key-value pairs used to organize FHIR stores.  Label
+    keys must be between 1 and 63 characters long, have a UTF-8 encoding of
+    maximum 128 bytes, and must conform to the following PCRE regular
+    expression: \p{Ll}\p{Lo}{0,62}  Label values are optional, must be between
+    1 and 63 characters long, have a UTF-8 encoding of maximum 128 bytes, and
+    must conform to the following PCRE regular expression:
+    [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated with
+    a given store.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   disableReferentialIntegrity = _messages.BooleanField(1)
   disableResourceVersioning = _messages.BooleanField(2)
-  enableUpdateCreate = _messages.BooleanField(3)
-  name = _messages.StringField(4)
-  notificationConfig = _messages.MessageField('NotificationConfig', 5)
+  enableHistoryImport = _messages.BooleanField(3)
+  enableUpdateCreate = _messages.BooleanField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  notificationConfig = _messages.MessageField('NotificationConfig', 7)
 
 
 class Finding(_messages.Message):
@@ -492,8 +594,8 @@ class GoogleCloudHealthcareV1alpha2DicomBigQueryDestination(_messages.Message):
       the table will be overwritten by the contents of the DICOM store. If the
       flag is not set and the destination table already exists, the export
       call returns an error.
-    tableUri: BigQuery URI to a table, up to 2000 characters long. Accepted
-      forms: *  BigQuery gs path e.g. bq://projectId.bqDatasetId.tableId
+    tableUri: BigQuery URI to a table, up to 2000 characters long, in the
+      format `bq://projectId.bqDatasetId.tableId`
   """
 
   force = _messages.BooleanField(1)
@@ -552,8 +654,8 @@ class GoogleCloudHealthcareV1alpha2FhirBigQueryDestination(_messages.Message):
   r"""The configuration for exporting to BigQuery.
 
   Fields:
-    datasetUri: BigQuery URI to a dataset, up to 2000 characters long.
-      Accepted forms: *  BigQuery gs path e.g. bq://projectId.bqDatasetId
+    datasetUri: BigQuery URI to a dataset, up to 2000 characters long, in the
+      format `bq://projectId.bqDatasetId`
     schemaConfig: The configuration for the exported BigQuery schema.
   """
 
@@ -593,14 +695,15 @@ class GoogleCloudHealthcareV1alpha2FhirRestGcsDestination(_messages.Message):
 
 
 class GoogleCloudHealthcareV1alpha2FhirRestGcsErrorDestination(_messages.Message):
-  r"""Specifies the Cloud Storage destination for exporting errors to.
+  r"""Specifies the Cloud Storage destination where errors will be recorded.
 
   Fields:
-    uriPrefix: URI for a Cloud Storage directory to which result files should
-      be written (in the format `gs://{bucket-id}/{path/to/destination/dir}`).
-      If there is no trailing slash, the service will append one when
-      composing the object path. The user is responsible for creating the
-      Cloud Storage bucket referenced in `uri_prefix`.
+    uriPrefix: URI for a Cloud Storage directory to which error report files
+      should be written (in the format `gs://{bucket-
+      id}/{path/to/destination/dir}`). If there is no trailing slash, the
+      service will append one when composing the object path. The user is
+      responsible for creating the Cloud Storage bucket referenced in
+      `uri_prefix`.
   """
 
   uriPrefix = _messages.StringField(1)
@@ -610,19 +713,18 @@ class GoogleCloudHealthcareV1alpha2FhirRestGcsSource(_messages.Message):
   r"""Specifies the configuration for importing data from Cloud Storage.
 
   Fields:
-    uri: Points to a Cloud Storage URI containing file(s) with content only.
-      The URI must be in the following format: `gs://{bucket_id}/{object_id}`.
-      The URI can include wildcards in `object_id` and thus identify multiple
-      files. Supported wildcards:  '*' to match 0 or more non-separator
-      characters  '**' to match 0 or more characters (including separators).
-      Must be used at       the end of a path and with no other wildcards in
-      the       path. Can also be used with a file extension (such as .dcm),
-      which       imports all files with the extension in the specified
-      directory and       its sub-directories. For example,       `gs://my-
-      bucket/my-directory/**.dcm` imports all files with .dcm       extensions
-      in `my-directory/` and its sub-directories.  '?' to match 1 character
-      All other URI formats are invalid. Files matching the wildcard are
-      expected to contain content only, no metadata.
+    uri: Points to a Cloud Storage URI containing file(s) to import.  The URI
+      must be in the following format: `gs://{bucket_id}/{object_id}`. The URI
+      can include wildcards in `object_id` and thus identify multiple files.
+      Supported wildcards:  *  `*` to match 0 or more non-separator characters
+      *  `**` to match 0 or more characters (including separators). Must be
+      used at the end of a path and with no other wildcards in the path. Can
+      also be used with a file extension (such as .ndjson), which imports all
+      files with the extension in the specified directory and its sub-
+      directories. For example, `gs://my-bucket/my-directory/**.ndjson`
+      imports all files with `.ndjson` extensions in `my-directory/` and its
+      sub-directories. *  `?` to match 1 character  Files matching the
+      wildcard are expected to contain content only, no metadata.
   """
 
   uri = _messages.StringField(1)
@@ -947,6 +1049,22 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebInstancesRequest(_me
   Fields:
     dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
       RS, WADO-RS, or QIDO-RS standard (e.g., `instances`).
+    parent: The name of the DICOM store that is being accessed (e.g., `project
+      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
+      /{dicom_store_id}`).
+  """
+
+  dicomWebPath = _messages.StringField(1, required=True)
+  parent = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebSearchForStudiesRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsDicomStoresDicomWebSearchForStudies
+  Request object.
+
+  Fields:
+    dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
+      RS, WADO-RS, or QIDO-RS standard (e.g., `studies`).
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
       /{dicom_store_id}`).
@@ -1317,6 +1435,9 @@ class HealthcareProjectsLocationsDatasetsDicomStoresListRequest(_messages.Messag
   r"""A HealthcareProjectsLocationsDatasetsDicomStoresListRequest object.
 
   Fields:
+    filter: Restricts stores returned to those matching a filter. Syntax: http
+      s://cloud.google.com/appengine/docs/standard/python/search/query_strings
+      Only filtering on labels is supported, for example `labels.key=value`.
     pageSize: Limit on the number of DICOM stores to return in a single
       response. If zero the default page size of 100 is used.
     pageToken: The next_page_token value returned from the previous List
@@ -1324,9 +1445,10 @@ class HealthcareProjectsLocationsDatasetsDicomStoresListRequest(_messages.Messag
     parent: Name of the dataset.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsDicomStoresPatchRequest(_messages.Message):
@@ -1676,6 +1798,9 @@ class HealthcareProjectsLocationsDatasetsFhirStoresListRequest(_messages.Message
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresListRequest object.
 
   Fields:
+    filter: Restricts stores returned to those matching a filter. Syntax: http
+      s://cloud.google.com/appengine/docs/standard/python/search/query_strings
+      Only filtering on labels is supported, for example `labels.key=value`.
     pageSize: Limit on the number of FHIR stores to return in a single
       response.  If zero the default page size of 100 is used.
     pageToken: The next_page_token value returned from the previous List
@@ -1683,9 +1808,10 @@ class HealthcareProjectsLocationsDatasetsFhirStoresListRequest(_messages.Message
     parent: Name of the dataset.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresPatchRequest(_messages.Message):
@@ -1842,6 +1968,9 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresListRequest(_messages.Messag
   r"""A HealthcareProjectsLocationsDatasetsHl7V2StoresListRequest object.
 
   Fields:
+    filter: Restricts stores returned to those matching a filter. Syntax: http
+      s://cloud.google.com/appengine/docs/standard/python/search/query_strings
+      Only filtering on labels is supported, for example `labels.key=value`.
     pageSize: Limit on the number of HL7v2 stores to return in a single
       response. If zero the default page size of 100 is used.
     pageToken: The next_page_token value returned from the previous List
@@ -1849,9 +1978,10 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresListRequest(_messages.Messag
     parent: Name of the dataset.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesCreateRequest(_messages.Message):
@@ -1947,21 +2077,20 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesListRequest(_message
       'HL7RegExp("^.*\|.*\|CERNER")' - PatientId(value, type), which matches
       if the message lists a patient   having an ID of the given value and
       type in the PID-2, PID-3, or PID-4   segments; e.g. 'PatientId("123456",
-      "MRN")' - HasLabel(x), a boolean returning true if the message has a
-      label with   key x (having any value) set using the labels map in
-      Message; e.g.   'HasLabel("priority")' - Label(x), a string value of the
-      label with key x as set using the labels   map in Message, e.g.
-      'Label("priority") = "high"' Negation on the patient ID function and the
-      label function are not supported, e.g. invalid queries: 'NOT
-      PatientId("123456", "MRN")', 'NOT HasLabel("tag1")', 'NOT Label("tag2")
-      = "val2"'. Conjunction of multiple patient ID functions is not
-      supported, e.g. an invalid query: 'PatientId("123456", "MRN") AND
-      PatientId("456789", "MRN")'. Conjunction of multiple label functions is
-      also not supported, e.g. an invalid query: 'HasLabel("tag1") AND
-      Label("tag2") = "val2"'. Conjunction of one patient ID function, one
-      label function and other fields is supported, e.g. a valid query:
-      'PatientId("123456", "MRN") AND HasLabel("tag1") AND message_type =
-      "ADT"'.
+      "MRN")' - labels.x, a string value of the label with key x as set using
+      the labels   map in Message, e.g. 'labels."priority"="high"'. ":*" can
+      be used to   assert the existence of a label, e.g.
+      'labels."priority":*'. Negation on the patient ID function or the labels
+      field is not supported, e.g. invalid queries: 'NOT PatientId("123456",
+      "MRN")', 'NOT labels."tag1":*', 'NOT labels."tag2"="val2"'. Conjunction
+      of multiple patient ID functions is not supported, e.g. an invalid
+      query: 'PatientId("123456", "MRN") AND PatientId("456789", "MRN")'.
+      Conjunction of multiple labels fields is also not supported, e.g. an
+      invalid query: 'labels."tag1":* AND labels."tag2"="val2"'. Conjunction
+      of one patient ID function, one labels field and other fields is
+      supported, e.g. a valid query: 'PatientId("123456", "MRN") AND
+      labels."tag1":* AND message_type = "ADT"'. HasLabel(x) and Label(x) are
+      deprecated.
     orderBy: Orders messages returned by the specified order_by clause.
       Syntax:
       https://cloud.google.com/apis/design/design_patterns#sorting_order
@@ -2171,7 +2300,25 @@ class HealthcareProjectsLocationsListRequest(_messages.Message):
 class Hl7V2Store(_messages.Message):
   r"""Represents an HL7v2 store.
 
+  Messages:
+    LabelsValue: User-supplied key-value pairs used to organize HL7v2 stores.
+      Label keys must be between 1 and 63 characters long, have a UTF-8
+      encoding of maximum 128 bytes, and must conform to the following PCRE
+      regular expression: \p{Ll}\p{Lo}{0,62}  Label values are optional, must
+      be between 1 and 63 characters long, have a UTF-8 encoding of maximum
+      128 bytes, and must conform to the following PCRE regular expression:
+      [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated
+      with a given store.
+
   Fields:
+    labels: User-supplied key-value pairs used to organize HL7v2 stores.
+      Label keys must be between 1 and 63 characters long, have a UTF-8
+      encoding of maximum 128 bytes, and must conform to the following PCRE
+      regular expression: \p{Ll}\p{Lo}{0,62}  Label values are optional, must
+      be between 1 and 63 characters long, have a UTF-8 encoding of maximum
+      128 bytes, and must conform to the following PCRE regular expression:
+      [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated
+      with a given store.
     name: Output only. Resource name of the HL7v2 store, of the form `projects
       /{project_id}/datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_id}`.
     notificationConfig: The notification destination all messages (both Ingest
@@ -2182,9 +2329,41 @@ class Hl7V2Store(_messages.Message):
       server parses the messages.
   """
 
-  name = _messages.StringField(1)
-  notificationConfig = _messages.MessageField('NotificationConfig', 2)
-  parserConfig = _messages.MessageField('ParserConfig', 3)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""User-supplied key-value pairs used to organize HL7v2 stores.  Label
+    keys must be between 1 and 63 characters long, have a UTF-8 encoding of
+    maximum 128 bytes, and must conform to the following PCRE regular
+    expression: \p{Ll}\p{Lo}{0,62}  Label values are optional, must be between
+    1 and 63 characters long, have a UTF-8 encoding of maximum 128 bytes, and
+    must conform to the following PCRE regular expression:
+    [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated with
+    a given store.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+  name = _messages.StringField(2)
+  notificationConfig = _messages.MessageField('NotificationConfig', 3)
+  parserConfig = _messages.MessageField('ParserConfig', 4)
 
 
 class HttpBody(_messages.Message):
@@ -2920,9 +3099,9 @@ class SchemaConfig(_messages.Message):
 
   Fields:
     recursiveStructureDepth: The depth for all recursive structures in the
-      output analytics schema. For example, concept in the CodeSystem resource
-      is a recursive structure; when the depth is 2, the CodeSystem table will
-      have a column called `concept.concept` but not
+      output analytics schema. For example, `concept` in the CodeSystem
+      resource is a recursive structure; when the depth is 2, the CodeSystem
+      table will have a column called `concept.concept` but not
       `concept.concept.concept`. If not specified or set to 0, the server will
       use the default value 2.
     schemaType: Specifies the output schema type. If unspecified, the default
@@ -2935,9 +3114,10 @@ class SchemaConfig(_messages.Message):
 
     Values:
       SCHEMA_TYPE_UNSPECIFIED: No schema type specified. Same as `LOSSLESS`.
-      LOSSLESS: Schema generated from original FHIR data.
+      LOSSLESS: A data-driven schema generated from the fields present in the
+        FHIR data being exported, with no additional simplification.
       ANALYTICS: Analytics schema defined by the FHIR community. See
-        https://github.com/rbrush/sql-on-fhir/blob/master/sql-on-fhir.md.
+        https://github.com/FHIR/sql-on-fhir/blob/master/sql-on-fhir.md.
     """
     SCHEMA_TYPE_UNSPECIFIED = 0
     LOSSLESS = 1

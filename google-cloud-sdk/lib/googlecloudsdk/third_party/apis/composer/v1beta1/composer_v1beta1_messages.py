@@ -333,6 +333,8 @@ class EnvironmentConfig(_messages.Message):
     nodeConfig: The configuration used for the Kubernetes Engine cluster.
     nodeCount: The number of nodes in the Kubernetes Engine cluster that will
       be used to run this environment.
+    privateEnvironmentConfig: The configuration used for the private Composer
+      environment.
     softwareConfig: The configuration settings for software inside the
       environment.
   """
@@ -342,7 +344,51 @@ class EnvironmentConfig(_messages.Message):
   gkeCluster = _messages.StringField(3)
   nodeConfig = _messages.MessageField('NodeConfig', 4)
   nodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 6)
+  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 6)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 7)
+
+
+class IPAllocationPolicy(_messages.Message):
+  r"""Configuration for controlling how IPs are allocated in the GKE cluster.
+
+  Fields:
+    clusterIpv4CidrBlock: Optional. The IP address range used to allocate IP
+      addresses to pods in the cluster.  This field is applicable only when
+      `use_ip_aliases` is true.  Set to blank to have GKE choose a range with
+      the default size.  Set to /netmask (e.g. `/14`) to have GKE choose a
+      range with a specific netmask.  Set to a
+      [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+      notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
+      `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
+      range to use. Specify `cluster_secondary_range_name` or
+      `cluster_ipv4_cidr_block` but not both.
+    clusterSecondaryRangeName: Optional. The name of the cluster's secondary
+      range used to allocate IP addresses to pods. Specify either
+      `cluster_secondary_range_name` or `cluster_ipv4_cidr_block` but not
+      both.
+    servicesIpv4CidrBlock: Optional. The IP address range of the services IP
+      addresses in this cluster.  This field is applicable only when
+      `use_ip_aliases` is true.  Set to blank to have GKE choose a range with
+      the default size.  Set to /netmask (e.g. `/14`) to have GKE choose a
+      range with a specific netmask.  Set to a
+      [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+      notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
+      `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
+      range to use. Specify `services_secondary_range_name` or
+      `services_ipv4_cidr_block` but not both.
+    servicesSecondaryRangeName: Optional. The name of the services' secondary
+      range used to allocate IP addresses to the cluster. Specify either
+      `services_secondary_range_name` or `services_ipv4_cidr_block` but not
+      both.
+    useIpAliases: Optional. Whether or not to enable Alias IPs in the GKE
+      cluster. If true or if left blank, a VPC-native cluster is created.
+  """
+
+  clusterIpv4CidrBlock = _messages.StringField(1)
+  clusterSecondaryRangeName = _messages.StringField(2)
+  servicesIpv4CidrBlock = _messages.StringField(3)
+  servicesSecondaryRangeName = _messages.StringField(4)
+  useIpAliases = _messages.BooleanField(5)
 
 
 class ImageVersion(_messages.Message):
@@ -408,6 +454,8 @@ class NodeConfig(_messages.Message):
   Fields:
     diskSizeGb: Optional. The disk size in GB used for node VMs. Minimum size
       is 20GB. If unspecified, defaults to 100GB. Cannot be updated.
+    ipAllocationPolicy: Optional. The IPAllocationPolicy fields for the GKE
+      cluster.
     location: Optional. The Compute Engine [zone](/compute/docs/regions-zones)
       in which to deploy the VMs used to run the Apache Airflow software,
       specified as a [relative resource
@@ -467,13 +515,14 @@ class NodeConfig(_messages.Message):
   """
 
   diskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  location = _messages.StringField(2)
-  machineType = _messages.StringField(3)
-  network = _messages.StringField(4)
-  oauthScopes = _messages.StringField(5, repeated=True)
-  serviceAccount = _messages.StringField(6)
-  subnetwork = _messages.StringField(7)
-  tags = _messages.StringField(8, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 2)
+  location = _messages.StringField(3)
+  machineType = _messages.StringField(4)
+  network = _messages.StringField(5)
+  oauthScopes = _messages.StringField(6, repeated=True)
+  serviceAccount = _messages.StringField(7)
+  subnetwork = _messages.StringField(8)
+  tags = _messages.StringField(9, repeated=True)
 
 
 class Operation(_messages.Message):
@@ -639,6 +688,40 @@ class OperationMetadata(_messages.Message):
   resource = _messages.StringField(4)
   resourceUuid = _messages.StringField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
+class PrivateClusterConfig(_messages.Message):
+  r"""Configuration options for private cluster of Composer environment.
+
+  Fields:
+    enablePrivateEndpoint: Optional. If true, access to public endpoint of gke
+      cluster will be denied. `IPAllocationPolicy.use_ip_aliases` must be true
+      if this field is set to true. Default value is false.
+    masterIpv4CidrBlock: The IP range in CIDR notation to use for the hosted
+      master network. This range will be used for assigning internal IP
+      addresses to the cluster master or set of masters, as well as the ILB
+      VIP (Internal Load Balance Virtual IP).This range must not overlap with
+      any other ranges in use within the cluster's network. If left blank,
+      default value of '172.16.0.0/28' will be used.
+  """
+
+  enablePrivateEndpoint = _messages.BooleanField(1)
+  masterIpv4CidrBlock = _messages.StringField(2)
+
+
+class PrivateEnvironmentConfig(_messages.Message):
+  r"""The configuration information for configuring a private Composer
+  environment.
+
+  Fields:
+    enablePrivateEnvironment: Optional. If `true`, a private Composer
+      environment is created.
+    privateClusterConfig: Optional. Configuration for private cluster for a
+      private Composer environment.
+  """
+
+  enablePrivateEnvironment = _messages.BooleanField(1)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 2)
 
 
 class SoftwareConfig(_messages.Message):

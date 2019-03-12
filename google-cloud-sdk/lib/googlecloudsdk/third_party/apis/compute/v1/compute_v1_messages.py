@@ -2349,6 +2349,8 @@ class BackendService(_messages.Message):
     connectionDraining: A ConnectionDraining attribute.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
+    customRequestHeaders: Headers that the HTTP/S load balancer should add to
+      proxied requests.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     enableCDN: If true, enable Cloud CDN for this BackendService.  When the
@@ -2432,16 +2434,18 @@ class BackendService(_messages.Message):
 
     Values:
       HTTP: <no description>
+      HTTP2: <no description>
       HTTPS: <no description>
       SSL: <no description>
       TCP: <no description>
       UDP: <no description>
     """
     HTTP = 0
-    HTTPS = 1
-    SSL = 2
-    TCP = 3
-    UDP = 4
+    HTTP2 = 1
+    HTTPS = 2
+    SSL = 3
+    TCP = 4
+    UDP = 5
 
   class SessionAffinityValueValuesEnum(_messages.Enum):
     r"""Type of session affinity to use. The default is NONE.  When the load
@@ -2468,23 +2472,24 @@ class BackendService(_messages.Message):
   cdnPolicy = _messages.MessageField('BackendServiceCdnPolicy', 3)
   connectionDraining = _messages.MessageField('ConnectionDraining', 4)
   creationTimestamp = _messages.StringField(5)
-  description = _messages.StringField(6)
-  enableCDN = _messages.BooleanField(7)
-  fingerprint = _messages.BytesField(8)
-  healthChecks = _messages.StringField(9, repeated=True)
-  iap = _messages.MessageField('BackendServiceIAP', 10)
-  id = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(12, default=u'compute#backendService')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 13)
-  name = _messages.StringField(14)
-  port = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(16)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 17)
-  region = _messages.StringField(18)
-  securityPolicy = _messages.StringField(19)
-  selfLink = _messages.StringField(20)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 21)
-  timeoutSec = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  customRequestHeaders = _messages.StringField(6, repeated=True)
+  description = _messages.StringField(7)
+  enableCDN = _messages.BooleanField(8)
+  fingerprint = _messages.BytesField(9)
+  healthChecks = _messages.StringField(10, repeated=True)
+  iap = _messages.MessageField('BackendServiceIAP', 11)
+  id = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(13, default=u'compute#backendService')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 14)
+  name = _messages.StringField(15)
+  port = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(17)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 18)
+  region = _messages.StringField(19)
+  securityPolicy = _messages.StringField(20)
+  selfLink = _messages.StringField(21)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 22)
+  timeoutSec = _messages.IntegerField(23, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -2948,9 +2953,9 @@ class Binding(_messages.Message):
       * `serviceAccount:{emailid}`: An email address that represents a service
       account. For example, `my-other-app@appspot.gserviceaccount.com`.  *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`.    * `domain:{domain}`: A Google Apps
-      domain name that represents all the users of that domain. For example,
-      `google.com` or `example.com`.
+      example, `admins@example.com`.    * `domain:{domain}`: The G Suite
+      domain (primary) that represents all the users of that domain. For
+      example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -7345,6 +7350,20 @@ class ComputeInstancesGetSerialPortOutputRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeInstancesGetShieldedInstanceIdentityRequest(_messages.Message):
+  r"""A ComputeInstancesGetShieldedInstanceIdentityRequest object.
+
+  Fields:
+    instance: Name or id of the instance scoping this request.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
 class ComputeInstancesInsertRequest(_messages.Message):
   r"""A ComputeInstancesInsertRequest object.
 
@@ -7771,6 +7790,34 @@ class ComputeInstancesSetServiceAccountRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeInstancesSetShieldedInstanceIntegrityPolicyRequest(_messages.Message):
+  r"""A ComputeInstancesSetShieldedInstanceIntegrityPolicyRequest object.
+
+  Fields:
+    instance: Name or id of the instance scoping this request.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    shieldedInstanceIntegrityPolicy: A ShieldedInstanceIntegrityPolicy
+      resource to be passed as the request body.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 4)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeInstancesSetTagsRequest(_messages.Message):
   r"""A ComputeInstancesSetTagsRequest object.
 
@@ -7966,6 +8013,34 @@ class ComputeInstancesUpdateNetworkInterfaceRequest(_messages.Message):
   project = _messages.StringField(4, required=True)
   requestId = _messages.StringField(5)
   zone = _messages.StringField(6, required=True)
+
+
+class ComputeInstancesUpdateShieldedInstanceConfigRequest(_messages.Message):
+  r"""A ComputeInstancesUpdateShieldedInstanceConfigRequest object.
+
+  Fields:
+    instance: Name or id of the instance scoping this request.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    shieldedInstanceConfig: A ShieldedInstanceConfig resource to be passed as
+      the request body.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInterconnectAttachmentsAggregatedListRequest(_messages.Message):
@@ -14559,11 +14634,12 @@ class DeprecationStatus(_messages.Message):
 
   Enums:
     StateValueValuesEnum: The deprecation state of this resource. This can be
-      DEPRECATED, OBSOLETE, or DELETED. Operations which create a new resource
-      using a DEPRECATED resource will return successfully, but with a warning
-      indicating the deprecated resource and recommending its replacement.
-      Operations which use OBSOLETE or DELETED resources will be rejected and
-      result in an error.
+      ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate
+      the end of life date for an image, can use ACTIVE. Operations which
+      create a new resource using a DEPRECATED resource will return
+      successfully, but with a warning indicating the deprecated resource and
+      recommending its replacement. Operations which use OBSOLETE or DELETED
+      resources will be rejected and result in an error.
 
   Fields:
     deleted: An optional RFC3339 timestamp on or after which the state of this
@@ -14580,30 +14656,34 @@ class DeprecationStatus(_messages.Message):
     replacement: The URL of the suggested replacement for a deprecated
       resource. The suggested replacement resource must be the same kind of
       resource as the deprecated resource.
-    state: The deprecation state of this resource. This can be DEPRECATED,
-      OBSOLETE, or DELETED. Operations which create a new resource using a
-      DEPRECATED resource will return successfully, but with a warning
-      indicating the deprecated resource and recommending its replacement.
-      Operations which use OBSOLETE or DELETED resources will be rejected and
-      result in an error.
+    state: The deprecation state of this resource. This can be ACTIVE
+      DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end
+      of life date for an image, can use ACTIVE. Operations which create a new
+      resource using a DEPRECATED resource will return successfully, but with
+      a warning indicating the deprecated resource and recommending its
+      replacement. Operations which use OBSOLETE or DELETED resources will be
+      rejected and result in an error.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The deprecation state of this resource. This can be DEPRECATED,
-    OBSOLETE, or DELETED. Operations which create a new resource using a
-    DEPRECATED resource will return successfully, but with a warning
+    r"""The deprecation state of this resource. This can be ACTIVE DEPRECATED,
+    OBSOLETE, or DELETED. Operations which communicate the end of life date
+    for an image, can use ACTIVE. Operations which create a new resource using
+    a DEPRECATED resource will return successfully, but with a warning
     indicating the deprecated resource and recommending its replacement.
     Operations which use OBSOLETE or DELETED resources will be rejected and
     result in an error.
 
     Values:
+      ACTIVE: <no description>
       DELETED: <no description>
       DEPRECATED: <no description>
       OBSOLETE: <no description>
     """
-    DELETED = 0
-    DEPRECATED = 1
-    OBSOLETE = 2
+    ACTIVE = 0
+    DELETED = 1
+    DEPRECATED = 2
+    OBSOLETE = 3
 
   deleted = _messages.StringField(1)
   deprecated = _messages.StringField(2)
@@ -16863,6 +16943,50 @@ class GuestOsFeature(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
 
+class HTTP2HealthCheck(_messages.Message):
+  r"""A HTTP2HealthCheck object.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
+      before sending data to the backend, either NONE or PROXY_V1. The default
+      is NONE.
+
+  Fields:
+    host: The value of the host header in the HTTP/2 health check request. If
+      left empty (default value), the IP on behalf of which this health check
+      is performed will be used.
+    port: The TCP port number for the health check request. The default value
+      is 443. Valid values are 1 through 65535.
+    portName: Port name as defined in InstanceGroup#NamedPort#name. If both
+      port and port_name are defined, port takes precedence.
+    proxyHeader: Specifies the type of proxy header to append before sending
+      data to the backend, either NONE or PROXY_V1. The default is NONE.
+    requestPath: The request path of the HTTP/2 health check request. The
+      default value is /.
+    response: The string to match anywhere in the first 1024 bytes of the
+      response body. If left empty (the default value), the status code
+      determines health. The response data can only be ASCII.
+  """
+
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    r"""Specifies the type of proxy header to append before sending data to
+    the backend, either NONE or PROXY_V1. The default is NONE.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
+  host = _messages.StringField(1)
+  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(3)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 4)
+  requestPath = _messages.StringField(5)
+  response = _messages.StringField(6)
+
+
 class HTTPHealthCheck(_messages.Message):
   r"""A HTTPHealthCheck object.
 
@@ -16970,6 +17094,7 @@ class HealthCheck(_messages.Message):
       property when you create the resource.
     healthyThreshold: A so-far unhealthy instance will be marked healthy after
       this many consecutive successes. The default value is 2.
+    http2HealthCheck: A HTTP2HealthCheck attribute.
     httpHealthCheck: A HTTPHealthCheck attribute.
     httpsHealthCheck: A HTTPSHealthCheck attribute.
     id: [Output Only] The unique identifier for the resource. This identifier
@@ -17003,32 +17128,35 @@ class HealthCheck(_messages.Message):
 
     Values:
       HTTP: <no description>
+      HTTP2: <no description>
       HTTPS: <no description>
       INVALID: <no description>
       SSL: <no description>
       TCP: <no description>
     """
     HTTP = 0
-    HTTPS = 1
-    INVALID = 2
-    SSL = 3
-    TCP = 4
+    HTTP2 = 1
+    HTTPS = 2
+    INVALID = 3
+    SSL = 4
+    TCP = 5
 
   checkIntervalSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
   healthyThreshold = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  httpHealthCheck = _messages.MessageField('HTTPHealthCheck', 5)
-  httpsHealthCheck = _messages.MessageField('HTTPSHealthCheck', 6)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(8, default=u'compute#healthCheck')
-  name = _messages.StringField(9)
-  selfLink = _messages.StringField(10)
-  sslHealthCheck = _messages.MessageField('SSLHealthCheck', 11)
-  tcpHealthCheck = _messages.MessageField('TCPHealthCheck', 12)
-  timeoutSec = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  type = _messages.EnumField('TypeValueValuesEnum', 14)
-  unhealthyThreshold = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  http2HealthCheck = _messages.MessageField('HTTP2HealthCheck', 5)
+  httpHealthCheck = _messages.MessageField('HTTPHealthCheck', 6)
+  httpsHealthCheck = _messages.MessageField('HTTPSHealthCheck', 7)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(9, default=u'compute#healthCheck')
+  name = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  sslHealthCheck = _messages.MessageField('SSLHealthCheck', 12)
+  tcpHealthCheck = _messages.MessageField('TCPHealthCheck', 13)
+  timeoutSec = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  type = _messages.EnumField('TypeValueValuesEnum', 15)
+  unhealthyThreshold = _messages.IntegerField(16, variant=_messages.Variant.INT32)
 
 
 class HealthCheckList(_messages.Message):
@@ -18000,6 +18128,9 @@ class Instance(_messages.Message):
       is supported.  Service accounts generate access tokens that can be
       accessed through the metadata server and used to authenticate
       applications on the instance. See Service Accounts for more information.
+    shieldedInstanceConfig: A ShieldedInstanceConfig attribute.
+    shieldedInstanceIntegrityPolicy: A ShieldedInstanceIntegrityPolicy
+      attribute.
     startRestricted: [Output Only] Whether a VM has been restricted for start
       because Compute Engine has detected suspicious activity.
     status: [Output Only] The status of the instance. One of the following
@@ -18024,6 +18155,7 @@ class Instance(_messages.Message):
 
     Values:
       PROVISIONING: <no description>
+      REPAIRING: <no description>
       RUNNING: <no description>
       STAGING: <no description>
       STOPPED: <no description>
@@ -18033,13 +18165,14 @@ class Instance(_messages.Message):
       TERMINATED: <no description>
     """
     PROVISIONING = 0
-    RUNNING = 1
-    STAGING = 2
-    STOPPED = 3
-    STOPPING = 4
-    SUSPENDED = 5
-    SUSPENDING = 6
-    TERMINATED = 7
+    REPAIRING = 1
+    RUNNING = 2
+    STAGING = 3
+    STOPPED = 4
+    STOPPING = 5
+    SUSPENDED = 6
+    SUSPENDING = 7
+    TERMINATED = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -18086,11 +18219,13 @@ class Instance(_messages.Message):
   scheduling = _messages.MessageField('Scheduling', 18)
   selfLink = _messages.StringField(19)
   serviceAccounts = _messages.MessageField('ServiceAccount', 20, repeated=True)
-  startRestricted = _messages.BooleanField(21)
-  status = _messages.EnumField('StatusValueValuesEnum', 22)
-  statusMessage = _messages.StringField(23)
-  tags = _messages.MessageField('Tags', 24)
-  zone = _messages.StringField(25)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 21)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 22)
+  startRestricted = _messages.BooleanField(23)
+  status = _messages.EnumField('StatusValueValuesEnum', 24)
+  statusMessage = _messages.StringField(25)
+  tags = _messages.MessageField('Tags', 26)
+  zone = _messages.StringField(27)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -20169,6 +20304,7 @@ class InstanceWithNamedPorts(_messages.Message):
 
     Values:
       PROVISIONING: <no description>
+      REPAIRING: <no description>
       RUNNING: <no description>
       STAGING: <no description>
       STOPPED: <no description>
@@ -20178,13 +20314,14 @@ class InstanceWithNamedPorts(_messages.Message):
       TERMINATED: <no description>
     """
     PROVISIONING = 0
-    RUNNING = 1
-    STAGING = 2
-    STOPPED = 3
-    STOPPING = 4
-    SUSPENDED = 5
-    SUSPENDING = 6
-    TERMINATED = 7
+    REPAIRING = 1
+    RUNNING = 2
+    STAGING = 3
+    STOPPED = 4
+    STOPPING = 5
+    SUSPENDED = 6
+    SUSPENDING = 7
+    TERMINATED = 8
 
   instance = _messages.StringField(1)
   namedPorts = _messages.MessageField('NamedPort', 2, repeated=True)
@@ -22734,6 +22871,7 @@ class ManagedInstance(_messages.Message):
 
     Values:
       PROVISIONING: <no description>
+      REPAIRING: <no description>
       RUNNING: <no description>
       STAGING: <no description>
       STOPPED: <no description>
@@ -22743,13 +22881,14 @@ class ManagedInstance(_messages.Message):
       TERMINATED: <no description>
     """
     PROVISIONING = 0
-    RUNNING = 1
-    STAGING = 2
-    STOPPED = 3
-    STOPPING = 4
-    SUSPENDED = 5
-    SUSPENDING = 6
-    TERMINATED = 7
+    REPAIRING = 1
+    RUNNING = 2
+    STAGING = 3
+    STOPPED = 4
+    STOPPING = 5
+    SUSPENDED = 6
+    SUSPENDING = 7
+    TERMINATED = 8
 
   currentAction = _messages.EnumField('CurrentActionValueValuesEnum', 1)
   id = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
@@ -25727,6 +25866,7 @@ class Quota(_messages.Message):
       CPUS: <no description>
       CPUS_ALL_REGIONS: <no description>
       DISKS_TOTAL_GB: <no description>
+      EXTERNAL_VPN_GATEWAYS: <no description>
       FIREWALLS: <no description>
       FORWARDING_RULES: <no description>
       GLOBAL_INTERNAL_ADDRESSES: <no description>
@@ -25794,65 +25934,66 @@ class Quota(_messages.Message):
     CPUS = 4
     CPUS_ALL_REGIONS = 5
     DISKS_TOTAL_GB = 6
-    FIREWALLS = 7
-    FORWARDING_RULES = 8
-    GLOBAL_INTERNAL_ADDRESSES = 9
-    GPUS_ALL_REGIONS = 10
-    HEALTH_CHECKS = 11
-    IMAGES = 12
-    INSTANCES = 13
-    INSTANCE_GROUPS = 14
-    INSTANCE_GROUP_MANAGERS = 15
-    INSTANCE_TEMPLATES = 16
-    INTERCONNECTS = 17
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 18
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 19
-    INTERNAL_ADDRESSES = 20
-    IN_USE_ADDRESSES = 21
-    IN_USE_BACKUP_SCHEDULES = 22
-    IN_USE_SNAPSHOT_SCHEDULES = 23
-    LOCAL_SSD_TOTAL_GB = 24
-    NETWORKS = 25
-    NVIDIA_K80_GPUS = 26
-    NVIDIA_P100_GPUS = 27
-    NVIDIA_P100_VWS_GPUS = 28
-    NVIDIA_P4_GPUS = 29
-    NVIDIA_P4_VWS_GPUS = 30
-    NVIDIA_T4_GPUS = 31
-    NVIDIA_T4_VWS_GPUS = 32
-    NVIDIA_V100_GPUS = 33
-    PREEMPTIBLE_CPUS = 34
-    PREEMPTIBLE_LOCAL_SSD_GB = 35
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 36
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 37
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 38
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 39
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 40
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 41
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 42
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 43
-    REGIONAL_AUTOSCALERS = 44
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 45
-    RESOURCE_POLICIES = 46
-    ROUTERS = 47
-    ROUTES = 48
-    SECURITY_POLICIES = 49
-    SECURITY_POLICY_RULES = 50
-    SNAPSHOTS = 51
-    SSD_TOTAL_GB = 52
-    SSL_CERTIFICATES = 53
-    STATIC_ADDRESSES = 54
-    SUBNETWORKS = 55
-    TARGET_HTTPS_PROXIES = 56
-    TARGET_HTTP_PROXIES = 57
-    TARGET_INSTANCES = 58
-    TARGET_POOLS = 59
-    TARGET_SSL_PROXIES = 60
-    TARGET_TCP_PROXIES = 61
-    TARGET_VPN_GATEWAYS = 62
-    URL_MAPS = 63
-    VPN_GATEWAYS = 64
-    VPN_TUNNELS = 65
+    EXTERNAL_VPN_GATEWAYS = 7
+    FIREWALLS = 8
+    FORWARDING_RULES = 9
+    GLOBAL_INTERNAL_ADDRESSES = 10
+    GPUS_ALL_REGIONS = 11
+    HEALTH_CHECKS = 12
+    IMAGES = 13
+    INSTANCES = 14
+    INSTANCE_GROUPS = 15
+    INSTANCE_GROUP_MANAGERS = 16
+    INSTANCE_TEMPLATES = 17
+    INTERCONNECTS = 18
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 19
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 20
+    INTERNAL_ADDRESSES = 21
+    IN_USE_ADDRESSES = 22
+    IN_USE_BACKUP_SCHEDULES = 23
+    IN_USE_SNAPSHOT_SCHEDULES = 24
+    LOCAL_SSD_TOTAL_GB = 25
+    NETWORKS = 26
+    NVIDIA_K80_GPUS = 27
+    NVIDIA_P100_GPUS = 28
+    NVIDIA_P100_VWS_GPUS = 29
+    NVIDIA_P4_GPUS = 30
+    NVIDIA_P4_VWS_GPUS = 31
+    NVIDIA_T4_GPUS = 32
+    NVIDIA_T4_VWS_GPUS = 33
+    NVIDIA_V100_GPUS = 34
+    PREEMPTIBLE_CPUS = 35
+    PREEMPTIBLE_LOCAL_SSD_GB = 36
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 37
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 38
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 39
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 40
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 41
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 42
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 43
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 44
+    REGIONAL_AUTOSCALERS = 45
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 46
+    RESOURCE_POLICIES = 47
+    ROUTERS = 48
+    ROUTES = 49
+    SECURITY_POLICIES = 50
+    SECURITY_POLICY_RULES = 51
+    SNAPSHOTS = 52
+    SSD_TOTAL_GB = 53
+    SSL_CERTIFICATES = 54
+    STATIC_ADDRESSES = 55
+    SUBNETWORKS = 56
+    TARGET_HTTPS_PROXIES = 57
+    TARGET_HTTP_PROXIES = 58
+    TARGET_INSTANCES = 59
+    TARGET_POOLS = 60
+    TARGET_SSL_PROXIES = 61
+    TARGET_TCP_PROXIES = 62
+    TARGET_VPN_GATEWAYS = 63
+    URL_MAPS = 64
+    VPN_GATEWAYS = 65
+    VPN_TUNNELS = 66
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -27936,7 +28077,7 @@ class RouterStatusBgpPeerStatus(_messages.Message):
 
 
 class RouterStatusNatStatus(_messages.Message):
-  r"""Status of a NAT contained in this router.
+  r"""Status of a NAT contained in this router. Next tag: 9
 
   Fields:
     autoAllocatedNatIps: A list of IPs auto-allocated for NAT. Example:
@@ -28552,6 +28693,62 @@ class ServiceAccount(_messages.Message):
 
   email = _messages.StringField(1)
   scopes = _messages.StringField(2, repeated=True)
+
+
+class ShieldedInstanceConfig(_messages.Message):
+  r"""A set of Shielded Instance options.
+
+  Fields:
+    enableIntegrityMonitoring: Defines whether the instance has integrity
+      monitoring enabled.
+    enableSecureBoot: Defines whether the instance has Secure Boot enabled.
+    enableVtpm: Defines whether the instance has the vTPM enabled.
+  """
+
+  enableIntegrityMonitoring = _messages.BooleanField(1)
+  enableSecureBoot = _messages.BooleanField(2)
+  enableVtpm = _messages.BooleanField(3)
+
+
+class ShieldedInstanceIdentity(_messages.Message):
+  r"""A shielded Instance identity entry.
+
+  Fields:
+    encryptionKey: An Endorsement Key (EK) issued to the Shielded Instance's
+      vTPM.
+    kind: [Output Only] Type of the resource. Always
+      compute#shieldedInstanceIdentity for shielded Instance identity entry.
+    signingKey: An Attestation Key (AK) issued to the Shielded Instance's
+      vTPM.
+  """
+
+  encryptionKey = _messages.MessageField('ShieldedInstanceIdentityEntry', 1)
+  kind = _messages.StringField(2, default=u'compute#shieldedInstanceIdentity')
+  signingKey = _messages.MessageField('ShieldedInstanceIdentityEntry', 3)
+
+
+class ShieldedInstanceIdentityEntry(_messages.Message):
+  r"""A Shielded Instance Identity Entry.
+
+  Fields:
+    ekCert: A PEM-encoded X.509 certificate. This field can be empty.
+    ekPub: A PEM-encoded public key.
+  """
+
+  ekCert = _messages.StringField(1)
+  ekPub = _messages.StringField(2)
+
+
+class ShieldedInstanceIntegrityPolicy(_messages.Message):
+  r"""The policy describes the baseline against which Instance boot integrity
+  is measured.
+
+  Fields:
+    updateAutoLearnPolicy: Updates the integrity policy baseline using the
+      measurements from the VM instance's most recent boot.
+  """
+
+  updateAutoLearnPolicy = _messages.BooleanField(1)
 
 
 class SignedUrlKey(_messages.Message):
@@ -31850,7 +32047,8 @@ class TargetVpnGateway(_messages.Message):
   beta.targetVpnGateways ==) (== resource_for v1.targetVpnGateways ==)
 
   Enums:
-    StatusValueValuesEnum: [Output Only] The status of the VPN gateway.
+    StatusValueValuesEnum: [Output Only] The status of the VPN gateway, which
+      can be one of the following: CREATING, READY, FAILED, or DELETING.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -31859,7 +32057,7 @@ class TargetVpnGateway(_messages.Message):
       property when you create the resource.
     forwardingRules: [Output Only] A list of URLs to the ForwardingRule
       resources. ForwardingRules are created using
-      compute.forwardingRules.insert and associated to a VPN gateway.
+      compute.forwardingRules.insert and associated with a VPN gateway.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#targetVpnGateway for
@@ -31877,14 +32075,16 @@ class TargetVpnGateway(_messages.Message):
       resides. You must specify this field as part of the HTTP request URL. It
       is not settable as a field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
-    status: [Output Only] The status of the VPN gateway.
+    status: [Output Only] The status of the VPN gateway, which can be one of
+      the following: CREATING, READY, FAILED, or DELETING.
     tunnels: [Output Only] A list of URLs to VpnTunnel resources. VpnTunnels
-      are created using compute.vpntunnels.insert method and associated to a
-      VPN gateway.
+      are created using the compute.vpntunnels.insert method and associated
+      with a VPN gateway.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""[Output Only] The status of the VPN gateway.
+    r"""[Output Only] The status of the VPN gateway, which can be one of the
+    following: CREATING, READY, FAILED, or DELETING.
 
     Values:
       CREATING: <no description>
@@ -32194,7 +32394,7 @@ class TargetVpnGatewaysScopedList(_messages.Message):
       of addresses when the list is empty.
 
   Fields:
-    targetVpnGateways: [Output Only] A list of target vpn gateways contained
+    targetVpnGateways: [Output Only] A list of target VPN gateways contained
       in this scope.
     warning: [Output Only] Informational warning which replaces the list of
       addresses when the list is empty.
@@ -32935,7 +33135,19 @@ class VpnTunnel(_messages.Message):
   resource_for v1.vpnTunnels ==)
 
   Enums:
-    StatusValueValuesEnum: [Output Only] The status of the VPN tunnel.
+    StatusValueValuesEnum: [Output Only] The status of the VPN tunnel, which
+      can be one of the following:  - PROVISIONING: Resource is being
+      allocated for the VPN tunnel.  - WAITING_FOR_FULL_CONFIG: Waiting to
+      receive all VPN-related configs from the user. Network,
+      TargetVpnGateway, VpnTunnel, ForwardingRule, and Route resources are
+      needed to setup the VPN tunnel.  - FIRST_HANDSHAKE: Successful first
+      handshake with the peer VPN.  - ESTABLISHED: Secure session is
+      successfully established with the peer VPN.  - NETWORK_ERROR:
+      Deprecated, replaced by NO_INCOMING_PACKETS  - AUTHORIZATION_ERROR: Auth
+      error (for example, bad shared secret).  - NEGOTIATION_FAILURE:
+      Handshake failed.  - DEPROVISIONING: Resources are being deallocated for
+      the VPN tunnel.  - FAILED: Tunnel creation has failed and the tunnel is
+      not ready to be used.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -32946,14 +33158,14 @@ class VpnTunnel(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     ikeVersion: IKE protocol version to use when establishing the VPN tunnel
-      with peer VPN gateway. Acceptable IKE versions are 1 or 2. Default
-      version is 2.
+      with the peer VPN gateway. Acceptable IKE versions are 1 or 2. The
+      default version is 2.
     kind: [Output Only] Type of resource. Always compute#vpnTunnel for VPN
       tunnels.
     localTrafficSelector: Local traffic selector to use when establishing the
-      VPN tunnel with peer VPN gateway. The value should be a CIDR formatted
-      string, for example: 192.168.0.0/16. The ranges should be disjoint. Only
-      IPv4 is supported.
+      VPN tunnel with the peer VPN gateway. The value should be a CIDR
+      formatted string, for example: 192.168.0.0/16. The ranges must be
+      disjoint. Only IPv4 is supported.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -32966,21 +33178,43 @@ class VpnTunnel(_messages.Message):
       must specify this field as part of the HTTP request URL. It is not
       settable as a field in the request body.
     remoteTrafficSelector: Remote traffic selectors to use when establishing
-      the VPN tunnel with peer VPN gateway. The value should be a CIDR
+      the VPN tunnel with the peer VPN gateway. The value should be a CIDR
       formatted string, for example: 192.168.0.0/16. The ranges should be
       disjoint. Only IPv4 is supported.
-    router: URL of router resource to be used for dynamic routing.
+    router: URL of the router resource to be used for dynamic routing.
     selfLink: [Output Only] Server-defined URL for the resource.
     sharedSecret: Shared secret used to set the secure session between the
       Cloud VPN gateway and the peer VPN gateway.
     sharedSecretHash: Hash of the shared secret.
-    status: [Output Only] The status of the VPN tunnel.
+    status: [Output Only] The status of the VPN tunnel, which can be one of
+      the following:  - PROVISIONING: Resource is being allocated for the VPN
+      tunnel.  - WAITING_FOR_FULL_CONFIG: Waiting to receive all VPN-related
+      configs from the user. Network, TargetVpnGateway, VpnTunnel,
+      ForwardingRule, and Route resources are needed to setup the VPN tunnel.
+      - FIRST_HANDSHAKE: Successful first handshake with the peer VPN.  -
+      ESTABLISHED: Secure session is successfully established with the peer
+      VPN.  - NETWORK_ERROR: Deprecated, replaced by NO_INCOMING_PACKETS  -
+      AUTHORIZATION_ERROR: Auth error (for example, bad shared secret).  -
+      NEGOTIATION_FAILURE: Handshake failed.  - DEPROVISIONING: Resources are
+      being deallocated for the VPN tunnel.  - FAILED: Tunnel creation has
+      failed and the tunnel is not ready to be used.
     targetVpnGateway: URL of the Target VPN gateway with which this VPN tunnel
       is associated. Provided by the client when the VPN tunnel is created.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""[Output Only] The status of the VPN tunnel.
+    r"""[Output Only] The status of the VPN tunnel, which can be one of the
+    following:  - PROVISIONING: Resource is being allocated for the VPN
+    tunnel.  - WAITING_FOR_FULL_CONFIG: Waiting to receive all VPN-related
+    configs from the user. Network, TargetVpnGateway, VpnTunnel,
+    ForwardingRule, and Route resources are needed to setup the VPN tunnel.  -
+    FIRST_HANDSHAKE: Successful first handshake with the peer VPN.  -
+    ESTABLISHED: Secure session is successfully established with the peer VPN.
+    - NETWORK_ERROR: Deprecated, replaced by NO_INCOMING_PACKETS  -
+    AUTHORIZATION_ERROR: Auth error (for example, bad shared secret).  -
+    NEGOTIATION_FAILURE: Handshake failed.  - DEPROVISIONING: Resources are
+    being deallocated for the VPN tunnel.  - FAILED: Tunnel creation has
+    failed and the tunnel is not ready to be used.
 
     Values:
       ALLOCATING_RESOURCES: <no description>
@@ -33058,7 +33292,7 @@ class VpnTunnelAggregatedList(_messages.Message):
       AdditionalProperty: An additional property for a ItemsValue object.
 
     Fields:
-      additionalProperties: Name of the scope containing this set of vpn
+      additionalProperties: Name of the scope containing this set of VPN
         tunnels.
     """
 
@@ -33312,7 +33546,7 @@ class VpnTunnelsScopedList(_messages.Message):
       when the list is empty.
 
   Fields:
-    vpnTunnels: A list of vpn tunnels contained in this scope.
+    vpnTunnels: A list of VPN tunnels contained in this scope.
     warning: Informational warning which replaces the list of addresses when
       the list is empty.
   """

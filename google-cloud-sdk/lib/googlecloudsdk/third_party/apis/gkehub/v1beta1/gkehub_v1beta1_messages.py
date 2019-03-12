@@ -399,9 +399,9 @@ class Membership(_messages.Message):
   Fields:
     createTime: Output only. Timestamp for when the Membership was created.
     deleteTime: Output only. Timestamp for when the Membership was deleted.
-    description: An optional description of this membership, limited to 2048
+    description: A required description of this membership, limited to 63
       characters.
-    endpoint: Endpoint information to reach this member.
+    endpoint: A MembershipEndpoint attribute.
     labels: GCP labels for this membership.
     name: Output only. The unique name of this domain resource in the format:
       `projects/[project_id]/locations/global/memberships/[membership_id]`.
@@ -462,16 +462,10 @@ class MembershipEndpoint(_messages.Message):
       west1-a/clusters/c0 It can be at the most 1000 characters in length.
     oidcConfig: OIDC configuration to use to authenticate users against with
       this member.
-    resourceId: Unique per-project identification for this endpoint (in space
-      and time) to be provided by the user at creation time. While a self_link
-      is optional for endpoints that may not be on GCP, all membership
-      endpoints must provide a unique resource_id string. It is not mutable
-      after creation. It can be at the most 1000 characters in length.
   """
 
   gcpResourceLink = _messages.StringField(1)
   oidcConfig = _messages.MessageField('OidcConfig', 2)
-  resourceId = _messages.StringField(3)
 
 
 class MembershipState(_messages.Message):

@@ -399,9 +399,7 @@
             "A desktop Mac operating system.",
             "A desktop Windows operating system.",
             "A desktop Linux operating system.",
-            "A desktop ChromeOS operating system.",
-            "An Android operating system.",
-            "An iOS operating system."
+            "A desktop ChromeOS operating system."
           ],
           "type": "string",
           "enum": [
@@ -409,9 +407,7 @@
             "DESKTOP_MAC",
             "DESKTOP_WINDOWS",
             "DESKTOP_LINUX",
-            "DESKTOP_CHROME_OS",
-            "ANDROID",
-            "IOS"
+            "DESKTOP_CHROME_OS"
           ]
         },
         "minimumVersion": {
@@ -470,7 +466,7 @@
           }
         },
         "unrestrictedServices": {
-          "description": "GCP services exempt from the Access Zone restrictions. May contain list of\nservices or a single wildcard \"*\".\nServices matching the unrestricted_services are excluded from Access Zone\nrestrictions. For example, if `logging.googleapis.com` is unrestricted,\nusers can read logs in projects from anywhere, even though the projects are\ninside access zone. Wildcard means that unless explicitly specified by\n\"restricted_services\" list, any service is treated as unrestricted. One of\nthe fields \"restricted_services\", \"unrestricted_services\" must contain a\nwildcard \"*\", otherwise the Access Zone specification is invalid. It also\nmeans that both field being empty is invalid as well.\n\"unrestricted_services\" can be empty if and only if \"restricted_services\"\nlist contains a \"*\" wildcard.\nFor bridge access zones, must be empty.",
+          "description": "GCP services exempt from the Access Zone restrictions. Deprecated. Must be\nthe single wildcard \"*\". Services matching the unrestricted_services are\nexcluded from Access Zone restrictions.  Wildcard means that unless\nexplicitly specified by \"restricted_services\" list, any service is treated\nas unrestricted.\n\nFor bridge access zones, must be empty.",
           "type": "array",
           "items": {
             "type": "string"
@@ -487,7 +483,7 @@
           "format": "google-datetime"
         },
         "restrictedServices": {
-          "description": "GCP services that Access Zone restrictions will be applied to. May contain\nlist of services or a single wildcard \"*\". Only resources for services\nmatching the restricted_services will be subject to access zone protection.\nFor example, if `storage.googleapis.com` is specified, then storage buckets\nthat belong to the access zone could be accessed through Storage service\nonly if access conditions are met. Wildcard means that unless explicitly\nspecified by \"unrestricted_services\" list, any service is treated as\nrestricted. One of the fields \"restricted_services\",\n\"unrestricted_services\" must contain a wildcard \"*\", otherwise the Access\nZone specification is invalid. It also means that both field being empty is\ninvalid as well. \"restricted_services\" can be empty if and only if\n\"unrestricted_services\" list contains a \"*\" wildcard.\nFor bridge access zones, must be empty.",
+          "description": "GCP services that Access Zone restrictions will be applied to. Must contain\nlist of services. Only resources for services matching the\nrestricted_services will be subject to access zone protection. For example,\nif `storage.googleapis.com` is specified, then storage buckets that belong\nto the access zone could be accessed through Storage service only if access\nconditions are met.\n\nFor bridge access zones, must be empty.",
           "type": "array",
           "items": {
             "type": "string"

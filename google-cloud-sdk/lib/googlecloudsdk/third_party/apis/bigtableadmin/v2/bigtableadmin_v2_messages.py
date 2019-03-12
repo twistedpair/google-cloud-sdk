@@ -446,6 +446,21 @@ class BigtableadminProjectsInstancesTablesGenerateConsistencyTokenRequest(_messa
   name = _messages.StringField(2, required=True)
 
 
+class BigtableadminProjectsInstancesTablesGetIamPolicyRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class BigtableadminProjectsInstancesTablesGetRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesTablesGetRequest object.
 
@@ -536,6 +551,36 @@ class BigtableadminProjectsInstancesTablesModifyColumnFamiliesRequest(_messages.
 
   modifyColumnFamiliesRequest = _messages.MessageField('ModifyColumnFamiliesRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class BigtableadminProjectsInstancesTablesSetIamPolicyRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class BigtableadminProjectsInstancesTablesTestIamPermissionsRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class BigtableadminProjectsInstancesTestIamPermissionsRequest(_messages.Message):

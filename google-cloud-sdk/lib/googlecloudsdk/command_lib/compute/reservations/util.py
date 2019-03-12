@@ -19,7 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 
-def MakeAllocationMessageFromArgs(messages, args, allocation_ref):
+def MakeReservationMessageFromArgs(messages, args, allocation_ref):
   accelerators = MakeGuestAccelerators(messages,
                                        getattr(args, 'accelerator', None))
   local_ssds = MakeLocalSsds(messages, getattr(args, 'local_ssd', None))
@@ -54,7 +54,7 @@ def MakeLocalSsds(messages, ssd_configs):
   local_ssds = []
   disk_msg = (
       messages
-      .AllocationSpecificSKUAllocationAllocatedInstancePropertiesAllocatedDisk)
+      .AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk)
   interface_msg = disk_msg.InterfaceValueValuesEnum
 
   for s in ssd_configs:
@@ -73,8 +73,8 @@ def MakeSpecificSKUReservationMessage(messages, vm_count, accelerators,
                                       min_cpu_platform):
   """Constructs a single specific sku reservation message object."""
   prop_msgs = (
-      messages.AllocationSpecificSKUAllocationAllocatedInstanceProperties)
-  return messages.AllocationSpecificSKUAllocation(
+      messages.AllocationSpecificSKUAllocationReservedInstanceProperties)
+  return messages.AllocationSpecificSKUReservation(
       count=vm_count,
       instanceProperties=prop_msgs(
           guestAccelerators=accelerators,
@@ -83,11 +83,11 @@ def MakeSpecificSKUReservationMessage(messages, vm_count, accelerators,
           minCpuPlatform=min_cpu_platform))
 
 
-def MakeReservationMessage(messages, allocation_name, specific_allocation,
-                           require_specific_allocation, allocation_zone):
+def MakeReservationMessage(messages, reservation_name, specific_reservation,
+                           require_specific_reservation, reservation_zone):
   """Constructs a single allocation message object."""
-  return messages.Allocation(
-      name=allocation_name,
-      specificAllocation=specific_allocation,
-      specificAllocationRequired=require_specific_allocation,
-      zone=allocation_zone)
+  return messages.Reservation(
+      name=reservation_name,
+      specificReservation=specific_reservation,
+      specificReservationRequired=require_specific_reservation,
+      zone=reservation_zone)

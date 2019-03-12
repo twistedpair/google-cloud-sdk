@@ -227,8 +227,8 @@ class Binding(_messages.Message):
       service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: A Google Apps domain name that represents all the
-      users of that domain. For example, `google.com` or `example.com`.
+      * `domain:{domain}`: The G Suite domain (primary) that represents all
+      the    users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -369,20 +369,6 @@ class Empty(_messages.Message):
 
 
 
-class ErrorDetail(_messages.Message):
-  r"""Structure to describe the error encountered during batch operation on
-  one resource. This is used both for sample errors in operation response, and
-  for format of errors in error reports.
-
-  Fields:
-    error: The status of the error.
-    resource: The identifier of the resource.
-  """
-
-  error = _messages.MessageField('Status', 1)
-  resource = _messages.StringField(2)
-
-
 class ExportDicomDataRequest(_messages.Message):
   r"""Exports data from the specified DICOM store. If a given resource (e.g.,
   a DICOM object with the same SOPInstance UID) already exists in the output,
@@ -402,13 +388,7 @@ class ExportResourcesRequest(_messages.Message):
 
   Fields:
     bigqueryDestinationLocation: The BigQuery destination location. The output
-      will be one BigQuery table per resource type. The server implements a
-      data-driven FHIR-to-SQL schema mapping in support of analytics workloads
-      with BigQuery. Incompatible changes to the output schema may be
-      introduced in the future as a result of continuous collaboration with
-      the FHIR community to refine the [desired SQL projection of FHIR
-      resources](https://github.com/rbrush/sql-on-fhir/blob/master/sql-on-
-      fhir.md).
+      will be one BigQuery table per resource type.
     gcsDestinationLocation: The Cloud Storage destination location. Specify a
       path to a Cloud Storage bucket or folder rather than a concrete object.
       The exported outputs are organized by FHIR resource types. The server

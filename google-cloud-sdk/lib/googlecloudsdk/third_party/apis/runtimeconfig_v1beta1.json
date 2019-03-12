@@ -256,7 +256,7 @@
           "format": "google-datetime"
         },
         "state": {
-          "description": "Output only. The current state of the variable. The variable state indicates\nthe outcome of the `variables().watch` call and is visible through the\n`get` and `list` calls.",
+          "description": "Output only. The current state of the variable. The variable state\nindicates the outcome of the `variables().watch` call and is visible\nthrough the `get` and `list` calls.",
           "enumDescriptions": [
             "Default variable state.",
             "The variable was updated, while `variables().watch` was executing.",
@@ -303,7 +303,7 @@
     },
     "Waiter": {
       "id": "Waiter",
-      "description": "A Waiter resource waits for some end condition within a RuntimeConfig resource\nto be met before it returns. For example, assume you have a distributed\nsystem where each node writes to a Variable resource indicating the node's\nreadiness as part of the startup process.\n\nYou then configure a Waiter resource with the success condition set to wait\nuntil some number of nodes have checked in. Afterwards, your application\nruns some arbitrary code after the condition has been met and the waiter\nreturns successfully.\n\nOnce created, a Waiter resource is immutable.\n\nTo learn more about using waiters, read the\n[Creating a Waiter](\/deployment-manager\/runtime-configurator\/creating-a-waiter)\ndocumentation.",
+      "description": "A Waiter resource waits for some end condition within a RuntimeConfig\nresource to be met before it returns. For example, assume you have a\ndistributed system where each node writes to a Variable resource indicating\nthe node's readiness as part of the startup process.\n\nYou then configure a Waiter resource with the success condition set to wait\nuntil some number of nodes have checked in. Afterwards, your application\nruns some arbitrary code after the condition has been met and the waiter\nreturns successfully.\n\nOnce created, a Waiter resource is immutable.\n\nTo learn more about using waiters, read the\n[Creating a\nWaiter](\/deployment-manager\/runtime-configurator\/creating-a-waiter)\ndocumentation.",
       "type": "object",
       "properties": {
         "name": {
@@ -320,7 +320,7 @@
           "$ref": "EndCondition"
         },
         "success": {
-          "description": "[Required] The success condition. If this condition is met, `done` will be\nset to `true` and the `error` value will remain unset. The failure condition\ntakes precedence over the success condition. If both conditions are met, a\nfailure will be indicated.",
+          "description": "[Required] The success condition. If this condition is met, `done` will be\nset to `true` and the `error` value will remain unset. The failure\ncondition takes precedence over the success condition. If both conditions\nare met, a failure will be indicated.",
           "$ref": "EndCondition"
         },
         "createTime": {
@@ -432,7 +432,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"

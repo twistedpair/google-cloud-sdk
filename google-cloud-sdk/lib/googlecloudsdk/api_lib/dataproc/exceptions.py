@@ -51,3 +51,7 @@ class ParseError(Error):
 
 class FileUploadError(Error):
   """File upload error."""
+
+
+class ValidationError(Error):
+  """Error while validating YAML against schema."""

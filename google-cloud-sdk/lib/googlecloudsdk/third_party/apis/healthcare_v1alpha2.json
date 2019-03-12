@@ -109,16 +109,16 @@
     }
   },
   "schemas": {
-    "ListOperationsResponse": {
-      "id": "ListOperationsResponse",
-      "description": "The response message for Operations.ListOperations.",
+    "ListLocationsResponse": {
+      "id": "ListLocationsResponse",
+      "description": "The response message for Locations.ListLocations.",
       "type": "object",
       "properties": {
-        "operations": {
-          "description": "A list of operations that matches the specified filter in the request.",
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
           "type": "array",
           "items": {
-            "$ref": "Operation"
+            "$ref": "Location"
           }
         },
         "nextPageToken": {
@@ -127,64 +127,36 @@
         }
       }
     },
-    "Operation": {
-      "id": "Operation",
-      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
+    "Location": {
+      "id": "Location",
+      "description": "A resource that represents Google Cloud Platform location.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
+          "description": "Resource name for the location, which may vary between implementations.\nFor example: `\"projects\/example-project\/locations\/us-east1\"`",
           "type": "string"
+        },
+        "locationId": {
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name.\nFor example, \"Tokyo\".",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Cross-service attributes for the location. For example\n\n    {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         },
         "metadata": {
-          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
+          "description": "Service-specific metadata. For example the available capacity at the given\nlocation.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
             "description": "Properties of the object. Contains field @type with type URL."
-          }
-        },
-        "done": {
-          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
-          "type": "boolean"
-        },
-        "error": {
-          "description": "The error result of the operation in case of failure or cancellation.",
-          "$ref": "Status"
-        },
-        "response": {
-          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        }
-      }
-    },
-    "Status": {
-      "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
-      "type": "object",
-      "properties": {
-        "code": {
-          "description": "The status code, which should be an enum value of google.rpc.Code.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "message": {
-          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
-          "type": "string"
-        },
-        "details": {
-          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "any",
-              "description": "Properties of the object. Contains field @type with type URL."
-            }
           }
         }
       }
@@ -246,7 +218,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -353,6 +325,86 @@
           "type": "array",
           "items": {
             "type": "string"
+          }
+        }
+      }
+    },
+    "ListOperationsResponse": {
+      "id": "ListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
+      "type": "object",
+      "properties": {
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Operation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Operation": {
+      "id": "Operation",
+      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
           }
         }
       }
@@ -708,6 +760,13 @@
         "notificationConfig": {
           "description": "Notification destination for new DICOM instances.\nSupplied by the client.",
           "$ref": "NotificationConfig"
+        },
+        "labels": {
+          "description": "User-supplied key-value pairs used to organize DICOM stores.\n\nLabel keys must be between 1 and 63 characters long, have a UTF-8 encoding\nof maximum 128 bytes, and must conform to the\nfollowing PCRE regular expression:\n\\p{Ll}\\p{Lo}{0,62}\n\nLabel values are optional, must be between 1 and 63 characters long, have\na UTF-8 encoding of maximum 128 bytes, and must conform to the\nfollowing PCRE regular expression: [\\p{Ll}\\p{Lo}\\p{N}_-]{0,63}\n\nNo more than 64 labels can be associated with a given store.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -798,7 +857,7 @@
       "type": "object",
       "properties": {
         "tableUri": {
-          "description": "BigQuery URI to a table, up to 2000 characters long.\nAccepted forms:\n*  BigQuery gs path e.g. bq:\/\/projectId.bqDatasetId.tableId",
+          "description": "BigQuery URI to a table, up to 2000 characters long, in the format\n`bq:\/\/projectId.bqDatasetId.tableId`",
           "type": "string"
         },
         "force": {
@@ -850,6 +909,13 @@
         "parserConfig": {
           "description": "The configuration for the parser. It determines how the server parses the\nmessages.",
           "$ref": "ParserConfig"
+        },
+        "labels": {
+          "description": "User-supplied key-value pairs used to organize HL7v2 stores.\n\nLabel keys must be between 1 and 63 characters long, have a UTF-8 encoding\nof maximum 128 bytes, and must conform to the\nfollowing PCRE regular expression:\n\\p{Ll}\\p{Lo}{0,62}\n\nLabel values are optional, must be between 1 and 63 characters long, have\na UTF-8 encoding of maximum 128 bytes, and must conform to the\nfollowing PCRE regular expression: [\\p{Ll}\\p{Lo}\\p{N}_-]{0,63}\n\nNo more than 64 labels can be associated with a given store.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1091,18 +1157,18 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "Points to a Cloud Storage URI containing file(s) with\ncontent only. The URI must be in the following format:\n`gs:\/\/{bucket_id}\/{object_id}`. The URI can include wildcards in\n`object_id` and thus identify multiple files. Supported wildcards:\n '*' to match 0 or more non-separator characters\n '**' to match 0 or more characters (including separators). Must be used at\n      the end of a path and with no other wildcards in the\n      path. Can also be used with a file extension (such as .dcm), which\n      imports all files with the extension in the specified directory and\n      its sub-directories. For example,\n      `gs:\/\/my-bucket\/my-directory\/**.dcm` imports all files with .dcm\n      extensions in `my-directory\/` and its sub-directories.\n '?' to match 1 character\nAll other URI formats are invalid.\nFiles matching the wildcard are expected to contain content only, no\nmetadata.",
+          "description": "Points to a Cloud Storage URI containing file(s) to import.\n\nThe URI must be in the following format: `gs:\/\/{bucket_id}\/{object_id}`.\nThe URI can include wildcards in `object_id` and thus identify multiple\nfiles. Supported wildcards:\n\n*  `*` to match 0 or more non-separator characters\n*  `**` to match 0 or more characters (including separators). Must be used\nat the end of a path and with no other wildcards in the\npath. Can also be used with a file extension (such as .ndjson), which\nimports all files with the extension in the specified directory and\nits sub-directories. For example, `gs:\/\/my-bucket\/my-directory\/**.ndjson`\nimports all files with `.ndjson` extensions in `my-directory\/` and its\nsub-directories.\n*  `?` to match 1 character\n\nFiles matching the wildcard are expected to contain content only, no\nmetadata.",
           "type": "string"
         }
       }
     },
     "GoogleCloudHealthcareV1alpha2FhirRestGcsErrorDestination": {
       "id": "GoogleCloudHealthcareV1alpha2FhirRestGcsErrorDestination",
-      "description": "Specifies the Cloud Storage destination for exporting errors to.",
+      "description": "Specifies the Cloud Storage destination where errors will be recorded.",
       "type": "object",
       "properties": {
         "uriPrefix": {
-          "description": "URI for a Cloud Storage directory to which result files\nshould be written (in the\nformat `gs:\/\/{bucket-id}\/{path\/to\/destination\/dir}`). If there is no\ntrailing slash, the service will append one when composing the object path.\nThe user is responsible for creating the Cloud Storage bucket referenced in\n`uri_prefix`.",
+          "description": "URI for a Cloud Storage directory to which error report files should be\nwritten (in the format `gs:\/\/{bucket-id}\/{path\/to\/destination\/dir}`). If\nthere is no trailing slash, the service will append one when composing the\nobject path. The user is responsible for creating the Cloud Storage bucket\nreferenced in `uri_prefix`.",
           "type": "string"
         }
       }
@@ -1117,7 +1183,7 @@
           "$ref": "GoogleCloudHealthcareV1alpha2FhirRestGcsDestination"
         },
         "bigqueryDestination": {
-          "description": "The BigQuery output destination.\n\nThe BigQuery location requires two IAM roles:\n`roles\/bigquery.dataEditor` and `roles\/bigquery.jobUser`.\n\nThe output will be one BigQuery table per resource type.\nThe server implements a data-driven FHIR-to-SQL schema mapping in support\nof analytics workloads with BigQuery. Incompatible changes to the output\nschema may be introduced in the future as a result of continuous\ncollaboration with the FHIR community to refine the\n[desired SQL projection of FHIR\nresources](https:\/\/github.com\/rbrush\/sql-on-fhir\/blob\/master\/sql-on-fhir.md).",
+          "description": "The BigQuery output destination.\n\nThe BigQuery location requires two IAM roles:\n`roles\/bigquery.dataEditor` and `roles\/bigquery.jobUser`.\n\nThe output will be one BigQuery table per resource type.",
           "$ref": "GoogleCloudHealthcareV1alpha2FhirBigQueryDestination"
         }
       }
@@ -1139,7 +1205,7 @@
       "type": "object",
       "properties": {
         "datasetUri": {
-          "description": "BigQuery URI to a dataset, up to 2000 characters long.\nAccepted forms:\n*  BigQuery gs path e.g. bq:\/\/projectId.bqDatasetId",
+          "description": "BigQuery URI to a dataset, up to 2000 characters long, in the format\n`bq:\/\/projectId.bqDatasetId`",
           "type": "string"
         },
         "schemaConfig": {
@@ -1157,8 +1223,8 @@
           "description": "Specifies the output schema type. If unspecified, the default is\n`LOSSLESS`.",
           "enumDescriptions": [
             "No schema type specified. Same as `LOSSLESS`.",
-            "Schema generated from original FHIR data.",
-            "Analytics schema defined by the FHIR community.\nSee https:\/\/github.com\/rbrush\/sql-on-fhir\/blob\/master\/sql-on-fhir.md."
+            "A data-driven schema generated from the fields present in the FHIR data\nbeing exported, with no additional simplification.",
+            "Analytics schema defined by the FHIR community.\nSee https:\/\/github.com\/FHIR\/sql-on-fhir\/blob\/master\/sql-on-fhir.md."
           ],
           "type": "string",
           "enum": [
@@ -1168,7 +1234,7 @@
           ]
         },
         "recursiveStructureDepth": {
-          "description": "The depth for all recursive structures in the output analytics\nschema. For example, concept in the CodeSystem resource is a recursive\nstructure; when the depth is 2, the CodeSystem table will have a column\ncalled `concept.concept` but not `concept.concept.concept`. If not\nspecified or set to 0, the server will use the default value 2.",
+          "description": "The depth for all recursive structures in the output analytics\nschema. For example, `concept` in the CodeSystem resource is a recursive\nstructure; when the depth is 2, the CodeSystem table will have a column\ncalled `concept.concept` but not `concept.concept.concept`. If not\nspecified or set to 0, the server will use the default value 2.",
           "type": "string",
           "format": "int64"
         }
@@ -1198,6 +1264,17 @@
         "disableResourceVersioning": {
           "description": "Whether to disable resource versioning for this FHIR store. This field can\nnot be changed after the creation of FHIR store.\nIf set to false, which is the default behavior, all write operations will\ncause historical versions to be recorded automatically. The historical\nversions can be fetched through the history APIs, but cannot be updated.\nIf set to true, no historical versions will be kept. The server will send\nback errors for attempts to read the historical versions.",
           "type": "boolean"
+        },
+        "labels": {
+          "description": "User-supplied key-value pairs used to organize FHIR stores.\n\nLabel keys must be between 1 and 63 characters long, have a UTF-8 encoding\nof maximum 128 bytes, and must conform to the\nfollowing PCRE regular expression:\n\\p{Ll}\\p{Lo}{0,62}\n\nLabel values are optional, must be between 1 and 63 characters long, have\na UTF-8 encoding of maximum 128 bytes, and must conform to the\nfollowing PCRE regular expression: [\\p{Ll}\\p{Lo}\\p{N}_-]{0,63}\n\nNo more than 64 labels can be associated with a given store.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "enableHistoryImport": {
+          "description": "Whether to allow the bulk import API to accept history bundles and directly\ninsert historical resource versions into the FHIR store. Importing resource\nhistories creates resource interactions that appear to have occurred in the\npast, which clients may not want to allow. If set to false, history bundles\nwithin an import will fail with an error.",
+          "type": "boolean"
         }
       }
     },
@@ -1216,73 +1293,6 @@
         "nextPageToken": {
           "description": "Token to retrieve the next page of results or empty if there are no more\nresults in the list.",
           "type": "string"
-        }
-      }
-    },
-    "ListLocationsResponse": {
-      "id": "ListLocationsResponse",
-      "description": "The response message for Locations.ListLocations.",
-      "type": "object",
-      "properties": {
-        "locations": {
-          "description": "A list of locations that matches the specified filter in the request.",
-          "type": "array",
-          "items": {
-            "$ref": "Location"
-          }
-        },
-        "nextPageToken": {
-          "description": "The standard List next-page token.",
-          "type": "string"
-        }
-      }
-    },
-    "Location": {
-      "id": "Location",
-      "description": "A resource that represents Google Cloud Platform location.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Resource name for the location, which may vary between implementations.\nFor example: `\"projects\/example-project\/locations\/us-east1\"`",
-          "type": "string"
-        },
-        "locationId": {
-          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
-          "type": "string"
-        },
-        "displayName": {
-          "description": "The friendly name for this location, typically a nearby city name.\nFor example, \"Tokyo\".",
-          "type": "string"
-        },
-        "labels": {
-          "description": "Cross-service attributes for the location. For example\n\n    {\"cloud.googleapis.com\/region\": \"us-east1\"}",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "metadata": {
-          "description": "Service-specific metadata. For example the available capacity at the given\nlocation.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        }
-      }
-    },
-    "ErrorDetail": {
-      "id": "ErrorDetail",
-      "description": "Structure to describe the error encountered during batch operation on one\nresource. This is used both for sample errors in operation response, and\nfor format of errors in error reports.",
-      "type": "object",
-      "properties": {
-        "resource": {
-          "description": "The identifier of the resource.",
-          "type": "string"
-        },
-        "error": {
-          "description": "The status of the error.",
-          "$ref": "Status"
         }
       }
     },
@@ -1347,6 +1357,21 @@
           "items": {
             "$ref": "ErrorDetail"
           }
+        }
+      }
+    },
+    "ErrorDetail": {
+      "id": "ErrorDetail",
+      "description": "Structure to describe the error encountered during batch operation on one\nresource. This is used both for sample errors in operation response, and\nfor format of errors in error reports.",
+      "type": "object",
+      "properties": {
+        "resource": {
+          "description": "The identifier of the resource.",
+          "type": "string"
+        },
+        "error": {
+          "description": "The status of the error.",
+          "$ref": "Status"
         }
       }
     },
@@ -1750,76 +1775,6 @@
               }
               ,
               "resources": {
-                "operations": {
-                  "methods": {
-                    "list": {
-                      "id": "healthcare.projects.locations.datasets.operations.list",
-                      "path": "v1alpha2/{+name}/operations",
-                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/operations",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation's parent resource.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
-                          "type": "string"
-                        },
-                        "filter": {
-                          "description": "The standard list filter.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "The standard list page size.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "description": "The standard list page token.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "ListOperationsResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id."
-                    },
-                    "get": {
-                      "id": "healthcare.projects.locations.datasets.operations.get",
-                      "path": "v1alpha2/{+name}",
-                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/operations/{operationsId}",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation resource.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/operations\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
-                    }
-                  }
-                },
                 "dicomStores": {
                   "methods": {
                     "setIamPolicy": {
@@ -2043,6 +1998,11 @@
                           "description": "The next_page_token value returned from the previous List request, if any.",
                           "location": "query",
                           "type": "string"
+                        },
+                        "filter": {
+                          "description": "Restricts stores returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\nOnly filtering on labels is supported, for example `labels.key=value`.",
+                          "location": "query",
+                          "type": "string"
                         }
                       },
                       "parameterOrder": [
@@ -2117,8 +2077,8 @@
                   "resources": {
                     "dicomWeb": {
                       "methods": {
-                        "studies": {
-                          "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies",
+                        "searchForStudies": {
+                          "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.searchForStudies",
                           "path": "v1alpha2/{+parent}/dicomWeb/{+dicomWebPath}",
                           "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies",
                           "httpMethod": "GET",
@@ -3004,6 +2964,11 @@
                           "description": "The next_page_token value returned from the previous List request, if any.",
                           "location": "query",
                           "type": "string"
+                        },
+                        "filter": {
+                          "description": "Restricts stores returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\nOnly filtering on labels is supported, for example `labels.key=value`.",
+                          "location": "query",
+                          "type": "string"
                         }
                       },
                       "parameterOrder": [
@@ -3198,7 +3163,7 @@
                               "type": "string"
                             },
                             "filter": {
-                              "description": "Restricts messages returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\nFields\/functions available for filtering are:\n- message_type, from the MSH-9 segment, e.g. 'NOT message_type = \"ADT\"'\n- send_date or sendDate, the YYYY-MM-DD date the message was sent in the\n  dataset's time_zone, from the MSH-7 segment; e.g.\n  'send_date < \"2017-01-02\"'\n- send_time, the timestamp of when the message was sent, using the RFC3339\n  time format for comparisons, from the MSH-7 segment; e.g. 'send_time <\n  \"2017-01-02T00:00:00-05:00\"'\n- send_facility, the hospital\/trust that the message came from, from the\n  MSH-4 segment, e.g. 'send_facility = \"RAL\"'\n- HL7RegExp(expr), which does regular expression matching of expr against\n  the HL7 message payload using re2 (http:\/\/code.google.com\/p\/re2\/)\n  syntax; e.g. 'HL7RegExp(\"^.*\\|.*\\|CERNER\")'\n- PatientId(value, type), which matches if the message lists a patient\n  having an ID of the given value and type in the PID-2, PID-3, or PID-4\n  segments; e.g. 'PatientId(\"123456\", \"MRN\")'\n- HasLabel(x), a boolean returning true if the message has a label with\n  key x (having any value) set using the labels map in Message; e.g.\n  'HasLabel(\"priority\")'\n- Label(x), a string value of the label with key x as set using the labels\n  map in Message, e.g. 'Label(\"priority\") = \"high\"'\nNegation on the patient ID function and the label function are not\nsupported, e.g. invalid queries: 'NOT PatientId(\"123456\", \"MRN\")',\n'NOT HasLabel(\"tag1\")', 'NOT Label(\"tag2\") = \"val2\"'.\nConjunction of multiple patient ID functions is not supported, e.g. an\ninvalid query: 'PatientId(\"123456\", \"MRN\") AND PatientId(\"456789\", \"MRN\")'.\nConjunction of multiple label functions is also not supported, e.g. an\ninvalid query: 'HasLabel(\"tag1\") AND Label(\"tag2\") = \"val2\"'.\nConjunction of one patient ID function, one label function and other fields\nis supported, e.g. a valid query:\n'PatientId(\"123456\", \"MRN\") AND HasLabel(\"tag1\") AND message_type = \"ADT\"'.",
+                              "description": "Restricts messages returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\nFields\/functions available for filtering are:\n- message_type, from the MSH-9 segment, e.g. 'NOT message_type = \"ADT\"'\n- send_date or sendDate, the YYYY-MM-DD date the message was sent in the\n  dataset's time_zone, from the MSH-7 segment; e.g.\n  'send_date < \"2017-01-02\"'\n- send_time, the timestamp of when the message was sent, using the RFC3339\n  time format for comparisons, from the MSH-7 segment; e.g. 'send_time <\n  \"2017-01-02T00:00:00-05:00\"'\n- send_facility, the hospital\/trust that the message came from, from the\n  MSH-4 segment, e.g. 'send_facility = \"RAL\"'\n- HL7RegExp(expr), which does regular expression matching of expr against\n  the HL7 message payload using re2 (http:\/\/code.google.com\/p\/re2\/)\n  syntax; e.g. 'HL7RegExp(\"^.*\\|.*\\|CERNER\")'\n- PatientId(value, type), which matches if the message lists a patient\n  having an ID of the given value and type in the PID-2, PID-3, or PID-4\n  segments; e.g. 'PatientId(\"123456\", \"MRN\")'\n- labels.x, a string value of the label with key x as set using the labels\n  map in Message, e.g. 'labels.\"priority\"=\"high\"'. \":*\" can be used to\n  assert the existence of a label, e.g. 'labels.\"priority\":*'.\nNegation on the patient ID function or the labels field is not supported,\ne.g. invalid queries: 'NOT PatientId(\"123456\", \"MRN\")',\n'NOT labels.\"tag1\":*', 'NOT labels.\"tag2\"=\"val2\"'.\nConjunction of multiple patient ID functions is not supported, e.g. an\ninvalid query: 'PatientId(\"123456\", \"MRN\") AND PatientId(\"456789\", \"MRN\")'.\nConjunction of multiple labels fields is also not supported, e.g. an\ninvalid query: 'labels.\"tag1\":* AND labels.\"tag2\"=\"val2\"'.\nConjunction of one patient ID function, one labels field and other fields\nis supported, e.g. a valid query:\n'PatientId(\"123456\", \"MRN\") AND labels.\"tag1\":* AND message_type = \"ADT\"'.\nHasLabel(x) and Label(x) are deprecated.",
                               "location": "query",
                               "type": "string"
                             },
@@ -3254,6 +3219,76 @@
                           "description": "Update the message."
                         }
                       }
+                    }
+                  }
+                },
+                "operations": {
+                  "methods": {
+                    "list": {
+                      "id": "healthcare.projects.locations.datasets.operations.list",
+                      "path": "v1alpha2/{+name}/operations",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/operations",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation's parent resource.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "The standard list filter.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The standard list page size.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The standard list page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "ListOperationsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id."
+                    },
+                    "get": {
+                      "id": "healthcare.projects.locations.datasets.operations.get",
+                      "path": "v1alpha2/{+name}",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/operations/{operationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/operations\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
                     }
                   }
                 },
@@ -3688,7 +3723,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets the capabilities statement for the store.\n"
+                      "description": "Gets the FHIR capability statement for the store, which contains a\ndescription of functionality supported by the server.\n"
                     },
                     "fhir": {
                       "id": "healthcare.projects.locations.datasets.fhirStores.fhir",
@@ -3716,7 +3751,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Executes all the requests in the given Bundle.  Conforms to\nhttp:\/\/hl7.org\/fhir\/http.html#transaction except that only the transaction\nupdate is supported."
+                      "description": "Executes all the requests in the given Bundle."
                     },
                     "import": {
                       "id": "healthcare.projects.locations.datasets.fhirStores.import",
@@ -3744,7 +3779,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Import resources to the FHIR store by loading data from the specified\nsources.\nFatal errors will be populated in the\nerror field.\nOtherwise a detailed response will be returned as of type\nImportResourcesResponse contained in the\nresponse field when the operation\nfinishes.\nThe metadata field type is\nOperationMetadata."
+                      "description": "Import resources to the FHIR store by loading data from the specified\nsources.\n\nThis method returns an Operation that can\nbe used to track the status of the import by calling\nGetOperation.\n\nImmediate fatal errors appear in the\nerror field.\nOtherwise, when the operation finishes, a detailed response of type\nImportResourcesResponse is returned in the\nresponse field.\nThe metadata field type for this\noperation is OperationMetadata."
                     },
                     "export": {
                       "id": "healthcare.projects.locations.datasets.fhirStores.export",
@@ -3772,7 +3807,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Export resources from the FHIR store to the specified destination.\nFatal errors will be populated in the\nerror field.\nOtherwise a detailed response will be returned as of type\nExportResourcesResponse contained in the\nresponse field when the operation\nfinishes.\nThe metadata field type is\nOperationMetadata."
+                      "description": "Export resources from the FHIR store to the specified destination.\n\nThis method returns an Operation that can\nbe used to track the status of the export by calling\nGetOperation.\n\nImmediate fatal errors appear in the\nerror field.\nOtherwise, when the operation finishes, a detailed response of type\nExportResourcesResponse is returned in the\nresponse field.\nThe metadata field type for this\noperation is OperationMetadata."
                     },
                     "create": {
                       "id": "healthcare.projects.locations.datasets.fhirStores.create",
@@ -3830,7 +3865,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets the specified FHIR store."
+                      "description": "Gets the configuration of the specified FHIR store."
                     },
                     "patch": {
                       "id": "healthcare.projects.locations.datasets.fhirStores.patch",
@@ -3864,7 +3899,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Updates the FHIR store."
+                      "description": "Updates the configuration of the specified FHIR store."
                     },
                     "delete": {
                       "id": "healthcare.projects.locations.datasets.fhirStores.delete",
@@ -3889,7 +3924,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes the FHIR store and removes all resources that are contained within\nit."
+                      "description": "Deletes the specified FHIR store and removes all resources within it."
                     },
                     "list": {
                       "id": "healthcare.projects.locations.datasets.fhirStores.list",
@@ -3912,6 +3947,11 @@
                         },
                         "pageToken": {
                           "description": "The next_page_token value returned from the previous List request, if any.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Restricts stores returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\nOnly filtering on labels is supported, for example `labels.key=value`.",
                           "location": "query",
                           "type": "string"
                         }
@@ -4097,7 +4137,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Deletes a FHIR resource.\nNote: unless resource versioning is disabled by setting the\ndisable_resource_versioning flag\non the FHIR store, the deleted resources will be moved to a history\nrepository that can still be retrieved through GetResourceVersion and\nrelated methods, unless they are removed by the DeleteResourceVersions\nmethod."
+                          "description": "Deletes a FHIR resource.\n\nNote: unless resource versioning is disabled by setting the\ndisable_resource_versioning flag\non the FHIR store, the deleted resources will be moved to a history\nrepository that can still be retrieved through GetResourceVersion and\nrelated methods, unless they are removed by the DeleteResourceVersions\nmethod."
                         },
                         "conditionalDeleteResource": {
                           "id": "healthcare.projects.locations.datasets.fhirStores.fhir.conditionalDeleteResource",
@@ -4130,7 +4170,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Deletes FHIR resources matching a search query.\nNote: unless resource versioning is disabled by setting the\ndisable_resource_versioning flag\non the FHIR store, the deleted resources will be moved to a history\nrepository that can still be retrieved through GetResourceVersion and\nrelated methods, unless they are removed by the DeleteResourceVersions\nmethod."
+                          "description": "Deletes FHIR resources matching a search query.\n\nNote: unless resource versioning is disabled by setting the\ndisable_resource_versioning flag\non the FHIR store, the deleted resources will be moved to a history\nrepository that can still be retrieved through GetResourceVersion and\nrelated methods, unless they are removed by the DeleteResourceVersions\nmethod."
                         },
                         "update": {
                           "id": "healthcare.projects.locations.datasets.fhirStores.fhir.update",
@@ -4379,7 +4419,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Gets the capabilities statement for the store.\n"
+                          "description": "Gets the FHIR capability statement for the store, which contains a\ndescription of functionality supported by the server.\n"
                         },
                         "delete$purge": {
                           "id": "healthcare.projects.locations.datasets.fhirStores.fhir.delete$purge",
@@ -4404,7 +4444,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Deletes all the historical versions of a resource (excluding current\nversion) from the FHIR store. To remove all versions of a resource, first\ndelete the current version and call this API."
+                          "description": "Deletes all the historical versions of a resource (excluding current\nversion) from the FHIR store. To remove all versions of a resource, first\ndelete the current version and call this method."
                         }
                       }
                       ,

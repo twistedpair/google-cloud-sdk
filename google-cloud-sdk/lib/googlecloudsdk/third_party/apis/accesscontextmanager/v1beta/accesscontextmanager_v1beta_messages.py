@@ -633,16 +633,12 @@ class OsConstraint(_messages.Message):
       DESKTOP_WINDOWS: A desktop Windows operating system.
       DESKTOP_LINUX: A desktop Linux operating system.
       DESKTOP_CHROME_OS: A desktop ChromeOS operating system.
-      ANDROID: An Android operating system.
-      IOS: An iOS operating system.
     """
     OS_UNSPECIFIED = 0
     DESKTOP_MAC = 1
     DESKTOP_WINDOWS = 2
     DESKTOP_LINUX = 3
     DESKTOP_CHROME_OS = 4
-    ANDROID = 5
-    IOS = 6
 
   minimumVersion = _messages.StringField(1)
   osType = _messages.EnumField('OsTypeValueValuesEnum', 2)
@@ -729,28 +725,13 @@ class ServicePerimeterConfig(_messages.Message):
       perimeter. Currently only projects are allowed. Format:
       `projects/{project_number}`
     restrictedServices: GCP services that are subject to the Service Perimeter
-      restrictions. May contain a list of services or a single wildcard "*".
-      For example, if `storage.googleapis.com` is specified, access to the
-      storage buckets inside the perimeter must meet the perimeter's access
-      restrictions.  Wildcard means that unless explicitly specified by
-      "unrestricted_services" list, any service is treated as restricted. One
-      of the fields "restricted_services", "unrestricted_services" must
-      contain a wildcard "*", otherwise the Service Perimeter specification is
-      invalid. It also means that both field being empty is invalid as well.
-      "restricted_services" can be empty if and only if
-      "unrestricted_services" list contains a "*" wildcard.
+      restrictions. Must contain a list of services. For example, if
+      `storage.googleapis.com` is specified, access to the storage buckets
+      inside the perimeter must meet the perimeter's access restrictions.
     unrestrictedServices: GCP services that are not subject to the Service
-      Perimeter restrictions. May contain a list of services or a single
-      wildcard "*". For example, if `logging.googleapis.com` is unrestricted,
-      users can access logs inside the perimeter as if the perimeter doesn't
-      exist, and it also means VMs inside the perimeter can access logs
-      outside the perimeter.  The wildcard means that unless explicitly
-      specified by "restricted_services" list, any service is treated as
-      unrestricted. One of the fields "restricted_services",
-      "unrestricted_services" must contain a wildcard "*", otherwise the
-      Service Perimeter specification is invalid. It also means that both
-      field being empty is invalid as well. "unrestricted_services" can be
-      empty if and only if "restricted_services" list contains a "*" wildcard.
+      Perimeter restrictions. Deprecated. Must be set to a single wildcard
+      "*".  The wildcard means that unless explicitly specified by
+      "restricted_services" list, any service is treated as unrestricted.
   """
 
   accessLevels = _messages.StringField(1, repeated=True)

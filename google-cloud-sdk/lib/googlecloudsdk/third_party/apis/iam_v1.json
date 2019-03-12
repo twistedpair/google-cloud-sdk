@@ -164,6 +164,10 @@
         "oauth2ClientId": {
           "description": "@OutputOnly The OAuth2 client id for the service account.\nThis is used in conjunction with the OAuth2 clientconfig API to make\nthree legged OAuth2 (3LO) flows to access the data of Google users.",
           "type": "string"
+        },
+        "disabled": {
+          "description": "@OutputOnly A bool indicate if the service account is disabled.\nThe field is currently in alpha phase.",
+          "type": "boolean"
         }
       }
     },
@@ -177,7 +181,7 @@
           "type": "string"
         },
         "serviceAccount": {
-          "description": "The ServiceAccount resource to create.\nCurrently, only the following values are user assignable:\n`display_name` .",
+          "description": "The ServiceAccount resource to\ncreate. Currently, only the following values are user assignable:\n`display_name` .",
           "$ref": "ServiceAccount"
         }
       }
@@ -199,6 +203,37 @@
     "Empty": {
       "id": "Empty",
       "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "UndeleteServiceAccountRequest": {
+      "id": "UndeleteServiceAccountRequest",
+      "description": "The service account undelete request.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "UndeleteServiceAccountResponse": {
+      "id": "UndeleteServiceAccountResponse",
+      "type": "object",
+      "properties": {
+        "restoredAccount": {
+          "description": "Metadata for the restored service account.",
+          "$ref": "ServiceAccount"
+        }
+      }
+    },
+    "EnableServiceAccountRequest": {
+      "id": "EnableServiceAccountRequest",
+      "description": "The service account enable request.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "DisableServiceAccountRequest": {
+      "id": "DisableServiceAccountRequest",
+      "description": "The service account disable request.",
       "type": "object",
       "properties": {
       }
@@ -496,7 +531,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -1192,7 +1227,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Updates a ServiceAccount.\n\nCurrently, only the following fields are updatable:\n`display_name` .\nThe `etag` is mandatory."
+              "description": "Note: This method is in the process of being deprecated. Use\nPatchServiceAccount instead.\n\nUpdates a ServiceAccount.\n\nCurrently, only the following fields are updatable:\n`display_name` .\nThe `etag` is mandatory."
             },
             "patch": {
               "id": "iam.projects.serviceAccounts.patch",
@@ -1220,7 +1255,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Patches a ServiceAccount.\n\nCurrently, only the following fields are updatable:\n`display_name` and `description`.\n\nOnly fields specified in the request are garaunteed to be returned in\nthe response. Other fields in the response may be empty.\n\nNote: The field mask is required."
+              "description": "Patches a ServiceAccount.\n\nCurrently, only the following fields are updatable:\n`display_name` and `description`.\n\nOnly fields specified in the request are guaranteed to be returned in\nthe response. Other fields in the response may be empty.\n\nNote: The field mask is required."
             },
             "delete": {
               "id": "iam.projects.serviceAccounts.delete",
@@ -1246,6 +1281,90 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Deletes a ServiceAccount."
+            },
+            "undelete": {
+              "id": "iam.projects.serviceAccounts.undelete",
+              "path": "v1/{+name}:undelete",
+              "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:undelete",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT_UNIQUE_ID}'.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "UndeleteServiceAccountRequest"
+              },
+              "response": {
+                "$ref": "UndeleteServiceAccountResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Restores a deleted ServiceAccount.\nThis is to be used as an action of last resort.  A service account may\nnot always be restorable."
+            },
+            "enable": {
+              "id": "iam.projects.serviceAccounts.enable",
+              "path": "v1/{+name}:enable",
+              "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:enable",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT_UNIQUE_ID}'.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "EnableServiceAccountRequest"
+              },
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Enables a ServiceAccount.\n The API is currently in alpha phase."
+            },
+            "disable": {
+              "id": "iam.projects.serviceAccounts.disable",
+              "path": "v1/{+name}:disable",
+              "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:disable",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "DisableServiceAccountRequest"
+              },
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Disables a ServiceAccount.\nThe API is currently in alpha phase."
             },
             "signBlob": {
               "id": "iam.projects.serviceAccounts.signBlob",
@@ -1326,7 +1445,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Returns the IAM access control policy for a\nServiceAccount."
+              "description": "Returns the Cloud IAM access control policy for a\nServiceAccount.\n\nNote: Service accounts are both\n[resources and identities](\/iam\/docs\/service-accounts#service_account_permissions).\nThis method treats the service account as a resource. It returns the Cloud\nIAM policy that reflects what members have access to the service account.\n\nThis method does not return what resources the service account has access\nto. To see if a service account has access to a resource, call the\n`getIamPolicy` method on the target resource. For example, to view grants\nfor a project, call the\n[projects.getIamPolicy](\/resource-manager\/reference\/rest\/v1\/projects\/getIamPolicy)\nmethod."
             },
             "setIamPolicy": {
               "id": "iam.projects.serviceAccounts.setIamPolicy",
@@ -1354,7 +1473,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Sets the IAM access control policy for a\nServiceAccount."
+              "description": "Sets the Cloud IAM access control policy for a\nServiceAccount.\n\nNote: Service accounts are both\n[resources and identities](\/iam\/docs\/service-accounts#service_account_permissions).\nThis method treats the service account as a resource. Use it to grant\nmembers access to the service account, such as when they need to\nimpersonate it.\n\nThis method does not grant the service account access to other resources,\nsuch as projects. To grant a service account access to resources, include\nthe service account in the Cloud IAM policy for the desired resource, then\ncall the appropriate `setIamPolicy` method on the target resource. For\nexample, to grant a service account access to a project, call the\n[projects.setIamPolicy](\/resource-manager\/reference\/rest\/v1\/projects\/setIamPolicy)\nmethod."
             },
             "testIamPermissions": {
               "id": "iam.projects.serviceAccounts.testIamPermissions",
@@ -1651,7 +1770,7 @@
                   "type": "string"
                 },
                 "view": {
-                  "description": "Optional view for the returned Role objects.",
+                  "description": "Optional view for the returned Role objects. When `FULL` is specified,\nthe `includedPermissions` field is returned, which includes a list of all\npermissions in the role. The default value is `BASIC`, which does not\nreturn the `includedPermissions` field.",
                   "location": "query",
                   "type": "string",
                   "enum": [
@@ -1871,7 +1990,7 @@
               "type": "string"
             },
             "view": {
-              "description": "Optional view for the returned Role objects.",
+              "description": "Optional view for the returned Role objects. When `FULL` is specified,\nthe `includedPermissions` field is returned, which includes a list of all\npermissions in the role. The default value is `BASIC`, which does not\nreturn the `includedPermissions` field.",
               "location": "query",
               "type": "string",
               "enum": [
@@ -1951,7 +2070,7 @@
                   "type": "string"
                 },
                 "view": {
-                  "description": "Optional view for the returned Role objects.",
+                  "description": "Optional view for the returned Role objects. When `FULL` is specified,\nthe `includedPermissions` field is returned, which includes a list of all\npermissions in the role. The default value is `BASIC`, which does not\nreturn the `includedPermissions` field.",
                   "location": "query",
                   "type": "string",
                   "enum": [

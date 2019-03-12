@@ -5,6 +5,50 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 238.0.0 (2019-03-12)
+
+### App Engine
+
+* 
+* Updated the Python SDK to version 1.9.84.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/python/release-notes
+
+* Added a new field, 'main', to app.yaml. This allows users of the Go
+  second-generation runtimes to specify which package to build. See
+  https://cloud.google.com/appengine/docs/standard/go111/config/appref for more
+  information.
+
+### App Engine Flexible Environment
+
+* Promoted network.session_affinity flag in yaml file to GA.
+
+### Cloud Access Context Manager
+
+*   Promoted the gcloud access-context-manager command group to GA
+*   Removed the unrestricted-services field from alpha and beta, always set to default '*'.
+
+### Cloud Dataproc
+
+* Promoted `--optional-components` of `gcloud dataproc clusters` to GA.
+
+### Cloud Functions
+
+* Promoted `max-instances` and `clear-max-instances` flags of `gcloud functions deploy` to beta.
+
+
+### Cloud Machine Learning Engine
+
+* Promoted `--machine-type` flag of `gcloud ml-engine versions create` command to GA.
+
+### Kubernetes Engine
+
+* Added the `--enable-shielded-containers` flag to `gcloud beta container clusters create`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 237.0.0 (2019-03-05)
 
 ### Cloud SDK

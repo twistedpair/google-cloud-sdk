@@ -185,11 +185,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The job name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.\n\nThe maximum allowed length for `JOB_ID` is 500 characters.\nCaller-specified in CreateJobRequest, after which it becomes\noutput only.",
+          "description": "Optionally caller-specified in CreateJob, after\nwhich it becomes output only.\n\nThe job name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.\n\nThe maximum allowed length for `JOB_ID` is 500 characters.",
           "type": "string"
         },
         "description": {
-          "description": "A human-readable description for the job. This string must not contain\nmore than 500 characters.",
+          "description": "Optionally caller-specified in CreateJob or\nUpdateJob.\n\nA human-readable description for the job. This string must not contain\nmore than 500 characters.",
           "type": "string"
         },
         "pubsubTarget": {
@@ -323,7 +323,7 @@
     },
     "AppEngineRouting": {
       "id": "AppEngineRouting",
-      "description": "App Engine Routing.\n\nFor more information about services, versions, and instances see\n[An Overview of App Engine](https:\/\/cloud.google.com\/appengine\/docs\/python\/an-overview-of-app-engine),\n[Microservices Architecture on Google App Engine](https:\/\/cloud.google.com\/appengine\/docs\/python\/microservices-on-app-engine),\n[App Engine Standard request routing](https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/how-requests-are-routed), and\n[App Engine Flex request routing](https:\/\/cloud.google.com\/appengine\/docs\/flexible\/python\/how-requests-are-routed).",
+      "description": "App Engine Routing.\n\nFor more information about services, versions, and instances see\n[An Overview of App\nEngine](https:\/\/cloud.google.com\/appengine\/docs\/python\/an-overview-of-app-engine),\n[Microservices Architecture on Google App\nEngine](https:\/\/cloud.google.com\/appengine\/docs\/python\/microservices-on-app-engine),\n[App Engine Standard request\nrouting](https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/how-requests-are-routed),\nand [App Engine Flex request\nrouting](https:\/\/cloud.google.com\/appengine\/docs\/flexible\/python\/how-requests-are-routed).",
       "type": "object",
       "properties": {
         "service": {
@@ -335,7 +335,7 @@
           "type": "string"
         },
         "instance": {
-          "description": "App instance.\n\nBy default, the job is sent to an instance which is available when\nthe job is attempted.\n\nRequests can only be sent to a specific instance if\n[manual scaling is used in App Engine Standard](https:\/\/cloud.google.com\/appengine\/docs\/python\/an-overview-of-app-engine?hl=en_US#scaling_types_and_instance_classes).\nApp Engine Flex does not support instances. For more information, see\n[App Engine Standard request routing](https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/how-requests-are-routed) and\n[App Engine Flex request routing](https:\/\/cloud.google.com\/appengine\/docs\/flexible\/python\/how-requests-are-routed).",
+          "description": "App instance.\n\nBy default, the job is sent to an instance which is available when\nthe job is attempted.\n\nRequests can only be sent to a specific instance if\n[manual scaling is used in App Engine\nStandard](https:\/\/cloud.google.com\/appengine\/docs\/python\/an-overview-of-app-engine?hl=en_US#scaling_types_and_instance_classes).\nApp Engine Flex does not support instances. For more information, see\n[App Engine Standard request\nrouting](https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/how-requests-are-routed)\nand [App Engine Flex request\nrouting](https:\/\/cloud.google.com\/appengine\/docs\/flexible\/python\/how-requests-are-routed).",
           "type": "string"
         },
         "host": {
@@ -694,7 +694,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The job name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.\n\nThe maximum allowed length for `JOB_ID` is 500 characters.\nCaller-specified in CreateJobRequest, after which it becomes\noutput only.",
+                      "description": "Optionally caller-specified in CreateJob, after\nwhich it becomes output only.\n\nThe job name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.\n\nThe maximum allowed length for `JOB_ID` is 500 characters.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
