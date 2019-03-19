@@ -130,6 +130,7 @@ https://cloud.google.com/compute/docs/instances/creating-instance-with-custom-ma
           required_keys=['vcpu', 'memory']))
 
 
+# TODO(b/119257245): fix the format in man page.
 def AddResourcesArgGroup(parser):
   """Add the argument group for ResourceCommitment support in commitment."""
   resources_group = parser.add_group(

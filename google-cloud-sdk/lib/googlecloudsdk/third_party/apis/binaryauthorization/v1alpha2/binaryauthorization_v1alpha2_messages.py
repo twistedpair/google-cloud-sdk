@@ -109,22 +109,36 @@ class Attestor(_messages.Message):
 
 
 class AttestorPublicKey(_messages.Message):
-  r"""An attestator public key that will be used to verify attestations signed
+  r"""An attestor public key that will be used to verify attestations signed
   by this attestor.
 
   Fields:
     asciiArmoredPgpPublicKey: ASCII-armored representation of a PGP public
       key, as the entire output by the command `gpg --export --armor
-      foo@example.com` (either LF or CRLF line endings).
+      foo@example.com` (either LF or CRLF line endings). When using this
+      field, `id` should be left blank.  The BinAuthz API handlers will
+      calculate the ID and fill it in automatically.  BinAuthz computes this
+      ID as the OpenPGP RFC4880 V4 fingerprint, represented as upper-case hex.
+      If `id` is provided by the caller, it will be overwritten by the API-
+      calculated ID.
     comment: Optional. A descriptive comment. This field may be updated.
-    id: Output only. This field will be overwritten with key ID information,
-      for example, an identifier extracted from a PGP public key. This field
-      may not be updated.
+    id: The ID of this public key. Signatures verified by BinAuthz must
+      include the ID of the public key that can be used to verify them, and
+      that ID must match the contents of this field exactly. Additional
+      restrictions on this field can be imposed based on which public key type
+      is encapsulated. See the documentation on `public_key` cases below for
+      details.
+    pkixPublicKey: A raw PKIX SubjectPublicKeyInfo format public key.  NOTE:
+      `id` may be explicitly provided by the caller when using this type of
+      public key, but it MUST be a valid RFC3986 URI. If `id` is left blank, a
+      default one will be computed based on the digest of the DER encoding of
+      the public key.
   """
 
   asciiArmoredPgpPublicKey = _messages.StringField(1)
   comment = _messages.StringField(2)
   id = _messages.StringField(3)
+  pkixPublicKey = _messages.MessageField('PkixPublicKey', 4)
 
 
 class BinaryauthorizationProjectsAttestorsAttestationsGetIamPolicyRequest(_messages.Message):
@@ -440,8 +454,77 @@ class ListAttestorsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class PkixPublicKey(_messages.Message):
+  r"""A public key in the PkixPublicKey format (see
+  https://tools.ietf.org/html/rfc5280#section-4.1.2.7 for details). Public
+  keys of this type are typically textually encoded using the PEM format.
+
+  Enums:
+    SignatureAlgorithmValueValuesEnum: The signature algorithm used to verify
+      a message against a signature using this key. These signature algorithm
+      must match the structure and any object identifiers encoded in
+      `public_key_pem` (i.e. this algorithm must match that of the public
+      key).
+
+  Fields:
+    publicKeyPem: A PEM-encoded public key, as described in
+      https://tools.ietf.org/html/rfc7468#section-13
+    signatureAlgorithm: The signature algorithm used to verify a message
+      against a signature using this key. These signature algorithm must match
+      the structure and any object identifiers encoded in `public_key_pem`
+      (i.e. this algorithm must match that of the public key).
+  """
+
+  class SignatureAlgorithmValueValuesEnum(_messages.Enum):
+    r"""The signature algorithm used to verify a message against a signature
+    using this key. These signature algorithm must match the structure and any
+    object identifiers encoded in `public_key_pem` (i.e. this algorithm must
+    match that of the public key).
+
+    Values:
+      SIGNATURE_ALGORITHM_UNSPECIFIED: Not specified.
+      RSA_PSS_2048_SHA256: RSASSA-PSS 2048 bit key with a SHA256 digest.
+      RSA_PSS_3072_SHA256: RSASSA-PSS 3072 bit key with a SHA256 digest.
+      RSA_PSS_4096_SHA256: RSASSA-PSS 4096 bit key with a SHA256 digest.
+      RSA_PSS_4096_SHA512: RSASSA-PSS 4096 bit key with a SHA512 digest.
+      RSA_SIGN_PKCS1_2048_SHA256: RSASSA-PKCS1-v1_5 with a 2048 bit key and a
+        SHA256 digest.
+      RSA_SIGN_PKCS1_3072_SHA256: RSASSA-PKCS1-v1_5 with a 3072 bit key and a
+        SHA256 digest.
+      RSA_SIGN_PKCS1_4096_SHA256: RSASSA-PKCS1-v1_5 with a 4096 bit key and a
+        SHA256 digest.
+      RSA_SIGN_PKCS1_4096_SHA512: RSASSA-PKCS1-v1_5 with a 4096 bit key and a
+        SHA512 digest.
+      ECDSA_P256_SHA256: ECDSA on the NIST P-256 curve with a SHA256 digest.
+      ECDSA_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
+      ECDSA_P521_SHA512: ECDSA on the NIST P-521 curve with a SHA512 digest.
+    """
+    SIGNATURE_ALGORITHM_UNSPECIFIED = 0
+    RSA_PSS_2048_SHA256 = 1
+    RSA_PSS_3072_SHA256 = 2
+    RSA_PSS_4096_SHA256 = 3
+    RSA_PSS_4096_SHA512 = 4
+    RSA_SIGN_PKCS1_2048_SHA256 = 5
+    RSA_SIGN_PKCS1_3072_SHA256 = 6
+    RSA_SIGN_PKCS1_4096_SHA256 = 7
+    RSA_SIGN_PKCS1_4096_SHA512 = 8
+    ECDSA_P256_SHA256 = 9
+    ECDSA_P384_SHA384 = 10
+    ECDSA_P521_SHA512 = 11
+
+  publicKeyPem = _messages.StringField(1)
+  signatureAlgorithm = _messages.EnumField('SignatureAlgorithmValueValuesEnum', 2)
+
+
 class Policy(_messages.Message):
   r"""A policy for container image binary authorization.
+
+  Enums:
+    GlobalPolicyEvaluationModeValueValuesEnum: Optional. Controls the
+      evaluation of a Google-maintained global admission policy for common
+      system-level images. Images not covered by the global policy will be
+      subject to the project admission policy. This setting has no effect when
+      specified inside a global admission policy.
 
   Messages:
     ClusterAdmissionRulesValue: Optional. Per-cluster admission rules. Cluster
@@ -463,12 +546,34 @@ class Policy(_messages.Message):
       restrictions see https://cloud.google.com/container-
       engine/reference/rest/v1/projects.zones.clusters.
     defaultAdmissionRule: Required. Default admission rule for a cluster
-      without a per-cluster admission rule.
+      without a per-cluster, per- kubernetes-service-account, or per-istio-
+      service-identity admission rule.
     description: Optional. A descriptive comment.
+    globalPolicyEvaluationMode: Optional. Controls the evaluation of a Google-
+      maintained global admission policy for common system-level images.
+      Images not covered by the global policy will be subject to the project
+      admission policy. This setting has no effect when specified inside a
+      global admission policy.
     name: Output only. The resource name, in the format `projects/*/policy`.
       There is at most one policy per project.
     updateTime: Output only. Time when the policy was last updated.
   """
+
+  class GlobalPolicyEvaluationModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Controls the evaluation of a Google-maintained global
+    admission policy for common system-level images. Images not covered by the
+    global policy will be subject to the project admission policy. This
+    setting has no effect when specified inside a global admission policy.
+
+    Values:
+      GLOBAL_POLICY_EVALUATION_MODE_UNSPECIFIED: Not specified: DISABLE is
+        assumed.
+      ENABLE: Enables global policy evaluation.
+      DISABLE: Disables global policy evaluation.
+    """
+    GLOBAL_POLICY_EVALUATION_MODE_UNSPECIFIED = 0
+    ENABLE = 1
+    DISABLE = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ClusterAdmissionRulesValue(_messages.Message):
@@ -505,8 +610,9 @@ class Policy(_messages.Message):
   clusterAdmissionRules = _messages.MessageField('ClusterAdmissionRulesValue', 2)
   defaultAdmissionRule = _messages.MessageField('AdmissionRule', 3)
   description = _messages.StringField(4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  globalPolicyEvaluationMode = _messages.EnumField('GlobalPolicyEvaluationModeValueValuesEnum', 5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class SetIamPolicyRequest(_messages.Message):

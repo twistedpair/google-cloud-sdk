@@ -182,6 +182,10 @@ class MultiChoiceQuestion(Question):
     else:
       return 1 <= answer_int <= len(self._choices)
 
+  def Choice(self, index):
+    """Gets one choice of the multi-choice question."""
+    return self._choices[index]
+
   def __eq__(self, other):
     if isinstance(other, self.__class__):
       # pylint: disable=protected-access
@@ -195,6 +199,9 @@ class MultiChoiceQuestion(Question):
   def __hash__(self):
     return hash((self._question, self._instruction,
                  self._instruction_on_rejection, tuple(self._choices)))
+
+  def __len__(self):
+    return len(self._choices)
 
 
 class FreeTextQuestion(Question):

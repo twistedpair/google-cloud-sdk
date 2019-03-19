@@ -102,6 +102,44 @@ FORWARDING_RULES_OVERVIEW_ALPHA = """\
         """
 
 
+FORWARDING_RULES_OVERVIEW_BETA = """\
+        A forwarding rule directs traffic that matches a bound IP address to a
+        forwarding target (load balancer, VPN gateway or VM instance).
+
+        Forwarding rules can be either global or regional, specified with the
+        ``--global'' or ``--region=REGION'' flag. Global forwarding rules work
+        with global load balancers, which include target HTTP proxies, target
+        HTTPS proxies, target SSL proxies and target TCP proxies; regional
+        forwarding rules work with regional or zonal targets, which include
+        target pools, target instances and target VPN gateways and backend
+        services.
+
+        Forwarding rules can be either external, internal or internal self
+        managed, specified with the
+        ``--load-balancing-scheme=[EXTERNAL|INTERNAL|INTERNAL_SELF_MANAGED]''
+        flag. External forwarding rules are accessible from the internet, while
+        internal forwarding rules are only accessible from within their VPC
+        networks. You can specify a reserved static external or internal IP
+        address with the ``--address=ADDRESS'' flag for the forwarding rule.
+        Otherwise if the flag is unspecified, an external forwarding rule will
+        be automatically assigned an ephemeral external IP address (global IP
+        addresses for global forwarding rules and regional IP addresses for
+        regional forwarding rules); an internal forwarding rule will be
+        automatically assigned an ephemeral internal IP address from the subnet
+        specified with the ``--subnet'' flag. An IP Address must be provided for
+        an internal self managed forwarding rule.
+
+        There are different types of load balancers working at different layers
+        of the OSI networking model
+        (http://en.wikipedia.org/wiki/Network_layer). Layer 3 load balancer
+        targets include target pools, target SSL proxies, target TCP proxies and
+        backend services. Layer 7 load balancer targets include target HTTP
+        proxies and target HTTPS proxies. For more information on load
+        balancing, see
+        https://cloud.google.com/compute/docs/load-balancing-and-autoscaling/.
+        """
+
+
 class ForwardingRulesZonalCompleter(compute_completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):
@@ -183,6 +221,20 @@ NETWORK_ARG_ALPHA = compute_flags.ResourceArgument(
     detailed_help="""\
         (Only for --load-balancing-scheme=INTERNAL,
         --load-balancing-scheme=INTERNAL_MANAGED, or
+        --load-balancing-scheme=INTERNAL_SELF_MANAGED) Network that this
+        forwarding rule applies to. If this field is not specified, the default
+        network will be used. In the absence of the default network, this field
+        must be specified.
+        """)
+
+NETWORK_ARG_BETA = compute_flags.ResourceArgument(
+    name='--network',
+    required=False,
+    resource_name='networks',
+    global_collection='compute.networks',
+    short_help='Network that this forwarding rule applies to.',
+    detailed_help="""\
+        (Only for --load-balancing-scheme=INTERNAL or
         --load-balancing-scheme=INTERNAL_SELF_MANAGED) Network that this
         forwarding rule applies to. If this field is not specified, the default
         network will be used. In the absence of the default network, this field
@@ -316,8 +368,22 @@ TARGET_VPN_GATEWAY_ARG = compute_flags.ResourceArgument(
                         ' region of the forwarding rule.'))
 
 
-def AddressArgHelp(include_alpha):
+def AddressArgHelp(include_l7_ilb, include_traffic_director):
   """Build the help text for the address argument."""
+
+  lb_schemes = '(EXTERNAL, INTERNAL'
+  if include_l7_ilb:
+    lb_schemes += ', INTERNAL_MANAGED'
+  if include_traffic_director:
+    lb_schemes += ', INTERNAL_SELF_MANAGED'
+  lb_schemes += ')'
+
+  address_help = ''
+  if include_traffic_director:
+    address_help = """
+    When the --load-balancing-scheme is INTERNAL_SELF_MANAGED, this must
+    be a URL reference to an existing Address resource.
+    """
 
   detailed_help = """\
     IP address that the forwarding rule will serve. All
@@ -354,11 +420,7 @@ def AddressArgHelp(include_alpha):
     - regions/us-central1/addresses/address-1
     - global/addresses/address-1
     - address-1
-  """ % ('EXTERNAL, INTERNAL, INTERNAL_MANAGED or INTERNAL_SELF_MANAGED'
-         if include_alpha else 'EXTERNAL or INTERNAL', """
-    When the --load-balancing-scheme is INTERNAL_SELF_MANAGED, this must
-    be a URL reference to an existing Address resource.
-         """ if include_alpha else '')
+  """ % (lb_schemes, address_help)
 
   return textwrap.dedent(detailed_help)
 
@@ -372,7 +434,20 @@ ADDRESS_ARG_ALPHA = compute_flags.ResourceArgument(
     global_collection='compute.globalAddresses',
     region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
     short_help='IP address that the forwarding rule will serve.',
-    detailed_help=AddressArgHelp(include_alpha=True))
+    detailed_help=AddressArgHelp(
+        include_l7_ilb=True, include_traffic_director=True))
+
+ADDRESS_ARG_BETA = compute_flags.ResourceArgument(
+    name='--address',
+    required=False,
+    resource_name='address',
+    completer=addresses_flags.AddressesCompleter,
+    regional_collection='compute.addresses',
+    global_collection='compute.globalAddresses',
+    region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
+    short_help='IP address that the forwarding rule will serve.',
+    detailed_help=AddressArgHelp(
+        include_l7_ilb=False, include_traffic_director=True))
 
 ADDRESS_ARG = compute_flags.ResourceArgument(
     name='--address',
@@ -383,12 +458,12 @@ ADDRESS_ARG = compute_flags.ResourceArgument(
     global_collection='compute.globalAddresses',
     region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
     short_help='IP address that the forwarding rule will serve.',
-    detailed_help=AddressArgHelp(include_alpha=False))
+    detailed_help=AddressArgHelp(
+        include_l7_ilb=False, include_traffic_director=False))
 
 
 def AddUpdateArgs(parser, include_beta=False, include_alpha=False):
   """Adds common flags for mutating forwarding rule targets."""
-  del include_beta
   target = parser.add_mutually_exclusive_group(required=True)
 
   TargetHttpProxyArg(include_alpha=include_alpha).AddArgument(
@@ -404,14 +479,27 @@ def AddUpdateArgs(parser, include_beta=False, include_alpha=False):
   BACKEND_SERVICE_ARG.AddArgument(parser, mutex_group=target)
   if include_alpha:
     NETWORK_ARG_ALPHA.AddArgument(parser)
+  elif include_beta:
+    NETWORK_ARG_BETA.AddArgument(parser)
   else:
     NETWORK_ARG.AddArgument(parser)
   SUBNET_ARG.AddArgument(parser)
 
-  AddLoadBalancingScheme(parser, include_alpha)
+  include_traffic_director = False
+  include_l7_ilb = False
+  if include_beta:
+    include_traffic_director = True
+  if include_alpha:
+    include_l7_ilb = True
+  AddLoadBalancingScheme(
+      parser,
+      include_traffic_director=include_traffic_director,
+      include_l7_ilb=include_l7_ilb)
 
 
-def AddLoadBalancingScheme(parser, include_alpha=False):
+def AddLoadBalancingScheme(parser,
+                           include_l7_ilb=False,
+                           include_traffic_director=False):
   """Adds the load-balancing-scheme flag."""
   load_balancing_choices = {
       'EXTERNAL':
@@ -422,11 +510,15 @@ def AddLoadBalancingScheme(parser, include_alpha=False):
       'INTERNAL': 'Internal load balancing or forwarding, used with '
                   '--backend-service.',
   }
-  if include_alpha:
+  if include_traffic_director:
     load_balancing_choices.update({
         'INTERNAL_SELF_MANAGED':
             'Traffic director load balancing or forwarding, used with '
-            '--target-http-proxy, --target-https-proxy.',
+            '--target-http-proxy, --target-https-proxy.'
+    })
+
+  if include_l7_ilb:
+    load_balancing_choices.update({
         'INTERNAL_MANAGED': 'Internal HTTP(S) Load Balancing, used with '
                             '--target-http-proxy, --target-https-proxy.'
     })
@@ -485,12 +577,17 @@ def AddIpVersionGroup(parser):
       """)
 
 
-def AddAddressesAndIPVersions(parser, required=True, include_alpha=False):
+def AddAddressesAndIPVersions(parser,
+                              required=True,
+                              include_alpha=False,
+                              include_beta=False):
   """Adds Addresses and IP versions flag."""
   group = parser.add_mutually_exclusive_group(required=required)
   AddIpVersionGroup(group)
   if include_alpha:
     ADDRESS_ARG_ALPHA.AddArgument(parser, mutex_group=group)
+  elif include_beta:
+    ADDRESS_ARG_BETA.AddArgument(parser, mutex_group=group)
   else:
     ADDRESS_ARG.AddArgument(parser, mutex_group=group)
 

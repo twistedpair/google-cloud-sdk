@@ -184,11 +184,14 @@ def BackendServiceArgumentForTargetTcpProxy(required=True):
         """)
 
 
-def AddLoadBalancingScheme(parser, include_alpha=False):
+def AddLoadBalancingScheme(parser,
+                           include_l7_ilb=False,
+                           include_traffic_director=False):
   parser.add_argument(
       '--load-balancing-scheme',
       choices=['INTERNAL', 'EXTERNAL'] +
-      (['INTERNAL_MANAGED', 'INTERNAL_SELF_MANAGED'] if include_alpha else []),
+      (['INTERNAL_MANAGED'] if include_l7_ilb else []) +
+      (['INTERNAL_SELF_MANAGED'] if include_traffic_director else []),
       type=lambda x: x.replace('-', '_').upper(),
       default='EXTERNAL',
       help='Specifies if this is internal or external load balancer.')

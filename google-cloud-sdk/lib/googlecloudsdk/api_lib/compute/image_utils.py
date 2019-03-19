@@ -26,6 +26,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import files as file_utils
 
 FAMILY_PREFIX = 'family/'
 GUEST_OS_FEATURES = ['MULTI_IP_SUBNET',
@@ -370,3 +371,57 @@ def AddGuestOsFeaturesArg(parser, release_track):
          Windows server include the WINDOWS parameter to indicate that it is a
          Windows image.
         """)
+
+
+def GetFileContentAndFileType(file_path):
+  """Helper function used for read file and determine file type."""
+  file_content = file_utils.ReadBinaryFileContents(file_path)
+  file_type = ''
+  if file_path.endswith('.bin'):
+    file_type = 'BIN'
+  else:
+    file_type = 'X509'
+  return file_content, file_type
+
+
+def CreateFileContentBuffer(messages, file_path):
+  """Helper function to read file and return FileContentBuffer."""
+  file_content_buffer = messages.FileContentBuffer()
+  content, file_type = GetFileContentAndFileType(file_path)
+  file_content_buffer.content = content
+  file_content_buffer.fileType =\
+      messages.FileContentBuffer.FileTypeValueValuesEnum(file_type)
+  return file_content_buffer
+
+
+def CreateInitialStateConfig(args, messages):
+  """Helper function used for creating InitialStateConfig."""
+  initial_state_config = messages.InitialStateConfig()
+  # check whether the initial_state_config's fields have been set
+  has_set = False
+  if args.platform_key_file:
+    file_content_buffer = CreateFileContentBuffer(messages,
+                                                  args.platform_key_file)
+    initial_state_config.pk = file_content_buffer
+    has_set = True
+  key_exchange_key_file_paths = getattr(args, 'key_exchange_key_file', [])
+  if key_exchange_key_file_paths:
+    for file_path in key_exchange_key_file_paths:
+      file_content_buffer = CreateFileContentBuffer(messages, file_path)
+      initial_state_config.keks.append(file_content_buffer)
+      has_set = True
+  signature_database_file_paths = getattr(args, 'signature_database_file', [])
+  if signature_database_file_paths:
+    for file_path in signature_database_file_paths:
+      file_content_buffer = CreateFileContentBuffer(messages, file_path)
+      initial_state_config.dbs.append(file_content_buffer)
+      has_set = True
+  forbidden_signature_database_file_paths = getattr(args,
+                                                    'forbidden_database_file',
+                                                    [])
+  if forbidden_signature_database_file_paths:
+    for file_path in forbidden_signature_database_file_paths:
+      file_content_buffer = CreateFileContentBuffer(messages, file_path)
+      initial_state_config.dbxs.append(file_content_buffer)
+      has_set = True
+  return initial_state_config, has_set

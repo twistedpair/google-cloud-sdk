@@ -27,7 +27,7 @@ from googlecloudsdk.command_lib.compute.forwarding_rules import flags
 from googlecloudsdk.core import properties
 
 
-def _ValidateGlobalArgs(args, include_alpha=False):
+def _ValidateGlobalArgs(args, include_traffic_director=False):
   """Validate the global forwarding rules args."""
   if args.target_instance:
     raise calliope_exceptions.ToolException(
@@ -53,7 +53,7 @@ def _ValidateGlobalArgs(args, include_alpha=False):
         'You cannot specify [--target-vpn-gateway] for a global '
         'forwarding rule.')
 
-  if (include_alpha and
+  if (include_traffic_director and
       getattr(args, 'load_balancing_scheme', None) == 'INTERNAL_SELF_MANAGED'):
     if not (getattr(args, 'target_http_proxy', None) or
             getattr(args, 'target_https_proxy', None)):
@@ -73,9 +73,9 @@ def _ValidateGlobalArgs(args, include_alpha=False):
           '[--load-balancing-scheme]')
 
 
-def GetGlobalTarget(resources, args, include_alpha=False):
+def GetGlobalTarget(resources, args, include_traffic_director=False):
   """Return the forwarding target for a globally scoped request."""
-  _ValidateGlobalArgs(args, include_alpha)
+  _ValidateGlobalArgs(args, include_traffic_director)
   if args.target_http_proxy:
     return flags.TargetHttpProxyArg().ResolveAsResource(args, resources)
 
@@ -87,12 +87,13 @@ def GetGlobalTarget(resources, args, include_alpha=False):
     return flags.TARGET_TCP_PROXY_ARG.ResolveAsResource(args, resources)
 
 
-def _ValidateRegionalArgs(args, include_alpha=False):
+def _ValidateRegionalArgs(args, include_traffic_director=False):
   """Validate the regional forwarding rules args.
 
   Args:
       args: The arguments given to the create/set-target command.
-      include_alpha: Should alpha functionality be included?
+      include_traffic_director: Should Traffic Director functionality be
+        included?
   """
 
   if getattr(args, 'global', None):
@@ -126,7 +127,7 @@ def _ValidateRegionalArgs(args, include_alpha=False):
         'You cannot specify [--subnet] or [--network] for non-internal '
         '[--load-balancing-scheme] forwarding rule.')
 
-  if (include_alpha and
+  if (include_traffic_director and
       getattr(args, 'load_balancing_scheme', None) == 'INTERNAL_SELF_MANAGED'):
     raise calliope_exceptions.ToolException(
         'You cannot specify an INTERNAL_SELF_MANAGED [--load-balancing-scheme] '
@@ -137,9 +138,10 @@ def GetRegionalTarget(client,
                       resources,
                       args,
                       forwarding_rule_ref=None,
-                      include_alpha=False):
+                      include_alpha=False,
+                      include_traffic_director=False):
   """Return the forwarding target for a regionally scoped request."""
-  _ValidateRegionalArgs(args, include_alpha)
+  _ValidateRegionalArgs(args, include_traffic_director)
   if forwarding_rule_ref:
     region_arg = forwarding_rule_ref.region
     project_arg = forwarding_rule_ref.project

@@ -1002,16 +1002,12 @@ class ArgumentParser(argparse.ArgumentParser):
         # pytype: disable=module-attr
         suggestions = None
         if 'Invalid choice' in message:
-          suggestions, total = suggest_commands.GetCommandSuggestions(
+          suggestions = suggest_commands.GetCommandSuggestions(
               self._GetOriginalArgs())
           self._ClearOriginalArgs()
         if suggestions:
           argparse._sys.stderr.write(
               '\n  '.join(['Maybe you meant:'] + suggestions) + '\n')
-          if len(suggestions) < total:
-            argparse._sys.stderr.write(
-                '\nShowing {} out of {} suggestions.\n'.format(
-                    len(suggestions), total))
           argparse._sys.stderr.write('\n' + _HELP_SEARCH_HINT + '\n')
           error.error_extra_info = {
               'suggestions': suggestions,

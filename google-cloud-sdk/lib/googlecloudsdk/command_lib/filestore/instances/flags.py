@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.filestore import filestore_client
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.filestore import flags
 from googlecloudsdk.command_lib.util.apis import arg_utils
@@ -28,7 +29,7 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 INSTANCES_LIST_FORMAT = """\
     table(
       name.basename():label=INSTANCE_NAME:sort=1,
-      name.segment(3):label=LOCATION,
+      name.segment(3):label=ZONE,
       tier,
       fileShares[0].capacityGb:label=CAPACITY_GB,
       fileShares[0].name:label=FILE_SHARE_NAME,
@@ -53,6 +54,10 @@ FILE_SHARE_ARG_SPEC = {
             upper_bound='65434GB',
             suggested_binary_size_scales=['GB', 'GiB', 'TB', 'TiB']
         ),
+    'source-snapshot':
+        str,
+    'source-snapshot-region':
+        str,
 }
 
 
@@ -62,6 +67,14 @@ def AddAsyncFlag(parser, operation):
       action='store_true',
       default=False,
       help='Do not wait for the {} operation to complete.'.format(operation))
+
+
+def AddLocationArg(parser):
+  action = actions.DeprecationAction(
+      'location',
+      warn='The `--location` flag is deprecated. Use `--zone`.')
+  parser.add_argument('--location', required=False, action=action,
+                      help='Location of the Cloud Filestore instance.')
 
 
 def AddDescriptionArg(parser):
@@ -119,11 +132,12 @@ def AddNetworkArg(parser):
       help=network_help)
 
 
-def AddFileShareArg(parser, required=True):
+def AddFileShareArg(parser, include_snapshot_flags=False, required=True):
   """Adds a --file-share flag to the given parser.
 
   Args:
     parser: argparse parser.
+    include_snapshot_flags: bool, whether to include --source-snapshot flags.
     required: bool, passthrough to parser.add_argument.
   """
   file_share_help = """\
@@ -138,12 +152,19 @@ def AddFileShareArg(parser, required=True):
       *name*::: The desired logical name of the volume.
 
       """
+  source_snapshot_help = """\
+      *source-snapshot*::: The name of the snapshot to restore from.
+
+      *source-snapshot-region*::: The region of the source snapshot. If
+      unspecified, the region of the instance will be used.
+      """
   parser.add_argument(
       '--file-share',
       type=arg_parsers.ArgDict(spec=FILE_SHARE_ARG_SPEC,
                                required_keys=['name', 'capacity']),
       required=required,
-      help=file_share_help)
+      help=file_share_help + (source_snapshot_help if include_snapshot_flags
+                              else ''))
 
 
 def AddInstanceCreateArgs(parser, api_version):
@@ -151,10 +172,12 @@ def AddInstanceCreateArgs(parser, api_version):
   concept_parsers.ConceptParser([flags.GetInstancePresentationSpec(
       'The instance to create.')]).AddToParser(parser)
   AddDescriptionArg(parser)
+  AddLocationArg(parser)
   messages = filestore_client.GetMessages(version=api_version)
   GetTierArg(messages).choice_arg.AddToParser(parser)
   AddAsyncFlag(parser, 'create')
-  AddFileShareArg(parser)
+  AddFileShareArg(parser, include_snapshot_flags=
+                  (api_version == filestore_client.ALPHA_API_VERSION))
   AddNetworkArg(parser)
   labels_util.AddCreateLabelsFlags(parser)
 
@@ -164,6 +187,7 @@ def AddInstanceUpdateArgs(parser):
   concept_parsers.ConceptParser([flags.GetInstancePresentationSpec(
       'The instance to update.')]).AddToParser(parser)
   AddDescriptionArg(parser)
+  AddLocationArg(parser)
   AddAsyncFlag(parser, 'update')
   labels_util.AddUpdateLabelsFlags(parser)
   AddFileShareArg(parser, required=False)

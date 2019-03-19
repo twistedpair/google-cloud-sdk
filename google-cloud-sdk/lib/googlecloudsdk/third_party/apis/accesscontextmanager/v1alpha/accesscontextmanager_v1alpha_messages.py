@@ -468,6 +468,8 @@ class Condition(_messages.Message):
     negate: Whether to negate the Condition. If true, the Condition becomes a
       NAND over its non-empty fields, each field must be false for the
       Condition overall to be satisfied. Defaults to false.
+    regions: The request must originate from one of the provided
+      countries/regions. Must be valid ISO 3166-1 alpha-2 codes.
     requiredAccessLevels: A list of other access levels defined in the same
       `Policy`, referenced by resource name. Referencing an `AccessLevel`
       which does not exist is an error. All access levels listed must be
@@ -479,7 +481,8 @@ class Condition(_messages.Message):
   ipSubnetworks = _messages.StringField(2, repeated=True)
   members = _messages.StringField(3, repeated=True)
   negate = _messages.BooleanField(4)
-  requiredAccessLevels = _messages.StringField(5, repeated=True)
+  regions = _messages.StringField(5, repeated=True)
+  requiredAccessLevels = _messages.StringField(6, repeated=True)
 
 
 class DevicePolicy(_messages.Message):
@@ -504,6 +507,9 @@ class DevicePolicy(_messages.Message):
       allows all statuses.
     osConstraints: Allowed OS versions, an empty list allows all types and all
       versions.
+    requireAdminApproval: Whether the device needs to be approved by the
+      customer admin.
+    requireCorpOwned: Whether the device needs to be corp owned.
     requireScreenlock: Whether or not screenlock is required for the
       DevicePolicy to be true. Defaults to `false`.
   """
@@ -539,7 +545,9 @@ class DevicePolicy(_messages.Message):
   allowedDeviceManagementLevels = _messages.EnumField('AllowedDeviceManagementLevelsValueListEntryValuesEnum', 1, repeated=True)
   allowedEncryptionStatuses = _messages.EnumField('AllowedEncryptionStatusesValueListEntryValuesEnum', 2, repeated=True)
   osConstraints = _messages.MessageField('OsConstraint', 3, repeated=True)
-  requireScreenlock = _messages.BooleanField(4)
+  requireAdminApproval = _messages.BooleanField(4)
+  requireCorpOwned = _messages.BooleanField(5)
+  requireScreenlock = _messages.BooleanField(6)
 
 
 class ListAccessLevelsResponse(_messages.Message):
@@ -699,6 +707,10 @@ class OsConstraint(_messages.Message):
       this OS satisfies the constraint. Format: `"major.minor.patch"`.
       Examples: `"10.5.301"`, `"9.2.1"`.
     osType: Required. The allowed OS type.
+    requireVerifiedChromeOs: Only allows requests from devices with a verified
+      Chrome OS. Verifications includes requirements that the device is
+      enterprise-managed, conformant to Dasher domain policies, and the caller
+      has permission to call the API targeted by the request.
   """
 
   class OsTypeValueValuesEnum(_messages.Enum):
@@ -720,6 +732,7 @@ class OsConstraint(_messages.Message):
 
   minimumVersion = _messages.StringField(1)
   osType = _messages.EnumField('OsTypeValueValuesEnum', 2)
+  requireVerifiedChromeOs = _messages.BooleanField(3)
 
 
 class StandardQueryParameters(_messages.Message):

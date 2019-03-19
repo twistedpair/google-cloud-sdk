@@ -350,7 +350,7 @@ def BetaArgsForClusterRef(parser):
   """Register beta-only flags for creating a Dataproc cluster."""
   flags.AddMinCpuPlatformArgs(parser, base.ReleaseTrack.BETA)
 
-  autoscaling_group = parser.add_argument_group(hidden=True)
+  autoscaling_group = parser.add_argument_group()
   flags.AddAutoscalingPolicyResourceArgForCluster(
       autoscaling_group, api_version='v1beta2')
 
@@ -422,7 +422,7 @@ def BetaArgsForClusterRef(parser):
         metavar='type=TYPE,[count=COUNT]',
         help=help_msg)
 
-  AddAllocationAffinityGroup(parser)
+  AddReservationAffinityGroup(parser)
 
 
 def GetClusterConfig(args,
@@ -530,8 +530,8 @@ def GetClusterConfig(args,
       zoneUri=properties.VALUES.compute.zone.GetOrFail())
 
   if beta:
-    allocation_affinity = GetAllocationAffinity(args, dataproc)
-    gce_cluster_config.allocationAffinity = allocation_affinity
+    reservation_affinity = GetReservationAffinity(args, dataproc)
+    gce_cluster_config.reservationAffinity = reservation_affinity
 
   if args.tags:
     gce_cluster_config.tags = args.tags
@@ -761,66 +761,67 @@ def DeleteGeneratedLabels(cluster, dataproc):
           labels, dataproc.messages.Cluster.LabelsValue)
 
 
-def AddAllocationAffinityGroup(parser):
-  """Adds the argument group to handle allocation affinity configurations."""
+def AddReservationAffinityGroup(parser):
+  """Adds the argument group to handle reservation affinity configurations."""
   group = parser.add_group(help='Manage the configuration of desired'
-                           'allocation which this instance could'
-                           'take capacity from.')
+                                'reservation which this instance could'
+                                'take capacity from.'
+                          )
   group.add_argument(
-      '--allocation-affinity',
+      '--reservation-affinity',
       choices=['any', 'none', 'specific'],
       default='any',
       hidden=True,
       help="""
-Specifies the configuration of desired allocation which this instance could
+Specifies the configuration of desired reservation which this instance could
 take capacity from. Choices are 'any', 'none' and 'specific', default is 'any'.
 """)
   group.add_argument(
-      '--allocation-label',
+      '--reservation-label',
       type=arg_parsers.ArgDict(spec={
           'key': str,
           'value': str,
       }),
       hidden=True,
       help="""
-The key and values of the label of the allocation resource. Required if the
-value of `--allocation-affinity` is `specific`.
+The key and values of the label of the reservation resource. Required if the
+value of `--reservation-affinity` is `specific`.
 
-*key*::: The label key of allocation resource.
+*key*::: The label key of reservation resource.
 
-*value*::: The label value of allocation resource.
+*value*::: The label value of reservation resource.
 """)
 
 
-def GetAllocationAffinity(args, client):
-  """Returns the message of allocation affinity for the instance."""
-  if not args.IsSpecified('allocation_affinity'):
+def GetReservationAffinity(args, client):
+  """Returns the message of reservation affinity for the instance."""
+  if not args.IsSpecified('reservation_affinity'):
     return None
 
-  type_msgs = (
-      client.messages.AllocationAffinity.ConsumeAllocationTypeValueValuesEnum)
+  type_msgs = (client.messages.
+               ReservationAffinity.ConsumeReservationTypeValueValuesEnum)
 
-  if args.allocation_affinity == 'none':
-    allocation_type = type_msgs.NO_ALLOCATION
-    allocation_key = None
-    allocation_values = []
-  elif args.allocation_affinity == 'specific':
-    allocation_type = type_msgs.SPECIFIC_ALLOCATION
-    # Currently, the key is fixed and the value is the name of the allocation.
+  if args.reservation_affinity == 'none':
+    reservation_type = type_msgs.NO_RESERVATION
+    reservation_key = None
+    reservation_values = []
+  elif args.reservation_affinity == 'specific':
+    reservation_type = type_msgs.SPECIFIC_RESERVATION
+    # Currently, the key is fixed and the value is the name of the reservation.
     # The value being a repeated field is reserved for future use when user
-    # can specify more than one allocation names from which the Vm can take
+    # can specify more than one reservation names from which the Vm can take
     # capacity from.
-    allocation_key = args.allocation_label.get('key', None)
-    allocation_values = [args.allocation_label.get('value', None)]
+    reservation_key = args.reservation_label.get('key', None)
+    reservation_values = [args.reservation_label.get('value', None)]
   else:
-    allocation_type = type_msgs.ANY_ALLOCATION
-    allocation_key = None
-    allocation_values = []
+    reservation_type = type_msgs.ANY_RESERVATION
+    reservation_key = None
+    reservation_values = []
 
-  return client.messages.AllocationAffinity(
-      consumeAllocationType=allocation_type,
-      key=allocation_key,
-      values=allocation_values)
+  return client.messages.ReservationAffinity(
+      consumeReservationType=reservation_type,
+      key=reservation_key,
+      values=reservation_values)
 
 
 def AddKerberosGroup(parser):

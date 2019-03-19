@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20190306",
+ "revision": "20190313",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -3860,7 +3860,7 @@
     },
     "state": {
      "type": "string",
-     "description": "The deprecation state of this resource. This can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image, can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error.",
+     "description": "The deprecation state of this resource. This can be ACTIVE, DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image, can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error.",
      "enum": [
       "ACTIVE",
       "DELETED",
@@ -12958,9 +12958,6 @@
    "type": "object",
    "description": "A list of machine images.",
    "properties": {
-    "etag": {
-     "type": "string"
-    },
     "id": {
      "type": "string",
      "description": "[Output Only] Unique identifier for the resource; defined by the server."
@@ -14629,6 +14626,10 @@
      "description": "Fingerprint hash of contents stored in this network interface. This field will be ignored when inserting an Instance or adding a NetworkInterface. An up-to-date fingerprint must be provided in order to update the NetworkInterface, otherwise the request will fail with error 412 conditionNotMet.",
      "format": "byte"
     },
+    "ipv6Address": {
+     "type": "string",
+     "description": "[Output Only] An IPv6 internal network address for this network interface."
+    },
     "kind": {
      "type": "string",
      "description": "[Output Only] Type of the resource. Always compute#networkInterface for network interfaces.",
@@ -14899,7 +14900,7 @@
   "NodeGroup": {
    "id": "NodeGroup",
    "type": "object",
-   "description": "A NodeGroup resource.",
+   "description": "A NodeGroup resource. (== resource_for beta.nodeGroups ==) (== resource_for v1.nodeGroups ==)",
    "properties": {
     "autoscalingPolicy": {
      "$ref": "NodeGroupAutoscalingPolicy"

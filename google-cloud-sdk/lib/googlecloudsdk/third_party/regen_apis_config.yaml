@@ -307,6 +307,10 @@ apis:
       default: true
     v1beta2:
       discovery_doc: dns_v1beta2.json
+  domains:
+    v1alpha1:
+      discovery_doc: domains_v1alpha1.json
+      default: true
   edge:
     v1alpha1:
       discovery_doc: edge_v1alpha1.json
@@ -445,9 +449,6 @@ apis:
   securitycenter:
     v1:
       discovery_doc: securitycenter_v1.json
-  serverless:
-    v1alpha1:
-      discovery_doc: serverless_v1alpha1.json
   servicemanagement:
     v1:
       discovery_doc: servicemanagement_v1.json
@@ -569,3 +570,6 @@ apis:
         projects.scanConfigs.scanRuns.crawledUrls:
           path: projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns/{scanRunsId}
           enable_uri_parsing: false
+  recommender:
+    v1alpha1:
+      discovery_doc: recommender_v1alpha1.json

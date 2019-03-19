@@ -19,7 +19,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute.instance_groups.managed.instance_configs import instance_disk_getter
 import six
 
 
@@ -172,6 +174,39 @@ def MakePreservedStateFromOverrides(messages, disk_overrides,
   return preserved_state
 
 
+def CreatePerInstanceConfigMessage(holder,
+                                   instance_ref,
+                                   stateful_disks,
+                                   stateful_metadata,
+                                   disk_getter=None):
+  """Create per-instance config message from the given stateful disks and metadata."""
+  if not disk_getter:
+    disk_getter = instance_disk_getter.InstanceDiskGetter(
+        instance_ref=instance_ref, holder=holder)
+  messages = holder.client.messages
+  disk_overrides = []
+  for stateful_disk in stateful_disks or []:
+    disk_overrides.append(
+        GetDiskOverride(
+            messages=messages,
+            stateful_disk=stateful_disk,
+            disk_getter=disk_getter))
+  metadata_overrides = []
+  # Keeping the metadata sorted to maintain consistency across commands
+  for metadata_key, metadata_value in sorted(six.iteritems(stateful_metadata)):
+    metadata_overrides.append(
+        messages.ManagedInstanceOverride.MetadataValueListEntry(
+            key=metadata_key, value=metadata_value))
+  return messages.PerInstanceConfig(
+      instance=str(instance_ref),
+      name=path_simplifier.Name(str(instance_ref)),
+      override=messages.ManagedInstanceOverride(
+          disks=disk_overrides, metadata=metadata_overrides),
+      preservedState=\
+          MakePreservedStateFromOverrides(
+              holder.client.messages, disk_overrides, metadata_overrides))
+
+
 def CallPerInstanceConfigUpdate(holder, igm_ref, per_instance_config_message):
   """Calls proper (zonal or regional) resource for instance config update."""
   messages = holder.client.messages
@@ -207,6 +242,39 @@ def CallPerInstanceConfigUpdate(holder, igm_ref, per_instance_config_message):
   operation_ref = holder.resources.Parse(
       operation.selfLink, collection=operation_collection)
   return operation_ref
+
+
+def CallCreateInstances(holder, igm_ref, per_instance_config_message):
+  """Make CreateInstances API call using the given per-instance config messages."""
+  messages = holder.client.messages
+  if igm_ref.Collection() == 'compute.instanceGroupManagers':
+    service = holder.client.apitools_client.instanceGroupManagers
+    request = messages \
+      .ComputeInstanceGroupManagersCreateInstancesRequest(
+          instanceGroupManager=igm_ref.Name(),
+          instanceGroupManagersCreateInstancesRequest=
+          messages.InstanceGroupManagersCreateInstancesRequest(
+              instances=[per_instance_config_message]),
+          project=igm_ref.project,
+          zone=igm_ref.zone)
+    operation_collection = 'compute.zoneOperations'
+  elif igm_ref.Collection() == 'compute.regionInstanceGroupManagers':
+    service = holder.client.apitools_client.regionInstanceGroupManagers
+    request = messages \
+      .ComputeRegionInstanceGroupManagersCreateInstancesRequest(
+          instanceGroupManager=igm_ref.Name(),
+          regionInstanceGroupManagersCreateInstancesRequest=
+          messages.RegionInstanceGroupManagersCreateInstancesRequest(
+              instances=[per_instance_config_message]),
+          project=igm_ref.project,
+          region=igm_ref.region)
+    operation_collection = 'compute.regionOperations'
+  else:
+    raise ValueError('Unknown reference type {0}'.format(igm_ref.Collection()))
+  operation = service.CreateInstances(request)
+  operation_ref = holder.resources.Parse(
+      operation.selfLink, collection=operation_collection)
+  return operation_ref, service
 
 
 def GetApplyUpdatesToInstancesRequestsZonal(holder, igm_ref, instances):

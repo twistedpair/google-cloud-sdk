@@ -29,6 +29,11 @@ def IsRegional(location):
   return len(location.split('-')) == 2
 
 
+def GetRegionFromZone(zone):
+  """Returns the GCP region that the input zone is in."""
+  return '-'.join(zone.split('-')[:-1])
+
+
 def ExtractRegionsFromLocationsListResponse(response, args):
   """Extract the regions from a list of GCP locations."""
   del args  # args is not used but passed by modify_responses_hook.

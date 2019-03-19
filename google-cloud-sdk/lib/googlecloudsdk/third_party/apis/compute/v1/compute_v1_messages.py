@@ -14634,7 +14634,7 @@ class DeprecationStatus(_messages.Message):
 
   Enums:
     StateValueValuesEnum: The deprecation state of this resource. This can be
-      ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate
+      ACTIVE, DEPRECATED, OBSOLETE, or DELETED. Operations which communicate
       the end of life date for an image, can use ACTIVE. Operations which
       create a new resource using a DEPRECATED resource will return
       successfully, but with a warning indicating the deprecated resource and
@@ -14656,7 +14656,7 @@ class DeprecationStatus(_messages.Message):
     replacement: The URL of the suggested replacement for a deprecated
       resource. The suggested replacement resource must be the same kind of
       resource as the deprecated resource.
-    state: The deprecation state of this resource. This can be ACTIVE
+    state: The deprecation state of this resource. This can be ACTIVE,
       DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end
       of life date for an image, can use ACTIVE. Operations which create a new
       resource using a DEPRECATED resource will return successfully, but with
@@ -14666,13 +14666,13 @@ class DeprecationStatus(_messages.Message):
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The deprecation state of this resource. This can be ACTIVE DEPRECATED,
-    OBSOLETE, or DELETED. Operations which communicate the end of life date
-    for an image, can use ACTIVE. Operations which create a new resource using
-    a DEPRECATED resource will return successfully, but with a warning
-    indicating the deprecated resource and recommending its replacement.
-    Operations which use OBSOLETE or DELETED resources will be rejected and
-    result in an error.
+    r"""The deprecation state of this resource. This can be ACTIVE,
+    DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of
+    life date for an image, can use ACTIVE. Operations which create a new
+    resource using a DEPRECATED resource will return successfully, but with a
+    warning indicating the deprecated resource and recommending its
+    replacement. Operations which use OBSOLETE or DELETED resources will be
+    rejected and result in an error.
 
     Values:
       ACTIVE: <no description>
@@ -20064,6 +20064,7 @@ class InstanceProperties(_messages.Message):
       tokens for these service accounts are available to the instances that
       are created from this template. Use metadata queries to obtain the
       access tokens for these instances.
+    shieldedInstanceConfig: A ShieldedInstanceConfig attribute.
     tags: A list of tags to apply to the instances that are created from this
       template. The tags identify valid sources or targets for network
       firewalls. The setTags method can modify this list of tags. Each tag
@@ -20105,7 +20106,8 @@ class InstanceProperties(_messages.Message):
   networkInterfaces = _messages.MessageField('NetworkInterface', 9, repeated=True)
   scheduling = _messages.MessageField('Scheduling', 10)
   serviceAccounts = _messages.MessageField('ServiceAccount', 11, repeated=True)
-  tags = _messages.MessageField('Tags', 12)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 12)
+  tags = _messages.MessageField('Tags', 13)
 
 
 class InstanceReference(_messages.Message):
@@ -23372,7 +23374,8 @@ class NetworksRemovePeeringRequest(_messages.Message):
 
 
 class NodeGroup(_messages.Message):
-  r"""A NodeGroup resource.
+  r"""A NodeGroup resource. (== resource_for beta.nodeGroups ==) (==
+  resource_for v1.nodeGroups ==)
 
   Enums:
     StatusValueValuesEnum:
@@ -28845,6 +28848,8 @@ class Snapshot(_messages.Message):
       reallocation. This status can either be UPDATING, meaning the size of
       the snapshot is being updated, or UP_TO_DATE, meaning the size of the
       snapshot is up-to-date.
+    storageLocations: GCS bucket storage location of the snapshot (regional or
+      multi-regional).
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -28920,6 +28925,7 @@ class Snapshot(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 16)
   storageBytes = _messages.IntegerField(17)
   storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 18)
+  storageLocations = _messages.StringField(19, repeated=True)
 
 
 class SnapshotList(_messages.Message):

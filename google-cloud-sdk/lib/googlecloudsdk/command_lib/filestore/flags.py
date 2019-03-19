@@ -28,12 +28,15 @@ LIST_HELP = ('Instances in all locations will be listed if this argument is '
              'not specified.')
 
 
-def GetLocationAttributeConfig():
+def GetZoneAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      'location',
-      'The location of the {resource}.',
+      'zone',
+      'The zone of the {resource}.',
       fallthroughs=[
-          deps.PropertyFallthrough(properties.VALUES.filestore.location)])
+          deps.PropertyFallthrough(properties.VALUES.filestore.zone),
+          deps.ArgFallthrough('--location'),
+          deps.PropertyFallthrough(properties.VALUES.filestore.location),
+      ])
 
 
 def GetInstanceAttributeConfig():
@@ -49,23 +52,23 @@ def GetOperationAttributeConfig():
 
 
 def GetLocationResourceSpec():
-  location_attribute_config = GetLocationAttributeConfig()
+  location_attribute_config = GetZoneAttributeConfig()
   location_attribute_config.fallthroughs = []
   return concepts.ResourceSpec(
       'file.projects.locations',
-      'location',
+      'zone',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=location_attribute_config)
 
 
 def GetListingLocationResourceSpec():
-  location_attribute_config = GetLocationAttributeConfig()
+  location_attribute_config = GetZoneAttributeConfig()
   location_attribute_config.fallthroughs.insert(
       0,
       deps.Fallthrough(lambda: '-', hint='uses all locations by default.'))
   return concepts.ResourceSpec(
       'file.projects.locations',
-      'location',
+      'zone',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=location_attribute_config)
 
@@ -75,7 +78,7 @@ def GetInstanceResourceSpec():
       'file.projects.locations.instances',
       'instance',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      locationsId=GetLocationAttributeConfig(),
+      locationsId=GetZoneAttributeConfig(),
       instancesId=GetInstanceAttributeConfig())
 
 
@@ -84,13 +87,13 @@ def GetOperationResourceSpec():
       'file.projects.locations.operations',
       'operation',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      locationsId=GetLocationAttributeConfig(),
+      locationsId=GetZoneAttributeConfig(),
       operationsId=GetOperationAttributeConfig())
 
 
 def GetLocationPresentationSpec(group_help):
   return presentation_specs.ResourcePresentationSpec(
-      'location',
+      'zone',
       GetLocationResourceSpec(),
       group_help,
       required=True)
@@ -98,7 +101,7 @@ def GetLocationPresentationSpec(group_help):
 
 def GetListingLocationPresentationSpec(group_help):
   return presentation_specs.ResourcePresentationSpec(
-      '--location',
+      '--zone',
       GetListingLocationResourceSpec(),
       group_help)
 

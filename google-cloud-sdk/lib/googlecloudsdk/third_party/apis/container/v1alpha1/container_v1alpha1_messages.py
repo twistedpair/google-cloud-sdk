@@ -341,7 +341,6 @@ class Cluster(_messages.Message):
       /Classless_Inter-Domain_Routing) notation (e.g. `1.2.3.4/29`). Service
       addresses are typically put in the last `/16` from the container CIDR.
     shieldedContainers: Shielded Containers configuration.
-    staging: Staging cluster configuration.
     status: [Output only] The current status of this cluster.
     statusMessage: [Output only] Additional information about the current
       status of this cluster, if available. Deprecated, use the field
@@ -481,14 +480,13 @@ class Cluster(_messages.Message):
   selfLink = _messages.StringField(50)
   servicesIpv4Cidr = _messages.StringField(51)
   shieldedContainers = _messages.MessageField('ShieldedContainers', 52)
-  staging = _messages.MessageField('Staging', 53)
-  status = _messages.EnumField('StatusValueValuesEnum', 54)
-  statusMessage = _messages.StringField(55)
-  subnetwork = _messages.StringField(56)
-  tpuIpv4CidrBlock = _messages.StringField(57)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 58)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 59)
-  zone = _messages.StringField(60)
+  status = _messages.EnumField('StatusValueValuesEnum', 53)
+  statusMessage = _messages.StringField(54)
+  subnetwork = _messages.StringField(55)
+  tpuIpv4CidrBlock = _messages.StringField(56)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 57)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 58)
+  zone = _messages.StringField(59)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -598,6 +596,7 @@ class ClusterUpdate(_messages.Message):
       resource usage.
     desiredVerticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
       configuration.
+    desiredWorkloadIdentityConfig: Configuration for Workload Identity.
     securityProfile: User may change security profile during update
   """
 
@@ -624,7 +623,8 @@ class ClusterUpdate(_messages.Message):
   desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 21)
   desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 22)
   desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 23)
-  securityProfile = _messages.MessageField('SecurityProfile', 24)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 24)
+  securityProfile = _messages.MessageField('SecurityProfile', 25)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1255,7 +1255,7 @@ class DatabaseEncryption(_messages.Message):
       UNKNOWN: Should never be set
       ENCRYPTED: Secrets in etcd are encrypted.
       DECRYPTED: Secrets in etcd are stored in plain text (at etcd level) -
-        this is unrelated to GCE level full disk encryption.
+        this is unrelated to Google Compute Engine level full disk encryption.
     """
     UNKNOWN = 0
     ENCRYPTED = 1
@@ -1756,16 +1756,11 @@ class MaintenancePolicy(_messages.Message):
   cluster.
 
   Fields:
-    stagingCluster: Specifies a staging cluster to link this cluster to. The
-      linked staging cluster receives cluster upgrades first and provides an
-      environment to validate incoming updates. The linked staging cluster
-      must have enabled [Staging](#Cluster.Staging).
     window: Specifies the maintenance window in which maintenance may be
       performed.
   """
 
-  stagingCluster = _messages.MessageField('StagingClusterLink', 1)
-  window = _messages.MessageField('MaintenanceWindow', 2)
+  window = _messages.MessageField('MaintenanceWindow', 1)
 
 
 class MaintenanceWindow(_messages.Message):
@@ -2488,7 +2483,7 @@ class PrivateIPv6Status(_messages.Message):
   from GKE pods to gRPC Google cloud services over IPv6.
 
   Fields:
-    enabled: Enables private IPv6 access to Google cloud services for this
+    enabled: Enables private IPv6 access to Google Cloud services for this
       cluster.
   """
 
@@ -3066,32 +3061,6 @@ class ShieldedContainers(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
-class Staging(_messages.Message):
-  r"""Staging indicates whether a cluster is designated as staging. A staging
-  cluster receives cluster upgrades first and provides an environment to
-  validate incoming updates.  You can guarantee that a production cluster is
-  upgraded after a staging cluster by specifying a
-  [StagingClusterLink](#Cluster.StagingClusterLink) in
-  [MaintenancePolicy.staging_cluster](#Cluster.MaintenancePolicy).
-
-  Fields:
-    enabled: Whether this cluster is designated as a staging environment.
-  """
-
-  enabled = _messages.BooleanField(1)
-
-
-class StagingClusterLink(_messages.Message):
-  r"""StagingClusterLink represents a link to a staging cluster resource.
-
-  Fields:
-    name: The staging cluster resource to link to, in the format
-      'projects/*/locations/*/clusters/*'.
-  """
-
-  name = _messages.StringField(1)
-
-
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -3378,7 +3347,8 @@ class UsableSubnetworkSecondaryRange(_messages.Message):
         created by the network admin and is currently claimed by a cluster for
         pods. It can only be used by other clusters as a pod range.
       IN_USE_MANAGED_POD: IN_USE_MANAGED_POD denotes this range was created by
-        GKE and is claimed for pods. It cannot be used for other clusters.
+        Google Kubernetes Engine and is claimed for pods. It cannot be used
+        for other clusters.
     """
     UNKNOWN = 0
     UNUSED = 1
@@ -3420,16 +3390,16 @@ class WorkloadMetadataConfig(_messages.Message):
 
   Enums:
     NodeMetadataValueValuesEnum: NodeMetadata is the configuration for how to
-      expose the node metadata to the workload running on the node.
+      expose metadata to the workloads running on the node.
 
   Fields:
-    nodeMetadata: NodeMetadata is the configuration for how to expose the node
-      metadata to the workload running on the node.
+    nodeMetadata: NodeMetadata is the configuration for how to expose metadata
+      to the workloads running on the node.
   """
 
   class NodeMetadataValueValuesEnum(_messages.Enum):
-    r"""NodeMetadata is the configuration for how to expose the node metadata
-    to the workload running on the node.
+    r"""NodeMetadata is the configuration for how to expose metadata to the
+    workloads running on the node.
 
     Values:
       UNSPECIFIED: Not set.
@@ -3441,10 +3411,16 @@ class WorkloadMetadataConfig(_messages.Message):
         improvements.  This feature is scheduled to be deprecated in the
         future and later removed.
       EXPOSE: Expose all VM metadata to pods.
+      GKE_METADATA_SERVER: Run the GKE Metadata Server on this node. The GKE
+        Metadata Server exposes a metadata API to workloads that is compatible
+        with the V1 Compute Metadata APIs exposed by the Compute Engine and
+        App Engine Metadata Servers. This feature can only be enabled if
+        Workload Identity is enabled at the cluster level.
     """
     UNSPECIFIED = 0
     SECURE = 1
     EXPOSE = 2
+    GKE_METADATA_SERVER = 3
 
   nodeMetadata = _messages.EnumField('NodeMetadataValueValuesEnum', 1)
 

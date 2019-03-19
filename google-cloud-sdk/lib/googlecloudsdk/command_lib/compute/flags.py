@@ -795,6 +795,40 @@ def AddStorageLocationFlag(parser, resource):
       """.format(resource))
 
 
+def AddShieldedInstanceInitialStateKeyArg(parser):
+  """Add the initial state for shielded instance arg."""
+  parser.add_argument(
+      '--platform-key-file',
+      help="""\
+      Single Platform Key file path used when booting up
+      shielded instance from this image.
+        """)
+  parser.add_argument(
+      '--key-exchange-key-file',
+      type=arg_parsers.ArgList(),
+      metavar='KEK_VALUE',
+      help="""\
+      List of key exchange key file paths used when booting up
+      shieled instance from this image.
+        """)
+  parser.add_argument(
+      '--signature-database-file',
+      type=arg_parsers.ArgList(),
+      metavar='DB_VALUE',
+      help="""\
+      List of valid public certificates file paths used when booting up
+      shieled instance from this image.
+        """)
+  parser.add_argument(
+      '--forbidden-database-file',
+      type=arg_parsers.ArgList(),
+      metavar='DBX_VALUE',
+      help="""\
+      List of revoked certificates file paths used when
+      booting up shieled instance from this image.
+        """)
+
+
 def RewriteFilter(args, message=None, frontend_fields=None):
   """Rewrites args.filter into client and server filter expression strings.
 

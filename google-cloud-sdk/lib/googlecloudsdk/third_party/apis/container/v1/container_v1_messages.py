@@ -136,12 +136,15 @@ class Cluster(_messages.Message):
     currentNodeCount: [Output only]  The number of nodes currently in the
       cluster. Deprecated. Call Kubernetes API directly to retrieve node
       information.
-    currentNodeVersion: [Output only] Deprecated, use [NodePool.version
+    currentNodeVersion: [Output only] Deprecated, use [NodePools.version
       ](/kubernetes-
-      engine/docs/reference/rest/v1/projects.zones.clusters.nodePool) instead.
-      The current version of the node software components. If they are
-      currently at multiple versions because they're in the process of being
-      upgraded, this reflects the minimum version of all nodes.
+      engine/docs/reference/rest/v1/projects.zones.clusters.nodePools)
+      instead. The current version of the node software components. If they
+      are currently at multiple versions because they're in the process of
+      being upgraded, this reflects the minimum version of all nodes.
+    defaultMaxPodsConstraint: The default constraint on the maximum number of
+      pods that can be run simultaneously on a node in the node pool of this
+      cluster. Only honored if cluster created with IP Alias support.
     description: An optional description of this cluster.
     enableKubernetesAlpha: Kubernetes alpha features are enabled on this
       cluster. This includes alpha API groups (e.g. v1alpha1) and features
@@ -149,6 +152,7 @@ class Cluster(_messages.Message):
       and nodes. The cluster has no SLA for uptime and master/node upgrades
       are disabled. Alpha enabled clusters are automatically deleted thirty
       days after creation.
+    enableTpu: Enable the ability to use Cloud TPUs in this cluster.
     endpoint: [Output only] The IP address of this cluster's master endpoint.
       The endpoint can be accessed from the internet at
       `https://username:password@endpoint/`.  See the `masterAuth` property of
@@ -238,6 +242,9 @@ class Cluster(_messages.Message):
     subnetwork: The name of the Google Compute Engine
       [subnetwork](/compute/docs/subnetworks) to which the cluster is
       connected.
+    tpuIpv4CidrBlock: [Output only] The IP address range of the Cloud TPUs in
+      this cluster, in [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
+      Domain_Routing) notation (e.g. `1.2.3.4/29`).
     zone: [Output only] The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides. This
       field is deprecated, use location instead.
@@ -303,38 +310,41 @@ class Cluster(_messages.Message):
   currentMasterVersion = _messages.StringField(5)
   currentNodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   currentNodeVersion = _messages.StringField(7)
-  description = _messages.StringField(8)
-  enableKubernetesAlpha = _messages.BooleanField(9)
-  endpoint = _messages.StringField(10)
-  expireTime = _messages.StringField(11)
-  initialClusterVersion = _messages.StringField(12)
-  initialNodeCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(14, repeated=True)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 15)
-  labelFingerprint = _messages.StringField(16)
-  legacyAbac = _messages.MessageField('LegacyAbac', 17)
-  location = _messages.StringField(18)
-  locations = _messages.StringField(19, repeated=True)
-  loggingService = _messages.StringField(20)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 21)
-  masterAuth = _messages.MessageField('MasterAuth', 22)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 23)
-  monitoringService = _messages.StringField(24)
-  name = _messages.StringField(25)
-  network = _messages.StringField(26)
-  networkConfig = _messages.MessageField('NetworkConfig', 27)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 28)
-  nodeConfig = _messages.MessageField('NodeConfig', 29)
-  nodeIpv4CidrSize = _messages.IntegerField(30, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 31, repeated=True)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 32)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 33)
-  selfLink = _messages.StringField(34)
-  servicesIpv4Cidr = _messages.StringField(35)
-  status = _messages.EnumField('StatusValueValuesEnum', 36)
-  statusMessage = _messages.StringField(37)
-  subnetwork = _messages.StringField(38)
-  zone = _messages.StringField(39)
+  defaultMaxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 8)
+  description = _messages.StringField(9)
+  enableKubernetesAlpha = _messages.BooleanField(10)
+  enableTpu = _messages.BooleanField(11)
+  endpoint = _messages.StringField(12)
+  expireTime = _messages.StringField(13)
+  initialClusterVersion = _messages.StringField(14)
+  initialNodeCount = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(16, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 17)
+  labelFingerprint = _messages.StringField(18)
+  legacyAbac = _messages.MessageField('LegacyAbac', 19)
+  location = _messages.StringField(20)
+  locations = _messages.StringField(21, repeated=True)
+  loggingService = _messages.StringField(22)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 23)
+  masterAuth = _messages.MessageField('MasterAuth', 24)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 25)
+  monitoringService = _messages.StringField(26)
+  name = _messages.StringField(27)
+  network = _messages.StringField(28)
+  networkConfig = _messages.MessageField('NetworkConfig', 29)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 30)
+  nodeConfig = _messages.MessageField('NodeConfig', 31)
+  nodeIpv4CidrSize = _messages.IntegerField(32, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 33, repeated=True)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 34)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 35)
+  selfLink = _messages.StringField(36)
+  servicesIpv4Cidr = _messages.StringField(37)
+  status = _messages.EnumField('StatusValueValuesEnum', 38)
+  statusMessage = _messages.StringField(39)
+  subnetwork = _messages.StringField(40)
+  tpuIpv4CidrBlock = _messages.StringField(41)
+  zone = _messages.StringField(42)
 
 
 class ClusterUpdate(_messages.Message):
@@ -1063,6 +1073,15 @@ class IPAllocationPolicy(_messages.Message):
     subnetworkName: A custom subnetwork name to be used if `create_subnetwork`
       is true.  If this field is empty, then an automatic name will be chosen
       for the new subnetwork.
+    tpuIpv4CidrBlock: The IP address range of the Cloud TPUs in this cluster.
+      If unspecified, a range will be automatically chosen with the default
+      size.  This field is only applicable when `use_ip_aliases` is true.  If
+      unspecified, the range will use the default size.  Set to /netmask (e.g.
+      `/14`) to have a range chosen with a specific netmask.  Set to a
+      [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+      notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
+      `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
+      range to use.
     useIpAliases: Whether alias IPs will be used for pod IPs in the cluster.
   """
 
@@ -1076,7 +1095,8 @@ class IPAllocationPolicy(_messages.Message):
   servicesIpv4CidrBlock = _messages.StringField(8)
   servicesSecondaryRangeName = _messages.StringField(9)
   subnetworkName = _messages.StringField(10)
-  useIpAliases = _messages.BooleanField(11)
+  tpuIpv4CidrBlock = _messages.StringField(11)
+  useIpAliases = _messages.BooleanField(12)
 
 
 class Jwk(_messages.Message):
@@ -1237,6 +1257,16 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
 
   cidrBlocks = _messages.MessageField('CidrBlock', 1, repeated=True)
   enabled = _messages.BooleanField(2)
+
+
+class MaxPodsConstraint(_messages.Message):
+  r"""Constraints applied to pods.
+
+  Fields:
+    maxPodsPerNode: Constraint enforced on the max num of pods per node.
+  """
+
+  maxPodsPerNode = _messages.IntegerField(1)
 
 
 class NetworkConfig(_messages.Message):
@@ -1523,6 +1553,8 @@ class NodePool(_messages.Message):
       instance groups](/compute/docs/instance-groups/creating-groups-of-
       managed-instances) associated with this node pool.
     management: NodeManagement configuration for this NodePool.
+    maxPodsConstraint: The constraint on the maximum number of pods that can
+      be run simultaneously on a node in the node pool.
     name: The name of the node pool.
     selfLink: [Output only] Server-defined URL for the resource.
     status: [Output only] The status of the nodes in this pool instance.
@@ -1565,11 +1597,12 @@ class NodePool(_messages.Message):
   initialNodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   instanceGroupUrls = _messages.StringField(5, repeated=True)
   management = _messages.MessageField('NodeManagement', 6)
-  name = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
-  statusMessage = _messages.StringField(10)
-  version = _messages.StringField(11)
+  maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 7)
+  name = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  statusMessage = _messages.StringField(11)
+  version = _messages.StringField(12)
 
 
 class NodePoolAutoscaling(_messages.Message):

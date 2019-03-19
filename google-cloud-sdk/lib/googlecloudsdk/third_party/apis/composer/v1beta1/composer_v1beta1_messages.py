@@ -333,8 +333,8 @@ class EnvironmentConfig(_messages.Message):
     nodeConfig: The configuration used for the Kubernetes Engine cluster.
     nodeCount: The number of nodes in the Kubernetes Engine cluster that will
       be used to run this environment.
-    privateEnvironmentConfig: The configuration used for the private Composer
-      environment.
+    privateEnvironmentConfig: The configuration used for the Private IP Cloud
+      Composer environment.
     softwareConfig: The configuration settings for software inside the
       environment.
   """
@@ -365,7 +365,7 @@ class IPAllocationPolicy(_messages.Message):
     clusterSecondaryRangeName: Optional. The name of the cluster's secondary
       range used to allocate IP addresses to pods. Specify either
       `cluster_secondary_range_name` or `cluster_ipv4_cidr_block` but not
-      both.
+      both.  This field is applicable only when `use_ip_aliases` is true.
     servicesIpv4CidrBlock: Optional. The IP address range of the services IP
       addresses in this cluster.  This field is applicable only when
       `use_ip_aliases` is true.  Set to blank to have GKE choose a range with
@@ -379,9 +379,9 @@ class IPAllocationPolicy(_messages.Message):
     servicesSecondaryRangeName: Optional. The name of the services' secondary
       range used to allocate IP addresses to the cluster. Specify either
       `services_secondary_range_name` or `services_ipv4_cidr_block` but not
-      both.
+      both.  This field is applicable only when `use_ip_aliases` is true.
     useIpAliases: Optional. Whether or not to enable Alias IPs in the GKE
-      cluster. If true or if left blank, a VPC-native cluster is created.
+      cluster. If `true`, a VPC-native cluster is created.
   """
 
   clusterIpv4CidrBlock = _messages.StringField(1)
@@ -493,9 +493,8 @@ class NodeConfig(_messages.Message):
       VPC](/vpc/docs/shared-vpc) subnetwork requirements, see
       `nodeConfig.subnetwork`.
     oauthScopes: Optional. The set of Google API scopes to be made available
-      on all node VMs. Defaults to ["https://www.googleapis.com/auth/cloud-
-      platform"] and must be included in the list of specified scopes. Cannot
-      be updated.
+      on all node VMs. If `oauth_scopes` is empty, defaults to
+      ["https://www.googleapis.com/auth/cloud-platform"]. Cannot be updated.
     serviceAccount: Optional. The Google Cloud Platform Service Account to be
       used by the node VMs. If a service account is not specified, the
       "default" Compute Engine service account is used. Cannot be updated.
@@ -504,10 +503,8 @@ class NodeConfig(_messages.Message):
       name](/apis/design/resource_names#relative_resource_name). For example:
       "projects/{projectId}/regions/{regionId}/subnetworks/{subnetworkId}"  If
       a subnetwork is provided, `nodeConfig.network` must also be provided,
-      and the subnetwork must belong to the same project as the network.  For
-      Shared VPC, you must configure the subnetwork with secondary ranges
-      named <strong>composer-pods</strong> and <strong>composer-
-      services</strong> to support Alias IPs.
+      and the subnetwork must belong to the enclosing environment's project
+      and location.
     tags: Optional. The list of instance tags applied to all node VMs. Tags
       are used to identify valid sources or targets for network firewalls.
       Each tag within the list must comply with
@@ -691,18 +688,18 @@ class OperationMetadata(_messages.Message):
 
 
 class PrivateClusterConfig(_messages.Message):
-  r"""Configuration options for private cluster of Composer environment.
+  r"""Configuration options for the private GKE cluster in a Cloud Composer
+  environment.
 
   Fields:
-    enablePrivateEndpoint: Optional. If true, access to public endpoint of gke
-      cluster will be denied. `IPAllocationPolicy.use_ip_aliases` must be true
-      if this field is set to true. Default value is false.
+    enablePrivateEndpoint: Optional. If `true`, access to the public endpoint
+      of the GKE cluster is denied.
     masterIpv4CidrBlock: The IP range in CIDR notation to use for the hosted
-      master network. This range will be used for assigning internal IP
-      addresses to the cluster master or set of masters, as well as the ILB
-      VIP (Internal Load Balance Virtual IP).This range must not overlap with
-      any other ranges in use within the cluster's network. If left blank,
-      default value of '172.16.0.0/28' will be used.
+      master network. This range is used for assigning internal IP addresses
+      to the cluster master or set of masters and to the internal load
+      balancer virtual IP. This range must not overlap with any other ranges
+      in use within the cluster's network. If left blank, the default value of
+      '172.16.0.0/28' is used.
   """
 
   enablePrivateEndpoint = _messages.BooleanField(1)
@@ -710,14 +707,15 @@ class PrivateClusterConfig(_messages.Message):
 
 
 class PrivateEnvironmentConfig(_messages.Message):
-  r"""The configuration information for configuring a private Composer
-  environment.
+  r"""The configuration information for configuring a Private IP Cloud
+  Composer environment.
 
   Fields:
-    enablePrivateEnvironment: Optional. If `true`, a private Composer
-      environment is created.
-    privateClusterConfig: Optional. Configuration for private cluster for a
-      private Composer environment.
+    enablePrivateEnvironment: Optional. If `true`, a Private IP Cloud Composer
+      environment is created. If this field is true, `use_ip_aliases` must be
+      true.
+    privateClusterConfig: Optional. Configuration for the private GKE cluster
+      for a Private IP Cloud Composer environment.
   """
 
   enablePrivateEnvironment = _messages.BooleanField(1)

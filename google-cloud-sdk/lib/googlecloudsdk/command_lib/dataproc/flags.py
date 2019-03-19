@@ -70,7 +70,7 @@ def AddTimeoutFlag(parser, default='10m'):
       '--timeout',
       type=arg_parsers.Duration(),
       default=default,
-      help=('Client side timeout on how long to wait for Datproc operations. '
+      help=('Client side timeout on how long to wait for Dataproc operations. '
             'See $ gcloud topic datetimes for information on duration '
             'formats.'),
       hidden=True)
@@ -242,7 +242,7 @@ def AddAutoscalingPolicyResourceArgForCluster(parser, api_version):
       _AutoscalingPolicyResourceSpec(api_version),
       'The autoscaling policy to use.',
       command_level_fallthroughs={
-          'region': '--region'
+          'region': ['--region'],
       },
       flag_name_overrides={
           'region': ''

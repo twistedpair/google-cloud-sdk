@@ -23,6 +23,7 @@ from collections import OrderedDict
 import re
 
 from apitools.base.protorpclite import messages
+from apitools.base.py import encoding
 import enum  # pylint: disable=unused-import, for pytype
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -96,6 +97,13 @@ def SetFieldInMessage(message, field_path, value):
         sub_message = [sub_message]
       setattr(message, f, sub_message)
     message = sub_message[0] if is_repeated else sub_message
+  field_type = _GetField(message, fields[-1]).type
+  if isinstance(value, dict):
+    value = encoding.PyValueToMessage(field_type, value)
+  if isinstance(value, list):
+    for i, item in enumerate(value):
+      if isinstance(item, dict):
+        value[i] = encoding.PyValueToMessage(field_type, item)
   setattr(message, fields[-1], value)
 
 
@@ -408,16 +416,23 @@ def ParseExistingMessageIntoMessage(message, existing_message, method):
   if type(existing_message) == type(message):  # pylint: disable=unidiomatic-typecheck
     return existing_message
 
-  # For read-modify-update api calls, the field name would be the same level
-  # or the next level of the request.
-  # TODO(b/111069150): refactor this part, don't hard code.
-  existing_message_name = type(existing_message).__name__
-  field_name = existing_message_name[0].lower() + existing_message_name[1:]
-  field_path = ''
-  if method.request_field != field_name:
-    field_path += method.request_field
-    field_path += '.'
-  field_path += field_name
+  # For read-modify-update API calls, the field to modify will exist either in
+  # the request message itself, or in a nested message one level below the
+  # request. Assume at first that it exists in the request message itself:
+  field_path = method.request_field
+  field = message.field_by_name(method.request_field)
+  # If this is not the case, then the field must be nested one level below.
+  if field.message_type != type(existing_message):
+    # We don't know what the name of the field is in the nested message, so we
+    # look through all of them until we find one with the right type.
+    nested_message = field.message_type()
+    for nested_field in nested_message.all_fields():
+      try:
+        if nested_field.message_type == type(existing_message):
+          field_path += '.' + nested_field.name
+          break
+      except AttributeError:  # Ignore non-message fields.
+        pass
 
   SetFieldInMessage(message, field_path, existing_message)
   return message

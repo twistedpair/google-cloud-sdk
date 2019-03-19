@@ -252,26 +252,26 @@ def CreateSchedulingMessage(
   return scheduling
 
 
-def CreateShieldedVmConfigMessage(
+def CreateShieldedInstanceConfigMessage(
     messages, enable_secure_boot, enable_vtpm, enable_integrity_monitoring):
-  """Create shieldedVMConfig message for VM."""
+  """Create shieldedInstanceConfig message for VM."""
 
-  shielded_vm_config = messages.ShieldedVmConfig(
+  shielded_instance_config = messages.ShieldedInstanceConfig(
       enableSecureBoot=enable_secure_boot,
       enableVtpm=enable_vtpm,
       enableIntegrityMonitoring=enable_integrity_monitoring)
 
-  return shielded_vm_config
+  return shielded_instance_config
 
 
-def CreateShieldedVmIntegrityPolicyMessage(messages,
-                                           update_auto_learn_policy=True):
-  """Creates shieldedVmIntegrityPolicy message for VM."""
+def CreateShieldedInstanceIntegrityPolicyMessage(messages,
+                                                 update_auto_learn_policy=True):
+  """Creates shieldedInstanceIntegrityPolicy message for VM."""
 
-  shielded_vm_integrity_policy = messages.ShieldedVmIntegrityPolicy(
+  shielded_instance_integrity_policy = messages.ShieldedInstanceIntegrityPolicy(
       updateAutoLearnPolicy=update_auto_learn_policy)
 
-  return shielded_vm_integrity_policy
+  return shielded_instance_integrity_policy
 
 
 def CreateMachineTypeUris(
@@ -1148,32 +1148,36 @@ def ResolveSnapshotURI(user_project, snapshot, resource_parser):
   return None
 
 
-def GetAllocationAffinity(args, client):
-  """Returns the message of allocation affinity for the instance."""
-  if args.IsSpecified('allocation_affinity'):
-    type_msgs = (client.messages.
-                 AllocationAffinity.ConsumeAllocationTypeValueValuesEnum)
+def GetReservationAffinity(args, client):
+  """Returns the message of reservation affinity for the instance."""
+  if args.IsSpecified('reservation_affinity'):
+    type_msgs = (
+        client.messages.ReservationAffinity
+        .ConsumeReservationTypeValueValuesEnum)
 
-    if args.allocation_affinity == 'none':
-      allocation_type = type_msgs.NO_ALLOCATION
-      allocation_key = None
-      allocation_values = []
-    elif args.allocation_affinity == 'specific':
-      allocation_type = type_msgs.SPECIFIC_ALLOCATION
-      # Currently, the key is fixed and the value is the name of the allocation.
+    reservation_key = None
+    reservation_values = []
+
+    if args.reservation_affinity == 'none':
+      reservation_type = type_msgs.NO_RESERVATION
+    elif args.reservation_affinity == 'specific':
+      reservation_type = type_msgs.SPECIFIC_RESERVATION
+      # Currently, the key is fixed and the value is the name of the
+      # reservation.
       # The value being a repeated field is reserved for future use when user
-      # can specify more than one allocation names from which the Vm can take
+      # can specify more than one reservation names from which the VM can take
       # capacity from.
-      allocation_key = args.allocation_label.get('key', None)
-      allocation_values = [args.allocation_label.get('value', None)]
+      reservation_key = _RESERVATION_AFFINITY_KEY
+      reservation_values = [args.reservation]
     else:
-      allocation_type = type_msgs.ANY_ALLOCATION
-      allocation_key = None
-      allocation_values = []
+      reservation_type = type_msgs.ANY_RESERVATION
 
-    return client.messages.AllocationAffinity(
-        consumeAllocationType=allocation_type,
-        key=allocation_key,
-        values=allocation_values)
+    return client.messages.ReservationAffinity(
+        consumeReservationType=reservation_type,
+        key=reservation_key or None,
+        values=reservation_values)
 
   return None
+
+
+_RESERVATION_AFFINITY_KEY = 'googleapis.com/reservation'

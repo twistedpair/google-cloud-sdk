@@ -23,8 +23,11 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.command_lib.filestore import locations_util
+from googlecloudsdk.command_lib.filestore.snapshots import util as snapshot_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
@@ -100,7 +103,7 @@ class FilestoreClient(object):
       Generator that yields the Cloud Filestore instances.
     """
     request = self.messages.FileProjectsLocationsInstancesListRequest(
-        parent=location_ref.RelativeName())
+        parent=location_ref)
     # Check for unreachable locations.
     response = self.client.projects_locations_instances.List(request)
     for location in response.unreachable:
@@ -174,7 +177,7 @@ class FilestoreClient(object):
 
   def GetLocation(self, location_ref):
     request = self.messages.FileProjectsLocationsGetRequest(
-        name=location_ref.RelativeName())
+        name=location_ref)
     return self.client.projects_locations.Get(request)
 
   def ListLocations(self, project_ref, limit=None):
@@ -199,7 +202,7 @@ class FilestoreClient(object):
       Generator that yields the Cloud Filestore instances.
     """
     request = self.messages.FileProjectsLocationsOperationsListRequest(
-        name=operation_ref.RelativeName())
+        name=operation_ref)
     return list_pager.YieldFromList(
         self.client.projects_locations_operations,
         request,
@@ -226,7 +229,7 @@ class FilestoreClient(object):
         self._ValidateFileShare(instance.tier, file_share.capacityGb)
 
   def ParseFilestoreConfig(self, tier=None, description=None, file_share=None,
-                           network=None, labels=None):
+                           network=None, labels=None, zone=None):
     """Parses the command line arguments for Create into a config.
 
     Args:
@@ -235,6 +238,7 @@ class FilestoreClient(object):
       file_share: the config for the file share.
       network: The network for the instance.
       labels: The parsed labels value.
+      zone: The parsed zone of the instance.
 
     Returns:
       the configuration that will be used as the request body for creating a
@@ -248,7 +252,7 @@ class FilestoreClient(object):
     if description:
       instance.description = description
 
-    self._adapter.ParseFileShareIntoInstance(instance, file_share)
+    self._adapter.ParseFileShareIntoInstance(instance, file_share, zone)
 
     if network:
       instance.networks = []
@@ -309,14 +313,23 @@ class AlphaFilestoreAdapter(object):
     self.client = GetClient(version=ALPHA_API_VERSION)
     self.messages = GetMessages(version=ALPHA_API_VERSION)
 
-  def ParseFileShareIntoInstance(self, instance, file_share):
+  def ParseFileShareIntoInstance(self, instance, file_share,
+                                 instance_zone=None):
     """Parse specified file share configs into an instance message."""
     if instance.fileShares is None:
       instance.fileShares = []
     if file_share:
+      source_snapshot = None
+      if 'source-snapshot' in file_share:
+        project = properties.VALUES.core.project.Get(required=True)
+        location = (file_share.get('source-snapshot-region') or
+                    locations_util.GetRegionFromZone(instance_zone))
+        source_snapshot = snapshot_util.SNAPSHOT_NAME_TEMPLATE.format(
+            project, location, file_share.get('source-snapshot'))
       file_share_config = self.messages.FileShareConfig(
           name=file_share.get('name'),
-          capacityGb=utils.BytesToGb(file_share.get('capacity')))
+          capacityGb=utils.BytesToGb(file_share.get('capacity')),
+          sourceSnapshot=source_snapshot)
       instance.fileShares.append(file_share_config)
 
   def FileSharesFromInstance(self, instance):
@@ -340,8 +353,10 @@ class BetaFilestoreAdapter(object):
     self.client = GetClient(version=BETA_API_VERSION)
     self.messages = GetMessages(version=BETA_API_VERSION)
 
-  def ParseFileShareIntoInstance(self, instance, file_share):
+  def ParseFileShareIntoInstance(self, instance, file_share,
+                                 instance_zone=None):
     """Parse specified file share configs into an instance message."""
+    del instance_zone  # Unused.
     if instance.fileShares is None:
       instance.fileShares = []
     if file_share:

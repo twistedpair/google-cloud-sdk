@@ -390,6 +390,79 @@ def AddMigStatefulFlagsForInstanceConfigs(parser, for_update=False):
     )
 
 
+def AddCreateInstancesFlags(parser):
+  """Adding stateful flags for creating and updating instance configs."""
+  parser.add_argument(
+      '--instance',
+      required=True,
+      help="""Name of the new instance to create.""")
+  stateful_disks_help = """
+      Stateful disk for the managed instance group to preserve. Usually,
+      a managed instance group deletes disks when deleting instances; however,
+      stateful disks are detached from deleted instances and are reattached
+      automatically to the instance on recreation, autohealing, updates, and any
+      other lifecycle transitions of the instance.
+
+      Stateful disks specified here form part of the per-instance config for
+      the new instance.
+
+      The same disk can be attached to many instances but only in read-only
+      mode.
+
+      Use this flag multiple times to attach more disks.
+
+      *device-name*::: (Required) Device name under which disk is or will be
+      attached.
+
+      *source*::: (Required) URI of an existing persistent disk to attach under
+      the specified device-name.
+
+      *mode*::: Specifies the attachment mode of the disk. Supported options are
+      'ro' for read-only and 'rw' for read-write. If omitted, defaults to 'rw'.
+      """
+  parser.add_argument(
+      '--stateful-disk',
+      type=arg_parsers.ArgDict(spec={
+          'device-name': str,
+          'source': str,
+          'mode': str,
+      }),
+      action='append',
+      help=stateful_disks_help,
+  )
+  stateful_metadata_argument_name = '--stateful-metadata'
+  stateful_metadata_help = """
+      Additional metadata to be made available to the guest operating system
+      on the instance along with the metadata defined in the instance template.
+
+      Use stateful metadata to define key/value pairs specific to an instance to
+      differentiate it from other instances in the managed instance group. The
+      stateful metadata forms part of the per-instance config for the new
+      instance.
+
+      Stateful metadata key/value pairs are preserved on instance recreation,
+      autohealing, updates, and any other lifecycle transitions of the
+      instance.
+
+      Only metadata keys provided in this flag are mutated. Stateful metadata
+      values defined for the keys already existing in the instance template
+      override the  values from the instance template. Other metadata entries
+      from the instance  template will remain unaffected and available.
+
+      Each metadata entry is a key/value pair separated by an equals sign.
+      Metadata keys must be unique and less than 128 bytes in length.
+      Multiple entries can be passed to this flag, e.g.,
+      ``--stateful-metadata key-1=value-1,key-2=value-2,key-3=value-3''.
+  """.format(argument_name=stateful_metadata_argument_name)
+  parser.add_argument(
+      stateful_metadata_argument_name,
+      type=arg_parsers.ArgDict(min_length=1),
+      default={},
+      action=arg_parsers.StoreOnceAction,
+      metavar='KEY=VALUE',
+      help=stateful_metadata_help)
+
+
 def AddMigStatefulForceInstanceUpdateFlag(parser):
   parser.add_argument(
       '--force-instance-update',
@@ -411,7 +484,9 @@ def AddMigStatefulForceInstanceUpdateFlag(parser):
         manually or by autohealer or updater.""")
 
 
-def ValidateMigStatefulFlagsForInstanceConfigs(args, for_update=False):
+def ValidateMigStatefulFlagsForInstanceConfigs(args,
+                                               for_update=False,
+                                               need_disk_source=False):
   """Validates the values of stateful flags for instance configs."""
   if for_update:
     stateful_disks = args.update_stateful_disk
@@ -438,6 +513,11 @@ def ValidateMigStatefulFlagsForInstanceConfigs(args, for_update=False):
           parameter_name=flag_name,
           message='Value for [mode] must be [rw] or [ro], not [{0}]'.format(
               mode_value))
+
+    if need_disk_source and not stateful_disk.get('source'):
+      raise exceptions.InvalidArgumentException(
+          parameter_name=flag_name,
+          message='[source] is required for all stateful disks')
 
     if mode_value and not stateful_disk.get('source'):
       raise exceptions.InvalidArgumentException(

@@ -224,7 +224,7 @@ class ToolResultsSummaryFetcher(object):
         passed_str = '{:.0%} ({p} of {t})'.format(
             pass_ratio, p=pass_counter[axis_value], t=total_counter[axis_value])
         outcome_str = self._GetOutcomeSummaryDisplayName(
-            step.multiStep.primaryStep.rollUp if step.multiStep.primaryStep
+            step.multiStep.primaryStep.rollUp if step.multiStep
             else step.outcome.summary)
         outcomes.append(
             FlakyAttemptsTestOutcome(

@@ -5,6 +5,73 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 239.0.0 (2019-03-19)
+
+### Cloud Dataproc
+
+* Added `gcloud beta dataproc autoscaling-policies` command group for managing
+  Cloud Dataproc autoscaling policies. For more information, see:
+  https://cloud.google.com/dataproc/docs/concepts/configuring-clusters/autoscaling
+* Added `--autoscaling-policy` flag to
+  `gcloud beta dataproc clusters <create|update>` and
+  `gcloud beta dataproc workflow-templates set-managed-cluster` to support
+  enabling and disabling autoscaling on Cloud Dataproc clusters with autoscaling
+  policies.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore Emulator version 1.4.1
+  * Fixes bug where an empty CommitRequest was trigger exceptions
+
+### Cloud Resource Manager
+
+* Promoted `resource-manager folders` command group to GA.
+
+### Compute Engine
+
+* Promoted `--bandwidth` flag of `gcloud compute interconnects attachments dedicated <create|update>` to GA.
+* Promoted load_balancing_scheme enum value INTERNAL_SELF_MANAGED to beta in 'gcloud compute forwarding-rules create' and 'gcloud compute backend-services create'.
+* Promoted `gcloud compute instances get-shielded-identity` to GA.
+* Promoted the `--shielded-vtpm`, `--shielded-secure-boot`, and
+  `--shielded-integrity-monitoring` flags of `gcloud compute instances create`
+  to GA.
+* Promoted the `--shielded-vtpm`, `--shielded-secure-boot`, and
+  `--shielded-integrity-monitoring` flags of `gcloud compute instance-templates
+  create` to GA.
+* Promoted the `--shielded-vtpm`, `--shielded-secure-boot`,
+  `--shielded-integrity-monitoring`, and `--shielded-learn-integrity-policy`
+  flags of `gcloud compute instances update` to GA.
+* Removed the deprecated `--shielded-vm-vtpm`, `--shielded-vm-secure-boot`, and
+  `--shielded-vm-integrity-monitoring` flags of `gcloud compute instances
+  create` from alpha and beta.
+* Removed the deprecated `--shielded-vm-vtpm`, `--shielded-vm-secure-boot`, and
+  `--shielded-vm-integrity-monitoring` flags of `gcloud compute
+  instance-templates create` from alpha and beta.
+* Removed the deprecated `--shielded-vm-vtpm`, `--shielded-vm-secure-boot`,
+  `--shielded-vm-integrity-monitoring`, and
+  `--shielded-vm-learn-integrity-policy` flags of `gcloud compute instances
+  update` from alpha and beta.
+
+### Kubernetes Engine
+
+* Update Google Container Engine's kubectl so that it now first attempts
+to match the API server version. If successful, the kubectl will
+delegate to the matching version of kubectl. Otherwise, it defaults
+to execute the current 1.11.7 version of kubectl.
+* Updated extra Google Kubernetes Engine kubectl versions:
+  * kubectl.1.9  (patch 1.9.11)
+  * kubectl.1.10 (patch 1.10.13)
+  * kubectl.1.11 (patch 1.11.8)
+  * kubectl.1.12 (patch 1.12.6)
+  * kubectl.1.13 (patch 1.13.4)
+
+* In June 2019, node auto-upgrade will be enabled by default for newly created
+clusters and node pools. To disable it, use the `--no-enable-autoupgrade` flag.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 238.0.0 (2019-03-12)
 
 ### App Engine

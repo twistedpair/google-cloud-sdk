@@ -59,12 +59,13 @@ def AddAssetTypesArgs(parser):
       metavar='ASSET_TYPES',
       type=arg_parsers.ArgList(),
       default=[],
-      help=('A list of asset types (i.e., "google.compute.Disk") to take a '
-            'snapshot. If specified and non-empty, only assets matching the '
-            'specified types will be returned. '
-            'See https://cloud.google.com/resource-manager/docs/'
-            'cloud-asset-inventory/overview '
-            'for supported asset types.'))
+      help=(
+          'A list of asset types (i.e., "compute.googleapis.com/Disk") to take '
+          'a snapshot. If specified and non-empty, only assets matching the '
+          'specified types will be returned. '
+          'See https://cloud.google.com/resource-manager/docs/'
+          'cloud-asset-inventory/overview '
+          'for supported asset types.'))
 
 
 def AddContentTypeArgs(parser, required):

@@ -59,6 +59,8 @@ memory:
   arg_name: memory
   help_text: |
     Limit on the amount of memory the Edge function or container can use.
+    The memory size can be given by a number followed by unit - e.g. 128MB, 2GiB.
+    Minimum allowed size for this flag is 1MB.
     When deploying an update to an existing function or container, it will
     keep its old memory limit unless you specify this flag.
   type: googlecloudsdk.command_lib.iot.edge.flags:BinarySize
@@ -67,7 +69,8 @@ memory:
 input_topic:
   arg_name: input-topic
   help_text: |
-    Input topic(s) for this component. Multiple topics can be specified by
+    Input topic(s) for this component. The input topics feed information or trigger
+    actions in each components. Multiple topics can be specified by
     using a comma-separated list of topics. Each topic can be specified in
     [NAME:]TOPIC format, which means that an abstract name can optionally
     be given to a topic. The NAME and TOPIC part must not contain any colons.
@@ -76,7 +79,8 @@ input_topic:
 output_topic:
   arg_name: output-topic
   help_text: |
-    Output topic(s) for this component. Multiple topics can be specified by
+    Output topic(s) for this component. The output topics are used to post result
+    from component logic execution. Multiple topics can be specified by
     using a comma-separated list of topics. Each topic can be specified in
     [NAME:]TOPIC format, which means that an abstract name can optionally
     be given to a topic. The NAME and TOPIC part must not contain any colons.

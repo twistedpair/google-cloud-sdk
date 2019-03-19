@@ -164,7 +164,7 @@
     },
     "Status": {
       "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error\nmessage, and error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
       "type": "object",
       "properties": {
         "code": {
@@ -279,7 +279,7 @@
           "$ref": "NodeConfig"
         },
         "privateEnvironmentConfig": {
-          "description": "The configuration used for the private Composer environment.",
+          "description": "The configuration used for the Private IP Cloud Composer environment.",
           "$ref": "PrivateEnvironmentConfig"
         },
         "airflowUri": {
@@ -342,7 +342,7 @@
           "type": "string"
         },
         "subnetwork": {
-          "description": "Optional. The Compute Engine subnetwork to be used for machine\ncommunications, specified as a\n[relative resource name](\/apis\/design\/resource_names#relative_resource_name).\nFor example:\n\"projects\/{projectId}\/regions\/{regionId}\/subnetworks\/{subnetworkId}\"\n\nIf a subnetwork is provided, `nodeConfig.network` must also be provided,\nand the subnetwork must belong to the same project as the network.\n\nFor Shared VPC, you must configure the subnetwork with secondary ranges\nnamed <strong>composer-pods<\/strong> and\n<strong>composer-services<\/strong> to support Alias IPs.",
+          "description": "Optional. The Compute Engine subnetwork to be used for machine\ncommunications, specified as a\n[relative resource name](\/apis\/design\/resource_names#relative_resource_name).\nFor example:\n\"projects\/{projectId}\/regions\/{regionId}\/subnetworks\/{subnetworkId}\"\n\nIf a subnetwork is provided, `nodeConfig.network` must also be provided,\nand the subnetwork must belong to the enclosing environment's project and\nlocation.",
           "type": "string"
         },
         "diskSizeGb": {
@@ -351,7 +351,7 @@
           "format": "int32"
         },
         "oauthScopes": {
-          "description": "Optional. The set of Google API scopes to be made available on all\nnode VMs. Defaults to\n[\"https:\/\/www.googleapis.com\/auth\/cloud-platform\"] and must be included in\nthe list of specified scopes. Cannot be updated.",
+          "description": "Optional. The set of Google API scopes to be made available on all\nnode VMs. If `oauth_scopes` is empty, defaults to\n[\"https:\/\/www.googleapis.com\/auth\/cloud-platform\"]. Cannot be updated.",
           "type": "array",
           "items": {
             "type": "string"
@@ -380,15 +380,15 @@
       "type": "object",
       "properties": {
         "useIpAliases": {
-          "description": "Optional. Whether or not to enable Alias IPs in the GKE cluster.\nIf true or if left blank, a VPC-native cluster is created.",
+          "description": "Optional. Whether or not to enable Alias IPs in the GKE cluster.\nIf `true`, a VPC-native cluster is created.",
           "type": "boolean"
         },
         "clusterSecondaryRangeName": {
-          "description": "Optional. The name of the cluster's secondary range used to allocate\nIP addresses to pods. Specify either `cluster_secondary_range_name`\nor `cluster_ipv4_cidr_block` but not both.",
+          "description": "Optional. The name of the cluster's secondary range used to allocate\nIP addresses to pods. Specify either `cluster_secondary_range_name`\nor `cluster_ipv4_cidr_block` but not both.\n\nThis field is applicable only when `use_ip_aliases` is true.",
           "type": "string"
         },
         "servicesSecondaryRangeName": {
-          "description": "Optional. The name of the services' secondary range used to allocate\nIP addresses to the cluster. Specify either `services_secondary_range_name`\nor `services_ipv4_cidr_block` but not both.",
+          "description": "Optional. The name of the services' secondary range used to allocate\nIP addresses to the cluster. Specify either `services_secondary_range_name`\nor `services_ipv4_cidr_block` but not both.\n\nThis field is applicable only when `use_ip_aliases` is true.",
           "type": "string"
         },
         "clusterIpv4CidrBlock": {
@@ -403,30 +403,30 @@
     },
     "PrivateEnvironmentConfig": {
       "id": "PrivateEnvironmentConfig",
-      "description": "The configuration information for configuring a private Composer environment.",
+      "description": "The configuration information for configuring a Private IP Cloud Composer\nenvironment.",
       "type": "object",
       "properties": {
         "enablePrivateEnvironment": {
-          "description": "Optional. If `true`, a private Composer environment is created.",
+          "description": "Optional. If `true`, a Private IP Cloud Composer environment is created.\nIf this field is true, `use_ip_aliases` must be true.",
           "type": "boolean"
         },
         "privateClusterConfig": {
-          "description": "Optional. Configuration for private cluster for a private Composer\nenvironment.",
+          "description": "Optional. Configuration for the private GKE cluster for a Private IP\nCloud Composer environment.",
           "$ref": "PrivateClusterConfig"
         }
       }
     },
     "PrivateClusterConfig": {
       "id": "PrivateClusterConfig",
-      "description": "Configuration options for private cluster of Composer environment.",
+      "description": "Configuration options for the private GKE cluster in a Cloud Composer\nenvironment.",
       "type": "object",
       "properties": {
         "enablePrivateEndpoint": {
-          "description": "Optional. If true, access to public endpoint of gke cluster will be denied.\n`IPAllocationPolicy.use_ip_aliases` must be true if this field is\nset to true. Default value is false.",
+          "description": "Optional. If `true`, access to the public endpoint of the GKE cluster is\ndenied.",
           "type": "boolean"
         },
         "masterIpv4CidrBlock": {
-          "description": "The IP range in CIDR notation to use for the hosted master network. This\nrange will be used for assigning internal IP addresses to the cluster\nmaster or set of masters, as well as the ILB VIP (Internal Load Balance\nVirtual IP).This range must not overlap with any other ranges in use\nwithin the cluster's network. If left blank, default value of\n'172.16.0.0\/28' will be used.",
+          "description": "The IP range in CIDR notation to use for the hosted master network. This\nrange is used for assigning internal IP addresses to the cluster\nmaster or set of masters and to the internal load balancer virtual IP.\nThis range must not overlap with any other ranges in use\nwithin the cluster's network. If left blank, the default value of\n'172.16.0.0\/28' is used.",
           "type": "string"
         }
       }

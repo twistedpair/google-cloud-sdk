@@ -19,18 +19,11 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
-from googlecloudsdk.api_lib.util import apis
-
-_API_NAME = 'edge'
-_API_VERSION = 'v1alpha1'
-
-
-def _GetMessagesModule():
-  return apis.GetMessagesModule(_API_NAME, _API_VERSION)
+from googlecloudsdk.api_lib.edge import util
 
 
 def ParseTopicBridgingTable(unused_ref, args, req):
-  messages = _GetMessagesModule()
+  messages = util.GetMessagesModule()
   parsed_table = cloudbuild_util.LoadMessageFromPath(
       args.rule_file, messages.TopicBridgingTable, 'topic bridging table')
   req.rules = parsed_table.rules

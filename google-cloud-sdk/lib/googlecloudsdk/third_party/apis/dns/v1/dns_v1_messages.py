@@ -491,6 +491,9 @@ class DnsResourceRecordSetsListRequest(_messages.Message):
 class ManagedZone(_messages.Message):
   r"""A ManagedZone object.
 
+  Enums:
+    VisibilityValueValuesEnum:
+
   Messages:
     LabelsValue: A LabelsValue object.
 
@@ -506,7 +509,19 @@ class ManagedZone(_messages.Message):
     name: A string attribute.
     nameServerSet: A string attribute.
     nameServers: A string attribute.
+    privateVisibilityConfig: A ManagedZonePrivateVisibilityConfig attribute.
+    visibility: A VisibilityValueValuesEnum attribute.
   """
+
+  class VisibilityValueValuesEnum(_messages.Enum):
+    r"""VisibilityValueValuesEnum enum type.
+
+    Values:
+      private: <no description>
+      public: <no description>
+    """
+    private = 0
+    public = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -542,6 +557,8 @@ class ManagedZone(_messages.Message):
   name = _messages.StringField(8)
   nameServerSet = _messages.StringField(9)
   nameServers = _messages.StringField(10, repeated=True)
+  privateVisibilityConfig = _messages.MessageField('ManagedZonePrivateVisibilityConfig', 11)
+  visibility = _messages.EnumField('VisibilityValueValuesEnum', 12)
 
 
 class ManagedZoneDnsSecConfig(_messages.Message):
@@ -601,6 +618,32 @@ class ManagedZoneOperationsListResponse(_messages.Message):
   kind = _messages.StringField(2, default=u'dns#managedZoneOperationsListResponse')
   nextPageToken = _messages.StringField(3)
   operations = _messages.MessageField('Operation', 4, repeated=True)
+
+
+class ManagedZonePrivateVisibilityConfig(_messages.Message):
+  r"""A ManagedZonePrivateVisibilityConfig object.
+
+  Fields:
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#managedZonePrivateVisibilityConfig".
+    networks: A ManagedZonePrivateVisibilityConfigNetwork attribute.
+  """
+
+  kind = _messages.StringField(1, default=u'dns#managedZonePrivateVisibilityConfig')
+  networks = _messages.MessageField('ManagedZonePrivateVisibilityConfigNetwork', 2, repeated=True)
+
+
+class ManagedZonePrivateVisibilityConfigNetwork(_messages.Message):
+  r"""A ManagedZonePrivateVisibilityConfigNetwork object.
+
+  Fields:
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#managedZonePrivateVisibilityConfigNetwork".
+    networkUrl: A string attribute.
+  """
+
+  kind = _messages.StringField(1, default=u'dns#managedZonePrivateVisibilityConfigNetwork')
+  networkUrl = _messages.StringField(2)
 
 
 class ManagedZonesListResponse(_messages.Message):
@@ -706,6 +749,8 @@ class Quota(_messages.Message):
     kind: Identifies what kind of resource this is. Value: the fixed string
       "dns#quota".
     managedZones: A integer attribute.
+    managedZonesPerNetwork: A integer attribute.
+    networksPerManagedZone: A integer attribute.
     resourceRecordsPerRrset: A integer attribute.
     rrsetAdditionsPerChange: A integer attribute.
     rrsetDeletionsPerChange: A integer attribute.
@@ -717,12 +762,14 @@ class Quota(_messages.Message):
   dnsKeysPerManagedZone = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   kind = _messages.StringField(2, default=u'dns#quota')
   managedZones = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  resourceRecordsPerRrset = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  rrsetAdditionsPerChange = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  rrsetDeletionsPerChange = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  rrsetsPerManagedZone = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  totalRrdataSizePerChange = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  whitelistedKeySpecs = _messages.MessageField('DnsKeySpec', 9, repeated=True)
+  managedZonesPerNetwork = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  networksPerManagedZone = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  resourceRecordsPerRrset = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  rrsetAdditionsPerChange = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  rrsetDeletionsPerChange = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  rrsetsPerManagedZone = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  totalRrdataSizePerChange = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  whitelistedKeySpecs = _messages.MessageField('DnsKeySpec', 11, repeated=True)
 
 
 class ResourceRecordSet(_messages.Message):

@@ -62,7 +62,7 @@ def _AddImageArg(parser):
   """Add an image resource arg."""
   parser.add_argument(
       '--image',
-      help='The path to the GCR container to deploy.')
+      help='Path to the GCR container to deploy.')
 
 
 def AddAllowUnauthenticatedFlag(parser):
@@ -87,7 +87,8 @@ def AddEndpointVisibilityEnum(parser):
       '--connectivity',
       choices=_VISIBILITY_MODES,
       help=('If \'external\', the service can be invoked through the internet, '
-            'in addition to through the cluster network.'))
+            'in addition to through the cluster network. Only applicable for '
+            'Cloud Run on Kubernetes Engine.'))
 
 
 def AddServiceFlag(parser):
@@ -107,7 +108,7 @@ def AddSourceRefFlags(parser):
 def AddRegionArg(parser):
   """Add a region arg."""
   parser.add_argument(
-      '--region', help='The region in which the resource can be found. '
+      '--region', help='Region in which the resource can be found. '
       'Alternatively, set the property [run/region].')
 
 
@@ -122,7 +123,7 @@ def AddRegionArgWithDefault(parser):
   """
   parser.add_argument(
       '--region', default='us-central1',
-      help='The region in which to list the resources.')
+      help='Region in which to list the resources.')
 
 
 def AddFunctionArg(parser):
@@ -147,7 +148,7 @@ def AddMutexEnvVarsFlags(parser):
 
   group = parser.add_mutually_exclusive_group()
   update_remove_group = group.add_argument_group(
-      help=('Only --update-{0} and --remove-{0} can be used together.  If both '
+      help=('Only --update-{0} and --remove-{0} can be used together. If both '
             'are specified, --remove-{0} will be applied first.'
            ).format(flag_name))
   map_util.AddMapUpdateFlag(update_remove_group, flag_name, long_name,
@@ -167,9 +168,9 @@ def AddMemoryFlag(parser):
 def AddConcurrencyFlag(parser):
   parser.add_argument('--concurrency',
                       help='Set the number of concurrent requests allowed per '
-                      'instance. A concurrency of 0 indicates any number of '
-                      'concurrent requests are allowed. To unset this field, '
-                      'provide the special value `default`.')
+                      'instance. A concurrency of 0 or unspecified indicates '
+                      'any number of concurrent requests are allowed. To unset '
+                      'this field, provide the special value `default`.')
 
 
 def AddTimeoutFlag(parser):

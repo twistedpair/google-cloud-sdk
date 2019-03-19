@@ -691,6 +691,12 @@ info."""
       hidden=suppressed)
 
 
+# Warn GA customers about the future node auto-upgrade default value change.
+# At the same time we will release the actual change to Alpha/Beta in parallel.
+def WarnGAForFutureAutoUpgradeChange():
+  log.warning(util.WARN_GA_FUTURE_AUTOUPGRADE_CHANGE)
+
+
 def AddTagsFlag(parser, help_text):
   """Adds a --tags to the given parser."""
   parser.add_argument(

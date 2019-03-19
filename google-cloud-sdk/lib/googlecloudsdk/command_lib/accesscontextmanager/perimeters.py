@@ -63,7 +63,7 @@ def AddAccessLevelsBase(ref, args, req, version=None):
 
 
 def AddImplicitUnrestrictedServiceWildcard(ref, args, req):
-  """Add wildcard for unrestricted services to message.
+  """Add wildcard for unrestricted services to message if type is regular.
 
   Args:
     ref: resources.Resource, the (unused) resource
@@ -74,12 +74,15 @@ def AddImplicitUnrestrictedServiceWildcard(ref, args, req):
     The modified request.
   """
   del ref, args  # Unused in AddImplicitServiceWildcard
-  service_perimeter_config = req.servicePerimeter.status
-  if not service_perimeter_config:
-    service_perimeter_config = util.GetMessages(
-        version='v1beta').ServicePerimeterConfig
-  service_perimeter_config.unrestrictedServices = ['*']
-  req.servicePerimeter.status = service_perimeter_config
+
+  m = util.GetMessages(version='v1beta')
+  if req.servicePerimeter.perimeterType == (
+      m.ServicePerimeter.PerimeterTypeValueValuesEnum.PERIMETER_TYPE_REGULAR):
+    service_perimeter_config = req.servicePerimeter.status
+    if not service_perimeter_config:
+      service_perimeter_config = m.ServicePerimeterConfig
+    service_perimeter_config.unrestrictedServices = ['*']
+    req.servicePerimeter.status = service_perimeter_config
   return req
 
 

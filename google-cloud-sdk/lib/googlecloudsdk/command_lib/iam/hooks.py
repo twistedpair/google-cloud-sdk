@@ -22,6 +22,7 @@ from googlecloudsdk.api_lib.iam import util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as gcloud_exceptions
 from googlecloudsdk.command_lib.iam import iam_util
+from googlecloudsdk.core import log
 
 
 def UpdateRequestWithConditionFromFile(ref, args, request):
@@ -61,3 +62,21 @@ def ParseConditionFromFile(condition_from_file):
   condition_dict = iam_util.ParseYamlOrJsonCondition(
       condition, _ConditionFileFormatException(condition_from_file))
   return condition_dict
+
+
+def EnableIamAccountConfirmation(response, args):
+  del response
+  if args.command_path[len(args.command_path) - 3:] == [
+      u'iam', u'service-accounts', u'enable'
+  ]:
+    log.status.Print('Enabled service account [{}].'.format(
+        args.service_account))
+
+
+def DisableIamAccountConfirmation(response, args):
+  del response
+  if args.command_path[len(args.command_path) - 3:] == [
+      u'iam', u'service-accounts', u'disable'
+  ]:
+    log.status.Print('Disabled service account [{}].'.format(
+        args.service_account))

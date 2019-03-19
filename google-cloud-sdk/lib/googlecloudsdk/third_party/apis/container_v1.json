@@ -232,6 +232,10 @@
           "description": "Configuration for cluster networking.",
           "$ref": "NetworkConfig"
         },
+        "defaultMaxPodsConstraint": {
+          "description": "The default constraint on the maximum number of pods that can be run\nsimultaneously on a node in the node pool of this cluster. Only honored\nif cluster created with IP Alias support.",
+          "$ref": "MaxPodsConstraint"
+        },
         "privateClusterConfig": {
           "description": "Configuration for private cluster.",
           "$ref": "PrivateClusterConfig"
@@ -257,7 +261,7 @@
           "type": "string"
         },
         "currentNodeVersion": {
-          "description": "[Output only] Deprecated, use\n[NodePool.version](\/kubernetes-engine\/docs\/reference\/rest\/v1\/projects.zones.clusters.nodePool)\ninstead. The current version of the node software components. If they are\ncurrently at multiple versions because they're in the process of being\nupgraded, this reflects the minimum version of all nodes.",
+          "description": "[Output only] Deprecated, use\n[NodePools.version](\/kubernetes-engine\/docs\/reference\/rest\/v1\/projects.zones.clusters.nodePools)\ninstead. The current version of the node software components. If they are\ncurrently at multiple versions because they're in the process of being\nupgraded, this reflects the minimum version of all nodes.",
           "type": "string"
         },
         "createTime": {
@@ -317,6 +321,14 @@
         },
         "location": {
           "description": "[Output only] The name of the Google Compute Engine\n[zone](\/compute\/docs\/regions-zones\/regions-zones#available) or\n[region](\/compute\/docs\/regions-zones\/regions-zones#available) in which\nthe cluster resides.",
+          "type": "string"
+        },
+        "enableTpu": {
+          "description": "Enable the ability to use Cloud TPUs in this cluster.",
+          "type": "boolean"
+        },
+        "tpuIpv4CidrBlock": {
+          "description": "[Output only] The IP address range of the Cloud TPUs in this cluster, in\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `1.2.3.4\/29`).",
           "type": "string"
         },
         "conditions": {
@@ -657,6 +669,10 @@
           "description": "NodeManagement configuration for this NodePool.",
           "$ref": "NodeManagement"
         },
+        "maxPodsConstraint": {
+          "description": "The constraint on the maximum number of pods that can be run\nsimultaneously on a node in the node pool.",
+          "$ref": "MaxPodsConstraint"
+        },
         "conditions": {
           "description": "Which conditions caused the current node pool state.",
           "type": "array",
@@ -718,6 +734,18 @@
         "description": {
           "description": "[Output only] This field is set when upgrades are about to commence\nwith the description of the upgrade.",
           "type": "string"
+        }
+      }
+    },
+    "MaxPodsConstraint": {
+      "id": "MaxPodsConstraint",
+      "description": "Constraints applied to pods.",
+      "type": "object",
+      "properties": {
+        "maxPodsPerNode": {
+          "description": "Constraint enforced on the max num of pods per node.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -831,6 +859,10 @@
         },
         "servicesIpv4CidrBlock": {
           "description": "The IP address range of the services IPs in this cluster. If blank, a range\nwill be automatically chosen with the default size.\n\nThis field is only applicable when `use_ip_aliases` is true.\n\nSet to blank to have a range chosen with the default size.\n\nSet to \/netmask (e.g. `\/14`) to have a range chosen with a specific\nnetmask.\n\nSet to a\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.",
+          "type": "string"
+        },
+        "tpuIpv4CidrBlock": {
+          "description": "The IP address range of the Cloud TPUs in this cluster. If unspecified, a\nrange will be automatically chosen with the default size.\n\nThis field is only applicable when `use_ip_aliases` is true.\n\nIf unspecified, the range will use the default size.\n\nSet to \/netmask (e.g. `\/14`) to have a range chosen with a specific\nnetmask.\n\nSet to a\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.",
           "type": "string"
         }
       }
@@ -1952,7 +1984,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Returns configuration info about the Kubernetes Engine service."
+              "description": "Returns configuration info about the Google Kubernetes Engine service."
             }
           }
           ,
@@ -2060,7 +2092,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a cluster, consisting of the specified number and type of Google\nCompute Engine instances.\n\nBy default, the cluster is created in the project's\n[default network](\/compute\/docs\/networks-and-firewalls#networks).\n\nOne firewall is added for the cluster. After cluster creation,\nthe cluster creates routes for each node to allow the containers\non that node to communicate with all other instances in the\ncluster.\n\nFinally, an entry is added to the project's global metadata indicating\nwhich CIDR range is being used by the cluster."
+                  "description": "Creates a cluster, consisting of the specified number and type of Google\nCompute Engine instances.\n\nBy default, the cluster is created in the project's\n[default network](\/compute\/docs\/networks-and-firewalls#networks).\n\nOne firewall is added for the cluster. After cluster creation,\nthe Kubelet creates routes for each node to allow the containers\non that node to communicate with all other instances in the\ncluster.\n\nFinally, an entry is added to the project's global metadata indicating\nwhich CIDR range the cluster is using."
                 },
                 "update": {
                   "id": "container.projects.locations.clusters.update",
@@ -2256,7 +2288,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Used to set master auth materials. Currently supports :-\nChanging the admin password for a specific cluster.\nThis can be either via password generation or explicitly set the password."
+                  "description": "Sets master auth materials. Currently supports changing the admin password\nor a specific cluster, either via password generation or explicitly setting\nthe password."
                 },
                 "delete": {
                   "id": "container.projects.locations.clusters.delete",
@@ -2296,7 +2328,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes the cluster, including the Kubernetes endpoint and all worker\nnodes.\n\nFirewalls and routes that were configured during cluster creation\nare also deleted.\n\nOther Google Compute Engine resources that might be in use by the cluster\n(e.g. load balancer resources) will not be deleted if they weren't present\nat the initial create time."
+                  "description": "Deletes the cluster, including the Kubernetes endpoint and all worker\nnodes.\n\nFirewalls and routes that were configured during cluster creation\nare also deleted.\n\nOther Google Compute Engine resources that might be in use by the cluster,\nsuch as load balancer resources, are not deleted if they weren't present\nwhen the cluster was initially created."
                 },
                 "getJwks": {
                   "id": "container.projects.locations.clusters.getJwks",
@@ -2321,7 +2353,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "GetJSONWebKeys gets the public component of the cluster signing keys in\nJSON Web Key format.\nThis API is not yet intended for general use, and is not available for all\nclusters."
+                  "description": "Gets the public component of the cluster signing keys in\nJSON Web Key format.\nThis API is not yet intended for general use, and is not available for all\nclusters."
                 },
                 "setResourceLabels": {
                   "id": "container.projects.locations.clusters.setResourceLabels",
@@ -2405,7 +2437,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Start master IP rotation."
+                  "description": "Starts master IP rotation."
                 },
                 "completeIpRotation": {
                   "id": "container.projects.locations.clusters.completeIpRotation",
@@ -2461,7 +2493,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Enables\/Disables Network Policy for a cluster."
+                  "description": "Enables or disables Network Policy for a cluster."
                 },
                 "setMaintenancePolicy": {
                   "id": "container.projects.locations.clusters.setMaintenancePolicy",
@@ -2522,7 +2554,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Updates the version and\/or image type for a specific node pool."
+                      "description": "Updates the version and\/or image type for the specified node pool."
                     },
                     "setAutoscaling": {
                       "id": "container.projects.locations.clusters.nodePools.setAutoscaling",
@@ -2550,7 +2582,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Sets the autoscaling settings for a specific node pool."
+                      "description": "Sets the autoscaling settings for the specified node pool."
                     },
                     "list": {
                       "id": "container.projects.locations.clusters.nodePools.list",
@@ -2635,7 +2667,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Retrieves the node pool requested."
+                      "description": "Retrieves the requested node pool."
                     },
                     "create": {
                       "id": "container.projects.locations.clusters.nodePools.create",
@@ -2736,7 +2768,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Roll back the previously Aborted or Failed NodePool upgrade.\nThis will be an no-op if the last upgrade successfully completed."
+                      "description": "Rolls back a previously Aborted or Failed NodePool upgrade.\nThis makes no changes if the last upgrade successfully completed."
                     },
                     "setManagement": {
                       "id": "container.projects.locations.clusters.nodePools.setManagement",
@@ -2821,7 +2853,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "GetOpenIDConfig gets the OIDC discovery document for the cluster.\nSee the OpenID Connect Discovery 1.0 specification for details.\nhttps:\/\/openid.net\/specs\/openid-connect-discovery-1_0.html\nThis API is not yet intended for general use, and is not available for all\nclusters."
+                      "description": "Gets the OIDC discovery document for the cluster.\nSee the\n[OpenID Connect Discovery 1.0\nspecification](https:\/\/openid.net\/specs\/openid-connect-discovery-1_0.html)\nfor details.\nThis API is not yet intended for general use, and is not available for all\nclusters."
                     }
                   }
                 }
@@ -2972,7 +3004,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Returns configuration info about the Kubernetes Engine service."
+              "description": "Returns configuration info about the Google Kubernetes Engine service."
             }
           }
           ,
@@ -3090,7 +3122,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a cluster, consisting of the specified number and type of Google\nCompute Engine instances.\n\nBy default, the cluster is created in the project's\n[default network](\/compute\/docs\/networks-and-firewalls#networks).\n\nOne firewall is added for the cluster. After cluster creation,\nthe cluster creates routes for each node to allow the containers\non that node to communicate with all other instances in the\ncluster.\n\nFinally, an entry is added to the project's global metadata indicating\nwhich CIDR range is being used by the cluster."
+                  "description": "Creates a cluster, consisting of the specified number and type of Google\nCompute Engine instances.\n\nBy default, the cluster is created in the project's\n[default network](\/compute\/docs\/networks-and-firewalls#networks).\n\nOne firewall is added for the cluster. After cluster creation,\nthe Kubelet creates routes for each node to allow the containers\non that node to communicate with all other instances in the\ncluster.\n\nFinally, an entry is added to the project's global metadata indicating\nwhich CIDR range the cluster is using."
                 },
                 "update": {
                   "id": "container.projects.zones.clusters.update",
@@ -3377,7 +3409,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Used to set master auth materials. Currently supports :-\nChanging the admin password for a specific cluster.\nThis can be either via password generation or explicitly set the password."
+                  "description": "Sets master auth materials. Currently supports changing the admin password\nor a specific cluster, either via password generation or explicitly setting\nthe password."
                 },
                 "delete": {
                   "id": "container.projects.zones.clusters.delete",
@@ -3420,7 +3452,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes the cluster, including the Kubernetes endpoint and all worker\nnodes.\n\nFirewalls and routes that were configured during cluster creation\nare also deleted.\n\nOther Google Compute Engine resources that might be in use by the cluster\n(e.g. load balancer resources) will not be deleted if they weren't present\nat the initial create time."
+                  "description": "Deletes the cluster, including the Kubernetes endpoint and all worker\nnodes.\n\nFirewalls and routes that were configured during cluster creation\nare also deleted.\n\nOther Google Compute Engine resources that might be in use by the cluster,\nsuch as load balancer resources, are not deleted if they weren't present\nwhen the cluster was initially created."
                 },
                 "resourceLabels": {
                   "id": "container.projects.zones.clusters.resourceLabels",
@@ -3543,7 +3575,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Start master IP rotation."
+                  "description": "Starts master IP rotation."
                 },
                 "completeIpRotation": {
                   "id": "container.projects.zones.clusters.completeIpRotation",
@@ -3625,7 +3657,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Enables\/Disables Network Policy for a cluster."
+                  "description": "Enables or disables Network Policy for a cluster."
                 },
                 "setMaintenancePolicy": {
                   "id": "container.projects.zones.clusters.setMaintenancePolicy",
@@ -3719,7 +3751,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Updates the version and\/or image type for a specific node pool."
+                      "description": "Updates the version and\/or image type for the specified node pool."
                     },
                     "autoscaling": {
                       "id": "container.projects.zones.clusters.nodePools.autoscaling",
@@ -3767,7 +3799,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Sets the autoscaling settings for a specific node pool."
+                      "description": "Sets the autoscaling settings for the specified node pool."
                     },
                     "list": {
                       "id": "container.projects.zones.clusters.nodePools.list",
@@ -3860,7 +3892,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Retrieves the node pool requested."
+                      "description": "Retrieves the requested node pool."
                     },
                     "create": {
                       "id": "container.projects.zones.clusters.nodePools.create",
@@ -3999,7 +4031,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Roll back the previously Aborted or Failed NodePool upgrade.\nThis will be an no-op if the last upgrade successfully completed."
+                      "description": "Rolls back a previously Aborted or Failed NodePool upgrade.\nThis makes no changes if the last upgrade successfully completed."
                     },
                     "setManagement": {
                       "id": "container.projects.zones.clusters.nodePools.setManagement",

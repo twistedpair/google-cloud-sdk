@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.util.apis import arg_utils
 
 # Needs to be indented to show up correctly in help text
 LIST_WITH_ALL_FIELDS_FORMAT = """\
@@ -83,3 +84,20 @@ def AddEnableLogging(parser, default):
       Enable logging for the firewall rule. Logs will be exported to
       StackDriver. Firewall logging is disabled by default.
       """)
+
+
+def GetLoggingMetadataArg(messages):
+  return arg_utils.ChoiceEnumMapper(
+      '--logging-metadata',
+      messages.FirewallLogConfig.MetadataValueValuesEnum,
+      custom_mappings={
+          'INCLUDE_ALL_METADATA': 'include-all',
+          'EXCLUDE_ALL_METADATA': 'exclude-all'
+      },
+      help_str=('Can only be specified if --enable-logging is true. Configures '
+                'whether metadata fields should be added to the reported '
+                'firewall logs.'))
+
+
+def AddLoggingMetadata(parser, messages):
+  GetLoggingMetadataArg(messages).choice_arg.AddToParser(parser)

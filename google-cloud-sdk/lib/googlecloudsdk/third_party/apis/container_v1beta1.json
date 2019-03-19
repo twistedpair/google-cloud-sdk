@@ -261,6 +261,10 @@
           "description": "Configuration for exporting resource usages. Resource usage export is\ndisabled when this config unspecified.",
           "$ref": "ResourceUsageExportConfig"
         },
+        "authenticatorGroupsConfig": {
+          "description": "Configuration controlling RBAC group membership information.",
+          "$ref": "AuthenticatorGroupsConfig"
+        },
         "privateClusterConfig": {
           "description": "Configuration for private cluster.",
           "$ref": "PrivateClusterConfig"
@@ -513,17 +517,19 @@
       "type": "object",
       "properties": {
         "nodeMetadata": {
-          "description": "NodeMetadata is the configuration for how to expose the node metadata to\nthe workload running on the node.",
+          "description": "NodeMetadata is the configuration for how to expose metadata to the\nworkloads running on the node.",
           "enumDescriptions": [
             "Not set.",
             "Prevent workloads not in hostNetwork from accessing certain VM metadata,\nspecifically kube-env, which contains Kubelet credentials, and the\ninstance identity token.\n\nMetadata concealment is a temporary security solution available while the\nbootstrapping process for cluster nodes is being redesigned with\nsignificant security improvements.  This feature is scheduled to be\ndeprecated in the future and later removed.",
-            "Expose all VM metadata to pods."
+            "Expose all VM metadata to pods.",
+            "Run the GKE Metadata Server on this node. The GKE Metadata Server exposes\na metadata API to workloads that is compatible with the V1 Compute\nMetadata APIs exposed by the Compute Engine and App Engine Metadata\nServers. This feature can only be enabled if Workload Identity is enabled\nat the cluster level."
           ],
           "type": "string",
           "enum": [
             "UNSPECIFIED",
             "SECURE",
-            "EXPOSE"
+            "EXPOSE",
+            "GKE_METADATA_SERVER"
           ]
         }
       }
@@ -1126,6 +1132,10 @@
         "subnetwork": {
           "description": "Output only. The relative name of the Google Compute Engine\n[subnetwork](\/compute\/docs\/vpc) to which the cluster is connected.\nExample: projects\/my-project\/regions\/us-central1\/subnetworks\/my-subnet",
           "type": "string"
+        },
+        "enableIntraNodeVisibility": {
+          "description": "Whether Intra-node visibility is enabled for this cluster.\nThis makes same node pod to pod traffic visible for VPC network.",
+          "type": "boolean"
         }
       }
     },
@@ -1151,6 +1161,21 @@
       "properties": {
         "datasetId": {
           "description": "The ID of a BigQuery Dataset.",
+          "type": "string"
+        }
+      }
+    },
+    "AuthenticatorGroupsConfig": {
+      "id": "AuthenticatorGroupsConfig",
+      "description": "Configuration for returning group information from authenticators.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether this cluster should return group membership lookups\nduring authentication using a group of security groups.",
+          "type": "boolean"
+        },
+        "securityGroup": {
+          "description": "The name of the security group-of-groups to be used. Only relevant\nif enabled = true.",
           "type": "string"
         }
       }
@@ -1225,7 +1250,7 @@
           "enumDescriptions": [
             "Should never be set",
             "Secrets in etcd are encrypted.",
-            "Secrets in etcd are stored in plain text (at etcd level) - this is\nunrelated to GCE level full disk encryption."
+            "Secrets in etcd are stored in plain text (at etcd level) - this is\nunrelated to Google Compute Engine level full disk encryption."
           ],
           "type": "string",
           "enum": [
@@ -1543,6 +1568,10 @@
           "description": "Cluster-level Vertical Pod Autoscaling configuration.",
           "$ref": "VerticalPodAutoscaling"
         },
+        "desiredIntraNodeVisibilityConfig": {
+          "description": "The desired config of Intra-node visibility.",
+          "$ref": "IntraNodeVisibilityConfig"
+        },
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to. The only valid value is the\nlatest supported version.\n\nUsers may specify either explicit versions offered by\nKubernetes Engine or version aliases, which have the following behavior:\n\n- \"latest\": picks the highest valid Kubernetes version\n- \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version\n- \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version\n- \"1.X.Y-gke.N\": picks an explicit Kubernetes version\n- \"-\": picks the default Kubernetes version",
           "type": "string"
@@ -1558,6 +1587,21 @@
         "desiredDatabaseEncryption": {
           "description": "Configuration of etcd encryption.",
           "$ref": "DatabaseEncryption"
+        },
+        "desiredWorkloadIdentityConfig": {
+          "description": "Configuration for Workload Identity.",
+          "$ref": "WorkloadIdentityConfig"
+        }
+      }
+    },
+    "IntraNodeVisibilityConfig": {
+      "id": "IntraNodeVisibilityConfig",
+      "description": "IntraNodeVisibilityConfig contains the desired config of the intra-node\nvisibility on this cluster.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enables intra node visibility for this cluster.",
+          "type": "boolean"
         }
       }
     },
@@ -2473,7 +2517,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Returns configuration info about the Kubernetes Engine service."
+              "description": "Returns configuration info about the Google Kubernetes Engine service."
             },
             "list": {
               "id": "container.projects.locations.list",
@@ -2498,7 +2542,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Used to fetch locations that offer GKE."
+              "description": "Fetches locations that offer Google Kubernetes Engine."
             }
           }
           ,
@@ -2606,7 +2650,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a cluster, consisting of the specified number and type of Google\nCompute Engine instances.\n\nBy default, the cluster is created in the project's\n[default network](\/compute\/docs\/networks-and-firewalls#networks).\n\nOne firewall is added for the cluster. After cluster creation,\nthe cluster creates routes for each node to allow the containers\non that node to communicate with all other instances in the\ncluster.\n\nFinally, an entry is added to the project's global metadata indicating\nwhich CIDR range is being used by the cluster."
+                  "description": "Creates a cluster, consisting of the specified number and type of Google\nCompute Engine instances.\n\nBy default, the cluster is created in the project's\n[default network](\/compute\/docs\/networks-and-firewalls#networks).\n\nOne firewall is added for the cluster. After cluster creation,\nthe Kubelet creates routes for each node to allow the containers\non that node to communicate with all other instances in the\ncluster.\n\nFinally, an entry is added to the project's global metadata indicating\nwhich CIDR range the cluster is using."
                 },
                 "update": {
                   "id": "container.projects.locations.clusters.update",
@@ -2802,7 +2846,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Used to set master auth materials. Currently supports :-\nChanging the admin password for a specific cluster.\nThis can be either via password generation or explicitly set.\nModify basic_auth.csv and reset the K8S API server."
+                  "description": "Sets master auth materials. Currently supports changing the admin password\nor a specific cluster, either via password generation or explicitly setting\nthe password."
                 },
                 "delete": {
                   "id": "container.projects.locations.clusters.delete",
@@ -2842,7 +2886,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes the cluster, including the Kubernetes endpoint and all worker\nnodes.\n\nFirewalls and routes that were configured during cluster creation\nare also deleted.\n\nOther Google Compute Engine resources that might be in use by the cluster\n(e.g. load balancer resources) will not be deleted if they weren't present\nat the initial create time."
+                  "description": "Deletes the cluster, including the Kubernetes endpoint and all worker\nnodes.\n\nFirewalls and routes that were configured during cluster creation\nare also deleted.\n\nOther Google Compute Engine resources that might be in use by the cluster,\nsuch as load balancer resources, are not deleted if they weren't present\nwhen the cluster was initially created."
                 },
                 "getJwks": {
                   "id": "container.projects.locations.clusters.getJwks",
@@ -2867,7 +2911,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "GetJSONWebKeys gets the public component of the cluster signing keys in\nJSON Web Key format.\nThis API is not yet intended for general use, and is not available for all\nclusters."
+                  "description": "Gets the public component of the cluster signing keys in\nJSON Web Key format.\nThis API is not yet intended for general use, and is not available for all\nclusters."
                 },
                 "setResourceLabels": {
                   "id": "container.projects.locations.clusters.setResourceLabels",
@@ -2951,7 +2995,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Start master IP rotation."
+                  "description": "Starts master IP rotation."
                 },
                 "completeIpRotation": {
                   "id": "container.projects.locations.clusters.completeIpRotation",
@@ -3007,7 +3051,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Enables\/Disables Network Policy for a cluster."
+                  "description": "Enables or disables Network Policy for a cluster."
                 },
                 "setMaintenancePolicy": {
                   "id": "container.projects.locations.clusters.setMaintenancePolicy",
@@ -3181,7 +3225,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Retrieves the node pool requested."
+                      "description": "Retrieves the requested node pool."
                     },
                     "create": {
                       "id": "container.projects.locations.clusters.nodePools.create",
@@ -3282,7 +3326,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Roll back the previously Aborted or Failed NodePool upgrade.\nThis will be an no-op if the last upgrade successfully completed."
+                      "description": "Rolls back a previously Aborted or Failed NodePool upgrade.\nThis makes no changes if the last upgrade successfully completed."
                     },
                     "setManagement": {
                       "id": "container.projects.locations.clusters.nodePools.setManagement",
@@ -3367,7 +3411,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "GetOpenIDConfig gets the OIDC discovery document for the cluster.\nSee the OpenID Connect Discovery 1.0 specification for details.\nhttps:\/\/openid.net\/specs\/openid-connect-discovery-1_0.html\nThis API is not yet intended for general use, and is not available for all\nclusters."
+                      "description": "Gets the OIDC discovery document for the cluster.\nSee the\n[OpenID Connect Discovery 1.0\nspecification](https:\/\/openid.net\/specs\/openid-connect-discovery-1_0.html)\nfor details.\nThis API is not yet intended for general use, and is not available for all\nclusters."
                     }
                   }
                 }
@@ -3408,7 +3452,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists all operations in a project in a specific zone or all zones."
+                  "description": "Lists all operations in a project in the specified zone or all zones."
                 },
                 "get": {
                   "id": "container.projects.locations.operations.get",
@@ -3518,7 +3562,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Returns configuration info about the Kubernetes Engine service."
+              "description": "Returns configuration info about the Google Kubernetes Engine service."
             }
           }
           ,
@@ -3636,7 +3680,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a cluster, consisting of the specified number and type of Google\nCompute Engine instances.\n\nBy default, the cluster is created in the project's\n[default network](\/compute\/docs\/networks-and-firewalls#networks).\n\nOne firewall is added for the cluster. After cluster creation,\nthe cluster creates routes for each node to allow the containers\non that node to communicate with all other instances in the\ncluster.\n\nFinally, an entry is added to the project's global metadata indicating\nwhich CIDR range is being used by the cluster."
+                  "description": "Creates a cluster, consisting of the specified number and type of Google\nCompute Engine instances.\n\nBy default, the cluster is created in the project's\n[default network](\/compute\/docs\/networks-and-firewalls#networks).\n\nOne firewall is added for the cluster. After cluster creation,\nthe Kubelet creates routes for each node to allow the containers\non that node to communicate with all other instances in the\ncluster.\n\nFinally, an entry is added to the project's global metadata indicating\nwhich CIDR range the cluster is using."
                 },
                 "update": {
                   "id": "container.projects.zones.clusters.update",
@@ -3923,7 +3967,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Used to set master auth materials. Currently supports :-\nChanging the admin password for a specific cluster.\nThis can be either via password generation or explicitly set.\nModify basic_auth.csv and reset the K8S API server."
+                  "description": "Sets master auth materials. Currently supports changing the admin password\nor a specific cluster, either via password generation or explicitly setting\nthe password."
                 },
                 "delete": {
                   "id": "container.projects.zones.clusters.delete",
@@ -3966,7 +4010,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes the cluster, including the Kubernetes endpoint and all worker\nnodes.\n\nFirewalls and routes that were configured during cluster creation\nare also deleted.\n\nOther Google Compute Engine resources that might be in use by the cluster\n(e.g. load balancer resources) will not be deleted if they weren't present\nat the initial create time."
+                  "description": "Deletes the cluster, including the Kubernetes endpoint and all worker\nnodes.\n\nFirewalls and routes that were configured during cluster creation\nare also deleted.\n\nOther Google Compute Engine resources that might be in use by the cluster,\nsuch as load balancer resources, are not deleted if they weren't present\nwhen the cluster was initially created."
                 },
                 "resourceLabels": {
                   "id": "container.projects.zones.clusters.resourceLabels",
@@ -4089,7 +4133,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Start master IP rotation."
+                  "description": "Starts master IP rotation."
                 },
                 "completeIpRotation": {
                   "id": "container.projects.zones.clusters.completeIpRotation",
@@ -4171,7 +4215,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Enables\/Disables Network Policy for a cluster."
+                  "description": "Enables or disables Network Policy for a cluster."
                 },
                 "setMaintenancePolicy": {
                   "id": "container.projects.zones.clusters.setMaintenancePolicy",
@@ -4406,7 +4450,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Retrieves the node pool requested."
+                      "description": "Retrieves the requested node pool."
                     },
                     "create": {
                       "id": "container.projects.zones.clusters.nodePools.create",
@@ -4545,7 +4589,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Roll back the previously Aborted or Failed NodePool upgrade.\nThis will be an no-op if the last upgrade successfully completed."
+                      "description": "Rolls back a previously Aborted or Failed NodePool upgrade.\nThis makes no changes if the last upgrade successfully completed."
                     },
                     "setManagement": {
                       "id": "container.projects.zones.clusters.nodePools.setManagement",
@@ -4683,7 +4727,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists all operations in a project in a specific zone or all zones."
+                  "description": "Lists all operations in a project in the specified zone or all zones."
                 },
                 "get": {
                   "id": "container.projects.zones.operations.get",
@@ -4816,7 +4860,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists subnetworks that are usable for creating clusters in a project."
+                  "description": "Lists subnetworks that can be used for creating clusters in a project."
                 }
               }
             }

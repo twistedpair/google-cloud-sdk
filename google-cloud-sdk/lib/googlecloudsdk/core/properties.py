@@ -1313,8 +1313,12 @@ class _SectionFilestore(_Section):
     super(_SectionFilestore, self).__init__('filestore')
     self.location = self._Add(
         'location',
-        help_text='Default location to use when working with Cloud Filestore '
-        'locations. When a `--location` flag is required but not '
+        help_text='(DEPRECATED) Please use the `--location` flag or set the '
+        'filestore/zone property.')
+    self.zone = self._Add(
+        'zone',
+        help_text='Default zone to use when working with Cloud Filestore '
+        'zones. When a `--zone` flag is required but not '
         'provided, the command will fall back to this value, if set.')
 
 
@@ -1583,6 +1587,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.deploymentmanager = self._Add('deploymentmanager')
     self.discovery = self._Add('discovery')
     self.dns = self._Add('dns')
+    self.domains = self._Add('domains')
     self.file = self._Add('file')
     self.firestore = self._Add('firestore')
     self.genomics = self._Add('genomics')

@@ -74,10 +74,12 @@ class Attestation(_messages.Message):
   for).
 
   Fields:
+    genericSignedAttestation: A GenericSignedAttestation attribute.
     pgpSignedAttestation: A PGP signed attestation.
   """
 
-  pgpSignedAttestation = _messages.MessageField('PgpSignedAttestation', 1)
+  genericSignedAttestation = _messages.MessageField('GenericSignedAttestation', 1)
+  pgpSignedAttestation = _messages.MessageField('PgpSignedAttestation', 2)
 
 
 class AuditConfig(_messages.Message):
@@ -267,8 +269,8 @@ class Binding(_messages.Message):
       service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: A Google Apps domain name that represents all the
-      users of that domain. For example, `google.com` or `example.com`.
+      * `domain:{domain}`: The G Suite domain (primary) that represents all
+      the    users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -851,7 +853,7 @@ class Derived(_messages.Message):
 
 
 class Detail(_messages.Message):
-  r"""Identifies all occurrences of this vulnerability in the package for a
+  r"""Identifies all appearances of this vulnerability in the package for a
   specific distro/location. For example: glibc in cpe:/o:debian:debian_linux:8
   for versions 2.1 - 2.2
 
@@ -1102,7 +1104,7 @@ class Fingerprint(_messages.Message):
 
 
 class FixableTotalByDigest(_messages.Message):
-  r"""Per resource and severity counts of fixable and total vulnerabilites.
+  r"""Per resource and severity counts of fixable and total vulnerabilities.
 
   Enums:
     SeverityValueValuesEnum: The severity for this count. SEVERITY_UNSPECIFIED
@@ -1141,6 +1143,54 @@ class FixableTotalByDigest(_messages.Message):
   resource = _messages.MessageField('Resource', 2)
   severity = _messages.EnumField('SeverityValueValuesEnum', 3)
   totalCount = _messages.IntegerField(4)
+
+
+class GenericSignedAttestation(_messages.Message):
+  r"""An attestation wrapper that uses the Grafeas `Signature` message. This
+  attestation must define the `plaintext` that the `signatures` verify and any
+  metadata necessary to interpret that plaintext.  The signatures should
+  always be over the `plaintext` bytestring.
+
+  Enums:
+    ContentTypeValueValuesEnum: Type (for example schema) of the attestation
+      payload that was signed. The verifier must ensure that the provided type
+      is one that the verifier supports, and that the attestation payload is a
+      valid instantiation of that type (for example by validating a JSON
+      schema).
+
+  Fields:
+    contentType: Type (for example schema) of the attestation payload that was
+      signed. The verifier must ensure that the provided type is one that the
+      verifier supports, and that the attestation payload is a valid
+      instantiation of that type (for example by validating a JSON schema).
+    serializedPayload: The serialized payload that is verified by one or more
+      `signatures`. The encoding and semantic meaning of this payload must
+      match what is set in `content_type`.
+    signatures: One or more signatures over `serialized_payload`.  Verifier
+      implementations should consider this attestation message verified if at
+      least one `signature` verifies `serialized_payload`.  See `Signature` in
+      common.proto for more details on signature structure and verification.
+  """
+
+  class ContentTypeValueValuesEnum(_messages.Enum):
+    r"""Type (for example schema) of the attestation payload that was signed.
+    The verifier must ensure that the provided type is one that the verifier
+    supports, and that the attestation payload is a valid instantiation of
+    that type (for example by validating a JSON schema).
+
+    Values:
+      CONTENT_TYPE_UNSPECIFIED: `ContentType` is not set.
+      SIMPLE_SIGNING_JSON: Atomic format attestation signature. See https://gi
+        thub.com/containers/image/blob/8a5d2f82a6e3263290c8e0276c3e0f64e77723e
+        7/docs/atomic-signature.md The payload extracted in `plaintext` is a
+        JSON blob conforming to the linked schema.
+    """
+    CONTENT_TYPE_UNSPECIFIED = 0
+    SIMPLE_SIGNING_JSON = 1
+
+  contentType = _messages.EnumField('ContentTypeValueValuesEnum', 1)
+  serializedPayload = _messages.BytesField(2)
+  signatures = _messages.MessageField('Signature', 3, repeated=True)
 
 
 class GerritSourceContext(_messages.Message):
@@ -1254,9 +1304,12 @@ class GrafeasV1beta1PackageDetails(_messages.Message):
 
 
 class GrafeasV1beta1VulnerabilityDetails(_messages.Message):
-  r"""Details of a vulnerability occurrence.
+  r"""Details of a vulnerability Occurrence.
 
   Enums:
+    EffectiveSeverityValueValuesEnum: The distro assigned severity for this
+      vulnerability when it is available, and note provider assigned severity
+      when distro has not yet assigned a severity for this vulnerability.
     SeverityValueValuesEnum: Output only. The note provider assigned Severity
       of the vulnerability.
 
@@ -1264,6 +1317,9 @@ class GrafeasV1beta1VulnerabilityDetails(_messages.Message):
     cvssScore: Output only. The CVSS score of this vulnerability. CVSS score
       is on a scale of 0-10 where 0 indicates low severity and 10 indicates
       high severity.
+    effectiveSeverity: The distro assigned severity for this vulnerability
+      when it is available, and note provider assigned severity when distro
+      has not yet assigned a severity for this vulnerability.
     longDescription: Output only. A detailed description of this
       vulnerability.
     packageIssue: Required. The set of affected locations and their fixes (if
@@ -1276,6 +1332,26 @@ class GrafeasV1beta1VulnerabilityDetails(_messages.Message):
     type: The type of package; whether native or non native(ruby gems, node.js
       packages etc)
   """
+
+  class EffectiveSeverityValueValuesEnum(_messages.Enum):
+    r"""The distro assigned severity for this vulnerability when it is
+    available, and note provider assigned severity when distro has not yet
+    assigned a severity for this vulnerability.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Unknown.
+      MINIMAL: Minimal severity.
+      LOW: Low severity.
+      MEDIUM: Medium severity.
+      HIGH: High severity.
+      CRITICAL: Critical severity.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    MINIMAL = 1
+    LOW = 2
+    MEDIUM = 3
+    HIGH = 4
+    CRITICAL = 5
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""Output only. The note provider assigned Severity of the vulnerability.
@@ -1296,12 +1372,13 @@ class GrafeasV1beta1VulnerabilityDetails(_messages.Message):
     CRITICAL = 5
 
   cvssScore = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  longDescription = _messages.StringField(2)
-  packageIssue = _messages.MessageField('PackageIssue', 3, repeated=True)
-  relatedUrls = _messages.MessageField('RelatedUrl', 4, repeated=True)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 5)
-  shortDescription = _messages.StringField(6)
-  type = _messages.StringField(7)
+  effectiveSeverity = _messages.EnumField('EffectiveSeverityValueValuesEnum', 2)
+  longDescription = _messages.StringField(3)
+  packageIssue = _messages.MessageField('PackageIssue', 4, repeated=True)
+  relatedUrls = _messages.MessageField('RelatedUrl', 5, repeated=True)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 6)
+  shortDescription = _messages.StringField(7)
+  type = _messages.StringField(8)
 
 
 class Hash(_messages.Message):
@@ -1359,6 +1436,19 @@ class Installation(_messages.Message):
   name = _messages.StringField(2)
 
 
+class KnowledgeBase(_messages.Message):
+  r"""A KnowledgeBase object.
+
+  Fields:
+    name: The KB name (generally of the form KB[0-9]+ i.e. KB123456).
+    url: A link to the KB in the Windows update catalog -
+      https://www.catalog.update.microsoft.com/
+  """
+
+  name = _messages.StringField(1)
+  url = _messages.StringField(2)
+
+
 class Layer(_messages.Message):
   r"""Layer holds metadata specific to a layer of a Docker image.
 
@@ -1378,23 +1468,23 @@ class Layer(_messages.Message):
 
     Values:
       DIRECTIVE_UNSPECIFIED: Default value for unsupported/missing directive.
-      MAINTAINER: https://docs.docker.com/reference/builder/#maintainer
-      RUN: https://docs.docker.com/reference/builder/#run
-      CMD: https://docs.docker.com/reference/builder/#cmd
-      LABEL: https://docs.docker.com/reference/builder/#label
-      EXPOSE: https://docs.docker.com/reference/builder/#expose
-      ENV: https://docs.docker.com/reference/builder/#env
-      ADD: https://docs.docker.com/reference/builder/#add
-      COPY: https://docs.docker.com/reference/builder/#copy
-      ENTRYPOINT: https://docs.docker.com/reference/builder/#entrypoint
-      VOLUME: https://docs.docker.com/reference/builder/#volume
-      USER: https://docs.docker.com/reference/builder/#user
-      WORKDIR: https://docs.docker.com/reference/builder/#workdir
-      ARG: https://docs.docker.com/reference/builder/#arg
-      ONBUILD: https://docs.docker.com/reference/builder/#onbuild
-      STOPSIGNAL: https://docs.docker.com/reference/builder/#stopsignal
-      HEALTHCHECK: https://docs.docker.com/reference/builder/#healthcheck
-      SHELL: https://docs.docker.com/reference/builder/#shell
+      MAINTAINER: https://docs.docker.com/engine/reference/builder/
+      RUN: https://docs.docker.com/engine/reference/builder/
+      CMD: https://docs.docker.com/engine/reference/builder/
+      LABEL: https://docs.docker.com/engine/reference/builder/
+      EXPOSE: https://docs.docker.com/engine/reference/builder/
+      ENV: https://docs.docker.com/engine/reference/builder/
+      ADD: https://docs.docker.com/engine/reference/builder/
+      COPY: https://docs.docker.com/engine/reference/builder/
+      ENTRYPOINT: https://docs.docker.com/engine/reference/builder/
+      VOLUME: https://docs.docker.com/engine/reference/builder/
+      USER: https://docs.docker.com/engine/reference/builder/
+      WORKDIR: https://docs.docker.com/engine/reference/builder/
+      ARG: https://docs.docker.com/engine/reference/builder/
+      ONBUILD: https://docs.docker.com/engine/reference/builder/
+      STOPSIGNAL: https://docs.docker.com/engine/reference/builder/
+      HEALTHCHECK: https://docs.docker.com/engine/reference/builder/
+      SHELL: https://docs.docker.com/engine/reference/builder/
     """
     DIRECTIVE_UNSPECIFIED = 0
     MAINTAINER = 1
@@ -1589,8 +1679,8 @@ class Occurrence(_messages.Message):
     name: Output only. The name of the occurrence in the form of
       `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]`.
     noteName: Required. Immutable. The analysis note associated with this
-      occurrence, in the form of `projects[PROVIDER_ID]/notes/[NOTE_ID]`. This
-      field can be used as a filter in list requests.
+      occurrence, in the form of `projects/[PROVIDER_ID]/notes/[NOTE_ID]`.
+      This field can be used as a filter in list requests.
     remediation: A description of actions that can be taken to remedy the
       note.
     resource: Required. Immutable. The resource for which the occurrence
@@ -1662,8 +1752,8 @@ class PackageIssue(_messages.Message):
   Fields:
     affectedLocation: Required. The location of the vulnerability.
     fixedLocation: The location of the available fix for vulnerability.
-    severityName: The severity (e.g., distro assigned severity) for this
-      vulnerability.
+    severityName: Deprecated, use Details.effective_severity instead The
+      severity (e.g., distro assigned severity) for this vulnerability.
   """
 
   affectedLocation = _messages.MessageField('VulnerabilityLocation', 1)
@@ -1867,6 +1957,52 @@ class SetIamPolicyRequest(_messages.Message):
 
   policy = _messages.MessageField('Policy', 1)
   updateMask = _messages.StringField(2)
+
+
+class Signature(_messages.Message):
+  r"""Verifiers (e.g. Kritis implementations) MUST verify signatures with
+  respect to the trust anchors defined in policy (e.g. a Kritis policy).
+  Typically this means that the verifier has been configured with a map from
+  `public_key_id` to public key material (and any required parameters, e.g.
+  signing algorithm).  In particular, verification implementations MUST NOT
+  treat the signature `public_key_id` as anything more than a key lookup hint.
+  The `public_key_id` DOES NOT validate or authenticate a public key; it only
+  provides a mechanism for quickly selecting a public key ALREADY CONFIGURED
+  on the verifier through a trusted channel. Verification implementations MUST
+  reject signatures in any of the following circumstances:   * The
+  `public_key_id` is not recognized by the verifier.   * The public key that
+  `public_key_id` refers to does not verify the     signature with respect to
+  the payload.  The `signature` contents SHOULD NOT be "attached" (where the
+  payload is included with the serialized `signature` bytes). Verifiers MUST
+  ignore any "attached" payload and only verify signatures with respect to
+  explicitly provided payload (e.g. a `payload` field on the proto message
+  that holds this Signature, or the canonical serialization of the proto
+  message that holds this signature).
+
+  Fields:
+    publicKeyId: The identifier for the public key that verifies this
+      signature.   * The `public_key_id` is required.   * The `public_key_id`
+      MUST be an RFC3986 conformant URI.   * When possible, the
+      `public_key_id` SHOULD be an immutable reference,     such as a
+      cryptographic digest.  Examples of valid `public_key_id`s:  OpenPGP V4
+      public key fingerprint:   *
+      "openpgp4fpr:74FAF3B861BDA0870C7B6DEF607E48D2A663AEEA" See
+      https://www.iana.org/assignments/uri-schemes/prov/openpgp4fpr for more
+      details on this scheme.  RFC6920 digest-named SubjectPublicKeyInfo
+      (digest of the DER serialization):   *
+      "ni:///sha-256;cD9o9Cq6LG3jD0iKXqEi_vdjJGecm_iXkbqVoScViaU"   * "nih:///
+      sha-256;703f68f42aba2c6de30f488a5ea122fef76324679c9bf89791ba95a1271589a5
+      "
+    signature: The content of the signature, an opaque bytestring. The payload
+      that this signature verifies MUST be unambiguously provided with the
+      Signature during verification. A wrapper message might provide the
+      payload explicitly. Alternatively, a message might have a canonical
+      serialization that can always be unambiguously computed to derive the
+      payload.
+  """
+
+  publicKeyId = _messages.StringField(1)
+  signature = _messages.BytesField(2)
 
 
 class Source(_messages.Message):
@@ -2181,7 +2317,8 @@ class Version(_messages.Message):
 
 
 class Vulnerability(_messages.Message):
-  r"""Vulnerability provides metadata about a security vulnerability.
+  r"""Vulnerability provides metadata about a security vulnerability in a
+  Note.
 
   Enums:
     SeverityValueValuesEnum: Note provider assigned impact of the
@@ -2193,6 +2330,11 @@ class Vulnerability(_messages.Message):
       vulnerability. One entry per (version range and cpe_uri) the package
       vulnerability has manifested in.
     severity: Note provider assigned impact of the vulnerability.
+    windowsDetails: Windows details get their own format because the
+      information format and model don't match a normal detail. Specifically
+      Windows updates are done as patches, thus Windows vulnerabilities really
+      are a missing package, rather than a package being at an incorrect
+      version.
   """
 
   class SeverityValueValuesEnum(_messages.Enum):
@@ -2216,6 +2358,7 @@ class Vulnerability(_messages.Message):
   cvssScore = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   details = _messages.MessageField('Detail', 2, repeated=True)
   severity = _messages.EnumField('SeverityValueValuesEnum', 3)
+  windowsDetails = _messages.MessageField('WindowsDetail', 4, repeated=True)
 
 
 class VulnerabilityLocation(_messages.Message):
@@ -2244,6 +2387,28 @@ class VulnerabilityOccurrencesSummary(_messages.Message):
   """
 
   counts = _messages.MessageField('FixableTotalByDigest', 1, repeated=True)
+
+
+class WindowsDetail(_messages.Message):
+  r"""A WindowsDetail object.
+
+  Fields:
+    cpeUri: Required. The CPE URI in [cpe
+      format](https://cpe.mitre.org/specification/) in which the vulnerability
+      manifests. Examples include distro or storage location for vulnerable
+      jar.
+    description: The description of the vulnerability.
+    fixingKbs: Required. The names of the KBs which have hotfixes to mitigate
+      this vulnerability. Note that there may be multiple hotfixes (and thus
+      multiple KBs) that mitigate a given vulnerability. Currently any listed
+      kb's presence is considered a fix.
+    name: Required. The name of the vulnerability.
+  """
+
+  cpeUri = _messages.StringField(1)
+  description = _messages.StringField(2)
+  fixingKbs = _messages.MessageField('KnowledgeBase', 3, repeated=True)
+  name = _messages.StringField(4)
 
 
 encoding.AddCustomJsonFieldMapping(

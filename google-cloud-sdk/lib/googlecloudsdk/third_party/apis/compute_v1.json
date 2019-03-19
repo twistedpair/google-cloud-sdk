@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20190305",
+ "revision": "20190313",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -3125,7 +3125,7 @@
     },
     "state": {
      "type": "string",
-     "description": "The deprecation state of this resource. This can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image, can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error.",
+     "description": "The deprecation state of this resource. This can be ACTIVE, DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image, can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error.",
      "enum": [
       "ACTIVE",
       "DELETED",
@@ -7778,6 +7778,9 @@
       "$ref": "ServiceAccount"
      }
     },
+    "shieldedInstanceConfig": {
+     "$ref": "ShieldedInstanceConfig"
+    },
     "tags": {
      "$ref": "Tags",
      "description": "A list of tags to apply to the instances that are created from this template. The tags identify valid sources or targets for network firewalls. The setTags method can modify this list of tags. Each tag within the list must comply with RFC1035."
@@ -10693,7 +10696,7 @@
   "NodeGroup": {
    "id": "NodeGroup",
    "type": "object",
-   "description": "A NodeGroup resource.",
+   "description": "A NodeGroup resource. (== resource_for beta.nodeGroups ==) (== resource_for v1.nodeGroups ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -15715,6 +15718,13 @@
       "",
       ""
      ]
+    },
+    "storageLocations": {
+     "type": "array",
+     "description": "GCS bucket storage location of the snapshot (regional or multi-regional).",
+     "items": {
+      "type": "string"
+     }
     }
    }
   },

@@ -34,38 +34,6 @@ class AcceleratorConfig(_messages.Message):
   acceleratorTypeUri = _messages.StringField(2)
 
 
-class AllocationAffinity(_messages.Message):
-  r"""Allocation Affinity for consuming Zonal allocation.
-
-  Enums:
-    ConsumeAllocationTypeValueValuesEnum:
-
-  Fields:
-    consumeAllocationType: A ConsumeAllocationTypeValueValuesEnum attribute.
-    key: Corresponds to the label key of Allocation resource.
-    values: Corresponds to the label values of allocation resource.
-  """
-
-  class ConsumeAllocationTypeValueValuesEnum(_messages.Enum):
-    r"""ConsumeAllocationTypeValueValuesEnum enum type.
-
-    Values:
-      TYPE_UNSPECIFIED: <no description>
-      NO_ALLOCATION: Do not consume from any allocated capacity.
-      ANY_ALLOCATION: Consume any allocation available.
-      SPECIFIC_ALLOCATION: Must consume from a specific allocation. Must
-        specify key value fields for specifying the allocations.
-    """
-    TYPE_UNSPECIFIED = 0
-    NO_ALLOCATION = 1
-    ANY_ALLOCATION = 2
-    SPECIFIC_ALLOCATION = 3
-
-  consumeAllocationType = _messages.EnumField('ConsumeAllocationTypeValueValuesEnum', 1)
-  key = _messages.StringField(2)
-  values = _messages.StringField(3, repeated=True)
-
-
 class AutoscalingConfig(_messages.Message):
   r"""Autoscaling Policy config associated with the cluster.
 
@@ -1736,7 +1704,6 @@ class GceClusterConfig(_messages.Message):
       metadata#project_and_instance_metadata)).
 
   Fields:
-    allocationAffinity: Allocation Affinity for consuming Zonal allocation.
     internalIpOnly: Optional. If true, all instances in the cluster will only
       have internal IP addresses. By default, clusters are not restricted to
       internal IP addresses, and will have ephemeral external IP addresses
@@ -1755,6 +1722,8 @@ class GceClusterConfig(_messages.Message):
       short name are valid. Examples: https://www.googleapis.com/compute/v1/pr
       ojects/[project_id]/regions/global/default
       projects/[project_id]/regions/global/default default
+    reservationAffinity: Optional. Reservation Affinity for consuming Zonal
+      reservation.
     serviceAccount: Optional. The service account of the instances. Defaults
       to the default Compute Engine service account. Custom service accounts
       need permissions equivalent to the following IAM roles:
@@ -1816,10 +1785,10 @@ class GceClusterConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  allocationAffinity = _messages.MessageField('AllocationAffinity', 1)
-  internalIpOnly = _messages.BooleanField(2)
-  metadata = _messages.MessageField('MetadataValue', 3)
-  networkUri = _messages.StringField(4)
+  internalIpOnly = _messages.BooleanField(1)
+  metadata = _messages.MessageField('MetadataValue', 2)
+  networkUri = _messages.StringField(3)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 4)
   serviceAccount = _messages.StringField(5)
   serviceAccountScopes = _messages.StringField(6, repeated=True)
   subnetworkUri = _messages.StringField(7)
@@ -2010,22 +1979,11 @@ class InstanceGroupAutoscalingPolicyConfig(_messages.Message):
       Required for primary workers. Note that by default, clusters will not
       use secondary workers. Required for secondary workers if the minimum
       secondary instances is set.Primary workers - Bounds: [min_instances, ).
-      Secondary workers - Bounds: [min_instances, ). Default: 0.
+      Required. Secondary workers - Bounds: [min_instances, ). Default: 0.
     minInstances: Optional. Minimum number of instances for this group.Primary
       workers - Bounds: 2, max_instances. Default: 2. Secondary workers -
       Bounds: 0, max_instances. Default: 0.
-    weight: Optional. Weight for instance group. Determines fraction of total
-      workers in cluster that will be composed of instances from this instance
-      group (e.g. if primary workers have weight 2 and secondary workers have
-      weight 1, then the cluster should have approximately 2 primary workers
-      to each secondary worker. Cluster may not reach these exact weights if
-      constrained by min/max bounds or other autoscaling configurations.Note
-      that all groups have an equal weight by default, so the cluster will
-      attempt to maintain an equal number of workers in each group within
-      configured size bounds per group. The cluster may not reach this balance
-      of weights if not allowed by worker-count bounds. For example, if
-      max_instances for secondary workers is 0, only primary workers will be
-      added. The cluster can also be out of balance when created.Default: 1.
+    weight: A integer attribute.
   """
 
   maxInstances = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3150,6 +3108,39 @@ class RegexValidation(_messages.Message):
   """
 
   regexes = _messages.StringField(1, repeated=True)
+
+
+class ReservationAffinity(_messages.Message):
+  r"""Reservation Affinity for consuming Zonal reservation.
+
+  Enums:
+    ConsumeReservationTypeValueValuesEnum: Optional. Type of reservation to
+      consume
+
+  Fields:
+    consumeReservationType: Optional. Type of reservation to consume
+    key: Optional. Corresponds to the label key of reservation resource.
+    values: Optional. Corresponds to the label values of reservation resource.
+  """
+
+  class ConsumeReservationTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Type of reservation to consume
+
+    Values:
+      TYPE_UNSPECIFIED: <no description>
+      NO_RESERVATION: Do not consume from any allocated capacity.
+      ANY_RESERVATION: Consume any reservation available.
+      SPECIFIC_RESERVATION: Must consume from a specific reservation. Must
+        specify key value fields for specifying the reservations.
+    """
+    TYPE_UNSPECIFIED = 0
+    NO_RESERVATION = 1
+    ANY_RESERVATION = 2
+    SPECIFIC_RESERVATION = 3
+
+  consumeReservationType = _messages.EnumField('ConsumeReservationTypeValueValuesEnum', 1)
+  key = _messages.StringField(2)
+  values = _messages.StringField(3, repeated=True)
 
 
 class SecurityConfig(_messages.Message):

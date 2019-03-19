@@ -275,7 +275,7 @@
           "$ref": "LifecycleConfig"
         },
         "initializationActions": {
-          "description": "Optional. Commands to execute on each node after config is completed. By default, executables are run on master and all worker nodes. You can test a node's <code>role<\/code> metadata to run an executable on a master or worker node, as shown below using curl (you can also use wget):\nROLE=$(curl -H Metadata-Flavor:Google http:\/\/metadata\/computeMetadata\/v1beta2\/instance\/attributes\/dataproc-role)\nif [[ \"${ROLE}\" == 'Master' ]]; then\n  ... master specific actions ...\nelse\n  ... worker specific actions ...\nfi\n",
+          "description": "Optional. Commands to execute on each node after config is completed. By default, executables are run on master and all worker nodes. You can test a node's <code>role<\/code> metadata to run an executable on a master or worker node, as shown below using curl (you can also use wget):\nROLE=$(curl -H Metadata-Flavor:Google\nhttp:\/\/metadata\/computeMetadata\/v1beta2\/instance\/attributes\/dataproc-role)\nif [[ \"${ROLE}\" == 'Master' ]]; then\n  ... master specific actions ...\nelse\n  ... worker specific actions ...\nfi\n",
           "type": "array",
           "items": {
             "$ref": "NodeInitializationAction"
@@ -345,38 +345,39 @@
             "type": "string"
           }
         },
-        "allocationAffinity": {
-          "description": "Allocation Affinity for consuming Zonal allocation.",
-          "$ref": "AllocationAffinity"
+        "reservationAffinity": {
+          "description": "Optional. Reservation Affinity for consuming Zonal reservation.",
+          "$ref": "ReservationAffinity"
         }
       }
     },
-    "AllocationAffinity": {
-      "id": "AllocationAffinity",
-      "description": "Allocation Affinity for consuming Zonal allocation.",
+    "ReservationAffinity": {
+      "id": "ReservationAffinity",
+      "description": "Reservation Affinity for consuming Zonal reservation.",
       "type": "object",
       "properties": {
-        "consumeAllocationType": {
+        "consumeReservationType": {
+          "description": "Optional. Type of reservation to consume",
           "enumDescriptions": [
             "",
             "Do not consume from any allocated capacity.",
-            "Consume any allocation available.",
-            "Must consume from a specific allocation. Must specify key value fields for specifying the allocations."
+            "Consume any reservation available.",
+            "Must consume from a specific reservation. Must specify key value fields for specifying the reservations."
           ],
           "type": "string",
           "enum": [
             "TYPE_UNSPECIFIED",
-            "NO_ALLOCATION",
-            "ANY_ALLOCATION",
-            "SPECIFIC_ALLOCATION"
+            "NO_RESERVATION",
+            "ANY_RESERVATION",
+            "SPECIFIC_RESERVATION"
           ]
         },
         "key": {
-          "description": "Corresponds to the label key of Allocation resource.",
+          "description": "Optional. Corresponds to the label key of reservation resource.",
           "type": "string"
         },
         "values": {
-          "description": "Corresponds to the label values of allocation resource.",
+          "description": "Optional. Corresponds to the label values of reservation resource.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1566,12 +1567,11 @@
           "format": "int32"
         },
         "maxInstances": {
-          "description": "Optional. Maximum number of instances for this group. Required for primary workers. Note that by default, clusters will not use secondary workers. Required for secondary workers if the minimum secondary instances is set.Primary workers - Bounds: [min_instances, ). Secondary workers - Bounds: [min_instances, ). Default: 0.",
+          "description": "Optional. Maximum number of instances for this group. Required for primary workers. Note that by default, clusters will not use secondary workers. Required for secondary workers if the minimum secondary instances is set.Primary workers - Bounds: [min_instances, ). Required. Secondary workers - Bounds: [min_instances, ). Default: 0.",
           "type": "integer",
           "format": "int32"
         },
         "weight": {
-          "description": "Optional. Weight for instance group. Determines fraction of total workers in cluster that will be composed of instances from this instance group (e.g. if primary workers have weight 2 and secondary workers have weight 1, then the cluster should have approximately 2 primary workers to each secondary worker. Cluster may not reach these exact weights if constrained by min\/max bounds or other autoscaling configurations.Note that all groups have an equal weight by default, so the cluster will attempt to maintain an equal number of workers in each group within configured size bounds per group. The cluster may not reach this balance of weights if not allowed by worker-count bounds. For example, if max_instances for secondary workers is 0, only primary workers will be added. The cluster can also be out of balance when created.Default: 1.",
           "type": "integer",
           "format": "int32"
         }
@@ -2545,7 +2545,7 @@
                       "format": "google-duration"
                     },
                     "updateMask": {
-                      "description": "Required. Specifies the path, relative to Cluster, of the field to update. For example, to change the number of workers in a cluster to 5, the update_mask parameter would be specified as config.worker_config.num_instances, and the PATCH request body would specify the new value, as follows:\n{\n  \"config\":{\n    \"workerConfig\":{\n      \"numInstances\":\"5\"\n    }\n  }\n}\nSimilarly, to change the number of preemptible workers in a cluster to 5, the update_mask parameter would be config.secondary_worker_config.num_instances, and the PATCH request body would be set as follows:\n{\n  \"config\":{\n    \"secondaryWorkerConfig\":{\n      \"numInstances\":\"5\"\n    }\n  }\n}\n<strong>Note:<\/strong> currently only the following fields can be updated:\n<table>\n<tr>\n<td><strong>Mask<\/strong><\/td><td><strong>Purpose<\/strong><\/td>\n<\/tr>\n<tr>\n<td>labels<\/td><td>Updates labels<\/td>\n<\/tr>\n<tr>\n<td>config.worker_config.num_instances<\/td><td>Resize primary worker group<\/td>\n<\/tr>\n<tr>\n<td>config.secondary_worker_config.num_instances<\/td><td>Resize secondary worker group<\/td>\n<\/tr>\n<tr>\n<td>config.lifecycle_config.auto_delete_ttl<\/td><td>Reset MAX TTL duration<\/td>\n<\/tr>\n<tr>\n<td>config.lifecycle_config.auto_delete_time<\/td><td>Update MAX TTL deletion timestamp<\/td>\n<\/tr>\n<tr>\n<td>config.lifecycle_config.idle_delete_ttl<\/td><td>Update Idle TTL duration<\/td>\n<\/tr>\n<tr>\n<td>config.autoscaling_config.policy_uri<\/td><td>Use, stop using, or change autoscaling policies<\/td>\n<\/tr>\n<\/table>",
+                      "description": "Required. Specifies the path, relative to Cluster, of the field to update. For example, to change the number of workers in a cluster to 5, the update_mask parameter would be specified as config.worker_config.num_instances, and the PATCH request body would specify the new value, as follows:\n{\n  \"config\":{\n    \"workerConfig\":{\n      \"numInstances\":\"5\"\n    }\n  }\n}\nSimilarly, to change the number of preemptible workers in a cluster to 5, the update_mask parameter would be config.secondary_worker_config.num_instances, and the PATCH request body would be set as follows:\n{\n  \"config\":{\n    \"secondaryWorkerConfig\":{\n      \"numInstances\":\"5\"\n    }\n  }\n}\n<strong>Note:<\/strong> currently only the following fields can be updated:\n<table>\n<tr>\n<td><strong>Mask<\/strong><\/td><td><strong>Purpose<\/strong><\/td>\n<\/tr>\n<tr>\n<td>labels<\/td><td>Updates labels<\/td>\n<\/tr>\n<tr>\n<td>config.worker_config.num_instances<\/td><td>Resize primary worker\ngroup<\/td>\n<\/tr>\n<tr>\n<td>config.secondary_worker_config.num_instances<\/td><td>Resize secondary\nworker group<\/td>\n<\/tr>\n<tr>\n<td>config.lifecycle_config.auto_delete_ttl<\/td><td>Reset MAX TTL\nduration<\/td>\n<\/tr>\n<tr>\n<td>config.lifecycle_config.auto_delete_time<\/td><td>Update MAX TTL\ndeletion timestamp<\/td>\n<\/tr>\n<tr>\n<td>config.lifecycle_config.idle_delete_ttl<\/td><td>Update Idle TTL\nduration<\/td>\n<\/tr>\n<tr>\n<td>config.autoscaling_config.policy_uri<\/td><td>Use, stop using, or change\nautoscaling policies<\/td>\n<\/tr>\n<\/table>",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
