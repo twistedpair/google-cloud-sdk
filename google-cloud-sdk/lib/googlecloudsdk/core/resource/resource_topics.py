@@ -22,7 +22,7 @@ from __future__ import unicode_literals
 import pkgutil
 import textwrap
 
-from googlecloudsdk import api_lib  # pytype: disable=import-error
+from googlecloudsdk import api_lib
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.resource import resource_transform
 

@@ -351,7 +351,7 @@ class BigqueryV2(base_api.BaseApiClient):
         method_id=u'bigquery.jobs.list',
         ordered_params=[u'projectId'],
         path_params=[u'projectId'],
-        query_params=[u'allUsers', u'maxCreationTime', u'maxResults', u'minCreationTime', u'pageToken', u'parentJobId', u'projection', u'stateFilter'],
+        query_params=[u'allUsers', u'maxCreationTime', u'maxResults', u'minCreationTime', u'pageToken', u'projection', u'stateFilter'],
         relative_path=u'projects/{projectId}/jobs',
         request_field='',
         request_type_name=u'BigqueryJobsListRequest',

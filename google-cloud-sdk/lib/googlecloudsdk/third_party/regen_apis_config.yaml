@@ -295,6 +295,12 @@ apis:
       default: true
     v2beta:
       discovery_doc: deploymentmanager_v2beta.json
+  dialogflow:
+    v2:
+      discovery_doc: dialogflow_v2.json
+      resources:
+        projects.agent:
+          path: projects/{projectsId}/agent
   discovery:
     v1:
       discovery_doc: discovery_v1.json
@@ -550,6 +556,9 @@ apis:
   vpcaccess:
     v1alpha1:
       discovery_doc: vpcaccess_v1alpha1.json
+    v1beta1:
+      discovery_doc: vpcaccess_v1beta1.json
+      default: true
   remotebuildexecution:
     v1alpha:
       discovery_doc: remotebuildexecution_v1alpha.json
@@ -573,3 +582,15 @@ apis:
   recommender:
     v1alpha1:
       discovery_doc: recommender_v1alpha1.json
+      resources:
+        projects.locations:
+          path: projects/{projectsId}/locations/{locationsId}
+          enable_uri_parsing: false
+        projects.locations.recommenders:
+          path: projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}
+          enable_uri_parsing: false
+        projects.locations.recommenders.recommendations:
+          path: projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}
+          enable_uri_parsing: false
+        operations:
+          path: operations/{+operationId}

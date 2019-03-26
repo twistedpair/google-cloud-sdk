@@ -99,12 +99,13 @@ class Configuration(k8s_object.KubernetesObject):
                 limits_cls.AdditionalProperty(
                     key=item.key,
                     value=item.value.string))
-          self.container.resources.limitsInMap = None
-
-      return
     else:
       self.container.resources = k8s_object.InitializedInstance(
           self._messages.ResourceRequirements)
+    # These fields are in the schema due to an error in interperetation of the
+    # Knative spec. We're removing them, so never send any contents for them.
+    self.container.resources.limitsInMap = None
+    self.container.resources.requestsInMap = None
 
   def _EnsureBuild(self):
     if self._m.spec.build:

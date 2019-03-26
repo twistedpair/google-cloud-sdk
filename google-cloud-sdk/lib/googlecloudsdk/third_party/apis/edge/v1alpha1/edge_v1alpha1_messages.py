@@ -43,6 +43,7 @@ class Container(_messages.Message):
       lowercase alpha-numeric characters and following characters: .-_. More
       strictly, it must match the regular expression [a-z0-9]+(?:._-+)*
     outputTopics: List of output topics.
+    portBindings: List of port bindings.
     updateTime: Output only. Last updated time of this container config. This
       is assigned by Edge Manager API.
     version: Output only. Version of this container config. This is assigned
@@ -88,9 +89,10 @@ class Container(_messages.Message):
   inputTopics = _messages.MessageField('TopicInfo', 7, repeated=True)
   name = _messages.StringField(8)
   outputTopics = _messages.MessageField('TopicInfo', 9, repeated=True)
-  updateTime = _messages.StringField(10)
-  version = _messages.IntegerField(11)
-  volumeBindings = _messages.MessageField('VolumeBinding', 12, repeated=True)
+  portBindings = _messages.MessageField('PortBinding', 10, repeated=True)
+  updateTime = _messages.StringField(11)
+  version = _messages.IntegerField(12)
+  volumeBindings = _messages.MessageField('VolumeBinding', 13, repeated=True)
 
 
 class ContainerState(_messages.Message):
@@ -130,18 +132,6 @@ class ContainerState(_messages.Message):
   version = _messages.IntegerField(4)
 
 
-class DeployableFunction(_messages.Message):
-  r"""Indicates an edge function in Google Container Registry.
-
-  Fields:
-    container: Output only. Name of the container.
-    dockerImageUri: Output only. URI of the container.
-  """
-
-  container = _messages.StringField(1)
-  dockerImageUri = _messages.StringField(2)
-
-
 class DeviceBinding(_messages.Message):
   r"""Defines the rules to bind local(edge device) resources to sandboxed
   environment(edge function or container).
@@ -159,21 +149,6 @@ class DeviceBinding(_messages.Message):
   cgroupPermissions = _messages.StringField(1)
   destination = _messages.StringField(2)
   source = _messages.StringField(3)
-
-
-class EdgeProjectsDeployableFunctionsListRequest(_messages.Message):
-  r"""A EdgeProjectsDeployableFunctionsListRequest object.
-
-  Fields:
-    pageSize: The standard list page size.
-    pageToken: Pagination token for next page of results.
-    parent: The project name. The list of deployable functions in given
-      project will be returned.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
 
 
 class EdgeProjectsLocationsRegistriesDevicesContainersCreateRequest(_messages.Message):
@@ -423,8 +398,8 @@ class EdgeProjectsLocationsRegistriesDevicesMlModelsPatchRequest(_messages.Messa
       `projects/p1/locations/us-
       central1/registries/registry0/devices/dev0/mlModels/m1`. The last token
       of the name (For example `m1`) should be no more than 256 bytes, and
-      should start with a letter followed by up to letters, numbers, or
-      hyphens, and cannot end with a hyphen.
+      should start with a letter followed by up to letters, numbers, hyphens
+      or underscores, and cannot end with a hyphen or an underscore.
     updateMask: Mask to control the fields to update. If empty, all fileds are
       updated.
   """
@@ -467,9 +442,10 @@ class Function(_messages.Message):
   r"""Data used to control Edge Function related things in Edge service.
 
   Enums:
-    FunctionTypeValueValuesEnum: Type of the function. A function may be
-      invoked when a message is published(on demand) or be running for stream
-      processing.
+    FunctionTypeValueValuesEnum: DEPRECATED: Specified function type will be
+      ignored. Function type should be specified when building a docker image
+      for the function. Type of the function. A function may be invoked when a
+      message is published(on demand) or be running for stream processing.
 
   Messages:
     EnvironmentVariablesValue: The environment_variables key-value pairs will
@@ -490,8 +466,10 @@ class Function(_messages.Message):
       set as environment variable when the docker container is started. Key
       cannot start with "X_GOOGLE_", and can not contain '='. Max 500 key-
       value pair. Max key/value length is 32768 bytes.
-    functionType: Type of the function. A function may be invoked when a
-      message is published(on demand) or be running for stream processing.
+    functionType: DEPRECATED: Specified function type will be ignored.
+      Function type should be specified when building a docker image for the
+      function. Type of the function. A function may be invoked when a message
+      is published(on demand) or be running for stream processing.
     inputTopics: List of input topics.
     name: Required. Name of the edge function. It must be unique among the
       edge functions running on the same edge device. For example,
@@ -502,6 +480,7 @@ class Function(_messages.Message):
       lowercase alpha-numeric characters and following characters: .-_. More
       strictly, it must match the regular expression [a-z0-9]+(?:._-+)*
     outputTopics: List of output topics.
+    portBindings: List of port bindings.
     requestTimeout: Timeout for one request to this edge function. Default
       value is 1 minute if not specified or equals to 0.
     updateTime: Output only. Last updated time of this function config. This
@@ -512,8 +491,10 @@ class Function(_messages.Message):
   """
 
   class FunctionTypeValueValuesEnum(_messages.Enum):
-    r"""Type of the function. A function may be invoked when a message is
-    published(on demand) or be running for stream processing.
+    r"""DEPRECATED: Specified function type will be ignored. Function type
+    should be specified when building a docker image for the function. Type of
+    the function. A function may be invoked when a message is published(on
+    demand) or be running for stream processing.
 
     Values:
       FUNCTION_TYPE_UNSPECIFIED: Default value, used when its value
@@ -566,10 +547,11 @@ class Function(_messages.Message):
   inputTopics = _messages.MessageField('TopicInfo', 8, repeated=True)
   name = _messages.StringField(9)
   outputTopics = _messages.MessageField('TopicInfo', 10, repeated=True)
-  requestTimeout = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
-  version = _messages.IntegerField(13)
-  volumeBindings = _messages.MessageField('VolumeBinding', 14, repeated=True)
+  portBindings = _messages.MessageField('PortBinding', 11, repeated=True)
+  requestTimeout = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
+  version = _messages.IntegerField(14)
+  volumeBindings = _messages.MessageField('VolumeBinding', 15, repeated=True)
 
 
 class FunctionState(_messages.Message):
@@ -625,18 +607,6 @@ class ListContainersResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
-class ListDeployableFunctionsResponse(_messages.Message):
-  r"""Response for 'ListDeployableFunctions'.
-
-  Fields:
-    deployableFunctions: List of deployable functions.
-    nextPageToken: Pagination token for next page of results.
-  """
-
-  deployableFunctions = _messages.MessageField('DeployableFunction', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
 class ListFunctionsResponse(_messages.Message):
   r"""Response for 'ListFunctions'.
 
@@ -681,8 +651,8 @@ class MlModel(_messages.Message):
       `projects/p1/locations/us-
       central1/registries/registry0/devices/dev0/mlModels/m1`. The last token
       of the name (For example `m1`) should be no more than 256 bytes, and
-      should start with a letter followed by up to letters, numbers, or
-      hyphens, and cannot end with a hyphen.
+      should start with a letter followed by up to letters, numbers, hyphens
+      or underscores, and cannot end with a hyphen or an underscore.
     numTfliteThreads: Number of threads that are spawned by TF Lite.
     outputTensors: List of output tensors.
     outputTopics: List of output topics.
@@ -776,27 +746,27 @@ class MlSamplingInfo(_messages.Message):
   r"""Data used to control retraining process of this MlModel.
 
   Messages:
-    ClassPolicyValue: the policies to specify sampling strategy for each
+    ClassPolicyValue: The policies to specify sampling strategy for each
       class.
 
   Fields:
-    classPolicy: the policies to specify sampling strategy for each class.
-    datasetName: Required. the dataset name used in AutoML. Can contain
-      alphabets, digits and underscore. Max 1024 bytes.
-    defaultPolicy: the default policy for all classes.
-    keepSampleMax: Required. the number of maximum samples on local storage.
+    classPolicy: The policies to specify sampling strategy for each class.
+    datasetName: Required. The dataset name used in AutoML. Can contain
+      alphabets, digits and underscores. Max 1024 bytes.
+    defaultPolicy: The default policy for all classes.
+    keepSampleMax: The number of maximum samples on local storage.
       default=10000.
-    labelFileUri: Required. the dataset label text file uri. Must start with
+    labelFileUri: Required. The dataset label text file uri. Must start with
       'gs://' and can contain up to 8192 bytes.
     tag: Required. tag for sampled data used for uploading. Can contain
-      alphabets, digits and underscore. Max 1024 bytes.
-    targetUri: Required. the target uri where the sampled data will be
+      alphabets, digits and underscores. Max 1024 bytes.
+    targetUri: Required. The target uri where the sampled data will be
       located. Must start with 'gs:// and can contain up to 8192 bytes.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ClassPolicyValue(_messages.Message):
-    r"""the policies to specify sampling strategy for each class.
+    r"""The policies to specify sampling strategy for each class.
 
     Messages:
       AdditionalProperty: An additional property for a ClassPolicyValue
@@ -832,13 +802,64 @@ class MlSamplingPolicy(_messages.Message):
   r"""Data used to control the sampling process of the ML inference results.
 
   Fields:
-    samplingRate: the default rate to sample a target data. default=0.1 for
+    samplingRate: The default rate to sample a target data. default=0.1 for
       10% sampling.
-    timeDelaySec: the time delay between sampling in sec. default=0 for 0 sec.
+    timeDelaySec: The time delay between sampling in sec. default=0 for 0 sec.
   """
 
   samplingRate = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   timeDelaySec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class PortBinding(_messages.Message):
+  r"""Defines the publish information of the docker container.
+
+  Enums:
+    ProtocolValueValuesEnum: Protocol for communication. TCP will be used if
+      not specified.
+
+  Fields:
+    containerPortEnd: Required. The ending number of container port mapping
+      range. Should be between 1-65535, and equals to or larger than
+      container_port_start.
+    containerPortStart: Required. The starting number of container port
+      mapping range. All the ports between container_port_start and
+      container_port_end will be published to host.  Should be between
+      1-65535.
+    hostIp: Should be ip address of host machine. For example, `127.0.0.1`. If
+      specified, host_port_start and host_port_end also should be specified.
+    hostPortEnd: The ending number of host port mapping range. Should be
+      between 1-65535. If specified, should be equals to or larger than
+      host_port_start. If not specified, host_port_start should not be
+      specified.
+    hostPortStart: The starting number of host port mapping range. Published
+      container ports will be mapped to the host ports in this range. If not
+      specified, host_port_end should not be specified, and container ports
+      will be mapped to randomly selected host ports. Should be between
+      1-65535.
+    protocol: Protocol for communication. TCP will be used if not specified.
+  """
+
+  class ProtocolValueValuesEnum(_messages.Enum):
+    r"""Protocol for communication. TCP will be used if not specified.
+
+    Values:
+      PROTOCOL_UNSPECIFIED: Default value, used when its value unspecified.
+      TCP: TCP. Edge runtime will use TCP if unspecified.
+      UDP: UDP
+      SCTP: SCTP
+    """
+    PROTOCOL_UNSPECIFIED = 0
+    TCP = 1
+    UDP = 2
+    SCTP = 3
+
+  containerPortEnd = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  containerPortStart = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  hostIp = _messages.StringField(3)
+  hostPortEnd = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  hostPortStart = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 6)
 
 
 class Rule(_messages.Message):

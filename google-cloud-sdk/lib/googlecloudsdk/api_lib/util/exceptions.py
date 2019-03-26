@@ -239,7 +239,7 @@ class HttpErrorPayload(string.Formatter):
       value = buf.getvalue().strip()
     if recursive_format:
       self._value = value
-      value = self.format(_Expand(recursive_format))  # pytype: disable=wrong-arg-types
+      value = self.format(_Expand(recursive_format))
     return value, name
 
   def _ExtractResponseAndJsonContent(self, http_error):
@@ -389,7 +389,7 @@ class HttpException(core_exceptions.Error):
       error_format = '{message}{details?\n{?}}'
       if log.GetVerbosity() <= logging.DEBUG:
         error_format += '{.debugInfo?\n{?}}'
-    return _Expand(self.payload.format(_Escape(error_format)))  # pytype: disable=wrong-arg-types
+    return _Expand(self.payload.format(_Escape(error_format)))
 
   @property
   def message(self):

@@ -68,7 +68,7 @@ class SnapshotsCompleter(compute_completers.ListCommandCompleter):
         **kwargs)
 
 
-def MakeDiskArg(plural):
+def MakeDiskArgZonal(plural):
   return compute_flags.ResourceArgument(
       resource_name='disk',
       completer=compute_completers.DisksCompleter,
@@ -78,7 +78,7 @@ def MakeDiskArg(plural):
       zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
 
 
-def MakeDiskArgZonalOrRegional(plural):
+def MakeDiskArg(plural):
   return compute_flags.ResourceArgument(
       resource_name='disk',
       completer=compute_completers.DisksCompleter,

@@ -53,7 +53,7 @@ def _verify_tensorflow(version):
   # Check tensorflow with a recent version is installed.
   try:
     # pylint: disable=g-import-not-at-top
-    import tensorflow as tf  # pytype: disable=import-error
+    import tensorflow as tf
     # pylint: enable=g-import-not-at-top
   except ImportError:
     eprint('Cannot import Tensorflow. Please verify '
@@ -85,7 +85,7 @@ def _verify_scikit_learn(version):
     return False
   try:
     # pylint: disable=g-import-not-at-top
-    import sklearn  # pytype: disable=import-error
+    import sklearn
     # pylint: enable=g-import-not-at-top
   except ImportError:
     eprint('Cannot import sklearn. Please verify '
@@ -109,7 +109,7 @@ def _verify_xgboost(version):
   # Check xgboost with a recent version is installed.
   try:
     # pylint: disable=g-import-not-at-top
-    import xgboost  # pytype: disable=import-error
+    import xgboost
     # pylint: enable=g-import-not-at-top
   except ImportError:
     eprint('Cannot import xgboost. Please verify '

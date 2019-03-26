@@ -267,9 +267,7 @@ def GetTimeZone(name):
     name = times_data.IANA_TO_WINDOWS.get(name, name)
     try:
       tzinfo = tzwin.tzwin(name)
-    # pytype: disable=name-error
     except WindowsError:  # pylint: disable=undefined-variable
-      # pytype: enable=name-error
       pass
   return tzinfo
 

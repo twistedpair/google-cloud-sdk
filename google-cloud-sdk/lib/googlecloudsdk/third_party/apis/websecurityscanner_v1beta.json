@@ -214,10 +214,6 @@
         "customAccount": {
           "description": "Authentication using a custom account.",
           "$ref": "CustomAccount"
-        },
-        "builtInAccount": {
-          "description": "Authentication using a custom account.",
-          "$ref": "BuiltInAccount"
         }
       }
     },
@@ -253,13 +249,6 @@
           "description": "Required.\nThe login form URL of the website.",
           "type": "string"
         }
-      }
-    },
-    "BuiltInAccount": {
-      "id": "BuiltInAccount",
-      "description": "Describes authentication configuration that uses a built-in test account,\nThe built-in test account is only available to Googlers.",
-      "type": "object",
-      "properties": {
       }
     },
     "Schedule": {
@@ -426,7 +415,6 @@
             "The Custom Login URL has a non-routable IP address.",
             "The Custom Login URL has an IP address which is not reserved for the\ncurrent project.",
             "Another scan with the same name (case-sensitive) already exists.",
-            "Googleplex should be scanned by go\/inq - Cloud does not support it.",
             "A field is set to an invalid value.",
             "There was an error trying to authenticate to the scan target.",
             "Finding type value is not specified in the list findings request.",
@@ -473,7 +461,6 @@
             "CUSTOM_LOGIN_URL_HAS_NON_ROUTABLE_IP_ADDRESS",
             "CUSTOM_LOGIN_URL_HAS_UNRESERVED_IP_ADDRESS",
             "DUPLICATE_SCAN_NAME",
-            "GOOGLEPLEX_NOT_SUPPORTED",
             "INVALID_FIELD_VALUE",
             "FAILED_TO_AUTHENTICATE_TO_TARGET",
             "FINDING_TYPE_UNSPECIFIED",
@@ -668,7 +655,7 @@
           "type": "string"
         },
         "trackingId": {
-          "description": "Output only.\nThe tracking ID uniquely identifies a vulnerability instance across\nmultiple ScanRuns.\nThis is the public version of TestResult.dna field.",
+          "description": "Output only.\nThe tracking ID uniquely identifies a vulnerability instance across\nmultiple ScanRuns.",
           "type": "string"
         },
         "form": {

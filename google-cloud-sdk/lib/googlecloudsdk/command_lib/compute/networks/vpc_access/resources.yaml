@@ -4,7 +4,7 @@ project:
   attributes:
   - parameter_name: projectsId
     attribute_name: project
-    help: The name of the Cloud project
+    help: Name of a Cloud project
     property: core/project
 
 region:
@@ -15,7 +15,7 @@ region:
     parameter_name: locationsId
     attribute_name: region
     help: |
-      A Google Compute Engine for VPC Access API.
+      Compute region (e.g. us-central1) for the connector.
   disable_auto_completers: false
 
 operation:
@@ -38,5 +38,16 @@ connector:
   - parameter_name: connectorsId
     attribute_name: connector
     help: |
-      A VPC Access connector.
+      Name of a VPC Access connector.
+  disable_auto_completers: false
+
+connector_v1beta1:
+  name: connector
+  collection: vpcaccess.projects.locations.connectors
+  request_id_field: connectorId
+  attributes:
+  - *region
+  - parameter_name: connectorsId
+    attribute_name: connector
+    help: Name of a VPC Access connector.
   disable_auto_completers: false

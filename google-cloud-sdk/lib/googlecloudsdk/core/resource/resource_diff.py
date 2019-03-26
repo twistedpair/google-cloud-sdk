@@ -68,7 +68,7 @@ class ResourceDiff(object):
     # Send these two buffers to the unified_diff() function for printing.
     lines_original = buff_original.getvalue().split('\n')
     lines_changed = buff_changed.getvalue().split('\n')
-    lines_diff = difflib.unified_diff(lines_original, lines_changed)  # pytype: disable=wrong-arg-types
+    lines_diff = difflib.unified_diff(lines_original, lines_changed)
     out = out or log.out
     for line in lines_diff:
       out.write(line + '\n')

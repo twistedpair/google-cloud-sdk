@@ -202,15 +202,15 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     """
     self._command_path = command_path
     self._command_name = ' '.join(self._command_path)
-    self._subcommands = None  # type: dict
-    self._subgroups = None  # type: dict
+    self._subcommands = None
+    self._subgroups = None
     self._top = self._command_path[0] if self._command_path else ''
     self._buf = io.StringIO()
     self._out = self._buf.write
     self._capsule = ''
     self._docstring = ''
     self._final_sections = ['EXAMPLES', 'SEE ALSO']
-    self._arg_sections = None  # type: list
+    self._arg_sections = None
     self._sections = {}
     self._file_name = '_'.join(self._command_path)
     self._global_flags = set()

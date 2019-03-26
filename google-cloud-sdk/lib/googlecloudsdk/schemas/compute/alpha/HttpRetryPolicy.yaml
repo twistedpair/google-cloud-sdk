@@ -27,7 +27,7 @@ properties:
       type: string
   numRetries:
     description: Specifies the allowed number retries. This number must be > 0.
-    type: uint32
+    type: integer
   perTryTimeout:
     description: Specifies a non-zero timeout per retry attempt.
     $ref: Duration.yaml

@@ -135,7 +135,7 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
           self._PrintEnvExport(six.iteritems(v),
                                prefix=self._Prefix(prefix, name))
       else:
-        value = pipes.quote(six.text_type(value))  # pytype: disable=wrong-arg-types
+        value = pipes.quote(six.text_type(value))
         self._out.write(self._env_command_format.format(
             name=prefix + name, value=value))
 

@@ -84,7 +84,7 @@ class DevSiteGenerator(walker.Walker):
     self._toc_root.write('- title: "gcloud Reference"\n')
     self._toc_root.write('  path: %s\n' % self._REFERENCE)
     self._toc_root.write('  section:\n')
-    self._toc_main = None  # type: file
+    self._toc_main = None
 
   def Visit(self, node, parent, is_group):
     """Updates the TOC and Renders a DevSite doc for each node in the CLI tree.

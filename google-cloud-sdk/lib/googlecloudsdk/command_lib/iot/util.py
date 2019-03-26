@@ -159,8 +159,6 @@ def _ValidatePublicKeyDict(public_key):
 
 def _ConvertStringToFormatEnum(type_, messages):
   """Convert string values to Enum object type."""
-  # TODO(b/71388306): Enums aren't handled well by pytype.
-  # pytype: disable=attribute-error
   if (type_ == flags.KeyTypes.RS256.choice_name or
       type_ == flags.KeyTypes.RSA_X509_PEM.choice_name):
     return messages.PublicKeyCredential.FormatValueValuesEnum.RSA_X509_PEM
@@ -171,7 +169,6 @@ def _ConvertStringToFormatEnum(type_, messages):
   elif (type_ == flags.KeyTypes.ES256.choice_name or
         type_ == flags.KeyTypes.ES256_PEM.choice_name):
     return messages.PublicKeyCredential.FormatValueValuesEnum.ES256_PEM
-  # pytype: enable=attribute-error
   else:
     # Should have been caught by argument parsing
     raise ValueError('Invalid key type [{}]'.format(type_))

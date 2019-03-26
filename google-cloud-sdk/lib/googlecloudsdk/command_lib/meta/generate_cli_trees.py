@@ -51,7 +51,6 @@ from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import text as text_utils
-from googlecloudsdk.core.util import typing  # pylint: disable=unused-import
 
 import six
 from six.moves import range
@@ -122,7 +121,6 @@ def _Positional(name, description='', default=None, nargs='0'):
 
 
 def _Command(path):
-  # type: (str) -> typing.Dict[str, typing.Any]
   """Initializes and returns a command/group dict node."""
   return {
       cli_tree.LOOKUP_CAPSULE: '',
@@ -217,7 +215,7 @@ class CliTreeGenerator(six.with_metaclass(abc.ABCMeta, object)):
         return path, files.FileReader(path)
       except files.Error:
         pass
-    return path, None  # pytype: disable=name-error
+    return path, None
 
   def IsUpToDate(self, tree, verbose=False):
     """Returns a bool tuple (readonly, up_to_date)."""
@@ -416,13 +414,13 @@ class BqCliTreeGenerator(CliTreeGenerator):
         else:
           paragraph.append(line)
       subcommand = _Command(path + [name])
-      command[cli_tree.LOOKUP_COMMANDS][name] = subcommand  # pytype: disable=attribute-error
+      command[cli_tree.LOOKUP_COMMANDS][name] = subcommand
       if description:
         subcommand[cli_tree.LOOKUP_SECTIONS]['DESCRIPTION'] = '\n'.join(
-            description)  # pytype: disable=attribute-error
+            description)
       if examples:
         subcommand[cli_tree.LOOKUP_SECTIONS]['EXAMPLES'] = '\n'.join(
-            examples)  # pytype: disable=attribute-error
+            examples)
 
     return command
 
@@ -748,7 +746,7 @@ class KubectlCliTreeGenerator(CliTreeGenerator):
           command[cli_tree.LOOKUP_IS_GROUP] = True
           command[cli_tree.LOOKUP_COMMANDS][name] = self.SubTree(path + [name])
       elif heading in ('DESCRIPTION', 'EXAMPLES'):
-        command[cli_tree.LOOKUP_SECTIONS][heading] = '\n'.join(content)  # pytype: disable=attribute-error
+        command[cli_tree.LOOKUP_SECTIONS][heading] = '\n'.join(content)
       elif heading == 'FLAGS':
         self.AddFlags(command, content)
     return command
@@ -1105,9 +1103,9 @@ class ManPageCliTreeGenerator(CliTreeGenerator):
           blocks.append(_NormalizeSpace('\n'.join(content[begin:end])))
         text = '\n'.join(blocks)
         if heading in command[cli_tree.LOOKUP_SECTIONS]:
-          command[cli_tree.LOOKUP_SECTIONS][heading] += '\n\n' + text  # pytype: disable=attribute-error
+          command[cli_tree.LOOKUP_SECTIONS][heading] += '\n\n' + text
         else:
-          command[cli_tree.LOOKUP_SECTIONS][heading] = text  # pytype: disable=attribute-error
+          command[cli_tree.LOOKUP_SECTIONS][heading] = text
     return command
 
   def Generate(self):

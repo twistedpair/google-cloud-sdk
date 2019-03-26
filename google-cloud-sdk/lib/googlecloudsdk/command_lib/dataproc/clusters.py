@@ -358,7 +358,6 @@ def BetaArgsForClusterRef(parser):
 
   parser.add_argument(
       '--enable-component-gateway',
-      hidden=True,
       action='store_true',
       help="""\
         Enable access to the web UIs of selected components on the cluster

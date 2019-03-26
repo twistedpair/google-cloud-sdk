@@ -76,6 +76,16 @@ WARN_GA_FUTURE_AUTOUPGRADE_CHANGE = ('In June 2019, node auto-upgrade will be '
                                      'clusters and node pools. To disable it, '
                                      'use the `--no-enable-autoupgrade` flag.')
 
+WARN_AUTOUPGRADE_ENABLED_BY_DEFAULT = (
+    'Newly created clusters and node-pools will have node auto-upgrade enabled '
+    'by default. This can be disabled using the `--no-enable-autoupgrade` '
+    'flag.')
+
+WARN_NODE_VERSION_WITH_AUTOUPGRADE_ENABLED = (
+    'Node version is specified while node auto-upgrade is enabled. '
+    'Node-pools created at the specified version will be auto-upgraded '
+    'whenever auto-upgrade preconditions are met.')
+
 
 class Error(core_exceptions.Error):
   """Class for errors raised by container commands."""

@@ -674,6 +674,7 @@ class Results(_messages.Message):
   Fields:
     artifactManifest: Path to the artifact manifest. Only populated when
       artifacts are uploaded.
+    artifactTiming: Time to push all non-container artifacts.
     buildStepImages: List of build step digests, in the order corresponding to
       build step indices.
     buildStepOutputs: List of build step outputs, produced by builder images,
@@ -687,10 +688,11 @@ class Results(_messages.Message):
   """
 
   artifactManifest = _messages.StringField(1)
-  buildStepImages = _messages.StringField(2, repeated=True)
-  buildStepOutputs = _messages.BytesField(3, repeated=True)
-  images = _messages.MessageField('BuiltImage', 4, repeated=True)
-  numArtifacts = _messages.IntegerField(5)
+  artifactTiming = _messages.MessageField('TimeSpan', 2)
+  buildStepImages = _messages.StringField(3, repeated=True)
+  buildStepOutputs = _messages.BytesField(4, repeated=True)
+  images = _messages.MessageField('BuiltImage', 5, repeated=True)
+  numArtifacts = _messages.IntegerField(6)
 
 
 class Secret(_messages.Message):

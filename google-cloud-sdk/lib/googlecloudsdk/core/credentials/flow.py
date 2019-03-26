@@ -67,7 +67,7 @@ class ClientRedirectHandler(tools.ClientRedirectHandler):
     if an error occurred.
     """
     self.send_response(200)
-    self.send_header('Content-type', 'text/html')  # pytype: disable=wrong-arg-types
+    self.send_header('Content-type', 'text/html')
     self.end_headers()
     query = self.path.split('?', 1)[-1]
     query = dict(parse_qsl(query))

@@ -14,8 +14,6 @@
 # limitations under the License.
 
 """Progress Tracker for Cloud SDK."""
-# TODO(b/113319639): Temporary skip to get pytype enabled.
-# pytype: skip-file
 
 from __future__ import absolute_import
 from __future__ import division
@@ -446,7 +444,7 @@ class _NormalCompletionProgressTracker(object):
       os._exit(1)  # pylint: disable=protected-access
     # Allow the child to run in the background for up to self._background_ttl
     # more seconds before being forcefully exited.
-    signal.signal(signal.SIGVTALRM, self._ExitBackground)  # pytype: disable=wrong-arg-types
+    signal.signal(signal.SIGVTALRM, self._ExitBackground)
     signal.setitimer(
         signal.ITIMER_VIRTUAL, self._background_ttl, self._background_ttl)
     # Suppress the explicit completion status channel.  stdout and stderr have

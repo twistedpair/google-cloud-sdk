@@ -14,8 +14,6 @@
 # limitations under the License.
 
 """Utilities to manage credentials."""
-# Pytype fails to analyze this file.
-# type: ignore
 
 from __future__ import absolute_import
 from __future__ import division
@@ -52,7 +50,7 @@ class UnknownCredentialsType(Error):
 
 
 @six.add_metaclass(abc.ABCMeta)
-class CredentialStore(object):  # pytype: disable=ignored-abstractmethod
+class CredentialStore(object):
   """Abstract definition of credential store."""
 
   @abc.abstractmethod
@@ -419,7 +417,6 @@ class CredentialType(enum.Enum):
 
   @staticmethod
   def FromCredentials(creds):
-    # type: (...) -> CredentialType
     if isinstance(creds, c_devshell.DevshellCredentials):
       return CredentialType.DEVSHELL
     if isinstance(creds, oauth2client_gce.AppAssertionCredentials):

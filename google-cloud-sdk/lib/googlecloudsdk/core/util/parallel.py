@@ -74,7 +74,7 @@ class InvalidStateException(Exception):
 
 
 @six.add_metaclass(abc.ABCMeta)
-class BasePool(object):  # pytype: disable=ignored-abstractmethod
+class BasePool(object):
   """Base class for parallel pools.
 
   Provides a limited subset of the multiprocessing.Pool API.
@@ -136,7 +136,7 @@ class BasePool(object):  # pytype: disable=ignored-abstractmethod
 
 
 @six.add_metaclass(abc.ABCMeta)
-class BaseFuture(object):  # pytype: disable=ignored-abstractmethod
+class BaseFuture(object):
   """A future object containing a value that may not be available yet."""
 
   def Get(self):

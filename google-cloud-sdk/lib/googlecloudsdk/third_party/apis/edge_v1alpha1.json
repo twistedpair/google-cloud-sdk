@@ -343,6 +343,13 @@
             "$ref": "DeviceBinding"
           }
         },
+        "portBindings": {
+          "description": "List of port bindings.",
+          "type": "array",
+          "items": {
+            "$ref": "PortBinding"
+          }
+        },
         "inputTopics": {
           "description": "List of input topics.",
           "type": "array",
@@ -358,7 +365,7 @@
           }
         },
         "functionType": {
-          "description": "Type of the function. A function may be invoked when a message is\npublished(on demand) or be running for stream processing.",
+          "description": "DEPRECATED: Specified function type will be ignored. Function type should\nbe specified when building a docker image for the function.\nType of the function. A function may be invoked when a message is\npublished(on demand) or be running for stream processing.",
           "enumDescriptions": [
             "Default value, used when its value unspecified.",
             "If a function is of type ON_DEMAND, the function will be invoked only when\na message is published to one of `input_topics`.",
@@ -430,6 +437,53 @@
         }
       }
     },
+    "PortBinding": {
+      "id": "PortBinding",
+      "description": "Defines the publish information of the docker container.",
+      "type": "object",
+      "properties": {
+        "hostIp": {
+          "description": "Should be ip address of host machine. For example, `127.0.0.1`. If\nspecified, host_port_start and host_port_end also should be specified.",
+          "type": "string"
+        },
+        "hostPortStart": {
+          "description": "The starting number of host port mapping range. Published container ports\nwill be mapped to the host ports in this range.\nIf not specified, host_port_end should not be specified, and container\nports will be mapped to randomly selected host ports. Should be between\n1-65535.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "hostPortEnd": {
+          "description": "The ending number of host port mapping range. Should be between 1-65535.\nIf specified, should be equals to or larger than host_port_start.\nIf not specified, host_port_start should not be specified.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "containerPortStart": {
+          "description": "Required. The starting number of container port mapping range. All the\nports between container_port_start and container_port_end will be published\nto host.  Should be between 1-65535.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "containerPortEnd": {
+          "description": "Required. The ending number of container port mapping range. Should be\nbetween 1-65535, and equals to or larger than container_port_start.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "protocol": {
+          "description": "Protocol for communication. TCP will be used if not specified.",
+          "enumDescriptions": [
+            "Default value, used when its value unspecified.",
+            "TCP. Edge runtime will use TCP if unspecified.",
+            "UDP",
+            "SCTP"
+          ],
+          "type": "string",
+          "enum": [
+            "PROTOCOL_UNSPECIFIED",
+            "TCP",
+            "UDP",
+            "SCTP"
+          ]
+        }
+      }
+    },
     "TopicInfo": {
       "id": "TopicInfo",
       "description": "Defines the mapping rule between the topic names in broker and topic names\nused in edge functions or containers.",
@@ -459,39 +513,6 @@
         },
         "nextPageToken": {
           "description": "Pagination token for next page of results.",
-          "type": "string"
-        }
-      }
-    },
-    "ListDeployableFunctionsResponse": {
-      "id": "ListDeployableFunctionsResponse",
-      "description": "Response for 'ListDeployableFunctions'.",
-      "type": "object",
-      "properties": {
-        "deployableFunctions": {
-          "description": "List of deployable functions.",
-          "type": "array",
-          "items": {
-            "$ref": "DeployableFunction"
-          }
-        },
-        "nextPageToken": {
-          "description": "Pagination token for next page of results.",
-          "type": "string"
-        }
-      }
-    },
-    "DeployableFunction": {
-      "id": "DeployableFunction",
-      "description": "Indicates an edge function in Google Container Registry.",
-      "type": "object",
-      "properties": {
-        "container": {
-          "description": "Output only. Name of the container.",
-          "type": "string"
-        },
-        "dockerImageUri": {
-          "description": "Output only. URI of the container.",
           "type": "string"
         }
       }
@@ -537,6 +558,13 @@
           "type": "array",
           "items": {
             "$ref": "DeviceBinding"
+          }
+        },
+        "portBindings": {
+          "description": "List of port bindings.",
+          "type": "array",
+          "items": {
+            "$ref": "PortBinding"
           }
         },
         "inputTopics": {
@@ -593,7 +621,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Name of the ML model. It must be unique among the ML models\nrunning on the same edge device. For example,\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/dev0\/mlModels\/m1`.\nThe last token of the name (For example `m1`) should be no more than 256\nbytes, and should start with a letter followed by up to letters, numbers,\nor hyphens, and cannot end with a hyphen.",
+          "description": "Required. Name of the ML model. It must be unique among the ML models\nrunning on the same edge device. For example,\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/dev0\/mlModels\/m1`.\nThe last token of the name (For example `m1`) should be no more than 256\nbytes, and should start with a letter followed by up to letters, numbers,\nhyphens or underscores, and cannot end with a hyphen or an underscore.",
           "type": "string"
         },
         "description": {
@@ -730,35 +758,35 @@
       "type": "object",
       "properties": {
         "defaultPolicy": {
-          "description": "the default policy for all classes.",
+          "description": "The default policy for all classes.",
           "$ref": "MlSamplingPolicy"
         },
         "keepSampleMax": {
-          "description": "Required. the number of maximum samples on local storage. default=10000.",
+          "description": "The number of maximum samples on local storage. default=10000.",
           "type": "integer",
           "format": "int32"
         },
         "labelFileUri": {
-          "description": "Required. the dataset label text file uri. Must start with 'gs:\/\/' and\ncan contain up to 8192 bytes.",
+          "description": "Required. The dataset label text file uri. Must start with 'gs:\/\/' and\ncan contain up to 8192 bytes.",
           "type": "string"
         },
         "targetUri": {
-          "description": "Required. the target uri where the sampled data will be located. Must start\nwith 'gs:\/\/ and can contain up to 8192 bytes.",
+          "description": "Required. The target uri where the sampled data will be located. Must start\nwith 'gs:\/\/ and can contain up to 8192 bytes.",
           "type": "string"
         },
         "datasetName": {
-          "description": "Required. the dataset name used in AutoML. Can contain alphabets, digits\nand underscore. Max 1024 bytes.",
+          "description": "Required. The dataset name used in AutoML. Can contain alphabets, digits\nand underscores. Max 1024 bytes.",
           "type": "string"
         },
         "classPolicy": {
-          "description": "the policies to specify sampling strategy for each class.",
+          "description": "The policies to specify sampling strategy for each class.",
           "type": "object",
           "additionalProperties": {
             "$ref": "MlSamplingPolicy"
           }
         },
         "tag": {
-          "description": "Required. tag for sampled data used for uploading. Can contain alphabets,\ndigits and underscore. Max 1024 bytes.",
+          "description": "Required. tag for sampled data used for uploading. Can contain alphabets,\ndigits and underscores. Max 1024 bytes.",
           "type": "string"
         }
       }
@@ -769,12 +797,12 @@
       "type": "object",
       "properties": {
         "samplingRate": {
-          "description": "the default rate to sample a target data. default=0.1 for 10% sampling.",
+          "description": "The default rate to sample a target data. default=0.1 for 10% sampling.",
           "type": "number",
           "format": "float"
         },
         "timeDelaySec": {
-          "description": "the time delay between sampling in sec. default=0 for 0 sec.",
+          "description": "The time delay between sampling in sec. default=0 for 0 sec.",
           "type": "integer",
           "format": "int32"
         }
@@ -1396,7 +1424,7 @@
                           "httpMethod": "PATCH",
                           "parameters": {
                             "name": {
-                              "description": "Required. Name of the ML model. It must be unique among the ML models\nrunning on the same edge device. For example,\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/dev0\/mlModels\/m1`.\nThe last token of the name (For example `m1`) should be no more than 256\nbytes, and should start with a letter followed by up to letters, numbers,\nor hyphens, and cannot end with a hyphen.",
+                              "description": "Required. Name of the ML model. It must be unique among the ML models\nrunning on the same edge device. For example,\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/dev0\/mlModels\/m1`.\nThe last token of the name (For example `m1`) should be no more than 256\nbytes, and should start with a letter followed by up to letters, numbers,\nhyphens or underscores, and cannot end with a hyphen or an underscore.",
                               "location": "path",
                               "required": true,
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/devices\/[^\/]+\/mlModels\/[^\/]+$",
@@ -1528,48 +1556,6 @@
                   }
                 }
               }
-            }
-          }
-        },
-        "deployableFunctions": {
-          "methods": {
-            "list": {
-              "id": "edge.projects.deployableFunctions.list",
-              "path": "v1alpha1/{+parent}/deployableFunctions",
-              "flatPath": "v1alpha1/projects/{projectsId}/deployableFunctions",
-              "httpMethod": "GET",
-              "parameters": {
-                "parent": {
-                  "description": "The project name. The list of deployable functions in given project will be\nreturned.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^projects\/[^\/]+$",
-                  "type": "string"
-                },
-                "pageSize": {
-                  "description": "The standard list page size.",
-                  "location": "query",
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "pageToken": {
-                  "description": "Pagination token for next page of results.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "response": {
-                "$ref": "ListDeployableFunctionsResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/cloudiot",
-                "https://www.googleapis.com/auth/devstorage.read_write"
-              ],
-              "description": "Returns the list of edge functions in Google Container Registry."
             }
           }
         }

@@ -54,7 +54,7 @@ GOOGLE_GCE_METADATA_HEADERS = {'Metadata-Flavor': 'Google'}
 def ReadNoProxy(uri):
   """Opens a URI with metadata headers, without a proxy, and reads all data.."""
   request = urllib.request.Request(
-      uri, headers=GOOGLE_GCE_METADATA_HEADERS)  # pytype: disable=wrong-arg-types
+      uri, headers=GOOGLE_GCE_METADATA_HEADERS)
   timeout_property = (
       properties.VALUES.compute.gce_metadata_read_timeout_sec.GetInt())
   result = urllib.request.build_opener(urllib.request.ProxyHandler({})).open(

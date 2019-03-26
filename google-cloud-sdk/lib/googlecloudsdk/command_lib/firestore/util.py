@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import log
 from googlecloudsdk.core.util import text
 
 
@@ -135,23 +134,6 @@ def ExtractOperationMetadata(response, unused_args):
   return encoding.DictToMessage(
       encoding.MessageToDict(response.metadata),
       messages.GoogleFirestoreAdminV1beta2IndexOperationMetadata)
-
-
-def LogCreatedIndex(response, args):
-  """Python hook to log the creation of the index to stderr.
-
-  The declarative framework doesn't log creation of resources if
-  is_parent_resource=True in the spec, so we have to do it manually here.
-
-  Args:
-    response: GoogleFirestoreAdminV1beta2IndexOperationMetadata message
-    args: The parsed arg namespace.
-  Returns:
-    The same response that was passed in.
-  """
-  if not args.async:
-    log.CreatedResource(response.index.split('/')[-1], kind='index')
-  return response
 
 
 def ValidateFieldArg(ref, unused_args, request):

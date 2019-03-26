@@ -14,9 +14,6 @@
 # limitations under the License.
 
 """Utilities for configuring platform specific installation."""
-# This file contains platform specific code which is not currently handled
-# by pytype.
-# pytype: skip-file
 
 from __future__ import absolute_import
 from __future__ import division
@@ -59,11 +56,9 @@ def _UpdatePathForWindows(bin_path):
   # pylint:disable=g-import-not-at-top, we want to only attempt these imports
   # on windows.
   try:
-    # pytype: disable=import-error
     import win32con
     import win32gui
     from six.moves import winreg
-    # pytype: enable=import-error
   except ImportError:
     _TraceAction("""\
 The installer is unable to automatically update your system PATH. Please add

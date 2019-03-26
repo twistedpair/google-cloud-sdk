@@ -208,7 +208,11 @@ class CloudOperationPollerNoResources(OperationPoller):
     return operation.response
 
 
-def WaitFor(poller, operation_ref, message,
+def WaitFor(poller,
+            operation_ref,
+            message=None,
+            custom_tracker=None,
+            tracker_update_func=None,
             pre_start_sleep_ms=1000,
             max_retrials=None,
             max_wait_ms=1800000,
@@ -221,7 +225,9 @@ def WaitFor(poller, operation_ref, message,
   Args:
     poller: OperationPoller, poller to use during retrials.
     operation_ref: object, passed to operation poller poll method.
-    message: str, string to display for progress_tracker.
+    message: str, string to display for default progress_tracker.
+    custom_tracker: ProgressTracker, progress_tracker to use for display.
+    tracker_update_func: func(tracker, result, status), tracker update function.
     pre_start_sleep_ms: int, Time to wait before making first poll request.
     max_retrials: int, max number of retrials before raising RetryException.
     max_wait_ms: int, number of ms to wait before raising WaitException.
@@ -240,13 +246,17 @@ def WaitFor(poller, operation_ref, message,
   aborted_message = 'Aborting wait for operation {0}.\n'.format(operation_ref)
   try:
     with progress_tracker.ProgressTracker(
-        message, aborted_message=aborted_message) as tracker:
+        message, aborted_message=aborted_message
+    ) if not custom_tracker else custom_tracker as tracker:
 
       if pre_start_sleep_ms:
         _SleepMs(pre_start_sleep_ms)
 
-      def _StatusUpdate(unused_result, unused_status):
-        tracker.Tick()
+      def _StatusUpdate(result, status):
+        if tracker_update_func:
+          tracker_update_func(tracker, result, status)
+        else:
+          tracker.Tick()
 
       operation = PollUntilDone(
           poller, operation_ref, max_retrials, max_wait_ms,

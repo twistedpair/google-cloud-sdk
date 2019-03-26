@@ -220,17 +220,6 @@ Path to Python archives used for training. These can be local paths
 Storage bucket given by `--staging-bucket`, or Cloud Storage URLs
 (`gs://bucket-name/path/to/package.tar.gz`).
 """)
-MACHINE_TYPE = base.Argument(
-    '--machine-type',
-    required=False,
-    choices=['mls1-c1-m2', 'mls1-c4-m2'],
-    help="""\
-Type of machine on which to serve the model. Currently only applies to
-online prediction. Currently supported machine_types are:
-
-* `mls1-c1-m2` - A virtual machine with 1 core and 2 Gb RAM (default).
-* `mls1-c4-m2` - A virtual machine with 4 core and 2 Gb RAM.
-""")
 
 
 SERVICE_ACCOUNT = base.Argument(
@@ -282,7 +271,7 @@ will be used instead.
     type_ = str
   else:
     type_ = functools.partial(storage_util.ObjectReference.FromArgument,
-                              allow_empty_object=True)  # pytype: disable=wrong-arg-types
+                              allow_empty_object=True)
   return base.Argument('--job-dir', type=type_, help=help_)
 
 
@@ -719,7 +708,7 @@ def GetWorkerMachineConfig():
       '--worker-server-count',
       type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
       required=True,
-      help=('The number of worker nodes to use for the training job.'))
+      help='The number of worker nodes to use for the training job.')
 
   machine_type_group = base.ArgumentGroup(
       required=False,
@@ -744,3 +733,12 @@ def GetWorkerImageUri():
       help=('Docker image to run on each worker node. '
             'This image must be in Google Container Registry. If not '
             'specified, the value of `master-image-uri` is used.'))
+
+
+def AddMachineTypeFlagToParser(parser):
+  base.Argument(
+      '--machine-type',
+      help="""\
+Type of machine on which to serve the model. Currently only applies to online prediction. For available machine types,
+see https://cloud.google.com/ml-engine/docs/tensorflow/online-predict#machine-types.
+""").AddToParser(parser)

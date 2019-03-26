@@ -19,11 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import deps
-from googlecloudsdk.calliope.concepts import handlers
 from googlecloudsdk.calliope.concepts import util
 from googlecloudsdk.command_lib.util import parameter_info_lib
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.util import typing  # pylint: disable=unused-import
 
 
 class ResourceParameterInfo(parameter_info_lib.ParameterInfoByConvention):
@@ -31,14 +29,13 @@ class ResourceParameterInfo(parameter_info_lib.ParameterInfoByConvention):
 
   def __init__(self, resource_info, parsed_args, argument, **kwargs):
     """Initializes."""
-    self.resource_info = resource_info  # type: handlers.ResourceInfo
+    self.resource_info = resource_info
     super(ResourceParameterInfo, self).__init__(
         parsed_args,
         argument,
         **kwargs)
 
   def GetValue(self, parameter_name, check_properties=True):
-    # type: (...) -> typing.Optional[str]
     """Returns the program state value for parameter_name.
 
     Args:
@@ -67,12 +64,10 @@ class ResourceParameterInfo(parameter_info_lib.ParameterInfoByConvention):
       properties.VALUES.core.disable_prompts.Set(current)
 
   def _AttributeName(self, parameter_name):
-    # type: (...) -> typing.Optional[str]
     """Helper function to get the corresponding attribute for a parameter."""
     return self.resource_info.resource_spec.AttributeName(parameter_name)
 
   def GetDest(self, parameter_name, prefix=None):
-    # type: (...) -> typing.Optional[str]
     """Returns the argument parser dest name for parameter_name with prefix.
 
     Args:
@@ -92,7 +87,6 @@ class ResourceParameterInfo(parameter_info_lib.ParameterInfoByConvention):
 
   def GetFlag(self, parameter_name, parameter_value=None,
               check_properties=True, for_update=False):
-    # type: (...) -> typing.Optional[str]
     """Returns the command line flag for parameter.
 
     If the flag is already present in program values, returns None.

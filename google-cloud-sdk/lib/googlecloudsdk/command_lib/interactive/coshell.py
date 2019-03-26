@@ -437,9 +437,9 @@ class _UnixCoshellBase(six.with_metaclass(abc.ABCMeta, _CoshellBase)):
 
   def __init__(self):
     super(_UnixCoshellBase, self).__init__()
-    self.status = None  # type: int
-    self._status_fd = None  # type: int
-    self._shell = None  # type: subprocess.Popen
+    self.status = None
+    self._status_fd = None
+    self._shell = None
 
   @staticmethod
   def _Quote(command):
@@ -835,7 +835,7 @@ class _MinGWCoshell(_UnixCoshellBase):
 
   def Interrupt(self):
     """Sends the interrupt signal to the coshell."""
-    self._shell.send_signal(signal.CTRL_C_EVENT)  # pytype: disable=module-attr
+    self._shell.send_signal(signal.CTRL_C_EVENT)
 
 
 class _WindowsCoshell(_CoshellBase):
@@ -860,7 +860,7 @@ class _WindowsCoshell(_CoshellBase):
 def _RunningOnWindows():
   """Lightweight mockable Windows check."""
   try:
-    return bool(WindowsError)  # pytype: disable=name-error
+    return bool(WindowsError)
   except NameError:
     return False
 

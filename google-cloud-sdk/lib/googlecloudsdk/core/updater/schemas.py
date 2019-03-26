@@ -917,7 +917,7 @@ class SDKDefinition(object):
   def LastUpdatedString(self):
     try:
       last_updated = config.InstallationConfig.ParseRevision(self.revision)
-      return time.strftime('%Y/%m/%d', last_updated)  # pytype: disable=wrong-arg-types
+      return time.strftime('%Y/%m/%d', last_updated)
     except ValueError:
       return 'Unknown'
 

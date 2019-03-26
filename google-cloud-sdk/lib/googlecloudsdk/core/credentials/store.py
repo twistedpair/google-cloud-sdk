@@ -674,7 +674,7 @@ def SaveCredentialsAsADC(credentials, file_path):
         credentials.revoke_uri)
   try:
     contents = json.dumps(credentials.serialization_data, sort_keys=True,
-                          indent=2, separators=(',', ': '))  # pytype: disable=wrong-arg-types
+                          indent=2, separators=(',', ': '))
     files.WriteFileContents(file_path, contents, private=True)
   except files.Error as e:
     log.debug(e, exc_info=True)

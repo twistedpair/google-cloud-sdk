@@ -67,8 +67,20 @@ NO_AUTOPROVISIONING_LIMITS_ERROR_MSG = """\
 Must specify both --max-cpu and --max-memory to enable autoprovisioning.
 """
 
+LIMITS_WITHOUT_AUTOPROVISIONING_MSG = """\
+Must enable node autoprovisioning to specify resource limits for autoscaling.
+"""
+
+LIMITS_WITHOUT_AUTOPROVISIONING_FLAG_MSG = """\
+Must specify --enable-autoprovisioning to specify resource limits for autoscaling.
+"""
+
 MISMATCH_ACCELERATOR_TYPE_LIMITS_ERROR_MSG = """\
 Maximum and minimum accelerator limits must be set on the same accelerator type.
+"""
+
+UNKNOWN_AUTOSCALING_PROFILE_MSG = """\
+Unknown autoscaling profile: '{profile}'.
 """
 
 NO_SUCH_LABEL_ERROR_MSG = """\
@@ -166,6 +178,7 @@ ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS + [NODELOCALDNS]
 UNSPECIFIED = 'UNSPECIFIED'
 SECURE = 'SECURE'
 EXPOSED = 'EXPOSED'
+GKE_METADATA_SERVER = 'GKE_METADATA_SERVER'
 
 
 def CheckResponse(response):
@@ -401,7 +414,7 @@ class CreateClusterOptions(object):
                database_encryption=None,
                metadata=None,
                enable_network_egress_metering=None,
-               enable_workload_identity=None,
+               identity_namespace=None,
                enable_shielded_containers=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -482,7 +495,7 @@ class CreateClusterOptions(object):
     self.database_encryption = database_encryption
     self.metadata = metadata
     self.enable_network_egress_metering = enable_network_egress_metering
-    self.enable_workload_identity = enable_workload_identity
+    self.identity_namespace = identity_namespace
     self.enable_shielded_containers = enable_shielded_containers
 
 
@@ -513,7 +526,8 @@ class UpdateClusterOptions(object):
                concurrent_node_count=None,
                enable_vertical_pod_autoscaling=None,
                security_profile=None,
-               security_profile_runtime_rules=None):
+               security_profile_runtime_rules=None,
+               autoscaling_profile=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -538,6 +552,7 @@ class UpdateClusterOptions(object):
     self.enable_vertical_pod_autoscaling = enable_vertical_pod_autoscaling
     self.security_profile = security_profile
     self.security_profile_runtime_rules = security_profile_runtime_rules
+    self.autoscaling_profile = autoscaling_profile
 
 
 class SetMasterAuthOptions(object):
@@ -1209,10 +1224,10 @@ class APIAdapter(object):
     operation = self.client.projects_locations_clusters.Create(req)
     return self.ParseOperation(operation.name, cluster_ref.zone)
 
-  def CreateClusterAutoscalingCommon(self, _):
+  def CreateClusterAutoscalingCommon(self, *_):
     raise util.Error(NO_AUTOPROVISIONING_MSG)
 
-  def UpdateClusterCommon(self, options):
+  def UpdateClusterCommon(self, cluster_ref, options):
     """Returns an UpdateCluster operation."""
     update = None
     if not options.version:
@@ -1270,8 +1285,9 @@ class APIAdapter(object):
               cidrBlock=network))
       update = self.messages.ClusterUpdate(
           desiredMasterAuthorizedNetworksConfig=authorized_networks)
-    elif options.enable_autoprovisioning is not None:
-      autoscaling = self.CreateClusterAutoscalingCommon(options)
+    elif options.enable_autoprovisioning is not None or \
+         options.autoscaling_profile is not None:
+      autoscaling = self.CreateClusterAutoscalingCommon(cluster_ref, options)
       update = self.messages.ClusterUpdate(
           desiredClusterAutoscaling=autoscaling)
     elif options.enable_pod_security_policy is not None:
@@ -1337,7 +1353,7 @@ class APIAdapter(object):
     return update
 
   def UpdateCluster(self, cluster_ref, options):
-    update = self.UpdateClusterCommon(options)
+    update = self.UpdateClusterCommon(cluster_ref, options)
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
             name=ProjectLocationCluster(cluster_ref.projectId,
@@ -1940,7 +1956,8 @@ class V1Beta1Adapter(V1Adapter):
         cluster.addonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=False, auth=istio_auth)
     if options.enable_autoprovisioning is not None:
-      cluster.autoscaling = self.CreateClusterAutoscalingCommon(options)
+      cluster.autoscaling = self.CreateClusterAutoscalingCommon(cluster_ref,
+                                                                options)
     if options.enable_stackdriver_kubernetes:
       if options.enable_cloud_logging and options.enable_cloud_monitoring:
         cluster.loggingService = 'logging.googleapis.com/kubernetes'
@@ -1951,9 +1968,9 @@ class V1Beta1Adapter(V1Adapter):
       cluster.databaseEncryption = self.messages.DatabaseEncryption(
           keyName=options.database_encryption,
           state=self.messages.DatabaseEncryption.StateValueValuesEnum.ENCRYPTED)
-    if options.enable_workload_identity:
+    if options.identity_namespace is not None:
       cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
-          identityNamespace='{}.svc.id.goog'.format(cluster_ref.projectId))
+          identityNamespace=options.identity_namespace)
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)
@@ -1961,7 +1978,7 @@ class V1Beta1Adapter(V1Adapter):
     return self.ParseOperation(operation.name, cluster_ref.zone)
 
   def UpdateCluster(self, cluster_ref, options):
-    update = self.UpdateClusterCommon(options)
+    update = self.UpdateClusterCommon(cluster_ref, options)
     if options.disable_addons is not None:
       if options.disable_addons.get(ISTIO) is not None:
         istio_auth = self.messages.IstioConfig.AuthValueValuesEnum.AUTH_NONE
@@ -1986,45 +2003,65 @@ class V1Beta1Adapter(V1Adapter):
             update=update))
     return self.ParseOperation(op.name, cluster_ref.zone)
 
-  def CreateClusterAutoscalingCommon(self, options):
+  def CreateClusterAutoscalingCommon(self, _cluster_ref, options):
     """Create cluster's autoscaling configuration.
 
     Args:
+      _cluster_ref: Cluster reference.
       options: Either CreateClusterOptions or UpdateClusterOptions.
     Returns:
       Cluster's autoscaling configuration.
     """
-    if options.autoprovisioning_config_file is None:
-      # Create using limits from flags.
-      return self.CreateClusterAutoscalingFromFlags(options)
-    # Create using limits from config file only.
-    return self.CreateClusterAutoscalingFromFile(options)
+    autoscaling = self.messages.ClusterAutoscaling()
+    autoscaling.enableNodeAutoprovisioning = options.enable_autoprovisioning
 
-  def CreateClusterAutoscalingFromFile(self, options):
-    resource_limits = yaml.load(options.autoprovisioning_config_file)
-    return self.messages.ClusterAutoscaling(
-        enableNodeAutoprovisioning=options.enable_autoprovisioning,
-        resourceLimits=resource_limits)
+    resource_limits = []
+    if options.autoprovisioning_config_file is not None:
+      # Create using config file only.
+      resource_limits = yaml.load(options.autoprovisioning_config_file)
+    else:
+      resource_limits = self.ResourceLimitsFromFlags(options)
+    autoscaling.resourceLimits = resource_limits
 
-  def CreateClusterAutoscalingFromFlags(self, options):
-    """Create cluster's autoscaling configuration from command line flags.
+    self.ValidateClusterAutoscaling(autoscaling)
+    return autoscaling
+
+  def ValidateClusterAutoscaling(self, autoscaling):
+    """Validate cluster autoscaling configuration.
+
+    Args:
+      autoscaling: autoscaling configuration to be validated.
+    Raises:
+      Error if the new configuration is invalid.
+    """
+    if autoscaling.enableNodeAutoprovisioning:
+      cpu_found, mem_found = False, False
+      for limit in autoscaling.resourceLimits:
+        if limit.resourceType == 'cpu':
+          cpu_found = True
+        if limit.resourceType == 'memory':
+          mem_found = True
+      if not cpu_found or not mem_found:
+        raise util.Error(NO_AUTOPROVISIONING_LIMITS_ERROR_MSG)
+    elif autoscaling.resourceLimits:
+      raise util.Error(LIMITS_WITHOUT_AUTOPROVISIONING_MSG)
+
+  def ResourceLimitsFromFlags(self, options):
+    """Create cluster's autoscaling resource limits from command line flags.
 
     Args:
       options: Either CreateClusterOptions or UpdateClusterOptions.
     Returns:
-      Cluster's autoscaling configuration.
+      Cluster's new autoscaling resource limits.
     """
-    if (options.enable_autoprovisioning and
-        (options.max_cpu is None or options.max_memory is None)):
-      raise util.Error(NO_AUTOPROVISIONING_LIMITS_ERROR_MSG)
-    resource_limits = []
+    new_resource_limits = []
     if options.min_cpu is not None or options.max_cpu is not None:
-      resource_limits.append(self.messages.ResourceLimit(
+      new_resource_limits.append(self.messages.ResourceLimit(
           resourceType='cpu',
           minimum=options.min_cpu,
           maximum=options.max_cpu))
     if options.min_memory is not None or options.max_memory is not None:
-      resource_limits.append(self.messages.ResourceLimit(
+      new_resource_limits.append(self.messages.ResourceLimit(
           resourceType='memory',
           minimum=options.min_memory,
           maximum=options.max_memory))
@@ -2035,13 +2072,11 @@ class V1Beta1Adapter(V1Adapter):
         if options.min_accelerator.get('type') != accelerator_type:
           raise util.Error(MISMATCH_ACCELERATOR_TYPE_LIMITS_ERROR_MSG)
         min_count = options.min_accelerator.get('count', 0)
-      resource_limits.append(self.messages.ResourceLimit(
+      new_resource_limits.append(self.messages.ResourceLimit(
           resourceType=options.max_accelerator.get('type'),
           minimum=min_count,
           maximum=options.max_accelerator.get('count', 0)))
-    return self.messages.ClusterAutoscaling(
-        enableNodeAutoprovisioning=options.enable_autoprovisioning,
-        resourceLimits=resource_limits)
+    return new_resource_limits
 
   def UpdateNodePool(self, node_pool_ref, options):
     if options.IsAutoscalingUpdate():
@@ -2103,8 +2138,10 @@ class V1Alpha1Adapter(V1Beta1Adapter):
 
   def CreateCluster(self, cluster_ref, options):
     cluster = self.CreateClusterCommon(cluster_ref, options)
-    if options.enable_autoprovisioning is not None:
-      cluster.autoscaling = self.CreateClusterAutoscalingCommon(options)
+    if (options.enable_autoprovisioning is not None or
+        options.autoscaling_profile is not None):
+      cluster.autoscaling = self.CreateClusterAutoscalingCommon(None,
+                                                                options)
     if options.local_ssd_volume_configs:
       for pool in cluster.nodePools:
         self._AddLocalSSDVolumeConfigsToNodeConfig(pool.config, options)
@@ -2147,9 +2184,9 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           federatingServiceAccount=options.federating_service_account)
     elif options.federating_service_account is not None:
       raise util.Error(ENABLE_MPI_EMPTY_ERROR_MSG)
-    if options.enable_workload_identity:
+    if options.identity_namespace is not None:
       cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
-          identityNamespace='{}.svc.id.goog'.format(cluster_ref.projectId))
+          identityNamespace=options.identity_namespace)
     if options.security_profile is not None:
       cluster.securityProfile = self.messages.SecurityProfile(
           name=options.security_profile)
@@ -2171,6 +2208,12 @@ class V1Alpha1Adapter(V1Beta1Adapter):
                 opt='enable-peering-route-sharing'))
       cluster.privateClusterConfig.enablePeeringRouteSharing = \
         options.enable_peering_route_sharing
+    if options.release_channel is not None:
+      channels = {
+          'rapid': self.messages.ReleaseChannel.ChannelValueValuesEnum.RAPID,
+      }
+      cluster.releaseChannel = self.messages.ReleaseChannel(
+          channel=channels[options.release_channel])
 
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
@@ -2179,7 +2222,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     return self.ParseOperation(operation.name, cluster_ref.zone)
 
   def UpdateCluster(self, cluster_ref, options):
-    update = self.UpdateClusterCommon(options)
+    update = self.UpdateClusterCommon(cluster_ref, options)
     if options.disable_addons is not None:
       if options.disable_addons.get(ISTIO) is not None:
         istio_auth = self.messages.IstioConfig.AuthValueValuesEnum.AUTH_NONE
@@ -2223,6 +2266,51 @@ class V1Alpha1Adapter(V1Beta1Adapter):
                                       node_pool_ref.clusterId))
     operation = self.client.projects_locations_clusters_nodePools.Create(req)
     return self.ParseOperation(operation.name, node_pool_ref.zone)
+
+  def CreateClusterAutoscalingCommon(self, cluster_ref, options):
+    """Create cluster's autoscaling configuration.
+
+    Args:
+      cluster_ref: Cluster reference.
+      options: Either CreateClusterOptions or UpdateClusterOptions.
+    Returns:
+      Cluster's autoscaling configuration.
+    """
+    # Patch cluster autoscaling if cluster_ref is provided.
+    cluster = None
+    autoscaling = self.messages.ClusterAutoscaling()
+    if cluster_ref:
+      cluster = self.GetCluster(cluster_ref)
+    if cluster and cluster.autoscaling:
+      autoscaling = cluster.autoscaling
+
+    resource_limits = []
+    if options.autoprovisioning_config_file is not None:
+      # Create using config file only.
+      resource_limits = yaml.load(options.autoprovisioning_config_file)
+    else:
+      resource_limits = self.ResourceLimitsFromFlags(options)
+
+    if options.enable_autoprovisioning is not None:
+      autoscaling.enableNodeAutoprovisioning = options.enable_autoprovisioning
+      autoscaling.resourceLimits = resource_limits
+
+    if options.autoscaling_profile is not None:
+      autoscaling.autoscalingProfile = \
+          self.CreateAutoscalingProfileCommon(options)
+
+    self.ValidateClusterAutoscaling(autoscaling)
+    return autoscaling
+
+  def CreateAutoscalingProfileCommon(self, options):
+    if options.autoscaling_profile == 'optimize-utilization':
+      return self.messages.ClusterAutoscaling \
+          .AutoscalingProfileValueValuesEnum.OPTIMIZE_UTILIZATION
+    if options.autoscaling_profile == 'balanced':
+      return self.messages.ClusterAutoscaling \
+          .AutoscalingProfileValueValuesEnum.PROFILE_UNSPECIFIED
+    raise util.Error(UNKNOWN_AUTOSCALING_PROFILE_MSG \
+                       .format(profile=options.autoscaling_profile))
 
   def ParseNodePools(self, options, node_config):
     """Creates a list of node pools for the cluster by parsing options.
@@ -2328,6 +2416,10 @@ def _AddWorkloadMetadataToNodeConfig(node_config, options, messages):
       node_config.workloadMetadataConfig = messages.WorkloadMetadataConfig(
           nodeMetadata=messages.WorkloadMetadataConfig.
           NodeMetadataValueValuesEnum.EXPOSE)
+    elif option == GKE_METADATA_SERVER:
+      node_config.workloadMetadataConfig = messages.WorkloadMetadataConfig(
+          nodeMetadata=messages.WorkloadMetadataConfig
+          .NodeMetadataValueValuesEnum.GKE_METADATA_SERVER)
     else:
       raise util.Error(
           UNKNOWN_WORKLOAD_METADATA_FROM_NODE_ERROR_MSG.format(option=option))

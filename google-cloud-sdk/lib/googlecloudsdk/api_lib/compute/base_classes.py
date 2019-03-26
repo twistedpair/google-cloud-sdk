@@ -43,7 +43,6 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import text
-from googlecloudsdk.core.util import typing  # pylint: disable=unused-import
 import six
 
 
@@ -58,7 +57,7 @@ class ComputeApiHolder(object):
     else:
       self._api_version = 'v1'
     self._client = None
-    self._resources = None  # type: resources.Registry
+    self._resources = None
 
   @property
   def client(self):
@@ -83,7 +82,7 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
     super(BaseCommand, self).__init__(*args, **kwargs)
 
     self.__resource_spec = None
-    self._project = properties.VALUES.core.project.Get(required=True)  # type: str
+    self._project = properties.VALUES.core.project.Get(required=True)
     self._compute_holder = ComputeApiHolder(self.ReleaseTrack())
 
   @property
@@ -117,7 +116,7 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
   @property
   def project(self):
     """Specifies the user's project."""
-    return self._project  # pytype: disable=attribute-error
+    return self._project
 
   @property
   def batch_url(self):
@@ -137,7 +136,7 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
   @property
   def resources(self):
     """Specifies the resources parser for compute resources."""
-    return self._compute_holder.resources   # pytype: disable=attribute-error
+    return self._compute_holder.resources
 
   @property
   def messages(self):
@@ -152,11 +151,10 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
 class BaseLister(base.ListCommand, BaseCommand):
   """Base class for the list subcommands."""
 
-  # Define class attributes for pytype
-  self_links = None  # type: set
-  names = None  # type: set
-  resource_refs = None  # type: list
-  service = None  # type: base_api.BaseApiService
+  self_links = None
+  names = None
+  resource_refs = None
+  service = None
 
   @staticmethod
   def Args(parser):
@@ -216,7 +214,6 @@ class BaseLister(base.ListCommand, BaseCommand):
       self.names.add(name)
 
   def FilterResults(self, args, items):
-    # type: (typing.Any, list[dict[str, str]]) -> typing.Generator[dict[str,str], typing.Any, typing.Any]  # pylint: disable=line-too-long
     """Filters the list results by name and URI."""
     for item in items:
       # If no positional arguments were given, do no filtering.
@@ -262,7 +259,7 @@ class BaseLister(base.ListCommand, BaseCommand):
 
     self.PopulateResourceFilteringStructures(args)
     items = self.FilterResults(
-        args, self.GetResources(args, errors))  # pytype: disable=wrong-arg-types
+        args, self.GetResources(args, errors))
     items = lister.ProcessResults(
         resources=items,
         field_selector=field_selector)
@@ -654,8 +651,7 @@ def GetGlobalRegionalListerHelp(resource):
 class BaseDescriber(base.DescribeCommand, BaseCommand):
   """Base class for the describe subcommands."""
 
-  # Define class attributes for pytype
-  service = None  # type: base_api.BaseApiService
+  service = None
 
   @staticmethod
   def Args(parser, resource=None):
@@ -680,7 +676,6 @@ class BaseDescriber(base.DescribeCommand, BaseCommand):
     pass
 
   def SetNameField(self, ref, request):
-    # type: (resources.Resource, typing.Any) -> None
     """Sets the field in the request that corresponds to the object name."""
     name_field = self.service.GetMethodConfig(self.method).ordered_params[-1]
     setattr(request, name_field, ref.Name())
@@ -692,7 +687,7 @@ class BaseDescriber(base.DescribeCommand, BaseCommand):
 
   def Run(self, args):
     """Yields JSON-serializable dicts of resources."""
-    ref = self.CreateReference(args)  # type: resources.Resource
+    ref = self.CreateReference(args)
 
     get_request_class = self.service.GetRequestType(self.method)
 

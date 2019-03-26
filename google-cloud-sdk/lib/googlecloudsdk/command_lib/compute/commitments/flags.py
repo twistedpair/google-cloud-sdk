@@ -22,8 +22,8 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
-from googlecloudsdk.command_lib.compute.allocations import resource_args
 from googlecloudsdk.command_lib.compute.reservations import flags as reservation_flags
+from googlecloudsdk.command_lib.compute.reservations import resource_args
 from googlecloudsdk.command_lib.util.apis import arg_utils
 
 
@@ -130,7 +130,7 @@ https://cloud.google.com/compute/docs/instances/creating-instance-with-custom-ma
           required_keys=['vcpu', 'memory']))
 
 
-# TODO(b/119257245): fix the format in man page.
+# TODO(b/129054682): fix the format in text render.
 def AddResourcesArgGroup(parser):
   """Add the argument group for ResourceCommitment support in commitment."""
   resources_group = parser.add_group(

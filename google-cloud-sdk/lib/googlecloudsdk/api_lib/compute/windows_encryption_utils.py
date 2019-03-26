@@ -20,8 +20,8 @@ from __future__ import unicode_literals
 
 import base64
 import ctypes
-from ctypes import windll  # pytype: disable=import-error
-from ctypes import wintypes  # pytype: disable=import-error
+from ctypes import windll  # pylint: disable=g-importing-member
+from ctypes import wintypes  # pylint: disable=g-importing-member
 
 advapi32 = windll.advapi32
 
@@ -144,7 +144,7 @@ class WinCrypt(object):
 
     # Get length of public key
     key_data = None
-    key_len = ctypes.c_ulong()  # pytype: disable=not-callable
+    key_len = ctypes.c_ulong()
     self.crypt_export_key(key,
                           user_crypto_key,
                           key_type,
@@ -184,7 +184,7 @@ class WinCrypt(object):
     """
     decoded_message = base64.b64decode(enc_message)
     little_endian_message = decoded_message[::-1]
-    data_len = ctypes.c_ulong(len(little_endian_message))  # pytype: disable=not-callable
+    data_len = ctypes.c_ulong(len(little_endian_message))
     data_buf = (ctypes.c_byte * data_len.value).from_buffer_copy(
         little_endian_message)
 

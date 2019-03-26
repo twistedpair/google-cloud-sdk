@@ -107,7 +107,7 @@ class TableAttributes(object):
 
 
 @six.add_metaclass(abc.ABCMeta)
-class Renderer(object):  # pytype: disable=ignored-abstractmethod
+class Renderer(object):
   r"""Markdown renderer base class.
 
   The member functions provide an abstract document model that matches markdown

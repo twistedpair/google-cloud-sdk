@@ -1248,7 +1248,7 @@ To revert your SDK to the previously installed version, you may run:
 
     backup_has_bundled_python = (
         BUNDLED_PYTHON_COMPONENT in
-        install_state.BackupInstallationState().InstalledComponents())  # pytype: disable=attribute-error
+        install_state.BackupInstallationState().InstalledComponents())
     if self.IsPythonBundled() and not backup_has_bundled_python:
       log.warning(BUNDLED_PYTHON_REMOVAL_WARNING)
 

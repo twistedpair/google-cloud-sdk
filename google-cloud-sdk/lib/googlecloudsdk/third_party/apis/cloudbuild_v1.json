@@ -164,7 +164,7 @@
     },
     "Status": {
       "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error\nmessage, and error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
       "type": "object",
       "properties": {
         "code": {
@@ -568,6 +568,10 @@
             "type": "string",
             "format": "byte"
           }
+        },
+        "artifactTiming": {
+          "description": "Time to push all non-container artifacts.",
+          "$ref": "TimeSpan"
         }
       }
     },
@@ -880,6 +884,10 @@
           "description": "Template describing the types of source changes to trigger a build.\n\nBranch and tag names in trigger templates are interpreted as regular\nexpressions. Any branch or tag change that matches that regular expression\nwill trigger a build.",
           "$ref": "RepoSource"
         },
+        "github": {
+          "description": "GitHubEventsConfig describes the configuration of a trigger that creates\na build whenever a GitHub event is received.",
+          "$ref": "GitHubEventsConfig"
+        },
         "build": {
           "description": "Contents of the build template.",
           "$ref": "Build"
@@ -917,6 +925,83 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "GitHubEventsConfig": {
+      "id": "GitHubEventsConfig",
+      "description": "GitHubEventsConfig describes the configuration of a trigger that creates a\nbuild whenever a GitHub event is received.\n\nThis message is experimental.",
+      "type": "object",
+      "properties": {
+        "installationId": {
+          "description": "The installationID that emmits the GitHub event.",
+          "type": "string",
+          "format": "int64"
+        },
+        "owner": {
+          "description": "Owner of the repository.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Name of the repository.",
+          "type": "string"
+        },
+        "checkSuite": {
+          "description": "Output only. Indicates that a build was generated from a check suite\nevent.",
+          "$ref": "CheckSuiteFilter"
+        },
+        "pullRequest": {
+          "description": "filter to match changes in pull requests.",
+          "$ref": "PullRequestFilter"
+        },
+        "push": {
+          "description": "filter to match changes in refs like branches, tags.",
+          "$ref": "PushFilter"
+        }
+      }
+    },
+    "CheckSuiteFilter": {
+      "id": "CheckSuiteFilter",
+      "description": "A CheckSuiteFilter is a filter that indicates that we should build on all\ncheck suite events.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "PullRequestFilter": {
+      "id": "PullRequestFilter",
+      "description": "PullRequestFilter contains filter properties for matching GitHub Pull\nRequests.",
+      "type": "object",
+      "properties": {
+        "branch": {
+          "description": "Regex of branches to match.\n\nThe syntax of the regular expressions accepted is the syntax accepted by\nRE2 and described at https:\/\/github.com\/google\/re2\/wiki\/Syntax",
+          "type": "string"
+        },
+        "commentControl": {
+          "description": "Whether to block builds on a \"\/gcbrun\" comment from a repository owner or\ncollaborator.",
+          "enumDescriptions": [
+            "Do not require comments on Pull Requests before builds are triggered.",
+            "Enforce that repository owners or collaborators must comment on Pull\nRequests before builds are triggered."
+          ],
+          "type": "string",
+          "enum": [
+            "COMMENTS_DISABLED",
+            "COMMENTS_ENABLED"
+          ]
+        }
+      }
+    },
+    "PushFilter": {
+      "id": "PushFilter",
+      "description": "Push contains filter properties for matching GitHub git pushes.",
+      "type": "object",
+      "properties": {
+        "branch": {
+          "description": "Regexes of branches to match.\n\nThe syntax of the regular expressions accepted is the syntax accepted by\nRE2 and described at https:\/\/github.com\/google\/re2\/wiki\/Syntax",
+          "type": "string"
+        },
+        "tag": {
+          "description": "Regexes of tags to match.\n\nThe syntax of the regular expressions accepted is the syntax accepted by\nRE2 and described at https:\/\/github.com\/google\/re2\/wiki\/Syntax",
+          "type": "string"
         }
       }
     },

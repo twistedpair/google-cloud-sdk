@@ -116,6 +116,14 @@ INSTANCES_ARG_FOR_CREATE = compute_flags.ResourceArgument(
     zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
     plural=True)
 
+INSTANCES_ARG_FOR_IMPORT = compute_flags.ResourceArgument(
+    resource_name='instance',
+    name='instance_names',
+    completer=compute_completers.InstancesCompleter,
+    zonal_collection='compute.instances',
+    zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
+    plural=True)
+
 SSH_INSTANCE_RESOLVER = compute_flags.ResourceResolver.FromMap(
     'instance', {compute_scope.ScopeEnum.ZONE: 'compute.instances'})
 
@@ -1567,10 +1575,10 @@ def ValidateLocalSsdFlags(args):
 
 
 def ValidateNicFlags(args):
-  """Valiadates flags specifying network interface cards.
+  """Validates flags specifying network interface cards.
 
   Args:
-    args: parsed comandline arguments.
+    args: parsed command line arguments.
   Raises:
     InvalidArgumentException: when it finds --network-interface that has both
                               address, and no-address keys.

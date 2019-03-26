@@ -56,6 +56,6 @@ def TargetVpnGatewayArgumentForVpnTunnel(required=True):
       plural=False,
       required=required,
       regional_collection='compute.targetVpnGateways',
-      short_help='A reference to a target vpn gateway',
+      short_help='A reference to a Cloud VPN Classic Target VPN Gateway.',
       region_explanation=('Should be the same as region, if not specified, '
                           'it will be automatically set.'))

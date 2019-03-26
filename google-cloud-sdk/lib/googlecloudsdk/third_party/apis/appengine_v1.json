@@ -317,6 +317,10 @@
         "splitHealthChecks": {
           "description": "Boolean value indicating if split health checks should be used instead of the legacy health checks. At an app.yaml level, this means defaulting to 'readiness_check' and 'liveness_check' values instead of 'health_check' ones. Once the legacy 'health_check' behavior is deprecated, and this value is always true, this setting can be removed.",
           "type": "boolean"
+        },
+        "useContainerOptimizedOs": {
+          "description": "If true, use Container-Optimized OS (https:\/\/cloud.google.com\/container-optimized-os\/) base image for VMs, rather than a base Debian image.",
+          "type": "boolean"
         }
       }
     },
@@ -617,6 +621,10 @@
         "entrypoint": {
           "description": "The entrypoint for the application.",
           "$ref": "Entrypoint"
+        },
+        "vpcAccessConnector": {
+          "description": "Enables VPC connectivity for standard apps.",
+          "$ref": "VpcAccessConnector"
         }
       }
     },
@@ -1419,6 +1427,17 @@
       "properties": {
         "shell": {
           "description": "The format should be a shell command that can be fed to bash -c.",
+          "type": "string"
+        }
+      }
+    },
+    "VpcAccessConnector": {
+      "id": "VpcAccessConnector",
+      "description": "VPC access connector specification.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Full Serverless VPC Access Connector name e.g. \/projects\/my-project\/locations\/us-central1\/connectors\/c1.",
           "type": "string"
         }
       }

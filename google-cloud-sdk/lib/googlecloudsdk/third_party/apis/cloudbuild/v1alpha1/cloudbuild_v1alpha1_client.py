@@ -78,7 +78,7 @@ This API is experimental.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a `WorkerPool` by its project ID and WorkerPool ID.
+      r"""Deletes a `WorkerPool` by its project ID and WorkerPool name.
 
 This API is experimental.
 

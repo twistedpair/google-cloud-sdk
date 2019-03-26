@@ -96,7 +96,7 @@ class InstallationConfig(object):
       seconds since the epoch.
     """
     return int(time.strftime(
-        InstallationConfig.REVISION_FORMAT_STRING, time_struct))  # pytype: disable=wrong-arg-types
+        InstallationConfig.REVISION_FORMAT_STRING, time_struct))
 
   @staticmethod
   def ParseRevision(revision):
@@ -111,7 +111,7 @@ class InstallationConfig(object):
       time.struct_time, The parsed time.
     """
     return time.strptime(str(revision),
-                         InstallationConfig.REVISION_FORMAT_STRING)  # pytype: disable=wrong-arg-types
+                         InstallationConfig.REVISION_FORMAT_STRING)
 
   @staticmethod
   def ParseRevisionAsSeconds(revision):

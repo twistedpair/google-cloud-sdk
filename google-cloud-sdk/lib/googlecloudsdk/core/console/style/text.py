@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Semantic text objects that are used for styled outputting."""
-# pytype: skip-file
 
 from __future__ import absolute_import
 from __future__ import division

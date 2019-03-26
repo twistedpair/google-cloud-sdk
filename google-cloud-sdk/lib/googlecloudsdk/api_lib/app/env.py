@@ -29,6 +29,8 @@ PHP_TI_RUNTIME_EXPR = re.compile(r'php[789]\d*')
 PYTHON_TI_RUNTIME_EXPR = re.compile(r'python3\d*')
 # Allow things like go110 and g110beta1
 GO_TI_RUNTIME_EXPR = re.compile(r'go1\d\d(\w+\d)?')
+# Java 7, 8 still allows handlers
+JAVA_TI_RUNTIME_EXPR = re.compile(r'java[123456]\d*')
 
 
 class Environment(enum.Enum):
@@ -58,5 +60,6 @@ _TI_RUNTIME_REGISTRY = {
     runtime_registry.RegistryEntry(PHP_TI_RUNTIME_EXPR, {STANDARD}): True,
     runtime_registry.RegistryEntry(PYTHON_TI_RUNTIME_EXPR, {STANDARD}): True,
     runtime_registry.RegistryEntry(GO_TI_RUNTIME_EXPR, {STANDARD}): True,
+    runtime_registry.RegistryEntry(JAVA_TI_RUNTIME_EXPR, {STANDARD}): True,
 }
 

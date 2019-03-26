@@ -103,7 +103,7 @@ class Namespace(argparse.Namespace):
   """
 
   def __init__(self, **kwargs):
-    self._deepest_parser = None  # type: ArgumentParser
+    self._deepest_parser = None
     self._parsers = []
     self._specified_args = {}
     super(Namespace, self).__init__(**kwargs)
@@ -357,7 +357,7 @@ class ArgumentParser(argparse.ArgumentParser):
     self._is_group = hasattr(self._calliope_command, 'commands')
     self._remainder_action = None
     self._specified_args = {}
-    self._error_context = None  # type: _ErrorContext
+    self._error_context = None
     self._probe_error = False
     self.flags_locations = collections.defaultdict(set)
     super(ArgumentParser, self).__init__(*args, **kwargs)
@@ -483,7 +483,7 @@ class ArgumentParser(argparse.ArgumentParser):
     error_context = self._error_context
     self._error_context = None
     if not unknown_args and hasattr(parser, 'flags_locations'):
-      parser.flags_locations = collections.defaultdict(set)  # pytype: disable=not-writable
+      parser.flags_locations = collections.defaultdict(set)
     return namespace, unknown_args, error_context
 
   def _DeduceBetterError(self, context, args, namespace):
@@ -999,7 +999,6 @@ class ArgumentParser(argparse.ArgumentParser):
       if '\n' not in message:
         # Provide "Maybe you meant" suggestions if we are dealing with an
         # invalid command.
-        # pytype: disable=module-attr
         suggestions = None
         if 'Invalid choice' in message:
           suggestions = suggest_commands.GetCommandSuggestions(
@@ -1041,7 +1040,6 @@ class ArgumentParser(argparse.ArgumentParser):
         else:
           usage_string = self._calliope_command.GetUsage()
           argparse._sys.stderr.write(usage_string)
-        # pytype: enable=module-attr
 
     parser.ReportErrorMetrics(error, message)
     self.exit(2, exception=error)
@@ -1257,7 +1255,7 @@ class DynamicPositionalAction(six.with_metaclass(abc.ABCMeta,
 
   def __call__(self, parser, namespace, values, option_string=None):
     choice = values[0]
-    args = self.GenerateArgs(namespace, choice)  # type: list[base.Argument]
+    args = self.GenerateArgs(namespace, choice)
     sub_parser = self._name_parser_map[choice]
 
     # This is tricky. When we create a new parser above, that parser does not

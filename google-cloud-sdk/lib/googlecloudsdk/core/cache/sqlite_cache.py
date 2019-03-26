@@ -17,8 +17,6 @@
 
 See the persistent_cache module for a detailed description.
 """
-# Pytype fails to analyze this file.
-# type: ignore
 
 from __future__ import absolute_import
 from __future__ import division
@@ -161,7 +159,6 @@ class _Table(persistent_cache_base.Table):
     self._cache._db.commit()  # pylint: disable=protected-access
 
   def Select(self, row_template=None, ignore_expiration=False):
-    # type: (...) -> list[tuple]
     """Returns the list of rows that match row_template, None for all."""
     if row_template is not None:
       self._CheckRowTemplates([row_template])

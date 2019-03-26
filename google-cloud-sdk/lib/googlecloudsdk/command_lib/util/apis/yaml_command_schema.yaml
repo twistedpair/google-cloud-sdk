@@ -365,6 +365,8 @@ properties:
     properties:
       # The full collection name of the resource the command operates on.
       collection: {type: string}
+      # The type of the resource the command operates on to be used for logging.
+      display_resource_type: {type: string}
       # The API version to use, defaults to API set as gcloud default.
       api_version: {type: string}
       # The name of the method to call to perform the operation. Optional if
@@ -558,6 +560,8 @@ properties:
           # Set to True if the resource spec is for the parent of the request
           # collection instead of for the collection itself.  This allows for
           # create commands that do not require a name for the new resource.
+          # Set the `resource_type` property on `request` to include the
+          # resource type in log messages.
           is_parent_resource: {type: boolean}
           # The name to use for the resource arg. If set this is the name that
           # will be used for the resource arg in the command. If not set,

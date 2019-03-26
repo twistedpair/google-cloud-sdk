@@ -326,8 +326,7 @@ class BaseSSHHelper(object):
     env: ssh.Environment, the current environment, used by subclasses.
   """
 
-  # Attributes for pytype
-  keys = None  # type: ssh.Keys
+  keys = None
 
   @staticmethod
   def Args(parser):
@@ -679,7 +678,7 @@ class BaseSSHCLIHelper(BaseSSHHelper):
         .format(metadata_id_url, instance_id)]
     cmd = ssh.SSHCommand(remote, identity_file=identity_file,
                          options=options, remote_command=remote_command)
-    return_code = cmd.Run(self.env, force_connect=True)  # pytype: disable=attribute-error
+    return_code = cmd.Run(self.env, force_connect=True)
     if return_code == 0:
       return
     elif return_code == 23:

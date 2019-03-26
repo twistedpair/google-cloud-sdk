@@ -140,13 +140,14 @@ def ParseResourceNameArgs(args, arg_name, current_value_thunk, resource_parser):
   Returns:
     List of str: the new value for the field, or None if no change is required.
   """
+  underscored_name = arg_name.replace('-', '_')
   remove = _ConvertValuesToRelativeNames(
-      getattr(args, 'remove_' + arg_name), resource_parser)
+      getattr(args, 'remove_' + underscored_name), resource_parser)
   add = _ConvertValuesToRelativeNames(
-      getattr(args, 'add_' + arg_name), resource_parser)
-  clear = getattr(args, 'clear_' + arg_name)
+      getattr(args, 'add_' + underscored_name), resource_parser)
+  clear = getattr(args, 'clear_' + underscored_name)
   set_ = _ConvertValuesToRelativeNames(
-      getattr(args, 'set_' + arg_name), resource_parser)
+      getattr(args, 'set_' + underscored_name), resource_parser)
 
   return _ModifyCurrentValue(remove, add, clear, set_, current_value_thunk)
 
@@ -175,10 +176,11 @@ def ParsePrimitiveArgs(args, arg_name, current_value_thunk):
     List of str: the new value for the field, or None if no change is required.
 
   """
-  remove = getattr(args, 'remove_' + arg_name)
-  add = getattr(args, 'add_' + arg_name)
-  clear = getattr(args, 'clear_' + arg_name)
-  set_ = getattr(args, 'set_' + arg_name)
+  underscored_name = arg_name.replace('-', '_')
+  remove = getattr(args, 'remove_' + underscored_name)
+  add = getattr(args, 'add_' + underscored_name)
+  clear = getattr(args, 'clear_' + underscored_name)
+  set_ = getattr(args, 'set_' + underscored_name)
 
   return _ModifyCurrentValue(remove, add, clear, set_, current_value_thunk)
 

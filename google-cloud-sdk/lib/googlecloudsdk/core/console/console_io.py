@@ -14,8 +14,6 @@
 # limitations under the License.
 
 """General console printing utilities used by the Cloud SDK."""
-# TODO(b/71388306): Unskip pytype on this file.
-# pytype: skip-file
 
 from __future__ import absolute_import
 from __future__ import division

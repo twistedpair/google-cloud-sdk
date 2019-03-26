@@ -20,7 +20,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import functools
-import enum  # pylint: disable=unused-import, for pytype
 
 from googlecloudsdk.api_lib.compute import filter_rewrite
 from googlecloudsdk.api_lib.compute.regions import service as regions_service
@@ -237,7 +236,6 @@ class ResourceArgScopes(object):
     self.scopes = {}
 
   def AddScope(self, scope, collection):
-    # type: (enum.Enum, str) -> None
     self.scopes[scope] = ResourceArgScope(scope, self.flag_prefix, collection)
 
   def SpecifiedByArgs(self, args):
@@ -510,7 +508,7 @@ class ResourceResolver(object):
         api_resource_registry)
 
     # Now unpack each element.
-    refs = [ref[0] for ref in refs]  # type: list[resources.Resource]
+    refs = [ref[0] for ref in refs]
 
     # Make sure correct collection was given for each resource, for example
     # URLs have implicit collections.

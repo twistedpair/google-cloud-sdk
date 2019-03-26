@@ -23,7 +23,6 @@ import collections
 from apitools.base.protorpclite import messages
 
 from googlecloudsdk.api_lib.util import resource as resource_lib  # pylint: disable=unused-import
-from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import registry
@@ -32,7 +31,6 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-from googlecloudsdk.core.util import typing  # pylint: disable=unused-import
 
 import six
 
@@ -160,10 +158,10 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
   def __init__(self, resource_spec, collection_info, method,
                static_params=None, id_field=None, param=None, **kwargs):
     """Initializes."""
-    self.resource_spec = resource_spec  # type: concepts.ResourceSpec
-    self._method = method  # type: registry.APIMethod
-    self._static_params = static_params or {}  # type: dict
-    self.id_field = id_field or DEFAULT_ID_FIELD  # type: str
+    self.resource_spec = resource_spec
+    self._method = method
+    self._static_params = static_params or {}
+    self.id_field = id_field or DEFAULT_ID_FIELD
     collection_name = collection_info.full_name
     api_version = collection_info.api_version
     super(ResourceArgumentCompleter, self).__init__(
@@ -187,7 +185,6 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
     return self.collection_info.GetParams('')[:-1]
 
   def _GetUpdaters(self):
-    # type: (...) -> dict
     """Helper function to build dict of updaters."""
     # Find the attribute that matches the final param of the collection for this
     # completer.
@@ -212,7 +209,6 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
     return updaters
 
   def ParameterInfo(self, parsed_args, argument):
-    # type: (...) -> resource_parameter_info.ResourceParameterInfo
     """Builds a ResourceParameterInfo object.
 
     Args:
@@ -231,7 +227,6 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
         collection=self.collection)
 
   def Update(self, parameter_info, aggregations):
-    # type: (...) -> typing.Optional[list[list[str]]]
     if self.method is None:
       return None
     log.info(
@@ -279,7 +274,6 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
   def _ParseResponse(self, response, response_collection,
                      parameter_info=None, aggregations=None,
                      parent_translator=None):
-    # type: (...) -> typing.Optional[resources.Resource]
     """Gets a resource ref from a single item in a list response."""
     param_values = self._GetParamValuesFromParent(
         parameter_info, aggregations=aggregations,
@@ -306,7 +300,6 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
     return params
 
   def _GetAggregationsValuesDict(self, aggregations):
-    # type: (...) -> dict
     """Build a {str: str} dict of name to value for aggregations."""
     aggregations_dict = {}
     aggregations = [] if aggregations is None else aggregations
@@ -317,7 +310,6 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
 
   def BuildListQuery(self, parameter_info, aggregations=None,
                      parent_translator=None):
-    # type: (...) -> typing.Optional[messages.Message]
     """Builds a list request to list values for the given argument.
 
     Args:
@@ -391,7 +383,6 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
 
   def GetParent(self, parameter_info, aggregations=None,
                 parent_translator=None):
-    # type: (...) -> typing.Optional[resources.Resource]
     """Gets the parent reference of the parsed parameters.
 
     Args:
@@ -432,7 +423,6 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
 
 
 def _MatchCollection(resource_spec, attribute):
-  # type: (concepts.ResourceSpec, concepts.Attribute) -> typing.Optional[str]
   """Gets the collection for an attribute in a resource."""
   resource_collection_info = resource_spec._collection_info  # pylint: disable=protected-access
   resource_collection = registry.APICollection(
@@ -453,7 +443,6 @@ def _MatchCollection(resource_spec, attribute):
 
 
 def _GetCompleterCollectionInfo(resource_spec, attribute):
-  # type: (concepts.ResourceSpec, concepts.Attribute) ->  typing.Optional[resource_lib.CollectionInfo]  # pylint: disable=line-too-long
   """Gets collection info for an attribute in a resource."""
   api_version = None
   collection = _MatchCollection(resource_spec, attribute)
@@ -486,7 +475,6 @@ class CompleterInfo(object):
 
   @classmethod
   def FromResource(cls, resource_spec, attribute_name):
-    # type: (...) -> CompleterInfo
     """Gets the method, param_name, and other configuration for a completer.
 
     Args:
@@ -548,7 +536,6 @@ class CompleterInfo(object):
                          param_name)
 
   def GetMethod(self):
-    # type: (...) -> typing.Optional[registry.APIMethod]
     """Get the APIMethod for an attribute in a resource."""
     return self.method
 

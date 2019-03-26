@@ -457,6 +457,14 @@ MAP = {
             default_version=False
         ),
     },
+    'dialogflow': {
+        'v2': APIDef(
+            class_path='googlecloudsdk.third_party.apis.dialogflow.v2',
+            client_classpath='dialogflow_v2_client.DialogflowV2',
+            messages_modulepath='dialogflow_v2_messages',
+            default_version=True
+        ),
+    },
     'discovery': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.discovery.v1',
@@ -906,6 +914,12 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.vpcaccess.v1alpha1',
             client_classpath='vpcaccess_v1alpha1_client.VpcaccessV1alpha1',
             messages_modulepath='vpcaccess_v1alpha1_messages',
+            default_version=False
+        ),
+        'v1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.vpcaccess.v1beta1',
+            client_classpath='vpcaccess_v1beta1_client.VpcaccessV1beta1',
+            messages_modulepath='vpcaccess_v1beta1_messages',
             default_version=True
         ),
     },

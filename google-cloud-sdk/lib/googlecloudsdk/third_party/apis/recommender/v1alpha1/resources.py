@@ -24,12 +24,42 @@ DOCS_URL = 'https://cloud.google.com/recommender/docs/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  OPERATIONS = (
+      'operations',
+      'operations/{+operationId}',
+      {},
+      [u'operationId'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
       {},
       [u'projectsId'],
       True
+  )
+  PROJECTS_LOCATIONS = (
+      'projects.locations',
+      'projects/{projectsId}/locations/{locationsId}',
+      {},
+      [u'projectsId', u'locationsId'],
+      False
+  )
+  PROJECTS_LOCATIONS_RECOMMENDERS = (
+      'projects.locations.recommenders',
+      'projects/{projectsId}/locations/{locationsId}/recommenders/'
+      '{recommendersId}',
+      {},
+      [u'projectsId', u'locationsId', u'recommendersId'],
+      False
+  )
+  PROJECTS_LOCATIONS_RECOMMENDERS_RECOMMENDATIONS = (
+      'projects.locations.recommenders.recommendations',
+      'projects/{projectsId}/locations/{locationsId}/recommenders/'
+      '{recommendersId}/recommendations/{recommendationsId}',
+      {},
+      [u'projectsId', u'locationsId', u'recommendersId', u'recommendationsId'],
+      False
   )
   PROJECTS_RULES = (
       'projects.rules',

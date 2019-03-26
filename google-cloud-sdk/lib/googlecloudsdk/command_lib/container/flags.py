@@ -181,6 +181,30 @@ The default Kubernetes version is available using the following command.
   return parser.add_argument('--cluster-version', help=help, hidden=suppressed)
 
 
+def AddReleaseChannelFlag(parser):
+  """Adds a --release-channel flag to the given parser."""
+  help_text = """\
+Release channel a cluster is subscribed to.
+
+When a cluster is subscribed to a release channel, Google maintains both the
+master version and the node version. Node auto-upgrade defaults to true and
+cannot be disabled. Updates to version related fields (e.g. --cluster-version)
+return an error.
+"""
+
+  return parser.add_argument(
+      '--release-channel',
+      metavar='CHANNEL',
+      choices={
+          'rapid': """\
+'rapid' channel clusters are the first to receive the latest releases of
+Kubernetes and other components.
+"""
+      },
+      help=help_text,
+      hidden=False)
+
+
 def AddClusterAutoscalingFlags(parser, update_group=None, hidden=False):
   """Adds autoscaling related flags to parser.
 
@@ -288,6 +312,27 @@ def AddAcceleratorArgs(parser):
       *count*::: (Optional) The number of accelerators to attach to the
       instances. The default value is 1.
       """)
+
+
+def AddAutoscalingProfilesFlag(parser, hidden=False):
+  """Adds autoscaling profiles flag to parser.
+
+  Autoscaling profiles flag is --autoscaling-profile.
+
+  Args:
+    parser: A given parser.
+    hidden: If true, suppress help text for added options.
+  """
+  parser.add_argument(
+      '--autoscaling-profile',
+      required=False,
+      default=None,
+      help="""\
+         Set autoscaling behaviour, choices are 'optimize_utilization' and 'balanced'.
+         Default is 'balanced'.
+      """,
+      hidden=hidden,
+      type=str)
 
 
 def AddAutoprovisioningFlags(parser, hidden=False):
@@ -665,7 +710,10 @@ more info."""
       help=help_text)
 
 
-def AddEnableAutoUpgradeFlag(parser, for_node_pool=False, suppressed=False):
+def AddEnableAutoUpgradeFlag(parser,
+                             for_node_pool=False,
+                             suppressed=False,
+                             default=None):
   """Adds a --enable-autoupgrade flag to parser."""
   if for_node_pool:
     help_text = """\
@@ -680,13 +728,13 @@ Sets autoupgrade feature for a cluster's default node-pool(s).
   $ {command} example-cluster --enable-autoupgrade
 """
   help_text += """
-See https://cloud.google.com/kubernetes-engine/docs/node-management for more \
+See https://cloud.google.com/kubernetes-engine/docs/node-auto-upgrades for more \
 info."""
 
   parser.add_argument(
       '--enable-autoupgrade',
       action='store_true',
-      default=None,
+      default=default,
       help=help_text,
       hidden=suppressed)
 
@@ -1227,6 +1275,12 @@ is scheduled to be deprecated in the future and later removed.
                     'while the bootstrapping process for cluster nodes is '
                     'being redesigned with significant security improvements.',
           'EXPOSED': 'Exposes all VM metadata to workloads.',
+          'GKE_METADATA_SERVER':
+              'Run the Kubernetes Engine Metadata Server on this node. The Kubernetes '
+              'Engine Metadata Server exposes a metadata API to workloads that is '
+              'compatible with the V1 Compute Metadata APIs exposed by the Compute Engine '
+              'and App Engine Metadata Servers. This feature can only be enabled if '
+              'Workload Identity is enabled at the cluster level.',
           'UNSPECIFIED': 'Chooses the default.',
       },
       type=lambda x: x.upper(),
@@ -1729,6 +1783,14 @@ def WarnForNodeModification(args, enable_autorepair):
                 'DaemonSet.')
 
 
+def WarnForAutoUpgrade(args):
+  if not args.IsSpecified('enable_autoupgrade'):
+    log.warning(util.WARN_AUTOUPGRADE_ENABLED_BY_DEFAULT)
+
+  if args.IsSpecified('node_version') and args.enable_autoupgrade:
+    log.warning(util.WARN_NODE_VERSION_WITH_AUTOUPGRADE_ENABLED)
+
+
 def AddMachineTypeFlag(parser):
   """Adds --machine-type flag to the parser.
 
@@ -1774,9 +1836,9 @@ specified in the annotation.
 Alpha flag `--[no-]enable-managed-pod-identity` is deprecated and will be removed
 in a future release.
 
-Instead, use the beta `--enable-workload-identity` flag:
+Instead, use the beta `--identity-namespace` flag:
 
-    gcloud beta container clusters create --enable-workload-identity
+    $ gcloud beta container clusters create --identity-namespace=PROJECT_NAME.svc.id.goog
 """,
           removed=False,
           action='store_true'),
@@ -1799,9 +1861,9 @@ Must be set with `--enable-managed-pod-identity`.
 Alpha flag `--federating-service-account` is deprecated and will be removed
 in a future release.
 
-Instead, use the beta `--enable-workload-identity` flag:
+Instead, use the beta `--identity-namespace` flag:
 
-    gcloud beta container clusters create --enable-workload-identity
+    $ gcloud beta container clusters create --identity-namespace=PROJECT_NAME.svc.id.goog
 """,
           removed=False),
       default=None,
@@ -1814,15 +1876,17 @@ def AddWorkloadIdentityFlags(parser):
   # TODO(b/126751755): Once we have a beta docs page, update the documentation
   # link in the help text.
   parser.add_argument(
-      '--enable-workload-identity',
-      default=False,
-      action='store_true',
+      '--identity-namespace',
+      default=None,
       hidden=True,
       help="""\
 Enable Workload Identity on the cluster.
 
 When enabled, Kubernetes service accounts will be able to act as Cloud IAM
-Service Accounts.
+Service Accounts, through the provided identity namespace.
+
+Currently, the only accepted identity namespace is the identity namespace of
+the Cloud project containing the cluster, `PROJECT_NAME.svc.id.goog`.
 """)
 
 
@@ -2052,8 +2116,8 @@ controller or webhook are installed.
 def AddNodeGroupFlag(parser):
   """Adds --node-group flag to the parser."""
   help_text = """\
-Assign instances of this pool to run on the specified GCE node group.
-This is useful for running workloads on sole tenant nodes.
+Assign instances of this pool to run on the specified Google Compute Engine
+node group. This is useful for running workloads on sole tenant nodes.
 
 To see available sole tenant node-groups, run:
 
@@ -2070,7 +2134,6 @@ information on sole tenancy and node groups.
 
   parser.add_argument(
       '--node-group',
-      hidden=True,
       help=help_text)
 
 

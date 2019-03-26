@@ -52,6 +52,11 @@ class AmbiguousContainerError(exceptions.Error):
   pass
 
 
+class CloudSQLError(exceptions.Error):
+  """Malformed instances string for CloudSQL."""
+  pass
+
+
 class ContainerIdError(exceptions.Error):
   """Container Id cannot be found by docker."""
   pass

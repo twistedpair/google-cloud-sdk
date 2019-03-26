@@ -29,8 +29,6 @@ string tuple
 
 where only one of the three elements need be present.
 """
-# Pytype fails to check this file.
-# type: ignore
 
 from __future__ import absolute_import
 from __future__ import division

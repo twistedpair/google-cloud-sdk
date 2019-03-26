@@ -47,4 +47,4 @@ properties:
       will be sent to the same backendService as determined by the
       BackendService's session affinity policy. The value must be between 0 and
       1000
-    type: uint32
+    type: integer

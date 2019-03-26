@@ -686,7 +686,7 @@ class _LogManager(object):
     try:
       log_file = self._SetupLogsDir(logs_dir)
       file_handler = logging.FileHandler(
-          log_file, encoding=LOG_FILE_ENCODING)  # pytype: disable=wrong-arg-types
+          log_file, encoding=LOG_FILE_ENCODING)
     except (OSError, IOError, files.Error) as exp:
       warning('Could not setup log file in {0}, ({1}: {2})'
               .format(logs_dir, type(exp).__name__, exp))

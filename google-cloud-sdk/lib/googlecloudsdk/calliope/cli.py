@@ -466,7 +466,7 @@ class CLILoader(object):
         # Mount each registered sub group under each release track that exists.
         for track, track_root_group in six.iteritems(loaded_release_tracks):
           # pylint: disable=line-too-long
-          parent_group = self.__FindParentGroup(track_root_group, root)  # type: backend.CommandGroup
+          parent_group = self.__FindParentGroup(track_root_group, root)
           # pylint: enable=line-too-long
           exception_if_present = None
           if not parent_group:
@@ -837,7 +837,6 @@ def _SubParsersActionCall(self, parser, namespace, values, option_string=None):
   del option_string
 
   # pylint: disable=protected-access
-  # pytype: disable=module-attr
 
   parser_name = values[0]
   arg_strings = values[1:]
@@ -862,7 +861,6 @@ def _SubParsersActionCall(self, parser, namespace, values, option_string=None):
     vars(namespace).setdefault(argparse._UNRECOGNIZED_ARGS_ATTR, [])
     getattr(namespace, argparse._UNRECOGNIZED_ARGS_ATTR).extend(arg_strings)
 
-  # pytype: enable=module-attr
   # pylint: enable=protected-access
 
 
@@ -929,7 +927,7 @@ class CLI(object):
     argparse.str = six.text_type
     # We need the argparse 1.2.1 patch in _SubParsersActionCall.
     # TODO(b/77288697) delete after py3 tests use non-hermetic python
-    if argparse.__version__ == '1.1':  # pytype: disable=module-attr
+    if argparse.__version__ == '1.1':
       argparse._SubParsersAction.__call__ = _SubParsersActionCall  # pylint: disable=protected-access
 
     if call_arg_complete:

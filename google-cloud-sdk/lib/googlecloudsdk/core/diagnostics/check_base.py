@@ -25,7 +25,7 @@ import six
 
 
 @six.add_metaclass(abc.ABCMeta)
-class Checker(object):  # pytype: disable=ignored-abstractmethod
+class Checker(object):
   """Base class for a single check."""
 
   @abc.abstractproperty

@@ -152,7 +152,7 @@ class LogsRequester(object):
       finally:
         of.flush()
         if of is not log.out:
-          of.close()  # pytype: disable=attribute-error
+          of.close()
     finally:
       tf.close()
     log.info('Copied %d records.', line_count)

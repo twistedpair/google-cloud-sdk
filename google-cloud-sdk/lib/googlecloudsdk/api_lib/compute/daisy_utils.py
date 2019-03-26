@@ -40,7 +40,11 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 
-_BUILDER = 'gcr.io/compute-image-tools/daisy:release'
+_DAISY_BUILDER = 'gcr.io/compute-image-tools/daisy:release'
+
+# TODO(b/128858645): switch to compute-image-tools release once OVF importer is
+# released
+_OVF_IMPORT_BUILDER = 'gcr.io/compute-image-tools/gce_ovf_import:latest'
 
 
 class FilteredLogTailer(cb_logs.LogTailer):
@@ -59,7 +63,7 @@ class FilteredLogTailer(cb_logs.LogTailer):
       self.out.Print(text)
 
 
-class DaisyCloudBuildClient(cb_logs.CloudBuildClient):
+class CloudBuildClientWithFiltering(cb_logs.CloudBuildClient):
   """Subclass of CloudBuildClient that allows filtering."""
 
   def StreamWithFilter(self, build_ref, output_filter=None):
@@ -67,8 +71,8 @@ class DaisyCloudBuildClient(cb_logs.CloudBuildClient):
 
     Args:
       build_ref: Build reference, The build whose logs shall be streamed.
-      output_filter: List of strings, The output will only be shown if the
-        line starts with one of the strings in the list.
+      output_filter: List of strings, The output will only be shown if the line
+        starts with one of the strings in the list.
 
     Raises:
       NoLogsBucketException: If the build does not specify a logsBucket.
@@ -105,9 +109,9 @@ class FailedBuildException(exceptions.Error):
   """Exception for builds that did not succeed."""
 
   def __init__(self, build):
-    super(FailedBuildException, self).__init__(
-        'build {id} completed with status "{status}"'.format(
-            id=build.id, status=build.status))
+    super(FailedBuildException,
+          self).__init__('build {id} completed with status "{status}"'.format(
+              id=build.id, status=build.status))
 
 
 class SubnetException(exceptions.Error):
@@ -115,19 +119,22 @@ class SubnetException(exceptions.Error):
 
 
 class ImageOperation(object):
-  """Enum representing image operation"""
+  """Enum representing image operation."""
   IMPORT = 'import'
   EXPORT = 'export'
 
 
-def AddCommonDaisyArgs(parser):
+def AddCommonDaisyArgs(parser, add_log_location=True):
   """Common arguments for Daisy builds."""
-  parser.add_argument(
-      '--log-location',
-      help='Directory in Google Cloud Storage to hold build logs. If not '
-      'set, ```gs://<project num>.cloudbuild-logs.googleusercontent.com/``` '
-      'will be created and used.',
-  )
+
+  if add_log_location:
+    parser.add_argument(
+        '--log-location',
+        help='Directory in Google Cloud Storage to hold build logs. If not '
+        'set, ```gs://<project num>.cloudbuild-logs.googleusercontent.com/``` '
+        'will be created and used.',
+    )
+
   parser.add_argument(
       '--timeout',
       type=arg_parsers.Duration(),
@@ -136,8 +143,7 @@ def AddCommonDaisyArgs(parser):
           Maximum time a build can last before it is failed as "TIMEOUT".
           For example, specifying ``2h'' will fail the process after  2 hours.
           See $ gcloud topic datetimes for information on duration formats.
-          """
-  )
+          """)
   base.ASYNC_FLAG.AddToParser(parser)
 
 
@@ -153,19 +159,18 @@ def _CheckIamPermissions(project_id, service_account_roles):
   # If the user's project doesn't have cloudbuild enabled yet, then the service
   # account won't even exist. If so, then ask to enable it before continuing.
   # Also prompt them to enable Stackdriver Logging if they haven't yet.
-  expected_services = ['cloudbuild.googleapis.com',
-                       'logging.googleapis.com']
+  expected_services = ['cloudbuild.googleapis.com', 'logging.googleapis.com']
   for service_name in expected_services:
-    if not services_api.IsServiceEnabled(project.projectId,
-                                         service_name):
+    if not services_api.IsServiceEnabled(project.projectId, service_name):
       # TODO(b/112757283): Split this out into a separate library.
-      prompt_message = ('The "{0}" service is not enabled for this project. '
-                        'It is required for this operation.\n').format(
-                            service_name)
-      console_io.PromptContinue(prompt_message,
-                                'Would you like to enable this service?',
-                                throw_if_unattended=True,
-                                cancel_on_no=True)
+      prompt_message = (
+          'The "{0}" service is not enabled for this project. '
+          'It is required for this operation.\n').format(service_name)
+      console_io.PromptContinue(
+          prompt_message,
+          'Would you like to enable this service?',
+          throw_if_unattended=True,
+          cancel_on_no=True)
       operation = services_api.EnableServiceApiCall(project.projectId,
                                                     service_name)
       # Wait for the operation to finish.
@@ -185,8 +190,10 @@ def _CheckIamPermissions(project_id, service_account_roles):
       del expected_permissions[binding.role]
 
   if expected_permissions:
-    ep_table = ['{0} {1}'.format(role, account) for role, account
-                in expected_permissions.items()]
+    ep_table = [
+        '{0} {1}'.format(role, account)
+        for role, account in expected_permissions.items()
+    ]
     prompt_message = (
         'The following IAM permissions are needed for this operation:\n'
         '[{0}]\n'.format('\n'.join(ep_table)))
@@ -216,8 +223,7 @@ def _CreateCloudBuild(build_config, client, messages):
   log.debug('submitting build: {0}'.format(repr(build_config)))
   op = client.projects_builds.Create(
       messages.CloudbuildProjectsBuildsCreateRequest(
-          build=build_config,
-          projectId=properties.VALUES.core.project.Get()))
+          build=build_config, projectId=properties.VALUES.core.project.Get()))
   json = encoding.MessageToJson(op.metadata)
   build = encoding.JsonToMessage(messages.BuildOperationMetadata, json).build
 
@@ -236,7 +242,8 @@ def _CreateCloudBuild(build_config, client, messages):
   return build, build_ref
 
 
-def GetAndCreateDaisyBucket(bucket_name=None, storage_client=None,
+def GetAndCreateDaisyBucket(bucket_name=None,
+                            storage_client=None,
                             bucket_location=None):
   """Determine the name of the GCS bucket to use and create if necessary.
 
@@ -279,8 +286,7 @@ def GetSubnetRegion():
     SubnetException: if region couldn't be inferred.
   """
   if properties.VALUES.compute.zone.Get():
-    return utils.ZoneNameToRegionName(
-        properties.VALUES.compute.zone.Get())
+    return utils.ZoneNameToRegionName(properties.VALUES.compute.zone.Get())
   elif properties.VALUES.compute.region.Get():
     return properties.VALUES.compute.region.Get()
 
@@ -314,14 +320,18 @@ def ExtractNetworkAndSubnetDaisyVariables(args, operation):
     network_full_path = 'global/networks/{0}'.format(args.network.lower())
 
   if add_network_variable:
-    variables.append('{0}_network={1}'.format(
-        operation, network_full_path))
+    variables.append('{0}_network={1}'.format(operation, network_full_path))
 
   return variables
 
 
-def RunDaisyBuild(args, workflow, variables, daisy_bucket=None, tags=None,
-                  user_zone=None, output_filter=None,
+def RunDaisyBuild(args,
+                  workflow,
+                  variables,
+                  daisy_bucket=None,
+                  tags=None,
+                  user_zone=None,
+                  output_filter=None,
                   service_account_roles=None):
   """Run a build with Daisy on Google Cloud Builder.
 
@@ -348,8 +358,6 @@ def RunDaisyBuild(args, workflow, variables, daisy_bucket=None, tags=None,
   Raises:
     FailedBuildException: If the build is completed and not 'SUCCESS'.
   """
-  client = cloudbuild_util.GetClientInstance()
-  messages = cloudbuild_util.GetMessagesModule()
   project_id = projects_util.ParseProject(
       properties.VALUES.core.project.GetOrFail())
 
@@ -363,11 +371,12 @@ def RunDaisyBuild(args, workflow, variables, daisy_bucket=None, tags=None,
 
   daisy_bucket = daisy_bucket or GetAndCreateDaisyBucket()
 
-  daisy_args = ['-gcs_path=gs://{0}/'.format(daisy_bucket),
-                '-default_timeout={0}s'.format(daisy_timeout),
-                '-variables={0}'.format(variables),
-                workflow,
-               ]
+  daisy_args = [
+      '-gcs_path=gs://{0}/'.format(daisy_bucket),
+      '-default_timeout={0}s'.format(daisy_timeout),
+      '-variables={0}'.format(variables),
+      workflow,
+  ]
   if user_zone is not None:
     daisy_args = ['-zone={0}'.format(user_zone)] + daisy_args
 
@@ -375,23 +384,56 @@ def RunDaisyBuild(args, workflow, variables, daisy_bucket=None, tags=None,
   if tags:
     build_tags.extend(tags)
 
-  # First, create the build request.
+  return _RunCloudBuild(args, _DAISY_BUILDER, daisy_args, build_tags,
+                        output_filter, args.log_location)
+
+
+def _RunCloudBuild(args,
+                   builder,
+                   build_args,
+                   build_tags=None,
+                   output_filter=None,
+                   log_location=None):
+  """Run a build with a specific builder on Google Cloud Builder.
+
+  Args:
+    args: an argparse namespace. All the arguments that were provided to this
+      command invocation.
+    builder: path to builder image
+    build_args: args to be sent to builder
+    build_tags: tags to be attached to the build
+    output_filter: A list of strings indicating what lines from the log should
+      be output. Only lines that start with one of the strings in output_filter
+      will be displayed.
+    log_location: GCS path to directory where logs will be stored.
+
+  Returns:
+    A build object that either streams the output or is displayed as a
+    link to the build.
+
+  Raises:
+    FailedBuildException: If the build is completed and not 'SUCCESS'.
+  """
+  client = cloudbuild_util.GetClientInstance()
+  messages = cloudbuild_util.GetMessagesModule()
+
+  # Create the build request.
   build_config = messages.Build(
       steps=[
           messages.BuildStep(
-              name=_BUILDER,
-              args=daisy_args,
+              name=builder,
+              args=build_args,
           ),
       ],
       tags=build_tags,
       timeout='{0}s'.format(args.timeout),
   )
-  if args.log_location:
+  if log_location:
     gcs_log_dir = resources.REGISTRY.Parse(
         args.log_location, collection='storage.objects')
 
-    build_config.logsBucket = (
-        'gs://{0}/{1}'.format(gcs_log_dir.bucket, gcs_log_dir.object))
+    build_config.logsBucket = ('gs://{0}/{1}'.format(gcs_log_dir.bucket,
+                                                     gcs_log_dir.object))
 
   # Start the build.
   build, build_ref = _CreateCloudBuild(build_config, client, messages)
@@ -405,7 +447,7 @@ def RunDaisyBuild(args, workflow, variables, daisy_bucket=None, tags=None,
 
   # Otherwise, logs are streamed from GCS.
   with execution_utils.CtrlCSection(mash_handler):
-    build = DaisyCloudBuildClient(client, messages).StreamWithFilter(
+    build = CloudBuildClientWithFiltering(client, messages).StreamWithFilter(
         build_ref, output_filter=output_filter)
 
   if build.status == messages.Build.StatusValueValuesEnum.TIMEOUT:
@@ -418,3 +460,104 @@ def RunDaisyBuild(args, workflow, variables, daisy_bucket=None, tags=None,
 
   return build
 
+
+def RunOVFImportBuild(args, instance_names, source_uri, no_guest_environment,
+                      can_ip_forward, deletion_protection, description, labels,
+                      machine_type, network, network_tier, subnet,
+                      private_network_ip, no_restart_on_failure, os, tags, zone,
+                      project, output_filter):
+  """Run a OVF import build on Google Cloud Builder.
+
+  Args:
+    args: an argparse namespace. All the arguments that were provided to this
+      command invocation.
+    instance_names: A list of instance names to be imported.
+    source_uri: A GCS path to OVA or OVF package.
+    no_guest_environment: If set to True, Google Guest Environment won't be
+      installed on the boot disk of the VM.
+    can_ip_forward: If set to True, allows the instances to send and receive
+      packets with non-matching destination or source IP addresses.
+    deletion_protection: Enables deletion protection for the instance.
+    description: Specifies a textual description of the instances.
+    labels: List of label KEY=VALUE pairs to add to the instance.
+    machine_type: Specifies the machine type used for the instances.
+    network: Specifies the network that the instances will be part of.
+    network_tier: Specifies the network tier of the interface. NETWORK_TIER must
+      be one of: PREMIUM, STANDARD.
+    subnet: Specifies the subnet that the instances will be part of.
+    private_network_ip: Specifies the RFC1918 IP to assign to the instance.
+    no_restart_on_failure: The instances will NOT be restarted if they are
+      terminated by Compute Engine.
+    os: Specifies the OS of the boot disk being imported.
+    tags: A list of strings for adding tags to the Argo build.
+    zone: The GCP zone to tell Daisy to do work in. If unspecified, defaults to
+      wherever the Argo runner happens to be.
+    project: The Google Cloud Platform project name to use for OVF import.
+    output_filter: A list of strings indicating what lines from the log should
+      be output. Only lines that start with one of the strings in output_filter
+      will be displayed.
+
+  Returns:
+    A build object that either streams the output or is displayed as a
+    link to the build.
+
+  Raises:
+    FailedBuildException: If the build is completed and not 'SUCCESS'.
+  """
+  project_id = projects_util.ParseProject(
+      properties.VALUES.core.project.GetOrFail())
+
+  _CheckIamPermissions(
+      project_id,
+      ['roles/iam.serviceAccountUser', 'roles/iam.serviceAccountTokenCreator'])
+
+  # Make OVF import time-out before gcloud by shaving off 2% from the timeout
+  # time, up to a max of 5m (300s).
+  two_percent = int(args.timeout * 0.02)
+  ovf_import_timeout = args.timeout - min(two_percent, 300)
+
+  ovf_importer_args = []
+  _AppendArg(ovf_importer_args, 'instance-names', ','.join(instance_names))
+  _AppendArg(ovf_importer_args, 'client-id', 'gcloud')
+  _AppendArg(ovf_importer_args, 'ovf-gcs-path', source_uri)
+  _AppendBoolArg(ovf_importer_args, 'no-guest-environment',
+                 no_guest_environment)
+  _AppendBoolArg(ovf_importer_args, 'can-ip-forward', can_ip_forward)
+  _AppendBoolArg(ovf_importer_args, 'deletion-protection', deletion_protection)
+  _AppendArg(ovf_importer_args, 'description', description)
+  if labels:
+    _AppendArg(ovf_importer_args, 'labels',
+               ','.join(['{}={}'.format(k, v) for k, v in labels.items()]))
+  _AppendArg(ovf_importer_args, 'machine-type', machine_type)
+  _AppendArg(ovf_importer_args, 'network', network)
+  _AppendArg(ovf_importer_args, 'network-tier', network_tier)
+  _AppendArg(ovf_importer_args, 'subnet', subnet)
+  _AppendArg(ovf_importer_args, 'private-network-ip', private_network_ip)
+  _AppendBoolArg(ovf_importer_args, 'no-restart-on-failure',
+                 no_restart_on_failure)
+  _AppendArg(ovf_importer_args, 'os', os)
+  if tags:
+    _AppendArg(ovf_importer_args, 'tags', ','.join(tags))
+  _AppendArg(ovf_importer_args, 'zone', zone)
+  _AppendArg(ovf_importer_args, 'timeout', ovf_import_timeout, '-{0}={1}s')
+  _AppendArg(ovf_importer_args, 'project', project)
+
+  build_tags = ['gce-ovf-import']
+
+  # print('OVF args: ' + str(list(ovf_importer_args)))
+  return _RunCloudBuild(args, _OVF_IMPORT_BUILDER, ovf_importer_args,
+                        build_tags, output_filter)
+
+
+def _AppendArg(args, name, arg, format_pattern='-{0}={1}'):
+  if arg:
+    args.append(format_pattern.format(name, arg))
+
+
+def _AppendBoolArg(args, name, arg):
+  _AppendArg(args, name, arg, '-{0}')
+
+
+def MakeGcsUri(uri):
+  obj_ref = resources.REGISTRY.Parse(uri)
+  return 'gs://{0}/{1}'.format(obj_ref.bucket, obj_ref.object)

@@ -195,7 +195,8 @@ def AddCiphertextFileFlag(parser, help_action):
 def AddSignatureFileFlag(parser, help_action):
   parser.add_argument(
       '--signature-file',
-      help='Path to the signature file {}.'.format(help_action))
+      help='Path to the signature file {}.'.format(help_action),
+      required=True)
 
 
 def AddInputFileFlag(parser, help_action):

@@ -29,11 +29,9 @@ import collections
 import copy
 import re
 
-# pytype: disable=import-error
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import apis_util
 from googlecloudsdk.api_lib.util import resource as resource_util
-# pytype: enable=import-error
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 
@@ -210,7 +208,7 @@ class _ResourceParser(object):
     params = self.collection_info.GetParams(subcollection)
     fields = match.groups()
     if url_unescape:
-      fields = map(urllib.parse.unquote, fields)  # pytype: disable=wrong-arg-types
+      fields = map(urllib.parse.unquote, fields)
 
     return Resource(self.registry, self.collection_info, subcollection,
                     param_values=dict(zip(params, fields)),
@@ -833,7 +831,7 @@ class Registry(object):
     # the instance's get method's relative path. At the leaf, a key of
     # None indicates that the URL can finish here, and provides the parser
     # for this resource.
-    cur_level = self.parsers_by_url  # type: dict
+    cur_level = self.parsers_by_url
     while tokens:
       token = tokens.pop(0)
       if token[0] == '{' and token[-1] == '}':
@@ -844,7 +842,7 @@ class Registry(object):
     if None in cur_level:
       raise AmbiguousResourcePath(cur_level[None], parser.collection_info.name)
 
-    cur_level[None] = subcollection, parser  # pytype: disable=unsupported-operands
+    cur_level[None] = subcollection, parser
 
   def GetParserForCollection(self, collection, api_version=None):
     """Returns a parser object for collection.

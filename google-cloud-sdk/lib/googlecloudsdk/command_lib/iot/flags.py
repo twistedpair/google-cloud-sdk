@@ -231,8 +231,6 @@ class KeyTypes(enum.Enum):
     self.choice_name = self.name.replace('_', '-').lower()
 
 
-# TODO(b/71388306): Enums aren't handled well by pytype.
-# pytype: disable=attribute-error
 _VALID_KEY_TYPES = {
     KeyTypes.RSA_PEM.choice_name: """\
         An RSA public key encoded in base64, and wrapped by
@@ -263,7 +261,6 @@ _VALID_KEY_TYPES = {
     KeyTypes.RS256.choice_name: 'Deprecated name for `rsa-x509-pem`',
     KeyTypes.ES256.choice_name: 'Deprecated nmame for `es256-pem`'
 }
-# pytype: enable=attribute-error
 
 
 def AddDeviceCredentialFlagsToParser(parser, combine_flags=True,

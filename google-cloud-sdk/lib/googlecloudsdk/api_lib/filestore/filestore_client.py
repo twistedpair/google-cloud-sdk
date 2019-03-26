@@ -360,6 +360,9 @@ class BetaFilestoreAdapter(object):
     if instance.fileShares is None:
       instance.fileShares = []
     if file_share:
+      # Deduplicate file shares with the same name.
+      instance.fileShares = [fs for fs in instance.fileShares
+                             if fs.name != file_share.get('name')]
       file_share_config = self.messages.FileShareConfig(
           name=file_share.get('name'),
           capacityGb=utils.BytesToGb(file_share.get('capacity')))

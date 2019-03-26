@@ -283,6 +283,28 @@ def TransformStatus(r, undefined=''):
   return status or undefined
 
 
+def TransformVpnTunnelGateway(vpn_tunnel, undefined=''):
+  """Returns the gateway for the specified VPN tunnel resource if applicable.
+
+  Args:
+    vpn_tunnel: JSON-serializable object of a VPN tunnel.
+    undefined: Returns this value if the resource cannot be formatted.
+
+  Returns:
+    The VPN gateway information in the VPN tunnel object.
+  """
+  target_vpn_gateway = resource_transform.GetKeyValue(vpn_tunnel,
+                                                      'targetVpnGateway', None)
+  if target_vpn_gateway is not None:
+    return target_vpn_gateway
+
+  vpn_gateway = resource_transform.GetKeyValue(vpn_tunnel, 'vpnGateway', None)
+  if vpn_gateway is not None:
+    return vpn_gateway
+
+  return undefined
+
+
 def TransformZone(r, undefined=''):
   """Returns a zone name from a selfLink.
 
@@ -310,7 +332,6 @@ def TransformTypeSuffix(uri, undefined=''):
 
 
 _TRANSFORMS = {
-
     'firewall_rule': TransformFirewallRule,
     'image_alias': TransformImageAlias,
     'location': TransformLocation,
@@ -324,6 +345,7 @@ _TRANSFORMS = {
     'scoped_suffixes': TransformScopedSuffixes,
     'status': TransformStatus,
     'type_suffix': TransformTypeSuffix,
+    'vpn_tunnel_gateway': TransformVpnTunnelGateway,
     'zone': TransformZone,
 }
 

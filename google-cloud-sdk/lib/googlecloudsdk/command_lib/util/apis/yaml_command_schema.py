@@ -91,7 +91,7 @@ class CommandType(Enum):
   @classmethod
   def ForName(cls, name):
     try:
-      return CommandType[name.upper()]  # pytype: disable=not-indexable
+      return CommandType[name.upper()]
     except KeyError:
       return CommandType.GENERIC
 
@@ -101,6 +101,7 @@ class Request(object):
 
   def __init__(self, command_type, data):
     self.collection = data['collection']
+    self.display_resource_type = data.get('display_resource_type')
     self.api_version = data.get('api_version')
     self.method = data.get('method', command_type.default_method)
     if not self.method:

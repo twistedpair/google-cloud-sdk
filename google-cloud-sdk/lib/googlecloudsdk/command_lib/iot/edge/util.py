@@ -22,7 +22,6 @@ import enum
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.iot.edge import flags
-from googlecloudsdk.core.util import typing  # pylint: disable=unused-import
 
 
 _COMPONENT_TOPIC = {'mlModel': 'mlservice'}
@@ -42,7 +41,6 @@ class Component(enum.Enum):
   ML = 'mlModel'
 
   def AsTopicPrefix(self):
-    # type: () -> typing.Text
     """Format component names when they are used as topic prefixes."""
     return 'mlservice' if self.value == Component.ML else self.value
 
@@ -58,7 +56,6 @@ def MemoryBytesToMb(value):
 
 
 def AddDefaultTopicHook(component):
-  # type: (typing.Text) -> typing.Callable
   """Returns AddDefaultTopicHook for given component.
 
   Default Topic is always the first topic of input/out topics, and takes form of
@@ -123,7 +120,6 @@ def _DictToList(env_vars_dict):
 
 
 def UpdateEnvVarsHook(component):
-  # type: (typing.Text) -> typing.Callable
   """Returns UpdateEnvVarsHook for given component.
 
   Args:
@@ -220,7 +216,6 @@ def UpdateMaskHook(ref, args, req):
 
 
 def NameAnnotateHook(component):
-  # type: (typing.Text) -> typing.Callable
   """Returns NameAnnotateHook for given component.
 
   Args:

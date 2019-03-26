@@ -664,7 +664,7 @@ def GetArgSections(arguments, is_root):
       dests.add(arg.dest)
     if category not in categories:
       categories[category] = set()
-    categories[category].add(arg)  # pytype: disable=attribute-error
+    categories[category].add(arg)
 
   # Collect the priority sections first in order:
   #   POSITIONAL ARGUMENTS, REQUIRED, COMMON, OTHER, and categorized.

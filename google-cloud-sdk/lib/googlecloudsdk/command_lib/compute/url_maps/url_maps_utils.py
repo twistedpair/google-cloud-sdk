@@ -58,3 +58,20 @@ def IsGlobalUrlMapRef(url_map_ref):
   """Returns True if the URL Map reference is global."""
 
   return url_map_ref.Collection() == 'compute.urlMaps'
+
+
+def ComposeGetRequest(client, url_map_ref):
+  """Create Url Maps get request."""
+  if url_map_ref.Collection() == 'compute.regionUrlMaps':
+    return (
+        client.apitools_client.regionUrlMaps,
+        'Get',
+        client.messages.ComputeRegionUrlMapsGetRequest(
+            **url_map_ref.AsDict())
+        )
+  return (
+      client.apitools_client.urlMaps,
+      'Get',
+      client.messages.ComputeUrlMapsGetRequest(
+          **url_map_ref.AsDict())
+      )

@@ -15,21 +15,12 @@ class Authentication(_messages.Message):
   r"""Scan authentication configuration.
 
   Fields:
-    builtInAccount: Authentication using a custom account.
     customAccount: Authentication using a custom account.
     googleAccount: Authentication using a Google account.
   """
 
-  builtInAccount = _messages.MessageField('BuiltInAccount', 1)
-  customAccount = _messages.MessageField('CustomAccount', 2)
-  googleAccount = _messages.MessageField('GoogleAccount', 3)
-
-
-class BuiltInAccount(_messages.Message):
-  r"""Describes authentication configuration that uses a built-in test
-  account, The built-in test account is only available to Googlers.
-  """
-
+  customAccount = _messages.MessageField('CustomAccount', 1)
+  googleAccount = _messages.MessageField('GoogleAccount', 2)
 
 
 class CrawledUrl(_messages.Message):
@@ -105,8 +96,7 @@ class Finding(_messages.Message):
     reproductionUrl: Output only. The URL containing human-readable payload
       that user can leverage to reproduce the vulnerability.
     trackingId: Output only. The tracking ID uniquely identifies a
-      vulnerability instance across multiple ScanRuns. This is the public
-      version of TestResult.dna field.
+      vulnerability instance across multiple ScanRuns.
     violatingResource: Output only. An addon containing detailed information
       regarding any resource causing the vulnerability such as JavaScript
       sources, image, audio files, etc.
@@ -413,8 +403,6 @@ class ScanConfigError(_messages.Message):
         IP address which is not reserved for the current project.
       DUPLICATE_SCAN_NAME: Another scan with the same name (case-sensitive)
         already exists.
-      GOOGLEPLEX_NOT_SUPPORTED: Googleplex should be scanned by go/inq - Cloud
-        does not support it.
       INVALID_FIELD_VALUE: A field is set to an invalid value.
       FAILED_TO_AUTHENTICATE_TO_TARGET: There was an error trying to
         authenticate to the scan target.
@@ -482,32 +470,31 @@ class ScanConfigError(_messages.Message):
     CUSTOM_LOGIN_URL_HAS_NON_ROUTABLE_IP_ADDRESS = 15
     CUSTOM_LOGIN_URL_HAS_UNRESERVED_IP_ADDRESS = 16
     DUPLICATE_SCAN_NAME = 17
-    GOOGLEPLEX_NOT_SUPPORTED = 18
-    INVALID_FIELD_VALUE = 19
-    FAILED_TO_AUTHENTICATE_TO_TARGET = 20
-    FINDING_TYPE_UNSPECIFIED = 21
-    FORBIDDEN_TO_SCAN_COMPUTE = 22
-    MALFORMED_FILTER = 23
-    MALFORMED_RESOURCE_NAME = 24
-    PROJECT_INACTIVE = 25
-    REQUIRED_FIELD = 26
-    RESOURCE_NAME_INCONSISTENT = 27
-    SCAN_ALREADY_RUNNING = 28
-    SCAN_NOT_RUNNING = 29
-    SEED_URL_DOES_NOT_BELONG_TO_CURRENT_PROJECT = 30
-    SEED_URL_MALFORMED = 31
-    SEED_URL_MAPPED_TO_NON_ROUTABLE_ADDRESS = 32
-    SEED_URL_MAPPED_TO_UNRESERVED_ADDRESS = 33
-    SEED_URL_HAS_NON_ROUTABLE_IP_ADDRESS = 34
-    SEED_URL_IP_ADDRESS_NOT_SUPPORTED_FOR_APPENGINE = 35
-    SEED_URL_HAS_UNRESERVED_IP_ADDRESS = 36
-    SERVICE_ACCOUNT_NOT_CONFIGURED = 37
-    TOO_MANY_SCANS = 38
-    UNABLE_TO_RESOLVE_PROJECT_INFO = 39
-    UNSUPPORTED_BLACKLIST_PATTERN_FORMAT = 40
-    UNSUPPORTED_FILTER = 41
-    UNSUPPORTED_FINDING_TYPE = 42
-    UNSUPPORTED_URL_SCHEME = 43
+    INVALID_FIELD_VALUE = 18
+    FAILED_TO_AUTHENTICATE_TO_TARGET = 19
+    FINDING_TYPE_UNSPECIFIED = 20
+    FORBIDDEN_TO_SCAN_COMPUTE = 21
+    MALFORMED_FILTER = 22
+    MALFORMED_RESOURCE_NAME = 23
+    PROJECT_INACTIVE = 24
+    REQUIRED_FIELD = 25
+    RESOURCE_NAME_INCONSISTENT = 26
+    SCAN_ALREADY_RUNNING = 27
+    SCAN_NOT_RUNNING = 28
+    SEED_URL_DOES_NOT_BELONG_TO_CURRENT_PROJECT = 29
+    SEED_URL_MALFORMED = 30
+    SEED_URL_MAPPED_TO_NON_ROUTABLE_ADDRESS = 31
+    SEED_URL_MAPPED_TO_UNRESERVED_ADDRESS = 32
+    SEED_URL_HAS_NON_ROUTABLE_IP_ADDRESS = 33
+    SEED_URL_IP_ADDRESS_NOT_SUPPORTED_FOR_APPENGINE = 34
+    SEED_URL_HAS_UNRESERVED_IP_ADDRESS = 35
+    SERVICE_ACCOUNT_NOT_CONFIGURED = 36
+    TOO_MANY_SCANS = 37
+    UNABLE_TO_RESOLVE_PROJECT_INFO = 38
+    UNSUPPORTED_BLACKLIST_PATTERN_FORMAT = 39
+    UNSUPPORTED_FILTER = 40
+    UNSUPPORTED_FINDING_TYPE = 41
+    UNSUPPORTED_URL_SCHEME = 42
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   fieldName = _messages.StringField(2)

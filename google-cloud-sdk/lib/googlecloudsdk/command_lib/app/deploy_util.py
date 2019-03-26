@@ -70,6 +70,11 @@ ORIGINAL_RUNTIME_RE = re.compile(ORIGINAL_RUNTIME_RE_STRING + r'\Z')
 # Max App Engine file size; see https://cloud.google.com/appengine/docs/quotas
 _MAX_FILE_SIZE_STANDARD = 32 * 1024 * 1024
 
+# 1rst gen runtimes that still need the _MAX_FILE_SIZE_STANDARD check:
+_RUNTIMES_WITH_FILE_SIZE_LIMITS = [
+    'java7', 'java8', 'java8g', 'python27', 'go19', 'php55'
+]
+
 
 class Error(core_exceptions.Error):
   """Base error for this module."""
@@ -338,7 +343,8 @@ class ServiceDeployer(object):
         (flex_image_build_option == FlexImageBuildOptions.ON_SERVER or
          not service_info.is_hermetic)):
       limit = None
-      if service_info.env == env.STANDARD:
+      if (service_info.env == env.STANDARD and
+          service_info.runtime in _RUNTIMES_WITH_FILE_SIZE_LIMITS):
         limit = _MAX_FILE_SIZE_STANDARD
       manifest = deploy_app_command_util.CopyFilesToCodeBucket(
           upload_dir, source_files, code_bucket_ref, max_file_size=limit)

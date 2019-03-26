@@ -220,7 +220,7 @@ class _GCEMetadata(object):
     return '-'.join(zone.split('-')[:-1]) if zone else None
 
 
-_metadata = None  # type: _GCEMetadata
+_metadata = None
 _metadata_lock = threading.Lock()
 
 

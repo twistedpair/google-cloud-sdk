@@ -45,7 +45,7 @@ NUM_RETRIES = 10
 # WindowsError only exists when running on Windows
 try:
   # pylint: disable=invalid-name, We are not defining this name.
-  WindowsError  # pytype: disable=name-error
+  WindowsError
 except NameError:
   # pylint: disable=invalid-name, We are not defining this name.
   WindowsError = None
@@ -844,7 +844,6 @@ class FileLock(object):
     return False
 
 
-# pytype: disable=import-error
 # Imports fcntl, which is only available on POSIX.
 class _PosixLocking(object):
   """Exclusive, non-blocking file locking on POSIX systems."""
@@ -910,11 +909,10 @@ def _FileInBinaryMode(file_obj):
       old_mode = msvcrt.setmode(fd, os.O_BINARY)
       yield
     finally:
-      msvcrt.setmode(fd, old_mode)  # pytype: disable=name-error
+      msvcrt.setmode(fd, old_mode)
   else:
     # On non-Windows platforms, text mode == binary mode, so just yield.
     yield
-# pytype: enable=import-error
 
 
 def WriteStreamBytes(stream, contents):

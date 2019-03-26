@@ -1243,9 +1243,13 @@ class FeatureSettings(_messages.Message):
       instead of 'health_check' ones. Once the legacy 'health_check' behavior
       is deprecated, and this value is always true, this setting can be
       removed.
+    useContainerOptimizedOs: If true, use Container-Optimized OS
+      (https://cloud.google.com/container-optimized-os/) base image for VMs,
+      rather than a base Debian image.
   """
 
   splitHealthChecks = _messages.BooleanField(1)
+  useContainerOptimizedOs = _messages.BooleanField(2)
 
 
 class FileInfo(_messages.Message):
@@ -2721,6 +2725,7 @@ class Version(_messages.Message):
     versionUrl: Serving URL for this version. Example: "https://myversion-dot-
       myservice-dot-myapp.appspot.com"@OutputOnly
     vm: Whether to deploy this version in a container on a virtual machine.
+    vpcAccessConnector: Enables VPC connectivity for standard apps.
     zones: The Google Compute Engine zones that are supported by this version
       in the App Engine flexible environment. Deprecated.
   """
@@ -2853,7 +2858,8 @@ class Version(_messages.Message):
   threadsafe = _messages.BooleanField(33)
   versionUrl = _messages.StringField(34)
   vm = _messages.BooleanField(35)
-  zones = _messages.StringField(36, repeated=True)
+  vpcAccessConnector = _messages.MessageField('VpcAccessConnector', 36)
+  zones = _messages.StringField(37, repeated=True)
 
 
 class Volume(_messages.Message):
@@ -2869,6 +2875,17 @@ class Volume(_messages.Message):
   name = _messages.StringField(1)
   sizeGb = _messages.FloatField(2)
   volumeType = _messages.StringField(3)
+
+
+class VpcAccessConnector(_messages.Message):
+  r"""VPC access connector specification.
+
+  Fields:
+    name: Full Serverless VPC Access Connector name e.g. /projects/my-
+      project/locations/us-central1/connectors/c1.
+  """
+
+  name = _messages.StringField(1)
 
 
 class ZipInfo(_messages.Message):

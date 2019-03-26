@@ -37,7 +37,7 @@ import six
 # class only exists in Python on Windows, but we need to catch it in order to
 # deal with certain error cases).
 try:
-  WindowsError  # pytype: disable=name-error
+  WindowsError
 except NameError:
 
   class WindowsError(Exception):

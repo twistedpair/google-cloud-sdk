@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 
-# TODO(b/119257245): fix the format in man page.
+# TODO(b/129054682): fix the format in text render.
 
 
 def GetDescriptionFlag():

@@ -259,7 +259,6 @@ class _StdinSocket(object):
     # python3.
     pass
 
-  # pytype: disable=module-attr
   def _RecvWindows(self, bufsize):
     """Reads data from std in Windows.
 
@@ -274,13 +273,12 @@ class _StdinSocket(object):
     # STD_INPUT_HANDLE is -10
     h = ctypes.windll.kernel32.GetStdHandle(-10)
     buf = ctypes.create_string_buffer(bufsize)
-    number_of_bytes_read = wintypes.DWORD()  # pytype: disable=not-callable
+    number_of_bytes_read = wintypes.DWORD()
     ok = ctypes.windll.kernel32.ReadFile(
         h, buf, bufsize, ctypes.byref(number_of_bytes_read), None)
     if not ok:
       raise socket.error(errno.EIO, 'stdin ReadFile failed')
     return buf.raw[:number_of_bytes_read.value]
-  # pytype: enable=module-attr
 
   class _EOFError(Exception):
     pass

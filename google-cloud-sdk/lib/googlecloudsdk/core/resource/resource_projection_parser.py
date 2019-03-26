@@ -14,8 +14,6 @@
 # limitations under the License.
 
 """A class for parsing a resource projection expression."""
-# TODO(b/113319639): Temporary skip to get pytype enabled.
-# pytype: skip-file
 
 from __future__ import absolute_import
 from __future__ import division
@@ -318,7 +316,7 @@ class Parser(object):
       ExpressionSyntaxError: The expression has a syntax error.
     """
     while True:
-      name = self._lex.Token('=:,)', space=False)  # type: str
+      name = self._lex.Token('=:,)', space=False)
       here = self._lex.GetPosition()
       if self._lex.IsCharacter('=', eoi_ok=True):
         boolean_value = False
@@ -446,7 +444,7 @@ class Parser(object):
       ExpressionSyntaxError: The expression has a syntax error.
     """
     while True:
-      name = self._lex.Token('=,])', space=False)  # type: str
+      name = self._lex.Token('=,])', space=False)
       if name:
         if self._lex.IsCharacter('='):
           value = self._lex.Token(',])', space=False, convert=True)
@@ -503,7 +501,7 @@ class Parser(object):
           self.__key_order_offset = 0
         else:
           here = self._lex.GetPosition()
-          name = self._lex.Token(':([')  # type: str
+          name = self._lex.Token(':([')
           if not name.isalpha():
             raise resource_exceptions.ExpressionSyntaxError(
                 'Name expected [{0}].'.format(self._lex.Annotate(here)))

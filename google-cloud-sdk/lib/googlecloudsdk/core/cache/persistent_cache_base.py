@@ -78,7 +78,7 @@ def Now():
 
 
 @six.add_metaclass(abc.ABCMeta)
-class Table(object):  # pytype: disable=ignored-abstractmethod
+class Table(object):
   """A persistent cache table object.
 
   This object should only be instantiated by a Cache object.
@@ -251,7 +251,7 @@ class Table(object):  # pytype: disable=ignored-abstractmethod
 
 
 @six.add_metaclass(abc.ABCMeta)
-class Cache(object):  # pytype: disable=ignored-abstractmethod
+class Cache(object):
   r"""A persistent cache object.
 
   This class is also a context manager. Changes are automaticaly committed if
@@ -328,7 +328,6 @@ class Cache(object):  # pytype: disable=ignored-abstractmethod
 
   @abc.abstractmethod
   def Table(self, name, create=True, columns=1, keys=1, timeout=None):
-    # type: (str, bool, int, int, int) -> Table
     """Returns the Table object for existing table name.
 
     Args:

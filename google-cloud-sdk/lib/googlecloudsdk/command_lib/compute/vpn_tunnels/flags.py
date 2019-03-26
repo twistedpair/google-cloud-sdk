@@ -25,7 +25,16 @@ DEFAULT_LIST_FORMAT = """\
     table(
       name,
       region.basename(),
-      targetVpnGateway.basename():label=GATEWAY,
+      vpn_tunnel_gateway().basename():label=GATEWAY,
+      peerIp:label=PEER_ADDRESS
+    )"""
+
+HA_VPN_LIST_FORMAT = """\
+    table(
+      name,
+      region.basename(),
+      vpn_tunnel_gateway().basename():label=GATEWAY,
+      vpn_gateway_interface:label=VPN_INTERFACE,
       peerIp:label=PEER_ADDRESS
     )"""
 

@@ -202,7 +202,7 @@ class Cache(metadata_table.CacheUsingMetadataTable):
     lock_name = '__lock__'
     self._restricted = set([lock_name])
     self._tables = {}
-    self._metadata = None  # type: _Table
+    self._metadata = None
     self._start = persistent_cache_base.Now()
     self._lock_path = os.path.join(self.name, lock_name)
     self._lock = None

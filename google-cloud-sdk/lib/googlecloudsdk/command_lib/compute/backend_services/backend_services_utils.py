@@ -438,3 +438,20 @@ def ApplyLogConfigArgs(messages, args, backend_service):
     if args.logging_sample_rate is not None:
       log_config.sampleRate = args.logging_sample_rate
     backend_service.logConfig = log_config
+
+
+def ComposeGetRequest(client, backend_service_ref):
+  """Create Backend Services get request."""
+  if backend_service_ref.Collection() == 'compute.regionBackendServices':
+    return (
+        client.apitools_client.regionBackendServices,
+        'Get',
+        client.messages.ComputeRegionBackendServicesGetRequest(
+            **backend_service_ref.AsDict())
+        )
+  return (
+      client.apitools_client.backendServices,
+      'Get',
+      client.messages.ComputeBackendServicesGetRequest(
+          **backend_service_ref.AsDict())
+      )

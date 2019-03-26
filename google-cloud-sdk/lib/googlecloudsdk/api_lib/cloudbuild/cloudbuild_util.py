@@ -241,7 +241,7 @@ def LoadMessageFromStream(stream,
     raise ParserError(path, 'Could not parse as a dictionary.')
 
   # Transform snake_case into camelCase.
-  structured_data = SnakeToCamel(structured_data, skip_camel_case)  # type: dict
+  structured_data = SnakeToCamel(structured_data, skip_camel_case)
 
   # Then, turn the dict into a proto message.
   try:

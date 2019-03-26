@@ -72,7 +72,7 @@ def _PythonConsole():
   except ImportError:
     pass
   else:
-    readline.set_completer(rlcompleter.Completer(globals()).complete)  # pytype: disable=wrong-arg-count
+    readline.set_completer(rlcompleter.Completer(globals()).complete)
     readline.parse_and_bind('tab: complete')
   console = code.InteractiveConsole(globals())
   console.interact(_BANNER)

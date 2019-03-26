@@ -449,7 +449,7 @@ def KillSubprocess(p):
     # Create the process map
     pid_map = {}
     for line in stdout.strip().split('\n'):
-      (ppid, pid) = re.match(r'\s*(\d+)\s+(\d+)', line).groups()  # pytype: disable=attribute-error
+      (ppid, pid) = re.match(r'\s*(\d+)\s+(\d+)', line).groups()
       ppid = int(ppid)
       pid = int(pid)
       children = pid_map.get(ppid)

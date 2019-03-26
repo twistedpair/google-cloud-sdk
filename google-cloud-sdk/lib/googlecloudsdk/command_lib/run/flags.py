@@ -29,6 +29,7 @@ from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import local_config
 from googlecloudsdk.command_lib.run import source_ref as source_ref_util
 from googlecloudsdk.command_lib.util.args import map_util
+from googlecloudsdk.command_lib.util.args import repeated
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -86,9 +87,9 @@ def AddEndpointVisibilityEnum(parser):
   parser.add_argument(
       '--connectivity',
       choices=_VISIBILITY_MODES,
-      help=('If \'external\', the service can be invoked through the internet, '
-            'in addition to through the cluster network. Only applicable for '
-            'Cloud Run on Kubernetes Engine.'))
+      help=('Defaults to \'external\'. If \'external\', the service can be '
+            'invoked through the internet, in addition to through the cluster '
+            'network. Only applicable to Cloud Run on Kubernetes Engine.'))
 
 
 def AddServiceFlag(parser):
@@ -135,6 +136,18 @@ def AddFunctionArg(parser):
       Specifies that the deployed object is a function. If a value is
       provided, that value is used as the entrypoint.
       """)
+
+
+def AddCloudSQLFlags(parser):
+  """Add flags for setting CloudSQL stuff."""
+  repeated.AddPrimitiveArgs(
+      parser,
+      'Service',
+      'cloudsql-instances',
+      'CloudSQL instances',
+      """You can specify a name of a CloudSQL instance if it's in the same
+      project and region as your Cloud Run service; otherwise specify
+      <project>:<region>:<instance> for the instance.""")
 
 
 def AddMutexEnvVarsFlags(parser):
@@ -189,6 +202,16 @@ def _HasEnvChanges(args):
   return any(args.IsSpecified(flag) for flag in env_flags)
 
 
+def _HasCloudSQLChanges(args):
+  """True iff any of the cloudsql flags are set."""
+  instances_flags = ['add_cloudsql_instances', 'set_cloudsql_instances',
+                     'remove_cloudsql_instances', 'clear_cloudsql_instances']
+  # hasattr check is to allow the same code to work for release tracks that
+  # don't have the args at all yet.
+  return any(hasattr(args, flag) and args.IsSpecified(flag)
+             for flag in instances_flags)
+
+
 def _GetEnvChanges(args):
   """Return config_changes.EnvVarChanges for given args."""
   kwargs = {}
@@ -212,6 +235,12 @@ def GetConfigurationChanges(args):
   changes = []
   if _HasEnvChanges(args):
     changes.append(_GetEnvChanges(args))
+
+  if _HasCloudSQLChanges(args):
+    region = GetRegion(args)
+    project = (getattr(args, 'project', None) or
+               properties.VALUES.core.project.Get(required=True))
+    changes.append(config_changes.CloudSQLChanges(project, region, args))
 
   if 'memory' in args and args.memory:
     changes.append(config_changes.ResourceChanges(memory=args.memory))

@@ -89,7 +89,7 @@ def Strptime(rfc3339_str):
     if zone_sign == '-':
       zone_offset = -zone_offset
 
-  integer_time = calendar.timegm(time_tuple) - zone_offset  # pytype: disable=wrong-arg-types
+  integer_time = calendar.timegm(time_tuple) - zone_offset
   if frac_seconds:
     sig_dig = len(frac_seconds)
     return ((integer_time * (10 ** sig_dig)

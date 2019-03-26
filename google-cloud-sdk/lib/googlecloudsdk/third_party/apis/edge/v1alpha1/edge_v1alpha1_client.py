@@ -35,7 +35,6 @@ class EdgeV1alpha1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.projects_deployableFunctions = self.ProjectsDeployableFunctionsService(self)
     self.projects_locations_registries_devices_containers = self.ProjectsLocationsRegistriesDevicesContainersService(self)
     self.projects_locations_registries_devices_functions = self.ProjectsLocationsRegistriesDevicesFunctionsService(self)
     self.projects_locations_registries_devices_mlModels = self.ProjectsLocationsRegistriesDevicesMlModelsService(self)
@@ -43,43 +42,6 @@ class EdgeV1alpha1(base_api.BaseApiClient):
     self.projects_locations_registries = self.ProjectsLocationsRegistriesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
-
-  class ProjectsDeployableFunctionsService(base_api.BaseApiService):
-    """Service class for the projects_deployableFunctions resource."""
-
-    _NAME = u'projects_deployableFunctions'
-
-    def __init__(self, client):
-      super(EdgeV1alpha1.ProjectsDeployableFunctionsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""Returns the list of edge functions in Google Container Registry.
-
-      Args:
-        request: (EdgeProjectsDeployableFunctionsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListDeployableFunctionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/deployableFunctions',
-        http_method=u'GET',
-        method_id=u'edge.projects.deployableFunctions.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/deployableFunctions',
-        request_field='',
-        request_type_name=u'EdgeProjectsDeployableFunctionsListRequest',
-        response_type_name=u'ListDeployableFunctionsResponse',
-        supports_download=False,
-    )
 
   class ProjectsLocationsRegistriesDevicesContainersService(base_api.BaseApiService):
     """Service class for the projects_locations_registries_devices_containers resource."""

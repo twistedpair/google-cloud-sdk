@@ -27,7 +27,6 @@ import abc
 
 from googlecloudsdk.core.cache import exceptions
 from googlecloudsdk.core.cache import persistent_cache_base
-from googlecloudsdk.core.util import typing  # pylint: disable=unused-import
 
 import six
 
@@ -70,7 +69,7 @@ class Metadata(object):
 
 
 @six.add_metaclass(abc.ABCMeta)
-class CacheUsingMetadataTable(persistent_cache_base.Cache):  # pytype: disable=ignored-abstractmethod
+class CacheUsingMetadataTable(persistent_cache_base.Cache):
   """A persistent cache metadata table implementation layer.
 
   Attributes:
@@ -83,10 +82,10 @@ class CacheUsingMetadataTable(persistent_cache_base.Cache):  # pytype: disable=i
   def __init__(self, table, name, create=True, timeout=0, version=None):
     super(CacheUsingMetadataTable, self).__init__(
         name, create=create, timeout=timeout, version=version)
-    self._metadata = None  # type: persistent_cache_base.Table
+    self._metadata = None
     self._table_class = table
-    self._restricted = None  # type: set
-    self._tables = None  # type: dict
+    self._restricted = None
+    self._tables = None
 
   @abc.abstractmethod
   def Delete(self):
@@ -254,7 +253,6 @@ class CacheUsingMetadataTable(persistent_cache_base.Cache):  # pytype: disable=i
                keys=1, timeout=0)
 
   def Select(self, name=None):
-    # type: (typing.Optional[str]) -> list[str]
     """Returns the list of unrestricted table names matching name.
 
     Args:

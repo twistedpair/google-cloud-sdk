@@ -24,7 +24,6 @@ import re
 
 from apitools.base.protorpclite import messages
 from apitools.base.py import encoding
-import enum  # pylint: disable=unused-import, for pytype
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import properties
@@ -136,14 +135,15 @@ def GetFromNamespace(namespace, arg_name, fallback=None, use_defaults=False):
 
 def Limit(method, namespace):
   """Gets the value of the limit flag (if present)."""
-  if method.IsPageableList() and method.ListItemField():
+  if (hasattr(namespace, 'limit') and method.IsPageableList() and
+      method.ListItemField()):
     return getattr(namespace, 'limit')
 
 
 def PageSize(method, namespace):
   """Gets the value of the page size flag (if present)."""
-  if (method.IsPageableList() and method.ListItemField() and
-      method.BatchPageSizeField()):
+  if (hasattr(namespace, 'page_size') and method.IsPageableList() and
+      method.ListItemField() and method.BatchPageSizeField()):
     return getattr(namespace, 'page_size')
 
 
@@ -439,7 +439,6 @@ def ParseExistingMessageIntoMessage(message, existing_message, method):
 
 
 def ChoiceToEnum(choice, enum_type, item_type='choice', valid_choices=None):
-  # type: (str, enum.Enum, list) -> enum.Enum
   """Converts the typed choice into an apitools Enum value."""
   if choice is None:
     return None

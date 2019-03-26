@@ -137,7 +137,7 @@ def GetModuleFromPath(name_to_give, module_path):
     return _GetModuleFromPathViaPkgutil(module_path, name_to_give)
   else:
     try:
-      f, file_path, items = result  # pytype: disable=attribute-error
+      f, file_path, items = result
       module = imp.load_module(name_to_give, f, file_path, items)
       if module.__name__ not in sys.modules:
         # Python 2.6 does not add this to sys.modules. This is to make sure
@@ -188,7 +188,7 @@ def _LoadModule(importer, module_path, module_name, name_to_give):
     imp.load_module('.'.join(package_path_parts), None,
                     os.path.join(_GetPathRoot(module_path),
                                  *package_path_parts),
-                    ('', '', imp.PKG_DIRECTORY))  # pytype: disable=wrong-arg-types
+                    ('', '', imp.PKG_DIRECTORY))
 
   # pylint: disable=exec-used
   exec(code, module.__dict__)

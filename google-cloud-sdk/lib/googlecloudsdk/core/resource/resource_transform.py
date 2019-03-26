@@ -997,7 +997,7 @@ def TransformScope(r, *args):
   if not r:
     return ''
   # pylint: disable=too-many-function-args
-  r = urllib.parse.unquote(six.text_type(r))  # pytype: disable=module-attr
+  r = urllib.parse.unquote(six.text_type(r))
   # pylint: enable=too-many-function-args
   if '/' not in r:
     return r
@@ -1025,7 +1025,7 @@ def TransformSegment(r, index=-1, undefined=''):
   if not r:
     return undefined
   # pylint: disable=too-many-function-args
-  r = urllib.parse.unquote(six.text_type(r))  # pytype: disable=module-attr
+  r = urllib.parse.unquote(six.text_type(r))
   # pylint: enable=too-many-function-args
   segments = r.split('/')
   try:

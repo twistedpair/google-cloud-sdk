@@ -5,6 +5,68 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 240.0.0 (2019-03-26)
+
+### Breaking Changes
+
+*   **(Kubernetes Engine)** Enabled node auto-upgrade by default for clusters and node-pools created
+*   **(Kubernetes Engine)** with `gcloud beta container <clusters|node-pools> create`. To disable manually,
+*   **(Kubernetes Engine)** use the `--no-enable-autoupgrade` flag.
+
+
+### Cloud SDK
+
+* Added the `--impersonate-service-account` flag to `gcloud`.
+
+### App Engine
+
+* Fixed a bug which could cause gcloud to incorrectly print `http` URLs for
+  services, when `https` URLs would be more appropriate.
+* Removed 32MB file size limit for second generation runtimes.
+
+### Cloud DNS
+
+* Promoted private zones of the `gcloud dns managed-zones` command group to GA.
+  Use the `--visibility` and `--networks` flags to configure zone visibility.
+
+### Cloud Dataproc
+
+* Added `gcloud beta dataproc <jobs submit|workflow-templates add-job> presto`
+  to enable submitting Presto jobs to a Dataproc cluster and adding Presto jobs
+  to workflow templates, respectively.
+* Added `--enable-component-gateway` flag to `gcloud beta dataproc clusters
+  create` and `gcloud beta dataproc workflow-templates set-managed-cluster`.
+
+### Compute Engine
+
+* Promoted `--failover-ratio`, `--drop-traffic-if-unhealthy`, and
+  `--connection-drain-on-failover` flags of
+  `gcloud compute backend-services <create|update>` to beta.
+* Promoted `--failover` flag of
+  `gcloud compute backend-services <add_backend|update_backend>` to beta.
+* Promoted `gcloud compute instance-groups managed wait-until` command to beta.
+* Promoted `--region` flag of `gcloud compute disks` and related commands to GA.
+* Added `gcloud beta compute external-vpn-gateway` command group to enable reading and manipulating of Compute Engine external VPN gateways.
+* Added `gcloud beta compute vpn-gateway` command group to enable reading and manipulating of Compute Engine VPN gateways.
+* Updated `gcloud beta compute vpn-tunnel` command to enable the creation of HA VPN tunnels.
+
+### Identity and Access Management
+
+* Added a new column, `DISABLED`, to the return table of
+  `gcloud iam service-account list`, which displays the state of the service
+  account listed.
+
+### Kubernetes Engine
+
+* Added the `--release-channel` flag to `gcloud alpha container clusters create`
+  for subscribing a cluster to a release channel.
+* Promoted `--default-max-pods-per-node` flag of `gcloud container clusters create` from Beta to GA.
+* Promoted `--max-pods-per-node` flag of `gcloud container node-pools create` from Beta to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 239.0.0 (2019-03-19)
 
 ### Cloud Dataproc
@@ -76,7 +138,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### App Engine
 
-* 
 * Updated the Python SDK to version 1.9.84.
   Please visit the following release notes for details:
   https://cloud.google.com/appengine/docs/python/release-notes
@@ -137,7 +198,6 @@ available in `gcloud dataproc clusters <create-from-file|describe>`.
 
 ### Cloud Storage
 
-* 
 * Updated gsutil component to 4.37.
 
 ### Compute Engine
@@ -3068,7 +3128,7 @@ labels.
 
 ### Breaking Changes
 
-* **(REMOVED)** Removed support for the format `--scopes=[ACCOUNT=]SCOPE,[[ACCOUNT=]SCOPE,…]]` in `gcloud compute instances <create|create-with-container>` and `gcloud compute instance-templates <create|create-with-container>`. Please use `--scopes=[SCOPE, …]` and `--service-account=ACCOUNT` instead.
+* **(REMOVED)** Removed support for the format `--scopes=[ACCOUNT=]SCOPE,[[ACCOUNT=]SCOPE,...]]` in `gcloud compute instances <create|create-with-container>` and `gcloud compute instance-templates <create|create-with-container>`. Please use `--scopes=[SCOPE, ...]` and `--service-account=ACCOUNT` instead.
 
 *   **(MODIFIED)** Added cautionary 'y/n' prompts to
     `gcloud beta iam roles create`, `gcloud beta iam roles update`, and

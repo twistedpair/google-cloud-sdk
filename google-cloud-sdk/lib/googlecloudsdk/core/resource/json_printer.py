@@ -61,7 +61,7 @@ class JsonPrinter(resource_printer_base.ResourcePrinter):
         ensure_ascii=True,
         indent=resource_printer_base.STRUCTURED_INDENTATION,
         separators=(',', ': '),
-        sort_keys=True)  # pytype: disable=wrong-arg-types
+        sort_keys=True)
     # ensure_ascii makes the json module always return byte strings. Any
     # non-ascii characters will be escaped. This is the default behavior, it is
     # just now explicit. We decode here so we get text strings back, and we can

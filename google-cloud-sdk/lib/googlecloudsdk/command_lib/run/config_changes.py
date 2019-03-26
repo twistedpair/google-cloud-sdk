@@ -20,6 +20,10 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import abc
+
+from googlecloudsdk.command_lib.run import exceptions
+from googlecloudsdk.command_lib.util.args import repeated
+
 import six
 
 
@@ -76,6 +80,73 @@ class ResourceChanges(ConfigChanger):
     """Mutates the given config's resource limits to match what's desired."""
     del metadata  # Unused, but requred by ConfigChanger's signature.
     config.resource_limits['memory'] = self._memory
+
+
+_CLOUDSQL_ANNOTATION = 'run.googleapis.com/cloudsql-instances'
+
+
+class CloudSQLChanges(ConfigChanger):
+  """Represents the intent to update the cloudsql instances."""
+
+  def __init__(self, project, region, args):
+    """Initializes the intent to update the cloudsql instances.
+
+    Args:
+      project: Project to use as the default project for CloudSQL instances.
+      region: Region to use as the default region for CloudSQL instances
+      args: Args to the command.
+    """
+    self._project = project
+    self._region = region
+    self._args = args
+
+  # Here we are a proxy through to the actual args to set some extra augmented
+  # information on each one, so each cloudsql instance gets the region and
+  # project.
+  @property
+  def add_cloudsql_instances(self):
+    return self._AugmentArgs('add_cloudsql_instances')
+
+  @property
+  def remove_cloudsql_instances(self):
+    return self._AugmentArgs('remove_cloudsql_instances')
+
+  @property
+  def set_cloudsql_instances(self):
+    return self._AugmentArgs('set_cloudsql_instances')
+
+  @property
+  def clear_cloudsql_instances(self):
+    return getattr(self._args, 'clear_cloudsql_instances', None)
+
+  def _AugmentArgs(self, arg_name):
+    val = getattr(self._args, arg_name, None)
+    if val is None:
+      return None
+    return [self._Augment(i) for i in val]
+
+  def AdjustConfiguration(self, config, metadata):
+    def GetCurrentInstances():
+      annotation_val = config.revision_annotations.get(_CLOUDSQL_ANNOTATION)
+      if annotation_val:
+        return annotation_val.split(',')
+      return []
+
+    instances = repeated.ParsePrimitiveArgs(
+        self, 'cloudsql-instances', GetCurrentInstances)
+    config.revision_annotations[_CLOUDSQL_ANNOTATION] = ','.join(instances)
+
+  def _Augment(self, instance_str):
+    instance = instance_str.split(':')
+    if len(instance) == 3:
+      ret = tuple(instance)
+    elif len(instance) == 1:
+      ret = self._project, self._region, instance[0]
+    else:
+      raise exceptions.CloudSQLError(
+          'Malformed CloudSQL instance string: {}'.format(
+              instance_str))
+    return ':'.join(ret)
 
 
 class ConcurrencyChanges(ConfigChanger):

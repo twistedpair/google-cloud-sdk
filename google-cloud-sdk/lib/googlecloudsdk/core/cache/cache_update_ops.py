@@ -35,7 +35,7 @@ class _TableRows(object):
 
 
 @six.add_metaclass(abc.ABCMeta)
-class _UpdateCacheOp(object):  # pytype: disable=ignored-abstractmethod
+class _UpdateCacheOp(object):
   """The cache update operation base class."""
 
   def __init__(self, completer):

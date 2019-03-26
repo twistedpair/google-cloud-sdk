@@ -77,7 +77,7 @@ def NormalizeForSearch(value, html=False):
   text = _Stringize(value).lower()
   # Strip HTML tags if needed.
   if html:
-    text = re.sub('<[^>]*>', '', text)  # pytype: disable=wrong-arg-types
+    text = re.sub('<[^>]*>', '', text)
   # Convert to NFKD normal form with accents stripped.
   return ''.join([c for c in unicodedata.normalize('NFKD', text)
                   if not unicodedata.combining(c)])
@@ -115,7 +115,7 @@ def _MatchOneWordInText(backend, key, op, warned_attribute, value, pattern):
     if value == 1 and operand.lower() == 'true':
       return True
     # Stringize float with trailing .0's stripped.
-    text = re.sub(r'\.0*$', '', _Stringize(value))  # pytype: disable=wrong-arg-types
+    text = re.sub(r'\.0*$', '', _Stringize(value))
   elif value == operand:
     return True
   elif value is None:
@@ -282,7 +282,7 @@ class Backend(object):
 
 
 @six.add_metaclass(abc.ABCMeta)
-class _Expr(object):  # pytype: disable=ignored-abstractmethod
+class _Expr(object):
   """Expression base class."""
 
   def __init__(self, backend):
@@ -441,7 +441,7 @@ class _ExprOperand(object):
 
 
 @six.add_metaclass(abc.ABCMeta)
-class _ExprOperator(_Expr):  # pytype: disable=ignored-abstractmethod
+class _ExprOperator(_Expr):
   """Base term (<key operator operand>) node.
 
   ExprOperator subclasses must define the function Apply(self, value, operand)

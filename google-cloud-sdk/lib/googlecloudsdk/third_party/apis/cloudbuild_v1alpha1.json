@@ -631,6 +631,10 @@
             "type": "string",
             "format": "byte"
           }
+        },
+        "artifactTiming": {
+          "description": "Time to push all non-container artifacts.",
+          "$ref": "TimeSpan"
         }
       }
     },
@@ -994,7 +998,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Deletes a `WorkerPool` by its project ID and WorkerPool ID.\n\nThis API is experimental."
+              "description": "Deletes a `WorkerPool` by its project ID and WorkerPool name.\n\nThis API is experimental."
             },
             "patch": {
               "id": "cloudbuild.projects.workerPools.patch",
