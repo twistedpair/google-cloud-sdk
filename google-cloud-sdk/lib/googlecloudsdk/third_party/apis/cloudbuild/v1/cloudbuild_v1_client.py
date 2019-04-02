@@ -441,7 +441,7 @@ This API is experimental.
         method_id=u'cloudbuild.projects.triggers.list',
         ordered_params=[u'projectId'],
         path_params=[u'projectId'],
-        query_params=[],
+        query_params=[u'pageSize', u'pageToken'],
         relative_path=u'v1/projects/{projectId}/triggers',
         request_field='',
         request_type_name=u'CloudbuildProjectsTriggersListRequest',

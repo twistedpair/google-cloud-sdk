@@ -319,10 +319,10 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: Unimplemented. The condition that is associated with this
-      binding. NOTE: an unsatisfied condition will not allow user access via
-      current binding. Different bindings, including their conditions, are
-      examined independently.
+    condition: The condition that is associated with this binding. NOTE: an
+      unsatisfied condition will not allow user access via current binding.
+      Different bindings, including their conditions, are examined
+      independently.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -1020,10 +1020,10 @@ class Queue(_messages.Message):
       particular a task after its first attempt fails. That is,   retry_config
       controls task retries (the   second attempt, third attempt, etc).  The
       queue's actual dispatch rate is the result of:  * Number of tasks in the
-      queue * User-specified throttling: rate limits   retry configuration,
-      and the   queue's state. * System throttling due to `429` (Too Many
-      Requests) or `503` (Service   Unavailable) responses from the worker,
-      high error rates, or to smooth   sudden large traffic spikes.
+      queue * User-specified throttling: rate_limits,   retry_config, and the
+      queue's state. * System throttling due to `429` (Too Many Requests) or
+      `503` (Service   Unavailable) responses from the worker, high error
+      rates, or to smooth   sudden large traffic spikes.
     retryConfig: Settings that determine the retry behavior.  * For tasks
       created using Cloud Tasks: the queue-level retry settings   apply to all
       tasks in the queue that were created using Cloud Tasks.   Retry settings

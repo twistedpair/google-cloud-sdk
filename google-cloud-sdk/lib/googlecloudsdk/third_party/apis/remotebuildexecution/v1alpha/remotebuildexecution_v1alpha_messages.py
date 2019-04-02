@@ -1602,12 +1602,17 @@ class GoogleDevtoolsRemoteworkersV1test2CommandTaskInputs(_messages.Message):
       that are indirectly referenced by an entry there.  The bot should check
       against this list before downloading required task inputs to reduce the
       number of communications between itself and the remote CAS server.
+    workingDirectory: Directory from which a command is executed. It is a
+      relative directory with respect to the bot's working directory (i.e.,
+      "./"). If it is non-empty, then it must exist under "./". Otherwise,
+      "./" will be used.
   """
 
   arguments = _messages.StringField(1, repeated=True)
   environmentVariables = _messages.MessageField('GoogleDevtoolsRemoteworkersV1test2CommandTaskInputsEnvironmentVariable', 2, repeated=True)
   files = _messages.MessageField('GoogleDevtoolsRemoteworkersV1test2Digest', 3, repeated=True)
   inlineBlobs = _messages.MessageField('GoogleDevtoolsRemoteworkersV1test2Blob', 4, repeated=True)
+  workingDirectory = _messages.StringField(5)
 
 
 class GoogleDevtoolsRemoteworkersV1test2CommandTaskInputsEnvironmentVariable(_messages.Message):

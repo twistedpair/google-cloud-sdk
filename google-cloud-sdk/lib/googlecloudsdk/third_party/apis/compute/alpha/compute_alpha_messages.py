@@ -1442,6 +1442,9 @@ class AttachedDiskInitializeParams(_messages.Message):
       disks.
     replicaZones: URLs of the zones where the disk should be replicated to.
       Only applicable for regional resources.
+    resourcePolicies: Resource policies applied to this disk for automatic
+      snapshot creations. Specified using the full or partial URL. For
+      instance template, specify only the resource policy name.
     sourceImage: The source image to create this disk. When creating a new
       instance, one of initializeParams.sourceImage or disks.source is
       required except for local SSD.  To create a disk with one of the public
@@ -1505,10 +1508,11 @@ class AttachedDiskInitializeParams(_messages.Message):
   guestOsFeatures = _messages.MessageField('GuestOsFeature', 5, repeated=True)
   labels = _messages.MessageField('LabelsValue', 6)
   replicaZones = _messages.StringField(7, repeated=True)
-  sourceImage = _messages.StringField(8)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 9)
-  sourceSnapshot = _messages.StringField(10)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 11)
+  resourcePolicies = _messages.StringField(8, repeated=True)
+  sourceImage = _messages.StringField(9)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 10)
+  sourceSnapshot = _messages.StringField(11)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 12)
 
 
 class AuditConfig(_messages.Message):
@@ -3598,10 +3602,10 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: Unimplemented. The condition that is associated with this
-      binding. NOTE: an unsatisfied condition will not allow user access via
-      current binding. Different bindings, including their conditions, are
-      examined independently.
+    condition: The condition that is associated with this binding. NOTE: an
+      unsatisfied condition will not allow user access via current binding.
+      Different bindings, including their conditions, are examined
+      independently.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
@@ -11462,6 +11466,18 @@ class ComputeNetworksDeleteRequest(_messages.Message):
   network = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
+
+
+class ComputeNetworksGetEffectiveFirewallsRequest(_messages.Message):
+  r"""A ComputeNetworksGetEffectiveFirewallsRequest object.
+
+  Fields:
+    network: Name of the network for this request.
+    project: Project ID for this request.
+  """
+
+  network = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
 
 
 class ComputeNetworksGetRequest(_messages.Message):
@@ -20962,6 +20978,17 @@ class Disk(_messages.Message):
       sourceSnapshot, the value of sizeGb must not be less than the size of
       the sourceImage or the size of the snapshot. Acceptable values are 1 to
       65536, inclusive.
+    sourceDisk: The source disk used to create this disk. You can provide this
+      as a partial or full URL to the resource. For example, the following are
+      valid values:   - https://www.googleapis.com/compute/v1/projects/project
+      /zones/zone/disks/disk  - projects/project/zones/zone/disks/disk  -
+      zones/zone/disks/disk
+    sourceDiskId: [Output Only] The unique ID of the disk used to create this
+      disk. This value identifies the exact disk that was used to create this
+      persistent disk. For example, if you created the persistent disk from a
+      disk that was later deleted and recreated under the same name, the
+      source disk ID would identify the exact version of the disk that was
+      used.
     sourceImage: The source image used to create this disk. If the source
       image is deleted, this field will not be set.  To create a disk with one
       of the public operating system images, specify the image by its family
@@ -21081,17 +21108,19 @@ class Disk(_messages.Message):
   resourcePolicies = _messages.StringField(19, repeated=True)
   selfLink = _messages.StringField(20)
   sizeGb = _messages.IntegerField(21)
-  sourceImage = _messages.StringField(22)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 23)
-  sourceImageId = _messages.StringField(24)
-  sourceSnapshot = _messages.StringField(25)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 26)
-  sourceSnapshotId = _messages.StringField(27)
-  status = _messages.EnumField('StatusValueValuesEnum', 28)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 29)
-  type = _messages.StringField(30)
-  users = _messages.StringField(31, repeated=True)
-  zone = _messages.StringField(32)
+  sourceDisk = _messages.StringField(22)
+  sourceDiskId = _messages.StringField(23)
+  sourceImage = _messages.StringField(24)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 25)
+  sourceImageId = _messages.StringField(26)
+  sourceSnapshot = _messages.StringField(27)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 28)
+  sourceSnapshotId = _messages.StringField(29)
+  status = _messages.EnumField('StatusValueValuesEnum', 30)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 31)
+  type = _messages.StringField(32)
+  users = _messages.StringField(33, repeated=True)
+  zone = _messages.StringField(34)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -22900,7 +22929,7 @@ class FixedOrPercent(_messages.Message):
 
   Fields:
     calculated: [Output Only] Absolute value of VM instances calculated based
-      on the specific mode.    - If the value is fixed, then the caculated
+      on the specific mode.    - If the value is fixed, then the calculated
       value is equal to the fixed value.  - If the value is a percent, then
       the calculated value is percent/100 * targetSize. For example, the
       calculated value of a 80% of a managed instance group with 150 instances
@@ -24069,9 +24098,9 @@ class HealthCheck(_messages.Message):
 
   Enums:
     TypeValueValuesEnum: Specifies the type of the healthCheck, either TCP,
-      SSL, HTTP or HTTPS. If not specified, the default is TCP. Exactly one of
-      the protocol-specific health check field must be specified, which must
-      match type field.
+      SSL, HTTP, HTTPS or HTTP2. If not specified, the default is TCP. Exactly
+      one of the protocol-specific health check field must be specified, which
+      must match type field.
 
   Fields:
     checkIntervalSec: How often (in seconds) to send a health check. The
@@ -24104,8 +24133,8 @@ class HealthCheck(_messages.Message):
     timeoutSec: How long (in seconds) to wait before claiming failure. The
       default value is 5 seconds. It is invalid for timeoutSec to have greater
       value than checkIntervalSec.
-    type: Specifies the type of the healthCheck, either TCP, SSL, HTTP or
-      HTTPS. If not specified, the default is TCP. Exactly one of the
+    type: Specifies the type of the healthCheck, either TCP, SSL, HTTP, HTTPS
+      or HTTP2. If not specified, the default is TCP. Exactly one of the
       protocol-specific health check field must be specified, which must match
       type field.
     udpHealthCheck: A UDPHealthCheck attribute.
@@ -24114,9 +24143,10 @@ class HealthCheck(_messages.Message):
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Specifies the type of the healthCheck, either TCP, SSL, HTTP or HTTPS.
-    If not specified, the default is TCP. Exactly one of the protocol-specific
-    health check field must be specified, which must match type field.
+    r"""Specifies the type of the healthCheck, either TCP, SSL, HTTP, HTTPS or
+    HTTP2. If not specified, the default is TCP. Exactly one of the protocol-
+    specific health check field must be specified, which must match type
+    field.
 
     Values:
       HTTP: <no description>
@@ -31337,6 +31367,7 @@ class MachineImageList(_messages.Message):
     WarningValue: [Output Only] Informational warning message.
 
   Fields:
+    etag: A string attribute.
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
     items: A list of MachineImage resources.
@@ -31447,12 +31478,13 @@ class MachineImageList(_messages.Message):
     data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
     message = _messages.StringField(3)
 
-  id = _messages.StringField(1)
-  items = _messages.MessageField('MachineImage', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#machineImageList')
-  nextPageToken = _messages.StringField(4)
-  selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  etag = _messages.StringField(1)
+  id = _messages.StringField(2)
+  items = _messages.MessageField('MachineImage', 3, repeated=True)
+  kind = _messages.StringField(4, default=u'compute#machineImageList')
+  nextPageToken = _messages.StringField(5)
+  selfLink = _messages.StringField(6)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class MachineType(_messages.Message):
@@ -33008,6 +33040,10 @@ class NetworkEndpointGroupsListEndpointsRequest(_messages.Message):
       endpoints will not be provided.
 
   Fields:
+    endpointFilters: Optional list of endpoints to query. This is a more
+      efficient but also limited version of filter parameter. Endpoints in the
+      filter must have ip_address and port fields populated, other fields are
+      not supported.
     healthStatus: Optional query parameter for showing the health status of
       each network endpoint. Valid options are SKIP or SHOW. If you don't
       specifiy this parameter, the health status of network endpoints will not
@@ -33026,7 +33062,18 @@ class NetworkEndpointGroupsListEndpointsRequest(_messages.Message):
     SHOW = 0
     SKIP = 1
 
-  healthStatus = _messages.EnumField('HealthStatusValueValuesEnum', 1)
+  endpointFilters = _messages.MessageField('NetworkEndpointGroupsListEndpointsRequestNetworkEndpointFilter', 1, repeated=True)
+  healthStatus = _messages.EnumField('HealthStatusValueValuesEnum', 2)
+
+
+class NetworkEndpointGroupsListEndpointsRequestNetworkEndpointFilter(_messages.Message):
+  r"""A NetworkEndpointGroupsListEndpointsRequestNetworkEndpointFilter object.
+
+  Fields:
+    networkEndpoint: A NetworkEndpoint attribute.
+  """
+
+  networkEndpoint = _messages.MessageField('NetworkEndpoint', 1)
 
 
 class NetworkEndpointGroupsListNetworkEndpoints(_messages.Message):
@@ -33601,6 +33648,31 @@ class NetworksAddPeeringRequest(_messages.Message):
   name = _messages.StringField(4)
   networkPeering = _messages.MessageField('NetworkPeering', 5)
   peerNetwork = _messages.StringField(6)
+
+
+class NetworksGetEffectiveFirewallsResponse(_messages.Message):
+  r"""A NetworksGetEffectiveFirewallsResponse object.
+
+  Fields:
+    firewalls: Effective firewalls on the network.
+    organizationFirewalls: Effective firewalls from organization policies.
+  """
+
+  firewalls = _messages.MessageField('Firewall', 1, repeated=True)
+  organizationFirewalls = _messages.MessageField('NetworksGetEffectiveFirewallsResponseOrganizationFirewallPolicy', 2, repeated=True)
+
+
+class NetworksGetEffectiveFirewallsResponseOrganizationFirewallPolicy(_messages.Message):
+  r"""A pruned SecurityPolicy containing ID and any applicable firewall rules.
+
+  Fields:
+    id: [Output Only] The unique identifier for the security policy. This
+      identifier is defined by the server.
+    rules: The rules that apply to the network.
+  """
+
+  id = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
+  rules = _messages.MessageField('SecurityPolicyRule', 2, repeated=True)
 
 
 class NetworksRemovePeeringRequest(_messages.Message):
@@ -39574,6 +39646,10 @@ class Route(_messages.Message):
       packets. You can specify this as a full or partial URL. For example: htt
       ps://www.googleapis.com/compute/v1/projects/project/zones/zone/instances
       /
+    nextHopInterconnectAttachment: [Output Only] The URL to an
+      InterconnectAttachment which is the next hop for the route. This field
+      will only be populated for the dynamic routes generated by Cloud Router
+      with a linked interconnectAttachment.
     nextHopIp: The network IP address of an instance that should handle
       matching packets. Only IPv4 is supported.
     nextHopNetwork: The URL of the local network if it should handle matching
@@ -39702,15 +39778,16 @@ class Route(_messages.Message):
   nextHopGateway = _messages.StringField(8)
   nextHopIlb = _messages.StringField(9)
   nextHopInstance = _messages.StringField(10)
-  nextHopIp = _messages.StringField(11)
-  nextHopNetwork = _messages.StringField(12)
-  nextHopPeering = _messages.StringField(13)
-  nextHopVpnTunnel = _messages.StringField(14)
-  priority = _messages.IntegerField(15, variant=_messages.Variant.UINT32)
-  selfLink = _messages.StringField(16)
-  selfLinkWithId = _messages.StringField(17)
-  tags = _messages.StringField(18, repeated=True)
-  warnings = _messages.MessageField('WarningsValueListEntry', 19, repeated=True)
+  nextHopInterconnectAttachment = _messages.StringField(11)
+  nextHopIp = _messages.StringField(12)
+  nextHopNetwork = _messages.StringField(13)
+  nextHopPeering = _messages.StringField(14)
+  nextHopVpnTunnel = _messages.StringField(15)
+  priority = _messages.IntegerField(16, variant=_messages.Variant.UINT32)
+  selfLink = _messages.StringField(17)
+  selfLinkWithId = _messages.StringField(18)
+  tags = _messages.StringField(19, repeated=True)
+  warnings = _messages.MessageField('WarningsValueListEntry', 20, repeated=True)
 
 
 class RouteList(_messages.Message):
@@ -41240,6 +41317,10 @@ class Scheduling(_messages.Message):
       instances. Preemptible instances cannot be automatically restarted.  By
       default, this is set to true so an instance is automatically restarted
       if it is terminated by Compute Engine.
+    latencyTolerant: Defines whether the instance is tolerant of higher cpu
+      latency. This can only be set during instance creation, or when the
+      instance is not currently running. It must not be set if the preemptible
+      option is also set.
     minNodeCpus: The minimum number of virtual CPUs this instance will consume
       when running on a sole-tenant node.
     nodeAffinities: A set of node affinity and anti-affinity.
@@ -41266,10 +41347,11 @@ class Scheduling(_messages.Message):
     TERMINATE = 1
 
   automaticRestart = _messages.BooleanField(1)
-  minNodeCpus = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 3, repeated=True)
-  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 4)
-  preemptible = _messages.BooleanField(5)
+  latencyTolerant = _messages.BooleanField(2)
+  minNodeCpus = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 4, repeated=True)
+  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 5)
+  preemptible = _messages.BooleanField(6)
 
 
 class SchedulingNodeAffinity(_messages.Message):
@@ -49854,7 +49936,7 @@ class XpnResourceId(_messages.Message):
 
 class Zone(_messages.Message):
   r"""A Zone resource. (== resource_for beta.zones ==) (== resource_for
-  v1.zones ==)
+  v1.zones ==) Next ID: 17
 
   Enums:
     StatusValueValuesEnum: [Output Only] Status of the zone, either UP or

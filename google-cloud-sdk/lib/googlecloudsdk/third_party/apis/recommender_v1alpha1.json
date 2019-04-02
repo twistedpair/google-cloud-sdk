@@ -639,7 +639,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists recommendations for a Cloud project."
+                      "description": "Lists recommendations for a Cloud project and requires the\nrecommendation.*.list IAM permission."
                     },
                     "markClaimed": {
                       "id": "recommender.projects.locations.recommenders.recommendations.markClaimed",

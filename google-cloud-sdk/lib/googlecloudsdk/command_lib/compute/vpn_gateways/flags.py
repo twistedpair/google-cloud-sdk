@@ -88,7 +88,7 @@ def GetPeerVpnGatewayArgumentForOtherResource(required=False):
           'Peer side Highly Available VPN Gateway representing the remote '
           'tunnel endpoint, this flag is used when creating HA VPN tunnels '
           'from Google Cloud to Google Cloud.'
-          'Either peerExternalGateway or peerGcpGateway must be specified when '
+          'Either --peer-external-gateway or --peer-gcp-gateway must be specified when '
           'creating VPN tunnels from High Available VPN gateway.'),
       region_explanation=('Should be the same as region, if not specified, '
                           'it will be automatically set.'),

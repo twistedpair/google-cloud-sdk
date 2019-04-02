@@ -276,6 +276,8 @@ service.
 google.longrunning.Operations interface. Returns either an
 `Operation.error` or an `Operation.response` which contains
 a `LongRunningRecognizeResponse` message.
+For more information on asynchronous speech recognition, see the
+[how-to](https://cloud.google.com/speech-to-text/docs/async-recognize).
 
       Args:
         request: (LongRunningRecognizeRequest) input message

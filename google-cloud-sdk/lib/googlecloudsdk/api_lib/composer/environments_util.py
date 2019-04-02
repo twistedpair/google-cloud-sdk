@@ -45,6 +45,9 @@ def Create(environment_ref,
            python_version=None,
            image_version=None,
            airflow_executor_type=None,
+           private_environment=None,
+           private_endpoint=None,
+           master_ipv4_cidr=None,
            release_track=base.ReleaseTrack.GA):
   """Calls the Composer Environments.Create method.
 
@@ -73,10 +76,15 @@ def Create(environment_ref,
     disk_size_gb: int, the disk size of node VMs, in GB
     python_version: str or None, major python version to use within created
         environment.
-    image_version: str or None, the desire image for created environment in the
+    image_version: str or None, the desired image for created environment in the
         format of 'composer-(version)-airflow-(version)'
     airflow_executor_type: str or None, the airflow executor type to run task
         instances.
+    private_environment: bool or None, create env cluster nodes with no public
+        IP addresses.
+    private_endpoint: bool or None, managed env cluster using the private IP
+        address of the master API endpoint.
+    master_ipv4_cidr: IPv4 CIDR range to use for the master network.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
         which Composer client library will be used.
 
@@ -124,6 +132,31 @@ def Create(environment_ref,
       config.softwareConfig.airflowExecutorType = ConvertToTypeEnum(
           messages.SoftwareConfig.AirflowExecutorTypeValueValuesEnum,
           airflow_executor_type)
+
+  if private_environment:
+    is_config_empty = False
+    # VPC-native/IP-aliases must be enabled to allow creation of private envs.
+    # (There is no flag implemented for enable-ip-aliases at this time.)
+    config.nodeConfig.ipAllocationPolicy = messages.IPAllocationPolicy(
+        useIpAliases=True)
+
+    # Adds a PrivateClusterConfig, if necessary.
+    # TODO(b/128636528): Restore when API bug is addressed.
+    # private_cluster_config = None
+    if master_ipv4_cidr is None:
+      master_ipv4_cidr = '172.16.0.0/28'  # Assigns default value.
+
+    private_cluster_config = None
+    if private_endpoint or master_ipv4_cidr:
+      private_cluster_config = messages.PrivateClusterConfig(
+          enablePrivateEndpoint=private_endpoint,
+          masterIpv4CidrBlock=master_ipv4_cidr)
+
+    config.privateEnvironmentConfig = messages.PrivateEnvironmentConfig(
+        enablePrivateEnvironment=private_environment,
+        privateClusterConfig=private_cluster_config)
+
+  # Builds environment message and attaches the configuration
   environment = messages.Environment(name=environment_ref.RelativeName())
   if not is_config_empty:
     environment.config = config

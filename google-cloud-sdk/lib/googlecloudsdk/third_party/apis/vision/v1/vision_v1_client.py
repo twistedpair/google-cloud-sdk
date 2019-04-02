@@ -40,11 +40,13 @@ class VisionV1(base_api.BaseApiClient):
     self.locations_operations = self.LocationsOperationsService(self)
     self.locations = self.LocationsService(self)
     self.operations = self.OperationsService(self)
+    self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_productSets_products = self.ProjectsLocationsProductSetsProductsService(self)
     self.projects_locations_productSets = self.ProjectsLocationsProductSetsService(self)
     self.projects_locations_products_referenceImages = self.ProjectsLocationsProductsReferenceImagesService(self)
     self.projects_locations_products = self.ProjectsLocationsProductsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
+    self.projects_operations = self.ProjectsOperationsService(self)
     self.projects = self.ProjectsService(self)
 
   class FilesService(base_api.BaseApiService):
@@ -314,6 +316,45 @@ is the parent resource, without the operations collection id.
         supports_download=False,
     )
 
+  class ProjectsLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_operations resource."""
+
+    _NAME = u'projects_locations_operations'
+
+    def __init__(self, client):
+      super(VisionV1.ProjectsLocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
+method to poll the operation result at intervals as recommended by the API
+service.
+
+      Args:
+        request: (VisionProjectsLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method=u'GET',
+        method_id=u'vision.projects.locations.operations.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'VisionProjectsLocationsOperationsGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsProductSetsProductsService(base_api.BaseApiService):
     """Service class for the projects_locations_productSets_products resource."""
 
@@ -441,7 +482,7 @@ The actual image files are not deleted from Google Cloud Storage.
 
 Possible errors:
 
-* Returns NOT_FOUND if the ProductSet does not exist.
+none
 
       Args:
         request: (VisionProjectsLocationsProductSetsDeleteRequest) input message
@@ -606,7 +647,7 @@ Possible errors:
 
 Possible errors:
 
-* Returns NOT_FOUND If the Product is not found under the ProductSet.
+none
 
       Args:
         request: (VisionProjectsLocationsProductSetsRemoveProductRequest) input message
@@ -698,7 +739,7 @@ The actual image files are not deleted from Google Cloud Storage.
 
 Possible errors:
 
-* Returns NOT_FOUND if the reference image does not exist.
+none
 
       Args:
         request: (VisionProjectsLocationsProductsReferenceImagesDeleteRequest) input message
@@ -841,7 +882,7 @@ until all related caches are refreshed.
 
 Possible errors:
 
-* Returns NOT_FOUND if the product does not exist.
+none
 
       Args:
         request: (VisionProjectsLocationsProductsDeleteRequest) input message
@@ -979,6 +1020,45 @@ Possible errors:
       super(VisionV1.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class ProjectsOperationsService(base_api.BaseApiService):
+    """Service class for the projects_operations resource."""
+
+    _NAME = u'projects_operations'
+
+    def __init__(self, client):
+      super(VisionV1.ProjectsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
+method to poll the operation result at intervals as recommended by the API
+service.
+
+      Args:
+        request: (VisionProjectsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/operations/{operationsId}',
+        http_method=u'GET',
+        method_id=u'vision.projects.operations.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'VisionProjectsOperationsGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""

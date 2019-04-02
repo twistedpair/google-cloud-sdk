@@ -522,6 +522,7 @@ All fields must be set, even if they are not updated.
 For each date - or whatever granularity the data source supports - in the
 range, one transfer run is created.
 Note that runs are created per UTC time in the time range.
+DEPRECATED: use StartManualTransferRuns instead.
 
       Args:
         request: (BigquerydatatransferProjectsLocationsTransferConfigsScheduleRunsRequest) input message
@@ -544,6 +545,36 @@ Note that runs are created per UTC time in the time range.
         request_field=u'scheduleTransferRunsRequest',
         request_type_name=u'BigquerydatatransferProjectsLocationsTransferConfigsScheduleRunsRequest',
         response_type_name=u'ScheduleTransferRunsResponse',
+        supports_download=False,
+    )
+
+    def StartManualRuns(self, request, global_params=None):
+      r"""Start manual transfer runs to be executed now with schedule_time equal to.
+current time. The transfer runs can be created for a time range where the
+run_time is between start_time (inclusive) and end_time (exclusive), or for
+a specific run_time.
+
+      Args:
+        request: (BigquerydatatransferProjectsLocationsTransferConfigsStartManualRunsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StartManualTransferRunsResponse) The response message.
+      """
+      config = self.GetMethodConfig('StartManualRuns')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StartManualRuns.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/transferConfigs/{transferConfigsId}:startManualRuns',
+        http_method=u'POST',
+        method_id=u'bigquerydatatransfer.projects.locations.transferConfigs.startManualRuns',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1/{+parent}:startManualRuns',
+        request_field=u'startManualTransferRunsRequest',
+        request_type_name=u'BigquerydatatransferProjectsLocationsTransferConfigsStartManualRunsRequest',
+        response_type_name=u'StartManualTransferRunsResponse',
         supports_download=False,
     )
 
@@ -891,6 +922,7 @@ All fields must be set, even if they are not updated.
 For each date - or whatever granularity the data source supports - in the
 range, one transfer run is created.
 Note that runs are created per UTC time in the time range.
+DEPRECATED: use StartManualTransferRuns instead.
 
       Args:
         request: (BigquerydatatransferProjectsTransferConfigsScheduleRunsRequest) input message
@@ -913,6 +945,36 @@ Note that runs are created per UTC time in the time range.
         request_field=u'scheduleTransferRunsRequest',
         request_type_name=u'BigquerydatatransferProjectsTransferConfigsScheduleRunsRequest',
         response_type_name=u'ScheduleTransferRunsResponse',
+        supports_download=False,
+    )
+
+    def StartManualRuns(self, request, global_params=None):
+      r"""Start manual transfer runs to be executed now with schedule_time equal to.
+current time. The transfer runs can be created for a time range where the
+run_time is between start_time (inclusive) and end_time (exclusive), or for
+a specific run_time.
+
+      Args:
+        request: (BigquerydatatransferProjectsTransferConfigsStartManualRunsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StartManualTransferRunsResponse) The response message.
+      """
+      config = self.GetMethodConfig('StartManualRuns')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StartManualRuns.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/transferConfigs/{transferConfigsId}:startManualRuns',
+        http_method=u'POST',
+        method_id=u'bigquerydatatransfer.projects.transferConfigs.startManualRuns',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1/{+parent}:startManualRuns',
+        request_field=u'startManualTransferRunsRequest',
+        request_type_name=u'BigquerydatatransferProjectsTransferConfigsStartManualRunsRequest',
+        response_type_name=u'StartManualTransferRunsResponse',
         supports_download=False,
     )
 

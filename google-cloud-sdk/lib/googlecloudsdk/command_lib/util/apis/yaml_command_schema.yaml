@@ -365,6 +365,9 @@ properties:
     properties:
       # The full collection name of the resource the command operates on.
       collection: {type: string}
+      # If true, will disable validating that a resource arg is specified if
+      # the collection requires a params from a resource.
+      disable_resource_check: {type: boolean}
       # The type of the resource the command operates on to be used for logging.
       display_resource_type: {type: string}
       # The API version to use, defaults to API set as gcloud default.
@@ -372,6 +375,13 @@ properties:
       # The name of the method to call to perform the operation. Optional if
       # your command is one of the supported command types (not Generic).
       method: {type: string}
+      # The module path to a function to call to modify the API method
+      # to call to perform the operation. The provided or default `method`
+      # will be used to parse the arguments, then this function will be called
+      # with two arguments: a resource ref to the parsed resource and the parsed
+      # args namespace. The returned string will be the method used to create
+      # and issue the request.
+      modify_method_hook: {$ref: "#/definitions/python_hook"}
       # A mapping of method parameter to resource reference field (or '', to use
       # the full method name) for references or APIs that use non-standard
       # naming. For example, if a resource ref has a project, location, and

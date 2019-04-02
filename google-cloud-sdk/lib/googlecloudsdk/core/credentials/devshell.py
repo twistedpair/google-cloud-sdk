@@ -125,6 +125,7 @@ class CredentialInfoResponse(messages.Message):
   project_id = messages.StringField(2)
   access_token = messages.StringField(3)
   expires_in = messages.FloatField(4)
+  id_token = messages.StringField(5)
 
 
 def _SendRecv(request):
@@ -210,6 +211,7 @@ class DevshellCredentials(client.OAuth2Credentials):
     request = CredentialInfoRequest()
     self.devshell_response = _SendRecv(request)
     self.access_token = self.devshell_response.access_token
+    self.id_token = self.devshell_response.id_token
     if self.devshell_response.expires_in is not None:
       # Use utcnow as Oauth2client uses utcnow to determine if token is expired.
       self.token_expiry = (datetime.datetime.utcnow() + datetime.timedelta(

@@ -546,7 +546,8 @@ with the role are removed.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a ServiceAccountIdentityBinding.
+      r"""Creates a.
+ServiceAccountIdentityBinding
 and returns it.
 
       Args:
@@ -574,7 +575,8 @@ and returns it.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a ServiceAccountIdentityBinding.
+      r"""Deletes a.
+ServiceAccountIdentityBinding.
 
       Args:
         request: (IamProjectsServiceAccountsIdentityBindingsDeleteRequest) input message
@@ -601,7 +603,8 @@ and returns it.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the ServiceAccountIdentityBinding.
+      r"""Gets the.
+ServiceAccountIdentityBinding
 for a service account.
 
       Args:
@@ -629,7 +632,8 @@ for a service account.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the ServiceAccountIdentityBindings.
+      r"""Lists the.
+ServiceAccountIdentityBindings
 for a service account.
 
       Args:
@@ -929,9 +933,10 @@ The API is currently in alpha phase.
 ServiceAccount.
 
 Note: Service accounts are both
-[resources and identities](/iam/docs/service-accounts#service_account_permissions).
-This method treats the service account as a resource. It returns the Cloud
-IAM policy that reflects what members have access to the service account.
+[resources and
+identities](/iam/docs/service-accounts#service_account_permissions). This
+method treats the service account as a resource. It returns the Cloud IAM
+policy that reflects what members have access to the service account.
 
 This method does not return what resources the service account has access
 to. To see if a service account has access to a resource, call the
@@ -1031,10 +1036,10 @@ Note: The field mask is required.
 ServiceAccount.
 
 Note: Service accounts are both
-[resources and identities](/iam/docs/service-accounts#service_account_permissions).
-This method treats the service account as a resource. Use it to grant
-members access to the service account, such as when they need to
-impersonate it.
+[resources and
+identities](/iam/docs/service-accounts#service_account_permissions). This
+method treats the service account as a resource. Use it to grant members
+access to the service account, such as when they need to impersonate it.
 
 This method does not grant the service account access to other resources,
 such as projects. To grant a service account access to resources, include

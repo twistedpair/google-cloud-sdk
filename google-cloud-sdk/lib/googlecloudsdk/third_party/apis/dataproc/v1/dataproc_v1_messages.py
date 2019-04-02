@@ -38,10 +38,10 @@ class Binding(_messages.Message):
   r"""Associates members with a role.
 
   Fields:
-    condition: Unimplemented. The condition that is associated with this
-      binding. NOTE: an unsatisfied condition will not allow user access via
-      current binding. Different bindings, including their conditions, are
-      examined independently.
+    condition: The condition that is associated with this binding. NOTE: an
+      unsatisfied condition will not allow user access via current binding.
+      Different bindings, including their conditions, are examined
+      independently.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. members can have the following values: allUsers: A special
       identifier that represents anyone who is  on the internet; with or
@@ -2601,7 +2601,7 @@ class SoftwareConfig(_messages.Message):
     imageVersion: Optional. The version of software inside the cluster. It
       must be one of the supported Cloud Dataproc Versions, such as "1.2"
       (including a subminor version, such as "1.2.29"), or the "preview"
-      version. If unspecified, it defaults to the latest version.
+      version. If unspecified, it defaults to the latest Debian version.
     optionalComponents: The set of optional components to activate on the
       cluster.
     properties: Optional. The properties to set on daemon config
@@ -2619,23 +2619,23 @@ class SoftwareConfig(_messages.Message):
     Values:
       COMPONENT_UNSPECIFIED: <no description>
       ANACONDA: <no description>
+      DRUID: <no description>
       HIVE_WEBHCAT: <no description>
       JUPYTER: <no description>
       KERBEROS: <no description>
       PRESTO: <no description>
       ZEPPELIN: <no description>
       ZOOKEEPER: <no description>
-      DRUID: <no description>
     """
     COMPONENT_UNSPECIFIED = 0
     ANACONDA = 1
-    HIVE_WEBHCAT = 2
-    JUPYTER = 3
-    KERBEROS = 4
-    PRESTO = 5
-    ZEPPELIN = 6
-    ZOOKEEPER = 7
-    DRUID = 8
+    DRUID = 2
+    HIVE_WEBHCAT = 3
+    JUPYTER = 4
+    KERBEROS = 5
+    PRESTO = 6
+    ZEPPELIN = 7
+    ZOOKEEPER = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):

@@ -526,6 +526,10 @@
         "reservationAffinity": {
           "description": "The optional reservation affinity. Setting this field will apply\nthe specified [Zonal Compute\nReservation](\/compute\/docs\/instances\/reserving-zonal-resources)\nto this node pool.",
           "$ref": "ReservationAffinity"
+        },
+        "shieldedInstanceConfig": {
+          "description": "Shielded Instance options.",
+          "$ref": "ShieldedInstanceConfig"
         }
       }
     },
@@ -690,6 +694,21 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "ShieldedInstanceConfig": {
+      "id": "ShieldedInstanceConfig",
+      "description": "A set of Shielded Instance options.",
+      "type": "object",
+      "properties": {
+        "enableSecureBoot": {
+          "description": "Defines whether the instance has Secure Boot enabled.",
+          "type": "boolean"
+        },
+        "enableIntegrityMonitoring": {
+          "description": "Defines whether the instance has integrity monitoring enabled.",
+          "type": "boolean"
         }
       }
     },
@@ -966,6 +985,10 @@
         "resourceVersion": {
           "description": "Server-defined resource version (etag).",
           "type": "string"
+        },
+        "upgradeSettings": {
+          "description": "Upgrade settings (disruption budget and speed).",
+          "$ref": "UpgradeSettings"
         }
       }
     },
@@ -1066,6 +1089,23 @@
         "message": {
           "description": "Human-friendly representation of the condition",
           "type": "string"
+        }
+      }
+    },
+    "UpgradeSettings": {
+      "id": "UpgradeSettings",
+      "description": "Upgrade settings. When provided, enables Cluster API on the pool.\nMirrors the fields and defaults of MachineRollingUpdateDeployment\nhttps:\/\/github.com\/kubernetes-sigs\/cluster-api\/blob\/302479ecef8149c5a05e0a4955b0871f85b7d991\/pkg\/apis\/cluster\/v1alpha1\/machinedeployment_types.go#L93",
+      "type": "object",
+      "properties": {
+        "maxSurge": {
+          "description": "Disruption budget: how many machines to create before upgrading a node.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxUnavailable": {
+          "description": "Speed\/concurrency: how many nodes at a time to upgrade.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -2716,7 +2756,7 @@
           }
         },
         "condition": {
-          "description": "Unimplemented. The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.",
+          "description": "The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.",
           "$ref": "Expr"
         }
       }

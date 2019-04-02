@@ -208,6 +208,14 @@ class Collections(enum.Enum):
       [u'project', u'zone', u'machineType'],
       True
   )
+  NETWORKENDPOINTGROUPS = (
+      'networkEndpointGroups',
+      'projects/{project}/zones/{zone}/networkEndpointGroups/'
+      '{networkEndpointGroup}',
+      {},
+      [u'project', u'zone', u'networkEndpointGroup'],
+      True
+  )
   NETWORKS = (
       'networks',
       'projects/{project}/global/networks/{network}',

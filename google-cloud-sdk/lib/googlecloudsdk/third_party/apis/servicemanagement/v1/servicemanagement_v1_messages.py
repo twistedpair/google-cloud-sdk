@@ -181,10 +181,11 @@ class AuthProvider(_messages.Message):
     jwksUri: URL of the provider's public key set to validate signature of the
       JWT. See [OpenID Discovery](https://openid.net/specs/openid-connect-
       discovery-1_0.html#ProviderMetadata). Optional if the key set document:
-      - can be retrieved from    [OpenID Discovery](https://openid.net/specs
-      /openid-connect-discovery-1_0.html    of the issuer.  - can be inferred
-      from the email domain of the issuer (e.g. a Google service account).
-      Example: https://www.googleapis.com/oauth2/v1/certs
+      - can be retrieved from    [OpenID
+      Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html of
+      the issuer.  - can be inferred from the email domain of the issuer (e.g.
+      a Google  service account).  Example:
+      https://www.googleapis.com/oauth2/v1/certs
   """
 
   audiences = _messages.StringField(1)
@@ -327,8 +328,8 @@ class BackendRule(_messages.Message):
         Request path: /api/company/widgetworks/user/johndoe     Translated:
         https://example.cloudfunctions.net/getUser?cid=widgetworks&uid=johndoe
         Request path: /api/company/widgetworks/user/johndoe?timezone=EST
-        Translated:   https://example.cloudfunctions.net/getUser?timezone=EST&
-        cid=widgetworks&uid=johndoe
+        Translated:     https://example.cloudfunctions.net/getUser?timezone=ES
+        T&cid=widgetworks&uid=johndoe
       APPEND_PATH_TO_ADDRESS: The request path will be appended to the backend
         address.  # Examples  Given the following operation config:
         Method path:        /api/company/{cid}/user/{uid}     Backend address:
@@ -337,8 +338,8 @@ class BackendRule(_messages.Message):
         /api/company/widgetworks/user/johndoe     Translated:
         https://example.appspot.com/api/company/widgetworks/user/johndoe
         Request path: /api/company/widgetworks/user/johndoe?timezone=EST
-        Translated:   https://example.appspot.com/api/company/widgetworks/user
-        /johndoe?timezone=EST
+        Translated:     https://example.appspot.com/api/company/widgetworks/us
+        er/johndoe?timezone=EST
     """
     PATH_TRANSLATION_UNSPECIFIED = 0
     CONSTANT_ADDRESS = 1
@@ -394,10 +395,10 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: Unimplemented. The condition that is associated with this
-      binding. NOTE: an unsatisfied condition will not allow user access via
-      current binding. Different bindings, including their conditions, are
-      examined independently.
+    condition: The condition that is associated with this binding. NOTE: an
+      unsatisfied condition will not allow user access via current binding.
+      Different bindings, including their conditions, are examined
+      independently.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -543,8 +544,8 @@ class ConfigChange(_messages.Message):
       '.' character. For repeated fields, an applicable unique identifier
       field is used for the index (usually selector, name, or id). For maps,
       the term 'key' is used. If the field has no unique identifier, the
-      numeric index is used. Examples: - visibility.rules[selector=="google.Li
-      braryService.CreateBook"].restriction -
+      numeric index is used. ## Examples:  visibility.rules[selector=="google.
+      LibraryService.CreateBook"].restriction -
       quota.metric_rules[selector=="google"].metric_costs[key=="reads"].value
       - logging.producer_destinations[0]
     newValue: Value of the changed object in the new Service configuration, in

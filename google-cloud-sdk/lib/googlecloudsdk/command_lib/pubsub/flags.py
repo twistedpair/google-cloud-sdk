@@ -143,7 +143,7 @@ def AddPushConfigFlags(parser, track, required=False):
       '--push-endpoint', required=required,
       help='A URL to use as the endpoint for this subscription. This will '
            'also automatically set the subscription type to PUSH.')
-  if track in [base.ReleaseTrack.ALPHA]:
+  if track in [base.ReleaseTrack.BETA, base.ReleaseTrack.ALPHA]:
     parser.add_argument(
         '--push-auth-service-account',
         required=False,

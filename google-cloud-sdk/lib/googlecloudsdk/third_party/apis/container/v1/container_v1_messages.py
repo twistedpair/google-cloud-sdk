@@ -438,6 +438,31 @@ class CompleteIPRotationRequest(_messages.Message):
   zone = _messages.StringField(4)
 
 
+class ContainerProjectsAggregatedUsableSubnetworksListRequest(_messages.Message):
+  r"""A ContainerProjectsAggregatedUsableSubnetworksListRequest object.
+
+  Fields:
+    filter: Filtering currently only supports equality on the networkProjectId
+      and must be in the form: "networkProjectId=[PROJECTID]", where
+      `networkProjectId` is the project which owns the listed subnetworks.
+      This defaults to the parent project ID.
+    pageSize: The max number of results per page that should be returned. If
+      the number of available results is larger than `page_size`, a
+      `next_page_token` is returned which can be used to get the next page of
+      results in subsequent requests. Acceptable values are 0 to 500,
+      inclusive. (Default: 500)
+    pageToken: Specifies a page token to use. Set this to the nextPageToken
+      returned by previous list requests to get the next page of results.
+    parent: The parent project where subnetworks are usable. Specified in the
+      format 'projects/*'.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
 class ContainerProjectsLocationsClustersDeleteRequest(_messages.Message):
   r"""A ContainerProjectsLocationsClustersDeleteRequest object.
 
@@ -1184,6 +1209,24 @@ class ListOperationsResponse(_messages.Message):
 
   missingZones = _messages.StringField(1, repeated=True)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListUsableSubnetworksResponse(_messages.Message):
+  r"""ListUsableSubnetworksResponse is the response of
+  ListUsableSubnetworksRequest.
+
+  Fields:
+    nextPageToken: This token allows you to get the next page of results for
+      list requests. If the number of results is larger than `page_size`, use
+      the `next_page_token` as a value for the query parameter `page_token` in
+      the next request. The value will become empty when there are no more
+      pages.
+    subnetworks: A list of usable subnetworks in the specified network
+      project.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  subnetworks = _messages.MessageField('UsableSubnetwork', 2, repeated=True)
 
 
 class MaintenancePolicy(_messages.Message):
@@ -2429,6 +2472,75 @@ class UpdateNodePoolRequest(_messages.Message):
   nodeVersion = _messages.StringField(7)
   projectId = _messages.StringField(8)
   zone = _messages.StringField(9)
+
+
+class UsableSubnetwork(_messages.Message):
+  r"""UsableSubnetwork resource returns the subnetwork name, its associated
+  network and the primary CIDR range.
+
+  Fields:
+    ipCidrRange: The range of internal addresses that are owned by this
+      subnetwork.
+    network: Network Name. Example: projects/my-project/global/networks/my-
+      network
+    secondaryIpRanges: Secondary IP ranges.
+    statusMessage: A human readable status message representing the reasons
+      for cases where the caller cannot use the secondary ranges under the
+      subnet. For example if the secondary_ip_ranges is empty due to a
+      permission issue, an insufficient permission message will be given by
+      status_message.
+    subnetwork: Subnetwork Name. Example: projects/my-project/regions/us-
+      central1/subnetworks/my-subnet
+  """
+
+  ipCidrRange = _messages.StringField(1)
+  network = _messages.StringField(2)
+  secondaryIpRanges = _messages.MessageField('UsableSubnetworkSecondaryRange', 3, repeated=True)
+  statusMessage = _messages.StringField(4)
+  subnetwork = _messages.StringField(5)
+
+
+class UsableSubnetworkSecondaryRange(_messages.Message):
+  r"""Secondary IP range of a usable subnetwork.
+
+  Enums:
+    StatusValueValuesEnum: This field is to determine the status of the
+      secondary range programmably.
+
+  Fields:
+    ipCidrRange: The range of IP addresses belonging to this subnetwork
+      secondary range.
+    rangeName: The name associated with this subnetwork secondary range, used
+      when adding an alias IP range to a VM instance.
+    status: This field is to determine the status of the secondary range
+      programmably.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""This field is to determine the status of the secondary range
+    programmably.
+
+    Values:
+      UNKNOWN: UNKNOWN is the zero value of the Status enum. It's not a valid
+        status.
+      UNUSED: UNUSED denotes that this range is unclaimed by any cluster.
+      IN_USE_SERVICE: IN_USE_SERVICE denotes that this range is claimed by a
+        cluster for services. It cannot be used for other clusters.
+      IN_USE_SHAREABLE_POD: IN_USE_SHAREABLE_POD denotes this range was
+        created by the network admin and is currently claimed by a cluster for
+        pods. It can only be used by other clusters as a pod range.
+      IN_USE_MANAGED_POD: IN_USE_MANAGED_POD denotes this range was created by
+        GKE and is claimed for pods. It cannot be used for other clusters.
+    """
+    UNKNOWN = 0
+    UNUSED = 1
+    IN_USE_SERVICE = 2
+    IN_USE_SHAREABLE_POD = 3
+    IN_USE_MANAGED_POD = 4
+
+  ipCidrRange = _messages.StringField(1)
+  rangeName = _messages.StringField(2)
+  status = _messages.EnumField('StatusValueValuesEnum', 3)
 
 
 encoding.AddCustomJsonFieldMapping(

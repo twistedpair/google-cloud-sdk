@@ -1580,6 +1580,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.compute = self._Add('compute')
     self.container = self._Add('container')
     self.containeranalysis = self._Add('containeranalysis')
+    self.datacatalog = self._Add('datacatalog')
     self.dataflow = self._Add('dataflow')
     self.datapol = self._Add('datapol')
     self.dataproc = self._Add('dataproc')

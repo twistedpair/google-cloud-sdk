@@ -2092,6 +2092,12 @@ class Backend(_messages.Message):
       Can be used with either CONNECTION or UTILIZATION balancing modes. For
       CONNECTION mode, either maxConnections or maxConnectionsPerInstance must
       be set.  This cannot be used for internal load balancing.
+    maxConnectionsPerEndpoint: The max number of simultaneous connections that
+      a single backend network endpoint can handle. This is used to calculate
+      the capacity of the group. Can be used in either CONNECTION or
+      UTILIZATION balancing modes. For CONNECTION mode, either maxConnections
+      or maxConnectionsPerEndpoint must be set.  This cannot be used for
+      internal load balancing.
     maxConnectionsPerInstance: The max number of simultaneous connections that
       a single backend instance can handle. This is used to calculate the
       capacity of the group. Can be used in either CONNECTION or UTILIZATION
@@ -2102,6 +2108,11 @@ class Backend(_messages.Message):
       either RATE or UTILIZATION balancing modes, but required if RATE mode.
       For RATE mode, either maxRate or maxRatePerInstance must be set.  This
       cannot be used for internal load balancing.
+    maxRatePerEndpoint: The max requests per second (RPS) that a single
+      backend network endpoint can handle. This is used to calculate the
+      capacity of the group. Can be used in either balancing mode. For RATE
+      mode, either maxRate or maxRatePerEndpoint must be set.  This cannot be
+      used for internal load balancing.
     maxRatePerInstance: The max requests per second (RPS) that a single
       backend instance can handle. This is used to calculate the capacity of
       the group. Can be used in either balancing mode. For RATE mode, either
@@ -2133,10 +2144,12 @@ class Backend(_messages.Message):
   description = _messages.StringField(3)
   group = _messages.StringField(4)
   maxConnections = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  maxConnectionsPerInstance = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  maxRate = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  maxRatePerInstance = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
-  maxUtilization = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
+  maxConnectionsPerEndpoint = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  maxConnectionsPerInstance = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  maxRate = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  maxRatePerEndpoint = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
+  maxRatePerInstance = _messages.FloatField(10, variant=_messages.Variant.FLOAT)
+  maxUtilization = _messages.FloatField(11, variant=_messages.Variant.FLOAT)
 
 
 class BackendBucket(_messages.Message):
@@ -2821,6 +2834,16 @@ class BackendServiceList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class BackendServiceReference(_messages.Message):
+  r"""A BackendServiceReference object.
+
+  Fields:
+    backendService: A string attribute.
+  """
+
+  backendService = _messages.StringField(1)
+
+
 class BackendServicesScopedList(_messages.Message):
   r"""A BackendServicesScopedList object.
 
@@ -2939,10 +2962,10 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: Unimplemented. The condition that is associated with this
-      binding. NOTE: an unsatisfied condition will not allow user access via
-      current binding. Different bindings, including their conditions, are
-      examined independently.
+    condition: The condition that is associated with this binding. NOTE: an
+      unsatisfied condition will not allow user access via current binding.
+      Different bindings, including their conditions, are examined
+      independently.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
@@ -8709,6 +8732,307 @@ class ComputeMachineTypesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   zone = _messages.StringField(6, required=True)
+
+
+class ComputeNetworkEndpointGroupsAggregatedListRequest(_messages.Message):
+  r"""A ComputeNetworkEndpointGroupsAggregatedListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeNetworkEndpointGroupsAttachNetworkEndpointsRequest(_messages.Message):
+  r"""A ComputeNetworkEndpointGroupsAttachNetworkEndpointsRequest object.
+
+  Fields:
+    networkEndpointGroup: The name of the network endpoint group where you are
+      attaching network endpoints to. It should comply with RFC1035.
+    networkEndpointGroupsAttachEndpointsRequest: A
+      NetworkEndpointGroupsAttachEndpointsRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone where the network endpoint group is located. It
+      should comply with RFC1035.
+  """
+
+  networkEndpointGroup = _messages.StringField(1, required=True)
+  networkEndpointGroupsAttachEndpointsRequest = _messages.MessageField('NetworkEndpointGroupsAttachEndpointsRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
+class ComputeNetworkEndpointGroupsDeleteRequest(_messages.Message):
+  r"""A ComputeNetworkEndpointGroupsDeleteRequest object.
+
+  Fields:
+    networkEndpointGroup: The name of the network endpoint group to delete. It
+      should comply with RFC1035.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone where the network endpoint group is located. It
+      should comply with RFC1035.
+  """
+
+  networkEndpointGroup = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
+
+
+class ComputeNetworkEndpointGroupsDetachNetworkEndpointsRequest(_messages.Message):
+  r"""A ComputeNetworkEndpointGroupsDetachNetworkEndpointsRequest object.
+
+  Fields:
+    networkEndpointGroup: The name of the network endpoint group where you are
+      removing network endpoints. It should comply with RFC1035.
+    networkEndpointGroupsDetachEndpointsRequest: A
+      NetworkEndpointGroupsDetachEndpointsRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone where the network endpoint group is located. It
+      should comply with RFC1035.
+  """
+
+  networkEndpointGroup = _messages.StringField(1, required=True)
+  networkEndpointGroupsDetachEndpointsRequest = _messages.MessageField('NetworkEndpointGroupsDetachEndpointsRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
+class ComputeNetworkEndpointGroupsGetRequest(_messages.Message):
+  r"""A ComputeNetworkEndpointGroupsGetRequest object.
+
+  Fields:
+    networkEndpointGroup: The name of the network endpoint group. It should
+      comply with RFC1035.
+    project: Project ID for this request.
+    zone: The name of the zone where the network endpoint group is located. It
+      should comply with RFC1035.
+  """
+
+  networkEndpointGroup = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
+class ComputeNetworkEndpointGroupsInsertRequest(_messages.Message):
+  r"""A ComputeNetworkEndpointGroupsInsertRequest object.
+
+  Fields:
+    networkEndpointGroup: A NetworkEndpointGroup resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone where you want to create the network endpoint
+      group. It should comply with RFC1035.
+  """
+
+  networkEndpointGroup = _messages.MessageField('NetworkEndpointGroup', 1)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
+
+
+class ComputeNetworkEndpointGroupsListNetworkEndpointsRequest(_messages.Message):
+  r"""A ComputeNetworkEndpointGroupsListNetworkEndpointsRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    networkEndpointGroup: The name of the network endpoint group from which
+      you want to generate a list of included network endpoints. It should
+      comply with RFC1035.
+    networkEndpointGroupsListEndpointsRequest: A
+      NetworkEndpointGroupsListEndpointsRequest resource to be passed as the
+      request body.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    zone: The name of the zone where the network endpoint group is located. It
+      should comply with RFC1035.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  networkEndpointGroup = _messages.StringField(3, required=True)
+  networkEndpointGroupsListEndpointsRequest = _messages.MessageField('NetworkEndpointGroupsListEndpointsRequest', 4)
+  orderBy = _messages.StringField(5)
+  pageToken = _messages.StringField(6)
+  project = _messages.StringField(7, required=True)
+  zone = _messages.StringField(8, required=True)
+
+
+class ComputeNetworkEndpointGroupsListRequest(_messages.Message):
+  r"""A ComputeNetworkEndpointGroupsListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    zone: The name of the zone where the network endpoint group is located. It
+      should comply with RFC1035.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  zone = _messages.StringField(6, required=True)
+
+
+class ComputeNetworkEndpointGroupsTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeNetworkEndpointGroupsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+    zone: The name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeNetworksAddPeeringRequest(_messages.Message):
@@ -16176,7 +16500,7 @@ class FixedOrPercent(_messages.Message):
 
   Fields:
     calculated: [Output Only] Absolute value of VM instances calculated based
-      on the specific mode.    - If the value is fixed, then the caculated
+      on the specific mode.    - If the value is fixed, then the calculated
       value is equal to the fixed value.  - If the value is a percent, then
       the calculated value is percent/100 * targetSize. For example, the
       calculated value of a 80% of a managed instance group with 150 instances
@@ -16711,6 +17035,16 @@ class ForwardingRuleList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class ForwardingRuleReference(_messages.Message):
+  r"""A ForwardingRuleReference object.
+
+  Fields:
+    forwardingRule: A string attribute.
+  """
+
+  forwardingRule = _messages.StringField(1)
+
+
 class ForwardingRulesScopedList(_messages.Message):
   r"""A ForwardingRulesScopedList object.
 
@@ -16947,6 +17281,15 @@ class HTTP2HealthCheck(_messages.Message):
   r"""A HTTP2HealthCheck object.
 
   Enums:
+    PortSpecificationValueValuesEnum: Specifies how port is selected for
+      health checking, can be one of following values: USE_FIXED_PORT: The
+      port number in port is used for health checking. USE_NAMED_PORT: The
+      portName is used for health checking. USE_SERVING_PORT: For
+      NetworkEndpointGroup, the port specified for each network endpoint is
+      used for health checking. For other backends, the port or named port
+      specified in the Backend Service is used for health checking.   If not
+      specified, HTTP2 health check follows behavior specified in port and
+      portName fields.
     ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
       before sending data to the backend, either NONE or PROXY_V1. The default
       is NONE.
@@ -16959,6 +17302,14 @@ class HTTP2HealthCheck(_messages.Message):
       is 443. Valid values are 1 through 65535.
     portName: Port name as defined in InstanceGroup#NamedPort#name. If both
       port and port_name are defined, port takes precedence.
+    portSpecification: Specifies how port is selected for health checking, can
+      be one of following values: USE_FIXED_PORT: The port number in port is
+      used for health checking. USE_NAMED_PORT: The portName is used for
+      health checking. USE_SERVING_PORT: For NetworkEndpointGroup, the port
+      specified for each network endpoint is used for health checking. For
+      other backends, the port or named port specified in the Backend Service
+      is used for health checking.   If not specified, HTTP2 health check
+      follows behavior specified in port and portName fields.
     proxyHeader: Specifies the type of proxy header to append before sending
       data to the backend, either NONE or PROXY_V1. The default is NONE.
     requestPath: The request path of the HTTP/2 health check request. The
@@ -16967,6 +17318,25 @@ class HTTP2HealthCheck(_messages.Message):
       response body. If left empty (the default value), the status code
       determines health. The response data can only be ASCII.
   """
+
+  class PortSpecificationValueValuesEnum(_messages.Enum):
+    r"""Specifies how port is selected for health checking, can be one of
+    following values: USE_FIXED_PORT: The port number in port is used for
+    health checking. USE_NAMED_PORT: The portName is used for health checking.
+    USE_SERVING_PORT: For NetworkEndpointGroup, the port specified for each
+    network endpoint is used for health checking. For other backends, the port
+    or named port specified in the Backend Service is used for health
+    checking.   If not specified, HTTP2 health check follows behavior
+    specified in port and portName fields.
+
+    Values:
+      USE_FIXED_PORT: <no description>
+      USE_NAMED_PORT: <no description>
+      USE_SERVING_PORT: <no description>
+    """
+    USE_FIXED_PORT = 0
+    USE_NAMED_PORT = 1
+    USE_SERVING_PORT = 2
 
   class ProxyHeaderValueValuesEnum(_messages.Enum):
     r"""Specifies the type of proxy header to append before sending data to
@@ -16982,15 +17352,25 @@ class HTTP2HealthCheck(_messages.Message):
   host = _messages.StringField(1)
   port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   portName = _messages.StringField(3)
-  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 4)
-  requestPath = _messages.StringField(5)
-  response = _messages.StringField(6)
+  portSpecification = _messages.EnumField('PortSpecificationValueValuesEnum', 4)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 5)
+  requestPath = _messages.StringField(6)
+  response = _messages.StringField(7)
 
 
 class HTTPHealthCheck(_messages.Message):
   r"""A HTTPHealthCheck object.
 
   Enums:
+    PortSpecificationValueValuesEnum: Specifies how port is selected for
+      health checking, can be one of following values: USE_FIXED_PORT: The
+      port number in port is used for health checking. USE_NAMED_PORT: The
+      portName is used for health checking. USE_SERVING_PORT: For
+      NetworkEndpointGroup, the port specified for each network endpoint is
+      used for health checking. For other backends, the port or named port
+      specified in the Backend Service is used for health checking.   If not
+      specified, HTTP health check follows behavior specified in port and
+      portName fields.
     ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
       before sending data to the backend, either NONE or PROXY_V1. The default
       is NONE.
@@ -17003,6 +17383,14 @@ class HTTPHealthCheck(_messages.Message):
       is 80. Valid values are 1 through 65535.
     portName: Port name as defined in InstanceGroup#NamedPort#name. If both
       port and port_name are defined, port takes precedence.
+    portSpecification: Specifies how port is selected for health checking, can
+      be one of following values: USE_FIXED_PORT: The port number in port is
+      used for health checking. USE_NAMED_PORT: The portName is used for
+      health checking. USE_SERVING_PORT: For NetworkEndpointGroup, the port
+      specified for each network endpoint is used for health checking. For
+      other backends, the port or named port specified in the Backend Service
+      is used for health checking.   If not specified, HTTP health check
+      follows behavior specified in port and portName fields.
     proxyHeader: Specifies the type of proxy header to append before sending
       data to the backend, either NONE or PROXY_V1. The default is NONE.
     requestPath: The request path of the HTTP health check request. The
@@ -17011,6 +17399,25 @@ class HTTPHealthCheck(_messages.Message):
       response body. If left empty (the default value), the status code
       determines health. The response data can only be ASCII.
   """
+
+  class PortSpecificationValueValuesEnum(_messages.Enum):
+    r"""Specifies how port is selected for health checking, can be one of
+    following values: USE_FIXED_PORT: The port number in port is used for
+    health checking. USE_NAMED_PORT: The portName is used for health checking.
+    USE_SERVING_PORT: For NetworkEndpointGroup, the port specified for each
+    network endpoint is used for health checking. For other backends, the port
+    or named port specified in the Backend Service is used for health
+    checking.   If not specified, HTTP health check follows behavior specified
+    in port and portName fields.
+
+    Values:
+      USE_FIXED_PORT: <no description>
+      USE_NAMED_PORT: <no description>
+      USE_SERVING_PORT: <no description>
+    """
+    USE_FIXED_PORT = 0
+    USE_NAMED_PORT = 1
+    USE_SERVING_PORT = 2
 
   class ProxyHeaderValueValuesEnum(_messages.Enum):
     r"""Specifies the type of proxy header to append before sending data to
@@ -17026,15 +17433,25 @@ class HTTPHealthCheck(_messages.Message):
   host = _messages.StringField(1)
   port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   portName = _messages.StringField(3)
-  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 4)
-  requestPath = _messages.StringField(5)
-  response = _messages.StringField(6)
+  portSpecification = _messages.EnumField('PortSpecificationValueValuesEnum', 4)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 5)
+  requestPath = _messages.StringField(6)
+  response = _messages.StringField(7)
 
 
 class HTTPSHealthCheck(_messages.Message):
   r"""A HTTPSHealthCheck object.
 
   Enums:
+    PortSpecificationValueValuesEnum: Specifies how port is selected for
+      health checking, can be one of following values: USE_FIXED_PORT: The
+      port number in port is used for health checking. USE_NAMED_PORT: The
+      portName is used for health checking. USE_SERVING_PORT: For
+      NetworkEndpointGroup, the port specified for each network endpoint is
+      used for health checking. For other backends, the port or named port
+      specified in the Backend Service is used for health checking.   If not
+      specified, HTTPS health check follows behavior specified in port and
+      portName fields.
     ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
       before sending data to the backend, either NONE or PROXY_V1. The default
       is NONE.
@@ -17047,6 +17464,14 @@ class HTTPSHealthCheck(_messages.Message):
       is 443. Valid values are 1 through 65535.
     portName: Port name as defined in InstanceGroup#NamedPort#name. If both
       port and port_name are defined, port takes precedence.
+    portSpecification: Specifies how port is selected for health checking, can
+      be one of following values: USE_FIXED_PORT: The port number in port is
+      used for health checking. USE_NAMED_PORT: The portName is used for
+      health checking. USE_SERVING_PORT: For NetworkEndpointGroup, the port
+      specified for each network endpoint is used for health checking. For
+      other backends, the port or named port specified in the Backend Service
+      is used for health checking.   If not specified, HTTPS health check
+      follows behavior specified in port and portName fields.
     proxyHeader: Specifies the type of proxy header to append before sending
       data to the backend, either NONE or PROXY_V1. The default is NONE.
     requestPath: The request path of the HTTPS health check request. The
@@ -17055,6 +17480,25 @@ class HTTPSHealthCheck(_messages.Message):
       response body. If left empty (the default value), the status code
       determines health. The response data can only be ASCII.
   """
+
+  class PortSpecificationValueValuesEnum(_messages.Enum):
+    r"""Specifies how port is selected for health checking, can be one of
+    following values: USE_FIXED_PORT: The port number in port is used for
+    health checking. USE_NAMED_PORT: The portName is used for health checking.
+    USE_SERVING_PORT: For NetworkEndpointGroup, the port specified for each
+    network endpoint is used for health checking. For other backends, the port
+    or named port specified in the Backend Service is used for health
+    checking.   If not specified, HTTPS health check follows behavior
+    specified in port and portName fields.
+
+    Values:
+      USE_FIXED_PORT: <no description>
+      USE_NAMED_PORT: <no description>
+      USE_SERVING_PORT: <no description>
+    """
+    USE_FIXED_PORT = 0
+    USE_NAMED_PORT = 1
+    USE_SERVING_PORT = 2
 
   class ProxyHeaderValueValuesEnum(_messages.Enum):
     r"""Specifies the type of proxy header to append before sending data to
@@ -17070,9 +17514,10 @@ class HTTPSHealthCheck(_messages.Message):
   host = _messages.StringField(1)
   port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   portName = _messages.StringField(3)
-  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 4)
-  requestPath = _messages.StringField(5)
-  response = _messages.StringField(6)
+  portSpecification = _messages.EnumField('PortSpecificationValueValuesEnum', 4)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 5)
+  requestPath = _messages.StringField(6)
+  response = _messages.StringField(7)
 
 
 class HealthCheck(_messages.Message):
@@ -17082,9 +17527,9 @@ class HealthCheck(_messages.Message):
 
   Enums:
     TypeValueValuesEnum: Specifies the type of the healthCheck, either TCP,
-      SSL, HTTP or HTTPS. If not specified, the default is TCP. Exactly one of
-      the protocol-specific health check field must be specified, which must
-      match type field.
+      SSL, HTTP, HTTPS or HTTP2. If not specified, the default is TCP. Exactly
+      one of the protocol-specific health check field must be specified, which
+      must match type field.
 
   Fields:
     checkIntervalSec: How often (in seconds) to send a health check. The
@@ -17113,8 +17558,8 @@ class HealthCheck(_messages.Message):
     timeoutSec: How long (in seconds) to wait before claiming failure. The
       default value is 5 seconds. It is invalid for timeoutSec to have greater
       value than checkIntervalSec.
-    type: Specifies the type of the healthCheck, either TCP, SSL, HTTP or
-      HTTPS. If not specified, the default is TCP. Exactly one of the
+    type: Specifies the type of the healthCheck, either TCP, SSL, HTTP, HTTPS
+      or HTTP2. If not specified, the default is TCP. Exactly one of the
       protocol-specific health check field must be specified, which must match
       type field.
     unhealthyThreshold: A so-far healthy instance will be marked unhealthy
@@ -17122,9 +17567,10 @@ class HealthCheck(_messages.Message):
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Specifies the type of the healthCheck, either TCP, SSL, HTTP or HTTPS.
-    If not specified, the default is TCP. Exactly one of the protocol-specific
-    health check field must be specified, which must match type field.
+    r"""Specifies the type of the healthCheck, either TCP, SSL, HTTP, HTTPS or
+    HTTP2. If not specified, the default is TCP. Exactly one of the protocol-
+    specific health check field must be specified, which must match type
+    field.
 
     Values:
       HTTP: <no description>
@@ -17325,6 +17771,45 @@ class HealthStatus(_messages.Message):
   instance = _messages.StringField(2)
   ipAddress = _messages.StringField(3)
   port = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class HealthStatusForNetworkEndpoint(_messages.Message):
+  r"""A HealthStatusForNetworkEndpoint object.
+
+  Enums:
+    HealthStateValueValuesEnum: Health state of the network endpoint
+      determined based on the health checks configured.
+
+  Fields:
+    backendService: URL of the backend service associated with the health
+      state of the network endpoint.
+    forwardingRule: URL of the forwarding rule associated with the health
+      state of the network endpoint.
+    healthCheck: URL of the health check associated with the health state of
+      the network endpoint.
+    healthState: Health state of the network endpoint determined based on the
+      health checks configured.
+  """
+
+  class HealthStateValueValuesEnum(_messages.Enum):
+    r"""Health state of the network endpoint determined based on the health
+    checks configured.
+
+    Values:
+      DRAINING: <no description>
+      HEALTHY: <no description>
+      UNHEALTHY: <no description>
+      UNKNOWN: <no description>
+    """
+    DRAINING = 0
+    HEALTHY = 1
+    UNHEALTHY = 2
+    UNKNOWN = 3
+
+  backendService = _messages.MessageField('BackendServiceReference', 1)
+  forwardingRule = _messages.MessageField('ForwardingRuleReference', 2)
+  healthCheck = _messages.MessageField('HealthCheckReference', 3)
+  healthState = _messages.EnumField('HealthStateValueValuesEnum', 4)
 
 
 class HostRule(_messages.Message):
@@ -23069,6 +23554,670 @@ class Network(_messages.Message):
   subnetworks = _messages.StringField(12, repeated=True)
 
 
+class NetworkEndpoint(_messages.Message):
+  r"""The network endpoint.
+
+  Fields:
+    instance: The name for a specific VM instance that the IP address belongs
+      to. This is required for network endpoints of type GCE_VM_IP_PORT. The
+      instance must be in the same zone of network endpoint group.  The name
+      must be 1-63 characters long, and comply with RFC1035.
+    ipAddress: Optional IPv4 address of network endpoint. The IP address must
+      belong to a VM in GCE (either the primary IP or as part of an aliased IP
+      range). If the IP address is not specified, then the primary IP address
+      for the VM instance in the network that the network endpoint group
+      belongs to will be used.
+    port: Optional port number of network endpoint. If not specified and the
+      NetworkEndpointGroup.network_endpoint_type is GCE_IP_PORT, the
+      defaultPort for the network endpoint group will be used.
+  """
+
+  instance = _messages.StringField(1)
+  ipAddress = _messages.StringField(2)
+  port = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class NetworkEndpointGroup(_messages.Message):
+  r"""Represents a collection of network endpoints.
+
+  Enums:
+    NetworkEndpointTypeValueValuesEnum: Type of network endpoints in this
+      network endpoint group. Currently the only supported value is
+      GCE_VM_IP_PORT.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    defaultPort: The default port used if the port number is not specified in
+      the network endpoint.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output Only] Type of the resource. Always
+      compute#networkEndpointGroup for network endpoint group.
+    name: Name of the resource; provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    network: The URL of the network to which all network endpoints in the NEG
+      belong. Uses "default" project network if unspecified.
+    networkEndpointType: Type of network endpoints in this network endpoint
+      group. Currently the only supported value is GCE_VM_IP_PORT.
+    selfLink: [Output Only] Server-defined URL for the resource.
+    size: [Output only] Number of network endpoints in the network endpoint
+      group.
+    subnetwork: Optional URL of the subnetwork to which all network endpoints
+      in the NEG belong.
+    zone: [Output Only] The URL of the zone where the network endpoint group
+      is located.
+  """
+
+  class NetworkEndpointTypeValueValuesEnum(_messages.Enum):
+    r"""Type of network endpoints in this network endpoint group. Currently
+    the only supported value is GCE_VM_IP_PORT.
+
+    Values:
+      GCE_VM_IP_PORT: <no description>
+    """
+    GCE_VM_IP_PORT = 0
+
+  creationTimestamp = _messages.StringField(1)
+  defaultPort = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  description = _messages.StringField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'compute#networkEndpointGroup')
+  name = _messages.StringField(6)
+  network = _messages.StringField(7)
+  networkEndpointType = _messages.EnumField('NetworkEndpointTypeValueValuesEnum', 8)
+  selfLink = _messages.StringField(9)
+  size = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  subnetwork = _messages.StringField(11)
+  zone = _messages.StringField(12)
+
+
+class NetworkEndpointGroupAggregatedList(_messages.Message):
+  r"""A NetworkEndpointGroupAggregatedList object.
+
+  Messages:
+    ItemsValue: A list of NetworkEndpointGroupsScopedList resources.
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of NetworkEndpointGroupsScopedList resources.
+    kind: [Output Only] The resource type, which is always
+      compute#networkEndpointGroupAggregatedList for aggregated lists of
+      network endpoint groups.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ItemsValue(_messages.Message):
+    r"""A list of NetworkEndpointGroupsScopedList resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a ItemsValue object.
+
+    Fields:
+      additionalProperties: The name of the scope that contains this set of
+        network endpoint groups.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ItemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A NetworkEndpointGroupsScopedList attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('NetworkEndpointGroupsScopedList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('ItemsValue', 2)
+  kind = _messages.StringField(3, default=u'compute#networkEndpointGroupAggregatedList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
+
+
+class NetworkEndpointGroupList(_messages.Message):
+  r"""A NetworkEndpointGroupList object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of NetworkEndpointGroup resources.
+    kind: [Output Only] The resource type, which is always
+      compute#networkEndpointGroupList for network endpoint group lists.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('NetworkEndpointGroup', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#networkEndpointGroupList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
+
+
+class NetworkEndpointGroupsAttachEndpointsRequest(_messages.Message):
+  r"""A NetworkEndpointGroupsAttachEndpointsRequest object.
+
+  Fields:
+    networkEndpoints: The list of network endpoints to be attached.
+  """
+
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 1, repeated=True)
+
+
+class NetworkEndpointGroupsDetachEndpointsRequest(_messages.Message):
+  r"""A NetworkEndpointGroupsDetachEndpointsRequest object.
+
+  Fields:
+    networkEndpoints: The list of network endpoints to be detached.
+  """
+
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 1, repeated=True)
+
+
+class NetworkEndpointGroupsListEndpointsRequest(_messages.Message):
+  r"""A NetworkEndpointGroupsListEndpointsRequest object.
+
+  Enums:
+    HealthStatusValueValuesEnum: Optional query parameter for showing the
+      health status of each network endpoint. Valid options are SKIP or SHOW.
+      If you don't specifiy this parameter, the health status of network
+      endpoints will not be provided.
+
+  Fields:
+    healthStatus: Optional query parameter for showing the health status of
+      each network endpoint. Valid options are SKIP or SHOW. If you don't
+      specifiy this parameter, the health status of network endpoints will not
+      be provided.
+  """
+
+  class HealthStatusValueValuesEnum(_messages.Enum):
+    r"""Optional query parameter for showing the health status of each network
+    endpoint. Valid options are SKIP or SHOW. If you don't specifiy this
+    parameter, the health status of network endpoints will not be provided.
+
+    Values:
+      SHOW: <no description>
+      SKIP: <no description>
+    """
+    SHOW = 0
+    SKIP = 1
+
+  healthStatus = _messages.EnumField('HealthStatusValueValuesEnum', 1)
+
+
+class NetworkEndpointGroupsListNetworkEndpoints(_messages.Message):
+  r"""A NetworkEndpointGroupsListNetworkEndpoints object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of NetworkEndpointWithHealthStatus resources.
+    kind: [Output Only] The resource type, which is always
+      compute#networkEndpointGroupsListNetworkEndpoints for the list of
+      network endpoints in the specified network endpoint group.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('NetworkEndpointWithHealthStatus', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#networkEndpointGroupsListNetworkEndpoints')
+  nextPageToken = _messages.StringField(4)
+  warning = _messages.MessageField('WarningValue', 5)
+
+
+class NetworkEndpointGroupsScopedList(_messages.Message):
+  r"""A NetworkEndpointGroupsScopedList object.
+
+  Messages:
+    WarningValue: [Output Only] An informational warning that replaces the
+      list of network endpoint groups when the list is empty.
+
+  Fields:
+    networkEndpointGroups: [Output Only] The list of network endpoint groups
+      that are contained in this scope.
+    warning: [Output Only] An informational warning that replaces the list of
+      network endpoint groups when the list is empty.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] An informational warning that replaces the list of
+    network endpoint groups when the list is empty.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  networkEndpointGroups = _messages.MessageField('NetworkEndpointGroup', 1, repeated=True)
+  warning = _messages.MessageField('WarningValue', 2)
+
+
+class NetworkEndpointWithHealthStatus(_messages.Message):
+  r"""A NetworkEndpointWithHealthStatus object.
+
+  Fields:
+    healths: [Output only] The health status of network endpoint;
+    networkEndpoint: [Output only] The network endpoint;
+  """
+
+  healths = _messages.MessageField('HealthStatusForNetworkEndpoint', 1, repeated=True)
+  networkEndpoint = _messages.MessageField('NetworkEndpoint', 2)
+
+
 class NetworkInterface(_messages.Message):
   r"""A network interface resource attached to an instance.
 
@@ -25889,6 +27038,7 @@ class Quota(_messages.Message):
       IN_USE_SNAPSHOT_SCHEDULES: <no description>
       LOCAL_SSD_TOTAL_GB: <no description>
       NETWORKS: <no description>
+      NETWORK_ENDPOINT_GROUPS: <no description>
       NVIDIA_K80_GPUS: <no description>
       NVIDIA_P100_GPUS: <no description>
       NVIDIA_P100_VWS_GPUS: <no description>
@@ -25957,46 +27107,47 @@ class Quota(_messages.Message):
     IN_USE_SNAPSHOT_SCHEDULES = 24
     LOCAL_SSD_TOTAL_GB = 25
     NETWORKS = 26
-    NVIDIA_K80_GPUS = 27
-    NVIDIA_P100_GPUS = 28
-    NVIDIA_P100_VWS_GPUS = 29
-    NVIDIA_P4_GPUS = 30
-    NVIDIA_P4_VWS_GPUS = 31
-    NVIDIA_T4_GPUS = 32
-    NVIDIA_T4_VWS_GPUS = 33
-    NVIDIA_V100_GPUS = 34
-    PREEMPTIBLE_CPUS = 35
-    PREEMPTIBLE_LOCAL_SSD_GB = 36
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 37
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 38
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 39
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 40
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 41
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 42
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 43
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 44
-    REGIONAL_AUTOSCALERS = 45
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 46
-    RESOURCE_POLICIES = 47
-    ROUTERS = 48
-    ROUTES = 49
-    SECURITY_POLICIES = 50
-    SECURITY_POLICY_RULES = 51
-    SNAPSHOTS = 52
-    SSD_TOTAL_GB = 53
-    SSL_CERTIFICATES = 54
-    STATIC_ADDRESSES = 55
-    SUBNETWORKS = 56
-    TARGET_HTTPS_PROXIES = 57
-    TARGET_HTTP_PROXIES = 58
-    TARGET_INSTANCES = 59
-    TARGET_POOLS = 60
-    TARGET_SSL_PROXIES = 61
-    TARGET_TCP_PROXIES = 62
-    TARGET_VPN_GATEWAYS = 63
-    URL_MAPS = 64
-    VPN_GATEWAYS = 65
-    VPN_TUNNELS = 66
+    NETWORK_ENDPOINT_GROUPS = 27
+    NVIDIA_K80_GPUS = 28
+    NVIDIA_P100_GPUS = 29
+    NVIDIA_P100_VWS_GPUS = 30
+    NVIDIA_P4_GPUS = 31
+    NVIDIA_P4_VWS_GPUS = 32
+    NVIDIA_T4_GPUS = 33
+    NVIDIA_T4_VWS_GPUS = 34
+    NVIDIA_V100_GPUS = 35
+    PREEMPTIBLE_CPUS = 36
+    PREEMPTIBLE_LOCAL_SSD_GB = 37
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 38
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 39
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 40
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 41
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 42
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 43
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 44
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 45
+    REGIONAL_AUTOSCALERS = 46
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 47
+    RESOURCE_POLICIES = 48
+    ROUTERS = 49
+    ROUTES = 50
+    SECURITY_POLICIES = 51
+    SECURITY_POLICY_RULES = 52
+    SNAPSHOTS = 53
+    SSD_TOTAL_GB = 54
+    SSL_CERTIFICATES = 55
+    STATIC_ADDRESSES = 56
+    SUBNETWORKS = 57
+    TARGET_HTTPS_PROXIES = 58
+    TARGET_HTTP_PROXIES = 59
+    TARGET_INSTANCES = 60
+    TARGET_POOLS = 61
+    TARGET_SSL_PROXIES = 62
+    TARGET_TCP_PROXIES = 63
+    TARGET_VPN_GATEWAYS = 64
+    URL_MAPS = 65
+    VPN_GATEWAYS = 66
+    VPN_TUNNELS = 67
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -28295,6 +29446,15 @@ class SSLHealthCheck(_messages.Message):
   r"""A SSLHealthCheck object.
 
   Enums:
+    PortSpecificationValueValuesEnum: Specifies how port is selected for
+      health checking, can be one of following values: USE_FIXED_PORT: The
+      port number in port is used for health checking. USE_NAMED_PORT: The
+      portName is used for health checking. USE_SERVING_PORT: For
+      NetworkEndpointGroup, the port specified for each network endpoint is
+      used for health checking. For other backends, the port or named port
+      specified in the Backend Service is used for health checking.   If not
+      specified, SSL health check follows behavior specified in port and
+      portName fields.
     ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
       before sending data to the backend, either NONE or PROXY_V1. The default
       is NONE.
@@ -28304,6 +29464,14 @@ class SSLHealthCheck(_messages.Message):
       is 443. Valid values are 1 through 65535.
     portName: Port name as defined in InstanceGroup#NamedPort#name. If both
       port and port_name are defined, port takes precedence.
+    portSpecification: Specifies how port is selected for health checking, can
+      be one of following values: USE_FIXED_PORT: The port number in port is
+      used for health checking. USE_NAMED_PORT: The portName is used for
+      health checking. USE_SERVING_PORT: For NetworkEndpointGroup, the port
+      specified for each network endpoint is used for health checking. For
+      other backends, the port or named port specified in the Backend Service
+      is used for health checking.   If not specified, SSL health check
+      follows behavior specified in port and portName fields.
     proxyHeader: Specifies the type of proxy header to append before sending
       data to the backend, either NONE or PROXY_V1. The default is NONE.
     request: The application data to send once the SSL connection has been
@@ -28314,6 +29482,25 @@ class SSLHealthCheck(_messages.Message):
       If left empty (the default value), any response will indicate health.
       The response data can only be ASCII.
   """
+
+  class PortSpecificationValueValuesEnum(_messages.Enum):
+    r"""Specifies how port is selected for health checking, can be one of
+    following values: USE_FIXED_PORT: The port number in port is used for
+    health checking. USE_NAMED_PORT: The portName is used for health checking.
+    USE_SERVING_PORT: For NetworkEndpointGroup, the port specified for each
+    network endpoint is used for health checking. For other backends, the port
+    or named port specified in the Backend Service is used for health
+    checking.   If not specified, SSL health check follows behavior specified
+    in port and portName fields.
+
+    Values:
+      USE_FIXED_PORT: <no description>
+      USE_NAMED_PORT: <no description>
+      USE_SERVING_PORT: <no description>
+    """
+    USE_FIXED_PORT = 0
+    USE_NAMED_PORT = 1
+    USE_SERVING_PORT = 2
 
   class ProxyHeaderValueValuesEnum(_messages.Enum):
     r"""Specifies the type of proxy header to append before sending data to
@@ -28328,9 +29515,10 @@ class SSLHealthCheck(_messages.Message):
 
   port = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   portName = _messages.StringField(2)
-  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 3)
-  request = _messages.StringField(4)
-  response = _messages.StringField(5)
+  portSpecification = _messages.EnumField('PortSpecificationValueValuesEnum', 3)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 4)
+  request = _messages.StringField(5)
+  response = _messages.StringField(6)
 
 
 class Scheduling(_messages.Message):
@@ -30119,6 +31307,15 @@ class TCPHealthCheck(_messages.Message):
   r"""A TCPHealthCheck object.
 
   Enums:
+    PortSpecificationValueValuesEnum: Specifies how port is selected for
+      health checking, can be one of following values: USE_FIXED_PORT: The
+      port number in port is used for health checking. USE_NAMED_PORT: The
+      portName is used for health checking. USE_SERVING_PORT: For
+      NetworkEndpointGroup, the port specified for each network endpoint is
+      used for health checking. For other backends, the port or named port
+      specified in the Backend Service is used for health checking.   If not
+      specified, TCP health check follows behavior specified in port and
+      portName fields.
     ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
       before sending data to the backend, either NONE or PROXY_V1. The default
       is NONE.
@@ -30128,6 +31325,14 @@ class TCPHealthCheck(_messages.Message):
       is 80. Valid values are 1 through 65535.
     portName: Port name as defined in InstanceGroup#NamedPort#name. If both
       port and port_name are defined, port takes precedence.
+    portSpecification: Specifies how port is selected for health checking, can
+      be one of following values: USE_FIXED_PORT: The port number in port is
+      used for health checking. USE_NAMED_PORT: The portName is used for
+      health checking. USE_SERVING_PORT: For NetworkEndpointGroup, the port
+      specified for each network endpoint is used for health checking. For
+      other backends, the port or named port specified in the Backend Service
+      is used for health checking.   If not specified, TCP health check
+      follows behavior specified in port and portName fields.
     proxyHeader: Specifies the type of proxy header to append before sending
       data to the backend, either NONE or PROXY_V1. The default is NONE.
     request: The application data to send once the TCP connection has been
@@ -30138,6 +31343,25 @@ class TCPHealthCheck(_messages.Message):
       If left empty (the default value), any response will indicate health.
       The response data can only be ASCII.
   """
+
+  class PortSpecificationValueValuesEnum(_messages.Enum):
+    r"""Specifies how port is selected for health checking, can be one of
+    following values: USE_FIXED_PORT: The port number in port is used for
+    health checking. USE_NAMED_PORT: The portName is used for health checking.
+    USE_SERVING_PORT: For NetworkEndpointGroup, the port specified for each
+    network endpoint is used for health checking. For other backends, the port
+    or named port specified in the Backend Service is used for health
+    checking.   If not specified, TCP health check follows behavior specified
+    in port and portName fields.
+
+    Values:
+      USE_FIXED_PORT: <no description>
+      USE_NAMED_PORT: <no description>
+      USE_SERVING_PORT: <no description>
+    """
+    USE_FIXED_PORT = 0
+    USE_NAMED_PORT = 1
+    USE_SERVING_PORT = 2
 
   class ProxyHeaderValueValuesEnum(_messages.Enum):
     r"""Specifies the type of proxy header to append before sending data to
@@ -30152,9 +31376,10 @@ class TCPHealthCheck(_messages.Message):
 
   port = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   portName = _messages.StringField(2)
-  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 3)
-  request = _messages.StringField(4)
-  response = _messages.StringField(5)
+  portSpecification = _messages.EnumField('PortSpecificationValueValuesEnum', 3)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 4)
+  request = _messages.StringField(5)
+  response = _messages.StringField(6)
 
 
 class Tags(_messages.Message):
@@ -33812,7 +35037,7 @@ class XpnResourceId(_messages.Message):
 
 class Zone(_messages.Message):
   r"""A Zone resource. (== resource_for beta.zones ==) (== resource_for
-  v1.zones ==)
+  v1.zones ==) Next ID: 17
 
   Enums:
     StatusValueValuesEnum: [Output Only] Status of the zone, either UP or

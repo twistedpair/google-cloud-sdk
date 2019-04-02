@@ -59,6 +59,10 @@ class VideoUriFormatError(Error):
   """Error if the video input URI is invalid."""
 
 
+class AudioTrackError(Error):
+  """Error if the audio tracks setting is invalid."""
+
+
 def ValidateAndParseSegments(given_segments):
   """Get VideoSegment messages from string of form START1:END1,START2:END2....
 
@@ -172,3 +176,13 @@ def UpdateRequestWithInput(unused_ref, args, request):
   else:
     raise VideoUriFormatError(INPUT_ERROR_MESSAGE.format(path))
   return request
+
+
+# Argument Processors
+
+
+def AudioTrackProcessor(tracks):
+  """Verify at most two tracks, convert to [int, int]."""
+  if len(tracks) > 2:
+    raise AudioTrackError('Can not specify more than two audio tracks.')
+  return tracks

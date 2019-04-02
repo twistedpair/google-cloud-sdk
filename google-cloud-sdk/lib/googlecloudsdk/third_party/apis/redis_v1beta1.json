@@ -302,7 +302,7 @@
           "type": "string"
         },
         "redisVersion": {
-          "description": "Optional. The version of Redis software.\nIf not provided, latest supported version will be used. Updating the\nversion will perform an upgrade\/downgrade to the new version. Currently,\nthe supported values are `REDIS_3_2` for Redis 3.2.",
+          "description": "Optional. The version of Redis software.\nIf not provided, latest supported version will be used. Updating the\nversion will perform an upgrade\/downgrade to the new version. Currently,\nthe supported values are:\n\n *   `REDIS_4_0` for Redis 4.0 compatibility\n *   `REDIS_3_2` for Redis 3.2 compatibility",
           "type": "string"
         },
         "reservedIpRange": {
@@ -358,7 +358,7 @@
           "type": "string"
         },
         "redisConfigs": {
-          "description": "Optional. Redis configuration parameters, according to\nhttp:\/\/redis.io\/topics\/config. Currently, the only supported parameters\nare:\n\n *   maxmemory-policy\n *   notify-keyspace-events",
+          "description": "Optional. Redis configuration parameters, according to\nhttp:\/\/redis.io\/topics\/config. Currently, the only supported parameters\nare:\n\n Redis 3.2 and above:\n\n *   maxmemory-policy\n *   notify-keyspace-events\n\n Redis 4.0 and above:\n\n *   activedefrag\n *   lfu-log-factor\n *   lfu-decay-time",
           "type": "object",
           "additionalProperties": {
             "type": "string"

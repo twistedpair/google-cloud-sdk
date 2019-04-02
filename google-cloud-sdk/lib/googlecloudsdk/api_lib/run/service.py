@@ -98,4 +98,6 @@ class Service(k8s_object.KubernetesObject):
       return '!'
     return super(Service, self).ready_symbol
 
-
+  @property
+  def last_modifier(self):
+    return self.annotations.get(u'serving.knative.dev/lastModifier')

@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://console.cloud.google.com/apis/api/cloudasset.googleapis.com/overview",
+  "documentationLink": "https://cloud.google.com/resource-manager/docs/cloud-asset-inventory/quickstart-cloud-asset-inventory",
   "protocol": "rest",
   "rootUrl": "https://cloudasset.googleapis.com/",
   "servicePath": "",

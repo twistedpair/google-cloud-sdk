@@ -73,6 +73,13 @@ class Collections(enum.Enum):
       [u'project'],
       True
   )
+  PROJECTS_HMACKEYS = (
+      'projects.hmacKeys',
+      'projects/{projectId}/hmacKeys/{accessId}',
+      {},
+      [u'projectId', u'accessId'],
+      True
+  )
   PROJECTS_SERVICEACCOUNT = (
       'projects.serviceAccount',
       'projects/{projectId}/serviceAccount',

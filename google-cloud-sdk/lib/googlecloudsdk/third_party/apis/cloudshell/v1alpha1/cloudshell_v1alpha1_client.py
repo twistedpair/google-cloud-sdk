@@ -118,9 +118,10 @@ able to connect to the environment using the corresponding private key.
           }
 
     def Authorize(self, request, global_params=None):
-      r"""Sends an access token to a running environment on behalf of a user. When.
-this completes, the environment will be authorized to run gcloud commands
-without requiring the user to manually authenticate.
+      r"""Sends OAuth credentials to a running environment on behalf of a user. When.
+this completes, the environment will be authorized to run various Google
+Cloud command line tools without requiring the user to manually
+authenticate.
 
       Args:
         request: (CloudshellUsersEnvironmentsAuthorizeRequest) input message

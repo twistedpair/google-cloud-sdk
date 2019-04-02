@@ -35,4 +35,4 @@ properties:
       The percentage of traffic (connections/operations/requests) which will be
       aborted as part of fault injection. The value must be between 0.0 and
       100.0 inclusive.
-    type: double
+    type: number

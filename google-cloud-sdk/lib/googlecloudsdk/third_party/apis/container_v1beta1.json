@@ -455,6 +455,10 @@
             "$ref": "AcceleratorConfig"
           }
         },
+        "sandboxConfig": {
+          "description": "Sandbox configuration for this node.",
+          "$ref": "SandboxConfig"
+        },
         "diskType": {
           "description": "Type of the disk attached to each node (e.g. 'pd-standard' or 'pd-ssd')\n\nIf unspecified, the default disk type is 'pd-standard'",
           "type": "string"
@@ -507,6 +511,17 @@
         },
         "acceleratorType": {
           "description": "The accelerator type resource name. List of supported accelerators\n[here](\/compute\/docs\/gpus\/#Introduction)",
+          "type": "string"
+        }
+      }
+    },
+    "SandboxConfig": {
+      "id": "SandboxConfig",
+      "description": "SandboxConfig contains configurations of the sandbox to use for the node.",
+      "type": "object",
+      "properties": {
+        "sandboxType": {
+          "description": "Type of the sandbox to use for the node (e.g. 'gvisor')",
           "type": "string"
         }
       }

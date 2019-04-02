@@ -52,4 +52,4 @@ properties:
       "force" mode, where traffic will be spread to the healthy VMs with the
       best effort, or to all VMs when no VM is healthy.  This field is only used
       with l4 load balancing.
-    type: float
+    type: number

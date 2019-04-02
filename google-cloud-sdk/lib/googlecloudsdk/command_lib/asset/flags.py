@@ -36,7 +36,7 @@ def AddFolderArgs(parser):
 
 
 def AddParentArgs(parser):
-  parent_group = parser.add_group(mutex=True, help='The root asset')
+  parent_group = parser.add_group(mutex=True)
   AddOrganizationArgs(parent_group)
   AddFolderArgs(parent_group)
 

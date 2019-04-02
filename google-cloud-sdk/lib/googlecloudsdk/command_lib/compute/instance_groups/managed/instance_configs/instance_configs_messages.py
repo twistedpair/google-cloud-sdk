@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute.instance_groups.flags import AutoDeleteFlag
 from googlecloudsdk.command_lib.compute.instance_groups.managed.instance_configs import instance_disk_getter
 import six
 
@@ -88,8 +89,10 @@ def MakePreservedStateDiskEntry(messages, stateful_disk_data, disk_getter):
     mode = disk.mode
   preserved_disk = \
       messages.PreservedStatePreservedDisk(
-          autoDelete=messages.PreservedStatePreservedDisk \
-            .AutoDeleteValueValuesEnum.NEVER,
+          autoDelete=(stateful_disk_data.get('auto-delete') or
+                      AutoDeleteFlag.NEVER).GetAutoDeleteEnumValue(
+                          messages.PreservedStatePreservedDisk
+                          .AutoDeleteValueValuesEnum),
           source=source,
           mode=GetMode(messages, mode, preserved_state_mode=True))
   return messages.PreservedState.DisksValue.AdditionalProperty(
@@ -152,7 +155,7 @@ def MakePreservedStateFromOverrides(messages, disk_overrides,
     preserved_disk = \
         messages.PreservedStatePreservedDisk(
             autoDelete=messages.PreservedStatePreservedDisk \
-              .AutoDeleteValueValuesEnum.NEVER,
+                       .AutoDeleteValueValuesEnum.NEVER,
             source=override_disk.source,
             mode=disk_mode_map[override_disk.mode])
     disks_map.additionalProperties.append(
@@ -185,26 +188,35 @@ def CreatePerInstanceConfigMessage(holder,
         instance_ref=instance_ref, holder=holder)
   messages = holder.client.messages
   disk_overrides = []
+  preserved_state_disks = []
   for stateful_disk in stateful_disks or []:
     disk_overrides.append(
         GetDiskOverride(
             messages=messages,
             stateful_disk=stateful_disk,
             disk_getter=disk_getter))
+    preserved_state_disks.append(
+        MakePreservedStateDiskEntry(messages, stateful_disk, disk_getter))
   metadata_overrides = []
+  preserved_state_metadata = []
   # Keeping the metadata sorted to maintain consistency across commands
   for metadata_key, metadata_value in sorted(six.iteritems(stateful_metadata)):
     metadata_overrides.append(
         messages.ManagedInstanceOverride.MetadataValueListEntry(
             key=metadata_key, value=metadata_value))
+    preserved_state_metadata.append(
+        MakePreservedStateMetadataEntry(
+            messages, key=metadata_key, value=metadata_value))
   return messages.PerInstanceConfig(
       instance=str(instance_ref),
       name=path_simplifier.Name(str(instance_ref)),
       override=messages.ManagedInstanceOverride(
           disks=disk_overrides, metadata=metadata_overrides),
-      preservedState=\
-          MakePreservedStateFromOverrides(
-              holder.client.messages, disk_overrides, metadata_overrides))
+      preservedState=messages.PreservedState(
+          disks=messages.PreservedState.DisksValue(
+              additionalProperties=preserved_state_disks),
+          metadata=messages.PreservedState.MetadataValue(
+              additionalProperties=preserved_state_metadata)))
 
 
 def CallPerInstanceConfigUpdate(holder, igm_ref, per_instance_config_message):

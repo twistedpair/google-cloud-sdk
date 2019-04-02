@@ -128,9 +128,9 @@ def AddCreateGaArgs(parser):
   AddInterconnectTypeGA(parser)
 
 
-def AddCreateBetaArgs(parser, supports_100g=False):
+def AddCreateBetaArgs(parser):
   """Adds beta flags for create command to the argparse.ArgumentParser."""
-  AddCreateCommonArgs(parser, supports_100g)
+  AddCreateCommonArgs(parser, supports_100g=True)
   AddInterconnectTypeBetaAndAlpha(parser)
 
 

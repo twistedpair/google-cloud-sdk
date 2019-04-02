@@ -23,6 +23,7 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.binauthz import apis
 from googlecloudsdk.api_lib.container.binauthz import util
 from googlecloudsdk.command_lib.container.binauthz import exceptions
+from googlecloudsdk.command_lib.kms import maps as kms_maps
 
 
 class Client(object):
@@ -67,12 +68,12 @@ class Client(object):
             parent=project_ref.RelativeName(),
         ))
 
-  def AddKey(self, attestor_ref, key_content, comment=None):
-    """Add a key to an attestor.
+  def AddPgpKey(self, attestor_ref, pgp_pubkey_content, comment=None):
+    """Add a PGP key to an attestor.
 
     Args:
       attestor_ref: ResourceSpec, The attestor to be updated.
-      key_content: The contents of the public key file.
+      pgp_pubkey_content: The contents of the PGP public key file.
       comment: The comment on the public key.
 
     Returns:
@@ -87,14 +88,18 @@ class Client(object):
     existing_pub_keys = set(
         public_key.asciiArmoredPgpPublicKey
         for public_key in attestor.userOwnedDrydockNote.publicKeys)
-    if key_content in existing_pub_keys:
+    if pgp_pubkey_content in existing_pub_keys:
       raise exceptions.AlreadyExistsError(
           'Provided public key already present on attestor [{}]'.format(
               attestor.name))
 
+    existing_ids = set(
+        public_key.id
+        for public_key in attestor.userOwnedDrydockNote.publicKeys)
+
     attestor.userOwnedDrydockNote.publicKeys.append(
         self.messages.AttestorPublicKey(
-            asciiArmoredPgpPublicKey=key_content,
+            asciiArmoredPgpPublicKey=pgp_pubkey_content,
             comment=comment))
 
     updated_attestor = self.client.projects_attestors.Update(attestor)
@@ -102,60 +107,102 @@ class Client(object):
     return next(
         public_key
         for public_key in updated_attestor.userOwnedDrydockNote.publicKeys
-        if public_key.asciiArmoredPgpPublicKey == key_content)
+        if public_key.id not in existing_ids)
 
-  def RemoveKey(self, attestor_ref, fingerprint_to_remove):
-    """Remove a key on an attestor.
+  def AddPkixKey(self, attestor_ref, pkix_pubkey_content, pkix_sig_algorithm,
+                 id_override=None, comment=None):
+    """Add a key to an attestor.
 
     Args:
       attestor_ref: ResourceSpec, The attestor to be updated.
-      fingerprint_to_remove: The fingerprint of the key to remove.
+      pkix_pubkey_content: The PEM-encoded PKIX public key.
+      pkix_sig_algorithm: The PKIX public key signature algorithm.
+      id_override: If provided, the key ID to use instead of the API-generated
+          one.
+      comment: The comment on the public key.
+
+    Returns:
+      The added public key.
 
     Raises:
-      NotFoundError: If an expected public key could not be located by
-          fingerprint.
+      AlreadyExistsError: If a public key with the same key content was found on
+          the attestor.
     """
     attestor = self.Get(attestor_ref)
 
     existing_ids = set(
         public_key.id
         for public_key in attestor.userOwnedDrydockNote.publicKeys)
-    if fingerprint_to_remove not in existing_ids:
+    if id_override is not None and id_override in existing_ids:
+      raise exceptions.AlreadyExistsError(
+          'Public key with ID [{}] already present on attestor [{}]'.format(
+              id_override, attestor.name))
+
+    attestor.userOwnedDrydockNote.publicKeys.append(
+        self.messages.AttestorPublicKey(
+            id=id_override,
+            pkixPublicKey=self.messages.PkixPublicKey(
+                publicKeyPem=pkix_pubkey_content,
+                signatureAlgorithm=pkix_sig_algorithm),
+            comment=comment))
+
+    updated_attestor = self.client.projects_attestors.Update(attestor)
+
+    return next(
+        public_key
+        for public_key in updated_attestor.userOwnedDrydockNote.publicKeys
+        if public_key.id not in existing_ids)
+
+  def RemoveKey(self, attestor_ref, pubkey_id):
+    """Remove a key on an attestor.
+
+    Args:
+      attestor_ref: ResourceSpec, The attestor to be updated.
+      pubkey_id: The ID of the key to remove.
+
+    Raises:
+      NotFoundError: If an expected public key could not be located by ID.
+    """
+    attestor = self.Get(attestor_ref)
+
+    existing_ids = set(
+        public_key.id
+        for public_key in attestor.userOwnedDrydockNote.publicKeys)
+    if pubkey_id not in existing_ids:
       raise exceptions.NotFoundError(
           'No matching public key found on attestor [{}]'.format(
               attestor.name))
 
     attestor.userOwnedDrydockNote.publicKeys = [
         public_key for public_key in attestor.userOwnedDrydockNote.publicKeys
-        if public_key.id != fingerprint_to_remove]
+        if public_key.id != pubkey_id]
 
     self.client.projects_attestors.Update(attestor)
 
   def UpdateKey(
-      self, attestor_ref, fingerprint, key_content=None, comment=None):
+      self, attestor_ref, pubkey_id, pgp_pubkey_content=None, comment=None):
     """Update a key on an attestor.
 
     Args:
       attestor_ref: ResourceSpec, The attestor to be updated.
-      fingerprint: The fingerprint of the key to update.
-      key_content: The contents of the public key file.
+      pubkey_id: The ID of the key to update.
+      pgp_pubkey_content: The contents of the public key file.
       comment: The comment on the public key.
 
     Returns:
       The updated public key.
 
     Raises:
-      NotFoundError: If an expected public key could not be located by
-          fingerprint.
-      InvalidStateError: If multiple public keys matched the provided
-          fingerprint.
+      NotFoundError: If an expected public key could not be located by ID.
+      InvalidStateError: If multiple public keys matched the provided ID.
+      InvalidArgumentError: If a non-PGP key is updated with pgp_pubkey_content.
     """
     attestor = self.Get(attestor_ref)
 
     existing_keys = [
         public_key
         for public_key in attestor.userOwnedDrydockNote.publicKeys
-        if public_key.id == fingerprint]
+        if public_key.id == pubkey_id]
 
     if not existing_keys:
       raise exceptions.NotFoundError(
@@ -167,8 +214,11 @@ class Client(object):
               attestor.name))
 
     existing_key = existing_keys[0]
-    if key_content is not None:
-      existing_key.asciiArmoredPgpPublicKey = key_content
+    if pgp_pubkey_content is not None:
+      if not existing_key.asciiArmoredPgpPublicKey:
+        raise exceptions.InvalidArgumentError(
+            'Cannot update a non-PGP PublicKey with a PGP public key')
+      existing_key.asciiArmoredPgpPublicKey = pgp_pubkey_content
     if comment is not None:
       existing_key.comment = comment
 
@@ -177,7 +227,7 @@ class Client(object):
     return next(
         public_key
         for public_key in updated_attestor.userOwnedDrydockNote.publicKeys
-        if public_key.id == fingerprint)
+        if public_key.id == pubkey_id)
 
   def Update(self, attestor_ref, description=None):
     """Update an attestor.
@@ -203,3 +253,36 @@ class Client(object):
     )
 
     self.client.projects_attestors.Delete(req)
+
+  def ConvertFromKmsSignatureAlgorithm(self, kms_algorithm):
+    """Convert a KMS SignatureAlgorithm into a Binauthz SignatureAlgorithm."""
+    binauthz_enum = self.messages.PkixPublicKey.SignatureAlgorithmValueValuesEnum
+    kms_enum = kms_maps.ALGORITHM_ENUM
+    alg_map = {
+        kms_enum.RSA_SIGN_PSS_2048_SHA256.name:
+            binauthz_enum.RSA_PSS_2048_SHA256,
+        kms_enum.RSA_SIGN_PSS_3072_SHA256.name:
+            binauthz_enum.RSA_PSS_3072_SHA256,
+        kms_enum.RSA_SIGN_PSS_4096_SHA256.name:
+            binauthz_enum.RSA_PSS_4096_SHA256,
+        kms_enum.RSA_SIGN_PSS_4096_SHA512.name:
+            binauthz_enum.RSA_PSS_4096_SHA512,
+        kms_enum.RSA_SIGN_PKCS1_2048_SHA256.name:
+            binauthz_enum.RSA_SIGN_PKCS1_2048_SHA256,
+        kms_enum.RSA_SIGN_PKCS1_3072_SHA256.name:
+            binauthz_enum.RSA_SIGN_PKCS1_3072_SHA256,
+        kms_enum.RSA_SIGN_PKCS1_4096_SHA256.name:
+            binauthz_enum.RSA_SIGN_PKCS1_4096_SHA256,
+        kms_enum.RSA_SIGN_PKCS1_4096_SHA512.name:
+            binauthz_enum.RSA_SIGN_PKCS1_4096_SHA512,
+        kms_enum.EC_SIGN_P256_SHA256.name:
+            binauthz_enum.ECDSA_P256_SHA256,
+        kms_enum.EC_SIGN_P384_SHA384.name:
+            binauthz_enum.ECDSA_P384_SHA384,
+    }
+    try:
+      return alg_map[kms_algorithm.name]
+    except KeyError:
+      raise exceptions.InvalidArgumentError(
+          'Unsupported PkixPublicKey signature algorithm: "{}"'.format(
+              kms_algorithm.name))

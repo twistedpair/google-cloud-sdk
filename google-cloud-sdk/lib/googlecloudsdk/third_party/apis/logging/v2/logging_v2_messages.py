@@ -460,9 +460,14 @@ class LogEntry(_messages.Message):
       but the forward-slash is removed. Listing the log entry will not show
       the leading slash and filtering for a log name with a leading slash will
       never return any results.
-    metadata: Output only. Additional metadata about the monitored
+    metadata: Deprecated. Output only. Additional metadata about the monitored
       resource.Only k8s_container, k8s_pod, and k8s_node MonitoredResources
-      have this field populated.
+      have this field populated for GKE versions older than 1.12.6. For GKE
+      versions 1.12.6 and above, the metadata field has been deprecated. The
+      Kubernetes pod labels that used to be in metadata.userLabels will now be
+      present in the labels field with a key prefix of k8s-pod/. The
+      Stackdriver system labels that were present in the metadata.systemLabels
+      field will no longer be available in the LogEntry.
     operation: Optional. Information about an operation associated with the
       log entry, if applicable.
     protoPayload: The log entry payload, represented as a protocol buffer.

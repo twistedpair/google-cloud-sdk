@@ -620,6 +620,53 @@
         }
       }
     },
+    "StartManualTransferRunsRequest": {
+      "id": "StartManualTransferRunsRequest",
+      "description": "A request to start manual transfer runs.",
+      "type": "object",
+      "properties": {
+        "requestedTimeRange": {
+          "description": "Time range for the transfer runs that should be started.",
+          "$ref": "TimeRange"
+        },
+        "requestedRunTime": {
+          "description": "Specific run_time for a transfer run to be started. The\nrequested_run_time must not be in the future.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "TimeRange": {
+      "id": "TimeRange",
+      "description": "A specification for a time range, this will request transfer runs with\nrun_time between start_time (inclusive) and end_time (exclusive).",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "Start time of the range of transfer runs. For example,\n`\"2017-05-25T00:00:00+00:00\"`. The start_time must be strictly less than\nthe end_time. Creates transfer runs where run_time is in the range betwen\nstart_time (inclusive) and end_time (exlusive).",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "End time of the range of transfer runs. For example,\n`\"2017-05-30T00:00:00+00:00\"`. The end_time must not be in the future.\nCreates transfer runs where run_time is in the range betwen start_time\n(inclusive) and end_time (exlusive).",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "StartManualTransferRunsResponse": {
+      "id": "StartManualTransferRunsResponse",
+      "description": "A response to start manual transfer runs.",
+      "type": "object",
+      "properties": {
+        "runs": {
+          "description": "The transfer runs that were created.",
+          "type": "array",
+          "items": {
+            "$ref": "TransferRun"
+          }
+        }
+      }
+    },
     "ListTransferRunsResponse": {
       "id": "ListTransferRunsResponse",
       "description": "The returned list of pipelines in the project.",
@@ -1069,7 +1116,36 @@
                 "https://www.googleapis.com/auth/bigquery",
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Creates transfer runs for a time range [start_time, end_time].\nFor each date - or whatever granularity the data source supports - in the\nrange, one transfer run is created.\nNote that runs are created per UTC time in the time range."
+              "description": "Creates transfer runs for a time range [start_time, end_time].\nFor each date - or whatever granularity the data source supports - in the\nrange, one transfer run is created.\nNote that runs are created per UTC time in the time range.\nDEPRECATED: use StartManualTransferRuns instead."
+            },
+            "startManualRuns": {
+              "id": "bigquerydatatransfer.projects.transferConfigs.startManualRuns",
+              "path": "v1/{+parent}:startManualRuns",
+              "flatPath": "v1/projects/{projectsId}/transferConfigs/{transferConfigsId}:startManualRuns",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Transfer configuration name in the form:\n`projects\/{project_id}\/transferConfigs\/{config_id}`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/transferConfigs\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "StartManualTransferRunsRequest"
+              },
+              "response": {
+                "$ref": "StartManualTransferRunsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/bigquery",
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Start manual transfer runs to be executed now with schedule_time equal to\ncurrent time. The transfer runs can be created for a time range where the\nrun_time is between start_time (inclusive) and end_time (exclusive), or for\na specific run_time."
             }
           }
           ,
@@ -1633,7 +1709,36 @@
                     "https://www.googleapis.com/auth/bigquery",
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates transfer runs for a time range [start_time, end_time].\nFor each date - or whatever granularity the data source supports - in the\nrange, one transfer run is created.\nNote that runs are created per UTC time in the time range."
+                  "description": "Creates transfer runs for a time range [start_time, end_time].\nFor each date - or whatever granularity the data source supports - in the\nrange, one transfer run is created.\nNote that runs are created per UTC time in the time range.\nDEPRECATED: use StartManualTransferRuns instead."
+                },
+                "startManualRuns": {
+                  "id": "bigquerydatatransfer.projects.locations.transferConfigs.startManualRuns",
+                  "path": "v1/{+parent}:startManualRuns",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/transferConfigs/{transferConfigsId}:startManualRuns",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Transfer configuration name in the form:\n`projects\/{project_id}\/transferConfigs\/{config_id}`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/transferConfigs\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "StartManualTransferRunsRequest"
+                  },
+                  "response": {
+                    "$ref": "StartManualTransferRunsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/bigquery",
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Start manual transfer runs to be executed now with schedule_time equal to\ncurrent time. The transfer runs can be created for a time range where the\nrun_time is between start_time (inclusive) and end_time (exclusive), or for\na specific run_time."
                 }
               }
               ,

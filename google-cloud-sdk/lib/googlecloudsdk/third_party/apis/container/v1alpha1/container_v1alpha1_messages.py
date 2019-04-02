@@ -1348,10 +1348,10 @@ class GoogleIamV1Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: Unimplemented. The condition that is associated with this
-      binding. NOTE: an unsatisfied condition will not allow user access via
-      current binding. Different bindings, including their conditions, are
-      examined independently.
+    condition: The condition that is associated with this binding. NOTE: an
+      unsatisfied condition will not allow user access via current binding.
+      Different bindings, including their conditions, are examined
+      independently.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -2040,6 +2040,7 @@ class NodeConfig(_messages.Message):
     serviceAccount: The Google Cloud Platform Service Account to be used by
       the node VMs. If no Service Account is specified, the "default" service
       account is used.
+    shieldedInstanceConfig: Shielded Instance options.
     tags: The list of instance tags applied to all nodes. Tags are used to
       identify valid sources or targets for network firewalls and are
       specified by the client during cluster or node pool creation. Each tag
@@ -2132,9 +2133,10 @@ class NodeConfig(_messages.Message):
   reservationAffinity = _messages.MessageField('ReservationAffinity', 15)
   sandboxConfig = _messages.MessageField('SandboxConfig', 16)
   serviceAccount = _messages.StringField(17)
-  tags = _messages.StringField(18, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 19, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 20)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 18)
+  tags = _messages.StringField(19, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 20, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 21)
 
 
 class NodeManagement(_messages.Message):
@@ -2189,6 +2191,7 @@ class NodePool(_messages.Message):
     statusMessage: [Output only] Additional information about the current
       status of this node pool instance, if available. Deprecated, use the
       field conditions instead.
+    upgradeSettings: Upgrade settings (disruption budget and speed).
     version: The version of the Kubernetes of this node.
   """
 
@@ -2233,7 +2236,8 @@ class NodePool(_messages.Message):
   selfLink = _messages.StringField(11)
   status = _messages.EnumField('StatusValueValuesEnum', 12)
   statusMessage = _messages.StringField(13)
-  version = _messages.StringField(14)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 14)
+  version = _messages.StringField(15)
 
 
 class NodePoolAutoscaling(_messages.Message):
@@ -3061,6 +3065,19 @@ class ShieldedContainers(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
+class ShieldedInstanceConfig(_messages.Message):
+  r"""A set of Shielded Instance options.
+
+  Fields:
+    enableIntegrityMonitoring: Defines whether the instance has integrity
+      monitoring enabled.
+    enableSecureBoot: Defines whether the instance has Secure Boot enabled.
+  """
+
+  enableIntegrityMonitoring = _messages.BooleanField(1)
+  enableSecureBoot = _messages.BooleanField(2)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -3291,6 +3308,22 @@ class UpdateNodePoolRequest(_messages.Message):
   projectId = _messages.StringField(9)
   updatedNodePool = _messages.MessageField('NodePool', 10)
   zone = _messages.StringField(11)
+
+
+class UpgradeSettings(_messages.Message):
+  r"""Upgrade settings. When provided, enables Cluster API on the pool.
+  Mirrors the fields and defaults of MachineRollingUpdateDeployment
+  https://github.com/kubernetes-sigs/cluster-api/blob/302479ecef8149c5a05e0a49
+  55b0871f85b7d991/pkg/apis/cluster/v1alpha1/machinedeployment_types.go#L93
+
+  Fields:
+    maxSurge: Disruption budget: how many machines to create before upgrading
+      a node.
+    maxUnavailable: Speed/concurrency: how many nodes at a time to upgrade.
+  """
+
+  maxSurge = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  maxUnavailable = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class UsableSubnetwork(_messages.Message):

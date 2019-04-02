@@ -133,6 +133,18 @@ CLOUDRUN_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG = """\
 The CloudRun-on-GKE addon (--addons=CloudRun) requires Cloud Logging and Cloud Monitoring to be enabled via the --enable-stackdriver-kubernetes flag.
 """
 
+CLOUDRUN_ISTIO_KUBERNETES_DISABLED_ERROR_MSG = """\
+The CloudRun-on-GKE addon (--addons=CloudRun) requires Istio to be enabled via the --addons=Istio flag.
+"""
+
+CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG = """\
+The CloudRun-on-GKE addon (--addons=CloudRun) requires HTTP Load Balancing to be enabled via the --addons=HttpLoadBalancing flag.
+"""
+
+CLOUDRUN_HPA_KUBERNETES_DISABLED_ERROR_MSG = """\
+The CloudRun-on-GKE addon (--addons=CloudRun) requires Horizontal Pod Autoscaling to be enabled via the --addons=HorizontalPodAutoscaling flag.
+"""
+
 DEFAULT_MAX_PODS_PER_NODE_WITHOUT_IP_ALIAS_ERROR_MSG = """\
 Cannot use --default-max-pods-per-node without --enable-ip-alias.
 """
@@ -155,6 +167,10 @@ Cannot use --federating-service-account without --enable-managed-pod-identity
 
 ENABLE_NETWORK_EGRESS_METERING_ERROR_MSG = """\
 Cannot use --[no-]enable-network-egress-metering without --resource-usage-bigquery-dataset.
+"""
+
+SURGE_AND_AUTOSCALING_ERROR_MSG = """\
+Cannot use cluster autoscaling with alpha surge upgrades.
 """
 
 MAX_NODES_PER_POOL = 1000
@@ -408,6 +424,7 @@ class CreateClusterOptions(object):
                resource_usage_bigquery_dataset=None,
                security_group=None,
                enable_private_ipv6_access=None,
+               enable_intra_node_visibility=None,
                enable_vertical_pod_autoscaling=None,
                security_profile=None,
                security_profile_runtime_rules=None,
@@ -489,6 +506,7 @@ class CreateClusterOptions(object):
     self.resource_usage_bigquery_dataset = resource_usage_bigquery_dataset
     self.security_group = security_group
     self.enable_private_ipv6_access = enable_private_ipv6_access
+    self.enable_intra_node_visibility = enable_intra_node_visibility
     self.enable_vertical_pod_autoscaling = enable_vertical_pod_autoscaling
     self.security_profile = security_profile
     self.security_profile_runtime_rules = security_profile_runtime_rules
@@ -525,6 +543,7 @@ class UpdateClusterOptions(object):
                enable_binauthz=None,
                concurrent_node_count=None,
                enable_vertical_pod_autoscaling=None,
+               enable_intra_node_visibility=None,
                security_profile=None,
                security_profile_runtime_rules=None,
                autoscaling_profile=None):
@@ -553,6 +572,7 @@ class UpdateClusterOptions(object):
     self.security_profile = security_profile
     self.security_profile_runtime_rules = security_profile_runtime_rules
     self.autoscaling_profile = autoscaling_profile
+    self.enable_intra_node_visibility = enable_intra_node_visibility
 
 
 class SetMasterAuthOptions(object):
@@ -953,6 +973,14 @@ class APIAdapter(object):
             self.messages.ClientCertificateConfig(
                 issueClientCertificate=options.issue_client_certificate))
 
+    if options.enable_intra_node_visibility is not None:
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig(
+            enableIntraNodeVisibility=options.enable_intra_node_visibility)
+      else:
+        cluster.networkConfig.enableIntraNodeVisibility = \
+            options.enable_intra_node_visibility
+
     return cluster
 
   def ParseNodeConfig(self, options):
@@ -1325,6 +1353,11 @@ class APIAdapter(object):
           name=options.security_profile)
       update = self.messages.ClusterUpdate(
           securityProfile=security_profile)
+    elif options.enable_intra_node_visibility is not None:
+      intra_node_visibility_config = self.messages.IntraNodeVisibilityConfig(
+          enabled=options.enable_intra_node_visibility)
+      update = self.messages.ClusterUpdate(
+          desiredIntraNodeVisibilityConfig=intra_node_visibility_config)
     elif options.enable_peering_route_sharing is not None:
       # For update, we can either enable or disable.
       private_cluster_config = self.messages.PrivateClusterConfig(
@@ -1936,11 +1969,11 @@ class V1Beta1Adapter(V1Adapter):
         if not options.enable_stackdriver_kubernetes:
           raise util.Error(CLOUDRUN_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
         if ISTIO not in options.addons:
-          # Istio is a dependency of CloudRun. We auto-enable Istio in no
-          # auth mode if not specified by the user.
-          log.warning('Auto-enabling the Istio addon, which is required to run '
-                      'the CloudRun addon.')
-          options.addons.append(ISTIO)
+          raise util.Error(CLOUDRUN_ISTIO_KUBERNETES_DISABLED_ERROR_MSG)
+        if INGRESS not in options.addons:
+          raise util.Error(CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG)
+        if HPA not in options.addons:
+          raise util.Error(CLOUDRUN_HPA_KUBERNETES_DISABLED_ERROR_MSG)
         cluster.addonsConfig.cloudRunConfig = self.messages.CloudRunConfig(
             disabled=False)
       # Istio is disabled by default
@@ -2152,19 +2185,17 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       else:
         raise util.Error(CLOUD_LOGGING_OR_MONITORING_DISABLED_ERROR_MSG)
     if options.addons:
-      # CloudRun is disabled by default. CloudRun is the new name of Serverless.
+      # CloudRun is disabled by default.
       if CLOUDRUN in options.addons:
         if not options.enable_stackdriver_kubernetes:
           raise util.Error(CLOUDRUN_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
         if ISTIO not in options.addons:
-          # Istio is a dependency of CloudRun. We auto-enable Istio in no
-          # auth mode if not specified by the user.
-          log.warning('Auto-enabling the Istio addon, which is required to run '
-                      'the CloudRun addon.')
-          options.addons.append(ISTIO)
-        # TODO(b/118504840): replace ServerlessConfig with CloudRunConfig when
-        # CloudRunConfig is ready in GKE Alpha API.
-        cluster.addonsConfig.serverlessConfig = self.messages.ServerlessConfig(
+          raise util.Error(CLOUDRUN_ISTIO_KUBERNETES_DISABLED_ERROR_MSG)
+        if INGRESS not in options.addons:
+          raise util.Error(CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG)
+        if HPA not in options.addons:
+          raise util.Error(CLOUDRUN_HPA_KUBERNETES_DISABLED_ERROR_MSG)
+        cluster.addonsConfig.cloudRunConfig = self.messages.CloudRunConfig(
             disabled=False)
       # Istio is disabled by default
       if ISTIO in options.addons:
@@ -2198,8 +2229,12 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           keyName=options.database_encryption,
           state=self.messages.DatabaseEncryption.StateValueValuesEnum.ENCRYPTED)
     if options.enable_private_ipv6_access is not None:
-      cluster.networkConfig = self.messages.NetworkConfig(
-          enablePrivateIpv6Access=options.enable_private_ipv6_access)
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig(
+            enablePrivateIpv6Access=options.enable_private_ipv6_access)
+      else:
+        cluster.networkConfig.enablePrivateIpv6Access = \
+            options.enable_private_ipv6_access
     if options.enable_peering_route_sharing is not None:
       if not options.enable_private_nodes:
         raise util.Error(
@@ -2236,10 +2271,8 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         update.desiredAddonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=options.disable_addons.get(ISTIO), auth=istio_auth)
       if options.disable_addons.get(CLOUDRUN) is not None:
-        # TODO(b/118504840): replace ServerlessConfig with CloudRunConfig when
-        # CloudRunConfig is ready in GKE Alpha API
-        update.desiredAddonsConfig.serverlessConfig = (
-            self.messages.ServerlessConfig(
+        update.desiredAddonsConfig.cloudRunConfig = (
+            self.messages.CloudRunConfig(
                 disabled=options.disable_addons.get(CLOUDRUN)))
     if options.update_nodes and options.concurrent_node_count:
       update.concurrentNodeCount = options.concurrent_node_count
@@ -2358,6 +2391,11 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           raise util.Error(MAX_PODS_PER_NODE_WITHOUT_IP_ALIAS_ERROR_MSG)
         pool.maxPodsConstraint = self.messages.MaxPodsConstraint(
             maxPodsPerNode=options.max_pods_per_node)
+      if options.max_surge_upgrade:
+        if options.max_surge_upgrade > 0 and options.enable_autoscaling:
+          raise util.Error(SURGE_AND_AUTOSCALING_ERROR_MSG)
+        pool.upgradeSettings = self.messages.UpgradeSettings()
+        pool.upgradeSettings.maxSurge = options.max_surge_upgrade
       pools.append(pool)
       to_add -= nodes
     return pools

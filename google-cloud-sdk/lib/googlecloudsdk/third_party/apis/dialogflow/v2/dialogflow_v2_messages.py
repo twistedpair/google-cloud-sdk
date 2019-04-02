@@ -13,83 +13,6 @@ from apitools.base.py import extra_types
 package = 'dialogflow'
 
 
-class BatchUpdateEntityTypesResponse(_messages.Message):
-  r"""The response message for EntityTypes.BatchUpdateEntityTypes.
-
-  Fields:
-    entityTypes: The collection of updated or created entity types.
-  """
-
-  entityTypes = _messages.MessageField('EntityType', 1, repeated=True)
-
-
-class BatchUpdateIntentsResponse(_messages.Message):
-  r"""The response message for Intents.BatchUpdateIntents.
-
-  Fields:
-    intents: The collection of updated or created intents.
-  """
-
-  intents = _messages.MessageField('Intent', 1, repeated=True)
-
-
-class Context(_messages.Message):
-  r"""Represents a context.
-
-  Messages:
-    ParametersValue: Optional. The collection of parameters associated with
-      this context. Refer to [this doc](https://cloud.google.com/dialogflow-
-      enterprise/docs/intents-actions-parameters) for syntax.
-
-  Fields:
-    lifespanCount: Optional. The number of conversational query requests after
-      which the context expires. If set to `0` (the default) the context
-      expires immediately. Contexts expire automatically after 20 minutes if
-      there are no matching queries.
-    name: Required. The unique identifier of the context. Format:
-      `projects/<Project ID>/agent/sessions/<Session ID>/contexts/<Context
-      ID>`, or `projects/<Project ID>/agent/environments/<Environment
-      ID>/users/<User ID>/sessions/<Session ID>/contexts/<Context ID>`.  The
-      `Context ID` is always converted to lowercase, may only contain
-      characters in a-zA-Z0-9_-% and may be at most 250 bytes long.  If
-      `Environment ID` is not specified, we assume default 'draft'
-      environment. If `User ID` is not specified, we assume default '-' user.
-    parameters: Optional. The collection of parameters associated with this
-      context. Refer to [this doc](https://cloud.google.com/dialogflow-
-      enterprise/docs/intents-actions-parameters) for syntax.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ParametersValue(_messages.Message):
-    r"""Optional. The collection of parameters associated with this context.
-    Refer to [this doc](https://cloud.google.com/dialogflow-enterprise/docs
-    /intents-actions-parameters) for syntax.
-
-    Messages:
-      AdditionalProperty: An additional property for a ParametersValue object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ParametersValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  lifespanCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  name = _messages.StringField(2)
-  parameters = _messages.MessageField('ParametersValue', 3)
-
-
 class DialogflowProjectsAgentEntityTypesBatchDeleteRequest(_messages.Message):
   r"""A DialogflowProjectsAgentEntityTypesBatchDeleteRequest object.
 
@@ -724,153 +647,6 @@ class DialogflowProjectsOperationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class EntityType(_messages.Message):
-  r"""Represents an entity type. Entity types serve as a tool for extracting
-  parameter values from natural language queries.
-
-  Enums:
-    AutoExpansionModeValueValuesEnum: Optional. Indicates whether the entity
-      type can be automatically expanded.
-    KindValueValuesEnum: Required. Indicates the kind of entity type.
-
-  Fields:
-    autoExpansionMode: Optional. Indicates whether the entity type can be
-      automatically expanded.
-    displayName: Required. The name of the entity type.
-    entities: Optional. The collection of entity entries associated with the
-      entity type.
-    kind: Required. Indicates the kind of entity type.
-    name: The unique identifier of the entity type. Required for
-      EntityTypes.UpdateEntityType and EntityTypes.BatchUpdateEntityTypes
-      methods. Format: `projects/<Project ID>/agent/entityTypes/<Entity Type
-      ID>`.
-  """
-
-  class AutoExpansionModeValueValuesEnum(_messages.Enum):
-    r"""Optional. Indicates whether the entity type can be automatically
-    expanded.
-
-    Values:
-      AUTO_EXPANSION_MODE_UNSPECIFIED: Auto expansion disabled for the entity.
-      AUTO_EXPANSION_MODE_DEFAULT: Allows an agent to recognize values that
-        have not been explicitly listed in the entity.
-    """
-    AUTO_EXPANSION_MODE_UNSPECIFIED = 0
-    AUTO_EXPANSION_MODE_DEFAULT = 1
-
-  class KindValueValuesEnum(_messages.Enum):
-    r"""Required. Indicates the kind of entity type.
-
-    Values:
-      KIND_UNSPECIFIED: Not specified. This value should be never used.
-      KIND_MAP: Map entity types allow mapping of a group of synonyms to a
-        canonical value.
-      KIND_LIST: List entity types contain a set of entries that do not map to
-        canonical values. However, list entity types can contain references to
-        other entity types (with or without aliases).
-    """
-    KIND_UNSPECIFIED = 0
-    KIND_MAP = 1
-    KIND_LIST = 2
-
-  autoExpansionMode = _messages.EnumField('AutoExpansionModeValueValuesEnum', 1)
-  displayName = _messages.StringField(2)
-  entities = _messages.MessageField('EntityTypeEntity', 3, repeated=True)
-  kind = _messages.EnumField('KindValueValuesEnum', 4)
-  name = _messages.StringField(5)
-
-
-class EntityTypeEntity(_messages.Message):
-  r"""An **entity entry** for an associated entity type.
-
-  Fields:
-    synonyms: Required. A collection of value synonyms. For example, if the
-      entity type is *vegetable*, and `value` is *scallions*, a synonym could
-      be *green onions*.  For `KIND_LIST` entity types:  *   This collection
-      must contain exactly one synonym equal to `value`.
-    value: Required. The primary value associated with this entity entry. For
-      example, if the entity type is *vegetable*, the value could be
-      *scallions*.  For `KIND_MAP` entity types:  *   A canonical value to be
-      used in place of synonyms.  For `KIND_LIST` entity types:  *   A string
-      that can contain references to other entity types (with or     without
-      aliases).
-  """
-
-  synonyms = _messages.StringField(1, repeated=True)
-  value = _messages.StringField(2)
-
-
-class EventInput(_messages.Message):
-  r"""Events allow for matching intents by event name instead of the natural
-  language input. For instance, input `<event: { name: "welcome_event",
-  parameters: { name: "Sam" } }>` can trigger a personalized welcome response.
-  The parameter `name` may be used by the agent in the response: `"Hello
-  #welcome_event.name! What can I do for you today?"`.
-
-  Messages:
-    ParametersValue: Optional. The collection of parameters associated with
-      the event.
-
-  Fields:
-    languageCode: Required. The language of this query. See [Language
-      Support](https://cloud.google.com/dialogflow-
-      enterprise/docs/reference/language) for a list of the currently
-      supported language codes. Note that queries in the same session do not
-      necessarily need to specify the same language.
-    name: Required. The unique identifier of the event.
-    parameters: Optional. The collection of parameters associated with the
-      event.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ParametersValue(_messages.Message):
-    r"""Optional. The collection of parameters associated with the event.
-
-    Messages:
-      AdditionalProperty: An additional property for a ParametersValue object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ParametersValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  languageCode = _messages.StringField(1)
-  name = _messages.StringField(2)
-  parameters = _messages.MessageField('ParametersValue', 3)
-
-
-class ExportAgentResponse(_messages.Message):
-  r"""The response message for Agents.ExportAgent.
-
-  Fields:
-    agentContent: The exported agent.  Example for how to export an agent to a
-      zip file via a command line: <pre>curl \   'https://dialogflow.googleapi
-      s.com/v2beta1/projects/&lt;project_name&gt;/agent:export'\   -X POST \
-      -H 'Authorization: Bearer '$(gcloud auth application-default   print-
-      access-token) \   -H 'Accept: application/json' \   -H 'Content-Type:
-      application/json' \   --compressed \   --data-binary '{}' \ | grep
-      agentContent | sed -e 's/.*"agentContent": "\([^"]*\)".*/\1/' \ | base64
-      --decode > &lt;agent zip file&gt;</pre>
-    agentUri: The URI to a file containing the exported agent. This field is
-      populated only if `agent_uri` is specified in `ExportAgentRequest`.
-  """
-
-  agentContent = _messages.BytesField(1)
-  agentUri = _messages.StringField(2)
-
-
 class GoogleCloudDialogflowV2Agent(_messages.Message):
   r"""Represents a conversational agent.
 
@@ -1388,7 +1164,7 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
     languageCode: Required. The language of the supplied audio. Dialogflow
       does not do translations. See [Language
       Support](https://cloud.google.com/dialogflow-
-      enterprise/docs/reference/languages) for a list of the currently
+      enterprise/docs/reference/language) for a list of the currently
       supported language codes. Note that queries in the same session do not
       necessarily need to specify the same language.
     phraseHints: Optional. The collection of phrase hints which are used to
@@ -2637,6 +2413,1379 @@ class GoogleCloudDialogflowV2WebhookResponse(_messages.Message):
   source = _messages.StringField(6)
 
 
+class GoogleCloudDialogflowV2beta1BatchUpdateEntityTypesResponse(_messages.Message):
+  r"""The response message for EntityTypes.BatchUpdateEntityTypes.
+
+  Fields:
+    entityTypes: The collection of updated or created entity types.
+  """
+
+  entityTypes = _messages.MessageField('GoogleCloudDialogflowV2beta1EntityType', 1, repeated=True)
+
+
+class GoogleCloudDialogflowV2beta1BatchUpdateIntentsResponse(_messages.Message):
+  r"""The response message for Intents.BatchUpdateIntents.
+
+  Fields:
+    intents: The collection of updated or created intents.
+  """
+
+  intents = _messages.MessageField('GoogleCloudDialogflowV2beta1Intent', 1, repeated=True)
+
+
+class GoogleCloudDialogflowV2beta1Context(_messages.Message):
+  r"""Represents a context.
+
+  Messages:
+    ParametersValue: Optional. The collection of parameters associated with
+      this context. Refer to [this doc](https://cloud.google.com/dialogflow-
+      enterprise/docs/intents-actions-parameters) for syntax.
+
+  Fields:
+    lifespanCount: Optional. The number of conversational query requests after
+      which the context expires. If set to `0` (the default) the context
+      expires immediately. Contexts expire automatically after 20 minutes if
+      there are no matching queries.
+    name: Required. The unique identifier of the context. Format:
+      `projects/<Project ID>/agent/sessions/<Session ID>/contexts/<Context
+      ID>`, or `projects/<Project ID>/agent/environments/<Environment
+      ID>/users/<User ID>/sessions/<Session ID>/contexts/<Context ID>`.  The
+      `Context ID` is always converted to lowercase, may only contain
+      characters in a-zA-Z0-9_-% and may be at most 250 bytes long.  If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
+    parameters: Optional. The collection of parameters associated with this
+      context. Refer to [this doc](https://cloud.google.com/dialogflow-
+      enterprise/docs/intents-actions-parameters) for syntax.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""Optional. The collection of parameters associated with this context.
+    Refer to [this doc](https://cloud.google.com/dialogflow-enterprise/docs
+    /intents-actions-parameters) for syntax.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  lifespanCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  name = _messages.StringField(2)
+  parameters = _messages.MessageField('ParametersValue', 3)
+
+
+class GoogleCloudDialogflowV2beta1EntityType(_messages.Message):
+  r"""Represents an entity type. Entity types serve as a tool for extracting
+  parameter values from natural language queries.
+
+  Enums:
+    AutoExpansionModeValueValuesEnum: Optional. Indicates whether the entity
+      type can be automatically expanded.
+    KindValueValuesEnum: Required. Indicates the kind of entity type.
+
+  Fields:
+    autoExpansionMode: Optional. Indicates whether the entity type can be
+      automatically expanded.
+    displayName: Required. The name of the entity type.
+    entities: Optional. The collection of entity entries associated with the
+      entity type.
+    kind: Required. Indicates the kind of entity type.
+    name: The unique identifier of the entity type. Required for
+      EntityTypes.UpdateEntityType and EntityTypes.BatchUpdateEntityTypes
+      methods. Format: `projects/<Project ID>/agent/entityTypes/<Entity Type
+      ID>`.
+  """
+
+  class AutoExpansionModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Indicates whether the entity type can be automatically
+    expanded.
+
+    Values:
+      AUTO_EXPANSION_MODE_UNSPECIFIED: Auto expansion disabled for the entity.
+      AUTO_EXPANSION_MODE_DEFAULT: Allows an agent to recognize values that
+        have not been explicitly listed in the entity.
+    """
+    AUTO_EXPANSION_MODE_UNSPECIFIED = 0
+    AUTO_EXPANSION_MODE_DEFAULT = 1
+
+  class KindValueValuesEnum(_messages.Enum):
+    r"""Required. Indicates the kind of entity type.
+
+    Values:
+      KIND_UNSPECIFIED: Not specified. This value should be never used.
+      KIND_MAP: Map entity types allow mapping of a group of synonyms to a
+        canonical value.
+      KIND_LIST: List entity types contain a set of entries that do not map to
+        canonical values. However, list entity types can contain references to
+        other entity types (with or without aliases).
+    """
+    KIND_UNSPECIFIED = 0
+    KIND_MAP = 1
+    KIND_LIST = 2
+
+  autoExpansionMode = _messages.EnumField('AutoExpansionModeValueValuesEnum', 1)
+  displayName = _messages.StringField(2)
+  entities = _messages.MessageField('GoogleCloudDialogflowV2beta1EntityTypeEntity', 3, repeated=True)
+  kind = _messages.EnumField('KindValueValuesEnum', 4)
+  name = _messages.StringField(5)
+
+
+class GoogleCloudDialogflowV2beta1EntityTypeEntity(_messages.Message):
+  r"""An **entity entry** for an associated entity type.
+
+  Fields:
+    synonyms: Required. A collection of value synonyms. For example, if the
+      entity type is *vegetable*, and `value` is *scallions*, a synonym could
+      be *green onions*.  For `KIND_LIST` entity types:  *   This collection
+      must contain exactly one synonym equal to `value`.
+    value: Required. The primary value associated with this entity entry. For
+      example, if the entity type is *vegetable*, the value could be
+      *scallions*.  For `KIND_MAP` entity types:  *   A canonical value to be
+      used in place of synonyms.  For `KIND_LIST` entity types:  *   A string
+      that can contain references to other entity types (with or     without
+      aliases).
+  """
+
+  synonyms = _messages.StringField(1, repeated=True)
+  value = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowV2beta1EventInput(_messages.Message):
+  r"""Events allow for matching intents by event name instead of the natural
+  language input. For instance, input `<event: { name: "welcome_event",
+  parameters: { name: "Sam" } }>` can trigger a personalized welcome response.
+  The parameter `name` may be used by the agent in the response: `"Hello
+  #welcome_event.name! What can I do for you today?"`.
+
+  Messages:
+    ParametersValue: Optional. The collection of parameters associated with
+      the event.
+
+  Fields:
+    languageCode: Required. The language of this query. See [Language
+      Support](https://cloud.google.com/dialogflow-
+      enterprise/docs/reference/language) for a list of the currently
+      supported language codes. Note that queries in the same session do not
+      necessarily need to specify the same language.
+    name: Required. The unique identifier of the event.
+    parameters: Optional. The collection of parameters associated with the
+      event.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""Optional. The collection of parameters associated with the event.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  languageCode = _messages.StringField(1)
+  name = _messages.StringField(2)
+  parameters = _messages.MessageField('ParametersValue', 3)
+
+
+class GoogleCloudDialogflowV2beta1ExportAgentResponse(_messages.Message):
+  r"""The response message for Agents.ExportAgent.
+
+  Fields:
+    agentContent: The exported agent.  Example for how to export an agent to a
+      zip file via a command line: <pre>curl \   'https://dialogflow.googleapi
+      s.com/v2beta1/projects/&lt;project_name&gt;/agent:export'\   -X POST \
+      -H 'Authorization: Bearer '$(gcloud auth application-default   print-
+      access-token) \   -H 'Accept: application/json' \   -H 'Content-Type:
+      application/json' \   --compressed \   --data-binary '{}' \ | grep
+      agentContent | sed -e 's/.*"agentContent": "\([^"]*\)".*/\1/' \ | base64
+      --decode > &lt;agent zip file&gt;</pre>
+    agentUri: The URI to a file containing the exported agent. This field is
+      populated only if `agent_uri` is specified in `ExportAgentRequest`.
+  """
+
+  agentContent = _messages.BytesField(1)
+  agentUri = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowV2beta1Intent(_messages.Message):
+  r"""Represents an intent. Intents convert a number of user expressions or
+  patterns into an action. An action is an extraction of a user command or
+  sentence semantics.
+
+  Enums:
+    DefaultResponsePlatformsValueListEntryValuesEnum:
+    WebhookStateValueValuesEnum: Optional. Indicates whether webhooks are
+      enabled for the intent.
+
+  Fields:
+    action: Optional. The name of the action associated with the intent. Note:
+      The action name must not contain whitespaces.
+    defaultResponsePlatforms: Optional. The list of platforms for which the
+      first response will be taken from among the messages assigned to the
+      DEFAULT_PLATFORM.
+    displayName: Required. The name of this intent.
+    endInteraction: Optional. Indicates that this intent ends an interaction.
+      Some integrations (e.g., Actions on Google or Dialogflow phone gateway)
+      use this information to close interaction with an end user. Default is
+      false.
+    events: Optional. The collection of event names that trigger the intent.
+      If the collection of input contexts is not empty, all of the contexts
+      must be present in the active user session for an event to trigger this
+      intent.
+    followupIntentInfo: Read-only. Information about all followup intents that
+      have this intent as a direct or indirect parent. We populate this field
+      only in the output.
+    inputContextNames: Optional. The list of context names required for this
+      intent to be triggered. Format: `projects/<Project
+      ID>/agent/sessions/-/contexts/<Context ID>`.
+    isFallback: Optional. Indicates whether this is a fallback intent.
+    messages: Optional. The collection of rich messages corresponding to the
+      `Response` field in the Dialogflow console.
+    mlDisabled: Optional. Indicates whether Machine Learning is disabled for
+      the intent. Note: If `ml_disabled` setting is set to true, then this
+      intent is not taken into account during inference in `ML ONLY` match
+      mode. Also, auto-markup in the UI is turned off.
+    mlEnabled: Optional. Indicates whether Machine Learning is enabled for the
+      intent. Note: If `ml_enabled` setting is set to false, then this intent
+      is not taken into account during inference in `ML ONLY` match mode.
+      Also, auto-markup in the UI is turned off. DEPRECATED! Please use
+      `ml_disabled` field instead. NOTE: If both `ml_enabled` and
+      `ml_disabled` are either not set or false, then the default value is
+      determined as follows: - Before April 15th, 2018 the default is:
+      ml_enabled = false / ml_disabled = true. - After April 15th, 2018 the
+      default is:   ml_enabled = true / ml_disabled = false.
+    name: The unique identifier of this intent. Required for
+      Intents.UpdateIntent and Intents.BatchUpdateIntents methods. Format:
+      `projects/<Project ID>/agent/intents/<Intent ID>`.
+    outputContexts: Optional. The collection of contexts that are activated
+      when the intent is matched. Context messages in this collection should
+      not set the parameters field. Setting the `lifespan_count` to 0 will
+      reset the context when the intent is matched. Format: `projects/<Project
+      ID>/agent/sessions/-/contexts/<Context ID>`.
+    parameters: Optional. The collection of parameters associated with the
+      intent.
+    parentFollowupIntentName: Read-only after creation. The unique identifier
+      of the parent intent in the chain of followup intents. You can set this
+      field when creating an intent, for example with CreateIntent or
+      BatchUpdateIntents, in order to make this intent a followup intent.  It
+      identifies the parent followup intent. Format: `projects/<Project
+      ID>/agent/intents/<Intent ID>`.
+    priority: Optional. The priority of this intent. Higher numbers represent
+      higher priorities. If this is zero or unspecified, we use the default
+      priority 500000.  Negative numbers mean that the intent is disabled.
+    resetContexts: Optional. Indicates whether to delete all contexts in the
+      current session when this intent is matched.
+    rootFollowupIntentName: Read-only. The unique identifier of the root
+      intent in the chain of followup intents. It identifies the correct
+      followup intents chain for this intent. We populate this field only in
+      the output.  Format: `projects/<Project ID>/agent/intents/<Intent ID>`.
+    trainingPhrases: Optional. The collection of examples that the agent is
+      trained on.
+    webhookState: Optional. Indicates whether webhooks are enabled for the
+      intent.
+  """
+
+  class DefaultResponsePlatformsValueListEntryValuesEnum(_messages.Enum):
+    r"""DefaultResponsePlatformsValueListEntryValuesEnum enum type.
+
+    Values:
+      PLATFORM_UNSPECIFIED: <no description>
+      FACEBOOK: <no description>
+      SLACK: <no description>
+      TELEGRAM: <no description>
+      KIK: <no description>
+      SKYPE: <no description>
+      LINE: <no description>
+      VIBER: <no description>
+      ACTIONS_ON_GOOGLE: <no description>
+      TELEPHONY: <no description>
+    """
+    PLATFORM_UNSPECIFIED = 0
+    FACEBOOK = 1
+    SLACK = 2
+    TELEGRAM = 3
+    KIK = 4
+    SKYPE = 5
+    LINE = 6
+    VIBER = 7
+    ACTIONS_ON_GOOGLE = 8
+    TELEPHONY = 9
+
+  class WebhookStateValueValuesEnum(_messages.Enum):
+    r"""Optional. Indicates whether webhooks are enabled for the intent.
+
+    Values:
+      WEBHOOK_STATE_UNSPECIFIED: Webhook is disabled in the agent and in the
+        intent.
+      WEBHOOK_STATE_ENABLED: Webhook is enabled in the agent and in the
+        intent.
+      WEBHOOK_STATE_ENABLED_FOR_SLOT_FILLING: Webhook is enabled in the agent
+        and in the intent. Also, each slot filling prompt is forwarded to the
+        webhook.
+    """
+    WEBHOOK_STATE_UNSPECIFIED = 0
+    WEBHOOK_STATE_ENABLED = 1
+    WEBHOOK_STATE_ENABLED_FOR_SLOT_FILLING = 2
+
+  action = _messages.StringField(1)
+  defaultResponsePlatforms = _messages.EnumField('DefaultResponsePlatformsValueListEntryValuesEnum', 2, repeated=True)
+  displayName = _messages.StringField(3)
+  endInteraction = _messages.BooleanField(4)
+  events = _messages.StringField(5, repeated=True)
+  followupIntentInfo = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentFollowupIntentInfo', 6, repeated=True)
+  inputContextNames = _messages.StringField(7, repeated=True)
+  isFallback = _messages.BooleanField(8)
+  messages = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessage', 9, repeated=True)
+  mlDisabled = _messages.BooleanField(10)
+  mlEnabled = _messages.BooleanField(11)
+  name = _messages.StringField(12)
+  outputContexts = _messages.MessageField('GoogleCloudDialogflowV2beta1Context', 13, repeated=True)
+  parameters = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentParameter', 14, repeated=True)
+  parentFollowupIntentName = _messages.StringField(15)
+  priority = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  resetContexts = _messages.BooleanField(17)
+  rootFollowupIntentName = _messages.StringField(18)
+  trainingPhrases = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentTrainingPhrase', 19, repeated=True)
+  webhookState = _messages.EnumField('WebhookStateValueValuesEnum', 20)
+
+
+class GoogleCloudDialogflowV2beta1IntentFollowupIntentInfo(_messages.Message):
+  r"""Represents a single followup intent in the chain.
+
+  Fields:
+    followupIntentName: The unique identifier of the followup intent. Format:
+      `projects/<Project ID>/agent/intents/<Intent ID>`.
+    parentFollowupIntentName: The unique identifier of the followup intent's
+      parent. Format: `projects/<Project ID>/agent/intents/<Intent ID>`.
+  """
+
+  followupIntentName = _messages.StringField(1)
+  parentFollowupIntentName = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessage(_messages.Message):
+  r"""Corresponds to the `Response` field in the Dialogflow console.
+
+  Enums:
+    PlatformValueValuesEnum: Optional. The platform that this message is
+      intended for.
+
+  Messages:
+    PayloadValue: Returns a response containing a custom, platform-specific
+      payload. See the Intent.Message.Platform type for a description of the
+      structure that may be required for your platform.
+
+  Fields:
+    basicCard: Displays a basic card for Actions on Google.
+    card: Displays a card.
+    carouselSelect: Displays a carousel card for Actions on Google.
+    image: Displays an image.
+    linkOutSuggestion: Displays a link out suggestion chip for Actions on
+      Google.
+    listSelect: Displays a list card for Actions on Google.
+    payload: Returns a response containing a custom, platform-specific
+      payload. See the Intent.Message.Platform type for a description of the
+      structure that may be required for your platform.
+    platform: Optional. The platform that this message is intended for.
+    quickReplies: Displays quick replies.
+    simpleResponses: Returns a voice or text-only response for Actions on
+      Google.
+    suggestions: Displays suggestion chips for Actions on Google.
+    telephonyPlayAudio: Plays audio from a file in Telephony Gateway.
+    telephonySynthesizeSpeech: Synthesizes speech in Telephony Gateway.
+    telephonyTransferCall: Transfers the call in Telephony Gateway.
+    text: Returns a text response.
+  """
+
+  class PlatformValueValuesEnum(_messages.Enum):
+    r"""Optional. The platform that this message is intended for.
+
+    Values:
+      PLATFORM_UNSPECIFIED: Not specified.
+      FACEBOOK: Facebook.
+      SLACK: Slack.
+      TELEGRAM: Telegram.
+      KIK: Kik.
+      SKYPE: Skype.
+      LINE: Line.
+      VIBER: Viber.
+      ACTIONS_ON_GOOGLE: Actions on Google. When using Actions on Google, you
+        can choose one of the specific Intent.Message types that mention
+        support for Actions on Google, or you can use the advanced
+        Intent.Message.payload field. The payload field provides access to AoG
+        features not available in the specific message types. If using the
+        Intent.Message.payload field, it should have a structure similar to
+        the JSON message shown here. For more information, see [Actions on
+        Google Webhook
+        Format](https://developers.google.com/actions/dialogflow/webhook)
+        <pre>{   "expectUserResponse": true,   "isSsml": false,
+        "noInputPrompts": [],   "richResponse": {     "items": [       {
+        "simpleResponse": {           "displayText": "hi",
+        "textToSpeech": "hello"         }       }     ],     "suggestions": [
+        {         "title": "Say this"       },       {         "title": "or
+        this"       }     ]   },   "systemIntent": {     "data": {
+        "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
+        "listSelect": {         "items": [           {
+        "optionInfo": {               "key": "key1",               "synonyms":
+        [                 "key one"               ]             },
+        "title": "must not be empty, but unique"           },           {
+        "optionInfo": {               "key": "key2",               "synonyms":
+        [                 "key two"               ]             },
+        "title": "must not be empty, but unique"           }         ]       }
+        },     "intent": "actions.intent.OPTION"   } }</pre>
+      TELEPHONY: Telephony Gateway.
+    """
+    PLATFORM_UNSPECIFIED = 0
+    FACEBOOK = 1
+    SLACK = 2
+    TELEGRAM = 3
+    KIK = 4
+    SKYPE = 5
+    LINE = 6
+    VIBER = 7
+    ACTIONS_ON_GOOGLE = 8
+    TELEPHONY = 9
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PayloadValue(_messages.Message):
+    r"""Returns a response containing a custom, platform-specific payload. See
+    the Intent.Message.Platform type for a description of the structure that
+    may be required for your platform.
+
+    Messages:
+      AdditionalProperty: An additional property for a PayloadValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PayloadValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  basicCard = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageBasicCard', 1)
+  card = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageCard', 2)
+  carouselSelect = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageCarouselSelect', 3)
+  image = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageImage', 4)
+  linkOutSuggestion = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageLinkOutSuggestion', 5)
+  listSelect = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageListSelect', 6)
+  payload = _messages.MessageField('PayloadValue', 7)
+  platform = _messages.EnumField('PlatformValueValuesEnum', 8)
+  quickReplies = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageQuickReplies', 9)
+  simpleResponses = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageSimpleResponses', 10)
+  suggestions = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageSuggestions', 11)
+  telephonyPlayAudio = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageTelephonyPlayAudio', 12)
+  telephonySynthesizeSpeech = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageTelephonySynthesizeSpeech', 13)
+  telephonyTransferCall = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageTelephonyTransferCall', 14)
+  text = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageText', 15)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageBasicCard(_messages.Message):
+  r"""The basic card message. Useful for displaying information.
+
+  Fields:
+    buttons: Optional. The collection of card buttons.
+    formattedText: Required, unless image is present. The body text of the
+      card.
+    image: Optional. The image for the card.
+    subtitle: Optional. The subtitle of the card.
+    title: Optional. The title of the card.
+  """
+
+  buttons = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageBasicCardButton', 1, repeated=True)
+  formattedText = _messages.StringField(2)
+  image = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageImage', 3)
+  subtitle = _messages.StringField(4)
+  title = _messages.StringField(5)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageBasicCardButton(_messages.Message):
+  r"""The button object that appears at the bottom of a card.
+
+  Fields:
+    openUriAction: Required. Action to take when a user taps on the button.
+    title: Required. The title of the button.
+  """
+
+  openUriAction = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageBasicCardButtonOpenUriAction', 1)
+  title = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageBasicCardButtonOpenUriAction(_messages.Message):
+  r"""Opens the given URI.
+
+  Fields:
+    uri: Required. The HTTP or HTTPS scheme URI.
+  """
+
+  uri = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageCard(_messages.Message):
+  r"""The card response message.
+
+  Fields:
+    buttons: Optional. The collection of card buttons.
+    imageUri: Optional. The public URI to an image file for the card.
+    subtitle: Optional. The subtitle of the card.
+    title: Optional. The title of the card.
+  """
+
+  buttons = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageCardButton', 1, repeated=True)
+  imageUri = _messages.StringField(2)
+  subtitle = _messages.StringField(3)
+  title = _messages.StringField(4)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageCardButton(_messages.Message):
+  r"""Optional. Contains information about a button.
+
+  Fields:
+    postback: Optional. The text to send back to the Dialogflow API or a URI
+      to open.
+    text: Optional. The text to show on the button.
+  """
+
+  postback = _messages.StringField(1)
+  text = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageCarouselSelect(_messages.Message):
+  r"""The card for presenting a carousel of options to select from.
+
+  Fields:
+    items: Required. Carousel items.
+  """
+
+  items = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageCarouselSelectItem', 1, repeated=True)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageCarouselSelectItem(_messages.Message):
+  r"""An item in the carousel.
+
+  Fields:
+    description: Optional. The body text of the card.
+    image: Optional. The image to display.
+    info: Required. Additional info about the option item.
+    title: Required. Title of the carousel item.
+  """
+
+  description = _messages.StringField(1)
+  image = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageImage', 2)
+  info = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageSelectItemInfo', 3)
+  title = _messages.StringField(4)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageImage(_messages.Message):
+  r"""The image response message.
+
+  Fields:
+    accessibilityText: A text description of the image to be used for
+      accessibility, e.g., screen readers. Required if image_uri is set for
+      CarouselSelect.
+    imageUri: Optional. The public URI to an image file.
+  """
+
+  accessibilityText = _messages.StringField(1)
+  imageUri = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageLinkOutSuggestion(_messages.Message):
+  r"""The suggestion chip message that allows the user to jump out to the app
+  or website associated with this agent.
+
+  Fields:
+    destinationName: Required. The name of the app or site this chip is
+      linking to.
+    uri: Required. The URI of the app or site to open when the user taps the
+      suggestion chip.
+  """
+
+  destinationName = _messages.StringField(1)
+  uri = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageListSelect(_messages.Message):
+  r"""The card for presenting a list of options to select from.
+
+  Fields:
+    items: Required. List items.
+    title: Optional. The overall title of the list.
+  """
+
+  items = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageListSelectItem', 1, repeated=True)
+  title = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageListSelectItem(_messages.Message):
+  r"""An item in the list.
+
+  Fields:
+    description: Optional. The main text describing the item.
+    image: Optional. The image to display.
+    info: Required. Additional information about this option.
+    title: Required. The title of the list item.
+  """
+
+  description = _messages.StringField(1)
+  image = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageImage', 2)
+  info = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageSelectItemInfo', 3)
+  title = _messages.StringField(4)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageQuickReplies(_messages.Message):
+  r"""The quick replies response message.
+
+  Fields:
+    quickReplies: Optional. The collection of quick replies.
+    title: Optional. The title of the collection of quick replies.
+  """
+
+  quickReplies = _messages.StringField(1, repeated=True)
+  title = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageSelectItemInfo(_messages.Message):
+  r"""Additional info about the select item for when it is triggered in a
+  dialog.
+
+  Fields:
+    key: Required. A unique key that will be sent back to the agent if this
+      response is given.
+    synonyms: Optional. A list of synonyms that can also be used to trigger
+      this item in dialog.
+  """
+
+  key = _messages.StringField(1)
+  synonyms = _messages.StringField(2, repeated=True)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageSimpleResponse(_messages.Message):
+  r"""The simple response message containing speech or text.
+
+  Fields:
+    displayText: Optional. The text to display.
+    ssml: One of text_to_speech or ssml must be provided. Structured spoken
+      response to the user in the SSML format. Mutually exclusive with
+      text_to_speech.
+    textToSpeech: One of text_to_speech or ssml must be provided. The plain
+      text of the speech output. Mutually exclusive with ssml.
+  """
+
+  displayText = _messages.StringField(1)
+  ssml = _messages.StringField(2)
+  textToSpeech = _messages.StringField(3)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageSimpleResponses(_messages.Message):
+  r"""The collection of simple response candidates. This message in
+  `QueryResult.fulfillment_messages` and
+  `WebhookResponse.fulfillment_messages` should contain only one
+  `SimpleResponse`.
+
+  Fields:
+    simpleResponses: Required. The list of simple responses.
+  """
+
+  simpleResponses = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageSimpleResponse', 1, repeated=True)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageSuggestion(_messages.Message):
+  r"""The suggestion chip message that the user can tap to quickly post a
+  reply to the conversation.
+
+  Fields:
+    title: Required. The text shown the in the suggestion chip.
+  """
+
+  title = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageSuggestions(_messages.Message):
+  r"""The collection of suggestions.
+
+  Fields:
+    suggestions: Required. The list of suggested replies.
+  """
+
+  suggestions = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageSuggestion', 1, repeated=True)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageTelephonyPlayAudio(_messages.Message):
+  r"""Plays audio from a file in Telephony Gateway.
+
+  Fields:
+    audioUri: Required. URI to a Google Cloud Storage object containing the
+      audio to play, e.g., "gs://bucket/object". The object must contain a
+      single channel (mono) of linear PCM audio (2 bytes / sample) at 8kHz.
+      This object must be readable by the `service-<Project Number>@gcp-sa-
+      dialogflow.iam.gserviceaccount.com` service account where <Project
+      Number> is the number of the Telephony Gateway project (usually the same
+      as the Dialogflow agent project). If the Google Cloud Storage bucket is
+      in the Telephony Gateway project, this permission is added by default
+      when enabling the Dialogflow V2 API.  For audio from other sources,
+      consider using the `TelephonySynthesizeSpeech` message with SSML.
+  """
+
+  audioUri = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageTelephonySynthesizeSpeech(_messages.Message):
+  r"""Synthesizes speech and plays back the synthesized audio to the caller in
+  Telephony Gateway.  Telephony Gateway takes the synthesizer settings from
+  `DetectIntentResponse.output_audio_config` which can either be set at
+  request-level or can come from the agent-level synthesizer config.
+
+  Fields:
+    ssml: The SSML to be synthesized. For more information, see
+      [SSML](https://developers.google.com/actions/reference/ssml).
+    text: The raw text to be synthesized.
+  """
+
+  ssml = _messages.StringField(1)
+  text = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageTelephonyTransferCall(_messages.Message):
+  r"""Transfers the call in Telephony Gateway.
+
+  Fields:
+    phoneNumber: Required. The phone number to transfer the call to in [E.164
+      format](https://en.wikipedia.org/wiki/E.164).  We currently only allow
+      transferring to US numbers (+1xxxyyyzzzz).
+  """
+
+  phoneNumber = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageText(_messages.Message):
+  r"""The text response message.
+
+  Fields:
+    text: Optional. The collection of the agent's responses.
+  """
+
+  text = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudDialogflowV2beta1IntentParameter(_messages.Message):
+  r"""Represents intent parameters.
+
+  Fields:
+    defaultValue: Optional. The default value to use when the `value` yields
+      an empty result. Default values can be extracted from contexts by using
+      the following syntax: `#context_name.parameter_name`.
+    displayName: Required. The name of the parameter.
+    entityTypeDisplayName: Optional. The name of the entity type, prefixed
+      with `@`, that describes values of the parameter. If the parameter is
+      required, this must be provided.
+    isList: Optional. Indicates whether the parameter represents a list of
+      values.
+    mandatory: Optional. Indicates whether the parameter is required. That is,
+      whether the intent cannot be completed without collecting the parameter
+      value.
+    name: The unique identifier of this parameter.
+    prompts: Optional. The collection of prompts that the agent can present to
+      the user in order to collect value for the parameter.
+    value: Optional. The definition of the parameter value. It can be: - a
+      constant string, - a parameter value defined as `$parameter_name`, - an
+      original parameter value defined as `$parameter_name.original`, - a
+      parameter value from some context defined as
+      `#context_name.parameter_name`.
+  """
+
+  defaultValue = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  entityTypeDisplayName = _messages.StringField(3)
+  isList = _messages.BooleanField(4)
+  mandatory = _messages.BooleanField(5)
+  name = _messages.StringField(6)
+  prompts = _messages.StringField(7, repeated=True)
+  value = _messages.StringField(8)
+
+
+class GoogleCloudDialogflowV2beta1IntentTrainingPhrase(_messages.Message):
+  r"""Represents an example that the agent is trained on.
+
+  Enums:
+    TypeValueValuesEnum: Required. The type of the training phrase.
+
+  Fields:
+    name: Output only. The unique identifier of this training phrase.
+    parts: Required. The ordered list of training phrase parts. The parts are
+      concatenated in order to form the training phrase.  Note: The API does
+      not automatically annotate training phrases like the Dialogflow Console
+      does.  Note: Do not forget to include whitespace at part boundaries, so
+      the training phrase is well formatted when the parts are concatenated.
+      If the training phrase does not need to be annotated with parameters,
+      you just need a single part with only the Part.text field set.  If you
+      want to annotate the training phrase, you must create multiple parts,
+      where the fields of each part are populated in one of two ways:  -
+      `Part.text` is set to a part of the phrase that has no parameters. -
+      `Part.text` is set to a part of the phrase that you want to annotate,
+      and the `entity_type`, `alias`, and `user_defined` fields are all
+      set.
+    timesAddedCount: Optional. Indicates how many times this example was added
+      to the intent. Each time a developer adds an existing sample by editing
+      an intent or training, this counter is increased.
+    type: Required. The type of the training phrase.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of the training phrase.
+
+    Values:
+      TYPE_UNSPECIFIED: Not specified. This value should never be used.
+      EXAMPLE: Examples do not contain @-prefixed entity type names, but
+        example parts can be annotated with entity types.
+      TEMPLATE: Templates are not annotated with entity types, but they can
+        contain @-prefixed entity type names as substrings. Template mode has
+        been deprecated. Example mode is the only supported way to create new
+        training phrases. If you have existing training phrases that you've
+        created in template mode, those will continue to work.
+    """
+    TYPE_UNSPECIFIED = 0
+    EXAMPLE = 1
+    TEMPLATE = 2
+
+  name = _messages.StringField(1)
+  parts = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentTrainingPhrasePart', 2, repeated=True)
+  timesAddedCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+
+
+class GoogleCloudDialogflowV2beta1IntentTrainingPhrasePart(_messages.Message):
+  r"""Represents a part of a training phrase.
+
+  Fields:
+    alias: Optional. The parameter name for the value extracted from the
+      annotated part of the example. This field is required for annotated
+      parts of the training phrase.
+    entityType: Optional. The entity type name prefixed with `@`. This field
+      is required for annotated parts of the training phrase.
+    text: Required. The text for this part.
+    userDefined: Optional. Indicates whether the text was manually annotated.
+      This field is set to true when the Dialogflow Console is used to
+      manually annotate the part. When creating an annotated part with the
+      API, you must set this to true.
+  """
+
+  alias = _messages.StringField(1)
+  entityType = _messages.StringField(2)
+  text = _messages.StringField(3)
+  userDefined = _messages.BooleanField(4)
+
+
+class GoogleCloudDialogflowV2beta1KnowledgeAnswers(_messages.Message):
+  r"""Represents the result of querying a Knowledge base.
+
+  Fields:
+    answers: A list of answers from Knowledge Connector.
+  """
+
+  answers = _messages.MessageField('GoogleCloudDialogflowV2beta1KnowledgeAnswersAnswer', 1, repeated=True)
+
+
+class GoogleCloudDialogflowV2beta1KnowledgeAnswersAnswer(_messages.Message):
+  r"""An answer from Knowledge Connector.
+
+  Enums:
+    MatchConfidenceLevelValueValuesEnum: The system's confidence level that
+      this knowledge answer is a good match for this conversational query.
+      NOTE: The confidence level for a given `<query, answer>` pair may change
+      without notice, as it depends on models that are constantly being
+      improved. However, it will change less frequently than the confidence
+      score below, and should be preferred for referencing the quality of an
+      answer.
+
+  Fields:
+    answer: The piece of text from the `source` knowledge base document that
+      answers this conversational query.
+    faqQuestion: The corresponding FAQ question if the answer was extracted
+      from a FAQ Document, empty otherwise.
+    matchConfidence: The system's confidence score that this Knowledge answer
+      is a good match for this conversational query. The range is from 0.0
+      (completely uncertain) to 1.0 (completely certain). Note: The confidence
+      score is likely to vary somewhat (possibly even for identical requests),
+      as the underlying model is under constant improvement. It may be
+      deprecated in the future. We recommend using `match_confidence_level`
+      which should be generally more stable.
+    matchConfidenceLevel: The system's confidence level that this knowledge
+      answer is a good match for this conversational query. NOTE: The
+      confidence level for a given `<query, answer>` pair may change without
+      notice, as it depends on models that are constantly being improved.
+      However, it will change less frequently than the confidence score below,
+      and should be preferred for referencing the quality of an answer.
+    source: Indicates which Knowledge Document this answer was extracted from.
+      Format: `projects/<Project ID>/knowledgeBases/<Knowledge Base
+      ID>/documents/<Document ID>`.
+  """
+
+  class MatchConfidenceLevelValueValuesEnum(_messages.Enum):
+    r"""The system's confidence level that this knowledge answer is a good
+    match for this conversational query. NOTE: The confidence level for a
+    given `<query, answer>` pair may change without notice, as it depends on
+    models that are constantly being improved. However, it will change less
+    frequently than the confidence score below, and should be preferred for
+    referencing the quality of an answer.
+
+    Values:
+      MATCH_CONFIDENCE_LEVEL_UNSPECIFIED: Not specified.
+      LOW: Indicates that the confidence is low.
+      MEDIUM: Indicates our confidence is medium.
+      HIGH: Indicates our confidence is high.
+    """
+    MATCH_CONFIDENCE_LEVEL_UNSPECIFIED = 0
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+
+  answer = _messages.StringField(1)
+  faqQuestion = _messages.StringField(2)
+  matchConfidence = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  matchConfidenceLevel = _messages.EnumField('MatchConfidenceLevelValueValuesEnum', 4)
+  source = _messages.StringField(5)
+
+
+class GoogleCloudDialogflowV2beta1KnowledgeOperationMetadata(_messages.Message):
+  r"""Metadata in google::longrunning::Operation for Knowledge operations.
+
+  Enums:
+    StateValueValuesEnum: Required. The current state of this operation.
+
+  Fields:
+    state: Required. The current state of this operation.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Required. The current state of this operation.
+
+    Values:
+      STATE_UNSPECIFIED: State unspecified.
+      PENDING: The operation has been created.
+      RUNNING: The operation is currently running.
+      DONE: The operation is done, either cancelled or completed.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    RUNNING = 2
+    DONE = 3
+
+  state = _messages.EnumField('StateValueValuesEnum', 1)
+
+
+class GoogleCloudDialogflowV2beta1OriginalDetectIntentRequest(_messages.Message):
+  r"""Represents the contents of the original request that was passed to the
+  `[Streaming]DetectIntent` call.
+
+  Messages:
+    PayloadValue: Optional. This field is set to the value of the
+      `QueryParameters.payload` field passed in the request. Some integrations
+      that query a Dialogflow agent may provide additional information in the
+      payload.  In particular for the Telephony Gateway this field has the
+      form: <pre>{  "telephony": {    "caller_id": "+18558363987"  } }</pre>
+      Note: The caller ID field (`caller_id`) will be redacted for Standard
+      Edition agents and populated with the caller ID in [E.164
+      format](https://en.wikipedia.org/wiki/E.164) for Enterprise Edition
+      agents.
+
+  Fields:
+    payload: Optional. This field is set to the value of the
+      `QueryParameters.payload` field passed in the request. Some integrations
+      that query a Dialogflow agent may provide additional information in the
+      payload.  In particular for the Telephony Gateway this field has the
+      form: <pre>{  "telephony": {    "caller_id": "+18558363987"  } }</pre>
+      Note: The caller ID field (`caller_id`) will be redacted for Standard
+      Edition agents and populated with the caller ID in [E.164
+      format](https://en.wikipedia.org/wiki/E.164) for Enterprise Edition
+      agents.
+    source: The source of this request, e.g., `google`, `facebook`, `slack`.
+      It is set by Dialogflow-owned servers.
+    version: Optional. The version of the protocol used for this request. This
+      field is AoG-specific.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PayloadValue(_messages.Message):
+    r"""Optional. This field is set to the value of the
+    `QueryParameters.payload` field passed in the request. Some integrations
+    that query a Dialogflow agent may provide additional information in the
+    payload.  In particular for the Telephony Gateway this field has the form:
+    <pre>{  "telephony": {    "caller_id": "+18558363987"  } }</pre> Note: The
+    caller ID field (`caller_id`) will be redacted for Standard Edition agents
+    and populated with the caller ID in [E.164
+    format](https://en.wikipedia.org/wiki/E.164) for Enterprise Edition
+    agents.
+
+    Messages:
+      AdditionalProperty: An additional property for a PayloadValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PayloadValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  payload = _messages.MessageField('PayloadValue', 1)
+  source = _messages.StringField(2)
+  version = _messages.StringField(3)
+
+
+class GoogleCloudDialogflowV2beta1QueryResult(_messages.Message):
+  r"""Represents the result of conversational query or event processing.
+
+  Messages:
+    DiagnosticInfoValue: The free-form diagnostic info. For example, this
+      field could contain webhook call latency. The string keys of the
+      Struct's fields map can change without notice.
+    ParametersValue: The collection of extracted parameters.
+    WebhookPayloadValue: If the query was fulfilled by a webhook call, this
+      field is set to the value of the `payload` field returned in the webhook
+      response.
+
+  Fields:
+    action: The action name from the matched intent.
+    allRequiredParamsPresent: This field is set to: - `false` if the matched
+      intent has required parameters and not all of    the required parameter
+      values have been collected. - `true` if all required parameter values
+      have been collected, or if the    matched intent doesn't contain any
+      required parameters.
+    diagnosticInfo: The free-form diagnostic info. For example, this field
+      could contain webhook call latency. The string keys of the Struct's
+      fields map can change without notice.
+    fulfillmentMessages: The collection of rich messages to present to the
+      user.
+    fulfillmentText: The text to be pronounced to the user or shown on the
+      screen. Note: This is a legacy field, `fulfillment_messages` should be
+      preferred.
+    intent: The intent that matched the conversational query. Some, not all
+      fields are filled in this message, including but not limited to: `name`,
+      `display_name` and `webhook_state`.
+    intentDetectionConfidence: The intent detection confidence. Values range
+      from 0.0 (completely uncertain) to 1.0 (completely certain). If there
+      are `multiple knowledge_answers` messages, this value is set to the
+      greatest `knowledgeAnswers.match_confidence` value in the list.
+    knowledgeAnswers: The result from Knowledge Connector (if any), ordered by
+      decreasing `KnowledgeAnswers.match_confidence`.
+    languageCode: The language that was triggered during intent detection. See
+      [Language Support](https://cloud.google.com/dialogflow-
+      enterprise/docs/reference/language) for a list of the currently
+      supported language codes.
+    outputContexts: The collection of output contexts. If applicable,
+      `output_contexts.parameters` contains entries with name `<parameter
+      name>.original` containing the original parameter values before the
+      query.
+    parameters: The collection of extracted parameters.
+    queryText: The original conversational query text: - If natural language
+      text was provided as input, `query_text` contains   a copy of the input.
+      - If natural language speech audio was provided as input, `query_text`
+      contains the speech recognition result. If speech recognizer produced
+      multiple alternatives, a particular one is picked. - If an event was
+      provided as input, `query_text` is not set.
+    sentimentAnalysisResult: The sentiment analysis result, which depends on
+      the `sentiment_analysis_request_config` specified in the request.
+    speechRecognitionConfidence: The Speech recognition confidence between 0.0
+      and 1.0. A higher number indicates an estimated greater likelihood that
+      the recognized words are correct. The default of 0.0 is a sentinel value
+      indicating that confidence was not set.  This field is not guaranteed to
+      be accurate or set. In particular this field isn't set for
+      StreamingDetectIntent since the streaming endpoint has separate
+      confidence estimates per portion of the audio in
+      StreamingRecognitionResult.
+    webhookPayload: If the query was fulfilled by a webhook call, this field
+      is set to the value of the `payload` field returned in the webhook
+      response.
+    webhookSource: If the query was fulfilled by a webhook call, this field is
+      set to the value of the `source` field returned in the webhook response.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DiagnosticInfoValue(_messages.Message):
+    r"""The free-form diagnostic info. For example, this field could contain
+    webhook call latency. The string keys of the Struct's fields map can
+    change without notice.
+
+    Messages:
+      AdditionalProperty: An additional property for a DiagnosticInfoValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DiagnosticInfoValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""The collection of extracted parameters.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class WebhookPayloadValue(_messages.Message):
+    r"""If the query was fulfilled by a webhook call, this field is set to the
+    value of the `payload` field returned in the webhook response.
+
+    Messages:
+      AdditionalProperty: An additional property for a WebhookPayloadValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a WebhookPayloadValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  action = _messages.StringField(1)
+  allRequiredParamsPresent = _messages.BooleanField(2)
+  diagnosticInfo = _messages.MessageField('DiagnosticInfoValue', 3)
+  fulfillmentMessages = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessage', 4, repeated=True)
+  fulfillmentText = _messages.StringField(5)
+  intent = _messages.MessageField('GoogleCloudDialogflowV2beta1Intent', 6)
+  intentDetectionConfidence = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
+  knowledgeAnswers = _messages.MessageField('GoogleCloudDialogflowV2beta1KnowledgeAnswers', 8)
+  languageCode = _messages.StringField(9)
+  outputContexts = _messages.MessageField('GoogleCloudDialogflowV2beta1Context', 10, repeated=True)
+  parameters = _messages.MessageField('ParametersValue', 11)
+  queryText = _messages.StringField(12)
+  sentimentAnalysisResult = _messages.MessageField('GoogleCloudDialogflowV2beta1SentimentAnalysisResult', 13)
+  speechRecognitionConfidence = _messages.FloatField(14, variant=_messages.Variant.FLOAT)
+  webhookPayload = _messages.MessageField('WebhookPayloadValue', 15)
+  webhookSource = _messages.StringField(16)
+
+
+class GoogleCloudDialogflowV2beta1Sentiment(_messages.Message):
+  r"""The sentiment, such as positive/negative feeling or association, for a
+  unit of analysis, such as the query text.
+
+  Fields:
+    magnitude: A non-negative number in the [0, +inf) range, which represents
+      the absolute magnitude of sentiment, regardless of score (positive or
+      negative).
+    score: Sentiment score between -1.0 (negative sentiment) and 1.0 (positive
+      sentiment).
+  """
+
+  magnitude = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  score = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudDialogflowV2beta1SentimentAnalysisResult(_messages.Message):
+  r"""The result of sentiment analysis as configured by
+  `sentiment_analysis_request_config`.
+
+  Fields:
+    queryTextSentiment: The sentiment analysis result for `query_text`.
+  """
+
+  queryTextSentiment = _messages.MessageField('GoogleCloudDialogflowV2beta1Sentiment', 1)
+
+
+class GoogleCloudDialogflowV2beta1WebhookRequest(_messages.Message):
+  r"""The request message for a webhook call.
+
+  Fields:
+    alternativeQueryResults: Alternative query results from KnowledgeService.
+    originalDetectIntentRequest: Optional. The contents of the original
+      request that was passed to `[Streaming]DetectIntent` call.
+    queryResult: The result of the conversational query or event processing.
+      Contains the same value as
+      `[Streaming]DetectIntentResponse.query_result`.
+    responseId: The unique identifier of the response. Contains the same value
+      as `[Streaming]DetectIntentResponse.response_id`.
+    session: The unique identifier of detectIntent request session. Can be
+      used to identify end-user inside webhook implementation. Format:
+      `projects/<Project ID>/agent/sessions/<Session ID>`, or
+      `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
+      ID>/sessions/<Session ID>`.
+  """
+
+  alternativeQueryResults = _messages.MessageField('GoogleCloudDialogflowV2beta1QueryResult', 1, repeated=True)
+  originalDetectIntentRequest = _messages.MessageField('GoogleCloudDialogflowV2beta1OriginalDetectIntentRequest', 2)
+  queryResult = _messages.MessageField('GoogleCloudDialogflowV2beta1QueryResult', 3)
+  responseId = _messages.StringField(4)
+  session = _messages.StringField(5)
+
+
+class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
+  r"""The response message for a webhook call.
+
+  Messages:
+    PayloadValue: Optional. This value is passed directly to
+      `QueryResult.webhook_payload`. See the related
+      `fulfillment_messages[i].payload field`, which may be used as an
+      alternative to this field.  This field can be used for Actions on Google
+      responses. It should have a structure similar to the JSON message shown
+      here. For more information, see [Actions on Google Webhook
+      Format](https://developers.google.com/actions/dialogflow/webhook) <pre>{
+      "google": {     "expectUserResponse": true,     "richResponse": {
+      "items": [         {           "simpleResponse": {
+      "textToSpeech": "this is a simple response"           }         }
+      ]     }   } }</pre>
+
+  Fields:
+    endInteraction: Optional. Indicates that this intent ends an interaction.
+      Some integrations (e.g., Actions on Google or Dialogflow phone gateway)
+      use this information to close interaction with an end user. Default is
+      false.
+    followupEventInput: Optional. Makes the platform immediately invoke
+      another `DetectIntent` call internally with the specified event as
+      input.
+    fulfillmentMessages: Optional. The collection of rich messages to present
+      to the user. This value is passed directly to
+      `QueryResult.fulfillment_messages`.
+    fulfillmentText: Optional. The text to be shown on the screen. This value
+      is passed directly to `QueryResult.fulfillment_text`.
+    outputContexts: Optional. The collection of output contexts. This value is
+      passed directly to `QueryResult.output_contexts`.
+    payload: Optional. This value is passed directly to
+      `QueryResult.webhook_payload`. See the related
+      `fulfillment_messages[i].payload field`, which may be used as an
+      alternative to this field.  This field can be used for Actions on Google
+      responses. It should have a structure similar to the JSON message shown
+      here. For more information, see [Actions on Google Webhook
+      Format](https://developers.google.com/actions/dialogflow/webhook) <pre>{
+      "google": {     "expectUserResponse": true,     "richResponse": {
+      "items": [         {           "simpleResponse": {
+      "textToSpeech": "this is a simple response"           }         }
+      ]     }   } }</pre>
+    source: Optional. This value is passed directly to
+      `QueryResult.webhook_source`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PayloadValue(_messages.Message):
+    r"""Optional. This value is passed directly to
+    `QueryResult.webhook_payload`. See the related
+    `fulfillment_messages[i].payload field`, which may be used as an
+    alternative to this field.  This field can be used for Actions on Google
+    responses. It should have a structure similar to the JSON message shown
+    here. For more information, see [Actions on Google Webhook
+    Format](https://developers.google.com/actions/dialogflow/webhook) <pre>{
+    "google": {     "expectUserResponse": true,     "richResponse": {
+    "items": [         {           "simpleResponse": {
+    "textToSpeech": "this is a simple response"           }         }       ]
+    }   } }</pre>
+
+    Messages:
+      AdditionalProperty: An additional property for a PayloadValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PayloadValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  endInteraction = _messages.BooleanField(1)
+  followupEventInput = _messages.MessageField('GoogleCloudDialogflowV2beta1EventInput', 2)
+  fulfillmentMessages = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessage', 3, repeated=True)
+  fulfillmentText = _messages.StringField(4)
+  outputContexts = _messages.MessageField('GoogleCloudDialogflowV2beta1Context', 5, repeated=True)
+  payload = _messages.MessageField('PayloadValue', 6)
+  source = _messages.StringField(7)
+
+
 class GoogleLongrunningOperation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -2849,1040 +3998,6 @@ class GoogleTypeLatLng(_messages.Message):
   longitude = _messages.FloatField(2)
 
 
-class Intent(_messages.Message):
-  r"""Represents an intent. Intents convert a number of user expressions or
-  patterns into an action. An action is an extraction of a user command or
-  sentence semantics.
-
-  Enums:
-    DefaultResponsePlatformsValueListEntryValuesEnum:
-    WebhookStateValueValuesEnum: Optional. Indicates whether webhooks are
-      enabled for the intent.
-
-  Fields:
-    action: Optional. The name of the action associated with the intent. Note:
-      The action name must not contain whitespaces.
-    defaultResponsePlatforms: Optional. The list of platforms for which the
-      first response will be taken from among the messages assigned to the
-      DEFAULT_PLATFORM.
-    displayName: Required. The name of this intent.
-    endInteraction: Optional. Indicates that this intent ends an interaction.
-      Some integrations (e.g., Actions on Google or Dialogflow phone gateway)
-      use this information to close interaction with an end user. Default is
-      false.
-    events: Optional. The collection of event names that trigger the intent.
-      If the collection of input contexts is not empty, all of the contexts
-      must be present in the active user session for an event to trigger this
-      intent.
-    followupIntentInfo: Read-only. Information about all followup intents that
-      have this intent as a direct or indirect parent. We populate this field
-      only in the output.
-    inputContextNames: Optional. The list of context names required for this
-      intent to be triggered. Format: `projects/<Project
-      ID>/agent/sessions/-/contexts/<Context ID>`.
-    isFallback: Optional. Indicates whether this is a fallback intent.
-    messages: Optional. The collection of rich messages corresponding to the
-      `Response` field in the Dialogflow console.
-    mlDisabled: Optional. Indicates whether Machine Learning is disabled for
-      the intent. Note: If `ml_disabled` setting is set to true, then this
-      intent is not taken into account during inference in `ML ONLY` match
-      mode. Also, auto-markup in the UI is turned off.
-    mlEnabled: Optional. Indicates whether Machine Learning is enabled for the
-      intent. Note: If `ml_enabled` setting is set to false, then this intent
-      is not taken into account during inference in `ML ONLY` match mode.
-      Also, auto-markup in the UI is turned off. DEPRECATED! Please use
-      `ml_disabled` field instead. NOTE: If both `ml_enabled` and
-      `ml_disabled` are either not set or false, then the default value is
-      determined as follows: - Before April 15th, 2018 the default is:
-      ml_enabled = false / ml_disabled = true. - After April 15th, 2018 the
-      default is:   ml_enabled = true / ml_disabled = false.
-    name: The unique identifier of this intent. Required for
-      Intents.UpdateIntent and Intents.BatchUpdateIntents methods. Format:
-      `projects/<Project ID>/agent/intents/<Intent ID>`.
-    outputContexts: Optional. The collection of contexts that are activated
-      when the intent is matched. Context messages in this collection should
-      not set the parameters field. Setting the `lifespan_count` to 0 will
-      reset the context when the intent is matched. Format: `projects/<Project
-      ID>/agent/sessions/-/contexts/<Context ID>`.
-    parameters: Optional. The collection of parameters associated with the
-      intent.
-    parentFollowupIntentName: Read-only after creation. The unique identifier
-      of the parent intent in the chain of followup intents. You can set this
-      field when creating an intent, for example with CreateIntent or
-      BatchUpdateIntents, in order to make this intent a followup intent.  It
-      identifies the parent followup intent. Format: `projects/<Project
-      ID>/agent/intents/<Intent ID>`.
-    priority: Optional. The priority of this intent. Higher numbers represent
-      higher priorities. If this is zero or unspecified, we use the default
-      priority 500000.  Negative numbers mean that the intent is disabled.
-    resetContexts: Optional. Indicates whether to delete all contexts in the
-      current session when this intent is matched.
-    rootFollowupIntentName: Read-only. The unique identifier of the root
-      intent in the chain of followup intents. It identifies the correct
-      followup intents chain for this intent. We populate this field only in
-      the output.  Format: `projects/<Project ID>/agent/intents/<Intent ID>`.
-    trainingPhrases: Optional. The collection of examples that the agent is
-      trained on.
-    webhookState: Optional. Indicates whether webhooks are enabled for the
-      intent.
-  """
-
-  class DefaultResponsePlatformsValueListEntryValuesEnum(_messages.Enum):
-    r"""DefaultResponsePlatformsValueListEntryValuesEnum enum type.
-
-    Values:
-      PLATFORM_UNSPECIFIED: <no description>
-      FACEBOOK: <no description>
-      SLACK: <no description>
-      TELEGRAM: <no description>
-      KIK: <no description>
-      SKYPE: <no description>
-      LINE: <no description>
-      VIBER: <no description>
-      ACTIONS_ON_GOOGLE: <no description>
-      TELEPHONY: <no description>
-    """
-    PLATFORM_UNSPECIFIED = 0
-    FACEBOOK = 1
-    SLACK = 2
-    TELEGRAM = 3
-    KIK = 4
-    SKYPE = 5
-    LINE = 6
-    VIBER = 7
-    ACTIONS_ON_GOOGLE = 8
-    TELEPHONY = 9
-
-  class WebhookStateValueValuesEnum(_messages.Enum):
-    r"""Optional. Indicates whether webhooks are enabled for the intent.
-
-    Values:
-      WEBHOOK_STATE_UNSPECIFIED: Webhook is disabled in the agent and in the
-        intent.
-      WEBHOOK_STATE_ENABLED: Webhook is enabled in the agent and in the
-        intent.
-      WEBHOOK_STATE_ENABLED_FOR_SLOT_FILLING: Webhook is enabled in the agent
-        and in the intent. Also, each slot filling prompt is forwarded to the
-        webhook.
-    """
-    WEBHOOK_STATE_UNSPECIFIED = 0
-    WEBHOOK_STATE_ENABLED = 1
-    WEBHOOK_STATE_ENABLED_FOR_SLOT_FILLING = 2
-
-  action = _messages.StringField(1)
-  defaultResponsePlatforms = _messages.EnumField('DefaultResponsePlatformsValueListEntryValuesEnum', 2, repeated=True)
-  displayName = _messages.StringField(3)
-  endInteraction = _messages.BooleanField(4)
-  events = _messages.StringField(5, repeated=True)
-  followupIntentInfo = _messages.MessageField('IntentFollowupIntentInfo', 6, repeated=True)
-  inputContextNames = _messages.StringField(7, repeated=True)
-  isFallback = _messages.BooleanField(8)
-  messages = _messages.MessageField('IntentMessage', 9, repeated=True)
-  mlDisabled = _messages.BooleanField(10)
-  mlEnabled = _messages.BooleanField(11)
-  name = _messages.StringField(12)
-  outputContexts = _messages.MessageField('Context', 13, repeated=True)
-  parameters = _messages.MessageField('IntentParameter', 14, repeated=True)
-  parentFollowupIntentName = _messages.StringField(15)
-  priority = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  resetContexts = _messages.BooleanField(17)
-  rootFollowupIntentName = _messages.StringField(18)
-  trainingPhrases = _messages.MessageField('IntentTrainingPhrase', 19, repeated=True)
-  webhookState = _messages.EnumField('WebhookStateValueValuesEnum', 20)
-
-
-class IntentFollowupIntentInfo(_messages.Message):
-  r"""Represents a single followup intent in the chain.
-
-  Fields:
-    followupIntentName: The unique identifier of the followup intent. Format:
-      `projects/<Project ID>/agent/intents/<Intent ID>`.
-    parentFollowupIntentName: The unique identifier of the followup intent's
-      parent. Format: `projects/<Project ID>/agent/intents/<Intent ID>`.
-  """
-
-  followupIntentName = _messages.StringField(1)
-  parentFollowupIntentName = _messages.StringField(2)
-
-
-class IntentMessage(_messages.Message):
-  r"""Corresponds to the `Response` field in the Dialogflow console.
-
-  Enums:
-    PlatformValueValuesEnum: Optional. The platform that this message is
-      intended for.
-
-  Messages:
-    PayloadValue: Returns a response containing a custom, platform-specific
-      payload. See the Intent.Message.Platform type for a description of the
-      structure that may be required for your platform.
-
-  Fields:
-    basicCard: Displays a basic card for Actions on Google.
-    card: Displays a card.
-    carouselSelect: Displays a carousel card for Actions on Google.
-    image: Displays an image.
-    linkOutSuggestion: Displays a link out suggestion chip for Actions on
-      Google.
-    listSelect: Displays a list card for Actions on Google.
-    payload: Returns a response containing a custom, platform-specific
-      payload. See the Intent.Message.Platform type for a description of the
-      structure that may be required for your platform.
-    platform: Optional. The platform that this message is intended for.
-    quickReplies: Displays quick replies.
-    simpleResponses: Returns a voice or text-only response for Actions on
-      Google.
-    suggestions: Displays suggestion chips for Actions on Google.
-    telephonyPlayAudio: Plays audio from a file in Telephony Gateway.
-    telephonySynthesizeSpeech: Synthesizes speech in Telephony Gateway.
-    telephonyTransferCall: Transfers the call in Telephony Gateway.
-    text: Returns a text response.
-  """
-
-  class PlatformValueValuesEnum(_messages.Enum):
-    r"""Optional. The platform that this message is intended for.
-
-    Values:
-      PLATFORM_UNSPECIFIED: Not specified.
-      FACEBOOK: Facebook.
-      SLACK: Slack.
-      TELEGRAM: Telegram.
-      KIK: Kik.
-      SKYPE: Skype.
-      LINE: Line.
-      VIBER: Viber.
-      ACTIONS_ON_GOOGLE: Actions on Google. When using Actions on Google, you
-        can choose one of the specific Intent.Message types that mention
-        support for Actions on Google, or you can use the advanced
-        Intent.Message.payload field. The payload field provides access to AoG
-        features not available in the specific message types. If using the
-        Intent.Message.payload field, it should have a structure similar to
-        the JSON message shown here. For more information, see [Actions on
-        Google Webhook
-        Format](https://developers.google.com/actions/dialogflow/webhook)
-        <pre>{   "expectUserResponse": true,   "isSsml": false,
-        "noInputPrompts": [],   "richResponse": {     "items": [       {
-        "simpleResponse": {           "displayText": "hi",
-        "textToSpeech": "hello"         }       }     ],     "suggestions": [
-        {         "title": "Say this"       },       {         "title": "or
-        this"       }     ]   },   "systemIntent": {     "data": {
-        "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
-        "listSelect": {         "items": [           {
-        "optionInfo": {               "key": "key1",               "synonyms":
-        [                 "key one"               ]             },
-        "title": "must not be empty, but unique"           },           {
-        "optionInfo": {               "key": "key2",               "synonyms":
-        [                 "key two"               ]             },
-        "title": "must not be empty, but unique"           }         ]       }
-        },     "intent": "actions.intent.OPTION"   } }</pre>
-      TELEPHONY: Telephony Gateway.
-    """
-    PLATFORM_UNSPECIFIED = 0
-    FACEBOOK = 1
-    SLACK = 2
-    TELEGRAM = 3
-    KIK = 4
-    SKYPE = 5
-    LINE = 6
-    VIBER = 7
-    ACTIONS_ON_GOOGLE = 8
-    TELEPHONY = 9
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class PayloadValue(_messages.Message):
-    r"""Returns a response containing a custom, platform-specific payload. See
-    the Intent.Message.Platform type for a description of the structure that
-    may be required for your platform.
-
-    Messages:
-      AdditionalProperty: An additional property for a PayloadValue object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a PayloadValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  basicCard = _messages.MessageField('IntentMessageBasicCard', 1)
-  card = _messages.MessageField('IntentMessageCard', 2)
-  carouselSelect = _messages.MessageField('IntentMessageCarouselSelect', 3)
-  image = _messages.MessageField('IntentMessageImage', 4)
-  linkOutSuggestion = _messages.MessageField('IntentMessageLinkOutSuggestion', 5)
-  listSelect = _messages.MessageField('IntentMessageListSelect', 6)
-  payload = _messages.MessageField('PayloadValue', 7)
-  platform = _messages.EnumField('PlatformValueValuesEnum', 8)
-  quickReplies = _messages.MessageField('IntentMessageQuickReplies', 9)
-  simpleResponses = _messages.MessageField('IntentMessageSimpleResponses', 10)
-  suggestions = _messages.MessageField('IntentMessageSuggestions', 11)
-  telephonyPlayAudio = _messages.MessageField('IntentMessageTelephonyPlayAudio', 12)
-  telephonySynthesizeSpeech = _messages.MessageField('IntentMessageTelephonySynthesizeSpeech', 13)
-  telephonyTransferCall = _messages.MessageField('IntentMessageTelephonyTransferCall', 14)
-  text = _messages.MessageField('IntentMessageText', 15)
-
-
-class IntentMessageBasicCard(_messages.Message):
-  r"""The basic card message. Useful for displaying information.
-
-  Fields:
-    buttons: Optional. The collection of card buttons.
-    formattedText: Required, unless image is present. The body text of the
-      card.
-    image: Optional. The image for the card.
-    subtitle: Optional. The subtitle of the card.
-    title: Optional. The title of the card.
-  """
-
-  buttons = _messages.MessageField('IntentMessageBasicCardButton', 1, repeated=True)
-  formattedText = _messages.StringField(2)
-  image = _messages.MessageField('IntentMessageImage', 3)
-  subtitle = _messages.StringField(4)
-  title = _messages.StringField(5)
-
-
-class IntentMessageBasicCardButton(_messages.Message):
-  r"""The button object that appears at the bottom of a card.
-
-  Fields:
-    openUriAction: Required. Action to take when a user taps on the button.
-    title: Required. The title of the button.
-  """
-
-  openUriAction = _messages.MessageField('IntentMessageBasicCardButtonOpenUriAction', 1)
-  title = _messages.StringField(2)
-
-
-class IntentMessageBasicCardButtonOpenUriAction(_messages.Message):
-  r"""Opens the given URI.
-
-  Fields:
-    uri: Required. The HTTP or HTTPS scheme URI.
-  """
-
-  uri = _messages.StringField(1)
-
-
-class IntentMessageCard(_messages.Message):
-  r"""The card response message.
-
-  Fields:
-    buttons: Optional. The collection of card buttons.
-    imageUri: Optional. The public URI to an image file for the card.
-    subtitle: Optional. The subtitle of the card.
-    title: Optional. The title of the card.
-  """
-
-  buttons = _messages.MessageField('IntentMessageCardButton', 1, repeated=True)
-  imageUri = _messages.StringField(2)
-  subtitle = _messages.StringField(3)
-  title = _messages.StringField(4)
-
-
-class IntentMessageCardButton(_messages.Message):
-  r"""Optional. Contains information about a button.
-
-  Fields:
-    postback: Optional. The text to send back to the Dialogflow API or a URI
-      to open.
-    text: Optional. The text to show on the button.
-  """
-
-  postback = _messages.StringField(1)
-  text = _messages.StringField(2)
-
-
-class IntentMessageCarouselSelect(_messages.Message):
-  r"""The card for presenting a carousel of options to select from.
-
-  Fields:
-    items: Required. Carousel items.
-  """
-
-  items = _messages.MessageField('IntentMessageCarouselSelectItem', 1, repeated=True)
-
-
-class IntentMessageCarouselSelectItem(_messages.Message):
-  r"""An item in the carousel.
-
-  Fields:
-    description: Optional. The body text of the card.
-    image: Optional. The image to display.
-    info: Required. Additional info about the option item.
-    title: Required. Title of the carousel item.
-  """
-
-  description = _messages.StringField(1)
-  image = _messages.MessageField('IntentMessageImage', 2)
-  info = _messages.MessageField('IntentMessageSelectItemInfo', 3)
-  title = _messages.StringField(4)
-
-
-class IntentMessageImage(_messages.Message):
-  r"""The image response message.
-
-  Fields:
-    accessibilityText: A text description of the image to be used for
-      accessibility, e.g., screen readers. Required if image_uri is set for
-      CarouselSelect.
-    imageUri: Optional. The public URI to an image file.
-  """
-
-  accessibilityText = _messages.StringField(1)
-  imageUri = _messages.StringField(2)
-
-
-class IntentMessageLinkOutSuggestion(_messages.Message):
-  r"""The suggestion chip message that allows the user to jump out to the app
-  or website associated with this agent.
-
-  Fields:
-    destinationName: Required. The name of the app or site this chip is
-      linking to.
-    uri: Required. The URI of the app or site to open when the user taps the
-      suggestion chip.
-  """
-
-  destinationName = _messages.StringField(1)
-  uri = _messages.StringField(2)
-
-
-class IntentMessageListSelect(_messages.Message):
-  r"""The card for presenting a list of options to select from.
-
-  Fields:
-    items: Required. List items.
-    title: Optional. The overall title of the list.
-  """
-
-  items = _messages.MessageField('IntentMessageListSelectItem', 1, repeated=True)
-  title = _messages.StringField(2)
-
-
-class IntentMessageListSelectItem(_messages.Message):
-  r"""An item in the list.
-
-  Fields:
-    description: Optional. The main text describing the item.
-    image: Optional. The image to display.
-    info: Required. Additional information about this option.
-    title: Required. The title of the list item.
-  """
-
-  description = _messages.StringField(1)
-  image = _messages.MessageField('IntentMessageImage', 2)
-  info = _messages.MessageField('IntentMessageSelectItemInfo', 3)
-  title = _messages.StringField(4)
-
-
-class IntentMessageQuickReplies(_messages.Message):
-  r"""The quick replies response message.
-
-  Fields:
-    quickReplies: Optional. The collection of quick replies.
-    title: Optional. The title of the collection of quick replies.
-  """
-
-  quickReplies = _messages.StringField(1, repeated=True)
-  title = _messages.StringField(2)
-
-
-class IntentMessageSelectItemInfo(_messages.Message):
-  r"""Additional info about the select item for when it is triggered in a
-  dialog.
-
-  Fields:
-    key: Required. A unique key that will be sent back to the agent if this
-      response is given.
-    synonyms: Optional. A list of synonyms that can also be used to trigger
-      this item in dialog.
-  """
-
-  key = _messages.StringField(1)
-  synonyms = _messages.StringField(2, repeated=True)
-
-
-class IntentMessageSimpleResponse(_messages.Message):
-  r"""The simple response message containing speech or text.
-
-  Fields:
-    displayText: Optional. The text to display.
-    ssml: One of text_to_speech or ssml must be provided. Structured spoken
-      response to the user in the SSML format. Mutually exclusive with
-      text_to_speech.
-    textToSpeech: One of text_to_speech or ssml must be provided. The plain
-      text of the speech output. Mutually exclusive with ssml.
-  """
-
-  displayText = _messages.StringField(1)
-  ssml = _messages.StringField(2)
-  textToSpeech = _messages.StringField(3)
-
-
-class IntentMessageSimpleResponses(_messages.Message):
-  r"""The collection of simple response candidates. This message in
-  `QueryResult.fulfillment_messages` and
-  `WebhookResponse.fulfillment_messages` should contain only one
-  `SimpleResponse`.
-
-  Fields:
-    simpleResponses: Required. The list of simple responses.
-  """
-
-  simpleResponses = _messages.MessageField('IntentMessageSimpleResponse', 1, repeated=True)
-
-
-class IntentMessageSuggestion(_messages.Message):
-  r"""The suggestion chip message that the user can tap to quickly post a
-  reply to the conversation.
-
-  Fields:
-    title: Required. The text shown the in the suggestion chip.
-  """
-
-  title = _messages.StringField(1)
-
-
-class IntentMessageSuggestions(_messages.Message):
-  r"""The collection of suggestions.
-
-  Fields:
-    suggestions: Required. The list of suggested replies.
-  """
-
-  suggestions = _messages.MessageField('IntentMessageSuggestion', 1, repeated=True)
-
-
-class IntentMessageTelephonyPlayAudio(_messages.Message):
-  r"""Plays audio from a file in Telephony Gateway.
-
-  Fields:
-    audioUri: Required. URI to a Google Cloud Storage object containing the
-      audio to play, e.g., "gs://bucket/object". The object must contain a
-      single channel (mono) of linear PCM audio (2 bytes / sample) at 8kHz.
-      This object must be readable by the `service-<Project Number>@gcp-sa-
-      dialogflow.iam.gserviceaccount.com` service account where <Project
-      Number> is the number of the Telephony Gateway project (usually the same
-      as the Dialogflow agent project). If the Google Cloud Storage bucket is
-      in the Telephony Gateway project, this permission is added by default
-      when enabling the Dialogflow V2 API.  For audio from other sources,
-      consider using the `TelephonySynthesizeSpeech` message with SSML.
-  """
-
-  audioUri = _messages.StringField(1)
-
-
-class IntentMessageTelephonySynthesizeSpeech(_messages.Message):
-  r"""Synthesizes speech and plays back the synthesized audio to the caller in
-  Telephony Gateway.  Telephony Gateway takes the synthesizer settings from
-  `DetectIntentResponse.output_audio_config` which can either be set at
-  request-level or can come from the agent-level synthesizer config.
-
-  Fields:
-    ssml: The SSML to be synthesized. For more information, see
-      [SSML](https://developers.google.com/actions/reference/ssml).
-    text: The raw text to be synthesized.
-  """
-
-  ssml = _messages.StringField(1)
-  text = _messages.StringField(2)
-
-
-class IntentMessageTelephonyTransferCall(_messages.Message):
-  r"""Transfers the call in Telephony Gateway.
-
-  Fields:
-    phoneNumber: Required. The phone number to transfer the call to in [E.164
-      format](https://en.wikipedia.org/wiki/E.164).  We currently only allow
-      transferring to US numbers (+1xxxyyyzzzz).
-  """
-
-  phoneNumber = _messages.StringField(1)
-
-
-class IntentMessageText(_messages.Message):
-  r"""The text response message.
-
-  Fields:
-    text: Optional. The collection of the agent's responses.
-  """
-
-  text = _messages.StringField(1, repeated=True)
-
-
-class IntentParameter(_messages.Message):
-  r"""Represents intent parameters.
-
-  Fields:
-    defaultValue: Optional. The default value to use when the `value` yields
-      an empty result. Default values can be extracted from contexts by using
-      the following syntax: `#context_name.parameter_name`.
-    displayName: Required. The name of the parameter.
-    entityTypeDisplayName: Optional. The name of the entity type, prefixed
-      with `@`, that describes values of the parameter. If the parameter is
-      required, this must be provided.
-    isList: Optional. Indicates whether the parameter represents a list of
-      values.
-    mandatory: Optional. Indicates whether the parameter is required. That is,
-      whether the intent cannot be completed without collecting the parameter
-      value.
-    name: The unique identifier of this parameter.
-    prompts: Optional. The collection of prompts that the agent can present to
-      the user in order to collect value for the parameter.
-    value: Optional. The definition of the parameter value. It can be: - a
-      constant string, - a parameter value defined as `$parameter_name`, - an
-      original parameter value defined as `$parameter_name.original`, - a
-      parameter value from some context defined as
-      `#context_name.parameter_name`.
-  """
-
-  defaultValue = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  entityTypeDisplayName = _messages.StringField(3)
-  isList = _messages.BooleanField(4)
-  mandatory = _messages.BooleanField(5)
-  name = _messages.StringField(6)
-  prompts = _messages.StringField(7, repeated=True)
-  value = _messages.StringField(8)
-
-
-class IntentTrainingPhrase(_messages.Message):
-  r"""Represents an example that the agent is trained on.
-
-  Enums:
-    TypeValueValuesEnum: Required. The type of the training phrase.
-
-  Fields:
-    name: Output only. The unique identifier of this training phrase.
-    parts: Required. The ordered list of training phrase parts. The parts are
-      concatenated in order to form the training phrase.  Note: The API does
-      not automatically annotate training phrases like the Dialogflow Console
-      does.  Note: Do not forget to include whitespace at part boundaries, so
-      the training phrase is well formatted when the parts are concatenated.
-      If the training phrase does not need to be annotated with parameters,
-      you just need a single part with only the Part.text field set.  If you
-      want to annotate the training phrase, you must create multiple parts,
-      where the fields of each part are populated in one of two ways:  -
-      `Part.text` is set to a part of the phrase that has no parameters. -
-      `Part.text` is set to a part of the phrase that you want to annotate,
-      and the `entity_type`, `alias`, and `user_defined` fields are all
-      set.
-    timesAddedCount: Optional. Indicates how many times this example was added
-      to the intent. Each time a developer adds an existing sample by editing
-      an intent or training, this counter is increased.
-    type: Required. The type of the training phrase.
-  """
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. The type of the training phrase.
-
-    Values:
-      TYPE_UNSPECIFIED: Not specified. This value should never be used.
-      EXAMPLE: Examples do not contain @-prefixed entity type names, but
-        example parts can be annotated with entity types.
-      TEMPLATE: Templates are not annotated with entity types, but they can
-        contain @-prefixed entity type names as substrings. Template mode has
-        been deprecated. Example mode is the only supported way to create new
-        training phrases. If you have existing training phrases that you've
-        created in template mode, those will continue to work.
-    """
-    TYPE_UNSPECIFIED = 0
-    EXAMPLE = 1
-    TEMPLATE = 2
-
-  name = _messages.StringField(1)
-  parts = _messages.MessageField('IntentTrainingPhrasePart', 2, repeated=True)
-  timesAddedCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  type = _messages.EnumField('TypeValueValuesEnum', 4)
-
-
-class IntentTrainingPhrasePart(_messages.Message):
-  r"""Represents a part of a training phrase.
-
-  Fields:
-    alias: Optional. The parameter name for the value extracted from the
-      annotated part of the example. This field is required for annotated
-      parts of the training phrase.
-    entityType: Optional. The entity type name prefixed with `@`. This field
-      is required for annotated parts of the training phrase.
-    text: Required. The text for this part.
-    userDefined: Optional. Indicates whether the text was manually annotated.
-      This field is set to true when the Dialogflow Console is used to
-      manually annotate the part. When creating an annotated part with the
-      API, you must set this to true.
-  """
-
-  alias = _messages.StringField(1)
-  entityType = _messages.StringField(2)
-  text = _messages.StringField(3)
-  userDefined = _messages.BooleanField(4)
-
-
-class KnowledgeAnswers(_messages.Message):
-  r"""Represents the result of querying a Knowledge base.
-
-  Fields:
-    answers: A list of answers from Knowledge Connector.
-  """
-
-  answers = _messages.MessageField('KnowledgeAnswersAnswer', 1, repeated=True)
-
-
-class KnowledgeAnswersAnswer(_messages.Message):
-  r"""An answer from Knowledge Connector.
-
-  Enums:
-    MatchConfidenceLevelValueValuesEnum: The system's confidence level that
-      this knowledge answer is a good match for this conversational query.
-      NOTE: The confidence level for a given `<query, answer>` pair may change
-      without notice, as it depends on models that are constantly being
-      improved. However, it will change less frequently than the confidence
-      score below, and should be preferred for referencing the quality of an
-      answer.
-
-  Fields:
-    answer: The piece of text from the `source` knowledge base document that
-      answers this conversational query.
-    faqQuestion: The corresponding FAQ question if the answer was extracted
-      from a FAQ Document, empty otherwise.
-    matchConfidence: The system's confidence score that this Knowledge answer
-      is a good match for this conversational query. The range is from 0.0
-      (completely uncertain) to 1.0 (completely certain). Note: The confidence
-      score is likely to vary somewhat (possibly even for identical requests),
-      as the underlying model is under constant improvement. It may be
-      deprecated in the future. We recommend using `match_confidence_level`
-      which should be generally more stable.
-    matchConfidenceLevel: The system's confidence level that this knowledge
-      answer is a good match for this conversational query. NOTE: The
-      confidence level for a given `<query, answer>` pair may change without
-      notice, as it depends on models that are constantly being improved.
-      However, it will change less frequently than the confidence score below,
-      and should be preferred for referencing the quality of an answer.
-    source: Indicates which Knowledge Document this answer was extracted from.
-      Format: `projects/<Project ID>/knowledgeBases/<Knowledge Base
-      ID>/documents/<Document ID>`.
-  """
-
-  class MatchConfidenceLevelValueValuesEnum(_messages.Enum):
-    r"""The system's confidence level that this knowledge answer is a good
-    match for this conversational query. NOTE: The confidence level for a
-    given `<query, answer>` pair may change without notice, as it depends on
-    models that are constantly being improved. However, it will change less
-    frequently than the confidence score below, and should be preferred for
-    referencing the quality of an answer.
-
-    Values:
-      MATCH_CONFIDENCE_LEVEL_UNSPECIFIED: Not specified.
-      LOW: Indicates that the confidence is low.
-      MEDIUM: Indicates our confidence is medium.
-      HIGH: Indicates our confidence is high.
-    """
-    MATCH_CONFIDENCE_LEVEL_UNSPECIFIED = 0
-    LOW = 1
-    MEDIUM = 2
-    HIGH = 3
-
-  answer = _messages.StringField(1)
-  faqQuestion = _messages.StringField(2)
-  matchConfidence = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
-  matchConfidenceLevel = _messages.EnumField('MatchConfidenceLevelValueValuesEnum', 4)
-  source = _messages.StringField(5)
-
-
-class KnowledgeOperationMetadata(_messages.Message):
-  r"""Metadata in google::longrunning::Operation for Knowledge operations.
-
-  Enums:
-    StateValueValuesEnum: Required. The current state of this operation.
-
-  Fields:
-    state: Required. The current state of this operation.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Required. The current state of this operation.
-
-    Values:
-      STATE_UNSPECIFIED: State unspecified.
-      PENDING: The operation has been created.
-      RUNNING: The operation is currently running.
-      DONE: The operation is done, either cancelled or completed.
-    """
-    STATE_UNSPECIFIED = 0
-    PENDING = 1
-    RUNNING = 2
-    DONE = 3
-
-  state = _messages.EnumField('StateValueValuesEnum', 1)
-
-
-class OriginalDetectIntentRequest(_messages.Message):
-  r"""Represents the contents of the original request that was passed to the
-  `[Streaming]DetectIntent` call.
-
-  Messages:
-    PayloadValue: Optional. This field is set to the value of the
-      `QueryParameters.payload` field passed in the request. Some integrations
-      that query a Dialogflow agent may provide additional information in the
-      payload.  In particular for the Telephony Gateway this field has the
-      form: <pre>{  "telephony": {    "caller_id": "+18558363987"  } }</pre>
-      Note: The caller ID field (`caller_id`) will be redacted for Standard
-      Edition agents and populated with the caller ID in [E.164
-      format](https://en.wikipedia.org/wiki/E.164) for Enterprise Edition
-      agents.
-
-  Fields:
-    payload: Optional. This field is set to the value of the
-      `QueryParameters.payload` field passed in the request. Some integrations
-      that query a Dialogflow agent may provide additional information in the
-      payload.  In particular for the Telephony Gateway this field has the
-      form: <pre>{  "telephony": {    "caller_id": "+18558363987"  } }</pre>
-      Note: The caller ID field (`caller_id`) will be redacted for Standard
-      Edition agents and populated with the caller ID in [E.164
-      format](https://en.wikipedia.org/wiki/E.164) for Enterprise Edition
-      agents.
-    source: The source of this request, e.g., `google`, `facebook`, `slack`.
-      It is set by Dialogflow-owned servers.
-    version: Optional. The version of the protocol used for this request. This
-      field is AoG-specific.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class PayloadValue(_messages.Message):
-    r"""Optional. This field is set to the value of the
-    `QueryParameters.payload` field passed in the request. Some integrations
-    that query a Dialogflow agent may provide additional information in the
-    payload.  In particular for the Telephony Gateway this field has the form:
-    <pre>{  "telephony": {    "caller_id": "+18558363987"  } }</pre> Note: The
-    caller ID field (`caller_id`) will be redacted for Standard Edition agents
-    and populated with the caller ID in [E.164
-    format](https://en.wikipedia.org/wiki/E.164) for Enterprise Edition
-    agents.
-
-    Messages:
-      AdditionalProperty: An additional property for a PayloadValue object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a PayloadValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  payload = _messages.MessageField('PayloadValue', 1)
-  source = _messages.StringField(2)
-  version = _messages.StringField(3)
-
-
-class QueryResult(_messages.Message):
-  r"""Represents the result of conversational query or event processing.
-
-  Messages:
-    DiagnosticInfoValue: The free-form diagnostic info. For example, this
-      field could contain webhook call latency. The string keys of the
-      Struct's fields map can change without notice.
-    ParametersValue: The collection of extracted parameters.
-    WebhookPayloadValue: If the query was fulfilled by a webhook call, this
-      field is set to the value of the `payload` field returned in the webhook
-      response.
-
-  Fields:
-    action: The action name from the matched intent.
-    allRequiredParamsPresent: This field is set to: - `false` if the matched
-      intent has required parameters and not all of    the required parameter
-      values have been collected. - `true` if all required parameter values
-      have been collected, or if the    matched intent doesn't contain any
-      required parameters.
-    diagnosticInfo: The free-form diagnostic info. For example, this field
-      could contain webhook call latency. The string keys of the Struct's
-      fields map can change without notice.
-    fulfillmentMessages: The collection of rich messages to present to the
-      user.
-    fulfillmentText: The text to be pronounced to the user or shown on the
-      screen. Note: This is a legacy field, `fulfillment_messages` should be
-      preferred.
-    intent: The intent that matched the conversational query. Some, not all
-      fields are filled in this message, including but not limited to: `name`,
-      `display_name` and `webhook_state`.
-    intentDetectionConfidence: The intent detection confidence. Values range
-      from 0.0 (completely uncertain) to 1.0 (completely certain). If there
-      are `multiple knowledge_answers` messages, this value is set to the
-      greatest `knowledgeAnswers.match_confidence` value in the list.
-    knowledgeAnswers: The result from Knowledge Connector (if any), ordered by
-      decreasing `KnowledgeAnswers.match_confidence`.
-    languageCode: The language that was triggered during intent detection. See
-      [Language Support](https://cloud.google.com/dialogflow-
-      enterprise/docs/reference/language) for a list of the currently
-      supported language codes.
-    outputContexts: The collection of output contexts. If applicable,
-      `output_contexts.parameters` contains entries with name `<parameter
-      name>.original` containing the original parameter values before the
-      query.
-    parameters: The collection of extracted parameters.
-    queryText: The original conversational query text: - If natural language
-      text was provided as input, `query_text` contains   a copy of the input.
-      - If natural language speech audio was provided as input, `query_text`
-      contains the speech recognition result. If speech recognizer produced
-      multiple alternatives, a particular one is picked. - If an event was
-      provided as input, `query_text` is not set.
-    sentimentAnalysisResult: The sentiment analysis result, which depends on
-      the `sentiment_analysis_request_config` specified in the request.
-    speechRecognitionConfidence: The Speech recognition confidence between 0.0
-      and 1.0. A higher number indicates an estimated greater likelihood that
-      the recognized words are correct. The default of 0.0 is a sentinel value
-      indicating that confidence was not set.  This field is not guaranteed to
-      be accurate or set. In particular this field isn't set for
-      StreamingDetectIntent since the streaming endpoint has separate
-      confidence estimates per portion of the audio in
-      StreamingRecognitionResult.
-    webhookPayload: If the query was fulfilled by a webhook call, this field
-      is set to the value of the `payload` field returned in the webhook
-      response.
-    webhookSource: If the query was fulfilled by a webhook call, this field is
-      set to the value of the `source` field returned in the webhook response.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class DiagnosticInfoValue(_messages.Message):
-    r"""The free-form diagnostic info. For example, this field could contain
-    webhook call latency. The string keys of the Struct's fields map can
-    change without notice.
-
-    Messages:
-      AdditionalProperty: An additional property for a DiagnosticInfoValue
-        object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a DiagnosticInfoValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ParametersValue(_messages.Message):
-    r"""The collection of extracted parameters.
-
-    Messages:
-      AdditionalProperty: An additional property for a ParametersValue object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ParametersValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class WebhookPayloadValue(_messages.Message):
-    r"""If the query was fulfilled by a webhook call, this field is set to the
-    value of the `payload` field returned in the webhook response.
-
-    Messages:
-      AdditionalProperty: An additional property for a WebhookPayloadValue
-        object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a WebhookPayloadValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  action = _messages.StringField(1)
-  allRequiredParamsPresent = _messages.BooleanField(2)
-  diagnosticInfo = _messages.MessageField('DiagnosticInfoValue', 3)
-  fulfillmentMessages = _messages.MessageField('IntentMessage', 4, repeated=True)
-  fulfillmentText = _messages.StringField(5)
-  intent = _messages.MessageField('Intent', 6)
-  intentDetectionConfidence = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
-  knowledgeAnswers = _messages.MessageField('KnowledgeAnswers', 8)
-  languageCode = _messages.StringField(9)
-  outputContexts = _messages.MessageField('Context', 10, repeated=True)
-  parameters = _messages.MessageField('ParametersValue', 11)
-  queryText = _messages.StringField(12)
-  sentimentAnalysisResult = _messages.MessageField('SentimentAnalysisResult', 13)
-  speechRecognitionConfidence = _messages.FloatField(14, variant=_messages.Variant.FLOAT)
-  webhookPayload = _messages.MessageField('WebhookPayloadValue', 15)
-  webhookSource = _messages.StringField(16)
-
-
-class Sentiment(_messages.Message):
-  r"""The sentiment, such as positive/negative feeling or association, for a
-  unit of analysis, such as the query text.
-
-  Fields:
-    magnitude: A non-negative number in the [0, +inf) range, which represents
-      the absolute magnitude of sentiment, regardless of score (positive or
-      negative).
-    score: Sentiment score between -1.0 (negative sentiment) and 1.0 (positive
-      sentiment).
-  """
-
-  magnitude = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  score = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-
-
-class SentimentAnalysisResult(_messages.Message):
-  r"""The result of sentiment analysis as configured by
-  `sentiment_analysis_request_config`.
-
-  Fields:
-    queryTextSentiment: The sentiment analysis result for `query_text`.
-  """
-
-  queryTextSentiment = _messages.MessageField('Sentiment', 1)
-
-
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -3944,121 +4059,6 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
-
-
-class WebhookRequest(_messages.Message):
-  r"""The request message for a webhook call.
-
-  Fields:
-    alternativeQueryResults: Alternative query results from KnowledgeService.
-    originalDetectIntentRequest: Optional. The contents of the original
-      request that was passed to `[Streaming]DetectIntent` call.
-    queryResult: The result of the conversational query or event processing.
-      Contains the same value as
-      `[Streaming]DetectIntentResponse.query_result`.
-    responseId: The unique identifier of the response. Contains the same value
-      as `[Streaming]DetectIntentResponse.response_id`.
-    session: The unique identifier of detectIntent request session. Can be
-      used to identify end-user inside webhook implementation. Format:
-      `projects/<Project ID>/agent/sessions/<Session ID>`, or
-      `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
-      ID>/sessions/<Session ID>`.
-  """
-
-  alternativeQueryResults = _messages.MessageField('QueryResult', 1, repeated=True)
-  originalDetectIntentRequest = _messages.MessageField('OriginalDetectIntentRequest', 2)
-  queryResult = _messages.MessageField('QueryResult', 3)
-  responseId = _messages.StringField(4)
-  session = _messages.StringField(5)
-
-
-class WebhookResponse(_messages.Message):
-  r"""The response message for a webhook call.
-
-  Messages:
-    PayloadValue: Optional. This value is passed directly to
-      `QueryResult.webhook_payload`. See the related
-      `fulfillment_messages[i].payload field`, which may be used as an
-      alternative to this field.  This field can be used for Actions on Google
-      responses. It should have a structure similar to the JSON message shown
-      here. For more information, see [Actions on Google Webhook
-      Format](https://developers.google.com/actions/dialogflow/webhook) <pre>{
-      "google": {     "expectUserResponse": true,     "richResponse": {
-      "items": [         {           "simpleResponse": {
-      "textToSpeech": "this is a simple response"           }         }
-      ]     }   } }</pre>
-
-  Fields:
-    endInteraction: Optional. Indicates that this intent ends an interaction.
-      Some integrations (e.g., Actions on Google or Dialogflow phone gateway)
-      use this information to close interaction with an end user. Default is
-      false.
-    followupEventInput: Optional. Makes the platform immediately invoke
-      another `DetectIntent` call internally with the specified event as
-      input.
-    fulfillmentMessages: Optional. The collection of rich messages to present
-      to the user. This value is passed directly to
-      `QueryResult.fulfillment_messages`.
-    fulfillmentText: Optional. The text to be shown on the screen. This value
-      is passed directly to `QueryResult.fulfillment_text`.
-    outputContexts: Optional. The collection of output contexts. This value is
-      passed directly to `QueryResult.output_contexts`.
-    payload: Optional. This value is passed directly to
-      `QueryResult.webhook_payload`. See the related
-      `fulfillment_messages[i].payload field`, which may be used as an
-      alternative to this field.  This field can be used for Actions on Google
-      responses. It should have a structure similar to the JSON message shown
-      here. For more information, see [Actions on Google Webhook
-      Format](https://developers.google.com/actions/dialogflow/webhook) <pre>{
-      "google": {     "expectUserResponse": true,     "richResponse": {
-      "items": [         {           "simpleResponse": {
-      "textToSpeech": "this is a simple response"           }         }
-      ]     }   } }</pre>
-    source: Optional. This value is passed directly to
-      `QueryResult.webhook_source`.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class PayloadValue(_messages.Message):
-    r"""Optional. This value is passed directly to
-    `QueryResult.webhook_payload`. See the related
-    `fulfillment_messages[i].payload field`, which may be used as an
-    alternative to this field.  This field can be used for Actions on Google
-    responses. It should have a structure similar to the JSON message shown
-    here. For more information, see [Actions on Google Webhook
-    Format](https://developers.google.com/actions/dialogflow/webhook) <pre>{
-    "google": {     "expectUserResponse": true,     "richResponse": {
-    "items": [         {           "simpleResponse": {
-    "textToSpeech": "this is a simple response"           }         }       ]
-    }   } }</pre>
-
-    Messages:
-      AdditionalProperty: An additional property for a PayloadValue object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a PayloadValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  endInteraction = _messages.BooleanField(1)
-  followupEventInput = _messages.MessageField('EventInput', 2)
-  fulfillmentMessages = _messages.MessageField('IntentMessage', 3, repeated=True)
-  fulfillmentText = _messages.StringField(4)
-  outputContexts = _messages.MessageField('Context', 5, repeated=True)
-  payload = _messages.MessageField('PayloadValue', 6)
-  source = _messages.StringField(7)
 
 
 encoding.AddCustomJsonFieldMapping(

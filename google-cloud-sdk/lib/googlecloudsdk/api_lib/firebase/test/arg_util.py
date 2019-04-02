@@ -55,6 +55,17 @@ def AddCommonTestRunArgs(parser):
       default=None,
       help='Invoke a test asynchronously without waiting for test results.')
   parser.add_argument(
+      '--num-flaky-test-attempts',
+      metavar='int',
+      type=arg_validate.NONNEGATIVE_INT_PARSER,
+      help="""\
+      Specifies the number of times a test execution should be reattempted if
+      one or more of its test cases fail for any reason. An execution that
+      initially fails but succeeds on any reattempt is reported as FLAKY.\n
+      The maximum number of reruns allowed is 10. (Default: 0, which implies
+      no reruns.) All additional attempts are executed in parallel.
+      """)
+  parser.add_argument(
       '--record-video',
       action='store_true',
       default=None,
@@ -86,20 +97,6 @@ def AddCommonTestRunArgs(parser):
       '- *--timeout 5m* is 5 minutes\n'
       '- *--timeout 200s* is 200 seconds\n'
       '- *--timeout 100* is 100 seconds')
-
-
-def AddCommonBetaTestRunArgs(parser):
-  parser.add_argument(
-      '--num-flaky-test-attempts',
-      metavar='int',
-      type=arg_validate.NONNEGATIVE_INT_PARSER,
-      help="""\
-      Specifies the number of times a test execution should be reattempted if
-      one or more of its test cases fail for any reason. An execution that
-      initially fails but succeeds on any reattempt is reported as FLAKY.\n
-      The maximum number of reruns allowed is 10. (Default: 0, which implies
-      no reruns.) All additional attempts are executed in parallel.
-      """)
 
 
 def AddAndroidTestArgs(parser):

@@ -101,10 +101,11 @@ class AuthProvider(_messages.Message):
     jwksUri: URL of the provider's public key set to validate signature of the
       JWT. See [OpenID Discovery](https://openid.net/specs/openid-connect-
       discovery-1_0.html#ProviderMetadata). Optional if the key set document:
-      - can be retrieved from    [OpenID Discovery](https://openid.net/specs
-      /openid-connect-discovery-1_0.html    of the issuer.  - can be inferred
-      from the email domain of the issuer (e.g. a Google service account).
-      Example: https://www.googleapis.com/oauth2/v1/certs
+      - can be retrieved from    [OpenID
+      Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html of
+      the issuer.  - can be inferred from the email domain of the issuer (e.g.
+      a Google  service account).  Example:
+      https://www.googleapis.com/oauth2/v1/certs
   """
 
   audiences = _messages.StringField(1)
@@ -247,8 +248,8 @@ class BackendRule(_messages.Message):
         Request path: /api/company/widgetworks/user/johndoe     Translated:
         https://example.cloudfunctions.net/getUser?cid=widgetworks&uid=johndoe
         Request path: /api/company/widgetworks/user/johndoe?timezone=EST
-        Translated:   https://example.cloudfunctions.net/getUser?timezone=EST&
-        cid=widgetworks&uid=johndoe
+        Translated:     https://example.cloudfunctions.net/getUser?timezone=ES
+        T&cid=widgetworks&uid=johndoe
       APPEND_PATH_TO_ADDRESS: The request path will be appended to the backend
         address.  # Examples  Given the following operation config:
         Method path:        /api/company/{cid}/user/{uid}     Backend address:
@@ -257,8 +258,8 @@ class BackendRule(_messages.Message):
         /api/company/widgetworks/user/johndoe     Translated:
         https://example.appspot.com/api/company/widgetworks/user/johndoe
         Request path: /api/company/widgetworks/user/johndoe?timezone=EST
-        Translated:   https://example.appspot.com/api/company/widgetworks/user
-        /johndoe?timezone=EST
+        Translated:     https://example.appspot.com/api/company/widgetworks/us
+        er/johndoe?timezone=EST
     """
     PATH_TRANSLATION_UNSPECIFIED = 0
     CONSTANT_ADDRESS = 1

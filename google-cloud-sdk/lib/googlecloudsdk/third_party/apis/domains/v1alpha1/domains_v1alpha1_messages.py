@@ -116,10 +116,10 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: Unimplemented. The condition that is associated with this
-      binding. NOTE: an unsatisfied condition will not allow user access via
-      current binding. Different bindings, including their conditions, are
-      examined independently.
+    condition: The condition that is associated with this binding. NOTE: an
+      unsatisfied condition will not allow user access via current binding.
+      Different bindings, including their conditions, are examined
+      independently.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -411,8 +411,8 @@ class DomainAvailability(_messages.Message):
         AVAILABILITY_UNSPECIFIED if something prevents the service from being
         able to determine availability.
       AVAILABLE: Domain is available for registration.
-      UNAVAILABLE: Domain is not available for registration, e.g. registered
-        by someone else.
+      UNAVAILABLE: Domain is not available for registration, e.g. it is
+        registered by someone else.
       UNSUPPORTED: Domain is not supported by Cloud Domains, but may be
         available elsewhere.
     """
@@ -1159,13 +1159,12 @@ class Registration(_messages.Message):
         This probably means that the registrant email has not been verified.
         Check the emails received from the registrar and follow the provided
         steps.
-      TRANSFERRED: The registration has been automatically detached from Cloud
-        and transferred directly to Google Domains for individual management.
-        This can happen if, for example, your billing account is inactive
-        during renewal. The domain will remain valid until it expires and
-        during that period you'll be able to reclaim it at
-        https://domains.google.com/ using WHOIS contact information. For more
-        information, see https://support.google.com/domains/answer/6339340.
+      TRANSFERRED: The registration has been detached from Cloud and
+        transferred directly to Google Domains for individual management. The
+        domain will remain valid until it expires and during that period
+        you'll be able to reclaim it at https://domains.google.com/ using
+        WHOIS contact information. For more information, see
+        https://support.google.com/domains/answer/6339340.
     """
     STATE_UNSPECIFIED = 0
     PROVISIONING = 1

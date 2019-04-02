@@ -510,6 +510,10 @@ class OidcConfig(_messages.Message):
     TokenEndpointRoutabilityValueValuesEnum: Connection method to be used when
       accessing the token endpoint.
 
+  Messages:
+    ExtraParametersValue: Additional parameters required by the Identity
+      Provider
+
   Fields:
     aud: Audience claims to request when fetching the id_token - should
       include the --oidc-client-id configured for the cluster.
@@ -521,9 +525,11 @@ class OidcConfig(_messages.Message):
       with Identity Provider.
     clientSecret: Client Secret for the OAuth client to be used when
       communicating with Identity Provider.
+    extraParameters: Additional parameters required by the Identity Provider
     issuer: Identity Provider that needs to issue tokens accepted by this
       cluster, ex. https://accounts.google.com. Should match the --oidc-
       issuer-url configured for the cluster.
+    scopes: Scopes to be requested from Identity Provider
     tokenEndpoint: Endpoint to be used to obtain the id_token, ex.
       https://www.googleapis.com/oauth2/v4/token. See https://openid.net/specs
       /openid-connect-core-1_0.html#TokenEndpoint
@@ -544,13 +550,40 @@ class OidcConfig(_messages.Message):
     PUBLIC = 1
     GKE_CONNECT = 2
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExtraParametersValue(_messages.Message):
+    r"""Additional parameters required by the Identity Provider
+
+    Messages:
+      AdditionalProperty: An additional property for a ExtraParametersValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ExtraParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExtraParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   aud = _messages.StringField(1, repeated=True)
   authorizationEndpoint = _messages.StringField(2)
   clientId = _messages.StringField(3)
   clientSecret = _messages.BytesField(4)
-  issuer = _messages.StringField(5)
-  tokenEndpoint = _messages.StringField(6)
-  tokenEndpointRoutability = _messages.EnumField('TokenEndpointRoutabilityValueValuesEnum', 7)
+  extraParameters = _messages.MessageField('ExtraParametersValue', 5)
+  issuer = _messages.StringField(6)
+  scopes = _messages.StringField(7, repeated=True)
+  tokenEndpoint = _messages.StringField(8)
+  tokenEndpointRoutability = _messages.EnumField('TokenEndpointRoutabilityValueValuesEnum', 9)
 
 
 class Operation(_messages.Message):

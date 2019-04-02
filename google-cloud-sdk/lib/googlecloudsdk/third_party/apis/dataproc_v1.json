@@ -434,7 +434,7 @@
       "type": "object",
       "properties": {
         "imageVersion": {
-          "description": "Optional. The version of software inside the cluster. It must be one of the supported Cloud Dataproc Versions, such as \"1.2\" (including a subminor version, such as \"1.2.29\"), or the \"preview\" version. If unspecified, it defaults to the latest version.",
+          "description": "Optional. The version of software inside the cluster. It must be one of the supported Cloud Dataproc Versions, such as \"1.2\" (including a subminor version, such as \"1.2.29\"), or the \"preview\" version. If unspecified, it defaults to the latest Debian version.",
           "type": "string"
         },
         "properties": {
@@ -449,13 +449,13 @@
           "enumDescriptions": [
             "Unspecified component.",
             "The Anaconda python distribution.",
+            "The Druid query engine.",
             "The Hive Web HCatalog (the REST service for accessing HCatalog).",
             "The Jupyter Notebook.",
             "The Kerberos security feature.",
             "The Presto query engine.",
             "The Zeppelin notebook.",
-            "The Zookeeper service.",
-            "The Druid query engine."
+            "The Zookeeper service."
           ],
           "type": "array",
           "items": {
@@ -463,13 +463,13 @@
             "enum": [
               "COMPONENT_UNSPECIFIED",
               "ANACONDA",
+              "DRUID",
               "HIVE_WEBHCAT",
               "JUPYTER",
               "KERBEROS",
               "PRESTO",
               "ZEPPELIN",
-              "ZOOKEEPER",
-              "DRUID"
+              "ZOOKEEPER"
             ]
           }
         }
@@ -1572,7 +1572,7 @@
           }
         },
         "condition": {
-          "description": "Unimplemented. The condition that is associated with this binding. NOTE: an unsatisfied condition will not allow user access via current binding. Different bindings, including their conditions, are examined independently.",
+          "description": "The condition that is associated with this binding. NOTE: an unsatisfied condition will not allow user access via current binding. Different bindings, including their conditions, are examined independently.",
           "$ref": "Expr"
         }
       }

@@ -415,6 +415,16 @@ class HttpTarget(_messages.Message):
       `X-AppEngine-*`: Google internal use only.  The total size of headers
       must be less than 80KB.
     httpMethod: Which HTTP method to use for the request.
+    oauthToken: If specified, an [OAuth
+      token](https://developers.google.com/identity/protocols/OAuth2) will be
+      generated and attached as an `Authorization` header in the HTTP request.
+      This type of authorization should be used when sending requests to a GCP
+      endpoint.
+    oidcToken: If specified, an
+      [OIDC](https://developers.google.com/identity/protocols/OpenIDConnect)
+      token will be generated and attached as an `Authorization` header in the
+      HTTP request.  This type of authorization should be used when sending
+      requests to third party endpoints.
     uri: Required.  The full URI path that the request will be sent to. This
       string must begin with either "http://" or "https://". Some examples of
       valid values for uri are: `http://acme.com` and
@@ -482,7 +492,9 @@ class HttpTarget(_messages.Message):
   body = _messages.BytesField(1)
   headers = _messages.MessageField('HeadersValue', 2)
   httpMethod = _messages.EnumField('HttpMethodValueValuesEnum', 3)
-  uri = _messages.StringField(4)
+  oauthToken = _messages.MessageField('OAuthToken', 4)
+  oidcToken = _messages.MessageField('OidcToken', 5)
+  uri = _messages.StringField(6)
 
 
 class Job(_messages.Message):
@@ -493,6 +505,14 @@ class Job(_messages.Message):
 
   Fields:
     appEngineHttpTarget: App Engine HTTP target.
+    attemptDeadline: The deadline for job attempts. If the request handler
+      does not respond by this deadline then the request is cancelled and the
+      attempt is marked as a `DEADLINE_EXCEEDED` failure. The failed attempt
+      can be viewed in execution logs. Cloud Scheduler will retry the job
+      according to the RetryConfig.  The allowed duration for this deadline
+      is:  * For HTTP targets, between 15 seconds and 30 minutes. * For App
+      Engine HTTP targets, between 15   seconds and 24 hours. * For PubSub
+      targets, this field is ignored.
     description: Optionally caller-specified in CreateJob or UpdateJob.  A
       human-readable description for the job. This string must not contain
       more than 500 characters.
@@ -565,18 +585,19 @@ class Job(_messages.Message):
     UPDATE_FAILED = 4
 
   appEngineHttpTarget = _messages.MessageField('AppEngineHttpTarget', 1)
-  description = _messages.StringField(2)
-  httpTarget = _messages.MessageField('HttpTarget', 3)
-  lastAttemptTime = _messages.StringField(4)
-  name = _messages.StringField(5)
-  pubsubTarget = _messages.MessageField('PubsubTarget', 6)
-  retryConfig = _messages.MessageField('RetryConfig', 7)
-  schedule = _messages.StringField(8)
-  scheduleTime = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  status = _messages.MessageField('Status', 11)
-  timeZone = _messages.StringField(12)
-  userUpdateTime = _messages.StringField(13)
+  attemptDeadline = _messages.StringField(2)
+  description = _messages.StringField(3)
+  httpTarget = _messages.MessageField('HttpTarget', 4)
+  lastAttemptTime = _messages.StringField(5)
+  name = _messages.StringField(6)
+  pubsubTarget = _messages.MessageField('PubsubTarget', 7)
+  retryConfig = _messages.MessageField('RetryConfig', 8)
+  schedule = _messages.StringField(9)
+  scheduleTime = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  status = _messages.MessageField('Status', 12)
+  timeZone = _messages.StringField(13)
+  userUpdateTime = _messages.StringField(14)
 
 
 class ListJobsResponse(_messages.Message):
@@ -686,6 +707,46 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class OAuthToken(_messages.Message):
+  r"""Contains information needed for generating an [OAuth
+  token](https://developers.google.com/identity/protocols/OAuth2). This type
+  of authorization should be used when sending requests to a GCP endpoint.
+
+  Fields:
+    scope: OAuth scope to be used for generating OAuth access token. If not
+      specified, "https://www.googleapis.com/auth/cloud-platform" will be
+      used.
+    serviceAccountEmail: [Service account
+      email](https://cloud.google.com/iam/docs/service-accounts) to be used
+      for generating OAuth token. The service account must be within the same
+      project as the job. The caller must have iam.serviceAccounts.actAs
+      permission for the service account.
+  """
+
+  scope = _messages.StringField(1)
+  serviceAccountEmail = _messages.StringField(2)
+
+
+class OidcToken(_messages.Message):
+  r"""Contains information needed for generating an [OpenID Connect
+  token](https://developers.google.com/identity/protocols/OpenIDConnect). This
+  type of authorization should be used when sending requests to third party
+  endpoints.
+
+  Fields:
+    audience: Audience to be used when generating OIDC token. If not
+      specified, the URI specified in target will be used.
+    serviceAccountEmail: [Service account
+      email](https://cloud.google.com/iam/docs/service-accounts) to be used
+      for generating OIDC token. The service account must be within the same
+      project as the job. The caller must have iam.serviceAccounts.actAs
+      permission for the service account.
+  """
+
+  audience = _messages.StringField(1)
+  serviceAccountEmail = _messages.StringField(2)
 
 
 class PauseJobRequest(_messages.Message):

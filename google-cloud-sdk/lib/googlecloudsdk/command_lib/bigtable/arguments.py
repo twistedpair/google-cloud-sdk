@@ -228,20 +228,18 @@ class ArgAdder(object):
 
 def InstanceAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='instance',
-      help_text='The Cloud Bigtable instance for the {resource}.')
+      name='instance', help_text='Cloud Bigtable instance for the {resource}.')
 
 
 def ClusterAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='cluster',
-      help_text='The Cloud Bigtable cluster for the {resource}.')
+      name='cluster', help_text='Cloud Bigtable cluster for the {resource}.')
 
 
 def AppProfileAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='app profile',
-      help_text='The Cloud Bigtable application profile for the {resource}.')
+      help_text='Cloud Bigtable application profile for the {resource}.')
 
 
 def GetInstanceResourceSpec():
@@ -269,7 +267,7 @@ def GetAppProfileResourceSpec():
   """Return the resource specification for a Bigtable app profile."""
   return concepts.ResourceSpec(
       'bigtableadmin.projects.instances.appProfiles',
-      resource_name='app-profile',
+      resource_name='app profile',
       instancesId=InstanceAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False)

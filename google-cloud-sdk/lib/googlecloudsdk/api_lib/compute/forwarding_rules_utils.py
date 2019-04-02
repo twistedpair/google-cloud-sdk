@@ -223,3 +223,15 @@ def _GetZonesInRegionLister(flag_names, region, compute_client, project):
     return {compute_scope.ScopeEnum.ZONE: choices}
 
   return Lister
+
+
+def SendGetRequest(client, forwarding_rule_ref):
+  """Send forwarding rule get request."""
+  if forwarding_rule_ref.Collection() == 'compute.globalForwardingRules':
+    return client.apitools_client.globalForwardingRules.Get(
+        client.messages.ComputeGlobalForwardingRulesGetRequest(
+            **forwarding_rule_ref.AsDict()))
+  else:
+    return client.apitools_client.forwardingRules.Get(
+        client.messages.ComputeForwardingRulesGetRequest(
+            **forwarding_rule_ref.AsDict()))

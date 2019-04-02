@@ -749,10 +749,14 @@ class CloudbuildProjectsTriggersListRequest(_messages.Message):
   r"""A CloudbuildProjectsTriggersListRequest object.
 
   Fields:
+    pageSize: Number of results to return in the list.
+    pageToken: Token to provide to skip to a particular spot in the list.
     projectId: ID of the project for which to list BuildTriggers.
   """
 
-  projectId = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  projectId = _messages.StringField(3, required=True)
 
 
 class CloudbuildProjectsTriggersPatchRequest(_messages.Message):
@@ -857,11 +861,13 @@ class ListBuildTriggersResponse(_messages.Message):
   r"""Response containing existing `BuildTriggers`.
 
   Fields:
+    nextPageToken: Token to receive the next page of results.
     triggers: `BuildTriggers` for the project, sorted by `create_time`
       descending.
   """
 
-  triggers = _messages.MessageField('BuildTrigger', 1, repeated=True)
+  nextPageToken = _messages.StringField(1)
+  triggers = _messages.MessageField('BuildTrigger', 2, repeated=True)
 
 
 class ListBuildsResponse(_messages.Message):

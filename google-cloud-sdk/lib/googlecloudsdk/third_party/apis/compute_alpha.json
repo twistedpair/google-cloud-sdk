@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20190313",
+ "revision": "20190326",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1254,6 +1254,13 @@
     "replicaZones": {
      "type": "array",
      "description": "URLs of the zones where the disk should be replicated to. Only applicable for regional resources.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "resourcePolicies": {
+     "type": "array",
+     "description": "Resource policies applied to this disk for automatic snapshot creations. Specified using the full or partial URL. For instance template, specify only the resource policy name.",
      "items": {
       "type": "string"
      }
@@ -2984,7 +2991,7 @@
    "properties": {
     "condition": {
      "$ref": "Expr",
-     "description": "Unimplemented. The condition that is associated with this binding. NOTE: an unsatisfied condition will not allow user access via current binding. Different bindings, including their conditions, are examined independently."
+     "description": "The condition that is associated with this binding. NOTE: an unsatisfied condition will not allow user access via current binding. Different bindings, including their conditions, are examined independently."
     },
     "members": {
      "type": "array",
@@ -3994,6 +4001,14 @@
      "type": "string",
      "description": "Size of the persistent disk, specified in GB. You can specify this field when creating a persistent disk using the sourceImage or sourceSnapshot parameter, or specify it alone to create an empty persistent disk.\n\nIf you specify this field along with sourceImage or sourceSnapshot, the value of sizeGb must not be less than the size of the sourceImage or the size of the snapshot. Acceptable values are 1 to 65536, inclusive.",
      "format": "int64"
+    },
+    "sourceDisk": {
+     "type": "string",
+     "description": "The source disk used to create this disk. You can provide this as a partial or full URL to the resource. For example, the following are valid values:  \n- https://www.googleapis.com/compute/v1/projects/project/zones/zone/disks/disk \n- projects/project/zones/zone/disks/disk \n- zones/zone/disks/disk"
+    },
+    "sourceDiskId": {
+     "type": "string",
+     "description": "[Output Only] The unique ID of the disk used to create this disk. This value identifies the exact disk that was used to create this persistent disk. For example, if you created the persistent disk from a disk that was later deleted and recreated under the same name, the source disk ID would identify the exact version of the disk that was used."
     },
     "sourceImage": {
      "type": "string",
@@ -5609,7 +5624,7 @@
    "properties": {
     "calculated": {
      "type": "integer",
-     "description": "[Output Only] Absolute value of VM instances calculated based on the specific mode.\n\n \n- If the value is fixed, then the caculated value is equal to the fixed value. \n- If the value is a percent, then the calculated value is percent/100 * targetSize. For example, the calculated value of a 80% of a managed instance group with 150 instances would be (80/100 * 150) = 120 VM instances. If there is a remainder, the number is rounded up.",
+     "description": "[Output Only] Absolute value of VM instances calculated based on the specific mode.\n\n \n- If the value is fixed, then the calculated value is equal to the fixed value. \n- If the value is a percent, then the calculated value is percent/100 * targetSize. For example, the calculated value of a 80% of a managed instance group with 150 instances would be (80/100 * 150) = 120 VM instances. If there is a remainder, the number is rounded up.",
      "format": "int32"
     },
     "fixed": {
@@ -6514,7 +6529,7 @@
     },
     "type": {
      "type": "string",
-     "description": "Specifies the type of the healthCheck, either TCP, SSL, HTTP or HTTPS. If not specified, the default is TCP. Exactly one of the protocol-specific health check field must be specified, which must match type field.",
+     "description": "Specifies the type of the healthCheck, either TCP, SSL, HTTP, HTTPS or HTTP2. If not specified, the default is TCP. Exactly one of the protocol-specific health check field must be specified, which must match type field.",
      "enum": [
       "HTTP",
       "HTTP2",
@@ -12958,6 +12973,9 @@
    "type": "object",
    "description": "A list of machine images.",
    "properties": {
+    "etag": {
+     "type": "string"
+    },
     "id": {
      "type": "string",
      "description": "[Output Only] Unique identifier for the resource; defined by the server."
@@ -14370,6 +14388,13 @@
    "id": "NetworkEndpointGroupsListEndpointsRequest",
    "type": "object",
    "properties": {
+    "endpointFilters": {
+     "type": "array",
+     "description": "Optional list of endpoints to query. This is a more efficient but also limited version of filter parameter. Endpoints in the filter must have ip_address and port fields populated, other fields are not supported.",
+     "items": {
+      "$ref": "NetworkEndpointGroupsListEndpointsRequestNetworkEndpointFilter"
+     }
+    },
     "healthStatus": {
      "type": "string",
      "description": "Optional query parameter for showing the health status of each network endpoint. Valid options are SKIP or SHOW. If you don't specifiy this parameter, the health status of network endpoints will not be provided.",
@@ -14381,6 +14406,15 @@
       "",
       ""
      ]
+    }
+   }
+  },
+  "NetworkEndpointGroupsListEndpointsRequestNetworkEndpointFilter": {
+   "id": "NetworkEndpointGroupsListEndpointsRequestNetworkEndpointFilter",
+   "type": "object",
+   "properties": {
+    "networkEndpoint": {
+     "$ref": "NetworkEndpoint"
     }
    }
   },
@@ -14875,6 +14909,45 @@
     "peerNetwork": {
      "type": "string",
      "description": "URL of the peer network. It can be either full URL or partial URL. The peer network may belong to a different project. If the partial URL does not contain project, it is assumed that the peer network is in the same project as the current network."
+    }
+   }
+  },
+  "NetworksGetEffectiveFirewallsResponse": {
+   "id": "NetworksGetEffectiveFirewallsResponse",
+   "type": "object",
+   "properties": {
+    "firewalls": {
+     "type": "array",
+     "description": "Effective firewalls on the network.",
+     "items": {
+      "$ref": "Firewall"
+     }
+    },
+    "organizationFirewalls": {
+     "type": "array",
+     "description": "Effective firewalls from organization policies.",
+     "items": {
+      "$ref": "NetworksGetEffectiveFirewallsResponseOrganizationFirewallPolicy"
+     }
+    }
+   }
+  },
+  "NetworksGetEffectiveFirewallsResponseOrganizationFirewallPolicy": {
+   "id": "NetworksGetEffectiveFirewallsResponseOrganizationFirewallPolicy",
+   "type": "object",
+   "description": "A pruned SecurityPolicy containing ID and any applicable firewall rules.",
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "[Output Only] The unique identifier for the security policy. This identifier is defined by the server.",
+     "format": "uint64"
+    },
+    "rules": {
+     "type": "array",
+     "description": "The rules that apply to the network.",
+     "items": {
+      "$ref": "SecurityPolicyRule"
+     }
     }
    }
   },
@@ -20255,6 +20328,10 @@
      "type": "string",
      "description": "The URL to an instance that should handle matching packets. You can specify this as a full or partial URL. For example:\nhttps://www.googleapis.com/compute/v1/projects/project/zones/zone/instances/"
     },
+    "nextHopInterconnectAttachment": {
+     "type": "string",
+     "description": "[Output Only] The URL to an InterconnectAttachment which is the next hop for the route. This field will only be populated for the dynamic routes generated by Cloud Router with a linked interconnectAttachment."
+    },
     "nextHopIp": {
      "type": "string",
      "description": "The network IP address of an instance that should handle matching packets. Only IPv4 is supported."
@@ -21724,6 +21801,10 @@
     "automaticRestart": {
      "type": "boolean",
      "description": "Specifies whether the instance should be automatically restarted if it is terminated by Compute Engine (not terminated by a user). You can only set the automatic restart option for standard instances. Preemptible instances cannot be automatically restarted.\n\nBy default, this is set to true so an instance is automatically restarted if it is terminated by Compute Engine."
+    },
+    "latencyTolerant": {
+     "type": "boolean",
+     "description": "Defines whether the instance is tolerant of higher cpu latency. This can only be set during instance creation, or when the instance is not currently running. It must not be set if the preemptible option is also set."
     },
     "minNodeCpus": {
      "type": "integer",
@@ -29010,7 +29091,7 @@
   "Zone": {
    "id": "Zone",
    "type": "object",
-   "description": "A Zone resource. (== resource_for beta.zones ==) (== resource_for v1.zones ==)",
+   "description": "A Zone resource. (== resource_for beta.zones ==) (== resource_for v1.zones ==) Next ID: 17",
    "properties": {
     "availableCpuPlatforms": {
      "type": "array",
@@ -41217,6 +41298,40 @@
      ],
      "response": {
       "$ref": "Network"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "getEffectiveFirewalls": {
+     "id": "compute.networks.getEffectiveFirewalls",
+     "path": "{project}/global/networks/{network}/getEffectiveFirewalls",
+     "httpMethod": "GET",
+     "description": "Returns the effective firewalls on a given network.",
+     "parameters": {
+      "network": {
+       "type": "string",
+       "description": "Name of the network for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "network"
+     ],
+     "response": {
+      "$ref": "NetworksGetEffectiveFirewallsResponse"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",

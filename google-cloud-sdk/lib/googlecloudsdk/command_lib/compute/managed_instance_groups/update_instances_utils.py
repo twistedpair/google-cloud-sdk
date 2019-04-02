@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import re
 
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.util.apis import arg_utils
 
 STANDBY_NAME = 'standby'
 
@@ -92,6 +93,22 @@ def ParseUpdatePolicyType(flag_name, policy_type_str, messages):
     return (messages.InstanceGroupManagerUpdatePolicy
             .TypeValueValuesEnum.PROACTIVE)
   raise exceptions.InvalidArgumentException(flag_name, 'unknown update policy.')
+
+
+def ParseReplacementMethod(method_type_str, messages):
+  """Retrieves value of update policy type: substitute or recreate.
+
+  Args:
+    method_type_str: string containing update policy type.
+    messages: module containing message classes.
+
+  Returns:
+    InstanceGroupManagerUpdatePolicy.TypeValueValuesEnum message enum value.
+  """
+  return arg_utils.ChoiceToEnum(
+      method_type_str,
+      (messages.InstanceGroupManagerUpdatePolicy
+       .ReplacementMethodValueValuesEnum))
 
 
 def ValidateUpdateInstancesArgs(args):

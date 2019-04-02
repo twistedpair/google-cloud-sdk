@@ -682,34 +682,6 @@ standard.
         supports_download=False,
     )
 
-    def Instances(self, request, global_params=None):
-      r"""SearchForInstances returns a list of matching instances. See.
-http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.7
-
-      Args:
-        request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (HttpBody) The response message.
-      """
-      config = self.GetMethodConfig('Instances')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Instances.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies/{studiesId}/series/{seriesId}/instances',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.series.instances',
-        ordered_params=[u'parent', u'dicomWebPath'],
-        path_params=[u'dicomWebPath', u'parent'],
-        query_params=[],
-        relative_path=u'v1alpha2/{+parent}/dicomWeb/{+dicomWebPath}',
-        request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesRequest',
-        response_type_name=u'HttpBody',
-        supports_download=False,
-    )
-
     def Metadata(self, request, global_params=None):
       r"""RetrieveSeriesMetadata returns instance associated with the given study and.
 series, presented as metadata with the bulk data removed. See
@@ -767,6 +739,34 @@ http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.5.2.
         supports_download=False,
     )
 
+    def SearchForInstances(self, request, global_params=None):
+      r"""SearchForInstances returns a list of matching instances. See.
+http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.7
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesSearchForInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('SearchForInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchForInstances.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies/{studiesId}/series/{seriesId}/instances',
+        http_method=u'GET',
+        method_id=u'healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.series.searchForInstances',
+        ordered_params=[u'parent', u'dicomWebPath'],
+        path_params=[u'dicomWebPath', u'parent'],
+        query_params=[],
+        relative_path=u'v1alpha2/{+parent}/dicomWeb/{+dicomWebPath}',
+        request_field='',
+        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesSearchForInstancesRequest',
+        response_type_name=u'HttpBody',
+        supports_download=False,
+    )
+
   class ProjectsLocationsDatasetsDicomStoresDicomWebStudiesService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets_dicomStores_dicomWeb_studies resource."""
 
@@ -802,34 +802,6 @@ are equivalent to the GET requests specified in the WADO-RS standard.
         request_field='',
         request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesDeleteRequest',
         response_type_name=u'Empty',
-        supports_download=False,
-    )
-
-    def Instances(self, request, global_params=None):
-      r"""SearchForInstances returns a list of matching instances. See.
-http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.7
-
-      Args:
-        request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesInstancesRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (HttpBody) The response message.
-      """
-      config = self.GetMethodConfig('Instances')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Instances.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies/{studiesId}/instances',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.instances',
-        ordered_params=[u'parent', u'dicomWebPath'],
-        path_params=[u'dicomWebPath', u'parent'],
-        query_params=[],
-        relative_path=u'v1alpha2/{+parent}/dicomWeb/{+dicomWebPath}',
-        request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesInstancesRequest',
-        response_type_name=u'HttpBody',
         supports_download=False,
     )
 
@@ -890,30 +862,58 @@ http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.5.1.
         supports_download=False,
     )
 
-    def Series(self, request, global_params=None):
-      r"""SearchForSeries returns a list of matching series. See.
+    def SearchForInstances(self, request, global_params=None):
+      r"""SearchForInstances returns a list of matching instances. See.
 http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.7
 
       Args:
-        request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesRequest) input message
+        request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSearchForInstancesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (HttpBody) The response message.
       """
-      config = self.GetMethodConfig('Series')
+      config = self.GetMethodConfig('SearchForInstances')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    Series.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies/{studiesId}/series',
+    SearchForInstances.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies/{studiesId}/instances',
         http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.series',
+        method_id=u'healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.searchForInstances',
         ordered_params=[u'parent', u'dicomWebPath'],
         path_params=[u'dicomWebPath', u'parent'],
         query_params=[],
         relative_path=u'v1alpha2/{+parent}/dicomWeb/{+dicomWebPath}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesRequest',
+        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSearchForInstancesRequest',
+        response_type_name=u'HttpBody',
+        supports_download=False,
+    )
+
+    def SearchForSeries(self, request, global_params=None):
+      r"""SearchForSeries returns a list of matching series. See.
+http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.7
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSearchForSeriesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('SearchForSeries')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchForSeries.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies/{studiesId}/series',
+        http_method=u'GET',
+        method_id=u'healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.searchForSeries',
+        ordered_params=[u'parent', u'dicomWebPath'],
+        path_params=[u'dicomWebPath', u'parent'],
+        query_params=[],
+        relative_path=u'v1alpha2/{+parent}/dicomWeb/{+dicomWebPath}',
+        request_field='',
+        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSearchForSeriesRequest',
         response_type_name=u'HttpBody',
         supports_download=False,
     )
@@ -957,30 +957,58 @@ http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.6.1.
       self._upload_configs = {
           }
 
-    def Instances(self, request, global_params=None):
+    def SearchForInstances(self, request, global_params=None):
       r"""SearchForInstances returns a list of matching instances. See.
 http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.7
 
       Args:
-        request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebInstancesRequest) input message
+        request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebSearchForInstancesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (HttpBody) The response message.
       """
-      config = self.GetMethodConfig('Instances')
+      config = self.GetMethodConfig('SearchForInstances')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    Instances.method_config = lambda: base_api.ApiMethodInfo(
+    SearchForInstances.method_config = lambda: base_api.ApiMethodInfo(
         flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/instances',
         http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.dicomStores.dicomWeb.instances',
+        method_id=u'healthcare.projects.locations.datasets.dicomStores.dicomWeb.searchForInstances',
         ordered_params=[u'parent', u'dicomWebPath'],
         path_params=[u'dicomWebPath', u'parent'],
         query_params=[],
         relative_path=u'v1alpha2/{+parent}/dicomWeb/{+dicomWebPath}',
         request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresDicomWebInstancesRequest',
+        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresDicomWebSearchForInstancesRequest',
+        response_type_name=u'HttpBody',
+        supports_download=False,
+    )
+
+    def SearchForSeries(self, request, global_params=None):
+      r"""SearchForSeries returns a list of matching series. See.
+http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.7
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebSearchForSeriesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('SearchForSeries')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchForSeries.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/series',
+        http_method=u'GET',
+        method_id=u'healthcare.projects.locations.datasets.dicomStores.dicomWeb.searchForSeries',
+        ordered_params=[u'parent', u'dicomWebPath'],
+        path_params=[u'dicomWebPath', u'parent'],
+        query_params=[],
+        relative_path=u'v1alpha2/{+parent}/dicomWeb/{+dicomWebPath}',
+        request_field='',
+        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresDicomWebSearchForSeriesRequest',
         response_type_name=u'HttpBody',
         supports_download=False,
     )
@@ -1013,59 +1041,31 @@ http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.7
         supports_download=False,
     )
 
-    def Series(self, request, global_params=None):
-      r"""SearchForSeries returns a list of matching series. See.
-http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.7
-
-      Args:
-        request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebSeriesRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (HttpBody) The response message.
-      """
-      config = self.GetMethodConfig('Series')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Series.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/series',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.dicomStores.dicomWeb.series',
-        ordered_params=[u'parent', u'dicomWebPath'],
-        path_params=[u'dicomWebPath', u'parent'],
-        query_params=[],
-        relative_path=u'v1alpha2/{+parent}/dicomWeb/{+dicomWebPath}',
-        request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresDicomWebSeriesRequest',
-        response_type_name=u'HttpBody',
-        supports_download=False,
-    )
-
-    def Studies(self, request, global_params=None):
+    def StoreInstances(self, request, global_params=None):
       r"""StoreInstances stores DICOM instances associated with study instance unique.
 identifiers (SUID). See
 http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.6.1.
 
       Args:
-        request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesRequest) input message
+        request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStoreInstancesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (HttpBody) The response message.
       """
-      config = self.GetMethodConfig('Studies')
+      config = self.GetMethodConfig('StoreInstances')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    Studies.method_config = lambda: base_api.ApiMethodInfo(
+    StoreInstances.method_config = lambda: base_api.ApiMethodInfo(
         flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies',
         http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies',
+        method_id=u'healthcare.projects.locations.datasets.dicomStores.dicomWeb.storeInstances',
         ordered_params=[u'parent', u'dicomWebPath'],
         path_params=[u'dicomWebPath', u'parent'],
         query_params=[],
         relative_path=u'v1alpha2/{+parent}/dicomWeb/{+dicomWebPath}',
         request_field=u'httpBody',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesRequest',
+        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStoreInstancesRequest',
         response_type_name=u'HttpBody',
         supports_download=False,
     )
@@ -1462,7 +1462,7 @@ deleted versions) from the FHIR store.
         method_id=u'healthcare.projects.locations.datasets.fhirStores.fhir._history.list',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[],
+        query_params=[u'at', u'count', u'page', u'since'],
         relative_path=u'v1alpha2/{+name}/_history',
         request_field='',
         request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresFhirHistoryListRequest',
@@ -1482,6 +1482,28 @@ deleted versions) from the FHIR store.
 
     def Search(self, request, global_params=None):
       r"""Searches resources in the given FHIR store.
+
+# Search Parameters
+
+The server's capability statement, retrieved through
+GetCapabilityStatement, indicates which search
+parameters are supported on each FHIR resource.
+
+# Search Modifiers
+
+Modifier   | Supported
+----------- | ---------
+`:missing`  | Yes
+`:exact`    | Yes
+`:contains` | Yes
+`:text`     | Yes
+`:in`       | Yes
+`:not-in`   | Yes
+`:above`    | Yes
+`:below`    | Yes
+`:[type]`   | Yes
+`:not`      | Yes
+`:recurse`  | No
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchRequest) input message
@@ -1772,6 +1794,28 @@ description of functionality supported by the server.
     def SearchResources(self, request, global_params=None):
       r"""Searches resources in the given FHIR store.
 
+# Search Parameters
+
+The server's capability statement, retrieved through
+GetCapabilityStatement, indicates which search
+parameters are supported on each FHIR resource.
+
+# Search Modifiers
+
+Modifier   | Supported
+----------- | ---------
+`:missing`  | Yes
+`:exact`    | Yes
+`:contains` | Yes
+`:text`     | Yes
+`:in`       | Yes
+`:not-in`   | Yes
+`:above`    | Yes
+`:below`    | Yes
+`:[type]`   | Yes
+`:not`      | Yes
+`:recurse`  | No
+
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchResourcesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -1964,6 +2008,33 @@ Authorization requires the Google IAM permission
         supports_download=False,
     )
 
+    def ExecuteBundle(self, request, global_params=None):
+      r"""Executes all the requests in the given Bundle.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsFhirStoresExecuteBundleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('ExecuteBundle')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExecuteBundle.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir',
+        http_method=u'POST',
+        method_id=u'healthcare.projects.locations.datasets.fhirStores.executeBundle',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1alpha2/{+parent}/fhir',
+        request_field=u'httpBody',
+        request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresExecuteBundleRequest',
+        response_type_name=u'HttpBody',
+        supports_download=False,
+    )
+
     def Export(self, request, global_params=None):
       r"""Export resources from the FHIR store to the specified destination.
 
@@ -2000,33 +2071,6 @@ operation is OperationMetadata.
         request_field=u'exportResourcesRequest',
         request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresExportRequest',
         response_type_name=u'Operation',
-        supports_download=False,
-    )
-
-    def Fhir(self, request, global_params=None):
-      r"""Executes all the requests in the given Bundle.
-
-      Args:
-        request: (HealthcareProjectsLocationsDatasetsFhirStoresFhirRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (HttpBody) The response message.
-      """
-      config = self.GetMethodConfig('Fhir')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Fhir.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir',
-        http_method=u'POST',
-        method_id=u'healthcare.projects.locations.datasets.fhirStores.fhir',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[],
-        relative_path=u'v1alpha2/{+parent}/fhir',
-        request_field=u'httpBody',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresFhirRequest',
-        response_type_name=u'HttpBody',
         supports_download=False,
     )
 
@@ -2120,7 +2164,21 @@ description of functionality supported by the server.
 
     def Import(self, request, global_params=None):
       r"""Import resources to the FHIR store by loading data from the specified.
-sources.
+sources. Each resource must have a client-supplied ID, which is retained
+by the server.
+
+The import operation is idempotent. Upon retry, the most recent data
+(matching the client-supplied ID) is overwritten, without creating a new
+resource version. If partial failures occur during the import, successful
+changes are not rolled back.
+
+If history imports are enabled
+(enable_history_import is set in the
+FHIR store's configuration), you can import historical versions of a
+resource by supplying a bundle of type `history`. The historical versions
+in the bundle must have `lastUpdated` timestamps. If a current or
+historical version with the supplied resource ID already exists, the
+bundle is rejected.
 
 This method returns an Operation that can
 be used to track the status of the import by calling

@@ -44,10 +44,3 @@ def ServiceDependencies():
       SERVICE_CONFIGURATIONS_READY: set()
   }
 
-
-def DomainMappingStages():
-  return [progress_tracker.Stage('Creating Domain Mapping...', key=READY)]
-
-
-def DomainMappingDependencies():
-  return {}

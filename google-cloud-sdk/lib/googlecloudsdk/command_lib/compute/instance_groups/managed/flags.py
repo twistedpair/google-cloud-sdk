@@ -80,6 +80,18 @@ def AddMinReadyArg(parser):
             'on duration formats.'))
 
 
+def AddReplacementMethodFlag(parser):
+  parser.add_argument(
+      '--replacement-method',
+      choices={
+          'substitute': 'Updated instances will be deleted and created again '
+                        'with another name.',
+          'recreate': 'Updated instances will be recreated with the same name.',
+      },
+      help='Type of replacement method. Specifies what action will be taken '
+           'to update instances.')
+
+
 def AddForceArg(parser):
   parser.add_argument(
       '--force',

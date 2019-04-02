@@ -19,11 +19,13 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.command_lib.compute.networks.subnets import flags
 import six
 
 
 def MakeSubnetworkUpdateRequest(client,
                                 subnet_ref,
+                                release_track='GA',
                                 enable_private_ip_google_access=None,
                                 add_secondary_ranges=None,
                                 remove_secondary_ranges=None,
@@ -40,6 +42,7 @@ def MakeSubnetworkUpdateRequest(client,
   Args:
     client: GCE API client
     subnet_ref: Reference to a subnetwork
+    release_track: The release track (ALPHA, BETA, GA)
     enable_private_ip_google_access: Enable/disable access to Google Cloud APIs
       from this subnet for instances without a public ip address.
     add_secondary_ranges: List of secondary IP ranges to add to the subnetwork
@@ -113,47 +116,43 @@ def MakeSubnetworkUpdateRequest(client,
     with client.apitools_client.IncludeFields(cleared_fields):
       return client.MakeRequests(
           [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
-  elif enable_flow_logs is not None:
+  elif (enable_flow_logs is not None or aggregation_interval is not None or
+        flow_sampling is not None or metadata is not None):
     subnetwork = client.messages.Subnetwork()
-    subnetwork.fingerprint = client.MakeRequests([
+    original_subnetwork = client.MakeRequests([
         (client.apitools_client.subnetworks, 'Get',
          client.messages.ComputeSubnetworksGetRequest(**subnet_ref.AsDict()))
-    ])[0].fingerprint
+    ])[0]
+    subnetwork.fingerprint = original_subnetwork.fingerprint
 
-    subnetwork.enableFlowLogs = enable_flow_logs
-    return client.MakeRequests(
-        [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
-  elif aggregation_interval is not None:
-    subnetwork = client.messages.Subnetwork()
-    subnetwork.fingerprint = client.MakeRequests([
-        (client.apitools_client.subnetworks, 'Get',
-         client.messages.ComputeSubnetworksGetRequest(**subnet_ref.AsDict()))
-    ])[0].fingerprint
+    if release_track == 'GA':
+      subnetwork.enableFlowLogs = enable_flow_logs
+    elif release_track == 'BETA':
+      log_config = client.messages.SubnetworkLogConfig(enable=enable_flow_logs)
+      if aggregation_interval is not None:
+        log_config.aggregationInterval = flags.GetLoggingAggregationIntervalArg(
+            client.messages).GetEnumForChoice(aggregation_interval)
+      if flow_sampling is not None:
+        log_config.flowSampling = flow_sampling
+      if metadata is not None:
+        log_config.metadata = flags.GetLoggingMetadataArg(
+            client.messages).GetEnumForChoice(metadata)
 
-    subnetwork.aggregationInterval = (
-        client.messages.Subnetwork.AggregationIntervalValueValuesEnum(
-            convert_to_enum(aggregation_interval)))
-    return client.MakeRequests(
-        [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
-  elif flow_sampling is not None:
-    subnetwork = client.messages.Subnetwork()
-    subnetwork.fingerprint = client.MakeRequests([
-        (client.apitools_client.subnetworks, 'Get',
-         client.messages.ComputeSubnetworksGetRequest(**subnet_ref.AsDict()))
-    ])[0].fingerprint
+      subnetwork.logConfig = log_config
+    else:
+      log_config = client.messages.SubnetworkLogConfig(enable=enable_flow_logs)
+      if aggregation_interval is not None:
+        log_config.aggregationInterval = (
+            flags.GetLoggingAggregationIntervalArgAlpha(
+                client.messages).GetEnumForChoice(aggregation_interval))
+      if flow_sampling is not None:
+        log_config.flowSampling = flow_sampling
+      if metadata is not None:
+        log_config.metadata = flags.GetLoggingMetadataArgAlpha(
+            client.messages).GetEnumForChoice(metadata)
 
-    subnetwork.flowSampling = flow_sampling
-    return client.MakeRequests(
-        [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
-  elif metadata is not None:
-    subnetwork = client.messages.Subnetwork()
-    subnetwork.fingerprint = client.MakeRequests([
-        (client.apitools_client.subnetworks, 'Get',
-         client.messages.ComputeSubnetworksGetRequest(**subnet_ref.AsDict()))
-    ])[0].fingerprint
+      subnetwork.logConfig = log_config
 
-    subnetwork.metadata = client.messages.Subnetwork.MetadataValueValuesEnum(
-        convert_to_enum(metadata))
     return client.MakeRequests(
         [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
   elif private_ipv6_google_access_type is not None:

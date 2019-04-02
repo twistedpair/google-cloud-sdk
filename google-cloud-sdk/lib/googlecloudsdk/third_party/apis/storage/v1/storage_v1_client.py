@@ -42,6 +42,7 @@ class StorageV1(base_api.BaseApiClient):
     self.notifications = self.NotificationsService(self)
     self.objectAccessControls = self.ObjectAccessControlsService(self)
     self.objects = self.ObjectsService(self)
+    self.projects_hmacKeys = self.ProjectsHmacKeysService(self)
     self.projects_serviceAccount = self.ProjectsServiceAccountService(self)
     self.projects = self.ProjectsService(self)
 
@@ -1349,6 +1350,146 @@ class StorageV1(base_api.BaseApiClient):
         request_field=u'channel',
         request_type_name=u'StorageObjectsWatchAllRequest',
         response_type_name=u'Channel',
+        supports_download=False,
+    )
+
+  class ProjectsHmacKeysService(base_api.BaseApiService):
+    """Service class for the projects_hmacKeys resource."""
+
+    _NAME = u'projects_hmacKeys'
+
+    def __init__(self, client):
+      super(StorageV1.ProjectsHmacKeysService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new HMAC key for the specified service account.
+
+      Args:
+        request: (StorageProjectsHmacKeysCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HmacKey) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'storage.projects.hmacKeys.create',
+        ordered_params=[u'projectId', u'serviceAccountEmail'],
+        path_params=[u'projectId'],
+        query_params=[u'serviceAccountEmail'],
+        relative_path=u'projects/{projectId}/hmacKeys',
+        request_field='',
+        request_type_name=u'StorageProjectsHmacKeysCreateRequest',
+        response_type_name=u'HmacKey',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an HMAC key.
+
+      Args:
+        request: (StorageProjectsHmacKeysDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StorageProjectsHmacKeysDeleteResponse) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'storage.projects.hmacKeys.delete',
+        ordered_params=[u'projectId', u'accessId'],
+        path_params=[u'accessId', u'projectId'],
+        query_params=[],
+        relative_path=u'projects/{projectId}/hmacKeys/{accessId}',
+        request_field='',
+        request_type_name=u'StorageProjectsHmacKeysDeleteRequest',
+        response_type_name=u'StorageProjectsHmacKeysDeleteResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves an HMAC key's metadata.
+
+      Args:
+        request: (StorageProjectsHmacKeysGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HmacKeyMetadata) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'storage.projects.hmacKeys.get',
+        ordered_params=[u'projectId', u'accessId'],
+        path_params=[u'accessId', u'projectId'],
+        query_params=[],
+        relative_path=u'projects/{projectId}/hmacKeys/{accessId}',
+        request_field='',
+        request_type_name=u'StorageProjectsHmacKeysGetRequest',
+        response_type_name=u'HmacKeyMetadata',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of HMAC keys matching the criteria.
+
+      Args:
+        request: (StorageProjectsHmacKeysListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HmacKeysMetadata) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'storage.projects.hmacKeys.list',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[u'maxResults', u'pageToken', u'serviceAccountEmail', u'showDeletedKeys'],
+        relative_path=u'projects/{projectId}/hmacKeys',
+        request_field='',
+        request_type_name=u'StorageProjectsHmacKeysListRequest',
+        response_type_name=u'HmacKeysMetadata',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Updates the state of an HMAC key. See the HMAC Key resource descriptor for valid states.
+
+      Args:
+        request: (HmacKeyMetadata) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HmacKeyMetadata) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'storage.projects.hmacKeys.update',
+        ordered_params=[u'projectId', u'accessId'],
+        path_params=[u'accessId', u'projectId'],
+        query_params=[],
+        relative_path=u'projects/{projectId}/hmacKeys/{accessId}',
+        request_field='<request>',
+        request_type_name=u'HmacKeyMetadata',
+        response_type_name=u'HmacKeyMetadata',
         supports_download=False,
     )
 

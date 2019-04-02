@@ -230,10 +230,10 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: Unimplemented. The condition that is associated with this
-      binding. NOTE: an unsatisfied condition will not allow user access via
-      current binding. Different bindings, including their conditions, are
-      examined independently.
+    condition: The condition that is associated with this binding. NOTE: an
+      unsatisfied condition will not allow user access via current binding.
+      Different bindings, including their conditions, are examined
+      independently.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -495,20 +495,6 @@ class CreateBackupMetadata(_messages.Message):
   progress = _messages.MessageField('OperationProgress', 4)
 
 
-class CreateBackupRequest(_messages.Message):
-  r"""A CreateBackupRequest object.
-
-  Fields:
-    backup: Required. The backup to create.
-    backupId: Required. The id of the backup to be created. The `backup_id`
-      appended to `parent` forms the full backup name of the form
-      `projects/<project>/instances/<instance>/backups/<backup_id>`.
-  """
-
-  backup = _messages.MessageField('Backup', 1)
-  backupId = _messages.StringField(2)
-
-
 class CreateDatabaseMetadata(_messages.Message):
   r"""Metadata type for the operation returned by CreateDatabase.
 
@@ -528,6 +514,7 @@ class CreateDatabaseRequest(_messages.Message):
       expression `a-z*[a-z0-9]` and be between 2 and 30 characters in length.
       If the database ID is a reserved word or if it contains a hyphen, the
       database ID must be enclosed in backticks (`` ` ``).
+    encryptionConfig: A EncryptionConfig attribute.
     extraStatements: An optional list of DDL statements to run inside the
       newly created database. Statements can create tables, indexes, etc.
       These statements execute atomically with the creation of the database:
@@ -535,7 +522,8 @@ class CreateDatabaseRequest(_messages.Message):
   """
 
   createStatement = _messages.StringField(1)
-  extraStatements = _messages.StringField(2, repeated=True)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 2)
+  extraStatements = _messages.StringField(3, repeated=True)
 
 
 class CreateInstanceMetadata(_messages.Message):
@@ -564,7 +552,7 @@ class CreateInstanceRequest(_messages.Message):
     instance: Required. The instance to create.  The name may be omitted, but
       if specified must be `<parent>/instances/<instance_id>`.
     instanceId: Required. The ID of the instance to create.  Valid identifiers
-      are of the form `a-z*[a-z0-9]` and must be between 6 and 30 characters
+      are of the form `a-z*[a-z0-9]` and must be between 2 and 64 characters
       in length.
   """
 
@@ -644,6 +632,9 @@ class Database(_messages.Message):
 
   Fields:
     createTime: A string attribute.
+    encryptionConfig: Output only. Custom encryption configuration (Cloud KMS
+      keys). Applicable only for databases using the Customer Managed
+      Encryption Keys feature.
     name: Required. The name of the database. Values are of the form
       `projects/<project>/instances/<instance>/databases/<database>`, where
       `<database>` is as specified in the `CREATE DATABASE` statement. This
@@ -668,9 +659,10 @@ class Database(_messages.Message):
     READY_OPTIMIZING = 3
 
   createTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  restoreInfo = _messages.MessageField('RestoreInfo', 3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 2)
+  name = _messages.StringField(3)
+  restoreInfo = _messages.MessageField('RestoreInfo', 4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class Delete(_messages.Message):
@@ -697,6 +689,20 @@ class Empty(_messages.Message):
 
 
 
+class EncryptionConfig(_messages.Message):
+  r"""Encryption configuration describing key resources in Cloud KMS used to
+  encrypt/decrypt a Cloud Spanner database.
+
+  Fields:
+    kmsKey: A required resource name of the Cloud KMS key that was used to
+      encrypt and decrypt the database. The form of the kms_key is `projects/[
+      PROJECT_ID]/locations/[LOCATION]/keyRings/[KEY_RING]/cryptoKeys/kms_key>
+      `.
+  """
+
+  kmsKey = _messages.StringField(1)
+
+
 class ExecuteBatchDmlRequest(_messages.Message):
   r"""The request for ExecuteBatchDml
 
@@ -708,7 +714,7 @@ class ExecuteBatchDmlRequest(_messages.Message):
       are executed serially, such that the effects of statement i are visible
       to statement i+1. Each statement must be a DML statement. Execution will
       stop at the first failed statement; the remaining statements will not
-      run.  REQUIRES: statements_size() > 0.
+      run.  REQUIRES: `statements_size()` > 0.
     transaction: The transaction to use. A ReadWrite transaction is required.
       Single-use transactions are not supported (to avoid replay).  The caller
       must either supply an existing transaction ID or begin a new
@@ -725,15 +731,15 @@ class ExecuteBatchDmlResponse(_messages.Message):
   each DML statement that has successfully executed. If a statement fails, the
   error is returned as part of the response payload. Clients can determine
   whether all DML statements have run successfully, or if a statement failed,
-  using one of the following approaches:    1. Check if 'status' field is
-  OkStatus.   2. Check if result_sets_size() equals the number of statements
-  in      ExecuteBatchDmlRequest.  Example 1: A request with 5 DML statements,
-  all executed successfully. Result: A response with 5 ResultSets, one for
-  each statement in the same order, and an OK status.  Example 2: A request
-  with 5 DML statements. The 3rd statement has a syntax error. Result: A
-  response with 2 ResultSets, for the first 2 statements that run
-  successfully, and a syntax error (INVALID_ARGUMENT) status. From
-  result_set_size() client can determine that the 3rd statement has failed.
+  using one of the following approaches:    1. Check if `'status'` field is
+  `OkStatus`.   2. Check if `result_sets_size()` equals the number of
+  statements in      ExecuteBatchDmlRequest.  Example 1: A request with 5 DML
+  statements, all executed successfully.  Result: A response with 5
+  ResultSets, one for each statement in the same order, and an `OkStatus`.
+  Example 2: A request with 5 DML statements. The 3rd statement has a syntax
+  error.  Result: A response with 2 ResultSets, for the first 2 statements
+  that run successfully, and a syntax error (`INVALID_ARGUMENT`) status. From
+  `result_set_size()` client can determine that the 3rd statement has failed.
 
   Fields:
     resultSets: ResultSets, one for each statement in the request that ran
@@ -1024,7 +1030,7 @@ class Instance(_messages.Message):
     name: Required. A unique identifier for the instance, which cannot be
       changed after the instance is created. Values are of the form
       `projects/<project>/instances/a-z*[a-z0-9]`. The final segment of the
-      name must be between 6 and 30 characters in length.
+      name must be between 2 and 64 characters in length.
     nodeCount: Required. The number of nodes allocated to this instance. This
       may be zero in API responses for instances that are not yet in state
       `READY`.  See [the documentation](https://cloud.google.com/spanner/docs/
@@ -2573,8 +2579,10 @@ class SpannerProjectsInstancesBackupsCreateRequest(_messages.Message):
   r"""A SpannerProjectsInstancesBackupsCreateRequest object.
 
   Fields:
-    createBackupRequest: A CreateBackupRequest resource to be passed as the
-      request body.
+    backup: A Backup resource to be passed as the request body.
+    backupId: Required. The id of the backup to be created. The `backup_id`
+      appended to `parent` forms the full backup name of the form
+      `projects/<project>/instances/<instance>/backups/<backup_id>`.
     parent: Required. The name of the instance in which the backup will be
       created. This must be the same instance that contains the database the
       backup will be created from. The backup will be stored in the
@@ -2582,8 +2590,9 @@ class SpannerProjectsInstancesBackupsCreateRequest(_messages.Message):
       Values are of the form `projects/<project>/instances/<instance>`.
   """
 
-  createBackupRequest = _messages.MessageField('CreateBackupRequest', 1)
-  parent = _messages.StringField(2, required=True)
+  backup = _messages.MessageField('Backup', 1)
+  backupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class SpannerProjectsInstancesBackupsDeleteRequest(_messages.Message):
@@ -2671,6 +2680,7 @@ class SpannerProjectsInstancesBackupsPatchRequest(_messages.Message):
   r"""A SpannerProjectsInstancesBackupsPatchRequest object.
 
   Fields:
+    backup: A Backup resource to be passed as the request body.
     name: Output only. A globally unique identifier for the backup which
       cannot be changed. Values are of the form
       `projects/<project>/instances/<instance>/backups/a-z*[a-z0-9]` The final
@@ -2679,12 +2689,16 @@ class SpannerProjectsInstancesBackupsPatchRequest(_messages.Message):
       configuration of the instance containing the backup, identified by the
       prefix of the backup name of the form
       `projects/<project>/instances/<instance>`.
-    updateBackupRequest: A UpdateBackupRequest resource to be passed as the
-      request body.
+    updateMask: Required. A mask specifying which fields (e.g. `expire_time`)
+      in the Backup resource should be updated. This mask is relative to the
+      Backup resource, not to the request message. The field mask must always
+      be specified; this prevents any future fields from being erased
+      accidentally by clients that do not know about them.
   """
 
-  name = _messages.StringField(1, required=True)
-  updateBackupRequest = _messages.MessageField('UpdateBackupRequest', 2)
+  backup = _messages.MessageField('Backup', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class SpannerProjectsInstancesBackupsSetIamPolicyRequest(_messages.Message):
@@ -3300,7 +3314,7 @@ class SpannerProjectsInstancesPatchRequest(_messages.Message):
     name: Required. A unique identifier for the instance, which cannot be
       changed after the instance is created. Values are of the form
       `projects/<project>/instances/a-z*[a-z0-9]`. The final segment of the
-      name must be between 6 and 30 characters in length.
+      name must be between 2 and 64 characters in length.
     updateInstanceRequest: A UpdateInstanceRequest resource to be passed as
       the request body.
   """
@@ -3905,25 +3919,6 @@ class Type(_messages.Message):
   arrayElementType = _messages.MessageField('Type', 1)
   code = _messages.EnumField('CodeValueValuesEnum', 2)
   structType = _messages.MessageField('StructType', 3)
-
-
-class UpdateBackupRequest(_messages.Message):
-  r"""A UpdateBackupRequest object.
-
-  Fields:
-    backup: Required. The backup to update. `backup.name`, and the fields to
-      be updated as specified by `update_mask` are required. Other fields are
-      ignored. Update is only supported for the following fields:  *
-      `backup.expire_time`.
-    updateMask: Required. A mask specifying which fields (e.g.
-      `backup.expire_time`) in the Backup resource should be updated. This
-      mask is relative to the Backup resource, not to the request message. The
-      field mask must always be specified; this prevents any future fields
-      from being erased accidentally by clients that do not know about them.
-  """
-
-  backup = _messages.MessageField('Backup', 1)
-  updateMask = _messages.StringField(2)
 
 
 class UpdateDatabaseDdlMetadata(_messages.Message):

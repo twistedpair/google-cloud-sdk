@@ -699,6 +699,12 @@ class CommandBuilder(object):
                        self._GetDisplayName(ref, args)),
           throw_if_unattended=True, cancel_on_no=True)
 
+    if self.spec.request.modify_method_hook:
+      self.spec.request.method = self.spec.request.modify_method_hook(ref, args)
+      self.method = registry.GetMethod(
+          self.spec.request.collection, self.spec.request.method,
+          self.spec.request.api_version)
+
     if self.spec.request.issue_request_hook:
       # Making the request is overridden, just call into the custom code.
       return ref, self.spec.request.issue_request_hook(ref, args)
@@ -714,7 +720,8 @@ class CommandBuilder(object):
           self.spec.request.resource_method_params,
           use_relative_name=self.spec.request.use_relative_name,
           parse_resource_into_request=parse_resource,
-          existing_message=existing_message)
+          existing_message=existing_message,
+          override_method=self.method)
       for hook in self.spec.request.modify_request_hooks:
         request = hook(ref, args, request)
 

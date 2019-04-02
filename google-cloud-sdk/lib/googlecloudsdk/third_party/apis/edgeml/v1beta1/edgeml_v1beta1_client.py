@@ -154,7 +154,8 @@ succeed, but with a warning message in
 
     def Convert(self, request, global_params=None):
       r"""Converts the input to a TensorFlow Lite model. Currently, the input must be.
-a TensorFlow SavedModel file archived in a zip file. If the input model is
+a TensorFlow SavedModel directory or "saved_model.pb" or
+"saved_model.pbtxt" file in the SavedModel directory. If the input model is
 pre-quantized, it will generate a quantized TFLite model, that can be
 compiled. If the input model is not quantized, the generated TFLite model
 will also be non-quantized (and therefore unable to be compiled). Note that

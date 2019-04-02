@@ -1944,6 +1944,87 @@
           "type": "string"
         }
       }
+    },
+    "ListUsableSubnetworksResponse": {
+      "id": "ListUsableSubnetworksResponse",
+      "description": "ListUsableSubnetworksResponse is the response of\nListUsableSubnetworksRequest.",
+      "type": "object",
+      "properties": {
+        "subnetworks": {
+          "description": "A list of usable subnetworks in the specified network project.",
+          "type": "array",
+          "items": {
+            "$ref": "UsableSubnetwork"
+          }
+        },
+        "nextPageToken": {
+          "description": "This token allows you to get the next page of results for list requests.\nIf the number of results is larger than `page_size`, use the\n`next_page_token` as a value for the query parameter `page_token` in the\nnext request. The value will become empty when there are no more pages.",
+          "type": "string"
+        }
+      }
+    },
+    "UsableSubnetwork": {
+      "id": "UsableSubnetwork",
+      "description": "UsableSubnetwork resource returns the subnetwork name, its associated network\nand the primary CIDR range.",
+      "type": "object",
+      "properties": {
+        "subnetwork": {
+          "description": "Subnetwork Name.\nExample: projects\/my-project\/regions\/us-central1\/subnetworks\/my-subnet",
+          "type": "string"
+        },
+        "network": {
+          "description": "Network Name.\nExample: projects\/my-project\/global\/networks\/my-network",
+          "type": "string"
+        },
+        "ipCidrRange": {
+          "description": "The range of internal addresses that are owned by this subnetwork.",
+          "type": "string"
+        },
+        "secondaryIpRanges": {
+          "description": "Secondary IP ranges.",
+          "type": "array",
+          "items": {
+            "$ref": "UsableSubnetworkSecondaryRange"
+          }
+        },
+        "statusMessage": {
+          "description": "A human readable status message representing the reasons for cases where\nthe caller cannot use the secondary ranges under the subnet. For example if\nthe secondary_ip_ranges is empty due to a permission issue, an insufficient\npermission message will be given by status_message.",
+          "type": "string"
+        }
+      }
+    },
+    "UsableSubnetworkSecondaryRange": {
+      "id": "UsableSubnetworkSecondaryRange",
+      "description": "Secondary IP range of a usable subnetwork.",
+      "type": "object",
+      "properties": {
+        "rangeName": {
+          "description": "The name associated with this subnetwork secondary range, used when adding\nan alias IP range to a VM instance.",
+          "type": "string"
+        },
+        "ipCidrRange": {
+          "description": "The range of IP addresses belonging to this subnetwork secondary range.",
+          "type": "string"
+        },
+        "status": {
+          "description": "This field is to determine the status of the secondary range programmably.",
+          "enumDescriptions": [
+            "UNKNOWN is the zero value of the Status enum. It's not a valid status.",
+            "UNUSED denotes that this range is unclaimed by any cluster.",
+            "IN_USE_SERVICE denotes that this range is claimed by a cluster for\nservices. It cannot be used for other clusters.",
+            "IN_USE_SHAREABLE_POD denotes this range was created by the network admin\nand is currently claimed by a cluster for pods. It can only be used by\nother clusters as a pod range.",
+            "IN_USE_MANAGED_POD denotes this range was created by GKE and is claimed\nfor pods. It cannot be used for other clusters."
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "UNUSED",
+            "IN_USE_SERVICE",
+            "IN_USE_SHAREABLE_POD",
+            "IN_USE_MANAGED_POD"
+          ]
+        }
+      }
     }
   },
   "resources": {
@@ -4254,6 +4335,55 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Cancels the specified operation."
+                }
+              }
+            }
+          }
+        },
+        "aggregated": {
+          "resources": {
+            "usableSubnetworks": {
+              "methods": {
+                "list": {
+                  "id": "container.projects.aggregated.usableSubnetworks.list",
+                  "path": "v1/{+parent}/aggregated/usableSubnetworks",
+                  "flatPath": "v1/projects/{projectsId}/aggregated/usableSubnetworks",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "The parent project where subnetworks are usable.\nSpecified in the format 'projects\/*'.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Filtering currently only supports equality on the networkProjectId and must\nbe in the form: \"networkProjectId=[PROJECTID]\", where `networkProjectId`\nis the project which owns the listed subnetworks. This defaults to the\nparent project ID.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The max number of results per page that should be returned. If the number\nof available results is larger than `page_size`, a `next_page_token` is\nreturned which can be used to get the next page of results in subsequent\nrequests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Specifies a page token to use. Set this to the nextPageToken returned by\nprevious list requests to get the next page of results.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListUsableSubnetworksResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists subnetworks that are usable for creating clusters in a project."
                 }
               }
             }

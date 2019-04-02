@@ -253,9 +253,9 @@ apis:
   datacatalog:
     v1alpha3:
       discovery_doc: datacatalog_v1alpha3.json
+    v1beta1:
+      discovery_doc: datacatalog_v1beta1.json
       default: true
-#    v1beta1:
-#      discovery_doc: datacatalog_v1beta1.json
   dataflow:
     v1b3:
       discovery_doc: dataflow_v1b3.json
@@ -453,8 +453,21 @@ apis:
     v1beta1:
       discovery_doc: runtimeconfig_v1beta1.json
   securitycenter:
+    v1beta1:
+      discovery_doc: securitycenter_v1beta1.json
+      resources:
+        organizations.sources.findings:
+          path: organizations/{organizationsId}/sources/{sourcesId}/findings/{findingId}
+        organizations.assets:
+          path: organizations/{organizationsId}/assets/{assetsId}
     v1:
       discovery_doc: securitycenter_v1.json
+      resources:
+        organizations.sources.findings:
+          path: organizations/{organizationsId}/sources/{sourcesId}/findings/{findingId}
+        organizations.assets:
+          path: organizations/{organizationsId}/assets/{assetsId}
+      default: true
   servicemanagement:
     v1:
       discovery_doc: servicemanagement_v1.json

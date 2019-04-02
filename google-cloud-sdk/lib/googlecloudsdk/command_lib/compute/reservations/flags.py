@@ -34,7 +34,7 @@ def GetRequireSpecificAllocation():
   help_text = """\
 Indicates whether the reservation can be consumed by VMs with "any reservation"
 defined. If enabled, then only VMs that target this reservation by name using
-``--reservation-affinity=specific`` can consume from this reservation.
+`--reservation-affinity=specific` can consume from this reservation.
 """
   return base.Argument(
       '--require-specific-reservation', action='store_true', help=help_text)
@@ -55,9 +55,7 @@ def GetMinCpuPlatform():
   """Gets the --min-cpu-platform flag."""
   return base.Argument(
       '--min-cpu-platform',
-      help="""\
-An optional minimum CPU platform of the reservation to create.
-""")
+      help='Optional minimum CPU platform of the reservation to create.')
 
 
 def GetMachineType(required=True):
@@ -65,7 +63,7 @@ def GetMachineType(required=True):
   help_text = """\
 The type of machine (name only) which has a fixed number of vCPUs and a fixed amount
 of memory. This also includes specifying custom machine type following
-``custom-number_of_CPUs-amount_of_memory`` pattern, e.g. ``custom-32-29440``.
+`custom-number_of_CPUs-amount_of_memory` pattern, e.g. `custom-32-29440`.
 """
   return base.Argument('--machine-type', required=required, help=help_text)
 
@@ -73,9 +71,10 @@ of memory. This also includes specifying custom machine type following
 def GetLocalSsdFlag():
   """Gets the -local-ssd flag."""
   help_text = """\
-Manage the size and the interface of local SSD to use.
+Manage the size and the interface of local SSD to use. See
+https://cloud.google.com/compute/docs/disks/local-ssd for more information.
 *interface*::: The kind of disk interface exposed to the VM for this SSD. Valid
-values are ``scsi'' and ``nvme''. SCSI is the default and is supported by more
+values are `scsi` and `nvme`. SCSI is the default and is supported by more
 guest operating systems. NVME may provide higher performance.
 *size*::: The size of the local SSD in base-2 GB.
 """
@@ -94,10 +93,9 @@ def GetAcceleratorFlag():
   help_text = """\
 Manage the configuration of the type and number of accelerator cards attached.
 *count*::: The number of accelerators to attach to each instance in the reservation.
-*type*::: The specific type (e.g. ``nvidia-tesla-k80`` for nVidia Tesla K80) of
-accelerator to attach to instances in the reservation. Use
-'gcloud compute accelerator-types list' to learn about all available accelerator
-types.
+*type*::: The specific type (e.g. `nvidia-tesla-k80` for nVidia Tesla K80) of
+accelerator to attach to instances in the reservation. Use `gcloud compute accelerator-types list`
+to learn about all available accelerator types.
 """
   return base.Argument(
       '--accelerator',

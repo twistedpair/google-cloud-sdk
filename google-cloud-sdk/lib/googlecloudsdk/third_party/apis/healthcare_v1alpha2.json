@@ -7,7 +7,7 @@
   "version": "v1alpha2",
   "revision": "0",
   "title": "Cloud Healthcare API",
-  "description": "",
+  "description": "Manage, store, and access healthcare data in Google Cloud Platform.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -225,7 +225,7 @@
           }
         },
         "condition": {
-          "description": "Unimplemented. The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.",
+          "description": "The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.",
           "$ref": "Expr"
         }
       }
@@ -384,7 +384,7 @@
     },
     "Status": {
       "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error\nmessage, and error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
       "type": "object",
       "properties": {
         "code": {
@@ -694,6 +694,10 @@
         "image": {
           "description": "Configures de-identification of image pixels wherever they are found in the\nsource_dataset.",
           "$ref": "ImageConfig"
+        },
+        "text": {
+          "description": "Configures de-identification of text wherever it is found in the\nsource_dataset.",
+          "$ref": "TextConfig"
         }
       }
     },
@@ -705,6 +709,28 @@
         "keepList": {
           "description": "List of tags to keep. Remove all other tags.",
           "$ref": "TagFilterList"
+        },
+        "removeList": {
+          "description": "List of tags to remove. Keep all other tags.",
+          "$ref": "TagFilterList"
+        },
+        "filterProfile": {
+          "description": "Tag filtering profile that determines which tags to keep\/remove.",
+          "enumDescriptions": [
+            "No tag filtration profile provided. Same as KEEP_ALL_PROFILE.",
+            "Keep only tags required to produce valid DICOM.",
+            "Remove tags based on DICOM Standard's Attribute Confidentiality Basic\nProfile (DICOM Standard Edition 2018e).",
+            "Keep all tags.",
+            "Inspects within tag contents and replaces sensitive text. The process\ncan be configured using the TextConfig.\nApplies to all tags with the following Value Representation names:\nAE, LO, LT, PN, SH, ST, UC, UT, DA, DT, AS"
+          ],
+          "type": "string",
+          "enum": [
+            "TAG_FILTER_PROFILE_UNSPECIFIED",
+            "MINIMAL_KEEP_LIST_PROFILE",
+            "ATTRIBUTE_CONFIDENTIALITY_BASIC_PROFILE",
+            "KEEP_ALL_PROFILE",
+            "DEIDENTIFY_TAG_CONTENTS"
+          ]
         }
       }
     },
@@ -727,6 +753,43 @@
       "description": "Specifies how de-identification of a FHIR store should be handled.",
       "type": "object",
       "properties": {
+        "fieldMetadataList": {
+          "description": "Specifies FHIR paths to match and how to transform them. Any field that\nis not matched by a FieldMetadata will be passed through to the output\ndataset unmodified. All extensions are removed in the output.",
+          "type": "array",
+          "items": {
+            "$ref": "FieldMetadata"
+          }
+        }
+      }
+    },
+    "FieldMetadata": {
+      "id": "FieldMetadata",
+      "description": "Specifies FHIR paths to match, and how to handle de-identification of\nmatching fields.",
+      "type": "object",
+      "properties": {
+        "paths": {
+          "description": "List of paths to FHIR fields to be redacted. Each path is a\nperiod-separated list where each component is either a field name or\nFHIR type name, for example: Patient, HumanName.\nFor \"choice\" types (those defined in the FHIR spec with the form:\nfield[x]) we use two separate components. e.g. \"deceasedAge.unit\" is\nmatched by \"Deceased.Age.unit\".\nSupported types are: AdministrativeGenderCode, Code, Date, DateTime,\nDecimal, HumanName, Id, LanguageCode, Markdown, MimeTypeCode, Oid,\nString, Uri, Uuid, Xhtml.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "action": {
+          "description": "Deidentify action for one field.",
+          "enumDescriptions": [
+            "No action specified.",
+            "Transform the entire field.",
+            "Should be inspected and any PHI found should be\ntransformed.",
+            "Do not transform."
+          ],
+          "type": "string",
+          "enum": [
+            "ACTION_UNSPECIFIED",
+            "TRANSFORM",
+            "INSPECT_AND_TRANSFORM",
+            "DO_NOT_TRANSFORM"
+          ]
+        }
       }
     },
     "ImageConfig": {
@@ -738,14 +801,118 @@
           "description": "Determines how to redact text from image.",
           "enumDescriptions": [
             "No text redaction specified. Same as REDACT_NO_TEXT.",
-            "Redact all text."
+            "Redact all text.",
+            "Redact sensitive text.",
+            "Do not redact text."
           ],
           "type": "string",
           "enum": [
             "TEXT_REDACTION_MODE_UNSPECIFIED",
-            "REDACT_ALL_TEXT"
+            "REDACT_ALL_TEXT",
+            "REDACT_SENSITIVE_TEXT",
+            "REDACT_NO_TEXT"
           ]
         }
+      }
+    },
+    "TextConfig": {
+      "id": "TextConfig",
+      "type": "object",
+      "properties": {
+        "transformations": {
+          "description": "The transformations to apply to the detected data.",
+          "type": "array",
+          "items": {
+            "$ref": "InfoTypeTransformation"
+          }
+        },
+        "experimentalConfig": {
+          "description": "Experimental de-identification config to use. For internal use only.\nIf not specified, it is ignored and standard DLP is used.",
+          "type": "string"
+        }
+      }
+    },
+    "InfoTypeTransformation": {
+      "id": "InfoTypeTransformation",
+      "description": "A transformation to apply to text that is identified as a specific\ninfo_type.",
+      "type": "object",
+      "properties": {
+        "infoTypes": {
+          "description": "InfoTypes to apply this transformation to. If this is not specified, the\ntransformation applies to any info_type.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "redactConfig": {
+          "description": "Config for text redaction.",
+          "$ref": "RedactConfig"
+        },
+        "characterMaskConfig": {
+          "description": "Config for character mask.",
+          "$ref": "CharacterMaskConfig"
+        },
+        "dateShiftConfig": {
+          "description": "Config for date shift.",
+          "$ref": "DateShiftConfig"
+        },
+        "cryptoHashConfig": {
+          "description": "Config for crypto hash.",
+          "$ref": "CryptoHashConfig"
+        },
+        "replaceWithInfoTypeConfig": {
+          "description": "Config for replace with InfoType.",
+          "$ref": "ReplaceWithInfoTypeConfig"
+        }
+      }
+    },
+    "RedactConfig": {
+      "id": "RedactConfig",
+      "description": "Define how to redact sensitive values. Default behaviour is erase,\ne.g. \"My name is Jake.\" becomes \"My name is .\"",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "CharacterMaskConfig": {
+      "id": "CharacterMaskConfig",
+      "description": "Mask a string by replacing its characters with a fixed character.",
+      "type": "object",
+      "properties": {
+        "maskingCharacter": {
+          "description": "Character to mask the sensitive values. If not supplied, defaults to \"*\".",
+          "type": "string"
+        }
+      }
+    },
+    "DateShiftConfig": {
+      "id": "DateShiftConfig",
+      "description": "Shift a date forward or backward in time by a random amount which is\nconsistent for a given patient and crypto key combination.",
+      "type": "object",
+      "properties": {
+        "cryptoKey": {
+          "description": "An AES 128\/192\/256 bit key. Causes the shift to be computed based on this\nkey and the patient ID. A default key is generated for each\nDeidentifyDataset operation and is used wherever crypto_key is not\nspecified.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "CryptoHashConfig": {
+      "id": "CryptoHashConfig",
+      "description": "Pseudonymization method that generates surrogates via cryptographic hashing.\nUses SHA-256.\nOutputs a base64-encoded representation of the hashed output\n(for example, `L7k0BHmF1ha5U3NfGykjro4xWi1MPVQPjhMAZbSV9mM=`).",
+      "type": "object",
+      "properties": {
+        "cryptoKey": {
+          "description": "An AES 128\/192\/256 bit key. Causes the hash to be computed based on this\nkey. A default key is generated for each DeidentifyDataset operation and is\nused wherever crypto_key is not specified.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "ReplaceWithInfoTypeConfig": {
+      "id": "ReplaceWithInfoTypeConfig",
+      "description": "When using the INSPECT_AND_TRANSFORM action, each match is replaced with\nthe name of the info_type. For example, \"My name is Jake\" becomes \"My name is\n[PERSON_NAME].\" The TRANSFORM action is equivalent to redacting.",
+      "type": "object",
+      "properties": {
       }
     },
     "DicomStore": {
@@ -1124,14 +1291,14 @@
     },
     "ImportResourcesRequest": {
       "id": "ImportResourcesRequest",
-      "description": "Request to import resources.\nThe FHIR resources to be imported must have client supplied IDs. The server\nwill retain the resource IDs. The import operation is idempotent. Retry will\noverwrite existing data identified by client supplied IDs. The import\noperation is not transactional. The server will not roll back any committed\nchanges upon partial failures.",
+      "description": "Request to import resources.",
       "type": "object",
       "properties": {
         "contentStructure": {
           "description": "The content structure in the source location. The default is\nBUNDLE.",
           "enumDescriptions": [
             "",
-            "Each unit is a bundle, which contains one or more resources.",
+            "Each unit is a bundle, which contains one or more resources. Set the\nbundle type to `history` to import resource versions.",
             "Each unit is a single resource."
           ],
           "type": "string",
@@ -1142,7 +1309,7 @@
           ]
         },
         "gcsSource": {
-          "description": "Cloud Storage source data location and import configuration.\n\nThe Cloud Storage location requires the `roles\/storage.objectViewer`\nCloud IAM role.\n\nEach Cloud Storage object should be a text file that contains newline\ndelimited JSON structures conforming to FHIR standard.",
+          "description": "Cloud Storage source data location and import configuration.\n\nThe Cloud Storage location requires the `roles\/storage.objectViewer`\nCloud IAM role.\n\nEach Cloud Storage object should be a text file that contains newline\ndelimited JSON structures conforming to FHIR standard.\n\nTo improve performance, use multiple Cloud Storage objects where each\nobject contains a subset of all of the newline-delimited JSON structures.\nYou can select all of the objects using the uri as the\nprefix. The maximum number of objects is 1,000.",
           "$ref": "GoogleCloudHealthcareV1alpha2FhirRestGcsSource"
         },
         "gcsErrorDestination": {
@@ -1342,17 +1509,57 @@
         }
       }
     },
+    "DeidentifyErrorDetails": {
+      "id": "DeidentifyErrorDetails",
+      "description": "Contains the status of the Deidentify operation.",
+      "type": "object",
+      "properties": {
+        "successStoreCount": {
+          "description": "Number of stores successfully processed.",
+          "type": "string",
+          "format": "int64"
+        },
+        "failureStoreCount": {
+          "description": "Number of stores failed to process.",
+          "type": "string",
+          "format": "int64"
+        },
+        "successResourceCount": {
+          "description": "Number of resources successfully processed.",
+          "type": "string",
+          "format": "int64"
+        },
+        "failureResourceCount": {
+          "description": "Number of resources failed to process.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "DeidentifySummary": {
+      "id": "DeidentifySummary",
+      "description": "Contains a detailed summary of the Deidentify operation.",
+      "type": "object",
+      "properties": {
+        "successStoreCount": {
+          "description": "Number of stores successfully processed.",
+          "type": "string",
+          "format": "int64"
+        },
+        "successResourceCount": {
+          "description": "Number of resources successfully processed.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "ImportDicomDataErrorDetails": {
       "id": "ImportDicomDataErrorDetails",
       "description": "Returns the errors encountered during DICOM store import.",
       "type": "object",
       "properties": {
-        "dicomStore": {
-          "description": "The name of the DICOM store where the resources have been imported, in the\nformat\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`",
-          "type": "string"
-        },
         "sampleErrors": {
-          "description": "Contains sample errors encountered in imports of individual resources\n(e.g., a Cloud Storage object).",
+          "description": "Deprecated. Use only for debugging purposes.\n\nContains sample errors encountered in imports of individual resources\n(for example, a Cloud Storage object).",
           "type": "array",
           "items": {
             "$ref": "ErrorDetail"
@@ -2110,8 +2317,8 @@
                           ],
                           "description": "SearchForStudies returns a list of matching studies. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_6.7"
                         },
-                        "series": {
-                          "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.series",
+                        "searchForSeries": {
+                          "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.searchForSeries",
                           "path": "v1alpha2/{+parent}/dicomWeb/{+dicomWebPath}",
                           "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/series",
                           "httpMethod": "GET",
@@ -2143,8 +2350,8 @@
                           ],
                           "description": "SearchForSeries returns a list of matching series. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_6.7"
                         },
-                        "instances": {
-                          "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.instances",
+                        "searchForInstances": {
+                          "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.searchForInstances",
                           "path": "v1alpha2/{+parent}/dicomWeb/{+dicomWebPath}",
                           "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/instances",
                           "httpMethod": "GET",
@@ -2176,8 +2383,8 @@
                           ],
                           "description": "SearchForInstances returns a list of matching instances. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_6.7"
                         },
-                        "studies": {
-                          "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies",
+                        "storeInstances": {
+                          "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.storeInstances",
                           "path": "v1alpha2/{+parent}/dicomWeb/{+dicomWebPath}",
                           "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies",
                           "httpMethod": "POST",
@@ -2283,8 +2490,8 @@
                               ],
                               "description": "RetrieveStudyMetadata returns instance associated with the given study\npresented as metadata with the bulk data removed. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_6.5.6."
                             },
-                            "series": {
-                              "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.series",
+                            "searchForSeries": {
+                              "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.searchForSeries",
                               "path": "v1alpha2/{+parent}/dicomWeb/{+dicomWebPath}",
                               "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies/{studiesId}/series",
                               "httpMethod": "GET",
@@ -2316,8 +2523,8 @@
                               ],
                               "description": "SearchForSeries returns a list of matching series. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_6.7"
                             },
-                            "instances": {
-                              "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.instances",
+                            "searchForInstances": {
+                              "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.searchForInstances",
                               "path": "v1alpha2/{+parent}/dicomWeb/{+dicomWebPath}",
                               "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies/{studiesId}/instances",
                               "httpMethod": "GET",
@@ -2489,8 +2696,8 @@
                                   ],
                                   "description": "RetrieveSeriesMetadata returns instance associated with the given study and\nseries, presented as metadata with the bulk data removed. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_6.5.6."
                                 },
-                                "instances": {
-                                  "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.series.instances",
+                                "searchForInstances": {
+                                  "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.series.searchForInstances",
                                   "path": "v1alpha2/{+parent}/dicomWeb/{+dicomWebPath}",
                                   "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies/{studiesId}/series/{seriesId}/instances",
                                   "httpMethod": "GET",
@@ -3163,12 +3370,12 @@
                               "type": "string"
                             },
                             "filter": {
-                              "description": "Restricts messages returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\nFields\/functions available for filtering are:\n- message_type, from the MSH-9 segment, e.g. 'NOT message_type = \"ADT\"'\n- send_date or sendDate, the YYYY-MM-DD date the message was sent in the\n  dataset's time_zone, from the MSH-7 segment; e.g.\n  'send_date < \"2017-01-02\"'\n- send_time, the timestamp of when the message was sent, using the RFC3339\n  time format for comparisons, from the MSH-7 segment; e.g. 'send_time <\n  \"2017-01-02T00:00:00-05:00\"'\n- send_facility, the hospital\/trust that the message came from, from the\n  MSH-4 segment, e.g. 'send_facility = \"RAL\"'\n- HL7RegExp(expr), which does regular expression matching of expr against\n  the HL7 message payload using re2 (http:\/\/code.google.com\/p\/re2\/)\n  syntax; e.g. 'HL7RegExp(\"^.*\\|.*\\|CERNER\")'\n- PatientId(value, type), which matches if the message lists a patient\n  having an ID of the given value and type in the PID-2, PID-3, or PID-4\n  segments; e.g. 'PatientId(\"123456\", \"MRN\")'\n- labels.x, a string value of the label with key x as set using the labels\n  map in Message, e.g. 'labels.\"priority\"=\"high\"'. \":*\" can be used to\n  assert the existence of a label, e.g. 'labels.\"priority\":*'.\nNegation on the patient ID function or the labels field is not supported,\ne.g. invalid queries: 'NOT PatientId(\"123456\", \"MRN\")',\n'NOT labels.\"tag1\":*', 'NOT labels.\"tag2\"=\"val2\"'.\nConjunction of multiple patient ID functions is not supported, e.g. an\ninvalid query: 'PatientId(\"123456\", \"MRN\") AND PatientId(\"456789\", \"MRN\")'.\nConjunction of multiple labels fields is also not supported, e.g. an\ninvalid query: 'labels.\"tag1\":* AND labels.\"tag2\"=\"val2\"'.\nConjunction of one patient ID function, one labels field and other fields\nis supported, e.g. a valid query:\n'PatientId(\"123456\", \"MRN\") AND labels.\"tag1\":* AND message_type = \"ADT\"'.\nHasLabel(x) and Label(x) are deprecated.",
+                              "description": "Restricts messages returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\n\nFields\/functions available for filtering are:\n\n*  `message_type`, from the MSH-9 segment; for example\n`NOT message_type = \"ADT\"`\n*  `send_date` or `sendDate`, the YYYY-MM-DD date the message was sent in\nthe dataset's time_zone, from the MSH-7 segment; for example\n`send_date < \"2017-01-02\"`\n*  `send_time`, the timestamp of when the message was sent, using the\nRFC3339 time format for comparisons, from the MSH-7 segment; for example\n`send_time < \"2017-01-02T00:00:00-05:00\"`\n*  `send_facility`, the care center that the message came from, from the\nMSH-4 segment; for example `send_facility = \"ABC\"`\n*  `HL7RegExp(expr)`, which does regular expression matching of `expr`\nagainst the message payload using re2 (http:\/\/code.google.com\/p\/re2\/)\nsyntax; for example `HL7RegExp(\"^.*\\|.*\\|EMERG\")`\n*  `PatientId(value, type)`, which matches if the message lists a patient\nhaving an ID of the given value and type in the PID-2, PID-3, or PID-4\nsegments; for example `PatientId(\"123456\", \"MRN\")`\n*  `labels.x`, a string value of the label with key `x` as set using the\nMessage.labels\nmap, for example `labels.\"priority\"=\"high\"`. The operator `:*` can be used\nto assert the existence of a label, for example `labels.\"priority\":*`.\n\nLimitations on conjunctions:\n\n*  Negation on the patient ID function or the labels field is not\nsupported, for example these queries are invalid:\n`NOT PatientId(\"123456\", \"MRN\")`, `NOT labels.\"tag1\":*`,\n`NOT labels.\"tag2\"=\"val2\"`.\n*  Conjunction of multiple patient ID functions is not supported, for\nexample this query is invalid:\n`PatientId(\"123456\", \"MRN\") AND PatientId(\"456789\", \"MRN\")`.\n*  Conjunction of multiple labels fields is also not supported, for\nexample this query is invalid: `labels.\"tag1\":* AND labels.\"tag2\"=\"val2\"`.\n*  Conjunction of one patient ID function, one labels field and conditions\non other fields is supported, for example this query is valid:\n`PatientId(\"123456\", \"MRN\") AND labels.\"tag1\":* AND message_type = \"ADT\"`.\n\nThe HasLabel(x) and Label(x) syntax from previous API versions are\ndeprecated; replaced by the `labels.x` syntax.",
                               "location": "query",
                               "type": "string"
                             },
                             "orderBy": {
-                              "description": "Orders messages returned by the specified order_by clause.\nSyntax: https:\/\/cloud.google.com\/apis\/design\/design_patterns#sorting_order\nFields available for ordering are:\n- send_time",
+                              "description": "Orders messages returned by the specified order_by clause.\nSyntax: https:\/\/cloud.google.com\/apis\/design\/design_patterns#sorting_order\n\nFields available for ordering are:\n\n*  `send_time`",
                               "location": "query",
                               "type": "string"
                             }
@@ -3725,8 +3932,8 @@
                       ],
                       "description": "Gets the FHIR capability statement for the store, which contains a\ndescription of functionality supported by the server.\n"
                     },
-                    "fhir": {
-                      "id": "healthcare.projects.locations.datasets.fhirStores.fhir",
+                    "executeBundle": {
+                      "id": "healthcare.projects.locations.datasets.fhirStores.executeBundle",
                       "path": "v1alpha2/{+parent}/fhir",
                       "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir",
                       "httpMethod": "POST",
@@ -3779,7 +3986,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Import resources to the FHIR store by loading data from the specified\nsources.\n\nThis method returns an Operation that can\nbe used to track the status of the import by calling\nGetOperation.\n\nImmediate fatal errors appear in the\nerror field.\nOtherwise, when the operation finishes, a detailed response of type\nImportResourcesResponse is returned in the\nresponse field.\nThe metadata field type for this\noperation is OperationMetadata."
+                      "description": "Import resources to the FHIR store by loading data from the specified\nsources. Each resource must have a client-supplied ID, which is retained\nby the server.\n\nThe import operation is idempotent. Upon retry, the most recent data\n(matching the client-supplied ID) is overwritten, without creating a new\nresource version. If partial failures occur during the import, successful\nchanges are not rolled back.\n\nIf history imports are enabled\n(enable_history_import is set in the\nFHIR store's configuration), you can import historical versions of a\nresource by supplying a bundle of type `history`. The historical versions\nin the bundle must have `lastUpdated` timestamps. If a current or\nhistorical version with the supplied resource ID already exists, the\nbundle is rejected.\n\nThis method returns an Operation that can\nbe used to track the status of the import by calling\nGetOperation.\n\nImmediate fatal errors appear in the\nerror field.\nOtherwise, when the operation finishes, a detailed response of type\nImportResourcesResponse is returned in the\nresponse field.\nThe metadata field type for this\noperation is OperationMetadata."
                     },
                     "export": {
                       "id": "healthcare.projects.locations.datasets.fhirStores.export",
@@ -4331,7 +4538,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Searches resources in the given FHIR store."
+                          "description": "Searches resources in the given FHIR store.\n\n# Search Parameters\n\nThe server's capability statement, retrieved through\nGetCapabilityStatement, indicates which search\nparameters are supported on each FHIR resource.\n\n# Search Modifiers\n\nModifier   | Supported\n----------- | ---------\n`:missing`  | Yes\n`:exact`    | Yes\n`:contains` | Yes\n`:text`     | Yes\n`:in`       | Yes\n`:not-in`   | Yes\n`:above`    | Yes\n`:below`    | Yes\n`:[type]`   | Yes\n`:not`      | Yes\n`:recurse`  | No"
                         },
                         "_search": {
                           "id": "healthcare.projects.locations.datasets.fhirStores.fhir._search",
@@ -4366,7 +4573,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Searches resources in the given FHIR store."
+                          "description": "Searches resources in the given FHIR store.\n\n# Search Parameters\n\nThe server's capability statement, retrieved through\nGetCapabilityStatement, indicates which search\nparameters are supported on each FHIR resource.\n\n# Search Modifiers\n\nModifier   | Supported\n----------- | ---------\n`:missing`  | Yes\n`:exact`    | Yes\n`:contains` | Yes\n`:text`     | Yes\n`:in`       | Yes\n`:not-in`   | Yes\n`:above`    | Yes\n`:below`    | Yes\n`:[type]`   | Yes\n`:not`      | Yes\n`:recurse`  | No"
                         },
                         "_search": {
                           "id": "healthcare.projects.locations.datasets.fhirStores.fhir._search",
@@ -4394,7 +4601,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Searches resources in the given FHIR store."
+                          "description": "Searches resources in the given FHIR store.\n\n# Search Parameters\n\nThe server's capability statement, retrieved through\nGetCapabilityStatement, indicates which search\nparameters are supported on each FHIR resource.\n\n# Search Modifiers\n\nModifier   | Supported\n----------- | ---------\n`:missing`  | Yes\n`:exact`    | Yes\n`:contains` | Yes\n`:text`     | Yes\n`:in`       | Yes\n`:not-in`   | Yes\n`:above`    | Yes\n`:below`    | Yes\n`:[type]`   | Yes\n`:not`      | Yes\n`:recurse`  | No"
                         },
                         "getMetadata": {
                           "id": "healthcare.projects.locations.datasets.fhirStores.fhir.getMetadata",
@@ -4487,6 +4694,27 @@
                                   "location": "path",
                                   "required": true,
                                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+\/fhir\/[^\/]+\/[^\/]+$",
+                                  "type": "string"
+                                },
+                                "count": {
+                                  "description": "The maximum number of search results on a page.",
+                                  "location": "query",
+                                  "type": "integer",
+                                  "format": "int32"
+                                },
+                                "since": {
+                                  "description": "Only include resource versions that were created at or after the given\ninstant in time. The instant in time uses the format\nYYYY-MM-DDThh:mm:ss.sss+zz:zz (for example 2015-02-07T13:28:17.239+02:00 or\n2017-01-01T00:00:00Z). The time must be specified to the second and\ninclude a time zone.",
+                                  "location": "query",
+                                  "type": "string"
+                                },
+                                "at": {
+                                  "description": "Only include resource versions that were current at some point during the\ntime period specified in the date time value. The date parameter format is\nyyyy-mm-ddThh:mm:ss[Z|(+|-)hh:mm]\nClients may specify any of the following:\nAn entire year: `_at=2019`\nAn entire month: `_at=2019-01`\nA specific day: `_at=2019-01-20`\nA specific second: `_at=2018-12-31T23:59:58Z`",
+                                  "location": "query",
+                                  "type": "string"
+                                },
+                                "page": {
+                                  "description": "Used to retrieve the first, previous, next, or last page of resource\nversions when using pagination. Value should be set to the value of the\n`link.url` field returned in the response to the previous request, where\n`link.relation` is \"first\", \"previous\", \"next\" or \"last\".\nOmit `page` if no previous request has been made.",
+                                  "location": "query",
                                   "type": "string"
                                 }
                               },

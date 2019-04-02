@@ -48,7 +48,8 @@ class Client(object):
             description=None,
             labels=None,
             private_visibility_config=None,
-            forwarding_config=None):
+            forwarding_config=None,
+            peering_config=None):
     """Managed Zones Update Request."""
     zone = self.messages.ManagedZone(
         name=zone_ref.Name(),
@@ -59,6 +60,8 @@ class Client(object):
       zone.privateVisibilityConfig = private_visibility_config
     if forwarding_config:
       zone.forwardingConfig = forwarding_config
+    if peering_config:
+      zone.peeringConfig = peering_config
     return self._service.Patch(
         self.messages.DnsManagedZonesPatchRequest(
             managedZoneResource=zone,

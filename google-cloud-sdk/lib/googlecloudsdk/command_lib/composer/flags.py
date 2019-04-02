@@ -28,6 +28,17 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.composer import parsers
 from googlecloudsdk.core import properties
 
+
+AIRFLOW_VERSION_TYPE = arg_parsers.RegexpValidator(
+    r'^(\d+\.\d+(?:\.\d+)?)', 'must be in the form X.Y[.Z].')
+
+IMAGE_VERSION_TYPE = arg_parsers.RegexpValidator(
+    r'^composer-(\d+\.\d+\.\d+|latest)-airflow-(\d+\.\d+(?:\.\d+)?)',
+    'must be in the form \'composer-A.B.C-airflow-X.Y[.Z]\' or '
+    '\'latest\' can be provided in place of the Cloud Composer version '
+    'string. For example: \'composer-latest-airflow-1.10.0\'.')
+
+# TODO(b/118349075): Refactor global Argument definitions to be factory methods.
 ENVIRONMENT_NAME_ARG = base.Argument(
     'name', metavar='NAME', help='The name of an environment.')
 
@@ -127,6 +138,39 @@ CLEAR_ENV_VARIABLES_FLAG = base.Argument(
     the user-supplied overrides will be removed.
     """)
 
+UPDATE_AIRFLOW_VERSION_FLAG = base.Argument(
+    '--airflow-version',
+    type=AIRFLOW_VERSION_TYPE,
+    metavar='AIRFLOW_VERSION',
+    help="""\
+    Upgrade the environment to a later Airflow version in-place.
+
+    Must be of the form `X.Y[.Z]`.
+
+    The Airflow version is a semantic version. The patch version can be omitted
+    and the current version will be selected. The version numbers that are used
+    will be stored.
+    """)
+
+UPDATE_IMAGE_VERSION_FLAG = base.Argument(
+    '--image-version',
+    type=IMAGE_VERSION_TYPE,
+    metavar='IMAGE_VERSION',
+    help="""\
+    Upgrade the environment to a later version in-place.
+
+    The image version encapsulates the versions of both Cloud Composer and
+    Apache Airflow. Must be of the form `composer-A.B.C-airflow-X.Y[.Z]`.
+
+    The Cloud Composer and Airflow versions are semantic versions.
+    `latest` can be provided instead of an explicit Cloud Composer
+    version number indicating that the server will replace `latest`
+    with the current Cloud Composer version. For the Apache Airflow
+    portion, the patch version can be omitted and the current
+    version will be selected. The version numbers that are used will
+    be stored.
+    """)
+
 UPDATE_PYPI_FROM_FILE_FLAG = base.Argument(
     '--update-pypi-packages-from-file',
     help="""\
@@ -185,6 +229,45 @@ REMOVE_PYPI_PACKAGES_FLAG = base.Argument(
     `--clear-pypi-packages` flags.
     """)
 
+ENABLE_PRIVATE_ENVIRONMENT_FLAG = base.Argument(
+    '--enable-private-environment',
+    default=None,
+    action='store_true',
+    help="""\
+    Environment cluster is created with no public IP addresses on the cluster
+    nodes.
+
+    If not specified, cluster nodes will be assigned public IP addresses.
+    """)
+
+ENABLE_PRIVATE_ENDPOINT_FLAG = base.Argument(
+    '--enable-private-endpoint',
+    default=None,
+    action='store_true',
+    help="""\
+    Environment cluster is managed using the private IP address of the master
+    API endpoint. Therefore access to the master endpoint must be from
+    internal IP addresses.
+
+    If not specified, the master API endpoint will be accessible by its public
+    IP address.
+
+    Cannot be specified unless '--enable-private-environnment' is also
+    specified.
+    """)
+
+MASTER_IPV4_CIDR_FLAG = base.Argument(
+    '--master-ipv4-cidr',
+    type=str,
+    default=None,
+    help="""\
+    IPv4 CIDR range to use for the master network. This should have a netmask
+    of size /28.
+
+    Cannot be specified unless '--enable-private-environnment' is also
+    specified.
+    """)
+
 
 def AddImportSourceFlag(parser, folder):
   """Adds a --source flag for a storage import command to a parser.
@@ -217,11 +300,11 @@ def AddImportDestinationFlag(parser, folder):
       metavar='DESTINATION',
       required=False,
       help="""\
-      An optional subdirectory under the {}/ directory in the environment's Cloud
-      Storage bucket into which to import files. May contain forward slashes to
-      delimit multiple levels of subdirectory nesting, but should not contain
-      leading or trailing slashes. If the DESTINATION does not exist, it will be
-      created.
+      An optional subdirectory under the {}/ directory in the environment's
+      Cloud Storage bucket into which to import files. May contain forward
+      slashes to delimit multiple levels of subdirectory nesting, but should not
+      contain leading or trailing slashes. If the DESTINATION does not exist, it
+      will be created.
       """.format(folder)).AddToParser(parser)
 
 
@@ -367,6 +450,21 @@ def AddNodeCountUpdateFlagToGroup(update_type_group):
       help='The new number of nodes running the Environment. Must be >= 3.')
 
 
+def AddPrivateEnvironmentFlags(update_type_group):
+  """Adds flags related to private clusters to parser.
+
+  Private cluster flags are related to similar flags found within GKE SDK:
+    /third_party/py/googlecloudsdk/command_lib/container/flags.py
+
+  Args:
+    update_type_group: argument group, the group to which flag should be added.
+  """
+  group = update_type_group.add_group(help='Private Clusters')
+  ENABLE_PRIVATE_ENVIRONMENT_FLAG.AddToParser(group)
+  ENABLE_PRIVATE_ENDPOINT_FLAG.AddToParser(group)
+  MASTER_IPV4_CIDR_FLAG.AddToParser(group)
+
+
 def AddPypiUpdateFlagsToGroup(update_type_group):
   """Adds flag related to setting Pypi updates.
 
@@ -400,6 +498,24 @@ def AddAirflowConfigUpdateFlagsToGroup(update_type_group):
   _AddPartialDictUpdateFlagsToGroup(
       update_type_group, CLEAR_AIRFLOW_CONFIGS_FLAG,
       REMOVE_AIRFLOW_CONFIGS_FLAG, UPDATE_AIRFLOW_CONFIGS_FLAG)
+
+
+def AddAirflowVersionUpdateFlagsToGroup(update_type_group):
+  """Adds flags to perform in-place env upgrades based on Airflow Version input.
+
+  Args:
+    update_type_group: argument group, the group to which flags should be added.
+  """
+  UPDATE_AIRFLOW_VERSION_FLAG.AddToParser(update_type_group)
+
+
+def AddImageVersionUpdateFlagsToGroup(update_type_group):
+  """Adds flags to perform in-place env upgrades based on Image Version input.
+
+  Args:
+    update_type_group: argument group, the group to which flags should be added.
+  """
+  UPDATE_IMAGE_VERSION_FLAG.AddToParser(update_type_group)
 
 
 def FallthroughToLocationProperty(location_refs, flag_name, failure_msg):

@@ -5,7 +5,7 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20190304",
+ "revision": "20190326",
  "title": "Cloud SQL Admin API",
  "description": "Creates and manages Cloud SQL instances, which provide fully managed MySQL or PostgreSQL databases.",
  "ownerDomain": "google.com",
@@ -369,6 +369,14 @@
      "type": "string",
      "description": "The database engine type and version. The databaseVersion field can not be changed after instance creation. MySQL Second Generation instances: MYSQL_5_7 (default) or MYSQL_5_6. PostgreSQL instances: POSTGRES_9_6 MySQL First Generation instances: MYSQL_5_6 (default) or MYSQL_5_5"
     },
+    "diskEncryptionConfiguration": {
+     "$ref": "DiskEncryptionConfiguration",
+     "description": "Disk encryption configuration specific to an instance. Applies only to Second Generation instances."
+    },
+    "diskEncryptionStatus": {
+     "$ref": "DiskEncryptionStatus",
+     "description": "Disk encryption status specific to an instance. Applies only to Second Generation instances."
+    },
     "etag": {
      "type": "string",
      "description": "This field is deprecated and will be removed from a future version of the API. Use the settings.settingsVersion field instead."
@@ -575,6 +583,38 @@
     "username": {
      "type": "string",
      "description": "The username for the replication connection."
+    }
+   }
+  },
+  "DiskEncryptionConfiguration": {
+   "id": "DiskEncryptionConfiguration",
+   "type": "object",
+   "description": "Disk encryption configuration.",
+   "properties": {
+    "kind": {
+     "type": "string",
+     "description": "This is always sql#diskEncryptionConfiguration.",
+     "default": "sql#diskEncryptionConfiguration"
+    },
+    "kmsKeyName": {
+     "type": "string",
+     "description": "KMS key resource name"
+    }
+   }
+  },
+  "DiskEncryptionStatus": {
+   "id": "DiskEncryptionStatus",
+   "type": "object",
+   "description": "Disk encryption status.",
+   "properties": {
+    "kind": {
+     "type": "string",
+     "description": "This is always sql#diskEncryptionStatus.",
+     "default": "sql#diskEncryptionStatus"
+    },
+    "kmsKeyVersionName": {
+     "type": "string",
+     "description": "KMS key version used to encrypt the Cloud SQL instance disk"
     }
    }
   },

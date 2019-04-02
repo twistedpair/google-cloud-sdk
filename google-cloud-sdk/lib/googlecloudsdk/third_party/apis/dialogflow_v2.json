@@ -1458,7 +1458,7 @@
           "format": "int32"
         },
         "languageCode": {
-          "description": "Required. The language of the supplied audio. Dialogflow does not do\ntranslations. See [Language\nSupport](https:\/\/cloud.google.com\/dialogflow-enterprise\/docs\/reference\/languages)\nfor a list of the currently supported language codes. Note that queries in\nthe same session do not necessarily need to specify the same language.",
+          "description": "Required. The language of the supplied audio. Dialogflow does not do\ntranslations. See [Language\nSupport](https:\/\/cloud.google.com\/dialogflow-enterprise\/docs\/reference\/language)\nfor a list of the currently supported language codes. Note that queries in\nthe same session do not necessarily need to specify the same language.",
           "type": "string"
         },
         "phraseHints": {
@@ -1741,8 +1741,8 @@
         }
       }
     },
-    "BatchUpdateEntityTypesResponse_": {
-      "id": "BatchUpdateEntityTypesResponse_",
+    "GoogleCloudDialogflowV2beta1BatchUpdateEntityTypesResponse": {
+      "id": "GoogleCloudDialogflowV2beta1BatchUpdateEntityTypesResponse",
       "description": "The response message for EntityTypes.BatchUpdateEntityTypes.",
       "type": "object",
       "properties": {
@@ -1750,13 +1750,13 @@
           "description": "The collection of updated or created entity types.",
           "type": "array",
           "items": {
-            "$ref": "EntityType_"
+            "$ref": "GoogleCloudDialogflowV2beta1EntityType"
           }
         }
       }
     },
-    "EntityType_": {
-      "id": "EntityType_",
+    "GoogleCloudDialogflowV2beta1EntityType": {
+      "id": "GoogleCloudDialogflowV2beta1EntityType",
       "description": "Represents an entity type.\nEntity types serve as a tool for extracting parameter values from natural\nlanguage queries.",
       "type": "object",
       "properties": {
@@ -1798,13 +1798,13 @@
           "description": "Optional. The collection of entity entries associated with the entity type.",
           "type": "array",
           "items": {
-            "$ref": "EntityTypeEntity_"
+            "$ref": "GoogleCloudDialogflowV2beta1EntityTypeEntity"
           }
         }
       }
     },
-    "EntityTypeEntity_": {
-      "id": "EntityTypeEntity_",
+    "GoogleCloudDialogflowV2beta1EntityTypeEntity": {
+      "id": "GoogleCloudDialogflowV2beta1EntityTypeEntity",
       "description": "An **entity entry** for an associated entity type.",
       "type": "object",
       "properties": {
@@ -1821,8 +1821,8 @@
         }
       }
     },
-    "BatchUpdateIntentsResponse_": {
-      "id": "BatchUpdateIntentsResponse_",
+    "GoogleCloudDialogflowV2beta1BatchUpdateIntentsResponse": {
+      "id": "GoogleCloudDialogflowV2beta1BatchUpdateIntentsResponse",
       "description": "The response message for Intents.BatchUpdateIntents.",
       "type": "object",
       "properties": {
@@ -1830,13 +1830,13 @@
           "description": "The collection of updated or created intents.",
           "type": "array",
           "items": {
-            "$ref": "Intent_"
+            "$ref": "GoogleCloudDialogflowV2beta1Intent"
           }
         }
       }
     },
-    "Intent_": {
-      "id": "Intent_",
+    "GoogleCloudDialogflowV2beta1Intent": {
+      "id": "GoogleCloudDialogflowV2beta1Intent",
       "description": "Represents an intent.\nIntents convert a number of user expressions or patterns into an action. An\naction is an extraction of a user command or sentence semantics.",
       "type": "object",
       "properties": {
@@ -1901,7 +1901,7 @@
           "description": "Optional. The collection of examples that the agent is\ntrained on.",
           "type": "array",
           "items": {
-            "$ref": "IntentTrainingPhrase_"
+            "$ref": "GoogleCloudDialogflowV2beta1IntentTrainingPhrase"
           }
         },
         "action": {
@@ -1912,7 +1912,7 @@
           "description": "Optional. The collection of contexts that are activated when the intent\nis matched. Context messages in this collection should not set the\nparameters field. Setting the `lifespan_count` to 0 will reset the context\nwhen the intent is matched.\nFormat: `projects\/<Project ID>\/agent\/sessions\/-\/contexts\/<Context ID>`.",
           "type": "array",
           "items": {
-            "$ref": "Context_"
+            "$ref": "GoogleCloudDialogflowV2beta1Context"
           }
         },
         "resetContexts": {
@@ -1923,14 +1923,14 @@
           "description": "Optional. The collection of parameters associated with the intent.",
           "type": "array",
           "items": {
-            "$ref": "IntentParameter_"
+            "$ref": "GoogleCloudDialogflowV2beta1IntentParameter"
           }
         },
         "messages": {
           "description": "Optional. The collection of rich messages corresponding to the\n`Response` field in the Dialogflow console.",
           "type": "array",
           "items": {
-            "$ref": "IntentMessage_"
+            "$ref": "GoogleCloudDialogflowV2beta1IntentMessage"
           }
         },
         "defaultResponsePlatforms": {
@@ -1976,13 +1976,13 @@
           "description": "Read-only. Information about all followup intents that have this intent as\na direct or indirect parent. We populate this field only in the output.",
           "type": "array",
           "items": {
-            "$ref": "IntentFollowupIntentInfo_"
+            "$ref": "GoogleCloudDialogflowV2beta1IntentFollowupIntentInfo"
           }
         }
       }
     },
-    "IntentTrainingPhrase_": {
-      "id": "IntentTrainingPhrase_",
+    "GoogleCloudDialogflowV2beta1IntentTrainingPhrase": {
+      "id": "GoogleCloudDialogflowV2beta1IntentTrainingPhrase",
       "description": "Represents an example that the agent is trained on.",
       "type": "object",
       "properties": {
@@ -2008,7 +2008,7 @@
           "description": "Required. The ordered list of training phrase parts.\nThe parts are concatenated in order to form the training phrase.\n\nNote: The API does not automatically annotate training phrases like the\nDialogflow Console does.\n\nNote: Do not forget to include whitespace at part boundaries,\nso the training phrase is well formatted when the parts are concatenated.\n\nIf the training phrase does not need to be annotated with parameters,\nyou just need a single part with only the Part.text field set.\n\nIf you want to annotate the training phrase, you must create multiple\nparts, where the fields of each part are populated in one of two ways:\n\n-   `Part.text` is set to a part of the phrase that has no parameters.\n-   `Part.text` is set to a part of the phrase that you want to annotate,\n    and the `entity_type`, `alias`, and `user_defined` fields are all\n    set.",
           "type": "array",
           "items": {
-            "$ref": "IntentTrainingPhrasePart_"
+            "$ref": "GoogleCloudDialogflowV2beta1IntentTrainingPhrasePart"
           }
         },
         "timesAddedCount": {
@@ -2018,8 +2018,8 @@
         }
       }
     },
-    "IntentTrainingPhrasePart_": {
-      "id": "IntentTrainingPhrasePart_",
+    "GoogleCloudDialogflowV2beta1IntentTrainingPhrasePart": {
+      "id": "GoogleCloudDialogflowV2beta1IntentTrainingPhrasePart",
       "description": "Represents a part of a training phrase.",
       "type": "object",
       "properties": {
@@ -2041,8 +2041,8 @@
         }
       }
     },
-    "Context_": {
-      "id": "Context_",
+    "GoogleCloudDialogflowV2beta1Context": {
+      "id": "GoogleCloudDialogflowV2beta1Context",
       "description": "Represents a context.",
       "type": "object",
       "properties": {
@@ -2065,8 +2065,8 @@
         }
       }
     },
-    "IntentParameter_": {
-      "id": "IntentParameter_",
+    "GoogleCloudDialogflowV2beta1IntentParameter": {
+      "id": "GoogleCloudDialogflowV2beta1IntentParameter",
       "description": "Represents intent parameters.",
       "type": "object",
       "properties": {
@@ -2107,26 +2107,26 @@
         }
       }
     },
-    "IntentMessage_": {
-      "id": "IntentMessage_",
+    "GoogleCloudDialogflowV2beta1IntentMessage": {
+      "id": "GoogleCloudDialogflowV2beta1IntentMessage",
       "description": "Corresponds to the `Response` field in the Dialogflow console.",
       "type": "object",
       "properties": {
         "text": {
           "description": "Returns a text response.",
-          "$ref": "IntentMessageText_"
+          "$ref": "GoogleCloudDialogflowV2beta1IntentMessageText"
         },
         "image": {
           "description": "Displays an image.",
-          "$ref": "IntentMessageImage_"
+          "$ref": "GoogleCloudDialogflowV2beta1IntentMessageImage"
         },
         "quickReplies": {
           "description": "Displays quick replies.",
-          "$ref": "IntentMessageQuickReplies_"
+          "$ref": "GoogleCloudDialogflowV2beta1IntentMessageQuickReplies"
         },
         "card": {
           "description": "Displays a card.",
-          "$ref": "IntentMessageCard_"
+          "$ref": "GoogleCloudDialogflowV2beta1IntentMessageCard"
         },
         "payload": {
           "description": "Returns a response containing a custom, platform-specific payload.\nSee the Intent.Message.Platform type for a description of the\nstructure that may be required for your platform.",
@@ -2138,39 +2138,39 @@
         },
         "simpleResponses": {
           "description": "Returns a voice or text-only response for Actions on Google.",
-          "$ref": "IntentMessageSimpleResponses_"
+          "$ref": "GoogleCloudDialogflowV2beta1IntentMessageSimpleResponses"
         },
         "basicCard": {
           "description": "Displays a basic card for Actions on Google.",
-          "$ref": "IntentMessageBasicCard_"
+          "$ref": "GoogleCloudDialogflowV2beta1IntentMessageBasicCard"
         },
         "suggestions": {
           "description": "Displays suggestion chips for Actions on Google.",
-          "$ref": "IntentMessageSuggestions_"
+          "$ref": "GoogleCloudDialogflowV2beta1IntentMessageSuggestions"
         },
         "linkOutSuggestion": {
           "description": "Displays a link out suggestion chip for Actions on Google.",
-          "$ref": "IntentMessageLinkOutSuggestion_"
+          "$ref": "GoogleCloudDialogflowV2beta1IntentMessageLinkOutSuggestion"
         },
         "listSelect": {
           "description": "Displays a list card for Actions on Google.",
-          "$ref": "IntentMessageListSelect_"
+          "$ref": "GoogleCloudDialogflowV2beta1IntentMessageListSelect"
         },
         "carouselSelect": {
           "description": "Displays a carousel card for Actions on Google.",
-          "$ref": "IntentMessageCarouselSelect_"
+          "$ref": "GoogleCloudDialogflowV2beta1IntentMessageCarouselSelect"
         },
         "telephonyPlayAudio": {
           "description": "Plays audio from a file in Telephony Gateway.",
-          "$ref": "IntentMessageTelephonyPlayAudio_"
+          "$ref": "GoogleCloudDialogflowV2beta1IntentMessageTelephonyPlayAudio"
         },
         "telephonySynthesizeSpeech": {
           "description": "Synthesizes speech in Telephony Gateway.",
-          "$ref": "IntentMessageTelephonySynthesizeSpeech_"
+          "$ref": "GoogleCloudDialogflowV2beta1IntentMessageTelephonySynthesizeSpeech"
         },
         "telephonyTransferCall": {
           "description": "Transfers the call in Telephony Gateway.",
-          "$ref": "IntentMessageTelephonyTransferCall_"
+          "$ref": "GoogleCloudDialogflowV2beta1IntentMessageTelephonyTransferCall"
         },
         "platform": {
           "description": "Optional. The platform that this message is intended for.",
@@ -2202,8 +2202,8 @@
         }
       }
     },
-    "IntentMessageText_": {
-      "id": "IntentMessageText_",
+    "GoogleCloudDialogflowV2beta1IntentMessageText": {
+      "id": "GoogleCloudDialogflowV2beta1IntentMessageText",
       "description": "The text response message.",
       "type": "object",
       "properties": {
@@ -2216,8 +2216,8 @@
         }
       }
     },
-    "IntentMessageImage_": {
-      "id": "IntentMessageImage_",
+    "GoogleCloudDialogflowV2beta1IntentMessageImage": {
+      "id": "GoogleCloudDialogflowV2beta1IntentMessageImage",
       "description": "The image response message.",
       "type": "object",
       "properties": {
@@ -2231,8 +2231,8 @@
         }
       }
     },
-    "IntentMessageQuickReplies_": {
-      "id": "IntentMessageQuickReplies_",
+    "GoogleCloudDialogflowV2beta1IntentMessageQuickReplies": {
+      "id": "GoogleCloudDialogflowV2beta1IntentMessageQuickReplies",
       "description": "The quick replies response message.",
       "type": "object",
       "properties": {
@@ -2249,8 +2249,8 @@
         }
       }
     },
-    "IntentMessageCard_": {
-      "id": "IntentMessageCard_",
+    "GoogleCloudDialogflowV2beta1IntentMessageCard": {
+      "id": "GoogleCloudDialogflowV2beta1IntentMessageCard",
       "description": "The card response message.",
       "type": "object",
       "properties": {
@@ -2270,13 +2270,13 @@
           "description": "Optional. The collection of card buttons.",
           "type": "array",
           "items": {
-            "$ref": "IntentMessageCardButton_"
+            "$ref": "GoogleCloudDialogflowV2beta1IntentMessageCardButton"
           }
         }
       }
     },
-    "IntentMessageCardButton_": {
-      "id": "IntentMessageCardButton_",
+    "GoogleCloudDialogflowV2beta1IntentMessageCardButton": {
+      "id": "GoogleCloudDialogflowV2beta1IntentMessageCardButton",
       "description": "Optional. Contains information about a button.",
       "type": "object",
       "properties": {
@@ -2290,8 +2290,8 @@
         }
       }
     },
-    "IntentMessageSimpleResponses_": {
-      "id": "IntentMessageSimpleResponses_",
+    "GoogleCloudDialogflowV2beta1IntentMessageSimpleResponses": {
+      "id": "GoogleCloudDialogflowV2beta1IntentMessageSimpleResponses",
       "description": "The collection of simple response candidates.\nThis message in `QueryResult.fulfillment_messages` and\n`WebhookResponse.fulfillment_messages` should contain only one\n`SimpleResponse`.",
       "type": "object",
       "properties": {
@@ -2299,13 +2299,13 @@
           "description": "Required. The list of simple responses.",
           "type": "array",
           "items": {
-            "$ref": "IntentMessageSimpleResponse_"
+            "$ref": "GoogleCloudDialogflowV2beta1IntentMessageSimpleResponse"
           }
         }
       }
     },
-    "IntentMessageSimpleResponse_": {
-      "id": "IntentMessageSimpleResponse_",
+    "GoogleCloudDialogflowV2beta1IntentMessageSimpleResponse": {
+      "id": "GoogleCloudDialogflowV2beta1IntentMessageSimpleResponse",
       "description": "The simple response message containing speech or text.",
       "type": "object",
       "properties": {
@@ -2323,8 +2323,8 @@
         }
       }
     },
-    "IntentMessageBasicCard_": {
-      "id": "IntentMessageBasicCard_",
+    "GoogleCloudDialogflowV2beta1IntentMessageBasicCard": {
+      "id": "GoogleCloudDialogflowV2beta1IntentMessageBasicCard",
       "description": "The basic card message. Useful for displaying information.",
       "type": "object",
       "properties": {
@@ -2342,19 +2342,19 @@
         },
         "image": {
           "description": "Optional. The image for the card.",
-          "$ref": "IntentMessageImage_"
+          "$ref": "GoogleCloudDialogflowV2beta1IntentMessageImage"
         },
         "buttons": {
           "description": "Optional. The collection of card buttons.",
           "type": "array",
           "items": {
-            "$ref": "IntentMessageBasicCardButton_"
+            "$ref": "GoogleCloudDialogflowV2beta1IntentMessageBasicCardButton"
           }
         }
       }
     },
-    "IntentMessageBasicCardButton_": {
-      "id": "IntentMessageBasicCardButton_",
+    "GoogleCloudDialogflowV2beta1IntentMessageBasicCardButton": {
+      "id": "GoogleCloudDialogflowV2beta1IntentMessageBasicCardButton",
       "description": "The button object that appears at the bottom of a card.",
       "type": "object",
       "properties": {
@@ -2364,12 +2364,12 @@
         },
         "openUriAction": {
           "description": "Required. Action to take when a user taps on the button.",
-          "$ref": "IntentMessageBasicCardButtonOpenUriAction_"
+          "$ref": "GoogleCloudDialogflowV2beta1IntentMessageBasicCardButtonOpenUriAction"
         }
       }
     },
-    "IntentMessageBasicCardButtonOpenUriAction_": {
-      "id": "IntentMessageBasicCardButtonOpenUriAction_",
+    "GoogleCloudDialogflowV2beta1IntentMessageBasicCardButtonOpenUriAction": {
+      "id": "GoogleCloudDialogflowV2beta1IntentMessageBasicCardButtonOpenUriAction",
       "description": "Opens the given URI.",
       "type": "object",
       "properties": {
@@ -2379,8 +2379,8 @@
         }
       }
     },
-    "IntentMessageSuggestions_": {
-      "id": "IntentMessageSuggestions_",
+    "GoogleCloudDialogflowV2beta1IntentMessageSuggestions": {
+      "id": "GoogleCloudDialogflowV2beta1IntentMessageSuggestions",
       "description": "The collection of suggestions.",
       "type": "object",
       "properties": {
@@ -2388,13 +2388,13 @@
           "description": "Required. The list of suggested replies.",
           "type": "array",
           "items": {
-            "$ref": "IntentMessageSuggestion_"
+            "$ref": "GoogleCloudDialogflowV2beta1IntentMessageSuggestion"
           }
         }
       }
     },
-    "IntentMessageSuggestion_": {
-      "id": "IntentMessageSuggestion_",
+    "GoogleCloudDialogflowV2beta1IntentMessageSuggestion": {
+      "id": "GoogleCloudDialogflowV2beta1IntentMessageSuggestion",
       "description": "The suggestion chip message that the user can tap to quickly post a reply\nto the conversation.",
       "type": "object",
       "properties": {
@@ -2404,8 +2404,8 @@
         }
       }
     },
-    "IntentMessageLinkOutSuggestion_": {
-      "id": "IntentMessageLinkOutSuggestion_",
+    "GoogleCloudDialogflowV2beta1IntentMessageLinkOutSuggestion": {
+      "id": "GoogleCloudDialogflowV2beta1IntentMessageLinkOutSuggestion",
       "description": "The suggestion chip message that allows the user to jump out to the app\nor website associated with this agent.",
       "type": "object",
       "properties": {
@@ -2419,8 +2419,8 @@
         }
       }
     },
-    "IntentMessageListSelect_": {
-      "id": "IntentMessageListSelect_",
+    "GoogleCloudDialogflowV2beta1IntentMessageListSelect": {
+      "id": "GoogleCloudDialogflowV2beta1IntentMessageListSelect",
       "description": "The card for presenting a list of options to select from.",
       "type": "object",
       "properties": {
@@ -2432,19 +2432,19 @@
           "description": "Required. List items.",
           "type": "array",
           "items": {
-            "$ref": "IntentMessageListSelectItem_"
+            "$ref": "GoogleCloudDialogflowV2beta1IntentMessageListSelectItem"
           }
         }
       }
     },
-    "IntentMessageListSelectItem_": {
-      "id": "IntentMessageListSelectItem_",
+    "GoogleCloudDialogflowV2beta1IntentMessageListSelectItem": {
+      "id": "GoogleCloudDialogflowV2beta1IntentMessageListSelectItem",
       "description": "An item in the list.",
       "type": "object",
       "properties": {
         "info": {
           "description": "Required. Additional information about this option.",
-          "$ref": "IntentMessageSelectItemInfo_"
+          "$ref": "GoogleCloudDialogflowV2beta1IntentMessageSelectItemInfo"
         },
         "title": {
           "description": "Required. The title of the list item.",
@@ -2456,12 +2456,12 @@
         },
         "image": {
           "description": "Optional. The image to display.",
-          "$ref": "IntentMessageImage_"
+          "$ref": "GoogleCloudDialogflowV2beta1IntentMessageImage"
         }
       }
     },
-    "IntentMessageSelectItemInfo_": {
-      "id": "IntentMessageSelectItemInfo_",
+    "GoogleCloudDialogflowV2beta1IntentMessageSelectItemInfo": {
+      "id": "GoogleCloudDialogflowV2beta1IntentMessageSelectItemInfo",
       "description": "Additional info about the select item for when it is triggered in a\ndialog.",
       "type": "object",
       "properties": {
@@ -2478,8 +2478,8 @@
         }
       }
     },
-    "IntentMessageCarouselSelect_": {
-      "id": "IntentMessageCarouselSelect_",
+    "GoogleCloudDialogflowV2beta1IntentMessageCarouselSelect": {
+      "id": "GoogleCloudDialogflowV2beta1IntentMessageCarouselSelect",
       "description": "The card for presenting a carousel of options to select from.",
       "type": "object",
       "properties": {
@@ -2487,19 +2487,19 @@
           "description": "Required. Carousel items.",
           "type": "array",
           "items": {
-            "$ref": "IntentMessageCarouselSelectItem_"
+            "$ref": "GoogleCloudDialogflowV2beta1IntentMessageCarouselSelectItem"
           }
         }
       }
     },
-    "IntentMessageCarouselSelectItem_": {
-      "id": "IntentMessageCarouselSelectItem_",
+    "GoogleCloudDialogflowV2beta1IntentMessageCarouselSelectItem": {
+      "id": "GoogleCloudDialogflowV2beta1IntentMessageCarouselSelectItem",
       "description": "An item in the carousel.",
       "type": "object",
       "properties": {
         "info": {
           "description": "Required. Additional info about the option item.",
-          "$ref": "IntentMessageSelectItemInfo_"
+          "$ref": "GoogleCloudDialogflowV2beta1IntentMessageSelectItemInfo"
         },
         "title": {
           "description": "Required. Title of the carousel item.",
@@ -2511,12 +2511,12 @@
         },
         "image": {
           "description": "Optional. The image to display.",
-          "$ref": "IntentMessageImage_"
+          "$ref": "GoogleCloudDialogflowV2beta1IntentMessageImage"
         }
       }
     },
-    "IntentMessageTelephonyPlayAudio_": {
-      "id": "IntentMessageTelephonyPlayAudio_",
+    "GoogleCloudDialogflowV2beta1IntentMessageTelephonyPlayAudio": {
+      "id": "GoogleCloudDialogflowV2beta1IntentMessageTelephonyPlayAudio",
       "description": "Plays audio from a file in Telephony Gateway.",
       "type": "object",
       "properties": {
@@ -2526,8 +2526,8 @@
         }
       }
     },
-    "IntentMessageTelephonySynthesizeSpeech_": {
-      "id": "IntentMessageTelephonySynthesizeSpeech_",
+    "GoogleCloudDialogflowV2beta1IntentMessageTelephonySynthesizeSpeech": {
+      "id": "GoogleCloudDialogflowV2beta1IntentMessageTelephonySynthesizeSpeech",
       "description": "Synthesizes speech and plays back the synthesized audio to the caller in\nTelephony Gateway.\n\nTelephony Gateway takes the synthesizer settings from\n`DetectIntentResponse.output_audio_config` which can either be set\nat request-level or can come from the agent-level synthesizer config.",
       "type": "object",
       "properties": {
@@ -2541,8 +2541,8 @@
         }
       }
     },
-    "IntentMessageTelephonyTransferCall_": {
-      "id": "IntentMessageTelephonyTransferCall_",
+    "GoogleCloudDialogflowV2beta1IntentMessageTelephonyTransferCall": {
+      "id": "GoogleCloudDialogflowV2beta1IntentMessageTelephonyTransferCall",
       "description": "Transfers the call in Telephony Gateway.",
       "type": "object",
       "properties": {
@@ -2552,8 +2552,8 @@
         }
       }
     },
-    "IntentFollowupIntentInfo_": {
-      "id": "IntentFollowupIntentInfo_",
+    "GoogleCloudDialogflowV2beta1IntentFollowupIntentInfo": {
+      "id": "GoogleCloudDialogflowV2beta1IntentFollowupIntentInfo",
       "description": "Represents a single followup intent in the chain.",
       "type": "object",
       "properties": {
@@ -2567,8 +2567,8 @@
         }
       }
     },
-    "ExportAgentResponse_": {
-      "id": "ExportAgentResponse_",
+    "GoogleCloudDialogflowV2beta1ExportAgentResponse": {
+      "id": "GoogleCloudDialogflowV2beta1ExportAgentResponse",
       "description": "The response message for Agents.ExportAgent.",
       "type": "object",
       "properties": {
@@ -2583,8 +2583,8 @@
         }
       }
     },
-    "KnowledgeOperationMetadata_": {
-      "id": "KnowledgeOperationMetadata_",
+    "GoogleCloudDialogflowV2beta1KnowledgeOperationMetadata": {
+      "id": "GoogleCloudDialogflowV2beta1KnowledgeOperationMetadata",
       "description": "Metadata in google::longrunning::Operation for Knowledge operations.",
       "type": "object",
       "properties": {
@@ -2606,8 +2606,8 @@
         }
       }
     },
-    "OriginalDetectIntentRequest_": {
-      "id": "OriginalDetectIntentRequest_",
+    "GoogleCloudDialogflowV2beta1OriginalDetectIntentRequest": {
+      "id": "GoogleCloudDialogflowV2beta1OriginalDetectIntentRequest",
       "description": "Represents the contents of the original request that was passed to\nthe `[Streaming]DetectIntent` call.",
       "type": "object",
       "properties": {
@@ -2629,8 +2629,8 @@
         }
       }
     },
-    "WebhookRequest_": {
-      "id": "WebhookRequest_",
+    "GoogleCloudDialogflowV2beta1WebhookRequest": {
+      "id": "GoogleCloudDialogflowV2beta1WebhookRequest",
       "description": "The request message for a webhook call.",
       "type": "object",
       "properties": {
@@ -2644,23 +2644,23 @@
         },
         "queryResult": {
           "description": "The result of the conversational query or event processing. Contains the\nsame value as `[Streaming]DetectIntentResponse.query_result`.",
-          "$ref": "QueryResult_"
+          "$ref": "GoogleCloudDialogflowV2beta1QueryResult"
         },
         "alternativeQueryResults": {
           "description": "Alternative query results from KnowledgeService.",
           "type": "array",
           "items": {
-            "$ref": "QueryResult_"
+            "$ref": "GoogleCloudDialogflowV2beta1QueryResult"
           }
         },
         "originalDetectIntentRequest": {
           "description": "Optional. The contents of the original request that was passed to\n`[Streaming]DetectIntent` call.",
-          "$ref": "OriginalDetectIntentRequest_"
+          "$ref": "GoogleCloudDialogflowV2beta1OriginalDetectIntentRequest"
         }
       }
     },
-    "QueryResult_": {
-      "id": "QueryResult_",
+    "GoogleCloudDialogflowV2beta1QueryResult": {
+      "id": "GoogleCloudDialogflowV2beta1QueryResult",
       "description": "Represents the result of conversational query or event processing.",
       "type": "object",
       "properties": {
@@ -2701,7 +2701,7 @@
           "description": "The collection of rich messages to present to the user.",
           "type": "array",
           "items": {
-            "$ref": "IntentMessage_"
+            "$ref": "GoogleCloudDialogflowV2beta1IntentMessage"
           }
         },
         "webhookSource": {
@@ -2720,12 +2720,12 @@
           "description": "The collection of output contexts. If applicable,\n`output_contexts.parameters` contains entries with name\n`<parameter name>.original` containing the original parameter values\nbefore the query.",
           "type": "array",
           "items": {
-            "$ref": "Context_"
+            "$ref": "GoogleCloudDialogflowV2beta1Context"
           }
         },
         "intent": {
           "description": "The intent that matched the conversational query. Some, not\nall fields are filled in this message, including but not limited to:\n`name`, `display_name` and `webhook_state`.",
-          "$ref": "Intent_"
+          "$ref": "GoogleCloudDialogflowV2beta1Intent"
         },
         "intentDetectionConfidence": {
           "description": "The intent detection confidence. Values range from 0.0\n(completely uncertain) to 1.0 (completely certain).\nIf there are `multiple knowledge_answers` messages, this value is set to\nthe greatest `knowledgeAnswers.match_confidence` value in the list.",
@@ -2742,27 +2742,27 @@
         },
         "sentimentAnalysisResult": {
           "description": "The sentiment analysis result, which depends on the\n`sentiment_analysis_request_config` specified in the request.",
-          "$ref": "SentimentAnalysisResult_"
+          "$ref": "GoogleCloudDialogflowV2beta1SentimentAnalysisResult"
         },
         "knowledgeAnswers": {
           "description": "The result from Knowledge Connector (if any), ordered by decreasing\n`KnowledgeAnswers.match_confidence`.",
-          "$ref": "KnowledgeAnswers_"
+          "$ref": "GoogleCloudDialogflowV2beta1KnowledgeAnswers"
         }
       }
     },
-    "SentimentAnalysisResult_": {
-      "id": "SentimentAnalysisResult_",
+    "GoogleCloudDialogflowV2beta1SentimentAnalysisResult": {
+      "id": "GoogleCloudDialogflowV2beta1SentimentAnalysisResult",
       "description": "The result of sentiment analysis as configured by\n`sentiment_analysis_request_config`.",
       "type": "object",
       "properties": {
         "queryTextSentiment": {
           "description": "The sentiment analysis result for `query_text`.",
-          "$ref": "Sentiment_"
+          "$ref": "GoogleCloudDialogflowV2beta1Sentiment"
         }
       }
     },
-    "Sentiment_": {
-      "id": "Sentiment_",
+    "GoogleCloudDialogflowV2beta1Sentiment": {
+      "id": "GoogleCloudDialogflowV2beta1Sentiment",
       "description": "The sentiment, such as positive\/negative feeling or association, for a unit\nof analysis, such as the query text.",
       "type": "object",
       "properties": {
@@ -2778,8 +2778,8 @@
         }
       }
     },
-    "KnowledgeAnswers_": {
-      "id": "KnowledgeAnswers_",
+    "GoogleCloudDialogflowV2beta1KnowledgeAnswers": {
+      "id": "GoogleCloudDialogflowV2beta1KnowledgeAnswers",
       "description": "Represents the result of querying a Knowledge base.",
       "type": "object",
       "properties": {
@@ -2787,13 +2787,13 @@
           "description": "A list of answers from Knowledge Connector.",
           "type": "array",
           "items": {
-            "$ref": "KnowledgeAnswersAnswer_"
+            "$ref": "GoogleCloudDialogflowV2beta1KnowledgeAnswersAnswer"
           }
         }
       }
     },
-    "KnowledgeAnswersAnswer_": {
-      "id": "KnowledgeAnswersAnswer_",
+    "GoogleCloudDialogflowV2beta1KnowledgeAnswersAnswer": {
+      "id": "GoogleCloudDialogflowV2beta1KnowledgeAnswersAnswer",
       "description": "An answer from Knowledge Connector.",
       "type": "object",
       "properties": {
@@ -2832,8 +2832,8 @@
         }
       }
     },
-    "WebhookResponse_": {
-      "id": "WebhookResponse_",
+    "GoogleCloudDialogflowV2beta1WebhookResponse": {
+      "id": "GoogleCloudDialogflowV2beta1WebhookResponse",
       "description": "The response message for a webhook call.",
       "type": "object",
       "properties": {
@@ -2845,7 +2845,7 @@
           "description": "Optional. The collection of rich messages to present to the user. This\nvalue is passed directly to `QueryResult.fulfillment_messages`.",
           "type": "array",
           "items": {
-            "$ref": "IntentMessage_"
+            "$ref": "GoogleCloudDialogflowV2beta1IntentMessage"
           }
         },
         "source": {
@@ -2864,12 +2864,12 @@
           "description": "Optional. The collection of output contexts. This value is passed directly\nto `QueryResult.output_contexts`.",
           "type": "array",
           "items": {
-            "$ref": "Context_"
+            "$ref": "GoogleCloudDialogflowV2beta1Context"
           }
         },
         "followupEventInput": {
           "description": "Optional. Makes the platform immediately invoke another `DetectIntent` call\ninternally with the specified event as input.",
-          "$ref": "EventInput_"
+          "$ref": "GoogleCloudDialogflowV2beta1EventInput"
         },
         "endInteraction": {
           "description": "Optional. Indicates that this intent ends an interaction. Some integrations\n(e.g., Actions on Google or Dialogflow phone gateway) use this information\nto close interaction with an end user. Default is false.",
@@ -2877,8 +2877,8 @@
         }
       }
     },
-    "EventInput_": {
-      "id": "EventInput_",
+    "GoogleCloudDialogflowV2beta1EventInput": {
+      "id": "GoogleCloudDialogflowV2beta1EventInput",
       "description": "Events allow for matching intents by event name instead of the natural\nlanguage input. For instance, input `<event: { name: \"welcome_event\",\nparameters: { name: \"Sam\" } }>` can trigger a personalized welcome response.\nThe parameter `name` may be used by the agent in the response:\n`\"Hello #welcome_event.name! What can I do for you today?\"`.",
       "type": "object",
       "properties": {

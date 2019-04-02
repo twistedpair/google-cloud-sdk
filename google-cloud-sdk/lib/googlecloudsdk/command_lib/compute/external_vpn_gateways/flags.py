@@ -81,8 +81,8 @@ def ExternalVpnGatewayArgumentForVpnTunnel(required=False):
       short_help=('Peer side external VPN gateway representing the remote '
                   'tunnel endpoint, this flag is used when creating HA VPN '
                   'tunnels from Google Cloud to your external VPN gateway.'
-                  'Either peerGxternalGateway or peerGcpGateway must be '
-                  'specified when creating VPN tunnels from High Available '
+                  'Either --peer-external-gateway or --peer-gcp-gateway must be'
+                  ' specified when creating VPN tunnels from High Available '
                   'VPN gateway.'),
       global_collection='compute.externalVpnGateways')
 

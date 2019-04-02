@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://cloudasset.googleapis.com/v1beta1/'
-DOCS_URL = 'https://console.cloud.google.com/apis/api/cloudasset.googleapis.com/overview'
+DOCS_URL = 'https://cloud.google.com/resource-manager/docs/cloud-asset-inventory/quickstart-cloud-asset-inventory'
 
 
 class Collections(enum.Enum):

@@ -602,6 +602,7 @@ class ManagedZone(_messages.Message):
     name: A string attribute.
     nameServerSet: A string attribute.
     nameServers: A string attribute.
+    peeringConfig: A ManagedZonePeeringConfig attribute.
     privateVisibilityConfig: A ManagedZonePrivateVisibilityConfig attribute.
     visibility: A VisibilityValueValuesEnum attribute.
   """
@@ -651,8 +652,9 @@ class ManagedZone(_messages.Message):
   name = _messages.StringField(9)
   nameServerSet = _messages.StringField(10)
   nameServers = _messages.StringField(11, repeated=True)
-  privateVisibilityConfig = _messages.MessageField('ManagedZonePrivateVisibilityConfig', 12)
-  visibility = _messages.EnumField('VisibilityValueValuesEnum', 13)
+  peeringConfig = _messages.MessageField('ManagedZonePeeringConfig', 12)
+  privateVisibilityConfig = _messages.MessageField('ManagedZonePrivateVisibilityConfig', 13)
+  visibility = _messages.EnumField('VisibilityValueValuesEnum', 14)
 
 
 class ManagedZoneDnsSecConfig(_messages.Message):
@@ -739,6 +741,34 @@ class ManagedZoneOperationsListResponse(_messages.Message):
   kind = _messages.StringField(2, default=u'dns#managedZoneOperationsListResponse')
   nextPageToken = _messages.StringField(3)
   operations = _messages.MessageField('Operation', 4, repeated=True)
+
+
+class ManagedZonePeeringConfig(_messages.Message):
+  r"""A ManagedZonePeeringConfig object.
+
+  Fields:
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#managedZonePeeringConfig".
+    targetNetwork: A ManagedZonePeeringConfigTargetNetwork attribute.
+  """
+
+  kind = _messages.StringField(1, default=u'dns#managedZonePeeringConfig')
+  targetNetwork = _messages.MessageField('ManagedZonePeeringConfigTargetNetwork', 2)
+
+
+class ManagedZonePeeringConfigTargetNetwork(_messages.Message):
+  r"""A ManagedZonePeeringConfigTargetNetwork object.
+
+  Fields:
+    deactivateTime: A string attribute.
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#managedZonePeeringConfigTargetNetwork".
+    networkUrl: A string attribute.
+  """
+
+  deactivateTime = _messages.StringField(1)
+  kind = _messages.StringField(2, default=u'dns#managedZonePeeringConfigTargetNetwork')
+  networkUrl = _messages.StringField(3)
 
 
 class ManagedZonePrivateVisibilityConfig(_messages.Message):
@@ -893,6 +923,7 @@ class Policy(_messages.Message):
       attribute.
     description: A string attribute.
     enableInboundForwarding: A boolean attribute.
+    enableLogging: A boolean attribute.
     id: A string attribute.
     kind: Identifies what kind of resource this is. Value: the fixed string
       "dns#policy".
@@ -903,10 +934,11 @@ class Policy(_messages.Message):
   alternativeNameServerConfig = _messages.MessageField('PolicyAlternativeNameServerConfig', 1)
   description = _messages.StringField(2)
   enableInboundForwarding = _messages.BooleanField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'dns#policy')
-  name = _messages.StringField(6)
-  networks = _messages.MessageField('PolicyNetwork', 7, repeated=True)
+  enableLogging = _messages.BooleanField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default=u'dns#policy')
+  name = _messages.StringField(7)
+  networks = _messages.MessageField('PolicyNetwork', 8, repeated=True)
 
 
 class PolicyAlternativeNameServerConfig(_messages.Message):

@@ -35,6 +35,8 @@ class ContainerV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_aggregated_usableSubnetworks = self.ProjectsAggregatedUsableSubnetworksService(self)
+    self.projects_aggregated = self.ProjectsAggregatedService(self)
     self.projects_locations_clusters_nodePools = self.ProjectsLocationsClustersNodePoolsService(self)
     self.projects_locations_clusters_well_known = self.ProjectsLocationsClustersWellKnownService(self)
     self.projects_locations_clusters = self.ProjectsLocationsClustersService(self)
@@ -45,6 +47,53 @@ class ContainerV1(base_api.BaseApiClient):
     self.projects_zones_operations = self.ProjectsZonesOperationsService(self)
     self.projects_zones = self.ProjectsZonesService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsAggregatedUsableSubnetworksService(base_api.BaseApiService):
+    """Service class for the projects_aggregated_usableSubnetworks resource."""
+
+    _NAME = u'projects_aggregated_usableSubnetworks'
+
+    def __init__(self, client):
+      super(ContainerV1.ProjectsAggregatedUsableSubnetworksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists subnetworks that are usable for creating clusters in a project.
+
+      Args:
+        request: (ContainerProjectsAggregatedUsableSubnetworksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListUsableSubnetworksResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/aggregated/usableSubnetworks',
+        http_method=u'GET',
+        method_id=u'container.projects.aggregated.usableSubnetworks.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+parent}/aggregated/usableSubnetworks',
+        request_field='',
+        request_type_name=u'ContainerProjectsAggregatedUsableSubnetworksListRequest',
+        response_type_name=u'ListUsableSubnetworksResponse',
+        supports_download=False,
+    )
+
+  class ProjectsAggregatedService(base_api.BaseApiService):
+    """Service class for the projects_aggregated resource."""
+
+    _NAME = u'projects_aggregated'
+
+    def __init__(self, client):
+      super(ContainerV1.ProjectsAggregatedService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsClustersNodePoolsService(base_api.BaseApiService):
     """Service class for the projects_locations_clusters_nodePools resource."""

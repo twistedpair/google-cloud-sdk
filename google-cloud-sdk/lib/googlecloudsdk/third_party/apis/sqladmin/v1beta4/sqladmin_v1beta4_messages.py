@@ -222,6 +222,10 @@ class DatabaseInstance(_messages.Message):
       Generation instances: MYSQL_5_7 (default) or MYSQL_5_6. PostgreSQL
       instances: POSTGRES_9_6 MySQL First Generation instances: MYSQL_5_6
       (default) or MYSQL_5_5
+    diskEncryptionConfiguration: Disk encryption configuration specific to an
+      instance. Applies only to Second Generation instances.
+    diskEncryptionStatus: Disk encryption status specific to an instance.
+      Applies only to Second Generation instances.
     etag: This field is deprecated and will be removed from a future version
       of the API. Use the settings.settingsVersion field instead.
     failoverReplica: The name and status of the failover replica. This
@@ -293,27 +297,29 @@ class DatabaseInstance(_messages.Message):
   connectionName = _messages.StringField(2)
   currentDiskSize = _messages.IntegerField(3)
   databaseVersion = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  failoverReplica = _messages.MessageField('FailoverReplicaValue', 6)
-  gceZone = _messages.StringField(7)
-  instanceType = _messages.StringField(8)
-  ipAddresses = _messages.MessageField('IpMapping', 9, repeated=True)
-  ipv6Address = _messages.StringField(10)
-  kind = _messages.StringField(11, default=u'sql#instance')
-  masterInstanceName = _messages.StringField(12)
-  maxDiskSize = _messages.IntegerField(13)
-  name = _messages.StringField(14)
-  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 15)
-  project = _messages.StringField(16)
-  region = _messages.StringField(17)
-  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 18)
-  replicaNames = _messages.StringField(19, repeated=True)
-  selfLink = _messages.StringField(20)
-  serverCaCert = _messages.MessageField('SslCert', 21)
-  serviceAccountEmailAddress = _messages.StringField(22)
-  settings = _messages.MessageField('Settings', 23)
-  state = _messages.StringField(24)
-  suspensionReason = _messages.StringField(25, repeated=True)
+  diskEncryptionConfiguration = _messages.MessageField('DiskEncryptionConfiguration', 5)
+  diskEncryptionStatus = _messages.MessageField('DiskEncryptionStatus', 6)
+  etag = _messages.StringField(7)
+  failoverReplica = _messages.MessageField('FailoverReplicaValue', 8)
+  gceZone = _messages.StringField(9)
+  instanceType = _messages.StringField(10)
+  ipAddresses = _messages.MessageField('IpMapping', 11, repeated=True)
+  ipv6Address = _messages.StringField(12)
+  kind = _messages.StringField(13, default=u'sql#instance')
+  masterInstanceName = _messages.StringField(14)
+  maxDiskSize = _messages.IntegerField(15)
+  name = _messages.StringField(16)
+  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 17)
+  project = _messages.StringField(18)
+  region = _messages.StringField(19)
+  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 20)
+  replicaNames = _messages.StringField(21, repeated=True)
+  selfLink = _messages.StringField(22)
+  serverCaCert = _messages.MessageField('SslCert', 23)
+  serviceAccountEmailAddress = _messages.StringField(24)
+  settings = _messages.MessageField('Settings', 25)
+  state = _messages.StringField(26)
+  suspensionReason = _messages.StringField(27, repeated=True)
 
 
 class DatabasesListResponse(_messages.Message):
@@ -389,6 +395,31 @@ class DemoteMasterMySqlReplicaConfiguration(_messages.Message):
   kind = _messages.StringField(4, default=u'sql#demoteMasterMysqlReplicaConfiguration')
   password = _messages.StringField(5)
   username = _messages.StringField(6)
+
+
+class DiskEncryptionConfiguration(_messages.Message):
+  r"""Disk encryption configuration.
+
+  Fields:
+    kind: This is always sql#diskEncryptionConfiguration.
+    kmsKeyName: KMS key resource name
+  """
+
+  kind = _messages.StringField(1, default=u'sql#diskEncryptionConfiguration')
+  kmsKeyName = _messages.StringField(2)
+
+
+class DiskEncryptionStatus(_messages.Message):
+  r"""Disk encryption status.
+
+  Fields:
+    kind: This is always sql#diskEncryptionStatus.
+    kmsKeyVersionName: KMS key version used to encrypt the Cloud SQL instance
+      disk
+  """
+
+  kind = _messages.StringField(1, default=u'sql#diskEncryptionStatus')
+  kmsKeyVersionName = _messages.StringField(2)
 
 
 class ExportContext(_messages.Message):

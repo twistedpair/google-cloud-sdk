@@ -1428,13 +1428,6 @@ class TestSpecification(_messages.Message):
     androidInstrumentationTest: An Android instrumentation test.
     androidRoboTest: An Android robo test.
     androidTestLoop: An Android Application with a Test Loop.
-    autoGoogleLogin: Enables automatic Google account login. If set, the
-      service will automatically generate a Google test account and add it to
-      the device, before executing the test. Note that test accounts might be
-      reused. Many applications show their full set of functionalities when an
-      account is present on the device. Logging into the device with these
-      generated accounts allows testing more functionalities. Default is
-      false.
     disablePerformanceMetrics: Disables performance metrics recording; may
       reduce test latency.
     disableVideoRecording: Disables video recording; may reduce test latency.
@@ -1449,13 +1442,12 @@ class TestSpecification(_messages.Message):
   androidInstrumentationTest = _messages.MessageField('AndroidInstrumentationTest', 1)
   androidRoboTest = _messages.MessageField('AndroidRoboTest', 2)
   androidTestLoop = _messages.MessageField('AndroidTestLoop', 3)
-  autoGoogleLogin = _messages.BooleanField(4)
-  disablePerformanceMetrics = _messages.BooleanField(5)
-  disableVideoRecording = _messages.BooleanField(6)
-  iosTestSetup = _messages.MessageField('IosTestSetup', 7)
-  iosXcTest = _messages.MessageField('IosXcTest', 8)
-  testSetup = _messages.MessageField('TestSetup', 9)
-  testTimeout = _messages.StringField(10)
+  disablePerformanceMetrics = _messages.BooleanField(4)
+  disableVideoRecording = _messages.BooleanField(5)
+  iosTestSetup = _messages.MessageField('IosTestSetup', 6)
+  iosXcTest = _messages.MessageField('IosXcTest', 7)
+  testSetup = _messages.MessageField('TestSetup', 8)
+  testTimeout = _messages.StringField(9)
 
 
 class TestingProjectsTestMatricesCancelRequest(_messages.Message):

@@ -204,11 +204,32 @@ def GetManagedZoneNetworksArg():
       'visibility is [private].')
 
 
+def GetDnsPeeringArgs():
+  """Return arg group for DNS Peering flags."""
+  peering_group = base.ArgumentGroup(required=False)
+  target_network_help_text = (
+      'The network id of the Google Compute Engine private network to forward'
+      ' queries to.')
+  target_project_help_text = (
+      'The project id of the Google Compute Engine private network to forward'
+      ' queries to.')
+  peering_group.AddArgument(
+      base.Argument(
+          '--target-network',
+          required=True,
+          help=target_network_help_text))
+  peering_group.AddArgument(
+      base.Argument(
+          '--target-project',
+          required=True,
+          help=target_project_help_text))
+  return peering_group
+
+
 def GetForwardingTargetsArg():
   return base.Argument(
       '--forwarding-targets',
       type=arg_parsers.ArgList(),
-      required=False,
       metavar='IP_ADDRESSES',
       help=('List of IPv4 addresses of target name servers that the zone '
             'will forward queries to. Ignored for `public` visibility.'))
@@ -217,35 +238,39 @@ def GetForwardingTargetsArg():
 # Policy Flags
 def GetPolicyDescriptionArg():
   return base.Argument(
-      '--description', required=False, help='A description of the policy.')
+      '--description',
+      help='A description of the policy.')
 
 
 def GetPolicyNetworksArg():
   return base.Argument(
       '--networks',
       type=arg_parsers.ArgList(),
-      required=False,
       metavar='NETWORKS',
       help=('The comma separated list of network names to associate with '
             'the policy.'))
 
 
-def GetPolicyInbboundForwardingArg():
+def GetPolicyInboundForwardingArg():
   return base.Argument(
       '--enable-inbound-forwarding',
-      required=False,
-      default=False,
       action='store_true',
       help=('Specifies whether to allow networks bound to this policy to '
             'receive DNS queries sent by VMs or applications over VPN '
             'connections. Defaults to False.'))
 
 
+def GetPolicyLoggingArg():
+  return base.Argument(
+      '--enable-logging',
+      action='store_true',
+      help='Specifies whether to enable query logging. Defaults to False.')
+
+
 def GetPolicyAltNameServersnArg():
   return base.Argument(
       '--alternative-name-servers',
       type=arg_parsers.ArgList(),
-      required=False,
       metavar='NAME_SERVERS',
       help=('List of alternative name servers to forward to. Must be a '
             'comma separated list of IPv4 addresses.'))

@@ -25,7 +25,8 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.args import labels_util
 import six
 
-VALID_REDIS_CONFIG_KEYS = ('maxmemory-policy', 'notify-keyspace-events')
+VALID_REDIS_CONFIG_KEYS = ('maxmemory-policy', 'notify-keyspace-events',
+                           'activedefrag', 'lfu-log-factor', 'lfu-decay-time')
 
 
 def GetClientForResource(resource_ref):
@@ -51,12 +52,15 @@ def InstanceRedisConfigArgType(value):
 def InstanceLabelsArgType(value):
   return arg_parsers.ArgDict(
       key_type=labels_util.KEY_FORMAT_VALIDATOR,
-      value_type=labels_util.VALUE_FORMAT_VALIDATOR)(value)
+      value_type=labels_util.VALUE_FORMAT_VALIDATOR)(
+          value)
 
 
 def AdditionalInstanceUpdateArguments():
-  return InstanceUpdateLabelsFlags() + [InstanceUpdateRedisConfigFlag(),
-                                        InstanceRemoveRedisConfigFlag()]
+  return InstanceUpdateLabelsFlags() + [
+      InstanceUpdateRedisConfigFlag(),
+      InstanceRemoveRedisConfigFlag()
+  ]
 
 
 def InstanceUpdateLabelsFlags():

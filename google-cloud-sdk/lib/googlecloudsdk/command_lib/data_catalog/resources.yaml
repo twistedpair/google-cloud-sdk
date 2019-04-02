@@ -1,0 +1,47 @@
+project:
+  name: project
+  collection: datacatalog.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    help: |
+      Project of the {resource}.
+    property: core/project
+
+location:
+  name: location
+  collection: datacatalog.projects.locations
+  attributes:
+  - *project
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: |
+      Location of the {resource}.
+
+entry_group:
+  name: entry group
+  collection: datacatalog.projects.locations.entryGroups
+  request_id_field: entryGroupId
+  attributes:
+  - *project
+  - *location
+  - &entry_group
+    parameter_name: entryGroupsId
+    attribute_name: entry-group
+    help: |
+      Entry group of the {resource}.
+
+entry:
+  name: entry
+  collection: datacatalog.projects.locations.entryGroups.entries
+  request_id_field: googleCloudDatacatalogV1beta1CreateEntryRequest.entryId
+  attributes:
+  - *project
+  - *location
+  - *entry_group
+  - parameter_name: entriesId
+    attribute_name: entry
+    help: |
+      Entry of the {resource}.

@@ -943,7 +943,7 @@ deleted versions) from the FHIR store.
         method_id=u'healthcare.projects.locations.datasets.fhirStores.resources._history.list',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[],
+        query_params=[u'at', u'count', u'page', u'since'],
         relative_path=u'v1alpha/{+name}/_history',
         request_field='',
         request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresResourcesHistoryListRequest',
@@ -963,6 +963,28 @@ deleted versions) from the FHIR store.
 
     def Search(self, request, global_params=None):
       r"""Searches resources in the given FHIR store.
+
+# Search Parameters
+
+The server's capability statement, retrieved through
+GetCapabilityStatement, indicates which search
+parameters are supported on each FHIR resource.
+
+# Search Modifiers
+
+Modifier   | Supported
+----------- | ---------
+`:missing`  | Yes
+`:exact`    | Yes
+`:contains` | Yes
+`:text`     | Yes
+`:in`       | Yes
+`:not-in`   | Yes
+`:above`    | Yes
+`:below`    | Yes
+`:[type]`   | Yes
+`:not`      | Yes
+`:recurse`  | No
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresResourcesSearchRequest) input message
@@ -1249,6 +1271,28 @@ delete the current version and call this API.
 
     def SearchResources(self, request, global_params=None):
       r"""Searches resources in the given FHIR store.
+
+# Search Parameters
+
+The server's capability statement, retrieved through
+GetCapabilityStatement, indicates which search
+parameters are supported on each FHIR resource.
+
+# Search Modifiers
+
+Modifier   | Supported
+----------- | ---------
+`:missing`  | Yes
+`:exact`    | Yes
+`:contains` | Yes
+`:text`     | Yes
+`:in`       | Yes
+`:not-in`   | Yes
+`:above`    | Yes
+`:below`    | Yes
+`:[type]`   | Yes
+`:not`      | Yes
+`:recurse`  | No
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresResourcesSearchResourcesRequest) input message

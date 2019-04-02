@@ -180,10 +180,10 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: Unimplemented. The condition that is associated with this
-      binding. NOTE: an unsatisfied condition will not allow user access via
-      current binding. Different bindings, including their conditions, are
-      examined independently.
+    condition: The condition that is associated with this binding. NOTE: an
+      unsatisfied condition will not allow user access via current binding.
+      Different bindings, including their conditions, are examined
+      independently.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -2385,6 +2385,9 @@ class VulnerabilityDetails(_messages.Message):
   fix it.
 
   Enums:
+    EffectiveSeverityValueValuesEnum: The distro assigned severity for this
+      vulnerability when that is available and note provider assigned severity
+      when distro has not yet assigned a severity for this vulnerability.
     SeverityValueValuesEnum: Output only. The note provider assigned Severity
       of the vulnerability.
 
@@ -2392,6 +2395,9 @@ class VulnerabilityDetails(_messages.Message):
     cvssScore: Output only. The CVSS score of this vulnerability. CVSS score
       is on a scale of 0-10 where 0 indicates low severity and 10 indicates
       high severity.
+    effectiveSeverity: The distro assigned severity for this vulnerability
+      when that is available and note provider assigned severity when distro
+      has not yet assigned a severity for this vulnerability.
     packageIssue: The set of affected locations and their fixes (if available)
       within the associated resource.
     severity: Output only. The note provider assigned Severity of the
@@ -2399,6 +2405,26 @@ class VulnerabilityDetails(_messages.Message):
     type: The type of package; whether native or non native(ruby gems, node.js
       packages etc)
   """
+
+  class EffectiveSeverityValueValuesEnum(_messages.Enum):
+    r"""The distro assigned severity for this vulnerability when that is
+    available and note provider assigned severity when distro has not yet
+    assigned a severity for this vulnerability.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Unknown Impact
+      MINIMAL: Minimal Impact
+      LOW: Low Impact
+      MEDIUM: Medium Impact
+      HIGH: High Impact
+      CRITICAL: Critical Impact
+    """
+    SEVERITY_UNSPECIFIED = 0
+    MINIMAL = 1
+    LOW = 2
+    MEDIUM = 3
+    HIGH = 4
+    CRITICAL = 5
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""Output only. The note provider assigned Severity of the vulnerability.
@@ -2419,9 +2445,10 @@ class VulnerabilityDetails(_messages.Message):
     CRITICAL = 5
 
   cvssScore = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  packageIssue = _messages.MessageField('PackageIssue', 2, repeated=True)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 3)
-  type = _messages.StringField(4)
+  effectiveSeverity = _messages.EnumField('EffectiveSeverityValueValuesEnum', 2)
+  packageIssue = _messages.MessageField('PackageIssue', 3, repeated=True)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 4)
+  type = _messages.StringField(5)
 
 
 class VulnerabilityLocation(_messages.Message):

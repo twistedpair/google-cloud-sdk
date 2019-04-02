@@ -24,34 +24,6 @@ DOCS_URL = 'https://cloud.google.com/genomics'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
-  ANNOTATIONS = (
-      'annotations',
-      'annotations/{annotationId}',
-      {},
-      [u'annotationId'],
-      True
-  )
-  ANNOTATIONSETS = (
-      'annotationsets',
-      'annotationsets/{annotationSetId}',
-      {},
-      [u'annotationSetId'],
-      True
-  )
-  CALLSETS = (
-      'callsets',
-      'callsets/{callSetId}',
-      {},
-      [u'callSetId'],
-      True
-  )
-  DATASETS = (
-      'datasets',
-      'datasets/{datasetId}',
-      {},
-      [u'datasetId'],
-      True
-  )
   OPERATIONS = (
       'operations',
       '{+name}',
@@ -60,41 +32,6 @@ class Collections(enum.Enum):
               'operations/{operationsId}',
       },
       [u'name'],
-      True
-  )
-  READGROUPSETS = (
-      'readgroupsets',
-      'readgroupsets/{readGroupSetId}',
-      {},
-      [u'readGroupSetId'],
-      True
-  )
-  REFERENCES = (
-      'references',
-      'references/{referenceId}',
-      {},
-      [u'referenceId'],
-      True
-  )
-  REFERENCESETS = (
-      'referencesets',
-      'referencesets/{referenceSetId}',
-      {},
-      [u'referenceSetId'],
-      True
-  )
-  VARIANTS = (
-      'variants',
-      'variants/{variantId}',
-      {},
-      [u'variantId'],
-      True
-  )
-  VARIANTSETS = (
-      'variantsets',
-      'variantsets/{variantSetId}',
-      {},
-      [u'variantSetId'],
       True
   )
 

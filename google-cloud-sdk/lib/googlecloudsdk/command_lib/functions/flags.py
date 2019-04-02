@@ -192,24 +192,28 @@ def AddRuntimeFlag(parser):
 
           - `nodejs6`: Node.js 6
           - `nodejs8`: Node.js 8
+          - `nodejs10`: Node.js 10
           - `python37`: Python 3.7
           - `go111`: Go 1.11
           """)
 
 
-def AddConnectedVPCMutexGroup(parser):
+def AddVPCMutexGroup(parser, enable_connected_vpc):
   """Add mutex group for --connected-vpc and --vpc-connector."""
   mutex_group = parser.add_group(mutex=True)
-  mutex_group.add_argument(
-      '--connected-vpc',
-      help='Specifies the VPC network to connect the function to.',
-      hidden=True
-  )
+  if enable_connected_vpc:
+    mutex_group.add_argument(
+        '--connected-vpc',
+        help='Specifies the VPC network to connect the function to.',
+        hidden=True)
   mutex_group.add_argument(
       '--vpc-connector',
-      help='The VPC Network Connector that this cloud function can connect to.',
-      hidden=True
-  )
+      help="""\
+        The VPC Access connector that the function can connect to. It
+        should be the fully-qualified URI of the VPC Access connector
+        resource whose format is:
+        `projects/${PROJECT}/locations/${LOCATION}/connectors/${CONNECTOR}`.
+      """)
 
 
 def AddEntryPointFlag(parser):
@@ -218,12 +222,13 @@ def AddEntryPointFlag(parser):
       '--entry-point',
       type=api_util.ValidateEntryPointNameOrRaise,
       help="""\
-      By default when a Google Cloud Function is triggered, it executes a
-      JavaScript function with the same name. Or, if it cannot find a
-      function with the same name, it executes a function named `function`.
-      You can use this flag to override the default behavior, by specifying
-      the name of a JavaScript function that will be executed when the
-      Google Cloud Function is triggered."""
+      Name of a Google Cloud Function (as defined in source code) that will
+      be executed. Defaults to the resource name suffix, if not specified. For
+      backward compatibility, if function with given name is not found, then
+      the system will try to use function named "function". For Node.js this
+      is name of a function exported by the module specified in
+      `source_location`.
+"""
   )
 
 

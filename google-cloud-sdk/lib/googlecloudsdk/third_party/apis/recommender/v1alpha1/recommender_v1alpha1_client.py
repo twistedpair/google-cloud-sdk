@@ -80,7 +80,8 @@ Check recommender.*.list and recommender.rule.create IAM permissions.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists recommendations for a Cloud project.
+      r"""Lists recommendations for a Cloud project and requires the.
+recommendation.*.list IAM permission.
 
       Args:
         request: (RecommenderProjectsLocationsRecommendersRecommendationsListRequest) input message

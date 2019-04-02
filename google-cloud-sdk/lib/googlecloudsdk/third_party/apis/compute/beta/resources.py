@@ -208,13 +208,6 @@ class Collections(enum.Enum):
       [u'project', u'license'],
       True
   )
-  MACHINEIMAGES = (
-      'machineImages',
-      'projects/{project}/global/machineImages/{machineImage}',
-      {},
-      [u'project', u'machineImage'],
-      True
-  )
   MACHINETYPES = (
       'machineTypes',
       'projects/{project}/zones/{zone}/machineTypes/{machineType}',

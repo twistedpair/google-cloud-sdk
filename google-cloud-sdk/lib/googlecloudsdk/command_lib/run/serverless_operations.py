@@ -107,6 +107,30 @@ def Connect(conn_context):
         op_client)
 
 
+class DomainMappingResourceRecordPoller(waiter.OperationPoller):
+  """Poll for when a DomainMapping first has resourceRecords."""
+
+  def __init__(self, ops):
+    self._ops = ops
+
+  def IsDone(self, mapping):
+    if getattr(mapping.status, 'resourceRecords', None):
+      return True
+    conditions = mapping.conditions
+    # pylint: disable=g-bool-id-comparison
+    # False (indicating failure) as distinct from None (indicating not sure yet)
+    if conditions and conditions['Ready']['status'] is False:
+      return True
+    # pylint: enable=g-bool-id-comparison
+    return False
+
+  def GetResult(self, mapping):
+    return mapping
+
+  def Poll(self, domain_mapping_ref):
+    return self._ops.GetDomainMapping(domain_mapping_ref)
+
+
 class ConditionPoller(waiter.OperationPoller):
   """A poller for CloudRun resource creation or update.
 
@@ -323,14 +347,6 @@ class ServiceConditionPoller(ConditionPoller):
     super(ServiceConditionPoller, self).__init__(
         getter, tracker, stages.ServiceDependencies())
     self._resource_fail_type = serverless_exceptions.DeploymentFailedError
-
-
-class DomainMappingConditionPoller(ConditionPoller):
-
-  def __init__(self, getter, tracker):
-    super(DomainMappingConditionPoller, self).__init__(
-        getter, tracker, stages.DomainMappingDependencies())
-    self._resource_fail_type = serverless_exceptions.DomainMappingCreationError
 
 
 def _Nonce():
@@ -994,6 +1010,7 @@ class ServerlessOperations(object):
     Returns:
       A domain_mapping.DomainMapping object.
     """
+
     messages = self._messages_module
     new_mapping = domain_mapping.DomainMapping.New(
         self._client, domain_mapping_ref.namespacesId)
@@ -1005,14 +1022,22 @@ class ServerlessOperations(object):
         parent=domain_mapping_ref.Parent().RelativeName())
     with metrics.RecordDuration(metric_names.CREATE_DOMAIN_MAPPING):
       response = self._client.namespaces_domainmappings.Create(request)
+      # 'run domain-mappings create' is synchronous. Poll for its completion.
+      with progress_tracker.ProgressTracker('Creating...'):
+        mapping = waiter.PollUntilDone(
+            DomainMappingResourceRecordPoller(self), domain_mapping_ref)
+      ready = mapping.conditions.get('Ready')
+      records = getattr(mapping.status, 'resourceRecords', None)
+      message = None
+      if ready and ready.get('message'):
+        message = ready['message']
+      if not records:
+        raise serverless_exceptions.DomainMappingCreationError(
+            message or 'Could not create domain mapping.')
+      if message:
+        log.status.Print(message)
+      return records
 
-    # 'run domain-mappings create' is synchronous. Poll for its completion.
-    getter = functools.partial(self.GetDomainMapping, domain_mapping_ref)
-    with progress_tracker.StagedProgressTracker(
-        'Creating...',
-        stages.DomainMappingStages(),
-        failure_message='Domain mapping failed') as tracker:
-      self.WaitForCondition(DomainMappingConditionPoller(getter, tracker))
     return domain_mapping.DomainMapping(response, messages)
 
   def DeleteDomainMapping(self, domain_mapping_ref):

@@ -635,6 +635,71 @@ class Expr(_messages.Message):
   title = _messages.StringField(5)
 
 
+class HmacKey(_messages.Message):
+  r"""JSON template to produce a JSON-style HMAC Key resource for Create
+  responses.
+
+  Fields:
+    kind: The kind of item this is. For HMAC keys, this is always
+      storage#hmacKey.
+    metadata: Key metadata.
+    secret: HMAC secret key material.
+  """
+
+  kind = _messages.StringField(1, default=u'storage#hmacKey')
+  metadata = _messages.MessageField('extra_types.JsonValue', 2)
+  secret = _messages.StringField(3)
+
+
+class HmacKeyMetadata(_messages.Message):
+  r"""JSON template to produce a JSON-style HMAC Key metadata resource.
+
+  Fields:
+    accessId: The ID of the HMAC Key.
+    etag: HTTP 1.1 Entity tag for the access-control entry.
+    id: The ID of the HMAC key, including the Project ID and the Access ID.
+    kind: The kind of item this is. For HMAC Key metadata, this is always
+      storage#hmacKeyMetadata.
+    projectId: Project ID owning the service account to which the key
+      authenticates.
+    selfLink: The link to this resource.
+    serviceAccountEmail: The email address of the key's associated service
+      account.
+    state: The state of the key. Can be one of ACTIVE, INACTIVE, or DELETED.
+    timeCreated: The creation time of the HMAC key in RFC 3339 format.
+    updated: The last modification time of the HMAC key metadata in RFC 3339
+      format.
+  """
+
+  accessId = _messages.StringField(1)
+  etag = _messages.StringField(2)
+  id = _messages.StringField(3)
+  kind = _messages.StringField(4, default=u'storage#hmacKeyMetadata')
+  projectId = _messages.StringField(5)
+  selfLink = _messages.StringField(6)
+  serviceAccountEmail = _messages.StringField(7)
+  state = _messages.StringField(8)
+  timeCreated = _messages.StringField(9)
+  updated = _messages.StringField(10)
+
+
+class HmacKeysMetadata(_messages.Message):
+  r"""A list of hmacKeys.
+
+  Fields:
+    items: The list of items.
+    kind: The kind of item this is. For lists of hmacKeys, this is always
+      storage#hmacKeysMetadata.
+    nextPageToken: The continuation token, used to page through large result
+      sets. Provide this value in a subsequent request to return the next page
+      of results.
+  """
+
+  items = _messages.MessageField('HmacKeyMetadata', 1, repeated=True)
+  kind = _messages.StringField(2, default=u'storage#hmacKeysMetadata')
+  nextPageToken = _messages.StringField(3)
+
+
 class Notification(_messages.Message):
   r"""A subscription to receive Google PubSub notifications.
 
@@ -2782,6 +2847,69 @@ class StorageObjectsWatchAllRequest(_messages.Message):
   projection = _messages.EnumField('ProjectionValueValuesEnum', 8)
   userProject = _messages.StringField(9)
   versions = _messages.BooleanField(10)
+
+
+class StorageProjectsHmacKeysCreateRequest(_messages.Message):
+  r"""A StorageProjectsHmacKeysCreateRequest object.
+
+  Fields:
+    projectId: Project ID owning the service account.
+    serviceAccountEmail: Email address of the service account.
+  """
+
+  projectId = _messages.StringField(1, required=True)
+  serviceAccountEmail = _messages.StringField(2, required=True)
+
+
+class StorageProjectsHmacKeysDeleteRequest(_messages.Message):
+  r"""A StorageProjectsHmacKeysDeleteRequest object.
+
+  Fields:
+    accessId: Name of the HMAC key to be deleted.
+    projectId: Project ID owning the requested key
+  """
+
+  accessId = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+
+
+class StorageProjectsHmacKeysDeleteResponse(_messages.Message):
+  r"""An empty StorageProjectsHmacKeysDelete response."""
+
+
+class StorageProjectsHmacKeysGetRequest(_messages.Message):
+  r"""A StorageProjectsHmacKeysGetRequest object.
+
+  Fields:
+    accessId: Name of the HMAC key.
+    projectId: Project ID owning the service account of the requested key.
+  """
+
+  accessId = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+
+
+class StorageProjectsHmacKeysListRequest(_messages.Message):
+  r"""A StorageProjectsHmacKeysListRequest object.
+
+  Fields:
+    maxResults: Maximum number of items plus prefixes to return in a single
+      page of responses. Because duplicate prefixes are omitted, fewer total
+      results may be returned than requested. The service uses this parameter
+      or 1,000 items, whichever is smaller.
+    pageToken: A previously-returned page token representing part of the
+      larger set of results to view.
+    projectId: Name of the project in which to look for HMAC keys.
+    serviceAccountEmail: If present, only keys for the given service account
+      are returned.
+    showDeletedKeys: Whether or not to show keys in the DELETED state.
+  """
+
+  maxResults = _messages.IntegerField(1, variant=_messages.Variant.UINT32, default=1000)
+  pageToken = _messages.StringField(2)
+  projectId = _messages.StringField(3, required=True)
+  serviceAccountEmail = _messages.StringField(4)
+  showDeletedKeys = _messages.BooleanField(5)
 
 
 class StorageProjectsServiceAccountGetRequest(_messages.Message):

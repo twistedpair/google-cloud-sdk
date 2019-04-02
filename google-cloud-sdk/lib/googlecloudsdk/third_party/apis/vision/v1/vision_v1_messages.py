@@ -806,16 +806,22 @@ class GcsDestination(_messages.Message):
   r"""The Google Cloud Storage location where the output will be written to.
 
   Fields:
-    uri: Google Cloud Storage URI where the results will be stored. Results
-      will be in JSON format and preceded by its corresponding input URI. This
-      field can either represent a single file, or a prefix for multiple
-      outputs. Prefixes must end in a `/`.  Examples:  *    File: gs://bucket-
-      name/filename.json *    Prefix: gs://bucket-name/prefix/here/ *    File:
-      gs://bucket-name/prefix/here  If multiple outputs, each response is
-      still AnnotateFileResponse, each of which contains some subset of the
-      full list of AnnotateImageResponse. Multiple outputs can happen if, for
-      example, the output JSON is too large and overflows into multiple
-      sharded files.
+    uri: Google Cloud Storage URI prefix where the results will be stored.
+      Results will be in JSON format and preceded by its corresponding input
+      URI prefix. This field can either represent a gcs file prefix or gcs
+      directory. In either case, the uri should be unique because in order to
+      get all of the output files, you will need to do a wildcard gcs search
+      on the uri prefix you provide.  Examples:  *    File Prefix: gs
+      ://bucket-name/here/filenameprefix   The output files will be created in
+      gs://bucket-name/here/ and the names of the output files will begin with
+      "filenameprefix".  *    Directory Prefix: gs://bucket-
+      name/some/location/   The output files will be created in gs://bucket-
+      name/some/location/ and the names of the output files could be anything
+      because there was no filename prefix specified.  If multiple outputs,
+      each response is still AnnotateFileResponse, each of which contains some
+      subset of the full list of AnnotateImageResponse. Multiple outputs can
+      happen if, for example, the output JSON is too large and overflows into
+      multiple sharded files.
   """
 
   uri = _messages.StringField(1)
@@ -1386,16 +1392,22 @@ class GoogleCloudVisionV1p1beta1GcsDestination(_messages.Message):
   r"""The Google Cloud Storage location where the output will be written to.
 
   Fields:
-    uri: Google Cloud Storage URI where the results will be stored. Results
-      will be in JSON format and preceded by its corresponding input URI. This
-      field can either represent a single file, or a prefix for multiple
-      outputs. Prefixes must end in a `/`.  Examples:  *    File: gs://bucket-
-      name/filename.json *    Prefix: gs://bucket-name/prefix/here/ *    File:
-      gs://bucket-name/prefix/here  If multiple outputs, each response is
-      still AnnotateFileResponse, each of which contains some subset of the
-      full list of AnnotateImageResponse. Multiple outputs can happen if, for
-      example, the output JSON is too large and overflows into multiple
-      sharded files.
+    uri: Google Cloud Storage URI prefix where the results will be stored.
+      Results will be in JSON format and preceded by its corresponding input
+      URI prefix. This field can either represent a gcs file prefix or gcs
+      directory. In either case, the uri should be unique because in order to
+      get all of the output files, you will need to do a wildcard gcs search
+      on the uri prefix you provide.  Examples:  *    File Prefix: gs
+      ://bucket-name/here/filenameprefix   The output files will be created in
+      gs://bucket-name/here/ and the names of the output files will begin with
+      "filenameprefix".  *    Directory Prefix: gs://bucket-
+      name/some/location/   The output files will be created in gs://bucket-
+      name/some/location/ and the names of the output files could be anything
+      because there was no filename prefix specified.  If multiple outputs,
+      each response is still AnnotateFileResponse, each of which contains some
+      subset of the full list of AnnotateImageResponse. Multiple outputs can
+      happen if, for example, the output JSON is too large and overflows into
+      multiple sharded files.
   """
 
   uri = _messages.StringField(1)
@@ -2647,16 +2659,22 @@ class GoogleCloudVisionV1p2beta1GcsDestination(_messages.Message):
   r"""The Google Cloud Storage location where the output will be written to.
 
   Fields:
-    uri: Google Cloud Storage URI where the results will be stored. Results
-      will be in JSON format and preceded by its corresponding input URI. This
-      field can either represent a single file, or a prefix for multiple
-      outputs. Prefixes must end in a `/`.  Examples:  *    File: gs://bucket-
-      name/filename.json *    Prefix: gs://bucket-name/prefix/here/ *    File:
-      gs://bucket-name/prefix/here  If multiple outputs, each response is
-      still AnnotateFileResponse, each of which contains some subset of the
-      full list of AnnotateImageResponse. Multiple outputs can happen if, for
-      example, the output JSON is too large and overflows into multiple
-      sharded files.
+    uri: Google Cloud Storage URI prefix where the results will be stored.
+      Results will be in JSON format and preceded by its corresponding input
+      URI prefix. This field can either represent a gcs file prefix or gcs
+      directory. In either case, the uri should be unique because in order to
+      get all of the output files, you will need to do a wildcard gcs search
+      on the uri prefix you provide.  Examples:  *    File Prefix: gs
+      ://bucket-name/here/filenameprefix   The output files will be created in
+      gs://bucket-name/here/ and the names of the output files will begin with
+      "filenameprefix".  *    Directory Prefix: gs://bucket-
+      name/some/location/   The output files will be created in gs://bucket-
+      name/some/location/ and the names of the output files could be anything
+      because there was no filename prefix specified.  If multiple outputs,
+      each response is still AnnotateFileResponse, each of which contains some
+      subset of the full list of AnnotateImageResponse. Multiple outputs can
+      happen if, for example, the output JSON is too large and overflows into
+      multiple sharded files.
   """
 
   uri = _messages.StringField(1)
@@ -3948,16 +3966,22 @@ class GoogleCloudVisionV1p3beta1GcsDestination(_messages.Message):
   r"""The Google Cloud Storage location where the output will be written to.
 
   Fields:
-    uri: Google Cloud Storage URI where the results will be stored. Results
-      will be in JSON format and preceded by its corresponding input URI. This
-      field can either represent a single file, or a prefix for multiple
-      outputs. Prefixes must end in a `/`.  Examples:  *    File: gs://bucket-
-      name/filename.json *    Prefix: gs://bucket-name/prefix/here/ *    File:
-      gs://bucket-name/prefix/here  If multiple outputs, each response is
-      still AnnotateFileResponse, each of which contains some subset of the
-      full list of AnnotateImageResponse. Multiple outputs can happen if, for
-      example, the output JSON is too large and overflows into multiple
-      sharded files.
+    uri: Google Cloud Storage URI prefix where the results will be stored.
+      Results will be in JSON format and preceded by its corresponding input
+      URI prefix. This field can either represent a gcs file prefix or gcs
+      directory. In either case, the uri should be unique because in order to
+      get all of the output files, you will need to do a wildcard gcs search
+      on the uri prefix you provide.  Examples:  *    File Prefix: gs
+      ://bucket-name/here/filenameprefix   The output files will be created in
+      gs://bucket-name/here/ and the names of the output files will begin with
+      "filenameprefix".  *    Directory Prefix: gs://bucket-
+      name/some/location/   The output files will be created in gs://bucket-
+      name/some/location/ and the names of the output files could be anything
+      because there was no filename prefix specified.  If multiple outputs,
+      each response is still AnnotateFileResponse, each of which contains some
+      subset of the full list of AnnotateImageResponse. Multiple outputs can
+      happen if, for example, the output JSON is too large and overflows into
+      multiple sharded files.
   """
 
   uri = _messages.StringField(1)
@@ -5315,16 +5339,22 @@ class GoogleCloudVisionV1p4beta1GcsDestination(_messages.Message):
   r"""The Google Cloud Storage location where the output will be written to.
 
   Fields:
-    uri: Google Cloud Storage URI where the results will be stored. Results
-      will be in JSON format and preceded by its corresponding input URI. This
-      field can either represent a single file, or a prefix for multiple
-      outputs. Prefixes must end in a `/`.  Examples:  *    File: gs://bucket-
-      name/filename.json *    Prefix: gs://bucket-name/prefix/here/ *    File:
-      gs://bucket-name/prefix/here  If multiple outputs, each response is
-      still AnnotateFileResponse, each of which contains some subset of the
-      full list of AnnotateImageResponse. Multiple outputs can happen if, for
-      example, the output JSON is too large and overflows into multiple
-      sharded files.
+    uri: Google Cloud Storage URI prefix where the results will be stored.
+      Results will be in JSON format and preceded by its corresponding input
+      URI prefix. This field can either represent a gcs file prefix or gcs
+      directory. In either case, the uri should be unique because in order to
+      get all of the output files, you will need to do a wildcard gcs search
+      on the uri prefix you provide.  Examples:  *    File Prefix: gs
+      ://bucket-name/here/filenameprefix   The output files will be created in
+      gs://bucket-name/here/ and the names of the output files will begin with
+      "filenameprefix".  *    Directory Prefix: gs://bucket-
+      name/some/location/   The output files will be created in gs://bucket-
+      name/some/location/ and the names of the output files could be anything
+      because there was no filename prefix specified.  If multiple outputs,
+      each response is still AnnotateFileResponse, each of which contains some
+      subset of the full list of AnnotateImageResponse. Multiple outputs can
+      happen if, for example, the output JSON is too large and overflows into
+      multiple sharded files.
   """
 
   uri = _messages.StringField(1)
@@ -7327,6 +7357,16 @@ class VisionOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class VisionProjectsLocationsOperationsGetRequest(_messages.Message):
+  r"""A VisionProjectsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class VisionProjectsLocationsProductSetsAddProductRequest(_messages.Message):
   r"""A VisionProjectsLocationsProductSetsAddProductRequest object.
 
@@ -7593,6 +7633,16 @@ class VisionProjectsLocationsProductsReferenceImagesListRequest(_messages.Messag
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class VisionProjectsOperationsGetRequest(_messages.Message):
+  r"""A VisionProjectsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class WebDetection(_messages.Message):

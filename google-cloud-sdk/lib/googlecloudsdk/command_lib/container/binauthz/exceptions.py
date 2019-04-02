@@ -36,3 +36,7 @@ class AlreadyExistsError(Error):
 
 class InvalidStateError(Error):
   """Indicates a resource is in an invalid state."""
+
+
+class InvalidArgumentError(Error):
+  """Indicates a flag/argument is invalid."""

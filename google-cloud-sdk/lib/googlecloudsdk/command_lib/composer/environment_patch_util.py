@@ -93,6 +93,7 @@ def ConstructPatch(env_ref=None,
                    clear_env_variables=None,
                    remove_env_variables=None,
                    update_env_variables=None,
+                   update_image_version=None,
                    release_track=base.ReleaseTrack.GA):
   """Constructs an environment patch.
 
@@ -122,6 +123,7 @@ def ConstructPatch(env_ref=None,
       to remove.
     update_env_variables: {string: string}, dict of environment variable
       names and values to set.
+    update_image_version: string, image version to use for environment upgrade
     release_track: base.ReleaseTrack, the release track of command. Will dictate
         which Composer client library will be used.
 
@@ -161,6 +163,9 @@ def ConstructPatch(env_ref=None,
         remove_env_variables,
         update_env_variables,
         release_track=release_track)
+  if update_image_version:
+    return _ConstructImageVersionPatch(
+        update_image_version, release_track=release_track)
   raise command_util.Error(
       'Cannot update Environment with no update type specified.')
 
@@ -332,3 +337,23 @@ def _ConstructEnvVariablesPatch(env_ref,
           command_util.BuildFullMapUpdate(
               clear_env_variables, remove_env_variables, update_env_variables,
               initial_env_var_list, entry_cls, _BuildEnv))
+
+
+def _ConstructImageVersionPatch(update_image_version,
+                                release_track=base.ReleaseTrack.GA):
+  """Constructs an environment patch for environment image version.
+
+  Args:
+    update_image_version: string, the target image version.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+      which Composer client library will be used.
+
+  Returns:
+    (str, Environment), the field mask and environment to use for update.
+  """
+  messages = api_util.GetMessagesModule(release_track=release_track)
+  software_config = messages.SoftwareConfig(imageVersion=update_image_version)
+  config = messages.EnvironmentConfig(softwareConfig=software_config)
+
+  return 'config.software_config.image_version', messages.Environment(
+      config=config)

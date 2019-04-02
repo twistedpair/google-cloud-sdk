@@ -629,26 +629,6 @@ class GenomicsPipelinesListRequest(_messages.Message):
   projectId = _messages.StringField(4)
 
 
-class ImportReadGroupSetsResponse(_messages.Message):
-  r"""The read group set import response.
-
-  Fields:
-    readGroupSetIds: IDs of the read group sets that were created.
-  """
-
-  readGroupSetIds = _messages.StringField(1, repeated=True)
-
-
-class ImportVariantsResponse(_messages.Message):
-  r"""The variant data import response.
-
-  Fields:
-    callSetIds: IDs of the call sets created during the import.
-  """
-
-  callSetIds = _messages.StringField(1, repeated=True)
-
-
 class ListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -717,9 +697,7 @@ class Operation(_messages.Message):
   Messages:
     MetadataValue: An OperationMetadata or Metadata object. This will always
       be returned with the Operation.
-    ResponseValue: If importing ReadGroupSets, an ImportReadGroupSetsResponse
-      is returned. If importing Variants, an ImportVariantsResponse is
-      returned. For pipelines and exports, an Empty response is returned.
+    ResponseValue: An Empty object.
 
   Fields:
     done: If the value is `false`, it means the operation is still in
@@ -732,9 +710,7 @@ class Operation(_messages.Message):
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. For example&#58; `operations
       /CJHU7Oi_ChDrveSpBRjfuL-qzoWAgEw`
-    response: If importing ReadGroupSets, an ImportReadGroupSetsResponse is
-      returned. If importing Variants, an ImportVariantsResponse is returned.
-      For pipelines and exports, an Empty response is returned.
+    response: An Empty object.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -765,9 +741,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""If importing ReadGroupSets, an ImportReadGroupSetsResponse is
-    returned. If importing Variants, an ImportVariantsResponse is returned.
-    For pipelines and exports, an Empty response is returned.
+    r"""An Empty object.
 
     Messages:
       AdditionalProperty: An additional property for a ResponseValue object.

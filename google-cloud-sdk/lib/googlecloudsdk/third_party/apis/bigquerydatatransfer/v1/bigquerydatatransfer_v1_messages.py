@@ -401,6 +401,22 @@ class BigquerydatatransferProjectsLocationsTransferConfigsScheduleRunsRequest(_m
   scheduleTransferRunsRequest = _messages.MessageField('ScheduleTransferRunsRequest', 2)
 
 
+class BigquerydatatransferProjectsLocationsTransferConfigsStartManualRunsRequest(_messages.Message):
+  r"""A
+  BigquerydatatransferProjectsLocationsTransferConfigsStartManualRunsRequest
+  object.
+
+  Fields:
+    parent: Transfer configuration name in the form:
+      `projects/{project_id}/transferConfigs/{config_id}`.
+    startManualTransferRunsRequest: A StartManualTransferRunsRequest resource
+      to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  startManualTransferRunsRequest = _messages.MessageField('StartManualTransferRunsRequest', 2)
+
+
 class BigquerydatatransferProjectsTransferConfigsCreateRequest(_messages.Message):
   r"""A BigquerydatatransferProjectsTransferConfigsCreateRequest object.
 
@@ -663,6 +679,21 @@ class BigquerydatatransferProjectsTransferConfigsScheduleRunsRequest(_messages.M
 
   parent = _messages.StringField(1, required=True)
   scheduleTransferRunsRequest = _messages.MessageField('ScheduleTransferRunsRequest', 2)
+
+
+class BigquerydatatransferProjectsTransferConfigsStartManualRunsRequest(_messages.Message):
+  r"""A BigquerydatatransferProjectsTransferConfigsStartManualRunsRequest
+  object.
+
+  Fields:
+    parent: Transfer configuration name in the form:
+      `projects/{project_id}/transferConfigs/{config_id}`.
+    startManualTransferRunsRequest: A StartManualTransferRunsRequest resource
+      to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  startManualTransferRunsRequest = _messages.MessageField('StartManualTransferRunsRequest', 2)
 
 
 class CheckValidCredsRequest(_messages.Message):
@@ -1146,6 +1177,30 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class StartManualTransferRunsRequest(_messages.Message):
+  r"""A request to start manual transfer runs.
+
+  Fields:
+    requestedRunTime: Specific run_time for a transfer run to be started. The
+      requested_run_time must not be in the future.
+    requestedTimeRange: Time range for the transfer runs that should be
+      started.
+  """
+
+  requestedRunTime = _messages.StringField(1)
+  requestedTimeRange = _messages.MessageField('TimeRange', 2)
+
+
+class StartManualTransferRunsResponse(_messages.Message):
+  r"""A response to start manual transfer runs.
+
+  Fields:
+    runs: The transfer runs that were created.
+  """
+
+  runs = _messages.MessageField('TransferRun', 1, repeated=True)
+
+
 class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
@@ -1222,6 +1277,25 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TimeRange(_messages.Message):
+  r"""A specification for a time range, this will request transfer runs with
+  run_time between start_time (inclusive) and end_time (exclusive).
+
+  Fields:
+    endTime: End time of the range of transfer runs. For example,
+      `"2017-05-30T00:00:00+00:00"`. The end_time must not be in the future.
+      Creates transfer runs where run_time is in the range betwen start_time
+      (inclusive) and end_time (exlusive).
+    startTime: Start time of the range of transfer runs. For example,
+      `"2017-05-25T00:00:00+00:00"`. The start_time must be strictly less than
+      the end_time. Creates transfer runs where run_time is in the range
+      betwen start_time (inclusive) and end_time (exlusive).
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
 
 
 class TransferConfig(_messages.Message):

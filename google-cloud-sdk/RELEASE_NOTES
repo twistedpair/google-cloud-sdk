@@ -5,13 +5,165 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 241.0.0 (2019-04-02)
+
+### Breaking Changes
+
+*   **(Cloud Functions)** Modified `gcloud functions deploy` such that the `--runtime` flag needs to be set when deploying a new function.
+
+
+### App Engine
+
+* Updated the Java SDK to version 1.9.73.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/java/release-notes
+* Updated the Python SDK to version 1.9.85.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/python/release-notes
+
+### BigQuery
+
+* Added DML/DDL query results that display the number of affected rows (for DML) and performed operation and target name (for DDL).
+
+### Cloud Asset Inventory
+
+* Promoted `gcloud asset` command group to GA
+
+### Cloud Bigtable
+
+*   Promoted the following to GA:
+    *   `gcloud bigtable app-profiles` command group
+    *   `gcloud bigtable clusters create`
+    *   `gcloud bigtable clusters update`
+    *   `gcloud bigtable clusters delete`
+
+### Cloud Build
+
+*   Added `--network=cloudbuild` to `gcloud builds submit --tag` invocations of
+    `docker build`. This enables access to metadata during Dockerfile `RUN`
+    operations at build time.
+
+### Cloud Composer
+
+* Added three new flags to `gcloud beta composer environments create` to support
+  Private IP Composer environments:
+    *  `--enable-private-environment`
+    *  `--enable-private-endpoint`
+    *  `--master-ipv4-cidr`
+* Added `gcloud beta composer environments list-upgrades` to list all image
+  version upgrades that are supported for a specified environment.
+* Added two mutually exclusive flags to `gcloud beta composer environments
+  update` to allow for in-place environment upgrades:
+    *  `--airflow-version`
+    *  `--image-version`
+
+### Cloud DNS
+
+* Added support for DNS peering in `gcloud beta dns managed-zones`.
+* Added `--enable-logging` flag to `gcloud beta dns policies` to enable query logging.
+
+
+### Cloud Data Catalog
+
+* Added the `gcloud beta data-catalog entries` command group, which provides
+  lookup, describe, and schema update functionality for Cloud Data Catalog
+  entries.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore Emulator version 1.4.2
+  * Adds implementations for BeginTransaction and Rollback
+
+### Cloud Functions
+
+* Added `--service-account` flag to `gcloud functions deploy`.
+* Added `--vpc-connector` flag to `gcloud beta functions deploy`.
+
+### Cloud Memorystore
+
+*   Added `gcloud redis instances failover` which provides the ability to
+    failover a standard tier Cloud Memorystore for Redis instance from the
+    master node to its replica.
+*   Added `--redis-version` flag to `gcloud beta redis instances create` to
+    enable the specification of a preferred Redis version compatibility; this
+    can be either `redis_3_2` or `redis_4_0`.
+*   Modified the `--update-redis-config` flag of `gcloud redis instances update`
+    to accept three additional parameters for Redis 4.0 compatible instances:
+    `activedefrag`, `lfu-decay-time`, `lfu-log-factor`.
+
+### Cloud PubSub
+
+* Added optional flags `--push-auth-service-account` and
+ `--push-auth-token-audience` for defining an authenticated push subscription in
+ `gcloud beta pubsub subscriptions <create|update|modify-push-config>`.
+
+### Cloud Storage
+
+* 
+* Updated gsutil component to 4.38.
+
+### Cloud Video Intelligence API
+
+* Added `gcloud beta ml video transcribe-speech|detect-text|detect-object`
+  commands.
+
+### Compute Engine
+
+* Promoted `--logging-aggregation-interval`, `--logging-flow-sampling`, and
+  `--logging-metadata` flags of
+  `gcloud compute networks subnets <create|update>` to beta.
+* Modified `gcloud compute networks subnets update` to support specifying
+  `--logging-aggregation-interval`, `--logging-flow-sampling`, and
+  `--logging-metadata` flags in a single call.
+* Promoted `gcloud compute reservations` command group to beta.
+* Promoted `--reservation` and `--reservation-affinity` of `gcloud compute instance-templates create` to beta.
+* Promoted `--reservation` and `--reservations-from-file` of `gcloud compute commitments create` to beta.
+* Promoted `gcloud compute commitments update-reservations` to beta.
+* Promoted 100G interconnect link type support for `gcloud compute interconnects create` to beta.
+* Deprecated the creation of new legacy network.
+
+### Firebase Test Lab
+
+* Promoted `--num-flaky-test-attempts` flag of `gcloud firebase test
+  <android|ios> run` to GA. This flag specifies how many times to rerun any
+  failed executions.
+
+### Kubernetes Engine
+
+*   Promoted the `--security-group` flag of `gcloud container clusters create`
+    to beta. The flag enables support for Google Groups in Kubernetes RBAC
+    rules.
+*   Added the `--enable-intra-node-visibility` flag to `gcloud beta container
+    clusters create`.
+*   Promoted the `--enable-tpu` flag and the `--tpu-ipv4-cidr` flag of `gcloud
+    container clusters create` to GA. The flags enables support for using Cloud
+    TPU in Google Kubernetes Engine clusters.
+*   Changed the default output formatting for the `gcloud beta container
+    binauthz attestations list` command.
+*   Google Kubernetes Engine kubectl is updated to 1.11.9. Addresses security
+    vulnerability: CVE-2019-1002101.
+*   Updated extra Google Kubernetes Engine kubectl versions:
+    *   kubectl.1.11 (patch 1.11.9)
+    *   kubectl.1.12 (patch 1.12.7)
+    *   kubectl.1.13 (patch 1.13.5)
+    *   kubectl.1.14 (patch 1.14.0)
+*   Removed extra Google Kubernetes Engine kubectl versions, since these
+    versions are vulnerable.
+    *   kubectl.1.9
+    *   kubectl.1.10
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 240.0.0 (2019-03-26)
 
 ### Breaking Changes
 
-*   **(Kubernetes Engine)** Enabled node auto-upgrade by default for clusters and node-pools created
-*   **(Kubernetes Engine)** with `gcloud beta container <clusters|node-pools> create`. To disable manually,
-*   **(Kubernetes Engine)** use the `--no-enable-autoupgrade` flag.
+*   **(Kubernetes Engine)** Enabled node auto-upgrade by default for clusters
+    and node-pools created with `gcloud beta container <clusters|node-pools>
+    create`. To disable manually, **(Kubernetes Engine)** use the
+    `--no-enable-autoupgrade` flag.
 
 
 ### Cloud SDK
@@ -5962,7 +6114,7 @@ disabled on existing clusters via the
 * Show Cloud OS Images (COS) in 'gcloud compute images list' output.
 * Added beta for 'compute xpn get-xpn-host' and 'compute xpn organizations list-xpn-hosts'.
 
-### Cloud Tools for Powershell
+### Cloud Tools for PowerShell
 
 * Added beta cmdlets for Log Sinks and Log Metrics.
 
@@ -6443,7 +6595,7 @@ if a file upload is necessary.
 
 * Add `--service-label` flag to `gcloud alpha compute forwarding-rules create`.
 
-### Cloud Tools for Powershell
+### Cloud Tools for PowerShell
 
 * Add cmdlets to manage Cloud Storage ACLs.
 
@@ -6598,7 +6750,7 @@ The alpha commands will remain, as is, until at least March of 2017.
   the `gcloud alpha container operations cancel` command.  See
   `gcloud alpha container operations cancel --help` for more details.
 
-### Cloud Tools for Powershell
+### Cloud Tools for PowerShell
 
 * Fix a bug where the module is not picking up the active user credentials
   correctly.
@@ -6964,7 +7116,7 @@ The alpha commands will remain, as is, until at least March of 2017.
   * Removed `jobs list` --job-name flag.
   * Added `jobs list` --uri flag.
 
-### Cloud Tools for Powershell
+### Cloud Tools for PowerShell
 
 * Add Google Cloud Sql and Google Cloud Dns powershell cmdlets.
 

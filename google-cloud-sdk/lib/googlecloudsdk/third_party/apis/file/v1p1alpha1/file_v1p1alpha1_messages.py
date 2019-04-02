@@ -26,6 +26,18 @@ class Empty(_messages.Message):
 
 
 
+class ExportConfig(_messages.Message):
+  r"""File share export specification.
+
+  Fields:
+    allowedIpRanges: List of IPv4 addresses in the format {octet 1}.{octet
+      2}.{octet 3}.{octet 4} or CIDR ranges in the format {octet 1}.{octet
+      2}.{octet 3}.{octet 4}/{mask size} which may mount the fileshare.
+  """
+
+  allowedIpRanges = _messages.StringField(1, repeated=True)
+
+
 class FileProjectsLocationsGetRequest(_messages.Message):
   r"""A FileProjectsLocationsGetRequest object.
 
@@ -201,7 +213,8 @@ class FileProjectsLocationsSnapshotsCreateRequest(_messages.Message):
   Fields:
     parent: The snapshot's project and location, in the format
       projects/{project_id}/locations/{location}. In Cloud Filestore, snapshot
-      locations map to GCP regions, for example **us-west1**.
+      locations map to GCP zones, for example **us-west1-b**, for local
+      snapshots and to GCP regions, for example **us-west1**, otherwise.
     snapshot: A Snapshot resource to be passed as the request body.
     snapshotId: The ID to use for the snapshot. The ID must be unique within
       the specified project and location.
@@ -246,9 +259,10 @@ class FileProjectsLocationsSnapshotsListRequest(_messages.Message):
       results to retrieve for this list request.
     parent: The project and location for which to retrieve snapshot
       information, in the format projects/{project_id}/locations/{location}.
-      In Cloud Filestore, snapshot locations map to GCP regions, for example
-      **us-west1**. To retrieve snapshot information for all locations, use
-      "-" for the {location} value.
+      In Cloud Filestore, snapshot locations map to GCP zones, for example
+      **us-west1-b**, for local snapshots and to GCP regions, for example
+      **us-west1**, otherwise. To retrieve snapshot information for all
+      locations, use "-" for the {location} value.
   """
 
   filter = _messages.StringField(1)
@@ -264,6 +278,9 @@ class FileShareConfig(_messages.Message):
   Fields:
     capacityGb: File share capacity in gigabytes (GB). Cloud Filestore defines
       1 GB as 1024^3 bytes.
+    exports: Exports. If exports are omitted, a default allowed_ip_ranges is
+      set to RFC1918 Internal IP ranges (10.0.0.0/8, 172.16.0.0/12,
+      192.168.0.0/16)
     name: The name of the file share (must be 16 characters or less).
     sourceSnapshot: The resource name of the snapshot, in the format
       projects/{project_id}/locations/{location_id}/snapshots/{snapshot_id},
@@ -272,8 +289,9 @@ class FileShareConfig(_messages.Message):
   """
 
   capacityGb = _messages.IntegerField(1)
-  name = _messages.StringField(2)
-  sourceSnapshot = _messages.StringField(3)
+  exports = _messages.MessageField('ExportConfig', 2, repeated=True)
+  name = _messages.StringField(3)
+  sourceSnapshot = _messages.StringField(4)
 
 
 class Instance(_messages.Message):
@@ -714,6 +732,8 @@ class Snapshot(_messages.Message):
   r"""A Cloud Filestore snapshot.
 
   Enums:
+    SourceInstanceTierValueValuesEnum: Output only. The service tier of the
+      source Cloud Filestore instance that this snapshot is created from.
     StateValueValuesEnum: Output only. The snapshot state.
 
   Messages:
@@ -726,6 +746,9 @@ class Snapshot(_messages.Message):
     description: Optional. A description of the snapshot with 2048 characters
       or less. Requests with longer descriptions will be rejected.
     labels: Resource labels to represent user provided metadata.
+    local: "true" if the snapshot is local, "false" otherwise. Local snapshots
+      are faster to create and restore, but they can only be performed within
+      the same location.
     name: Output only. The resource name of the snapshot, in the format
       projects/{project_id}/locations/{location_id}/snapshots/{snapshot_id}.
     sourceFileShare: Name of the file share in the source Cloud Filestore
@@ -734,11 +757,27 @@ class Snapshot(_messages.Message):
       Filestore instance, in the format
       projects/{project_id}/locations/{location_id}/instances/{instance_id},
       used to create this snapshot.
+    sourceInstanceTier: Output only. The service tier of the source Cloud
+      Filestore instance that this snapshot is created from.
     state: Output only. The snapshot state.
     storageBytes: Output only. The size of the storage used by the snapshot.
       As snapshots share storage, this number is expected to change with
-      snapshot creation/deletion.
+      snapshot creation/deletion. Always equals to capacityGb for local
+      snapshots.
   """
+
+  class SourceInstanceTierValueValuesEnum(_messages.Enum):
+    r"""Output only. The service tier of the source Cloud Filestore instance
+    that this snapshot is created from.
+
+    Values:
+      TIER_UNSPECIFIED: Not set.
+      STANDARD: STANDARD tier.
+      PREMIUM: PREMIUM tier.
+    """
+    TIER_UNSPECIFIED = 0
+    STANDARD = 1
+    PREMIUM = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The snapshot state.
@@ -786,11 +825,13 @@ class Snapshot(_messages.Message):
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
   labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  sourceFileShare = _messages.StringField(6)
-  sourceInstance = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  storageBytes = _messages.IntegerField(9)
+  local = _messages.BooleanField(5)
+  name = _messages.StringField(6)
+  sourceFileShare = _messages.StringField(7)
+  sourceInstance = _messages.StringField(8)
+  sourceInstanceTier = _messages.EnumField('SourceInstanceTierValueValuesEnum', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  storageBytes = _messages.IntegerField(11)
 
 
 class StandardQueryParameters(_messages.Message):

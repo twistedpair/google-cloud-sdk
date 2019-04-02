@@ -72,6 +72,17 @@ class Collections(enum.Enum):
       [u'projectsId', u'locationsId'],
       True
   )
+  PROJECTS_LOCATIONS_OPERATIONS = (
+      'projects.locations.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/operations/'
+              '{operationsId}',
+      },
+      [u'name'],
+      True
+  )
   PROJECTS_LOCATIONS_PRODUCTSETS = (
       'projects.locations.productSets',
       '{+name}',
@@ -101,6 +112,16 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/products/'
               '{productsId}/referenceImages/{referenceImagesId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_OPERATIONS = (
+      'projects.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/operations/{operationsId}',
       },
       [u'name'],
       True

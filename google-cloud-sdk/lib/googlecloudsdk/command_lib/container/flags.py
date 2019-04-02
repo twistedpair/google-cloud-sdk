@@ -1620,8 +1620,7 @@ def AddTpuFlags(parser, hidden=False, enable_tpu_service_networking=False):
       help="""\
 Enable Cloud TPUs for this cluster.
 
-Can not be specified unless `--enable-kubernetes-alpha` and `--enable-ip-alias`
-are also specified.
+Can not be specified unless `--enable-ip-alias` is also specified.
 """)
 
   group = tpu_group
@@ -1970,6 +1969,32 @@ This is currently only available on Alpha clusters, specified by using
       action='store_true')
 
 
+def AddEnableIntraNodeVisibilityFlag(parser, hidden=False):
+  """Adds --enable-intra-node-visibility flag to the parser.
+
+  When enabled, the intra-node traffic is visible to VPC network.
+
+  Args:
+    parser: A given parser.
+    hidden: If true, suppress help text for added options.
+  """
+  parser.add_argument(
+      '--enable-intra-node-visibility',
+      default=None,
+      hidden=hidden,
+      action='store_true',
+      help="""\
+Enable Intra-node visibility for this cluster.
+
+Enabling intra-node visibility makes your intra-node pod to pod traffic
+visible to the networking fabric. With this feature, you can use VPC flow
+logging or other VPC features for intra-node traffic.
+
+This is a beta feature, enabling it on existing cluster causes the cluster
+master and the cluster nodes to restart, which might cause disruption.
+""")
+
+
 def AddVerticalPodAutoscalingFlag(parser, hidden=False):
   """Adds vertical pod autoscaling related flag to the parser.
 
@@ -2222,3 +2247,28 @@ will enable a more secure Node credential bootstrapping implementation.
       action='store_true',
       help=help_text,
       hidden=True)
+
+
+def AddSurgeUpgradeFlag(parser, hidden=False):
+  """Adds surge upgrade related flag to the parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Whether or not to hide the help text.
+  """
+
+  max_surge_help = """\
+Number of extra (surge) nodes to be created on each upgrade of a node pool.
+
+Specifies the number of extra (surge) nodes to be created during this node
+pool's upgrades. For example, running the following command will result in
+creating an extra node each time a node is upgraded:
+
+  $ {command} example-cluster --max-surge-upgrade 1
+"""
+  parser.add_argument(
+      '--max-surge-upgrade',
+      type=int,
+      default=0,
+      help=max_surge_help,
+      hidden=hidden)

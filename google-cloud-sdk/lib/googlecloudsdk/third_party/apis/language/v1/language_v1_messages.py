@@ -37,7 +37,7 @@ class AnalyzeEntitiesRequest(_messages.Message):
         examples of languages that use this encoding natively.
       UTF16: Encoding-dependent information (such as `begin_offset`) is
         calculated based on the UTF-16 encoding of the input. Java and
-        Javascript are examples of languages that use this encoding natively.
+        JavaScript are examples of languages that use this encoding natively.
       UTF32: Encoding-dependent information (such as `begin_offset`) is
         calculated based on the UTF-32 encoding of the input. Python is an
         example of a language that uses this encoding natively.
@@ -88,7 +88,7 @@ class AnalyzeEntitySentimentRequest(_messages.Message):
         examples of languages that use this encoding natively.
       UTF16: Encoding-dependent information (such as `begin_offset`) is
         calculated based on the UTF-16 encoding of the input. Java and
-        Javascript are examples of languages that use this encoding natively.
+        JavaScript are examples of languages that use this encoding natively.
       UTF32: Encoding-dependent information (such as `begin_offset`) is
         calculated based on the UTF-32 encoding of the input. Python is an
         example of a language that uses this encoding natively.
@@ -141,7 +141,7 @@ class AnalyzeSentimentRequest(_messages.Message):
         examples of languages that use this encoding natively.
       UTF16: Encoding-dependent information (such as `begin_offset`) is
         calculated based on the UTF-16 encoding of the input. Java and
-        Javascript are examples of languages that use this encoding natively.
+        JavaScript are examples of languages that use this encoding natively.
       UTF32: Encoding-dependent information (such as `begin_offset`) is
         calculated based on the UTF-32 encoding of the input. Python is an
         example of a language that uses this encoding natively.
@@ -194,7 +194,7 @@ class AnalyzeSyntaxRequest(_messages.Message):
         examples of languages that use this encoding natively.
       UTF16: Encoding-dependent information (such as `begin_offset`) is
         calculated based on the UTF-16 encoding of the input. Java and
-        Javascript are examples of languages that use this encoding natively.
+        JavaScript are examples of languages that use this encoding natively.
       UTF32: Encoding-dependent information (such as `begin_offset`) is
         calculated based on the UTF-32 encoding of the input. Python is an
         example of a language that uses this encoding natively.
@@ -250,7 +250,7 @@ class AnnotateTextRequest(_messages.Message):
         examples of languages that use this encoding natively.
       UTF16: Encoding-dependent information (such as `begin_offset`) is
         calculated based on the UTF-16 encoding of the input. Java and
-        Javascript are examples of languages that use this encoding natively.
+        JavaScript are examples of languages that use this encoding natively.
       UTF32: Encoding-dependent information (such as `begin_offset`) is
         calculated based on the UTF-32 encoding of the input. Python is an
         example of a language that uses this encoding natively.
@@ -576,16 +576,18 @@ class Entity(_messages.Message):
     TypeValueValuesEnum: The entity type.
 
   Messages:
-    MetadataValue: Metadata associated with the entity.  Currently, Wikipedia
-      URLs and Knowledge Graph MIDs are provided, if available. The associated
-      keys are "wikipedia_url" and "mid", respectively.
+    MetadataValue: Metadata associated with the entity.  For most entity
+      types, the metadata is a Wikipedia URL (`wikipedia_url`) and Knowledge
+      Graph MID (`mid`), if they are available. For the metadata associated
+      with other entity types, see the Type table below.
 
   Fields:
     mentions: The mentions of this entity in the input document. The API
       currently supports proper noun mentions.
-    metadata: Metadata associated with the entity.  Currently, Wikipedia URLs
-      and Knowledge Graph MIDs are provided, if available. The associated keys
-      are "wikipedia_url" and "mid", respectively.
+    metadata: Metadata associated with the entity.  For most entity types, the
+      metadata is a Wikipedia URL (`wikipedia_url`) and Knowledge Graph MID
+      (`mid`), if they are available. For the metadata associated with other
+      entity types, see the Type table below.
     name: The representative name for the entity.
     salience: The salience score associated with the entity in the [0, 1.0]
       range.  The salience score for an entity provides information about the
@@ -608,9 +610,9 @@ class Entity(_messages.Message):
       LOCATION: Location
       ORGANIZATION: Organization
       EVENT: Event
-      WORK_OF_ART: Work of art
-      CONSUMER_GOOD: Consumer goods
-      OTHER: Other types
+      WORK_OF_ART: Artwork
+      CONSUMER_GOOD: Consumer product
+      OTHER: Other types of entities
     """
     UNKNOWN = 0
     PERSON = 1
@@ -623,9 +625,10 @@ class Entity(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Metadata associated with the entity.  Currently, Wikipedia URLs and
-    Knowledge Graph MIDs are provided, if available. The associated keys are
-    "wikipedia_url" and "mid", respectively.
+    r"""Metadata associated with the entity.  For most entity types, the
+    metadata is a Wikipedia URL (`wikipedia_url`) and Knowledge Graph MID
+    (`mid`), if they are available. For the metadata associated with other
+    entity types, see the Type table below.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.

@@ -170,7 +170,7 @@
     },
     "Status": {
       "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error\nmessage, and error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
       "type": "object",
       "properties": {
         "code": {
@@ -251,6 +251,10 @@
         },
         "restoreInfo": {
           "$ref": "RestoreInfo"
+        },
+        "encryptionConfig": {
+          "description": "Output only. Custom encryption configuration (Cloud KMS keys).\nApplicable only for databases using the Customer Managed Encryption Keys\nfeature.",
+          "$ref": "EncryptionConfig"
         }
       }
     },
@@ -295,6 +299,17 @@
         }
       }
     },
+    "EncryptionConfig": {
+      "id": "EncryptionConfig",
+      "description": "Encryption configuration describing key resources in Cloud KMS used to\nencrypt\/decrypt a Cloud Spanner database.",
+      "type": "object",
+      "properties": {
+        "kmsKey": {
+          "description": "A required resource name of the Cloud KMS key that was used to\nencrypt and decrypt the database. The form of the kms_key is\n`projects\/[PROJECT_ID]\/locations\/[LOCATION]\/keyRings\/[KEY_RING]\/cryptoKeys\/kms_key>`.",
+          "type": "string"
+        }
+      }
+    },
     "CreateDatabaseRequest": {
       "id": "CreateDatabaseRequest",
       "description": "The request for CreateDatabase.",
@@ -310,6 +325,9 @@
           "items": {
             "type": "string"
           }
+        },
+        "encryptionConfig": {
+          "$ref": "EncryptionConfig"
         }
       }
     },
@@ -419,7 +437,7 @@
           }
         },
         "condition": {
-          "description": "Unimplemented. The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.",
+          "description": "The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.",
           "$ref": "Expr"
         }
       }
@@ -783,20 +801,6 @@
         }
       }
     },
-    "CreateBackupRequest": {
-      "id": "CreateBackupRequest",
-      "type": "object",
-      "properties": {
-        "backupId": {
-          "description": "Required. The id of the backup to be created. The `backup_id` appended to\n`parent` forms the full backup name of the form\n`projects\/<project>\/instances\/<instance>\/backups\/<backup_id>`.",
-          "type": "string"
-        },
-        "backup": {
-          "description": "Required. The backup to create.",
-          "$ref": "Backup"
-        }
-      }
-    },
     "Backup": {
       "id": "Backup",
       "type": "object",
@@ -844,21 +848,6 @@
           "items": {
             "type": "string"
           }
-        }
-      }
-    },
-    "UpdateBackupRequest": {
-      "id": "UpdateBackupRequest",
-      "type": "object",
-      "properties": {
-        "backup": {
-          "description": "Required. The backup to update. `backup.name`, and the fields to be updated\nas specified by `update_mask` are required. Other fields are ignored.\nUpdate is only supported for the following fields:\n * `backup.expire_time`.",
-          "$ref": "Backup"
-        },
-        "updateMask": {
-          "description": "Required. A mask specifying which fields (e.g. `backup.expire_time`) in the\nBackup resource should be updated. This mask is relative to the Backup\nresource, not to the request message. The field mask must always be\nspecified; this prevents any future fields from being erased accidentally\nby clients that do not know about them.",
-          "type": "string",
-          "format": "google-fieldmask"
         }
       }
     },
@@ -1021,7 +1010,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. A unique identifier for the instance, which cannot be changed\nafter the instance is created. Values are of the form\n`projects\/<project>\/instances\/a-z*[a-z0-9]`. The final\nsegment of the name must be between 6 and 30 characters in length.",
+          "description": "Required. A unique identifier for the instance, which cannot be changed\nafter the instance is created. Values are of the form\n`projects\/<project>\/instances\/a-z*[a-z0-9]`. The final\nsegment of the name must be between 2 and 64 characters in length.",
           "type": "string"
         },
         "config": {
@@ -1066,7 +1055,7 @@
       "type": "object",
       "properties": {
         "instanceId": {
-          "description": "Required. The ID of the instance to create.  Valid identifiers are of the\nform `a-z*[a-z0-9]` and must be between 6 and 30 characters in\nlength.",
+          "description": "Required. The ID of the instance to create.  Valid identifiers are of the\nform `a-z*[a-z0-9]` and must be between 2 and 64 characters in\nlength.",
           "type": "string"
         },
         "instance": {
@@ -1634,7 +1623,7 @@
           "$ref": "TransactionSelector"
         },
         "statements": {
-          "description": "The list of statements to execute in this batch. Statements are executed\nserially, such that the effects of statement i are visible to statement\ni+1. Each statement must be a DML statement. Execution will stop at the\nfirst failed statement; the remaining statements will not run.\n\nREQUIRES: statements_size() > 0.",
+          "description": "The list of statements to execute in this batch. Statements are executed\nserially, such that the effects of statement i are visible to statement\ni+1. Each statement must be a DML statement. Execution will stop at the\nfirst failed statement; the remaining statements will not run.\n\nREQUIRES: `statements_size()` > 0.",
           "type": "array",
           "items": {
             "$ref": "Statement"
@@ -1675,7 +1664,7 @@
     },
     "ExecuteBatchDmlResponse": {
       "id": "ExecuteBatchDmlResponse",
-      "description": "The response for ExecuteBatchDml. Contains a list\nof ResultSet, one for each DML statement that has successfully executed.\nIf a statement fails, the error is returned as part of the response payload.\nClients can determine whether all DML statements have run successfully, or if\na statement failed, using one of the following approaches:\n\n  1. Check if 'status' field is OkStatus.\n  2. Check if result_sets_size() equals the number of statements in\n     ExecuteBatchDmlRequest.\n\nExample 1: A request with 5 DML statements, all executed successfully.\nResult: A response with 5 ResultSets, one for each statement in the same\norder, and an OK status.\n\nExample 2: A request with 5 DML statements. The 3rd statement has a syntax\nerror.\nResult: A response with 2 ResultSets, for the first 2 statements that\nrun successfully, and a syntax error (INVALID_ARGUMENT) status. From\nresult_set_size() client can determine that the 3rd statement has failed.",
+      "description": "The response for ExecuteBatchDml. Contains a list\nof ResultSet, one for each DML statement that has successfully executed.\nIf a statement fails, the error is returned as part of the response payload.\nClients can determine whether all DML statements have run successfully, or if\na statement failed, using one of the following approaches:\n\n  1. Check if `'status'` field is `OkStatus`.\n  2. Check if `result_sets_size()` equals the number of statements in\n     ExecuteBatchDmlRequest.\n\nExample 1: A request with 5 DML statements, all executed successfully.\n\nResult: A response with 5 ResultSets, one for each statement in the same\norder, and an `OkStatus`.\n\nExample 2: A request with 5 DML statements. The 3rd statement has a syntax\nerror.\n\nResult: A response with 2 ResultSets, for the first 2 statements that\nrun successfully, and a syntax error (`INVALID_ARGUMENT`) status. From\n`result_set_size()` client can determine that the 3rd statement has failed.",
       "type": "object",
       "properties": {
         "resultSets": {
@@ -2405,7 +2394,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "Required. A unique identifier for the instance, which cannot be changed\nafter the instance is created. Values are of the form\n`projects\/<project>\/instances\/a-z*[a-z0-9]`. The final\nsegment of the name must be between 6 and 30 characters in length.",
+                  "description": "Required. A unique identifier for the instance, which cannot be changed\nafter the instance is created. Values are of the form\n`projects\/<project>\/instances\/a-z*[a-z0-9]`. The final\nsegment of the name must be between 2 and 64 characters in length.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
@@ -3634,13 +3623,18 @@
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
+                    },
+                    "backupId": {
+                      "description": "Required. The id of the backup to be created. The `backup_id` appended to\n`parent` forms the full backup name of the form\n`projects\/<project>\/instances\/<instance>\/backups\/<backup_id>`.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
                     "parent"
                   ],
                   "request": {
-                    "$ref": "CreateBackupRequest"
+                    "$ref": "Backup"
                   },
                   "response": {
                     "$ref": "Operation"
@@ -3689,13 +3683,19 @@
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+$",
                       "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. A mask specifying which fields (e.g. `expire_time`) in the\nBackup resource should be updated. This mask is relative to the Backup\nresource, not to the request message. The field mask must always be\nspecified; this prevents any future fields from being erased accidentally\nby clients that do not know about them.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
                     }
                   },
                   "parameterOrder": [
                     "name"
                   ],
                   "request": {
-                    "$ref": "UpdateBackupRequest"
+                    "$ref": "Backup"
                   },
                   "response": {
                     "$ref": "Backup"

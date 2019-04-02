@@ -5,7 +5,7 @@
  "name": "toolresults",
  "canonicalName": "Tool Results",
  "version": "v1beta3",
- "revision": "20190304",
+ "revision": "20190326",
  "title": "Cloud Tool Results API",
  "description": "Reads and publishes results from Firebase Test Lab.",
  "ownerDomain": "google.com",
@@ -1369,9 +1369,11 @@
       "startActivityNotFound",
       "unspecifiedType",
       "unusedRoboDirective",
-      "usedRoboDirective"
+      "usedRoboDirective",
+      "usedRoboIgnoreDirective"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",

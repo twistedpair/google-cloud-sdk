@@ -1389,6 +1389,7 @@ class TestIssue(_messages.Message):
       unspecifiedType: <no description>
       unusedRoboDirective: <no description>
       usedRoboDirective: <no description>
+      usedRoboIgnoreDirective: <no description>
     """
     anr = 0
     availableDeepLinks = 1
@@ -1412,6 +1413,7 @@ class TestIssue(_messages.Message):
     unspecifiedType = 19
     unusedRoboDirective = 20
     usedRoboDirective = 21
+    usedRoboIgnoreDirective = 22
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   errorMessage = _messages.StringField(2)
