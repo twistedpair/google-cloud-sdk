@@ -132,7 +132,7 @@ def _ValidateBucketName(name):
   #   example, ".." or "-." or ".-" are not valid in DNS names.
 
 
-def _ValidateBucketUrl(url):
+def ValidateBucketUrl(url):
   # These are things that cause unhelpful error messages during parsing, so we
   # check for them here.
   if url.startswith(GSUTIL_BUCKET_PREFIX):
@@ -173,7 +173,7 @@ class BucketReference(object):
           '[gs://somebucket]')
 
     try:
-      _ValidateBucketUrl(value)
+      ValidateBucketUrl(value)
     except InvalidBucketNameError as err:
       raise argparse.ArgumentTypeError(str(err))
 

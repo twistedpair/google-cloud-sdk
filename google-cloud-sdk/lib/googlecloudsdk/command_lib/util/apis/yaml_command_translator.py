@@ -302,7 +302,11 @@ class CommandBuilder(object):
           # Data on responses from operation polling is stored in
           # additionalProperties, so convert to dict for consistent behavior.
           response_obj = encoding.MessageToDict(response)
+          # If the response is an operation that has a 'response' property that
+          # has a name, use that. Otherwise, use the 'name' property.
           full_name = response_obj.get('response', {}).get('name')
+          if not full_name:
+            full_name = response_obj.get('name')
           resource_name = resource_transform.TransformBaseName(full_name)
         else:
           resource_name = self._GetDisplayName(ref, args)

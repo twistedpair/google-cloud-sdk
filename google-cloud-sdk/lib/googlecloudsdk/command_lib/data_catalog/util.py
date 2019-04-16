@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2019 Google Inc. All Rights Reserved.
+# Copyright 2019 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,12 +20,11 @@ from __future__ import unicode_literals
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
-from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.data_catalog import entries
+from googlecloudsdk.api_lib.data_catalog import util as api_util
+from googlecloudsdk.command_lib.concepts import exceptions as concept_exceptions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import yaml
-
-
-DATACATALOG_DEFAULT_API_VERSION = 'v1beta1'
 
 
 class InvalidSchemaError(exceptions.Error):
@@ -36,12 +35,8 @@ class InvalidSchemaFileError(exceptions.Error):
   """Error if a schema file is not valid JSON or YAML."""
 
 
-def GetMessagesModule(api_version=DATACATALOG_DEFAULT_API_VERSION):
-  return apis.GetMessagesModule('datacatalog', api_version)
-
-
-def GetClientInstance(api_version=DATACATALOG_DEFAULT_API_VERSION):
-  return apis.GetClientInstance('datacatalog', api_version)
+class UnderSpecifiedEntryError(exceptions.Error):
+  """Error if an entry resource argument is not fully specified."""
 
 
 def CorrectUpdateMask(ref, args, request):
@@ -61,6 +56,50 @@ def CorrectUpdateMask(ref, args, request):
   del ref
   if args.IsSpecified('schema'):
     request.updateMask = request.updateMask.replace('schema.columns', 'schema')
+  return request
+
+
+def ParseResourceIntoLookupRequest(ref, args, request):
+  del ref
+  return entries.ParseResourceIntoLookupRequest(args.resource, request)
+
+
+def LookupAndParseEntry(ref, args, request):
+  """Parses the entry into the request, performing a lookup first if necessary.
+
+  Args:
+    ref: None.
+    args: The parsed args namespace.
+    request: The update entry request.
+  Returns:
+    Request containing the parsed entry.
+  Raises:
+    UnderSpecifiedEntryError: if ENTRY was only partially specified.
+    RequiredMutexGroupError: if both or neither ENTRY, --lookup-entry specified.
+  """
+  del ref
+  entry_ref = args.CONCEPTS.entry.Parse()
+
+  # Parse() will raise an error if the entry flags are specified without the
+  # anchor, so we don't need to handle that case. However no error is returned
+  # if a positional is specified but parsing fails, so we check for that here.
+  if args.IsSpecified('entry') and not entry_ref:
+    raise UnderSpecifiedEntryError(
+        'Argument [ENTRY : --entry-group=ENTRY_GROUP --location=LOCATION] was '
+        'not fully specified.')
+
+  if ((entry_ref and args.IsSpecified('lookup_entry')) or
+      (not entry_ref and not args.IsSpecified('lookup_entry'))):
+    raise concept_exceptions.RequiredMutexGroupError(
+        'entry',
+        '([ENTRY : --entry-group=ENTRY_GROUP --location=LOCATION] '
+        '| --lookup-entry)')
+
+  if entry_ref:
+    request.name = entry_ref.RelativeName()
+  else:
+    client = entries.EntriesClient()
+    request.name = client.Lookup(args.lookup_entry).name
   return request
 
 
@@ -84,7 +123,7 @@ def _SchemaToMessage(schema):
   Raises:
     InvalidSchemaError: If the schema is invalid.
   """
-  messages = GetMessagesModule()
+  messages = api_util.GetMessagesModule()
 
   try:
     schema_message = encoding.DictToMessage(

@@ -23,7 +23,7 @@ from googlecloudsdk.api_lib.run import k8s_object
 
 
 # Label names as to be stored in k8s object metadata
-AUTHOR_ANNOTATION = 'run.googleapis.com/lastModifierEmail'
+AUTHOR_ANNOTATION = 'serving.knative.dev/lastModifier'
 SERVICE_LABEL = 'serving.knative.dev/service'
 
 

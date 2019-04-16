@@ -186,7 +186,7 @@ def AddRuntimeFlag(parser):
   parser.add_argument(
       '--runtime',
       help="""\
-          The runtime in which to run the function. Defaults to Node.js 6.
+          The runtime in which to run the function.
 
           Choices:
 
@@ -212,7 +212,8 @@ def AddVPCMutexGroup(parser, enable_connected_vpc):
         The VPC Access connector that the function can connect to. It
         should be the fully-qualified URI of the VPC Access connector
         resource whose format is:
-        `projects/${PROJECT}/locations/${LOCATION}/connectors/${CONNECTOR}`.
+        `projects/${PROJECT}/locations/${LOCATION}/connectors/${CONNECTOR}`
+        or an empty string to clear the field.
       """)
 
 

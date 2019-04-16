@@ -30,6 +30,7 @@ from googlecloudsdk.core import yaml_location_value
 from googlecloudsdk.core.util import files
 
 from ruamel import yaml
+import six
 
 
 # YAML unfortunately uses a bunch of global class state for this kind of stuff.
@@ -245,3 +246,11 @@ def list_like(item):
 def dict_like(item):
   """Return True if the item is like a dict: a MutableMapping."""
   return isinstance(item, collections.MutableMapping)
+
+
+def strip_locations(obj):
+  if list_like(obj):
+    return [strip_locations(item) for item in obj]
+  if dict_like(obj):
+    return {key: strip_locations(value) for key, value in six.iteritems(obj)}
+  return obj.value

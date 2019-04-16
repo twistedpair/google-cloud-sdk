@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Common utilities for the containers tool."""
 
 from __future__ import absolute_import
@@ -21,7 +20,6 @@ from __future__ import unicode_literals
 
 import io
 import os
-
 
 from googlecloudsdk.api_lib.container import kubeconfig as kconfig
 from googlecloudsdk.core import config
@@ -85,6 +83,9 @@ WARN_NODE_VERSION_WITH_AUTOUPGRADE_ENABLED = (
     'Node version is specified while node auto-upgrade is enabled. '
     'Node-pools created at the specified version will be auto-upgraded '
     'whenever auto-upgrade preconditions are met.')
+
+GKE_DEFAULT_POD_RANGE = 14
+GKE_DEFAULT_POD_RANGE_PER_NODE = 24
 
 
 class Error(core_exceptions.Error):
@@ -392,3 +393,30 @@ class ClusterConfig(object):
     kubeconfig.Clear(cls.KubeContext(cluster_name, zone_id, project_id))
     kubeconfig.SaveToFile()
     log.debug('Purged cluster config from %s', config_dir)
+
+
+def CalculateMaxNodeNumberByPodRange(cluster_ipv4_cidr):
+  """Calculate the maximum number of nodes for route based clusters.
+
+  Args:
+    cluster_ipv4_cidr: The cluster IPv4 CIDR requested. If cluster_ipv4_cidr is
+      not specified, GKE_DEFAULT_POD_RANGE will be used.
+
+  Returns:
+    The maximum number of nodes the cluster can have.
+    The function returns -1 in case of error.
+  """
+
+  if cluster_ipv4_cidr is None:
+    pod_range = GKE_DEFAULT_POD_RANGE
+  else:
+    blocksize = cluster_ipv4_cidr.split('/')[-1]
+    if not blocksize.isdecimal():
+      return -1
+    pod_range = int(blocksize)
+    if pod_range < 0:
+      return -1
+  if pod_range > GKE_DEFAULT_POD_RANGE_PER_NODE:
+    return -1
+  max_nodes = 2**(GKE_DEFAULT_POD_RANGE_PER_NODE - pod_range)
+  return max_nodes

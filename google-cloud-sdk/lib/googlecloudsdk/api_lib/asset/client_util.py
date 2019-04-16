@@ -88,7 +88,8 @@ def MakeGetAssetsHistoryHttpRequests(args, api_version=DEFAULT_API_VERSION):
   if args.IsSpecified('end_time'):
     query_params.extend([('readTimeWindow.endTime',
                           times.FormatDateTime(args.end_time))])
-  parent = asset_utils.GetParentName(args.organization, args.project, None)
+  parent = asset_utils.GetParentNameForGetHistory(args.organization,
+                                                  args.project)
   url_base = '{0}/{1}/{2}:{3}'.format(BASE_URL, api_version, parent,
                                       'batchGetAssetsHistory')
   url_query = six.moves.urllib.parse.urlencode(query_params)

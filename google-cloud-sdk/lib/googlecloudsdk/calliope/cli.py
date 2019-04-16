@@ -113,7 +113,7 @@ def _AddFlagsFileFlags(inject, flags_file, parent_locations=None):
     for arg, obj in six.iteritems(member.value):
 
       line_col = obj.lc
-      value = obj.value
+      value = yaml.strip_locations(obj)
 
       if arg == flag:
         # The flags-file YAML arg value can be a path or list of paths.

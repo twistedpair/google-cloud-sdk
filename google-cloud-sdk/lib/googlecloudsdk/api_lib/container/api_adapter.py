@@ -173,6 +173,14 @@ SURGE_AND_AUTOSCALING_ERROR_MSG = """\
 Cannot use cluster autoscaling with alpha surge upgrades.
 """
 
+SURGE_AND_MAX_UNAVAILABLE_BOTH_ZERO_ERROR_MSG = """\
+Cannot set both --max-unavailable-upgrade and --max-surge-upgrade to 0.
+"""
+
+SURGE_REQUIRED__TO_CHANGE_MAX_UNAVAILABLE_ERROR_MSG = """\
+At present changing --max-unavailable-upgrade requires setting --max-surge-upgrade to at least 1.
+"""
+
 MAX_NODES_PER_POOL = 1000
 
 MAX_CONCURRENT_NODE_COUNT = 20
@@ -2391,11 +2399,23 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           raise util.Error(MAX_PODS_PER_NODE_WITHOUT_IP_ALIAS_ERROR_MSG)
         pool.maxPodsConstraint = self.messages.MaxPodsConstraint(
             maxPodsPerNode=options.max_pods_per_node)
-      if options.max_surge_upgrade:
-        if options.max_surge_upgrade > 0 and options.enable_autoscaling:
+      # When both flags are default, don't write UpgradeSettings.
+      # TODO(b/130107095): remove this condition and always create.
+      # UppgradeSettings.
+      if (options.max_surge_upgrade != 0 or
+          options.max_unavailable_upgrade != 1):
+        # TODO(b/130103224): remove this condition.
+        if options.enable_autoscaling:
           raise util.Error(SURGE_AND_AUTOSCALING_ERROR_MSG)
+        if (options.max_surge_upgrade == 0
+            and options.max_unavailable_upgrade == 0):
+          raise util.Error(SURGE_AND_MAX_UNAVAILABLE_BOTH_ZERO_ERROR_MSG)
+        # TODO(b/130107094): remove this condition.
+        if options.max_surge_upgrade == 0:
+          raise util.Error(SURGE_REQUIRED__TO_CHANGE_MAX_UNAVAILABLE_ERROR_MSG)
         pool.upgradeSettings = self.messages.UpgradeSettings()
         pool.upgradeSettings.maxSurge = options.max_surge_upgrade
+        pool.upgradeSettings.maxUnavailable = options.max_unavailable_upgrade
       pools.append(pool)
       to_add -= nodes
     return pools

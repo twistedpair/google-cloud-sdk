@@ -76,23 +76,6 @@ def GenerateServiceName(source_ref):
   return re.sub(r'[^a-zA-Z0-9-]', '', base_name).strip('-').lower()
 
 
-class ServiceFileFallthrough(deps.Fallthrough):
-  """Fall through to reading the property from .gcloud-serverless-service."""
-
-  def __init__(self, name):
-    super(ServiceFileFallthrough, self).__init__(
-        function=None,
-        hint='put a {name} key-value pair in .gcloud-serverless-service'.format(
-            name=name))
-    self.name = name
-
-  def _Call(self, parsed_args):
-    config = flags.GetLocalConfig(parsed_args)
-    if config:
-      return getattr(config, self.name, None)
-    return None
-
-
 class DefaultFallthrough(deps.Fallthrough):
   """Use the namespace "default".
 
@@ -138,7 +121,6 @@ def NamespaceAttributeConfig():
 def ServiceAttributeConfig(prompt=False):
   if prompt:
     fallthroughs = [
-        ServiceFileFallthrough('service'),
         ServicePromptFallthrough(),
     ]
   else:
@@ -257,4 +239,3 @@ CLUSTER_PRESENTATION = presentation_specs.ResourcePresentationSpec(
     'Kubernetes Engine cluster to connect to.',
     required=False,
     prefixes=True)
-

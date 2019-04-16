@@ -72,7 +72,11 @@ def CreateNatMessage(args, compute_holder, with_logging=False):
   return compute_holder.client.messages.RouterNat(**params)
 
 
-def UpdateNatMessage(nat, args, compute_holder, with_logging=False):
+def UpdateNatMessage(nat,
+                     args,
+                     compute_holder,
+                     with_logging=False,
+                     with_drain_ips=False):
   """Updates a NAT message with the specified arguments."""
   if (args.subnet_option in [
       nat_flags.SubnetOption.ALL_RANGES, nat_flags.SubnetOption.PRIMARY_RANGES
@@ -80,6 +84,20 @@ def UpdateNatMessage(nat, args, compute_holder, with_logging=False):
     ranges_to_nat, subnetworks = _ParseSubnetFields(args, compute_holder)
     nat.sourceSubnetworkIpRangesToNat = ranges_to_nat
     nat.subnetworks = subnetworks
+
+  if with_drain_ips:
+    if args.drain_nat_ips:
+      drain_nat_ips = nat_flags.DRAIN_NAT_IP_ADDRESSES_ARG.ResolveAsResource(
+          args, compute_holder.resources)
+      nat.drainNatIps = [str(ip) for ip in drain_nat_ips]
+
+      # Remove a IP from nat_ips if it is going to be drained.
+      if not args.nat_external_ip_pool:
+        nat.natIps = [ip for ip in nat.natIps
+                      if not _ContainIp(drain_nat_ips, ip)]
+
+    if args.clear_drain_nat_ips:
+      nat.drainNatIps = []
 
   if (args.ip_allocation_option == nat_flags.IpAllocationOption.AUTO or
       args.nat_external_ip_pool):
@@ -230,3 +248,11 @@ def _TranslateLogFilter(filter_str, compute_holder):
   raise calliope_exceptions.InvalidArgumentException(
       '--log-filter', ('--log-filter must be ALL, TRANSLATIONS_ONLY '
                        'or ERRORS_ONLY'))
+
+
+def _ContainIp(ip_list, target_ip):
+  """Returns true if target ip is in the list."""
+  for ip in ip_list:
+    if ip.RelativeName() in target_ip:
+      return True
+  return False

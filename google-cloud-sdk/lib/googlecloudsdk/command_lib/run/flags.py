@@ -19,15 +19,14 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import os
 import re
 
 from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.command_lib.functions.deploy import env_vars_util
 from googlecloudsdk.command_lib.run import config_changes
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
-from googlecloudsdk.command_lib.run import local_config
 from googlecloudsdk.command_lib.run import source_ref as source_ref_util
+from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.command_lib.util.args import repeated
 from googlecloudsdk.core import exceptions
@@ -178,6 +177,12 @@ def AddMemoryFlag(parser):
                       help='Set a memory limit. Ex: 1Gi, 512Mi.')
 
 
+def AddCpuFlag(parser):
+  parser.add_argument('--cpu',
+                      help='Set a CPU limit in Kubernetes cpu units. '
+                           'Ex: .5, 500m, 2.')
+
+
 def AddConcurrencyFlag(parser):
   parser.add_argument('--concurrency',
                       help='Set the number of concurrent requests allowed per '
@@ -195,6 +200,16 @@ def AddTimeoutFlag(parser):
       '10 seconds.')
 
 
+def AddServiceAccountFlag(parser):
+  parser.add_argument(
+      '--service-account',
+      help='Email address of the IAM service account associated with the '
+      'revision of the service. The service account represents the identity of '
+      'the running revision, and determines what permissions the revision has. '
+      'If not provided, the revision will use the project\'s default service '
+      'account.')
+
+
 def _HasEnvChanges(args):
   """True iff any of the env var flags are set."""
   env_flags = ['update_env_vars', 'set_env_vars',
@@ -210,6 +225,15 @@ def _HasCloudSQLChanges(args):
   # don't have the args at all yet.
   return any(hasattr(args, flag) and args.IsSpecified(flag)
              for flag in instances_flags)
+
+
+def _HasLabelChanges(args):
+  """True iff any of the label flags are set."""
+  label_flags = ['update_labels', 'clear_labels', 'remove_labels']
+  # hasattr check is to allow the same code to work for release tracks that
+  # don't have the args at all yet.
+  return any(hasattr(args, flag) and args.IsSpecified(flag)
+             for flag in label_flags)
 
 
 def _GetEnvChanges(args):
@@ -242,6 +266,8 @@ def GetConfigurationChanges(args):
                properties.VALUES.core.project.Get(required=True))
     changes.append(config_changes.CloudSQLChanges(project, region, args))
 
+  if 'cpu' in args and args.cpu:
+    changes.append(config_changes.ResourceChanges(cpu=args.cpu))
   if 'memory' in args and args.memory:
     changes.append(config_changes.ResourceChanges(memory=args.memory))
   if 'concurrency' in args and args.concurrency:
@@ -264,6 +290,15 @@ def GetConfigurationChanges(args):
       raise ArgumentError(
           'The --timeout argument must be a positive time duration.')
     changes.append(config_changes.TimeoutChanges(timeout=timeout_secs))
+  if 'service_account' in args and args.service_account:
+    changes.append(
+        config_changes.ServiceAccountChanges(
+            service_account=args.service_account))
+  if _HasLabelChanges(args):
+    diff = labels_util.Diff.FromUpdateArgs(args)
+    if diff.MayHaveUpdates():
+      changes.append(config_changes.LabelChanges(diff))
+
   return changes
 
 
@@ -298,22 +333,11 @@ def GetSourceRef(source_arg, image_arg):
         'You must provide a container image using the --image flag.')
 
 
-def GetLocalConfig(args):
-  src = getattr(args, 'source', None)
-  if not src:
-    return None
-  fname = os.path.join(src, local_config.DEFAULT_LOCAL_CONFIG_NAME)
-  if not os.path.exists(fname):
-    return None
-  return local_config.LocalConfig.ParseFrom(fname)
-
-
 def GetRegion(args, prompt=False):
   """Prompt for region if not provided.
 
   Region is decided in the following order:
   - region argument;
-  - local config file;
   - run/region gcloud config;
   - compute/region gcloud config;
   - prompt user.
@@ -327,9 +351,6 @@ def GetRegion(args, prompt=False):
   """
   if getattr(args, 'region', None):
     return args.region
-  conf = GetLocalConfig(args)
-  if conf and conf.region:
-    return conf.region
   if properties.VALUES.run.region.IsExplicitlySet():
     return properties.VALUES.run.region.Get()
   if properties.VALUES.compute.region.IsExplicitlySet():
@@ -362,3 +383,28 @@ def ValidateClusterArgs(args):
         'Connecting to a cluster requires a cluster location to be specified.'
         'Either set the run/cluster_location property '
         'or use the --cluster-location flag.')
+
+
+def VerifyOnePlatformFlags(args):
+  """Raise ConfigurationError if args includes GKE only arguments."""
+  if getattr(args, 'connectivity', None):
+    raise serverless_exceptions.ConfigurationError(
+        'The `--connectivity=[internal|external]` flag '
+        'is not supported on OnePlatform.')
+
+  if getattr(args, 'cpu', None):
+    raise serverless_exceptions.ConfigurationError(
+        'The `--cpu flag is not supported on OnePlatform.')
+
+
+def VerifyGKEFlags(args):
+  """Raise ConfigurationError if args includes OnePlatform only arguments."""
+  if getattr(args, 'allow_unauthenticated', None):
+    raise serverless_exceptions.ConfigurationError(
+        'The `--allow-unauthenticated` flag '
+        'is not supported with Cloud Run on GKE.')
+
+  if getattr(args, 'service_account', None):
+    raise serverless_exceptions.ConfigurationError(
+        'The `--service-account` flag '
+        'is not supported with Cloud Run on GKE.')

@@ -227,6 +227,15 @@ class Configuration(k8s_object.KubernetesObject):
     self.spec.revisionTemplate.spec.timeoutSeconds = value
 
   @property
+  def service_account(self):
+    """The service account in the revisionTemplate."""
+    return self.spec.revisionTemplate.spec.serviceAccountName
+
+  @service_account.setter
+  def service_account(self, value):
+    self.spec.revisionTemplate.spec.serviceAccountName = value
+
+  @property
   def build_template_arguments(self):
     """Returns a mutable, dict-like object to manage build template args.
 

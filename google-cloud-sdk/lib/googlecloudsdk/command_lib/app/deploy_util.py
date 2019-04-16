@@ -586,7 +586,10 @@ def RunDeploy(
 
     app = _PossiblyCreateApp(api_client, project)
     _RaiseIfStopped(api_client, app)
-    app = _PossiblyRepairApp(api_client, app)
+
+    # Call _PossiblyRepairApp when --bucket param is unspecified
+    if not args.bucket:
+      app = _PossiblyRepairApp(api_client, app)
 
     # Tell the user what is going to happen, and ask them to confirm.
     version_id = args.version or util.GenerateVersionId()

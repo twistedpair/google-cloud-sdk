@@ -19,8 +19,10 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.container import api_adapter
+from googlecloudsdk.api_lib.container import util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import text
 
@@ -230,6 +232,31 @@ def GetZoneOrRegion(args, ignore_property=False, required=True):
         ['--zone', '--region'], 'Please specify location')
 
   return location
+
+
+def GetAutoUpgrade(args):
+  """Gets the value of node auto-upgrade."""
+  if args.IsSpecified('enable_autoupgrade'):
+    return args.enable_autoupgrade
+  if getattr(args, 'enable_kubernetes_alpha', False):
+    return None
+  if args.enable_autoupgrade:
+    log.warning(util.WARN_AUTOUPGRADE_ENABLED_BY_DEFAULT)
+  # Return default value
+  return args.enable_autoupgrade
+
+
+def GetAutoRepair(args):
+  """Gets the value of node auto-repair."""
+  if args.IsSpecified('enable_autorepair'):
+    return args.enable_autorepair
+  if getattr(args, 'enable_kubernetes_alpha', False):
+    return None
+  # Node pools using COS support auto repairs, enable it for them by
+  # default. Other node pools using (Ubuntu, custom images) don't support
+  # node auto repairs, attempting to enable autorepair for them will result
+  # in API call failing so don't do it.
+  return (args.image_type or '').lower() in ['', 'cos']
 
 
 def ParseUpdateOptionsBase(args, locations):

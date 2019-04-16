@@ -2,7 +2,7 @@
 
 Google Cloud Data Catalog API provides features to attach metadata to Google
 Cloud Platform resources like BigQuery Tables.<br> Key critical resources
-include: <ul>     <li>Entries  (Datahub representation of a cloud
+include: <ul>     <li>Entries (Data Catalog representation of a cloud
 resource)</li>     <li>Tag Templates (Definition of columns and value types
 for attaching metadata)</li>     <li>Tags (Values associated with Tag
 templates and attached to Entries.)</li> </ul> Google Cloud Data Catalog API
@@ -102,8 +102,6 @@ class GoogleCloudDatacatalogV1beta1ColumnSchema(_messages.Message):
 
   Fields:
     column: Required. Name of the column.
-    columns: Schema of sub-columns. This field is deprecated, use subcolumns
-      instead. Only one of {columns, subcolumns} should be set.
     description: Description of the column.
     mode: A column's mode indicates whether the values in this column are
       required, nullable, etc. Only 'NULLABLE', 'REQUIRED' and 'REPEATED' are
@@ -113,11 +111,10 @@ class GoogleCloudDatacatalogV1beta1ColumnSchema(_messages.Message):
   """
 
   column = _messages.StringField(1)
-  columns = _messages.MessageField('GoogleCloudDatacatalogV1beta1ColumnSchema', 2, repeated=True)
-  description = _messages.StringField(3)
-  mode = _messages.StringField(4)
-  subcolumns = _messages.MessageField('GoogleCloudDatacatalogV1beta1ColumnSchema', 5, repeated=True)
-  type = _messages.StringField(6)
+  description = _messages.StringField(2)
+  mode = _messages.StringField(3)
+  subcolumns = _messages.MessageField('GoogleCloudDatacatalogV1beta1ColumnSchema', 4, repeated=True)
+  type = _messages.StringField(5)
 
 
 class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
@@ -138,8 +135,6 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
       paragraphs that describe entry contents.
     displayName: Display information such as title and description. A short
       name to identify the entry, for example, "Analytics Data - Jan 2011".
-    gcsFilesetSpec: Specification that applies to a Cloud Storage fileset.
-      This is only valid on entries of type FILESET.
     linkedResource: The full name of the cloud resource the entry belongs to.
       See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name
@@ -164,56 +159,18 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
       ENTRY_TYPE_UNSPECIFIED: Default unknown type
       TABLE: The type of entry that has a GoogleSQL schema, including logical
         views.
-      FILESET: An entry type which is a set of files or objects. Example -
-        Cloud Storage fileset.
     """
     ENTRY_TYPE_UNSPECIFIED = 0
     TABLE = 1
-    FILESET = 2
 
   bigqueryTableSpec = _messages.MessageField('GoogleCloudDatacatalogV1beta1BigQueryTableSpec', 1)
   description = _messages.StringField(2)
   displayName = _messages.StringField(3)
-  gcsFilesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1beta1GcsFilesetSpec', 4)
-  linkedResource = _messages.StringField(5)
-  name = _messages.StringField(6)
-  schema = _messages.MessageField('GoogleCloudDatacatalogV1beta1Schema', 7)
-  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1beta1SystemTimestamps', 8)
-  type = _messages.EnumField('TypeValueValuesEnum', 9)
-
-
-class GoogleCloudDatacatalogV1beta1GcsFileSpec(_messages.Message):
-  r"""Specifications of a single file in GCS.
-
-  Fields:
-    filePath: The full file path. Example: "gs://bucket_name/a/b.txt".
-    gcsTimestamps: Timestamps about the GCS file.
-    sizeBytes: The size of the file, in bytes.
-  """
-
-  filePath = _messages.StringField(1)
-  gcsTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1beta1SystemTimestamps', 2)
-  sizeBytes = _messages.IntegerField(3)
-
-
-class GoogleCloudDatacatalogV1beta1GcsFilesetSpec(_messages.Message):
-  r"""Describes a Cloud Storage fileset entry.
-
-  Fields:
-    filePatterns: Patterns to identify a set of files in Google Cloud Storage.
-      Examples of valid file_patterns:     "gs://bucket_name/*"
-      (matches all files in 'bucket_name')     "gs://bucket_name/file*"
-      (matches files prefixed by "file" in
-      'bucket_name')     "gs://bucket_name/a/*/b"    (matches all files in
-      'bucket_name' that                                  match a/*/b pattern,
-      e.g. a/c/b, a/d/b)     "gs://another_bucket/a.txt" (matches
-      gs://another_bucket/a.txt)
-    sampleGcsFileSpecs: Output only. Sample files contained in this fileset,
-      not all files contained in this fileset are represented here.
-  """
-
-  filePatterns = _messages.StringField(1, repeated=True)
-  sampleGcsFileSpecs = _messages.MessageField('GoogleCloudDatacatalogV1beta1GcsFileSpec', 2, repeated=True)
+  linkedResource = _messages.StringField(4)
+  name = _messages.StringField(5)
+  schema = _messages.MessageField('GoogleCloudDatacatalogV1beta1Schema', 6)
+  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1beta1SystemTimestamps', 7)
+  type = _messages.EnumField('TypeValueValuesEnum', 8)
 
 
 class GoogleCloudDatacatalogV1beta1Schema(_messages.Message):

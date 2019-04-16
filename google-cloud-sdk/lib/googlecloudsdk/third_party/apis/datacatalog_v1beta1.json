@@ -7,7 +7,7 @@
   "version": "v1beta1",
   "revision": "0",
   "title": "Google Cloud Data Catalog API",
-  "description": "Google Cloud Data Catalog API provides features to attach metadata to Google Cloud Platform resources like BigQuery Tables.<br>\nKey critical resources include:\n<ul>\n    <li>Entries  (Datahub representation of a cloud resource)<\/li>\n    <li>Tag Templates (Definition of columns and value types for attaching metadata)<\/li>\n    <li>Tags (Values associated with Tag templates and attached to Entries.)<\/li>\n<\/ul>\nGoogle Cloud Data Catalog API also provides rich search functionality to search resources for Entries and tags.\n",
+  "description": "Google Cloud Data Catalog API provides features to attach metadata to Google Cloud Platform resources like BigQuery Tables.<br>\nKey critical resources include:\n<ul>\n    <li>Entries (Data Catalog representation of a cloud resource)<\/li>\n    <li>Tag Templates (Definition of columns and value types for attaching metadata)<\/li>\n    <li>Tags (Values associated with Tag templates and attached to Entries.)<\/li>\n<\/ul>\nGoogle Cloud Data Catalog API also provides rich search functionality to search resources for Entries and tags.\n",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -126,19 +126,13 @@
           "description": "Type of entry.",
           "enumDescriptions": [
             "Default unknown type",
-            "The type of entry that has a GoogleSQL schema, including logical views.",
-            "An entry type which is a set of files or objects. Example - Cloud Storage\nfileset."
+            "The type of entry that has a GoogleSQL schema, including logical views."
           ],
           "type": "string",
           "enum": [
             "ENTRY_TYPE_UNSPECIFIED",
-            "TABLE",
-            "FILESET"
+            "TABLE"
           ]
-        },
-        "gcsFilesetSpec": {
-          "description": "Specification that applies to a Cloud Storage fileset. This is only valid\non entries of type FILESET.",
-          "$ref": "GoogleCloudDatacatalogV1beta1GcsFilesetSpec"
         },
         "bigqueryTableSpec": {
           "description": "Specification that applies to a BigQuery table. This is only valid on\nentries of type TABLE.",
@@ -159,69 +153,6 @@
         "sourceSystemTimestamps": {
           "description": "Timestamps about the underlying Google Cloud Platform resource -- not about\nthis Data Catalog Entry.",
           "$ref": "GoogleCloudDatacatalogV1beta1SystemTimestamps"
-        }
-      }
-    },
-    "GoogleCloudDatacatalogV1beta1GcsFilesetSpec": {
-      "id": "GoogleCloudDatacatalogV1beta1GcsFilesetSpec",
-      "description": "Describes a Cloud Storage fileset entry.",
-      "type": "object",
-      "properties": {
-        "filePatterns": {
-          "description": "Patterns to identify a set of files in Google Cloud Storage.\n\nExamples of valid file_patterns:\n    \"gs:\/\/bucket_name\/*\"        (matches all files in 'bucket_name')\n    \"gs:\/\/bucket_name\/file*\u201D    (matches files prefixed by \"file\" in\n                                 'bucket_name')\n    \"gs:\/\/bucket_name\/a\/*\/b\"    (matches all files in 'bucket_name' that\n                                 match a\/*\/b pattern, e.g. a\/c\/b, a\/d\/b)\n    \"gs:\/\/another_bucket\/a.txt\" (matches gs:\/\/another_bucket\/a.txt)",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "sampleGcsFileSpecs": {
-          "description": "Output only. Sample files contained in this fileset, not all files\ncontained in this fileset are represented here.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudDatacatalogV1beta1GcsFileSpec"
-          }
-        }
-      }
-    },
-    "GoogleCloudDatacatalogV1beta1GcsFileSpec": {
-      "id": "GoogleCloudDatacatalogV1beta1GcsFileSpec",
-      "description": "Specifications of a single file in GCS.",
-      "type": "object",
-      "properties": {
-        "filePath": {
-          "description": "The full file path. Example: \"gs:\/\/bucket_name\/a\/b.txt\".",
-          "type": "string"
-        },
-        "gcsTimestamps": {
-          "description": "Timestamps about the GCS file.",
-          "$ref": "GoogleCloudDatacatalogV1beta1SystemTimestamps"
-        },
-        "sizeBytes": {
-          "description": "The size of the file, in bytes.",
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "GoogleCloudDatacatalogV1beta1SystemTimestamps": {
-      "id": "GoogleCloudDatacatalogV1beta1SystemTimestamps",
-      "description": "Timestamps about this resource according to a particular system.",
-      "type": "object",
-      "properties": {
-        "createTime": {
-          "description": "Output only. The creation time of the resource within the given system.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. The last-modified time of the resource within the given\nsystem.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "expireTime": {
-          "description": "Output only. The expiration time of the resource within the given system.",
-          "type": "string",
-          "format": "google-datetime"
         }
       }
     },
@@ -296,19 +227,34 @@
           "description": "A column's mode indicates whether the values in this column are\nrequired, nullable, etc. Only 'NULLABLE', 'REQUIRED' and 'REPEATED' are\nsupported, default mode is 'NULLABLE'.",
           "type": "string"
         },
-        "columns": {
-          "description": "Schema of sub-columns. This field is deprecated, use subcolumns instead.\nOnly one of {columns, subcolumns} should be set.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudDatacatalogV1beta1ColumnSchema"
-          }
-        },
         "subcolumns": {
           "description": "Schema of sub-columns.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDatacatalogV1beta1ColumnSchema"
           }
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1beta1SystemTimestamps": {
+      "id": "GoogleCloudDatacatalogV1beta1SystemTimestamps",
+      "description": "Timestamps about this resource according to a particular system.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The creation time of the resource within the given system.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The last-modified time of the resource within the given\nsystem.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "expireTime": {
+          "description": "Output only. The expiration time of the resource within the given system.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     }

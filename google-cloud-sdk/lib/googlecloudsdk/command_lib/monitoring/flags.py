@@ -54,6 +54,29 @@ def AddDisplayNameFlag(parser, resource):
       '--display-name', help='The display name for the {}.'.format(resource))
 
 
+def AddCombinerFlag(parser, resource):
+  """Adds flags for specifying a combiner, which defines how to combine the results of multiple conditions."""
+  parser.add_argument(
+      '--combiner',
+      choices={
+          'COMBINE_UNSPECIFIED': 'An unspecified combiner',
+          'AND': 'An incident is created only if '
+                 'all conditions are met simultaneously. '
+                 'This combiner is satisfied if all conditions are met, '
+                 'even if they are met on completely different resources.',
+          'OR': 'An incident is created if '
+                'any of the listed conditions is met.',
+          'AND_WITH_MATCHING_RESOURCE': 'Combine conditions using '
+                                        'logical AND operator, '
+                                        'but unlike the regular AND option, '
+                                        'an incident is created '
+                                        'only if all conditions '
+                                        'are met simultaneously '
+                                        'on at least one resource.',
+      },
+      help='The combiner for the {}.'.format(resource))
+
+
 def AddPolicySettingsFlags(parser, update=False):
   """Adds policy settings flags to the parser."""
   policy_settings_group = parser.add_group(help="""\
@@ -61,7 +84,7 @@ def AddPolicySettingsFlags(parser, update=False):
       If any of these are specified, they will overwrite fields in the
       `--policy` or `--policy-from-file` flags if specified.""")
   AddDisplayNameFlag(policy_settings_group, resource='Alert Policy')
-
+  AddCombinerFlag(policy_settings_group, resource='Alert Policy')
   enabled_kwargs = {
       'action': arg_parsers.StoreTrueFalseAction if update else 'store_true'
   }

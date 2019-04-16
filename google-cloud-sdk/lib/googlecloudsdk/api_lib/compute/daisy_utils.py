@@ -42,9 +42,7 @@ from googlecloudsdk.core.console import console_io
 
 _DAISY_BUILDER = 'gcr.io/compute-image-tools/daisy:release'
 
-# TODO(b/128858645): switch to compute-image-tools release once OVF importer is
-# released
-_OVF_IMPORT_BUILDER = 'gcr.io/compute-image-tools/gce_ovf_import:latest'
+_OVF_IMPORT_BUILDER = 'gcr.io/compute-image-tools/gce_ovf_import:release'
 
 
 class FilteredLogTailer(cb_logs.LogTailer):
@@ -242,8 +240,7 @@ def _CreateCloudBuild(build_config, client, messages):
   return build, build_ref
 
 
-def GetAndCreateDaisyBucket(bucket_name=None,
-                            storage_client=None,
+def GetAndCreateDaisyBucket(bucket_name=None, storage_client=None,
                             bucket_location=None):
   """Determine the name of the GCS bucket to use and create if necessary.
 
@@ -251,7 +248,7 @@ def GetAndCreateDaisyBucket(bucket_name=None,
     bucket_name: str, bucket name to use, otherwise the bucket will be named
       based on the project id.
     storage_client: The storage_api client object.
-    bucket_location: str, bucket location
+    bucket_location: str, bucket location.
 
   Returns:
     A string containing the name of the GCS bucket to use.
@@ -264,7 +261,7 @@ def GetAndCreateDaisyBucket(bucket_name=None,
     if bucket_location:
       bucket_name = '{0}-{1}'.format(bucket_name, bucket_location).lower()
 
-  safe_bucket_name = bucket_name.replace('google', 'elgoog')
+  safe_bucket_name = _GetSafeBucketName(bucket_name)
 
   if not storage_client:
     storage_client = storage_api.StorageClient()
@@ -275,6 +272,18 @@ def GetAndCreateDaisyBucket(bucket_name=None,
       safe_bucket_name, location=bucket_location)
 
   return safe_bucket_name
+
+
+def _GetSafeBucketName(bucket_name):
+  # Rules are from https://cloud.google.com/storage/docs/naming.
+
+  # Bucket name can't contain "google".
+  bucket_name = bucket_name.replace('google', 'go-ogle')
+
+  # Bucket name can't start with "goog". Workaround for b/128691621
+  bucket_name = bucket_name[:4].replace('goog', 'go-og') + bucket_name[4:]
+
+  return bucket_name
 
 
 def GetSubnetRegion():

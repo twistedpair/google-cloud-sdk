@@ -32,6 +32,19 @@ IP_ADDRESSES_ARG = compute_flags.ResourceArgument(
     plural=True,
     required=False)
 
+DRAIN_NAT_IP_ADDRESSES_ARG = compute_flags.ResourceArgument(
+    name='--drain-nat-ips',
+    detailed_help=textwrap.dedent("""\
+       External IP Addresses to be drained
+
+       These IPs must be valid external IPs that have been used as NAT IPs
+       """),
+    resource_name='address',
+    regional_collection='compute.addresses',
+    region_hidden=True,
+    plural=True,
+    required=False)
+
 
 class IpAllocationOption(enum.Enum):
   AUTO = 0
@@ -63,7 +76,10 @@ def AddNatNameArg(parser, operation_type='operate on', plural=False):
   parser.add_argument('name', **params)
 
 
-def AddCommonNatArgs(parser, for_create=False, with_logging=False):
+def AddCommonNatArgs(parser,
+                     for_create=False,
+                     with_logging=False,
+                     with_drain_ips=False):
   """Adds common arguments for creating and updating NATs."""
   _AddIpAllocationArgs(parser, for_create)
   _AddSubnetworkArgs(parser, for_create)
@@ -71,6 +87,8 @@ def AddCommonNatArgs(parser, for_create=False, with_logging=False):
   _AddMinPortsPerVmArg(parser, for_create)
   if with_logging:
     _AddLoggingArgs(parser)
+  if with_drain_ips and not for_create:
+    _AddDrainNatIpsArgument(parser)
 
 
 def _AddIpAllocationArgs(parser, for_create=False):
@@ -195,6 +213,16 @@ def _AddLoggingArgs(parser):
       help=enable_logging_help_text)
   parser.add_argument(
       '--log-filter', help=log_filter_help_text, choices=filter_choices)
+
+
+def _AddDrainNatIpsArgument(parser):
+  drain_ips_group = parser.add_mutually_exclusive_group(required=False)
+  DRAIN_NAT_IP_ADDRESSES_ARG.AddArgument(parser, mutex_group=drain_ips_group)
+  drain_ips_group.add_argument(
+      '--clear-drain-nat-ips',
+      action='store_true',
+      default=False,
+      help='Clear the drained NAT IPs')
 
 
 def _AddClearableArgument(parser,

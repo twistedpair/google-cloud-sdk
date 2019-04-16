@@ -24,6 +24,13 @@ DOCS_URL = 'https://cloud.google.com/data-catalog/docs/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  ENTRIES = (
+      'entries',
+      'entries',
+      {},
+      [],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',

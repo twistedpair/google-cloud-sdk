@@ -1782,10 +1782,7 @@ def WarnForNodeModification(args, enable_autorepair):
                 'DaemonSet.')
 
 
-def WarnForAutoUpgrade(args):
-  if not args.IsSpecified('enable_autoupgrade'):
-    log.warning(util.WARN_AUTOUPGRADE_ENABLED_BY_DEFAULT)
-
+def WarnForNodeVersionAutoUpgrade(args):
   if args.IsSpecified('node_version') and args.enable_autoupgrade:
     log.warning(util.WARN_NODE_VERSION_WITH_AUTOUPGRADE_ENABLED)
 
@@ -2262,7 +2259,7 @@ Number of extra (surge) nodes to be created on each upgrade of a node pool.
 
 Specifies the number of extra (surge) nodes to be created during this node
 pool's upgrades. For example, running the following command will result in
-creating an extra node each time a node is upgraded:
+creating an extra node each time the node pool is upgraded:
 
   $ {command} example-cluster --max-surge-upgrade 1
 """
@@ -2271,4 +2268,32 @@ creating an extra node each time a node is upgraded:
       type=int,
       default=0,
       help=max_surge_help,
+      hidden=hidden)
+
+
+def AddMaxUnavailableUpgradeFlag(parser, hidden=False):
+  """Adds --max-unavailable-upgrade flag to the parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Whether or not to hide the help text.
+  """
+
+  max_unavailable_upgrade_help = """\
+Number of nodes that can be unavailable at the same time on each upgrade of a
+node pool.
+
+Specifies the number of nodes that can be unavailable at the same time while
+this node pool is being upgraded. For example, running the following command
+will result in having 3 nodes being upgraded in parallel (1 + 2), but keeping
+always at least 3 (5 - 2) available each time the node pool is upgraded:
+
+   $ {command} example-cluster --num-nodes=5 --max-surge-upgrade 1 \
+     --max-unavailable-upgrade=2
+"""
+  parser.add_argument(
+      '--max-unavailable-upgrade',
+      type=int,
+      default=1,
+      help=max_unavailable_upgrade_help,
       hidden=hidden)

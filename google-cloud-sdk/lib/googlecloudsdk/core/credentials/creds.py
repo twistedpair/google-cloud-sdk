@@ -206,6 +206,9 @@ class AccessTokenStore(client.Storage):
   credential serialization format and get captured as part of that.
   By extending client.Storage this class pretends to serialize credentials, but
   only serializes access token.
+
+  When fetching the more recent credentials from the cache, this does not return
+  token_response, as it is now out of date.
   """
 
   def __init__(self, access_token_cache, account_id, credentials):
@@ -231,6 +234,7 @@ class AccessTokenStore(client.Storage):
       if rapt_token is not None:
         self._credentials.rapt_token = rapt_token
       self._credentials.id_tokenb64 = id_token
+      self._credentials.token_response = None
     return self._credentials
 
   def locked_put(self, credentials):

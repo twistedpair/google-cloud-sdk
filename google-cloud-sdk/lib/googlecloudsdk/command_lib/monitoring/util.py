@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from apitools.base.py import encoding
 from googlecloudsdk.calliope import exceptions as calliope_exc
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
@@ -98,6 +99,18 @@ def GetBasePolicyMessageFromArgs(args, policy_class):
 
 
 def CheckConditionArgs(args):
+  """Checks if condition arguments exist and are specified correctly.
+  Args:
+    args: argparse.Namespace, the parsed arguments.
+  Returns:
+    bool: True, if '--condition-filter' is specified.
+  Raises:
+    RequiredArgumentException:
+      if '--if' is not set but '--condition-filter' is specified.
+    InvalidArgumentException:
+      if flag in should_not_be_set is specified without '--condition-filter'.
+  """
+
   if args.IsSpecified('condition_filter'):
     if not args.IsSpecified('if_value'):
       raise calliope_exc.RequiredArgumentException(
@@ -111,7 +124,8 @@ def CheckConditionArgs(args):
         '--trigger-count',
         '--trigger-percent',
         '--condition-display-name',
-        '--if'
+        '--if',
+        '--combiner'
     ]
     for flag in should_not_be_set:
       if flag == '--if':
@@ -192,10 +206,10 @@ def ParseNotificationChannel(channel_name, project=None):
       collection='monitoring.projects.notificationChannels')
 
 
-def ModifyAlertPolicy(base_policy, messages, display_name=None,
+def ModifyAlertPolicy(base_policy, messages, display_name=None, combiner=None,
                       documentation_content=None, documentation_format=None,
                       enabled=None, channels=None, field_masks=None):
-  """Override and/or add fields from other flags to an Alery Policy."""
+  """Override and/or add fields from other flags to an Alert Policy."""
   if field_masks is None:
     field_masks = []
 
@@ -223,6 +237,12 @@ def ModifyAlertPolicy(base_policy, messages, display_name=None,
     field_masks.append('notification_channels')
     base_policy.notificationChannels = channels
 
+  if combiner is not None:
+    field_masks.append('combiner')
+    combiner = arg_utils.ChoiceToEnum(combiner, base_policy.CombinerValueValuesEnum,
+                                      item_type='combiner')
+    base_policy.combiner = combiner
+
 
 def ValidateAtleastOneSpecified(args, flags):
   if not any([args.IsSpecified(_FlagToDest(flag))
@@ -237,7 +257,7 @@ def CreateAlertPolicyFromArgs(args, messages):
 
   # Get a base policy object from the flags
   policy = GetBasePolicyMessageFromArgs(args, messages.AlertPolicy)
-
+  combiner = args.combiner if args.IsSpecified('combiner') else None
   enabled = args.enabled if args.IsSpecified('enabled') else None
   channel_refs = args.CONCEPTS.notification_channels.Parse() or []
   channels = [channel.RelativeName() for channel in channel_refs] or None
@@ -248,6 +268,7 @@ def CreateAlertPolicyFromArgs(args, messages):
       policy,
       messages,
       display_name=args.display_name,
+      combiner=combiner,
       documentation_content=documentation_content,
       documentation_format=documentation_format,
       enabled=enabled,

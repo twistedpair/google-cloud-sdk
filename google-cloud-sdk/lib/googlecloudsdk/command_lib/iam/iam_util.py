@@ -104,9 +104,10 @@ Examples: `user:test-user@gmail.com`, `group:admins@example.com`,
 `domain:example.domain.com`.
 
 Can also be one of the following special values:
-* `allUsers` - anyone who is on the internet, with or without a Google account.
-* `allAuthenticatedUsers` - anyone who is authenticated with a Google account or
-   a service account.
+* `allUsers` - Special identifier that represents anyone who is on the internet,
+   with or without a Google account.
+* `allAuthenticatedUsers` - Special identifier that represents anyone who is
+   authenticated with a Google account or a service account.
       """
   ).format(verb=verb)
   parser.add_argument('--member', required=required, help=help_str)

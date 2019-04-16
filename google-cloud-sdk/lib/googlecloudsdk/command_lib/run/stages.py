@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.core.console import progress_tracker
 
 READY = 'Ready'
+SERVICE_IAM_POLICY_SET = 'IamPolicySet'
 SERVICE_ROUTES_READY = 'RoutesReady'
 SERVICE_CONFIGURATIONS_READY = 'ConfigurationsReady'
 
@@ -29,12 +30,17 @@ SERVICE_CONFIGURATIONS_READY = 'ConfigurationsReady'
 # Because some terminals cannot update multiple lines of output simultaneously,
 # the order of conditions in this dictionary should match the order in which we
 # expect cloud run resources to complete deployment.
-def ServiceStages():
+def ServiceStages(include_iam_policy_set=False):
   """Return the progress tracker Stages for conditions of a Service."""
-  return [
-      progress_tracker.Stage('Creating Revision...',
-                             key=SERVICE_CONFIGURATIONS_READY),
-      progress_tracker.Stage('Routing traffic...', key=SERVICE_ROUTES_READY)]
+  stages = [
+      progress_tracker.Stage(
+          'Creating Revision...', key=SERVICE_CONFIGURATIONS_READY),
+      progress_tracker.Stage(
+          'Routing traffic...', key=SERVICE_ROUTES_READY)]
+  if include_iam_policy_set:
+    stages.append(progress_tracker.Stage(
+        'Setting IAM Policy...', key=SERVICE_IAM_POLICY_SET))
+  return stages
 
 
 def ServiceDependencies():
@@ -43,4 +49,3 @@ def ServiceDependencies():
       SERVICE_ROUTES_READY: {SERVICE_CONFIGURATIONS_READY},
       SERVICE_CONFIGURATIONS_READY: set()
   }
-

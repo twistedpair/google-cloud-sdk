@@ -1603,6 +1603,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.monitoring = self._Add('monitoring')
     self.oslogin = self._Add('oslogin')
     self.pubsub = self._Add('pubsub')
+    self.recommender = self._Add('recommender')
     self.replicapoolupdater = self._Add('replicapoolupdater')
     self.runtimeconfig = self._Add('runtimeconfig')
     self.redis = self._Add('redis')

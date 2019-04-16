@@ -166,10 +166,10 @@
           "type": "string",
           "format": "google-datetime"
         },
-        "retentionPeriod": {
+        "retentionDays": {
           "description": "Logs will be retained by default for this amount of time, after which they will automatically be deleted. The minimum retention period is 1 day.",
-          "type": "string",
-          "format": "google-duration"
+          "type": "integer",
+          "format": "int32"
         },
         "retentionRules": {
           "description": "Fine grained retention rules that can override retention period.",

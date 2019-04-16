@@ -101,6 +101,7 @@ class JobSubmitter(base.Command):
           job,
           message='Waiting for job completion',
           goal_state=dataproc.messages.JobStatus.StateValueValuesEnum.DONE,
+          error_state=dataproc.messages.JobStatus.StateValueValuesEnum.ERROR,
           stream_driver_log=True)
       log.status.Print('Job [{0}] finished successfully.'.format(job_id))
 

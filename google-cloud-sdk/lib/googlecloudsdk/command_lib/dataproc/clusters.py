@@ -116,9 +116,11 @@ def ArgsForClusterRef(parser, beta=False, include_deprecated=True):
       'latest version.')
   parser.add_argument(
       '--bucket',
-      help='The Google Cloud Storage bucket to use with the Google Cloud '
-      'Storage connector. A bucket is auto created when this parameter is '
-      'not specified.')
+      help="""\
+      The Google Cloud Storage bucket to use by default to stage job
+      dependencies, miscellaneous config files, and job driver console output
+      when using this cluster.
+      """)
 
   netparser = parser.add_mutually_exclusive_group()
   netparser.add_argument(

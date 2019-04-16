@@ -408,7 +408,7 @@ class ManPageGenerator(DocumentGenerator):
 
 
 class LinterGenerator(DocumentGenerator):
-  """Generates linter files with suffix .txt in an output directory."""
+  """Generates linter files with suffix .json in an output directory."""
 
   def __init__(self, cli, directory, hidden=False, progress_callback=None,
                restrict=None):
@@ -428,7 +428,7 @@ class LinterGenerator(DocumentGenerator):
     """
 
     super(LinterGenerator, self).__init__(
-        cli, directory=directory, style='linter', suffix='.txt')
+        cli, directory=directory, style='linter', suffix='.json')
 
 
 class CommandTreeGenerator(walker.Walker):

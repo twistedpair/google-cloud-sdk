@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20190326",
+ "revision": "20190401",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -9408,7 +9408,8 @@
    "type": "object",
    "properties": {
     "instanceTemplate": {
-     "type": "string"
+     "type": "string",
+     "description": "The URL of the instance template that is specified for this managed instance group. The group uses this template to create new instances in the managed instance group until the `targetSize` for this version is reached."
     },
     "name": {
      "type": "string",
@@ -10676,6 +10677,45 @@
      "description": "Resource policies to be added to this instance.",
      "items": {
       "type": "string"
+     }
+    }
+   }
+  },
+  "InstancesGetEffectiveFirewallsResponse": {
+   "id": "InstancesGetEffectiveFirewallsResponse",
+   "type": "object",
+   "properties": {
+    "firewalls": {
+     "type": "array",
+     "description": "Effective firewalls on the instance.",
+     "items": {
+      "$ref": "Firewall"
+     }
+    },
+    "organizationFirewalls": {
+     "type": "array",
+     "description": "Effective firewalls from organization policies.",
+     "items": {
+      "$ref": "InstancesGetEffectiveFirewallsResponseOrganizationFirewallPolicy"
+     }
+    }
+   }
+  },
+  "InstancesGetEffectiveFirewallsResponseOrganizationFirewallPolicy": {
+   "id": "InstancesGetEffectiveFirewallsResponseOrganizationFirewallPolicy",
+   "type": "object",
+   "description": "A pruned SecurityPolicy containing ID and any applicable firewall rules.",
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "The unique identifier for the security policy. This identifier is defined by the server.",
+     "format": "uint64"
+    },
+    "rules": {
+     "type": "array",
+     "description": "The rules that apply to the network.",
+     "items": {
+      "$ref": "SecurityPolicyRule"
      }
     }
    }
@@ -12810,6 +12850,24 @@
     }
    }
   },
+  "LocalDisk": {
+   "id": "LocalDisk",
+   "type": "object",
+   "properties": {
+    "diskCount": {
+     "type": "string",
+     "description": "Specifies the number of such disks."
+    },
+    "diskSizeGb": {
+     "type": "string",
+     "description": "Specifies the size of the disk in base-2 GB."
+    },
+    "diskType": {
+     "type": "string",
+     "description": "Specifies the desired disk type on the node. This disk type must be a local storage type (e.g.: local-ssd). Note that for nodeTemplates, this should be the name of the disk type and not its URL."
+    }
+   }
+  },
   "LogConfig": {
    "id": "LogConfig",
    "type": "object",
@@ -13946,6 +14004,18 @@
       ""
      ]
     },
+    "multicastMode": {
+     "type": "string",
+     "description": "The multicast mode for this network. If set to ZONAL, multicast is allowed within a zone. If set to DISABLED, multicast is disabled for this network. The default is DISABLED.",
+     "enum": [
+      "DISABLED",
+      "ZONAL"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
     "name": {
      "type": "string",
      "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
@@ -14973,7 +15043,7 @@
   "NodeGroup": {
    "id": "NodeGroup",
    "type": "object",
-   "description": "A NodeGroup resource. (== resource_for beta.nodeGroups ==) (== resource_for v1.nodeGroups ==)",
+   "description": "A NodeGroup resource. To create a node group, you must first create a node templates. To learn more about node groups and sole-tenant nodes, read the Sole-tenant nodes documentation. (== resource_for beta.nodeGroups ==) (== resource_for v1.nodeGroups ==)",
    "properties": {
     "autoscalingPolicy": {
      "$ref": "NodeGroupAutoscalingPolicy"
@@ -15280,6 +15350,13 @@
    "id": "NodeGroupNode",
    "type": "object",
    "properties": {
+    "disks": {
+     "type": "array",
+     "description": "Local disk configurations.",
+     "items": {
+      "$ref": "LocalDisk"
+     }
+    },
     "instances": {
      "type": "array",
      "description": "Instances scheduled on this node.",
@@ -15568,7 +15645,7 @@
   "NodeTemplate": {
    "id": "NodeTemplate",
    "type": "object",
-   "description": "A Node Template resource.",
+   "description": "A Node Template resource. To learn more about node templates and sole-tenant nodes, read the Sole-tenant nodes documentation. (== resource_for beta.nodeTemplates ==) (== resource_for v1.nodeTemplates ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -15577,6 +15654,12 @@
     "description": {
      "type": "string",
      "description": "An optional description of this resource. Provide this property when you create the resource."
+    },
+    "disks": {
+     "type": "array",
+     "items": {
+      "$ref": "LocalDisk"
+     }
     },
     "id": {
      "type": "string",
@@ -19776,6 +19859,22 @@
     "snapshotSchedulePolicy": {
      "$ref": "ResourcePolicySnapshotSchedulePolicy",
      "description": "Resource policy for persistent disks for creating snapshots."
+    },
+    "status": {
+     "type": "string",
+     "description": "[Output Only] The status of resource policy creation.",
+     "enum": [
+      "CREATING",
+      "DELETING",
+      "INVALID",
+      "READY"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      ""
+     ]
     },
     "vmMaintenancePolicy": {
      "$ref": "ResourcePolicyVmMaintenancePolicy",
@@ -37199,6 +37298,55 @@
      ],
      "response": {
       "$ref": "Instance"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "getEffectiveFirewalls": {
+     "id": "compute.instances.getEffectiveFirewalls",
+     "path": "{project}/zones/{zone}/instances/{instance}/getEffectiveFirewalls",
+     "httpMethod": "GET",
+     "description": "Returns effective firewalls applied to an interface of the instance.",
+     "parameters": {
+      "instance": {
+       "type": "string",
+       "description": "Name of the instance scoping this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "networkInterface": {
+       "type": "string",
+       "description": "The name of the network interface to get the effective firewalls.",
+       "required": true,
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instance",
+      "networkInterface"
+     ],
+     "response": {
+      "$ref": "InstancesGetEffectiveFirewallsResponse"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",

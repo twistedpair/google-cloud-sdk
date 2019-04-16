@@ -256,6 +256,9 @@ apis:
     v1beta1:
       discovery_doc: datacatalog_v1beta1.json
       default: true
+      resources:
+        entries:
+          path: entries
   dataflow:
     v1b3:
       discovery_doc: dataflow_v1b3.json

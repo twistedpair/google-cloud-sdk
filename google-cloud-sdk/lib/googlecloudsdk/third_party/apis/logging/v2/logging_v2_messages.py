@@ -376,7 +376,7 @@ class LogBucket(_messages.Message):
       are:  "global"  "us-central1"For the location of global it is
       unspecified where logs are actually stored. Once a bucket has been
       created, the location can not be changed.
-    retentionPeriod: Logs will be retained by default for this amount of time,
+    retentionDays: Logs will be retained by default for this amount of time,
       after which they will automatically be deleted. The minimum retention
       period is 1 day.
     retentionRuleResolution: Describes how to choose the retention period for
@@ -408,7 +408,7 @@ class LogBucket(_messages.Message):
   etag = _messages.BytesField(4)
   locked = _messages.BooleanField(5)
   name = _messages.StringField(6)
-  retentionPeriod = _messages.StringField(7)
+  retentionDays = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   retentionRuleResolution = _messages.EnumField('RetentionRuleResolutionValueValuesEnum', 8)
   retentionRules = _messages.MessageField('LogRetentionRule', 9, repeated=True)
   updateTime = _messages.StringField(10)

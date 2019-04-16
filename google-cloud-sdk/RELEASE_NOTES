@@ -5,7 +5,64 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
-## 241.0.0 (2019-04-02)
+## 242.0.0 (2019-04-16)
+
+### Breaking Changes
+
+*   **(Cloud Composer)** Deprecated support for the `initdb`, `resetdb`, and `upgradedb` subcommands
+    within `gcloud composer environments run`. Execution of these subcommands
+    can be detrimental to the Airflow metadata of existing Composer
+    environments.
+
+
+### Cloud Data Catalog
+
+* Added the `--lookup-entry` flag to `gcloud beta data-catalog entries update`
+  to update the entry corresponding to the lookup of the given resource.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore Emulator version 1.4.4
+  * Reduced lock contention for multiple writes on a single document
+  * Fix bug where no-op writes were incorrectly updating the updatedAt timestamp
+* Release Cloud Firestore Emulator version 1.4.3
+  * Fixes bug that caused parsing security rules with string literals to fail
+
+### Compute Engine
+
+* Updated `gcloud beta compute <ssh|scp>` to use IAP Tunneling by default
+  if an external interface/IP address is not available and `--internal-ip` has
+  not been specified.
+* Added warning message about the maximum number of nodes that a cluster can have when being created.
+* Added the `--deprecate-in` and `--deprecate-on` flags to `gcloud compute
+  images deprecate` to set informational deprecate times to images.
+
+
+### Identity and Access Management
+
+*   Added the `--description` flag to `gcloud beta iam service-accounts
+    <create|update>`.
+
+### Kubernetes Engine
+
+* Renamed `--size` flag of `gcloud container clusters resize` to `--num-nodes`. `--size` retained as an alias.
+* Disabled node auto-repair and node auto-upgrade by default when
+`--enable-kubernetes-alpha` flag is used to create clusters with Kubernetes
+alpha features enabled. Users may now create alpha clusters without specifying
+`--no-enable-autorepair` or `--no-enable-autoupgrade` flags. However, for
+creating new node pools in an existing alpha cluster, these two flags may still
+be required.
+
+### Miscellaneous
+
+* Fixed a bug in `gcloud config config-helper` which could result in old
+  identity tokens when `--force-auth-refresh` was not present.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
+## 241.0.0 (2019-04-03)
 
 ### Breaking Changes
 
@@ -99,7 +156,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Storage
 
-* 
 * Updated gsutil component to 4.38.
 
 ### Cloud Video Intelligence API

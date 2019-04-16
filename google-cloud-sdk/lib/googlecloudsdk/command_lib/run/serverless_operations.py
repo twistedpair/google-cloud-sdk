@@ -949,13 +949,28 @@ class ServerlessOperations(object):
     """
     if tracker is None:
       tracker = progress_tracker.NoOpStagedProgressTracker(
-          stages.ServiceStages(), interruptable=True, aborted_message='aborted')
+          stages.ServiceStages(allow_unauthenticated),
+          interruptable=True, aborted_message='aborted')
     with_code = any(
         isinstance(c, deployable_pkg.Deployable) for c in config_changes)
     self._UpdateOrCreateService(
         service_ref, config_changes, with_code, private_endpoint)
+
     if allow_unauthenticated:
-      self.AddIamPolicyBinding(service_ref, ['allUsers'], 'roles/run.invoker')
+      try:
+        tracker.StartStage(stages.SERVICE_IAM_POLICY_SET)
+        tracker.UpdateStage(stages.SERVICE_IAM_POLICY_SET, '')
+        self.AddIamPolicyBinding(service_ref, ['allUsers'], 'roles/run.invoker')
+        tracker.CompleteStage(stages.SERVICE_IAM_POLICY_SET)
+      except api_exceptions.HttpError:
+        warning_message = (
+            'Setting IAM policy failed, try "gcloud beta run services '
+            'add-iam-policy-binding --region=%s --member=allUsers '
+            '--role=roles/run.invoker %s"') % (
+                self._region, service_ref.servicesId)
+        tracker.CompleteStageWithWarning(
+            stages.SERVICE_IAM_POLICY_SET, warning_message=warning_message)
+
     if not asyn:
       getter = functools.partial(self.GetService, service_ref)
       self.WaitForCondition(ServiceConditionPoller(getter, tracker))
@@ -1090,7 +1105,7 @@ class ServerlessOperations(object):
       role: str, The role to grant the provided members.
 
     Returns:
-      The IAM policy with the newly added binding.
+      A google.iam.v1.TestIamPermissionsResponse.
     """
     messages = self._messages_module
     oneplatform_service = resource_name_conversion.K8sToOnePlatform(
@@ -1102,7 +1117,8 @@ class ServerlessOperations(object):
     request = messages.RunProjectsLocationsServicesSetIamPolicyRequest(
         resource=str(oneplatform_service),
         setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy))
-    return self._op_client.projects_locations_services.SetIamPolicy(request)
+    result = self._op_client.projects_locations_services.SetIamPolicy(request)
+    return result
 
   def CanAddIamPolicyBinding(self, service_ref):
     try:
@@ -1110,5 +1126,3 @@ class ServerlessOperations(object):
       return True
     except api_exceptions.HttpError:
       return False
-
-

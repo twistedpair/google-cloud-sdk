@@ -41,8 +41,24 @@ class ConfigChanger(six.with_metaclass(abc.ABCMeta, object)):
     pass
 
 
+class LabelChanges(ConfigChanger):
+  """Represents the user intent to modify metadata labels."""
+
+  def __init__(self, diff):
+    self._diff = diff
+
+  def AdjustConfiguration(self, config, metadata):
+    # Currently assumes all "system"-owned labels are applied by the control
+    # plane and it's ok for us to clear them on the client.
+    update_result = self._diff.Apply(
+        config.MessagesModule().ObjectMeta.LabelsValue, metadata.labels)
+    maybe_new_labels = update_result.GetOrNone()
+    if maybe_new_labels:
+      metadata.labels = maybe_new_labels
+
+
 class EnvVarChanges(ConfigChanger):
-  """Represents the user-intent to modify environment variables."""
+  """Represents the user intent to modify environment variables."""
 
   def __init__(self, env_vars_to_update=None,
                env_vars_to_remove=None, clear_others=False):
@@ -71,16 +87,19 @@ class EnvVarChanges(ConfigChanger):
 
 
 class ResourceChanges(ConfigChanger):
-  """Represents the user-intent to update resource limits."""
+  """Represents the user intent to update resource limits."""
 
-  def __init__(self, memory):
+  def __init__(self, memory=None, cpu=None):
     self._memory = memory
+    self._cpu = cpu
 
   def AdjustConfiguration(self, config, metadata):
     """Mutates the given config's resource limits to match what's desired."""
     del metadata  # Unused, but requred by ConfigChanger's signature.
-    config.resource_limits['memory'] = self._memory
-
+    if self._memory is not None:
+      config.resource_limits['memory'] = self._memory
+    if self._cpu is not None:
+      config.resource_limits['cpu'] = self._cpu
 
 _CLOUDSQL_ANNOTATION = 'run.googleapis.com/cloudsql-instances'
 
@@ -150,7 +169,7 @@ class CloudSQLChanges(ConfigChanger):
 
 
 class ConcurrencyChanges(ConfigChanger):
-  """Represents the user-intent to update concurrency preference."""
+  """Represents the user intent to update concurrency preference."""
 
   def __init__(self, concurrency):
     self._concurrency = None if concurrency == 'default' else concurrency
@@ -170,7 +189,7 @@ class ConcurrencyChanges(ConfigChanger):
 
 
 class TimeoutChanges(ConfigChanger):
-  """Represents the user-intent to update request duration."""
+  """Represents the user intent to update request duration."""
 
   def __init__(self, timeout):
     self._timeout = timeout
@@ -179,3 +198,15 @@ class TimeoutChanges(ConfigChanger):
     """Mutates the given config's timeout to match what's desired."""
     del metadata  # Unused, but required by ConfigChanger's signature.
     config.timeout = self._timeout
+
+
+class ServiceAccountChanges(ConfigChanger):
+  """Represents the user intent to change service account for the revision."""
+
+  def __init__(self, service_account):
+    self._service_account = service_account
+
+  def AdjustConfiguration(self, config, metadata):
+    """Mutates the given config's service account to match what's desired."""
+    del metadata  # Unused, but required by ConfigChanger's signature.
+    config.service_account = self._service_account

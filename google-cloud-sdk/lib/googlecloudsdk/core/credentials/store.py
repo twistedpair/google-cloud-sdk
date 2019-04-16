@@ -304,6 +304,12 @@ def Load(account=None, scopes=None, prevent_refresh=False,
   requires credentials (like printing out a token) vs logically requiring
   credentials (like for an http request).
 
+  Credential information may come from the stored credential file (representing
+  the last gcloud auth command), or the credential cache (representing the last
+  time the credentials were refreshed). If they come from the cache, the
+  token_response field will be None, as the full server response from the cached
+  request was not stored.
+
   Args:
     account: str, The account address for the credentials being fetched. If
         None, the account stored in the core.account property is used.

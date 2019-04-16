@@ -59,30 +59,33 @@ client [kubectl]. To install, run
   $ gcloud components install kubectl
 """
 
+SUBCOMMAND_DEPRECATION = [
+    'initdb',
+    'resetdb',
+    'upgradedb',
+]
+
 SUBCOMMAND_WHITELIST = [
     'backfill',
     'clear',
     'connections',
     'dag_state',
     'delete_dag',
-    'initdb',
     'kerberos',
     'list_dags',
     'list_tasks',
     'pause',
     'pool',
     'render',
-    'resetdb',
     'run',
     'task_failed_deps',
     'task_state',
     'test',
     'trigger_dag',
     'unpause',
-    'upgradedb',
     'variables',
     'version',
-]
+] + SUBCOMMAND_DEPRECATION
 
 DEFAULT_NAMESPACE = 'default'
 NAMESPACE_ARG_NAME = '--namespace'

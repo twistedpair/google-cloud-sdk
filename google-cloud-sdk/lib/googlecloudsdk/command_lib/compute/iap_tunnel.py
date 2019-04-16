@@ -99,7 +99,8 @@ class SshTunnelArgs(object):
     self.pass_through_args = []
 
   @staticmethod
-  def FromArgs(args, track, instance_ref, interface):
+  def FromArgs(args, track, instance_ref, internal_interface,
+               external_interface):
     """Construct an SshTunnelArgs from command line args and values.
 
     Args:
@@ -107,12 +108,31 @@ class SshTunnelArgs(object):
         AddSshTunnelArgs called.
       track: ReleaseTrack, The currently running release track.
       instance_ref: The target instance reference object.
-      interface: The target interface resource object.
+      internal_interface: The internal interface of target resource object.
+      external_interface: The external interface of target resource object, if
+        available, otherwise None.
     Returns:
       SshTunnelArgs or None if IAP Tunnel is disabled.
     """
-    if not getattr(args, 'tunnel_through_iap', False):
+    # If tunneling through IAP is not available, then abort.
+    if not hasattr(args, 'tunnel_through_iap'):
       return None
+
+    # If set to connect directly to private IP address, then abort.
+    if getattr(args, 'internal_ip', False):
+      return None
+
+    if args.IsSpecified('tunnel_through_iap'):
+      # If IAP tunneling is explicitly disabled, then abort.
+      if not args.tunnel_through_iap:
+        return None
+    else:
+      # If no external interface is available, then default to using IAP
+      # tunneling and continue with code below.  Otherwise, abort.
+      if external_interface:
+        return None
+      log.status.Print('External IP address was not found; defaulting to using '
+                       'IAP tunneling.')
 
     res = SshTunnelArgs()
 
@@ -120,7 +140,7 @@ class SshTunnelArgs(object):
     res.project = instance_ref.project
     res.zone = instance_ref.zone
     res.instance = instance_ref.instance
-    res.interface = interface.name
+    res.interface = internal_interface.name
 
     # The tunnel_through_iap attribute existed, so these must too.
     if args.IsSpecified('iap_tunnel_url_override'):

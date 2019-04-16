@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -126,7 +126,7 @@ class HTTPClient(ClientWrapper):
     # work, at least until we get a more recent version of dulwich.
     # pylint:disable=protected-access
     url = self._transport._get_url(self._path)
-    refs, unused_capabilities = (
+    refs, unused_capabilities, url = (
         self._transport._discover_references(b'git-upload-pack', url))
     return refs
 
@@ -249,6 +249,8 @@ def _CheckoutLatestVersion(target_dir, url):
       raise InvalidTargetDirectoryError(
           'Unable to checkout directory {0}: {1}'.format(target_dir,
                                                          ex.message))
+  except (AssertionError) as ex:
+    raise InvalidRepositoryError()
   finally:
     local_repo.close()
 
@@ -278,6 +280,6 @@ def InstallRuntimeDef(url, target_dir):
   try:
     _FetchRepo(target_dir, url)
     _CheckoutLatestVersion(target_dir, url)
-  except errors.HangupException as ex:
+  except (errors.HangupException, errors.GitProtocolError) as ex:
     raise RepositoryCommunicationError('An error occurred accessing '
                                        '{0}: {1}'.format(url, ex.message))

@@ -9172,6 +9172,23 @@ class ComputeInstancesDetachDiskRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeInstancesGetEffectiveFirewallsRequest(_messages.Message):
+  r"""A ComputeInstancesGetEffectiveFirewallsRequest object.
+
+  Fields:
+    instance: Name of the instance scoping this request.
+    networkInterface: The name of the network interface to get the effective
+      firewalls.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  networkInterface = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeInstancesGetGuestAttributesRequest(_messages.Message):
   r"""A ComputeInstancesGetGuestAttributesRequest object.
 
@@ -27395,7 +27412,10 @@ class InstanceGroupManagerVersion(_messages.Message):
   r"""A InstanceGroupManagerVersion object.
 
   Fields:
-    instanceTemplate: A string attribute.
+    instanceTemplate: The URL of the instance template that is specified for
+      this managed instance group. The group uses this template to create new
+      instances in the managed instance group until the `targetSize` for this
+      version is reached.
     name: Name of the version. Unique among all versions in the scope of this
       managed instance group.
     tag: Tag describing the version. Used to trigger rollout of a target
@@ -28802,6 +28822,31 @@ class InstancesAddResourcePoliciesRequest(_messages.Message):
   """
 
   resourcePolicies = _messages.StringField(1, repeated=True)
+
+
+class InstancesGetEffectiveFirewallsResponse(_messages.Message):
+  r"""A InstancesGetEffectiveFirewallsResponse object.
+
+  Fields:
+    firewalls: Effective firewalls on the instance.
+    organizationFirewalls: Effective firewalls from organization policies.
+  """
+
+  firewalls = _messages.MessageField('Firewall', 1, repeated=True)
+  organizationFirewalls = _messages.MessageField('InstancesGetEffectiveFirewallsResponseOrganizationFirewallPolicy', 2, repeated=True)
+
+
+class InstancesGetEffectiveFirewallsResponseOrganizationFirewallPolicy(_messages.Message):
+  r"""A pruned SecurityPolicy containing ID and any applicable firewall rules.
+
+  Fields:
+    id: The unique identifier for the security policy. This identifier is
+      defined by the server.
+    rules: The rules that apply to the network.
+  """
+
+  id = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
+  rules = _messages.MessageField('SecurityPolicyRule', 2, repeated=True)
 
 
 class InstancesRemoveResourcePoliciesRequest(_messages.Message):
@@ -31183,6 +31228,22 @@ class LicensesListResponse(_messages.Message):
   warning = _messages.MessageField('WarningValue', 5)
 
 
+class LocalDisk(_messages.Message):
+  r"""A LocalDisk object.
+
+  Fields:
+    diskCount: Specifies the number of such disks.
+    diskSizeGb: Specifies the size of the disk in base-2 GB.
+    diskType: Specifies the desired disk type on the node. This disk type must
+      be a local storage type (e.g.: local-ssd). Note that for nodeTemplates,
+      this should be the name of the disk type and not its URL.
+  """
+
+  diskCount = _messages.StringField(1)
+  diskSizeGb = _messages.StringField(2)
+  diskType = _messages.StringField(3)
+
+
 class LogConfig(_messages.Message):
   r"""Specifies what kind of log the caller must write
 
@@ -32455,6 +32516,9 @@ class Network(_messages.Message):
       encryption for this network.
     LoadBalancerVmEncryptionValueValuesEnum: [Output Only] Type of LB-to-VM
       traffic encryption for this network.
+    MulticastModeValueValuesEnum: The multicast mode for this network. If set
+      to ZONAL, multicast is allowed within a zone. If set to DISABLED,
+      multicast is disabled for this network. The default is DISABLED.
 
   Fields:
     IPv4Range: Deprecated in favor of subnet mode networks. The range of
@@ -32480,6 +32544,9 @@ class Network(_messages.Message):
       networks.
     loadBalancerVmEncryption: [Output Only] Type of LB-to-VM traffic
       encryption for this network.
+    multicastMode: The multicast mode for this network. If set to ZONAL,
+      multicast is allowed within a zone. If set to DISABLED, multicast is
+      disabled for this network. The default is DISABLED.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -32518,6 +32585,18 @@ class Network(_messages.Message):
     ENCRYPTED = 0
     UNENCRYPTED = 1
 
+  class MulticastModeValueValuesEnum(_messages.Enum):
+    r"""The multicast mode for this network. If set to ZONAL, multicast is
+    allowed within a zone. If set to DISABLED, multicast is disabled for this
+    network. The default is DISABLED.
+
+    Values:
+      DISABLED: <no description>
+      ZONAL: <no description>
+    """
+    DISABLED = 0
+    ZONAL = 1
+
   IPv4Range = _messages.StringField(1)
   autoCreateSubnetworks = _messages.BooleanField(2)
   creationTimestamp = _messages.StringField(3)
@@ -32527,12 +32606,13 @@ class Network(_messages.Message):
   id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(8, default=u'compute#network')
   loadBalancerVmEncryption = _messages.EnumField('LoadBalancerVmEncryptionValueValuesEnum', 9)
-  name = _messages.StringField(10)
-  peerings = _messages.MessageField('NetworkPeering', 11, repeated=True)
-  routingConfig = _messages.MessageField('NetworkRoutingConfig', 12)
-  selfLink = _messages.StringField(13)
-  selfLinkWithId = _messages.StringField(14)
-  subnetworks = _messages.StringField(15, repeated=True)
+  multicastMode = _messages.EnumField('MulticastModeValueValuesEnum', 10)
+  name = _messages.StringField(11)
+  peerings = _messages.MessageField('NetworkPeering', 12, repeated=True)
+  routingConfig = _messages.MessageField('NetworkRoutingConfig', 13)
+  selfLink = _messages.StringField(14)
+  selfLinkWithId = _messages.StringField(15)
+  subnetworks = _messages.StringField(16, repeated=True)
 
 
 class NetworkEndpoint(_messages.Message):
@@ -33696,8 +33776,10 @@ class NetworksUpdatePeeringRequest(_messages.Message):
 
 
 class NodeGroup(_messages.Message):
-  r"""A NodeGroup resource. (== resource_for beta.nodeGroups ==) (==
-  resource_for v1.nodeGroups ==)
+  r"""A NodeGroup resource. To create a node group, you must first create a
+  node templates. To learn more about node groups and sole-tenant nodes, read
+  the Sole-tenant nodes documentation. (== resource_for beta.nodeGroups ==)
+  (== resource_for v1.nodeGroups ==)
 
   Enums:
     StatusValueValuesEnum:
@@ -34053,6 +34135,7 @@ class NodeGroupNode(_messages.Message):
     StatusValueValuesEnum:
 
   Fields:
+    disks: Local disk configurations.
     instances: Instances scheduled on this node.
     name: The name of the node.
     nodeType: The type of this node.
@@ -34076,11 +34159,12 @@ class NodeGroupNode(_messages.Message):
     READY = 3
     REPAIRING = 4
 
-  instances = _messages.StringField(1, repeated=True)
-  name = _messages.StringField(2)
-  nodeType = _messages.StringField(3)
-  serverBinding = _messages.MessageField('ServerBinding', 4)
-  status = _messages.EnumField('StatusValueValuesEnum', 5)
+  disks = _messages.MessageField('LocalDisk', 1, repeated=True)
+  instances = _messages.StringField(2, repeated=True)
+  name = _messages.StringField(3)
+  nodeType = _messages.StringField(4)
+  serverBinding = _messages.MessageField('ServerBinding', 5)
+  status = _messages.EnumField('StatusValueValuesEnum', 6)
 
 
 class NodeGroupsAddNodesRequest(_messages.Message):
@@ -34366,7 +34450,9 @@ class NodeGroupsSetNodeTemplateRequest(_messages.Message):
 
 
 class NodeTemplate(_messages.Message):
-  r"""A Node Template resource.
+  r"""A Node Template resource. To learn more about node templates and sole-
+  tenant nodes, read the Sole-tenant nodes documentation. (== resource_for
+  beta.nodeTemplates ==) (== resource_for v1.nodeTemplates ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the node template. One
@@ -34381,6 +34467,7 @@ class NodeTemplate(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    disks: A LocalDisk attribute.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] The type of the resource. Always compute#nodeTemplate
@@ -34456,18 +34543,19 @@ class NodeTemplate(_messages.Message):
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
-  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(4, default=u'compute#nodeTemplate')
-  name = _messages.StringField(5)
-  nodeAffinityLabels = _messages.MessageField('NodeAffinityLabelsValue', 6)
-  nodeType = _messages.StringField(7)
-  nodeTypeFlexibility = _messages.MessageField('NodeTemplateNodeTypeFlexibility', 8)
-  region = _messages.StringField(9)
-  selfLink = _messages.StringField(10)
-  selfLinkWithId = _messages.StringField(11)
-  serverBinding = _messages.MessageField('ServerBinding', 12)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  statusMessage = _messages.StringField(14)
+  disks = _messages.MessageField('LocalDisk', 3, repeated=True)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'compute#nodeTemplate')
+  name = _messages.StringField(6)
+  nodeAffinityLabels = _messages.MessageField('NodeAffinityLabelsValue', 7)
+  nodeType = _messages.StringField(8)
+  nodeTypeFlexibility = _messages.MessageField('NodeTemplateNodeTypeFlexibility', 9)
+  region = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  selfLinkWithId = _messages.StringField(12)
+  serverBinding = _messages.MessageField('ServerBinding', 13)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  statusMessage = _messages.StringField(15)
 
 
 class NodeTemplateAggregatedList(_messages.Message):
@@ -38995,6 +39083,10 @@ class ResourcePoliciesScopedList(_messages.Message):
 class ResourcePolicy(_messages.Message):
   r"""A ResourcePolicy object.
 
+  Enums:
+    StatusValueValuesEnum: [Output Only] The status of resource policy
+      creation.
+
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -39019,9 +39111,24 @@ class ResourcePolicy(_messages.Message):
       the resource id.
     snapshotSchedulePolicy: Resource policy for persistent disks for creating
       snapshots.
+    status: [Output Only] The status of resource policy creation.
     vmMaintenancePolicy: Resource policy applicable to VMs for infrastructure
       maintenance.
   """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The status of resource policy creation.
+
+    Values:
+      CREATING: <no description>
+      DELETING: <no description>
+      INVALID: <no description>
+      READY: <no description>
+    """
+    CREATING = 0
+    DELETING = 1
+    INVALID = 2
+    READY = 3
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
@@ -39033,7 +39140,8 @@ class ResourcePolicy(_messages.Message):
   selfLink = _messages.StringField(8)
   selfLinkWithId = _messages.StringField(9)
   snapshotSchedulePolicy = _messages.MessageField('ResourcePolicySnapshotSchedulePolicy', 10)
-  vmMaintenancePolicy = _messages.MessageField('ResourcePolicyVmMaintenancePolicy', 11)
+  status = _messages.EnumField('StatusValueValuesEnum', 11)
+  vmMaintenancePolicy = _messages.MessageField('ResourcePolicyVmMaintenancePolicy', 12)
 
 
 class ResourcePolicyAggregatedList(_messages.Message):

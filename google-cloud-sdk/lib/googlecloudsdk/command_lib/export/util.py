@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import os
 import re
+import textwrap
 
 from apitools.base.py import encoding as api_encoding
 from googlecloudsdk.api_lib.dataproc import exceptions
@@ -46,12 +47,13 @@ def AddExportFlags(parser, schema_path):
   """
   parser.add_argument(
       '--destination',
-      help="""Path to a YAML file where the {} configuration will be exported.
-      The exported data will not contain any output-only fields. Alternatively,
-      you may omit this flag to write to standard output. A schema describing
-      the export/import format can be found in:
-      {}.
-      """.format(_GetSchemaResourceName(schema_path), schema_path),
+      help=textwrap.dedent("""\
+          Path to a YAML file where the {} configuration will be exported.
+          The exported data will not contain any output-only fields.
+          Alternatively, you may omit this flag to write to standard output. A
+          schema describing the export/import format can be found in:
+          {}.
+      """).format(_GetSchemaResourceName(schema_path), schema_path),
       # Allow writing to stdout.
       required=False)
 
@@ -65,12 +67,13 @@ def AddImportFlags(parser, schema_path):
   """
   parser.add_argument(
       '--source',
-      help="""Path to a YAML file containing {} configuration export data. The
-      YAML file must not contain any output-only fields. Alternatively, you may
-      omit this flag to read from standard input. A schema describing the
-      export/import format can be found in:
-      {}.
-      """.format(_GetSchemaResourceName(schema_path), schema_path),
+      help=textwrap.dedent("""\
+          Path to a YAML file containing {} configuration export data. The
+          YAML file must not contain any output-only fields. Alternatively, you
+          may omit this flag to read from standard input. A schema describing
+          the export/import format can be found in:
+          {}.
+      """).format(_GetSchemaResourceName(schema_path), schema_path),
       # Allow reading from stdin.
       required=False)
 

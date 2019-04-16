@@ -325,6 +325,7 @@ def WaitForJobTermination(dataproc,
                           job,
                           message,
                           goal_state,
+                          error_state=None,
                           stream_driver_log=False,
                           log_poll_period_s=1,
                           dataproc_poll_period_s=10,
@@ -336,6 +337,7 @@ def WaitForJobTermination(dataproc,
     job: The job to wait to finish.
     message: str, message to display to user while polling.
     goal_state: JobStatus.StateValueValuesEnum, the state to define success
+    error_state: JobStatus.StateValueValuesEnum, the state to define failure
     stream_driver_log: bool, Whether to show the Job's driver's output.
     log_poll_period_s: number, delay in seconds between checking on the log.
     dataproc_poll_period_s: number, delay in seconds between requests to
@@ -419,10 +421,8 @@ def WaitForJobTermination(dataproc,
 
   # TODO(b/34836493): Get better test coverage of the next 20 lines.
   state = job.status.state
-  if state is not goal_state and job.status.details:
-    # Just log details, because the state will be in the error message.
-    log.info(job.status.details)
 
+  # goal_state and error_state will always be terminal
   if state in dataproc.terminal_job_states:
     if stream_driver_log:
       if not driver_log_stream:
@@ -431,6 +431,14 @@ def WaitForJobTermination(dataproc,
         log.warning('Job terminated, but output did not finish streaming.')
     if state is goal_state:
       return job
+    if error_state and state is error_state:
+      if job.status.details:
+        raise exceptions.JobError(
+            'Job [{0}] failed with error:\n{1}'.format(
+                job_ref.jobId, job.status.details))
+      raise exceptions.JobError('Job [{0}] failed.'.format(job_ref.jobId))
+    if job.status.details:
+      log.info('Details:\n' + job.status.details)
     raise exceptions.JobError(
         'Job [{0}] entered state [{1}] while waiting for [{2}].'.format(
             job_ref.jobId, state, goal_state))

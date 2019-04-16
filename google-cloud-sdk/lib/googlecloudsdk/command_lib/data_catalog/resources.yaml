@@ -37,6 +37,7 @@ entry:
   name: entry
   collection: datacatalog.projects.locations.entryGroups.entries
   request_id_field: googleCloudDatacatalogV1beta1CreateEntryRequest.entryId
+  disable_auto_completers: true
   attributes:
   - *project
   - *location
