@@ -272,7 +272,7 @@ class Node(_messages.Message):
       DELETING: TPU node is being deleted.
       REPAIRING: TPU node is being repaired and may be unusable. Details can
         be found in the `help_description` field.
-      STOPPED: 7 - Reserved. Was SUSPENDED. TPU node is stopped.
+      STOPPED: TPU node is stopped.
       STOPPING: TPU node is currently stopping.
       STARTING: TPU node is currently starting.
       PREEMPTED: TPU node has been preempted. Only applies to Preemptible TPU

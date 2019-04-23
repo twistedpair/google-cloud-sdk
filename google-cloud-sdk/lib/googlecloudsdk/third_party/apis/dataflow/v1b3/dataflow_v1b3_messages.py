@@ -3488,11 +3488,17 @@ class RuntimeEnvironment(_messages.Message):
   r"""The environment values to set at runtime.
 
   Messages:
-    AdditionalUserLabelsValue: Additional user labels attached to the job.
+    AdditionalUserLabelsValue: Additional user labels to be specified for the
+      job. Keys and values should follow the restrictions specified in the
+      [labeling restrictions](https://cloud.google.com/compute/docs/labeling-
+      resources#restrictions) page.
 
   Fields:
     additionalExperiments: Additional experiment flags for the job.
-    additionalUserLabels: Additional user labels attached to the job.
+    additionalUserLabels: Additional user labels to be specified for the job.
+      Keys and values should follow the restrictions specified in the
+      [labeling restrictions](https://cloud.google.com/compute/docs/labeling-
+      resources#restrictions) page.
     bypassTempDirValidation: Whether to bypass the safety checks for the job's
       temporary directory. Use with caution.
     machineType: The machine type to use for the job. Defaults to the value
@@ -3516,7 +3522,10 @@ class RuntimeEnvironment(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalUserLabelsValue(_messages.Message):
-    r"""Additional user labels attached to the job.
+    r"""Additional user labels to be specified for the job. Keys and values
+    should follow the restrictions specified in the [labeling
+    restrictions](https://cloud.google.com/compute/docs/labeling-
+    resources#restrictions) page.
 
     Messages:
       AdditionalProperty: An additional property for a

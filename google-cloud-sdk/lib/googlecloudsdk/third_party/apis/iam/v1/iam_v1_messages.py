@@ -14,6 +14,19 @@ from apitools.base.py import extra_types
 package = 'iam'
 
 
+class AdminAuditData(_messages.Message):
+  r"""Audit log information specific to Cloud IAM admin APIs. This message is
+  serialized as an `Any` type in the `ServiceData` message of an `AuditLog`
+  message.
+
+  Fields:
+    permissionDelta: The permission_delta when when creating or updating a
+      Role.
+  """
+
+  permissionDelta = _messages.MessageField('PermissionDelta', 1)
+
+
 class AttributeTranslatorCEL(_messages.Message):
   r"""Specifies a list of output attribute names and the corresponding input
   attribute to use for that output attribute. Each defined output attribute is
@@ -175,7 +188,7 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: an
+    condition: The condition that is associated with this binding. NOTE: An
       unsatisfied condition will not allow user access via current binding.
       Different bindings, including their conditions, are examined
       independently.
@@ -1347,6 +1360,19 @@ class Permission(_messages.Message):
   onlyInPredefinedRoles = _messages.BooleanField(5)
   stage = _messages.EnumField('StageValueValuesEnum', 6)
   title = _messages.StringField(7)
+
+
+class PermissionDelta(_messages.Message):
+  r"""A PermissionDelta message to record the added_permissions and
+  removed_permissions inside a role.
+
+  Fields:
+    addedPermissions: Added permissions.
+    removedPermissions: Removed permissions.
+  """
+
+  addedPermissions = _messages.StringField(1, repeated=True)
+  removedPermissions = _messages.StringField(2, repeated=True)
 
 
 class Policy(_messages.Message):

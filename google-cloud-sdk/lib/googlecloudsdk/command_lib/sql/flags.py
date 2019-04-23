@@ -159,6 +159,14 @@ def AddPassword(parser):
       help='Cloud SQL user\'s password.')
 
 
+def AddRootPassword(parser):
+  """Add the root password field to the parser."""
+  parser.add_argument(
+      '--root-password',
+      required=False,
+      help='Root Cloud SQL user\'s password.')
+
+
 def AddPromptForPassword(parser):
   parser.add_argument(
       '--prompt-for-password',

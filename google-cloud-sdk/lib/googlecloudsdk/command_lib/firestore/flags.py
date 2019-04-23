@@ -65,12 +65,7 @@ An index for the field.
 
 This flag can be repeated to provide multiple indexes. Any existing indexes will
 be overwritten with the ones provided. Any omitted indexes will be deleted if
-they currently exist. For example, to explicitly set the list of indexes for the
-*tags* field in the *Events* collection group to *[ascending, contains]*, run:
-
-  $ {command} tags \\
-      --collection-group=Events \\
-      --index order=ascending --index array-config=contains
+they currently exist.
 
 The following keys are allowed:
 

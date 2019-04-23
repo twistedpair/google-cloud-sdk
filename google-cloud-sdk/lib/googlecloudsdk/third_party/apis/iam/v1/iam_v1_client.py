@@ -1203,8 +1203,7 @@ PatchServiceAccount instead.
 Updates a ServiceAccount.
 
 Currently, only the following fields are updatable:
-`display_name` .
-The `etag` is mandatory.
+`display_name` and `description`.
 
       Args:
         request: (ServiceAccount) input message

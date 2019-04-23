@@ -933,6 +933,9 @@ class GoogleCloudDialogflowV2DetectIntentRequest(_messages.Message):
       This field should be populated iff `query_input` is set to an input
       audio config. A single request can contain up to 1 minute of speech
       audio data.
+    outputAudioConfig: Optional. Instructs the speech synthesizer how to
+      generate the output audio. If this field is not set and agent-level
+      speech synthesizer is not configured, no output audio is generated.
     queryInput: Required. The input specification. It can be set to:  1.  an
       audio config     which instructs the speech recognizer how to process
       the speech audio,  2.  a conversational query in the form of text, or
@@ -941,14 +944,23 @@ class GoogleCloudDialogflowV2DetectIntentRequest(_messages.Message):
   """
 
   inputAudio = _messages.BytesField(1)
-  queryInput = _messages.MessageField('GoogleCloudDialogflowV2QueryInput', 2)
-  queryParams = _messages.MessageField('GoogleCloudDialogflowV2QueryParameters', 3)
+  outputAudioConfig = _messages.MessageField('GoogleCloudDialogflowV2OutputAudioConfig', 2)
+  queryInput = _messages.MessageField('GoogleCloudDialogflowV2QueryInput', 3)
+  queryParams = _messages.MessageField('GoogleCloudDialogflowV2QueryParameters', 4)
 
 
 class GoogleCloudDialogflowV2DetectIntentResponse(_messages.Message):
   r"""The message returned from the DetectIntent method.
 
   Fields:
+    outputAudio: The audio data bytes encoded as specified in the request.
+      Note: The output audio is generated based on the values of default
+      platform text responses found in the `query_result.fulfillment_messages`
+      field. If multiple default text responses exist, they will be
+      concatenated when generating audio. If no default platform text
+      responses exist, the generated audio content will be empty.
+    outputAudioConfig: The config used by the speech synthesizer to generate
+      the output audio.
     queryResult: The selected results of the conversational query or event
       processing. See `alternative_query_results` for additional potential
       results.
@@ -957,9 +969,11 @@ class GoogleCloudDialogflowV2DetectIntentResponse(_messages.Message):
     webhookStatus: Specifies the status of the webhook request.
   """
 
-  queryResult = _messages.MessageField('GoogleCloudDialogflowV2QueryResult', 1)
-  responseId = _messages.StringField(2)
-  webhookStatus = _messages.MessageField('GoogleRpcStatus', 3)
+  outputAudio = _messages.BytesField(1)
+  outputAudioConfig = _messages.MessageField('GoogleCloudDialogflowV2OutputAudioConfig', 2)
+  queryResult = _messages.MessageField('GoogleCloudDialogflowV2QueryResult', 3)
+  responseId = _messages.StringField(4)
+  webhookStatus = _messages.MessageField('GoogleRpcStatus', 5)
 
 
 class GoogleCloudDialogflowV2EntityType(_messages.Message):
@@ -1966,6 +1980,51 @@ class GoogleCloudDialogflowV2OriginalDetectIntentRequest(_messages.Message):
   version = _messages.StringField(3)
 
 
+class GoogleCloudDialogflowV2OutputAudioConfig(_messages.Message):
+  r"""Instructs the speech synthesizer how to generate the output audio
+  content.
+
+  Enums:
+    AudioEncodingValueValuesEnum: Required. Audio encoding of the synthesized
+      audio content.
+
+  Fields:
+    audioEncoding: Required. Audio encoding of the synthesized audio content.
+    sampleRateHertz: Optional. The synthesis sample rate (in hertz) for this
+      audio. If not provided, then the synthesizer will use the default sample
+      rate based on the audio encoding. If this is different from the voice's
+      natural sample rate, then the synthesizer will honor this request by
+      converting to the desired sample rate (which might result in worse audio
+      quality).
+    synthesizeSpeechConfig: Optional. Configuration of how speech should be
+      synthesized.
+  """
+
+  class AudioEncodingValueValuesEnum(_messages.Enum):
+    r"""Required. Audio encoding of the synthesized audio content.
+
+    Values:
+      OUTPUT_AUDIO_ENCODING_UNSPECIFIED: Not specified.
+      OUTPUT_AUDIO_ENCODING_LINEAR_16: Uncompressed 16-bit signed little-
+        endian samples (Linear PCM). Audio content returned as LINEAR16 also
+        contains a WAV header.
+      OUTPUT_AUDIO_ENCODING_MP3: MP3 audio.
+      OUTPUT_AUDIO_ENCODING_OGG_OPUS: Opus encoded audio wrapped in an ogg
+        container. The result will be a file which can be played natively on
+        Android, and in browsers (at least Chrome and Firefox). The quality of
+        the encoding is considerably higher than MP3 while using approximately
+        the same bitrate.
+    """
+    OUTPUT_AUDIO_ENCODING_UNSPECIFIED = 0
+    OUTPUT_AUDIO_ENCODING_LINEAR_16 = 1
+    OUTPUT_AUDIO_ENCODING_MP3 = 2
+    OUTPUT_AUDIO_ENCODING_OGG_OPUS = 3
+
+  audioEncoding = _messages.EnumField('AudioEncodingValueValuesEnum', 1)
+  sampleRateHertz = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  synthesizeSpeechConfig = _messages.MessageField('GoogleCloudDialogflowV2SynthesizeSpeechConfig', 3)
+
+
 class GoogleCloudDialogflowV2QueryInput(_messages.Message):
   r"""Represents the query input. It can contain either:  1.  An audio config
   which     instructs the speech recognizer how to process the speech audio.
@@ -2000,6 +2059,9 @@ class GoogleCloudDialogflowV2QueryParameters(_messages.Message):
       webhook associated with the agent. Arbitrary JSON objects are supported.
     resetContexts: Optional. Specifies whether to delete all contexts in the
       current session before the new ones are activated.
+    sentimentAnalysisRequestConfig: Optional. Configures the type of sentiment
+      analysis to perform. If not provided, sentiment analysis is not
+      performed.
     sessionEntityTypes: Optional. Additional session entity types to replace
       or extend developer entity types with. The entity synonyms apply to all
       languages and persist for the session of this query.
@@ -2038,8 +2100,9 @@ class GoogleCloudDialogflowV2QueryParameters(_messages.Message):
   geoLocation = _messages.MessageField('GoogleTypeLatLng', 2)
   payload = _messages.MessageField('PayloadValue', 3)
   resetContexts = _messages.BooleanField(4)
-  sessionEntityTypes = _messages.MessageField('GoogleCloudDialogflowV2SessionEntityType', 5, repeated=True)
-  timeZone = _messages.StringField(6)
+  sentimentAnalysisRequestConfig = _messages.MessageField('GoogleCloudDialogflowV2SentimentAnalysisRequestConfig', 5)
+  sessionEntityTypes = _messages.MessageField('GoogleCloudDialogflowV2SessionEntityType', 6, repeated=True)
+  timeZone = _messages.StringField(7)
 
 
 class GoogleCloudDialogflowV2QueryResult(_messages.Message):
@@ -2091,6 +2154,8 @@ class GoogleCloudDialogflowV2QueryResult(_messages.Message):
       contains the speech recognition result. If speech recognizer produced
       multiple alternatives, a particular one is picked. - If an event was
       provided as input, `query_text` is not set.
+    sentimentAnalysisResult: The sentiment analysis result, which depends on
+      the `sentiment_analysis_request_config` specified in the request.
     speechRecognitionConfidence: The Speech recognition confidence between 0.0
       and 1.0. A higher number indicates an estimated greater likelihood that
       the recognized words are correct. The default of 0.0 is a sentinel value
@@ -2194,9 +2259,10 @@ class GoogleCloudDialogflowV2QueryResult(_messages.Message):
   outputContexts = _messages.MessageField('GoogleCloudDialogflowV2Context', 9, repeated=True)
   parameters = _messages.MessageField('ParametersValue', 10)
   queryText = _messages.StringField(11)
-  speechRecognitionConfidence = _messages.FloatField(12, variant=_messages.Variant.FLOAT)
-  webhookPayload = _messages.MessageField('WebhookPayloadValue', 13)
-  webhookSource = _messages.StringField(14)
+  sentimentAnalysisResult = _messages.MessageField('GoogleCloudDialogflowV2SentimentAnalysisResult', 12)
+  speechRecognitionConfidence = _messages.FloatField(13, variant=_messages.Variant.FLOAT)
+  webhookPayload = _messages.MessageField('WebhookPayloadValue', 14)
+  webhookSource = _messages.StringField(15)
 
 
 class GoogleCloudDialogflowV2RestoreAgentRequest(_messages.Message):
@@ -2231,6 +2297,45 @@ class GoogleCloudDialogflowV2SearchAgentsResponse(_messages.Message):
 
   agents = _messages.MessageField('GoogleCloudDialogflowV2Agent', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowV2Sentiment(_messages.Message):
+  r"""The sentiment, such as positive/negative feeling or association, for a
+  unit of analysis, such as the query text.
+
+  Fields:
+    magnitude: A non-negative number in the [0, +inf) range, which represents
+      the absolute magnitude of sentiment, regardless of score (positive or
+      negative).
+    score: Sentiment score between -1.0 (negative sentiment) and 1.0 (positive
+      sentiment).
+  """
+
+  magnitude = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  score = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudDialogflowV2SentimentAnalysisRequestConfig(_messages.Message):
+  r"""Configures the types of sentiment analysis to perform.
+
+  Fields:
+    analyzeQueryTextSentiment: Optional. Instructs the service to perform
+      sentiment analysis on `query_text`. If not provided, sentiment analysis
+      is not performed on `query_text`.
+  """
+
+  analyzeQueryTextSentiment = _messages.BooleanField(1)
+
+
+class GoogleCloudDialogflowV2SentimentAnalysisResult(_messages.Message):
+  r"""The result of sentiment analysis as configured by
+  `sentiment_analysis_request_config`.
+
+  Fields:
+    queryTextSentiment: The sentiment analysis result for `query_text`.
+  """
+
+  queryTextSentiment = _messages.MessageField('GoogleCloudDialogflowV2Sentiment', 1)
 
 
 class GoogleCloudDialogflowV2SessionEntityType(_messages.Message):
@@ -2284,6 +2389,39 @@ class GoogleCloudDialogflowV2SessionEntityType(_messages.Message):
   name = _messages.StringField(3)
 
 
+class GoogleCloudDialogflowV2SynthesizeSpeechConfig(_messages.Message):
+  r"""Configuration of how speech should be synthesized.
+
+  Fields:
+    effectsProfileId: Optional. An identifier which selects 'audio effects'
+      profiles that are applied on (post synthesized) text to speech. Effects
+      are applied on top of each other in the order they are given.
+    pitch: Optional. Speaking pitch, in the range [-20.0, 20.0]. 20 means
+      increase 20 semitones from the original pitch. -20 means decrease 20
+      semitones from the original pitch.
+    speakingRate: Optional. Speaking rate/speed, in the range [0.25, 4.0]. 1.0
+      is the normal native speed supported by the specific voice. 2.0 is twice
+      as fast, and 0.5 is half as fast. If unset(0.0), defaults to the native
+      1.0 speed. Any other values < 0.25 or > 4.0 will return an error.
+    voice: Optional. The desired voice of the synthesized audio.
+    volumeGainDb: Optional. Volume gain (in dB) of the normal native volume
+      supported by the specific voice, in the range [-96.0, 16.0]. If unset,
+      or set to a value of 0.0 (dB), will play at normal native signal
+      amplitude. A value of -6.0 (dB) will play at approximately half the
+      amplitude of the normal native signal amplitude. A value of +6.0 (dB)
+      will play at approximately twice the amplitude of the normal native
+      signal amplitude. We strongly recommend not to exceed +10 (dB) as
+      there's usually no effective increase in loudness for any value greater
+      than that.
+  """
+
+  effectsProfileId = _messages.StringField(1, repeated=True)
+  pitch = _messages.FloatField(2)
+  speakingRate = _messages.FloatField(3)
+  voice = _messages.MessageField('GoogleCloudDialogflowV2VoiceSelectionParams', 4)
+  volumeGainDb = _messages.FloatField(5)
+
+
 class GoogleCloudDialogflowV2TextInput(_messages.Message):
   r"""Represents the natural language text to be processed.
 
@@ -2303,6 +2441,52 @@ class GoogleCloudDialogflowV2TextInput(_messages.Message):
 
 class GoogleCloudDialogflowV2TrainAgentRequest(_messages.Message):
   r"""The request message for Agents.TrainAgent."""
+
+
+class GoogleCloudDialogflowV2VoiceSelectionParams(_messages.Message):
+  r"""Description of which voice to use for speech synthesis.
+
+  Enums:
+    SsmlGenderValueValuesEnum: Optional. The preferred gender of the voice. If
+      not set, the service will choose a voice based on the other parameters
+      such as language_code and name. Note that this is only a preference, not
+      requirement. If a voice of the appropriate gender is not available, the
+      synthesizer should substitute a voice with a different gender rather
+      than failing the request.
+
+  Fields:
+    name: Optional. The name of the voice. If not set, the service will choose
+      a voice based on the other parameters such as language_code and gender.
+    ssmlGender: Optional. The preferred gender of the voice. If not set, the
+      service will choose a voice based on the other parameters such as
+      language_code and name. Note that this is only a preference, not
+      requirement. If a voice of the appropriate gender is not available, the
+      synthesizer should substitute a voice with a different gender rather
+      than failing the request.
+  """
+
+  class SsmlGenderValueValuesEnum(_messages.Enum):
+    r"""Optional. The preferred gender of the voice. If not set, the service
+    will choose a voice based on the other parameters such as language_code
+    and name. Note that this is only a preference, not requirement. If a voice
+    of the appropriate gender is not available, the synthesizer should
+    substitute a voice with a different gender rather than failing the
+    request.
+
+    Values:
+      SSML_VOICE_GENDER_UNSPECIFIED: An unspecified gender, which means that
+        the client doesn't care which gender the selected voice will have.
+      SSML_VOICE_GENDER_MALE: A male voice.
+      SSML_VOICE_GENDER_FEMALE: A female voice.
+      SSML_VOICE_GENDER_NEUTRAL: A gender-neutral voice.
+    """
+    SSML_VOICE_GENDER_UNSPECIFIED = 0
+    SSML_VOICE_GENDER_MALE = 1
+    SSML_VOICE_GENDER_FEMALE = 2
+    SSML_VOICE_GENDER_NEUTRAL = 3
+
+  name = _messages.StringField(1)
+  ssmlGender = _messages.EnumField('SsmlGenderValueValuesEnum', 2)
 
 
 class GoogleCloudDialogflowV2WebhookRequest(_messages.Message):

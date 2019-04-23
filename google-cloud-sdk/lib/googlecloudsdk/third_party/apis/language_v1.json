@@ -306,7 +306,12 @@
             "Event",
             "Artwork",
             "Consumer product",
-            "Other types of entities"
+            "Other types of entities",
+            "Phone number<br><br>\nThe metadata lists the phone number, formatted according to local\nconvention, plus whichever additional elements appear in the text:<ul>\n<li><code>number<\/code> &ndash; the actual number, broken down into\nsections as per local convention<\/li> <li><code>national_prefix<\/code>\n&ndash; country code, if detected<\/li> <li><code>area_code<\/code> &ndash;\nregion or area code, if detected<\/li> <li><code>extension<\/code> &ndash;\nphone extension (to be dialed after connection), if detected<\/li><\/ul>",
+            "Address<br><br>\nThe metadata identifies the street number and locality plus whichever\nadditional elements appear in the text:<ul>\n<li><code>street_number<\/code> &ndash; street number<\/li>\n<li><code>locality<\/code> &ndash; city or town<\/li>\n<li><code>street_name<\/code> &ndash; street\/route name, if detected<\/li>\n<li><code>postal_code<\/code> &ndash; postal code, if detected<\/li>\n<li><code>country<\/code> &ndash; country, if detected<\/li>\n<li><code>broad_region<\/code> &ndash; administrative area, such as the\nstate, if detected<\/li> <li><code>narrow_region<\/code> &ndash; smaller\nadministrative area, such as county, if detected<\/li>\n<li><code>sublocality<\/code> &ndash; used in Asian addresses to demark a\ndistrict within a city, if detected<\/li><\/ul>",
+            "Date<br><br>\nThe metadata identifies the components of the date:<ul>\n<li><code>year<\/code> &ndash; four digit year, if detected<\/li>\n<li><code>month<\/code> &ndash; two digit month number, if detected<\/li>\n<li><code>day<\/code> &ndash; two digit day number, if detected<\/li><\/ul>",
+            "Number<br><br>\nThe metadata is the number itself.",
+            "Price<br><br>\nThe metadata identifies the <code>value<\/code> and <code>currency<\/code>."
           ],
           "type": "string",
           "enum": [
@@ -317,7 +322,12 @@
             "EVENT",
             "WORK_OF_ART",
             "CONSUMER_GOOD",
-            "OTHER"
+            "OTHER",
+            "PHONE_NUMBER",
+            "ADDRESS",
+            "DATE",
+            "NUMBER",
+            "PRICE"
           ]
         },
         "metadata": {

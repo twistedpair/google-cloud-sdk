@@ -408,3 +408,15 @@ def VerifyGKEFlags(args):
     raise serverless_exceptions.ConfigurationError(
         'The `--service-account` flag '
         'is not supported with Cloud Run on GKE.')
+
+
+def IsGKE(args):
+  """Returns True if args specify GKE.
+
+  Args:
+    args: Namespace, The args namespace.
+
+  Caller must add resource_args.CLUSTER_PRESENTATION to concept parser
+  first.
+  """
+  return bool(args.CONCEPTS.cluster.Parse())

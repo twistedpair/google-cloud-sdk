@@ -39,6 +39,7 @@ class ToolresultsV1beta3(base_api.BaseApiClient):
     self.projects_histories_executions_steps_perfMetricsSummary = self.ProjectsHistoriesExecutionsStepsPerfMetricsSummaryService(self)
     self.projects_histories_executions_steps_perfSampleSeries_samples = self.ProjectsHistoriesExecutionsStepsPerfSampleSeriesSamplesService(self)
     self.projects_histories_executions_steps_perfSampleSeries = self.ProjectsHistoriesExecutionsStepsPerfSampleSeriesService(self)
+    self.projects_histories_executions_steps_testCases = self.ProjectsHistoriesExecutionsStepsTestCasesService(self)
     self.projects_histories_executions_steps_thumbnails = self.ProjectsHistoriesExecutionsStepsThumbnailsService(self)
     self.projects_histories_executions_steps = self.ProjectsHistoriesExecutionsStepsService(self)
     self.projects_histories_executions = self.ProjectsHistoriesExecutionsService(self)
@@ -306,6 +307,76 @@ May return any of the following canonical error codes: - NOT_FOUND - The contain
         request_field='',
         request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesListRequest',
         response_type_name=u'ListPerfSampleSeriesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsHistoriesExecutionsStepsTestCasesService(base_api.BaseApiService):
+    """Service class for the projects_histories_executions_steps_testCases resource."""
+
+    _NAME = u'projects_histories_executions_steps_testCases'
+
+    def __init__(self, client):
+      super(ToolresultsV1beta3.ProjectsHistoriesExecutionsStepsTestCasesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a Test Case for a Step. Experimental test cases API. Still in active development.
+
+May return any of the following canonical error codes:
+
+- PERMISSION_DENIED - if the user is not authorized to write to project - INVALID_ARGUMENT - if the request is malformed - NOT_FOUND - if the containing Test Case does not exist
+
+      Args:
+        request: (ToolresultsProjectsHistoriesExecutionsStepsTestCasesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestCase) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'toolresults.projects.histories.executions.steps.testCases.get',
+        ordered_params=[u'projectId', u'historyId', u'executionId', u'stepId', u'testCaseId'],
+        path_params=[u'executionId', u'historyId', u'projectId', u'stepId', u'testCaseId'],
+        query_params=[],
+        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/testCases/{testCaseId}',
+        request_field='',
+        request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsTestCasesGetRequest',
+        response_type_name=u'TestCase',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Test Cases attached to a Step. Experimental test cases API. Still in active development.
+
+May return any of the following canonical error codes:
+
+- PERMISSION_DENIED - if the user is not authorized to write to project - INVALID_ARGUMENT - if the request is malformed - NOT_FOUND - if the containing Step does not exist
+
+      Args:
+        request: (ToolresultsProjectsHistoriesExecutionsStepsTestCasesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListTestCasesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'toolresults.projects.histories.executions.steps.testCases.list',
+        ordered_params=[u'projectId', u'historyId', u'executionId', u'stepId'],
+        path_params=[u'executionId', u'historyId', u'projectId', u'stepId'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/testCases',
+        request_field='',
+        request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsTestCasesListRequest',
+        response_type_name=u'ListTestCasesResponse',
         supports_download=False,
     )
 

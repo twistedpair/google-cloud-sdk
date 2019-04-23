@@ -50,9 +50,11 @@ def GetMaskString(args, spec, mask_path, is_dotted=True):
 
   field_list = []
   for param in _GetSpecParams(spec.arguments.params):
-    if ('--' + param.arg_name in specified_args_list or
+    is_arg_specified = (
+        '--' + param.arg_name in specified_args_list or
         '--no-' + param.arg_name in specified_args_list or
-        param.arg_name in specified_args_list):
+        param.arg_name in specified_args_list)
+    if is_arg_specified and param.api_field is not None:
       api_field_name = _ExtractMaskField(mask_path, param.api_field, is_dotted)
       field_list.append(api_field_name)
 

@@ -238,7 +238,7 @@
           }
         },
         "condition": {
-          "description": "The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.",
+          "description": "The condition that is associated with this binding.\nNOTE: An unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.",
           "$ref": "Expr"
         }
       }
@@ -685,7 +685,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Lists the billing accounts that the current authenticated user has\npermission to [view](https:\/\/cloud.google.com\/billing\/docs\/how-to\/billing-access)."
+          "description": "Lists the billing accounts that the current authenticated user has\npermission to\n[view](https:\/\/cloud.google.com\/billing\/docs\/how-to\/billing-access)."
         },
         "patch": {
           "id": "cloudbilling.billingAccounts.patch",

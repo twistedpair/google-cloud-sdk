@@ -25,10 +25,11 @@ class DatacatalogEntriesLookupRequest(_messages.Message):
     linkedResource: The full name of the Google Cloud Platform resource the
       Data Catalog entry represents. See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name
-      Example: "//bigquery.googleapis.com/projects/projectId/datasets/datasetI
-      d/tables/tableId".
-    sqlResource: The SQL name of the entry. Example:  1.
-      cloud_pubsub.project_id.topic_id 2.
+      Full names are case-sensitive.  Examples: "//bigquery.googleapis.com/pro
+      jects/projectId/datasets/datasetId/tables/tableId".
+      "//pubsub.googleapis.com/projects/projectId/topics/topicId"
+    sqlResource: The SQL name of the entry. SQL names are case-sensitive.
+      Examples: 1. cloud_pubsub.project_id.topic_id 2.
       bigquery.project_id.dataset_id.table_id 3.
       datacatalog.project_id.location_id.entry_group_id.entry_id
   """
@@ -159,9 +160,12 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
       ENTRY_TYPE_UNSPECIFIED: Default unknown type
       TABLE: The type of entry that has a GoogleSQL schema, including logical
         views.
+      DATA_STREAM: An entry type which is used for streaming entries. Example
+        - Pub/Sub.
     """
     ENTRY_TYPE_UNSPECIFIED = 0
     TABLE = 1
+    DATA_STREAM = 2
 
   bigqueryTableSpec = _messages.MessageField('GoogleCloudDatacatalogV1beta1BigQueryTableSpec', 1)
   description = _messages.StringField(2)

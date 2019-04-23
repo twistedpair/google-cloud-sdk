@@ -3602,7 +3602,7 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: an
+    condition: The condition that is associated with this binding. NOTE: An
       unsatisfied condition will not allow user access via current binding.
       Different bindings, including their conditions, are examined
       independently.
@@ -5653,7 +5653,7 @@ class ComputeDisksCreateSnapshotRequest(_messages.Message):
 
   Fields:
     disk: Name of the persistent disk to snapshot.
-    guestFlush: A boolean attribute.
+    guestFlush: Application consistent snapshot (ie. VSS).
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -6808,6 +6808,221 @@ class ComputeGlobalForwardingRulesTestIamPermissionsRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
   resource = _messages.StringField(2, required=True)
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
+class ComputeGlobalNetworkEndpointGroupsAttachNetworkEndpointsRequest(_messages.Message):
+  r"""A ComputeGlobalNetworkEndpointGroupsAttachNetworkEndpointsRequest
+  object.
+
+  Fields:
+    globalNetworkEndpointGroupsAttachEndpointsRequest: A
+      GlobalNetworkEndpointGroupsAttachEndpointsRequest resource to be passed
+      as the request body.
+    networkEndpointGroup: The name of the network endpoint group where you are
+      attaching network endpoints to. It should comply with RFC1035.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  globalNetworkEndpointGroupsAttachEndpointsRequest = _messages.MessageField('GlobalNetworkEndpointGroupsAttachEndpointsRequest', 1)
+  networkEndpointGroup = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeGlobalNetworkEndpointGroupsDeleteRequest(_messages.Message):
+  r"""A ComputeGlobalNetworkEndpointGroupsDeleteRequest object.
+
+  Fields:
+    networkEndpointGroup: The name of the network endpoint group to delete. It
+      should comply with RFC1035.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  networkEndpointGroup = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class ComputeGlobalNetworkEndpointGroupsDetachNetworkEndpointsRequest(_messages.Message):
+  r"""A ComputeGlobalNetworkEndpointGroupsDetachNetworkEndpointsRequest
+  object.
+
+  Fields:
+    globalNetworkEndpointGroupsDetachEndpointsRequest: A
+      GlobalNetworkEndpointGroupsDetachEndpointsRequest resource to be passed
+      as the request body.
+    networkEndpointGroup: The name of the network endpoint group where you are
+      removing network endpoints. It should comply with RFC1035.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  globalNetworkEndpointGroupsDetachEndpointsRequest = _messages.MessageField('GlobalNetworkEndpointGroupsDetachEndpointsRequest', 1)
+  networkEndpointGroup = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeGlobalNetworkEndpointGroupsGetRequest(_messages.Message):
+  r"""A ComputeGlobalNetworkEndpointGroupsGetRequest object.
+
+  Fields:
+    networkEndpointGroup: The name of the network endpoint group. It should
+      comply with RFC1035.
+    project: Project ID for this request.
+  """
+
+  networkEndpointGroup = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeGlobalNetworkEndpointGroupsInsertRequest(_messages.Message):
+  r"""A ComputeGlobalNetworkEndpointGroupsInsertRequest object.
+
+  Fields:
+    networkEndpointGroup: A NetworkEndpointGroup resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  networkEndpointGroup = _messages.MessageField('NetworkEndpointGroup', 1)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class ComputeGlobalNetworkEndpointGroupsListNetworkEndpointsRequest(_messages.Message):
+  r"""A ComputeGlobalNetworkEndpointGroupsListNetworkEndpointsRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    networkEndpointGroup: The name of the network endpoint group from which
+      you want to generate a list of included network endpoints. It should
+      comply with RFC1035.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  networkEndpointGroup = _messages.StringField(3, required=True)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+
+
+class ComputeGlobalNetworkEndpointGroupsListRequest(_messages.Message):
+  r"""A ComputeGlobalNetworkEndpointGroupsListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
 
 
 class ComputeGlobalOperationsAggregatedListRequest(_messages.Message):
@@ -13907,7 +14122,7 @@ class ComputeRegionDisksCreateSnapshotRequest(_messages.Message):
 
   Fields:
     disk: Name of the regional persistent disk to snapshot.
-    guestFlush: A boolean attribute.
+    guestFlush: Application consistent snapshot (ie. VSS).
     project: Project ID for this request.
     region: Name of the region for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -23685,6 +23900,26 @@ class ForwardingRulesScopedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 2)
 
 
+class GlobalNetworkEndpointGroupsAttachEndpointsRequest(_messages.Message):
+  r"""A GlobalNetworkEndpointGroupsAttachEndpointsRequest object.
+
+  Fields:
+    networkEndpoints: The list of network endpoints to be attached.
+  """
+
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 1, repeated=True)
+
+
+class GlobalNetworkEndpointGroupsDetachEndpointsRequest(_messages.Message):
+  r"""A GlobalNetworkEndpointGroupsDetachEndpointsRequest object.
+
+  Fields:
+    networkEndpoints: The list of network endpoints to be detached.
+  """
+
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 1, repeated=True)
+
+
 class GlobalSetLabelsRequest(_messages.Message):
   r"""A GlobalSetLabelsRequest object.
 
@@ -25877,8 +26112,9 @@ class Image(_messages.Message):
         which should be TAR. This is just a container and transmission format
         and not a runtime format. Provided by the client when the disk image
         is created.
-      sha1Checksum: An optional SHA1 checksum of the disk image before
-        unpackaging provided by the client when the disk image is created.
+      sha1Checksum: [Deprecated] This field is deprecated. An optional SHA1
+        checksum of the disk image before unpackaging provided by the client
+        when the disk image is created.
       source: The full Google Cloud Storage URL where the disk image is
         stored. You must provide either this property or the sourceDisk
         property but not both.
@@ -26815,8 +27051,11 @@ class InstanceGroupManager(_messages.Message):
       characters long, and comply with RFC1035.
     namedPorts: Named ports configured for the Instance Groups complementary
       to this Instance Group Manager.
-    pendingActions: [Output Only] The list of instance actions and the number
-      of instances in this managed instance group that are pending for each of
+    pendingActions: [Deprecated] This field is deprecated and will be removed.
+      Prefer using the status field instead. Please contact cloud-updater-
+      feedback@google.com to leave feedback if your workload relies on this
+      field. [Output Only] The list of instance actions and the number of
+      instances in this managed instance group that are pending for each of
       those actions.
     region: [Output Only] The URL of the region where the managed instance
       group resides (for regional resources).
@@ -26840,12 +27079,12 @@ class InstanceGroupManager(_messages.Message):
     updatePolicy: The update policy for this managed instance group.
     versions: Specifies the instance templates used by this managed instance
       group to create instances.  Each version is defined by an
-      instanceTemplate. Every template can appear at most once per instance
-      group. This field overrides the top-level instanceTemplate field. Read
-      more about the relationships between these fields. Exactly one version
-      must leave the targetSize field unset. That version will be applied to
-      all remaining instances. For more information, read about canary
-      updates.
+      instanceTemplate and a name. Every version can appear at most once per
+      instance group. This field overrides the top-level instanceTemplate
+      field. Read more about the relationships between these fields. Exactly
+      one version must leave the targetSize field unset. That version will be
+      applied to all remaining instances. For more information, read about
+      canary updates.
     zone: [Output Only] The URL of the zone where the managed instance group
       is located (for zonal resources).
   """
@@ -27250,13 +27489,25 @@ class InstanceGroupManagerPendingActionsSummary(_messages.Message):
   r"""A InstanceGroupManagerPendingActionsSummary object.
 
   Fields:
-    creating: [Output Only] The number of instances in the managed instance
+    creating: [Deprecated] This field is deprecated and will be removed.
+      Prefer using the status field instead. Please contact cloud-updater-
+      feedback@google.com to leave feedback if your workload relies on this
+      field. [Output Only] The number of instances in the managed instance
       group that are pending to be created.
-    deleting: [Output Only] The number of instances in the managed instance
+    deleting: [Deprecated] This field is deprecated and will be removed.
+      Prefer using the status field instead. Please contact cloud-updater-
+      feedback@google.com to leave feedback if your workload relies on this
+      field. [Output Only] The number of instances in the managed instance
       group that are pending to be deleted.
-    recreating: [Output Only] The number of instances in the managed instance
+    recreating: [Deprecated] This field is deprecated and will be removed.
+      Prefer using the status field instead. Please contact cloud-updater-
+      feedback@google.com to leave feedback if your workload relies on this
+      field. [Output Only] The number of instances in the managed instance
       group that are pending to be recreated.
-    restarting: [Output Only] The number of instances in the managed instance
+    restarting: [Deprecated] This field is deprecated and will be removed.
+      Prefer using the status field instead. Please contact cloud-updater-
+      feedback@google.com to leave feedback if your workload relies on this
+      field. [Output Only] The number of instances in the managed instance
       group that are pending to be restarted.
   """
 
@@ -27276,13 +27527,30 @@ class InstanceGroupManagerStatus(_messages.Message):
       of change (for example, creation, restart, or deletion); no future
       changes are scheduled for instances in the managed instance group; and
       the managed instance group itself is not being modified.
+    stateful: [Output Only] Stateful status of the given Instance Group
+      Manager.
     versionTarget: [Output Only] A status of consistency of Instances'
       versions with their target version specified by version field on
       Instance Group Manager.
   """
 
   isStable = _messages.BooleanField(1)
-  versionTarget = _messages.MessageField('InstanceGroupManagerStatusVersionTarget', 2)
+  stateful = _messages.MessageField('InstanceGroupManagerStatusStateful', 2)
+  versionTarget = _messages.MessageField('InstanceGroupManagerStatusVersionTarget', 3)
+
+
+class InstanceGroupManagerStatusStateful(_messages.Message):
+  r"""A InstanceGroupManagerStatusStateful object.
+
+  Fields:
+    isStateful: [Output Only] A bit indicating whether the managed instance
+      group is stateful, i.e. has any disks in Stateful Policy or at least one
+      per-instance config. This is determined based on the user intent, the
+      group may be reported as not stateful even when there is still some
+      preserved state on managed instances.
+  """
+
+  isStateful = _messages.BooleanField(1)
 
 
 class InstanceGroupManagerStatusVersionTarget(_messages.Message):
@@ -29432,10 +29700,12 @@ class InterconnectAttachment(_messages.Message):
       BPS_10G: <no description>
       BPS_1G: <no description>
       BPS_200M: <no description>
+      BPS_20G: <no description>
       BPS_2G: <no description>
       BPS_300M: <no description>
       BPS_400M: <no description>
       BPS_500M: <no description>
+      BPS_50G: <no description>
       BPS_50M: <no description>
       BPS_5G: <no description>
     """
@@ -29443,12 +29713,14 @@ class InterconnectAttachment(_messages.Message):
     BPS_10G = 1
     BPS_1G = 2
     BPS_200M = 3
-    BPS_2G = 4
-    BPS_300M = 5
-    BPS_400M = 6
-    BPS_500M = 7
-    BPS_50M = 8
-    BPS_5G = 9
+    BPS_20G = 4
+    BPS_2G = 5
+    BPS_300M = 6
+    BPS_400M = 7
+    BPS_500M = 8
+    BPS_50G = 9
+    BPS_50M = 10
+    BPS_5G = 11
 
   class EdgeAvailabilityDomainValueValuesEnum(_messages.Enum):
     r"""Desired availability domain for the attachment. Only available for
@@ -31319,29 +31591,16 @@ class LogConfigDataAccessOptions(_messages.Message):
   Enums:
     LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
       manner at the caller. This is relevant only in the LocalIAM
-      implementation, for now.  NOTE: Logging to Gin in a fail-closed manner
-      is currently unsupported while work is being done to satisfy the
-      requirements of go/345. Currently, setting LOG_FAIL_CLOSED mode will
-      have no effect, but still exists because there is active work being done
-      to support it (b/115874152).
+      implementation, for now.
 
   Fields:
     logMode: Whether Gin logging should happen in a fail-closed manner at the
       caller. This is relevant only in the LocalIAM implementation, for now.
-      NOTE: Logging to Gin in a fail-closed manner is currently unsupported
-      while work is being done to satisfy the requirements of go/345.
-      Currently, setting LOG_FAIL_CLOSED mode will have no effect, but still
-      exists because there is active work being done to support it
-      (b/115874152).
   """
 
   class LogModeValueValuesEnum(_messages.Enum):
     r"""Whether Gin logging should happen in a fail-closed manner at the
     caller. This is relevant only in the LocalIAM implementation, for now.
-    NOTE: Logging to Gin in a fail-closed manner is currently unsupported
-    while work is being done to satisfy the requirements of go/345. Currently,
-    setting LOG_FAIL_CLOSED mode will have no effect, but still exists because
-    there is active work being done to support it (b/115874152).
 
     Values:
       LOG_FAIL_CLOSED: <no description>
@@ -33782,6 +34041,7 @@ class NodeGroup(_messages.Message):
   (== resource_for v1.nodeGroups ==)
 
   Enums:
+    ManagedHoldbackValueValuesEnum:
     StatusValueValuesEnum:
 
   Fields:
@@ -33794,6 +34054,7 @@ class NodeGroup(_messages.Message):
       is defined by the server.
     kind: [Output Only] The type of the resource. Always compute#nodeGroup for
       node group.
+    managedHoldback: A ManagedHoldbackValueValuesEnum attribute.
     name: The name of the resource, provided by the client when initially
       creating the resource. The resource name must be 1-63 characters long,
       and comply with RFC1035. Specifically, the name must be 1-63 characters
@@ -33811,6 +34072,18 @@ class NodeGroup(_messages.Message):
     zone: [Output Only] The name of the zone where the node group resides,
       such as us-central1-a.
   """
+
+  class ManagedHoldbackValueValuesEnum(_messages.Enum):
+    r"""ManagedHoldbackValueValuesEnum enum type.
+
+    Values:
+      MANAGED_HOLDBACK_UNSPECIFIED: <no description>
+      OFF: <no description>
+      ON: <no description>
+    """
+    MANAGED_HOLDBACK_UNSPECIFIED = 0
+    OFF = 1
+    ON = 2
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""StatusValueValuesEnum enum type.
@@ -33831,13 +34104,14 @@ class NodeGroup(_messages.Message):
   description = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default=u'compute#nodeGroup')
-  name = _messages.StringField(6)
-  nodeTemplate = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
-  selfLinkWithId = _messages.StringField(9)
-  size = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  status = _messages.EnumField('StatusValueValuesEnum', 11)
-  zone = _messages.StringField(12)
+  managedHoldback = _messages.EnumField('ManagedHoldbackValueValuesEnum', 6)
+  name = _messages.StringField(7)
+  nodeTemplate = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  selfLinkWithId = _messages.StringField(10)
+  size = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  zone = _messages.StringField(13)
 
 
 class NodeGroupAggregatedList(_messages.Message):
@@ -36645,10 +36919,12 @@ class PreservedStatePreservedDisk(_messages.Message):
 
     Values:
       NEVER: <no description>
+      ON_PERMANENT_INSTANCE_DELETION: <no description>
       WHEN_NOT_IN_USE: <no description>
     """
     NEVER = 0
-    WHEN_NOT_IN_USE = 1
+    ON_PERMANENT_INSTANCE_DELETION = 1
+    WHEN_NOT_IN_USE = 2
 
   class ModeValueValuesEnum(_messages.Enum):
     r"""The mode in which to attach this disk, either READ_WRITE or READ_ONLY.
@@ -40426,10 +40702,10 @@ class RouterBgpPeerBfd(_messages.Message):
   r"""A RouterBgpPeerBfd object.
 
   Enums:
-    ModeValueValuesEnum: The BFD session initiation mode for this BGP peer. If
-      set to ACTIVE, the Cloud Router will initiate the BFD session for this
-      BGP peer. If set to PASSIVE, the Cloud Router will wait for the peer
-      router to initiate the BFD session for this BGP peer. If set to
+    ModeValueValuesEnum: The BFD session initialization mode for this BGP
+      peer. If set to ACTIVE, the Cloud Router will initiate the BFD session
+      for this BGP peer. If set to PASSIVE, the Cloud Router will wait for the
+      peer router to initiate the BFD session for this BGP peer. If set to
       DISABLED, BFD is disabled for this BGP peer. The default is PASSIVE.
     PacketModeValueValuesEnum: The BFD packet mode for this BGP peer. If set
       to CONTROL_AND_ECHO, BFD echo mode is enabled for this BGP peer. In this
@@ -40460,11 +40736,11 @@ class RouterBgpPeerBfd(_messages.Message):
       router. Otherwise, it will be used to determine the interval between BFD
       control packets. If set, this value must be between 33 and 30000. The
       default is 300.
-    mode: The BFD session initiation mode for this BGP peer. If set to ACTIVE,
-      the Cloud Router will initiate the BFD session for this BGP peer. If set
-      to PASSIVE, the Cloud Router will wait for the peer router to initiate
-      the BFD session for this BGP peer. If set to DISABLED, BFD is disabled
-      for this BGP peer. The default is PASSIVE.
+    mode: The BFD session initialization mode for this BGP peer. If set to
+      ACTIVE, the Cloud Router will initiate the BFD session for this BGP
+      peer. If set to PASSIVE, the Cloud Router will wait for the peer router
+      to initiate the BFD session for this BGP peer. If set to DISABLED, BFD
+      is disabled for this BGP peer. The default is PASSIVE.
     multiplier: The number of consecutive BFD packets that must be missed
       before BFD declares that a peer is unavailable. If set, the value must
       be a value between 2 and 16. The default is 3.
@@ -40487,11 +40763,11 @@ class RouterBgpPeerBfd(_messages.Message):
   """
 
   class ModeValueValuesEnum(_messages.Enum):
-    r"""The BFD session initiation mode for this BGP peer. If set to ACTIVE,
-    the Cloud Router will initiate the BFD session for this BGP peer. If set
-    to PASSIVE, the Cloud Router will wait for the peer router to initiate the
-    BFD session for this BGP peer. If set to DISABLED, BFD is disabled for
-    this BGP peer. The default is PASSIVE.
+    r"""The BFD session initialization mode for this BGP peer. If set to
+    ACTIVE, the Cloud Router will initiate the BFD session for this BGP peer.
+    If set to PASSIVE, the Cloud Router will wait for the peer router to
+    initiate the BFD session for this BGP peer. If set to DISABLED, BFD is
+    disabled for this BGP peer. The default is PASSIVE.
 
     Values:
       ACTIVE: <no description>
@@ -43714,10 +43990,12 @@ class StatefulPolicyPreservedStateDiskDevice(_messages.Message):
 
     Values:
       NEVER: <no description>
+      ON_PERMANENT_INSTANCE_DELETION: <no description>
       WHEN_NOT_IN_USE: <no description>
     """
     NEVER = 0
-    WHEN_NOT_IN_USE = 1
+    ON_PERMANENT_INSTANCE_DELETION = 1
+    WHEN_NOT_IN_USE = 2
 
   autoDelete = _messages.EnumField('AutoDeleteValueValuesEnum', 1)
 

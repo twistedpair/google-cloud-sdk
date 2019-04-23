@@ -28,7 +28,6 @@ from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.services import enable_api as services_api
 from googlecloudsdk.api_lib.services import services_util
-from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.cloudbuild import execution
@@ -43,6 +42,10 @@ from googlecloudsdk.core.console import console_io
 _DAISY_BUILDER = 'gcr.io/compute-image-tools/daisy:release'
 
 _OVF_IMPORT_BUILDER = 'gcr.io/compute-image-tools/gce_ovf_import:release'
+
+SERVICE_ACCOUNT_ROLES = [
+    'roles/iam.serviceAccountUser',
+    'roles/iam.serviceAccountTokenCreator']
 
 
 class FilteredLogTailer(cb_logs.LogTailer):
@@ -145,13 +148,11 @@ def AddCommonDaisyArgs(parser, add_log_location=True):
   base.ASYNC_FLAG.AddToParser(parser)
 
 
-def _CheckIamPermissions(project_id, service_account_roles):
+def _CheckIamPermissions(project_id):
   """Check for needed IAM permissions and prompt to add if missing.
 
   Args:
     project_id: A string with the name of the project.
-    service_account_roles: roles to be used by service account in addition to
-      compute.admin.
   """
   project = projects_api.Get(project_id)
   # If the user's project doesn't have cloudbuild enabled yet, then the service
@@ -178,9 +179,8 @@ def _CheckIamPermissions(project_id, service_account_roles):
   service_account = 'serviceAccount:{0}@cloudbuild.gserviceaccount.com'.format(
       project.projectNumber)
   expected_permissions = {'roles/compute.admin': service_account}
-  if service_account_roles:
-    for role in service_account_roles:
-      expected_permissions[role] = service_account
+  for role in SERVICE_ACCOUNT_ROLES:
+    expected_permissions[role] = service_account
 
   permissions = projects_api.GetIamPolicy(project_id)
   for binding in permissions.bindings:
@@ -240,37 +240,24 @@ def _CreateCloudBuild(build_config, client, messages):
   return build, build_ref
 
 
-def GetAndCreateDaisyBucket(bucket_name=None, storage_client=None,
-                            bucket_location=None):
-  """Determine the name of the GCS bucket to use and create if necessary.
+def GetDaisyBucketName(bucket_location=None):
+  """Determine bucket name for daisy.
 
   Args:
-    bucket_name: str, bucket name to use, otherwise the bucket will be named
-      based on the project id.
-    storage_client: The storage_api client object.
-    bucket_location: str, bucket location.
+    bucket_location: str, specified bucket location.
 
   Returns:
-    A string containing the name of the GCS bucket to use.
+    str, bucket name for daisy.
   """
   project = properties.VALUES.core.project.GetOrFail()
   safe_project = project.replace(':', '-')
   safe_project = safe_project.replace('.', '-')
-  if not bucket_name:
-    bucket_name = '{0}-daisy-bkt'.format(safe_project)
-    if bucket_location:
-      bucket_name = '{0}-{1}'.format(bucket_name, bucket_location).lower()
-
+  bucket_name = '{0}-daisy-bkt'.format(safe_project)
+  if bucket_location:
+    bucket_name = '{0}-{1}'.format(bucket_name, bucket_location).lower()
   safe_bucket_name = _GetSafeBucketName(bucket_name)
-
-  if not storage_client:
-    storage_client = storage_api.StorageClient()
-
   # TODO (b/117668144): Make Daisy scratch bucket ACLs same as
   # source/destination bucket
-  storage_client.CreateBucketIfNotExists(
-      safe_bucket_name, location=bucket_location)
-
   return safe_bucket_name
 
 
@@ -314,6 +301,7 @@ def ExtractNetworkAndSubnetDaisyVariables(args, operation):
   """
   variables = []
   add_network_variable = False
+  network_full_path = None
   if args.subnet:
     variables.append('{0}_subnet=regions/{1}/subnetworks/{2}'.format(
         operation, GetSubnetRegion(), args.subnet.lower()))
@@ -337,11 +325,10 @@ def ExtractNetworkAndSubnetDaisyVariables(args, operation):
 def RunDaisyBuild(args,
                   workflow,
                   variables,
-                  daisy_bucket=None,
+                  daisy_bucket,
                   tags=None,
                   user_zone=None,
-                  output_filter=None,
-                  service_account_roles=None):
+                  output_filter=None):
   """Run a build with Daisy on Google Cloud Builder.
 
   Args:
@@ -357,8 +344,6 @@ def RunDaisyBuild(args,
     output_filter: A list of strings indicating what lines from the log should
       be output. Only lines that start with one of the strings in output_filter
       will be displayed.
-    service_account_roles: roles to be used by service account in addition to
-      compute.admin.
 
   Returns:
     A build object that either streams the output or is displayed as a
@@ -370,15 +355,12 @@ def RunDaisyBuild(args,
   project_id = projects_util.ParseProject(
       properties.VALUES.core.project.GetOrFail())
 
-  _CheckIamPermissions(
-      project_id, service_account_roles or ['roles/iam.serviceAccountActor'])
+  _CheckIamPermissions(project_id)
 
   # Make Daisy time out before gcloud by shaving off 2% from the timeout time,
   # up to a max of 5m (300s).
   two_percent = int(args.timeout * 0.02)
   daisy_timeout = args.timeout - min(two_percent, 300)
-
-  daisy_bucket = daisy_bucket or GetAndCreateDaisyBucket()
 
   daisy_args = [
       '-gcs_path=gs://{0}/'.format(daisy_bucket),
@@ -516,9 +498,7 @@ def RunOVFImportBuild(args, instance_names, source_uri, no_guest_environment,
   project_id = projects_util.ParseProject(
       properties.VALUES.core.project.GetOrFail())
 
-  _CheckIamPermissions(
-      project_id,
-      ['roles/iam.serviceAccountUser', 'roles/iam.serviceAccountTokenCreator'])
+  _CheckIamPermissions(project_id)
 
   # Make OVF import time-out before gcloud by shaving off 2% from the timeout
   # time, up to a max of 5m (300s).

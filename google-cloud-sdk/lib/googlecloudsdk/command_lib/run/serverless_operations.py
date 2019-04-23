@@ -35,6 +35,7 @@ from googlecloudsdk.api_lib.run import metric_names
 from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import route
 from googlecloudsdk.api_lib.run import service
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import exceptions as exceptions_util
 from googlecloudsdk.api_lib.util import waiter
@@ -97,7 +98,12 @@ def Connect(conn_context):
   with conn_context as conn_info:
     # pylint: disable=protected-access
     client = apis_internal._GetClientInstance(
-        conn_info.api_name, conn_info.api_version, ca_certs=conn_info.ca_certs)
+        conn_info.api_name,
+        conn_info.api_version,
+        # Only check response if not connecting to GKE
+        check_response_func=apis.CheckResponseForApiEnablement
+        if conn_context.supports_one_platform else None,
+        ca_certs=conn_info.ca_certs)
     # pylint: enable=protected-access
     yield ServerlessOperations(
         client,

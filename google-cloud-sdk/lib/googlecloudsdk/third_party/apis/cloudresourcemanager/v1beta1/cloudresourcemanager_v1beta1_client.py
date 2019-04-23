@@ -280,8 +280,9 @@ and the Project remains visible to ListProjects.
 However, you cannot update the project.
 
 After the deletion completes, the Project is not retrievable by
-the  GetProject and
-ListProjects methods.
+the  GetProject
+and ListProjects
+methods.
 
 The caller must have modify permissions for this Project.
 

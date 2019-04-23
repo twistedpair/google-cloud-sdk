@@ -148,7 +148,7 @@ def CheckUpdateArgsSpecified(args, queue_type, is_alpha=False):
     if not _AnyArgsSpecified(args, ['max_attempts', 'max_retry_duration'],
                              clear_args=True):
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')
-  if queue_type == constants.APP_ENGINE_QUEUE:
+  if queue_type == constants.PUSH_QUEUE:
     if is_alpha:
       if not _AnyArgsSpecified(
           args, [
@@ -194,7 +194,7 @@ def _ParseRetryConfigArgs(args, queue_type, messages, is_update,
     _AddMaxAttemptsFieldsFromArgs(args, retry_config, is_alpha)
     return retry_config
 
-  if (queue_type == constants.APP_ENGINE_QUEUE and
+  if (queue_type == constants.PUSH_QUEUE and
       _AnyArgsSpecified(args, ['max_attempts', 'max_retry_duration',
                                'max_doublings', 'min_backoff', 'max_backoff'],
                         clear_args=is_update)):
@@ -220,7 +220,7 @@ def _AddMaxAttemptsFieldsFromArgs(args, config_object, is_alpha=False):
 
 def _ParseAlphaRateLimitsArgs(args, queue_type, messages, is_update):
   """Parses the attributes of 'args' for Queue.rateLimits."""
-  if (queue_type == constants.APP_ENGINE_QUEUE and
+  if (queue_type == constants.PUSH_QUEUE and
       _AnyArgsSpecified(args, ['max_tasks_dispatched_per_second',
                                'max_concurrent_tasks'],
                         clear_args=is_update)):
@@ -231,7 +231,7 @@ def _ParseAlphaRateLimitsArgs(args, queue_type, messages, is_update):
 
 def _ParseRateLimitsArgs(args, queue_type, messages, is_update):
   """Parses the attributes of 'args' for Queue.rateLimits."""
-  if (queue_type == constants.APP_ENGINE_QUEUE and _AnyArgsSpecified(
+  if (queue_type == constants.PUSH_QUEUE and _AnyArgsSpecified(
       args, ['max_dispatches_per_second', 'max_concurrent_dispatches'],
       clear_args=is_update)):
     return messages.RateLimits(
@@ -247,7 +247,7 @@ def _ParsePullTargetArgs(unused_args, queue_type, messages, is_update):
 
 def _ParseAppEngineHttpTargetArgs(args, queue_type, messages, is_update):
   """Parses the attributes of 'args' for Queue.appEngineHttpTarget."""
-  if queue_type == constants.APP_ENGINE_QUEUE:
+  if queue_type == constants.PUSH_QUEUE:
     routing_override = None
     if args.IsSpecified('routing_override'):
       routing_override = messages.AppEngineRouting(**args.routing_override)
@@ -259,7 +259,7 @@ def _ParseAppEngineHttpTargetArgs(args, queue_type, messages, is_update):
 
 def _ParseAppEngineHttpQueueArgs(args, queue_type, messages, is_update):
   """Parses the attributes of 'args' for Queue.appEngineHttpQueue."""
-  if queue_type == constants.APP_ENGINE_QUEUE:
+  if queue_type == constants.PUSH_QUEUE:
     routing_override = None
     if args.IsSpecified('routing_override'):
       routing_override = messages.AppEngineRouting(**args.routing_override)
@@ -276,7 +276,7 @@ def _ParsePullMessageArgs(args, task_type, messages):
 
 def _ParseAlphaAppEngineHttpRequestArgs(args, task_type, messages):
   """Parses the attributes of 'args' for Task.appEngineHttpRequest."""
-  if task_type == constants.APP_ENGINE_QUEUE:
+  if task_type == constants.PUSH_QUEUE:
     routing = (
         messages.AppEngineRouting(**args.routing) if args.routing else None)
     http_method = (messages.AppEngineHttpRequest.HttpMethodValueValuesEnum(
@@ -299,7 +299,7 @@ def _ParsePayloadArgs(args):
 
 def _ParseAppEngineHttpRequestArgs(args, task_type, messages):
   """Parses the attributes of 'args' for Task.appEngineHttpRequest."""
-  if task_type == constants.APP_ENGINE_QUEUE:
+  if task_type == constants.PUSH_QUEUE:
     routing = (
         messages.AppEngineRouting(**args.routing) if args.routing else None)
     http_method = (messages.AppEngineHttpRequest.HttpMethodValueValuesEnum(

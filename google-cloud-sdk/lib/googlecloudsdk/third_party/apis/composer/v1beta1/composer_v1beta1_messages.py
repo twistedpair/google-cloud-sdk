@@ -129,7 +129,7 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       form and the "labels" mask.</td>  </tr>  <tr>  <td>config.nodeCount</td>
       <td>Horizontally scale the number of nodes in the environment. An
       integer  greater than or equal to 3 must be provided in the
-      `config.nodeCount` field.  </td>  </tr>  <tr>
+      `config.nodeCount`  field.  </td>  </tr>  <tr>
       <td>config.softwareConfig.airflowConfigOverrides</td>  <td>Replace all
       Apache Airflow config overrides. If a replacement config  overrides map
       is not included in `environment`, all config overrides  are cleared.  It

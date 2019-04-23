@@ -5,6 +5,94 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 243.0.0 (2019-04-23)
+
+### Breaking Changes
+
+*   **(AI Platform)** Renamed `--worker-server-count` flag in `gcloud ml-engine jobs submit training` to `--worker-count`
+*   **(App Engine)** Update `app repair` description
+  `app repair` will no longer recreate a deleted service account.
+*   **(Cloud Machine Learning Engine)** Renamed `--worker-server-count` flag in `gcloud ml-engine jobs submit training` to `--worker-count`
+*   **(Cloud Machine Learning Engine)** Deprecated the `gcloud ml-engine` command group. Use `gcloud ai-platform`  instead.
+
+
+### AI Platform
+
+* Added the `gcloud ai-platform` command group to replace `gcloud ml-engine`.
+* Promoted `gcloud ai-platform versions create|update` to beta.
+* Added the `--enable-console-logging` flag to `gcloud beta ai-platform models
+  create` to enable logging of stderr and stdout streams for online prediction
+  in Stackdriver Logging.
+
+### Cloud Composer
+
+* Added five new flags to `gcloud beta composer environments create` to support
+  IP alias (a.k.a. VPC-native) for Composer environments:
+    *  `--enable-ip-alias`
+    *  `--cluster-ipv4-cidr`
+    *  `--cluster-secondary-range-name`
+    *  `--services-ipv4-cidr`
+    *  `--services-secondary-range-name`
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore Emulator version 1.4.5
+  * Fix bug for Firestore REST API
+  * Accept secure JWTs with warnings
+
+### Cloud SQL
+
+* Added the `--root-password` flag to `gcloud sql instances create`.
+
+### Cloud Tasks
+
+*   Replaced `gcloud tasks queues <create|update>-app-engine-queue` with `gcloud tasks queues <create|update>` in beta and GA.
+
+### Compute Engine
+
+* Promoted the `--storage-location` and `--labels` flag in `gcloud compute disks snapshot`to GA.
+* Promoted 'gcloud compute network-endpoint-groups' command group to GA.
+* Promoted `--network-endpoint-group` and `--network-endpoint-group-zone`
+flags to GA in following commands:
+  * `gcloud compute backend-services add-backend`
+  * `gcloud compute backend-services remove-backend`
+  * `gcloud compute backend-services update-backend`
+* Promoted `--max-connections-per-endpoint` and `--max-rate-per-endpoint`
+flags to GA in following commands:
+  * `gcloud compute backend-services add-backend`
+  * `gcloud compute backend-services update-backend`
+* Promoted `--use-serving-port` flag to GA in following commands:
+  * `gcloud compute health-checks http create`
+  * `gcloud compute health-checks https create`
+  * `gcloud compute health-checks http2 create`
+  * `gcloud compute health-checks ssl create`
+* Promoted `--custom-request-headers` and `--no-custom-request-headers` flags of
+  `gcloud compute backend-services <create|update>` to GA.
+* Promoted `--no-guest-environment`, `--network`, and `--subnet` flags of `gcloud
+  compute images import` to GA.
+* Promoted `--subnet` flag of `gcloud compute images export` to GA.
+* Promoted feature allowing `gcloud beta compute images <import|export>` to use
+  temporary bucket in the same region as source/destination buckets. This avoids
+  cross-region copying and its associated cost and performance penalty.
+* Promoted `--container-mount-disk-*` flags of
+  `gcloud compute instances <create-with-container|update-container>` to GA.
+* Promoted `--container-mount-disk-*` flags of
+  `gcloud compute instance-templates create-with-container` to GA.
+* Changed `--no-guest-environment` to `--guest-environment` flag of `gcloud
+  compute images import`
+
+### Kubernetes Engine
+
+* Support --update-addons=CloudRun=ENABLED|DISABLED to to enable or disable the
+ Cloud Run on Google Kubernetes Engine addon for existing Google Kubernetes
+ Engine cluster.
+* Promoted the `--sandbox` flag of `gcloud container node-pools create` to beta.
+The flag enables the requested sandbox on all nodes in the node-pool.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 242.0.0 (2019-04-16)
 
 ### Breaking Changes

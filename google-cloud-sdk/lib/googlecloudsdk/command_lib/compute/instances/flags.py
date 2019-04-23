@@ -302,7 +302,8 @@ def AddLocalSsdArgs(parser):
       Attaches a local SSD to the instances.
 
       *device-name*::: Optional. A name that indicates the disk name
-      the guest operating system will see.  If omitted, a device name
+      the guest operating system will see. Can only be specified if
+      `interface` is `SCSI`. If omitted, a device name
       of the form ``local-ssd-N'' will be used.
 
       *interface*::: Optional. The kind of disk interface exposed to the VM
@@ -349,7 +350,8 @@ def AddLocalSsdArgsWithSize(parser):
       This flag is currently in BETA and may change without notice.
 
       *device-name*::: Optional. A name that indicates the disk name
-      the guest operating system will see.  If omitted, a device name
+      the guest operating system will see. Can only be specified if `interface`
+      is `SCSI`. If omitted, a device name
       of the form ``local-ssd-N'' will be used.
 
       *interface*::: Optional. The kind of disk interface exposed to the VM
@@ -464,7 +466,7 @@ def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False,
       *auto-delete*::: If ``yes'',  this persistent disk will be
       automatically deleted when the instance is deleted. However,
       if the disk is later detached from the instance, this option
-      won't apply. The default value for this is ``no''.
+      won't apply. The default value for this is ``yes''.
       """.format(disk_device_name_help)
   if enable_regional_disks:
     disk_help += """

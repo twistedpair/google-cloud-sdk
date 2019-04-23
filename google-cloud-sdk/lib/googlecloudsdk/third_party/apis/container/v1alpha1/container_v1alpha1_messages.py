@@ -92,6 +92,21 @@ class AutoUpgradeOptions(_messages.Message):
   description = _messages.StringField(2)
 
 
+class AutoprovisioningNodePoolDefaults(_messages.Message):
+  r"""AutoprovisioningNodePoolDefaults contains defaults for a node pool
+  created by NAP.
+
+  Fields:
+    oauthScopes: Scopes that are used by NAP when creating node pools. If
+      oauth_scopes are specified, service_account should be empty.
+    serviceAccount: The Google Cloud Platform Service Account to be used by
+      the node VMs. If service_account is specified, scopes should be empty.
+  """
+
+  oauthScopes = _messages.StringField(1, repeated=True)
+  serviceAccount = _messages.StringField(2)
+
+
 class BigQueryDestination(_messages.Message):
   r"""Parameters for using BigQuery as the destination of resource usage
   export.
@@ -260,7 +275,8 @@ class Cluster(_messages.Message):
       this field should only be used in lieu of a "node_pool" object, since
       this configuration (along with the "node_config") will be used to create
       a "NodePool" object with an auto-generated name. Do not use this and a
-      node_pool at the same time.
+      node_pool at the same time.  This field is deprecated, use
+      node_pool.initial_node_count instead.
     instanceGroupUrls: Deprecated. Use node_pools.instance_group_urls.
     ipAllocationPolicy: Configuration for cluster IP allocation.
     labelFingerprint: The fingerprint of the set of labels for this cluster.
@@ -307,14 +323,15 @@ class Cluster(_messages.Message):
       left unspecified, the `default` network will be used.
     networkConfig: Configuration for cluster networking.
     networkPolicy: Configuration options for the NetworkPolicy feature.
-    nodeConfig: Parameters used in creating the cluster's nodes. See
-      `nodeConfig` for the description of its properties. For requests, this
-      field should only be used in lieu of a "node_pool" object, since this
-      configuration (along with the "initial_node_count") will be used to
+    nodeConfig: Parameters used in creating the cluster's nodes. For requests,
+      this field should only be used in lieu of a "node_pool" object, since
+      this configuration (along with the "initial_node_count") will be used to
       create a "NodePool" object with an auto-generated name. Do not use this
       and a node_pool at the same time. For responses, this field will be
-      populated with the node configuration of the first node pool.  If
-      unspecified, the defaults are used.
+      populated with the node configuration of the first node pool. (For
+      configuration of each node pool, see `node_pool.config`)  If
+      unspecified, the defaults are used. This field is deprecated, use
+      node_pool.config instead.
     nodeIpv4CidrSize: [Output only] The size of the address space on each node
       for hosting containers. This is provisioned from within the
       `container_ipv4_cidr` range.
@@ -340,7 +357,7 @@ class Cluster(_messages.Message):
       services in this cluster, in [CIDR](http://en.wikipedia.org/wiki
       /Classless_Inter-Domain_Routing) notation (e.g. `1.2.3.4/29`). Service
       addresses are typically put in the last `/16` from the container CIDR.
-    shieldedContainers: Shielded Containers configuration.
+    shieldedNodes: Shielded Nodes configuration.
     status: [Output only] The current status of this cluster.
     statusMessage: [Output only] Additional information about the current
       status of this cluster, if available. Deprecated, use the field
@@ -479,7 +496,7 @@ class Cluster(_messages.Message):
   securityProfile = _messages.MessageField('SecurityProfile', 49)
   selfLink = _messages.StringField(50)
   servicesIpv4Cidr = _messages.StringField(51)
-  shieldedContainers = _messages.MessageField('ShieldedContainers', 52)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 52)
   status = _messages.EnumField('StatusValueValuesEnum', 53)
   statusMessage = _messages.StringField(54)
   subnetwork = _messages.StringField(55)
@@ -498,6 +515,8 @@ class ClusterAutoscaling(_messages.Message):
     AutoscalingProfileValueValuesEnum: Defines autoscaling behaviour.
 
   Fields:
+    autoprovisioningNodePoolDefaults: AutoprovisioningNodePoolDefaults
+      contains defaults for a node pool created by NAP.
     autoscalingProfile: Defines autoscaling behaviour.
     enableNodeAutoprovisioning: Enables automatic node pool creation and
       deletion.
@@ -515,9 +534,10 @@ class ClusterAutoscaling(_messages.Message):
     PROFILE_UNSPECIFIED = 0
     OPTIMIZE_UTILIZATION = 1
 
-  autoscalingProfile = _messages.EnumField('AutoscalingProfileValueValuesEnum', 1)
-  enableNodeAutoprovisioning = _messages.BooleanField(2)
-  resourceLimits = _messages.MessageField('ResourceLimit', 3, repeated=True)
+  autoprovisioningNodePoolDefaults = _messages.MessageField('AutoprovisioningNodePoolDefaults', 1)
+  autoscalingProfile = _messages.EnumField('AutoscalingProfileValueValuesEnum', 2)
+  enableNodeAutoprovisioning = _messages.BooleanField(3)
+  resourceLimits = _messages.MessageField('ResourceLimit', 4, repeated=True)
 
 
 class ClusterUpdate(_messages.Message):
@@ -576,9 +596,9 @@ class ClusterUpdate(_messages.Message):
       cluster and desired_node_pool_id is not provided then the change applies
       to that single node pool.
     desiredNodePoolId: The node pool to be upgraded. This field is mandatory
-      if "desired_node_version", "desired_image_family" or
-      "desired_node_pool_autoscaling" is specified and there is more than one
-      node pool on the cluster.
+      if "desired_node_version", "desired_image_family",
+      "desired_node_pool_autoscaling", or "desired_workload_metadata_config"
+      is specified and there is more than one node pool on the cluster.
     desiredNodeVersion: The Kubernetes version to change the nodes to
       (typically an upgrade).  Users may specify either explicit versions
       offered by Kubernetes Engine or version aliases, which have the
@@ -1326,13 +1346,14 @@ class GetOpenIDConfigResponse(_messages.Message):
   See the OpenID Connect Discovery 1.0 specification for details.
 
   Fields:
-    claims_supported: NOLINT
-    grant_types: NOLINT
-    id_token_signing_alg_values_supported: NOLINT
-    issuer: NOLINT
-    jwks_uri: NOLINT
-    response_types_supported: NOLINT
-    subject_types_supported: NOLINT
+    claims_supported: Supported claims.
+    grant_types: Supported grant types.
+    id_token_signing_alg_values_supported: supported ID Token signing
+      Algorithms.
+    issuer: OIDC Issuer.
+    jwks_uri: JSON Web Key uri.
+    response_types_supported: Supported response types.
+    subject_types_supported: Supported subject types.
   """
 
   claims_supported = _messages.StringField(1, repeated=True)
@@ -1348,7 +1369,7 @@ class GoogleIamV1Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: an
+    condition: The condition that is associated with this binding. NOTE: An
       unsatisfied condition will not allow user access via current binding.
       Different bindings, including their conditions, are examined
       independently.
@@ -1618,15 +1639,15 @@ class Jwk(_messages.Message):
   r"""Jwk is a JSON Web Key as specified in RFC 7517
 
   Fields:
-    alg: NOLINT
-    crv: NOLINT
-    e: NOLINT
-    kid: NOLINT
-    kty: NOLINT
-    n: Fields for RSA keys. NOLINT
-    use: NOLINT
-    x: Fields for ECDSA keys. NOLINT
-    y: NOLINT
+    alg: Algorithm.
+    crv: Used for ECDSA keys.
+    e: Used for RSA keys.
+    kid: Key ID.
+    kty: Key Type.
+    n: Used for RSA keys.
+    use: Permitted uses for the public keys.
+    x: Used for ECDSA keys.
+    y: Used for ECDSA keys.
   """
 
   alg = _messages.StringField(1)
@@ -1831,7 +1852,7 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
   blocks, Google Compute Engine Public IPs and Google Prod IPs.
 
   Fields:
-    cidrBlocks: cidr_blocks define up to 10 external networks that could
+    cidrBlocks: cidr_blocks define up to 50 external networks that could
       access Kubernetes master through HTTPS.
     enabled: Whether or not master authorized networks is enabled.
   """
@@ -2185,6 +2206,8 @@ class NodePool(_messages.Message):
     maxPodsConstraint: The constraint on the maximum number of pods that can
       be run simultaneously on a node in the node pool.
     name: The name of the node pool.
+    podIpv4CidrSize: [Output only] The pod CIDR block size per node in this
+      node pool.
     resourceVersion: Server-defined resource version (etag).
     selfLink: [Output only] Server-defined URL for the resource.
     status: [Output only] The status of the nodes in this pool instance.
@@ -2232,12 +2255,13 @@ class NodePool(_messages.Message):
   management = _messages.MessageField('NodeManagement', 7)
   maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 8)
   name = _messages.StringField(9)
-  resourceVersion = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  status = _messages.EnumField('StatusValueValuesEnum', 12)
-  statusMessage = _messages.StringField(13)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 14)
-  version = _messages.StringField(15)
+  podIpv4CidrSize = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  resourceVersion = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  statusMessage = _messages.StringField(14)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 15)
+  version = _messages.StringField(16)
 
 
 class NodePoolAutoscaling(_messages.Message):
@@ -3054,17 +3078,6 @@ class SetNodePoolSizeRequest(_messages.Message):
   zone = _messages.StringField(6)
 
 
-class ShieldedContainers(_messages.Message):
-  r"""Configuration of Shielded Containers feature.
-
-  Fields:
-    enabled: Whether Shielded Containers features are enabled on all nodes in
-      this cluster.
-  """
-
-  enabled = _messages.BooleanField(1)
-
-
 class ShieldedInstanceConfig(_messages.Message):
   r"""A set of Shielded Instance options.
 
@@ -3076,6 +3089,17 @@ class ShieldedInstanceConfig(_messages.Message):
 
   enableIntegrityMonitoring = _messages.BooleanField(1)
   enableSecureBoot = _messages.BooleanField(2)
+
+
+class ShieldedNodes(_messages.Message):
+  r"""Configuration of Shielded Nodes feature.
+
+  Fields:
+    enabled: Whether Shielded Nodes features are enabled on all nodes in this
+      cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -3292,6 +3316,7 @@ class UpdateNodePoolRequest(_messages.Message):
     updatedNodePool: The updated node pool object. This field must be empty if
       any other node pool field is set (e.g. 'node_version', 'image_type',
       'locations', etc.)
+    workloadMetadataConfig: The desired image type for the node pool.
     zone: Deprecated. The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides. This
       field has been deprecated and replaced by the name field.
@@ -3307,7 +3332,8 @@ class UpdateNodePoolRequest(_messages.Message):
   nodeVersion = _messages.StringField(8)
   projectId = _messages.StringField(9)
   updatedNodePool = _messages.MessageField('NodePool', 10)
-  zone = _messages.StringField(11)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 11)
+  zone = _messages.StringField(12)
 
 
 class UpgradeSettings(_messages.Message):

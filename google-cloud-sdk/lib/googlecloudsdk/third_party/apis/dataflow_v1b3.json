@@ -1740,7 +1740,7 @@
           "type": "string"
         },
         "additionalUserLabels": {
-          "description": "Additional user labels attached to the job.",
+          "description": "Additional user labels to be specified for the job.\nKeys and values should follow the restrictions specified in the [labeling\nrestrictions](https:\/\/cloud.google.com\/compute\/docs\/labeling-resources#restrictions)\npage.",
           "type": "object",
           "additionalProperties": {
             "type": "string"

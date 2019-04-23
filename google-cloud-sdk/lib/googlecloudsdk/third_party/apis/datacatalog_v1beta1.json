@@ -126,12 +126,14 @@
           "description": "Type of entry.",
           "enumDescriptions": [
             "Default unknown type",
-            "The type of entry that has a GoogleSQL schema, including logical views."
+            "The type of entry that has a GoogleSQL schema, including logical views.",
+            "An entry type which is used for streaming entries. Example - Pub\/Sub."
           ],
           "type": "string",
           "enum": [
             "ENTRY_TYPE_UNSPECIFIED",
-            "TABLE"
+            "TABLE",
+            "DATA_STREAM"
           ]
         },
         "bigqueryTableSpec": {
@@ -344,12 +346,12 @@
           "httpMethod": "GET",
           "parameters": {
             "linkedResource": {
-              "description": "The full name of the Google Cloud Platform resource the Data Catalog\nentry represents. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name\nExample:\n\"\/\/bigquery.googleapis.com\/projects\/projectId\/datasets\/datasetId\/tables\/tableId\".",
+              "description": "The full name of the Google Cloud Platform resource the Data Catalog\nentry represents. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name\nFull names are case-sensitive.\n\nExamples:\n\"\/\/bigquery.googleapis.com\/projects\/projectId\/datasets\/datasetId\/tables\/tableId\".\n\"\/\/pubsub.googleapis.com\/projects\/projectId\/topics\/topicId\"",
               "location": "query",
               "type": "string"
             },
             "sqlResource": {
-              "description": "The SQL name of the entry. Example:\n\n1. cloud_pubsub.project_id.topic_id\n2. bigquery.project_id.dataset_id.table_id\n3. datacatalog.project_id.location_id.entry_group_id.entry_id",
+              "description": "The SQL name of the entry. SQL names are case-sensitive.\n\nExamples:\n1. cloud_pubsub.project_id.topic_id\n2. bigquery.project_id.dataset_id.table_id\n3. datacatalog.project_id.location_id.entry_group_id.entry_id",
               "location": "query",
               "type": "string"
             }

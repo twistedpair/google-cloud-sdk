@@ -86,6 +86,7 @@ WARN_NODE_VERSION_WITH_AUTOUPGRADE_ENABLED = (
 
 GKE_DEFAULT_POD_RANGE = 14
 GKE_DEFAULT_POD_RANGE_PER_NODE = 24
+GKE_ROUTE_BASED_SERVICE_RANGE = 20
 
 
 class Error(core_exceptions.Error):
@@ -416,7 +417,8 @@ def CalculateMaxNodeNumberByPodRange(cluster_ipv4_cidr):
     pod_range = int(blocksize)
     if pod_range < 0:
       return -1
-  if pod_range > GKE_DEFAULT_POD_RANGE_PER_NODE:
+  pod_range_ips = 2**(32 - pod_range) - 2**(32 - GKE_ROUTE_BASED_SERVICE_RANGE)
+  pod_range_ips_per_node = 2**(32 - GKE_DEFAULT_POD_RANGE_PER_NODE)
+  if pod_range_ips < pod_range_ips_per_node:
     return -1
-  max_nodes = 2**(GKE_DEFAULT_POD_RANGE_PER_NODE - pod_range)
-  return max_nodes
+  return int(pod_range_ips/pod_range_ips_per_node)

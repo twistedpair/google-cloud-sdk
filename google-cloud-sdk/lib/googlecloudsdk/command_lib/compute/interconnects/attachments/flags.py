@@ -25,8 +25,59 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
+# TODO(b/130816096): Clean up when large IA bandwidth API is promoted to Beta
+_BANDWIDTH_CHOICES_ALPHA = OrderedDict([
+    ('50m', '50 Mbit/s'),
+    ('100m', '100 Mbit/s'),
+    ('200m', '200 Mbit/s'),
+    ('300m', '300 Mbit/s'),
+    ('400m', '400 Mbit/s'),
+    ('500m', '500 Mbit/s'),
+    ('1g', '1 Gbit/s'),
+    ('2g', '2 Gbit/s'),
+    ('5g', '5 Gbit/s'),
+    ('10g', '10 Gbit/s'),
+    ('20g', '20 Gbit/s'),
+    ('50g', '50 Gbit/s'),
+    ('bps-50m', '50 Mbit/s'),
+    ('bps-100m', '100 Mbit/s'),
+    ('bps-200m', '200 Mbit/s'),
+    ('bps-300m', '300 Mbit/s'),
+    ('bps-400m', '400 Mbit/s'),
+    ('bps-500m', '500 Mbit/s'),
+    ('bps-1g', '1 Gbit/s'),
+    ('bps-2g', '2 Gbit/s'),
+    ('bps-5g', '5 Gbit/s'),
+    ('bps-10g', '10 Gbit/s'),
+    ('bps-20g', '20 Gbit/s'),
+    ('bps-50g', '50 Gbit/s'),
+])
 
-_BANDWIDTH_CHOICES = OrderedDict([
+# TODO(b/130817246): Clean up when large IA bandwidth API is promoted to GA
+_BANDWIDTH_CHOICES_BETA = OrderedDict([
+    ('50m', '50 Mbit/s'),
+    ('100m', '100 Mbit/s'),
+    ('200m', '200 Mbit/s'),
+    ('300m', '300 Mbit/s'),
+    ('400m', '400 Mbit/s'),
+    ('500m', '500 Mbit/s'),
+    ('1g', '1 Gbit/s'),
+    ('2g', '2 Gbit/s'),
+    ('5g', '5 Gbit/s'),
+    ('10g', '10 Gbit/s'),
+    ('bps-50m', '50 Mbit/s'),
+    ('bps-100m', '100 Mbit/s'),
+    ('bps-200m', '200 Mbit/s'),
+    ('bps-300m', '300 Mbit/s'),
+    ('bps-400m', '400 Mbit/s'),
+    ('bps-500m', '500 Mbit/s'),
+    ('bps-1g', '1 Gbit/s'),
+    ('bps-2g', '2 Gbit/s'),
+    ('bps-5g', '5 Gbit/s'),
+    ('bps-10g', '10 Gbit/s'),
+])
+
+_BANDWIDTH_CHOICES_GA = OrderedDict([
     ('50m', '50 Mbit/s'),
     ('100m', '100 Mbit/s'),
     ('200m', '200 Mbit/s'),
@@ -94,9 +145,7 @@ def InterconnectAttachmentArgumentForRouter(required=False,
 
 def AddAdminEnabled(parser, default_behavior=True, update=False):
   """Adds adminEnabled flag to the argparse.ArgumentParser."""
-  group = parser.add_group(mutex=True,
-                           required=False,
-                           help='')
+  group = parser.add_group(mutex=True, required=False, help='')
   if update:
     # Update command
     help_text = """\
@@ -134,16 +183,23 @@ def AddAdminEnabled(parser, default_behavior=True, update=False):
       '--enable-admin', action='store_true', default=None, help=help_text)
 
 
-def AddBandwidth(parser, required):
+def AddBandwidth(parser, required, track):
   """Adds bandwidth flag to the argparse.ArgumentParser."""
   help_text = """\
       Provisioned capacity of the attachment.
       """
+  if track == base.ReleaseTrack.ALPHA:
+    choices = _BANDWIDTH_CHOICES_ALPHA
+  elif track == base.ReleaseTrack.BETA:
+    choices = _BANDWIDTH_CHOICES_BETA
+  else:
+    choices = _BANDWIDTH_CHOICES_GA
+
   base.ChoiceArgument(
       '--bandwidth',
       # TODO(b/80311900): use arg_parsers.BinarySize()
       # and deprecate the proto enum names
-      choices=_BANDWIDTH_CHOICES,
+      choices=choices,
       required=required,
       help_str=help_text).AddToParser(parser)
 
@@ -172,9 +228,8 @@ def AddPartnerAsn(parser):
 
 def AddPartnerMetadata(parser, required=True):
   """Adds partner metadata flags to the argparse.ArgumentParser."""
-  group = parser.add_group(mutex=False,
-                           required=required,
-                           help='Partner metadata.')
+  group = parser.add_group(
+      mutex=False, required=required, help='Partner metadata.')
   group.add_argument(
       '--partner-name',
       required=required,

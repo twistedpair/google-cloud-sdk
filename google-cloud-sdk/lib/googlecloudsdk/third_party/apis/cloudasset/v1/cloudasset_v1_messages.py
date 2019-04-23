@@ -116,7 +116,7 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: an
+    condition: The condition that is associated with this binding. NOTE: An
       unsatisfied condition will not allow user access via current binding.
       Different bindings, including their conditions, are examined
       independently.
@@ -287,9 +287,20 @@ class GcsDestination(_messages.Message):
       by gsutil. For example: "gs://bucket_name/object_name". See [Viewing and
       Editing Object Metadata](https://cloud.google.com/storage/docs/viewing-
       editing-metadata) for more information.
+    uriPrefix: The uri prefix of all generated Cloud Storage objects. For
+      example: "gs://bucket_name/object_name_prefix". Each object uri is in
+      format: "gs://bucket_name/object_name_prefix/<asset type>/<shard number>
+      and only contains assets for that type. <shard number> starts from 0.
+      For example:
+      "gs://bucket_name/object_name_prefix/compute.googleapis.com/Disk/0" is
+      the first shard of output objects containing all
+      compute.googleapis.com/Disk assets. An INVALID_ARGUMENT error will be
+      returned if file with the same name
+      "gs://bucket_name/object_name_prefix" already exists.
   """
 
   uri = _messages.StringField(1)
+  uriPrefix = _messages.StringField(2)
 
 
 class Operation(_messages.Message):

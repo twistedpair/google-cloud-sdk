@@ -404,6 +404,69 @@ class BaseSSHHelper(object):
               project=project or
               properties.VALUES.core.project.Get(required=True),))])[0]
 
+  def GetHostKeysFromGuestAttributes(self, client, instance_ref):
+    """Get host keys from guest attributes.
+
+    Args:
+      client: The compute client.
+      instance_ref: The instance object.
+
+    Returns:
+      A dictionary of host keys, with the type as the key and the host key
+      as the value.
+    """
+    requests = [(client.apitools_client.instances,
+                 'GetGuestAttributes',
+                 client.messages.ComputeInstancesGetGuestAttributesRequest(
+                     instance=instance_ref.Name(),
+                     project=instance_ref.project,
+                     queryPath='hostkeys/',
+                     zone=instance_ref.zone))]
+
+    try:
+      hostkeys = client.MakeRequests(requests)[0]
+    except exceptions.ToolException as e:
+      if ('The resource \'hostkeys/\' of type \'Guest Attribute\' was not '
+          'found.') in str(e):
+        hostkeys = None
+      else:
+        raise e
+
+    hostkey_dict = {}
+
+    if hostkeys is not None:
+      for item in hostkeys.queryValue.items:
+        if item.namespace == 'hostkeys':
+          hostkey_dict[item.key] = item.value
+
+    return hostkey_dict
+
+  def WriteHostKeysToKnownHosts(self, known_hosts, host_keys, host_key_alias):
+    """Writes host keys to known hosts file.
+
+    Only writes keys to known hosts file if there are no existing keys for
+    the host.
+
+    Args:
+      known_hosts: obj, known_hosts file object.
+      host_keys: dict, dictionary of host keys.
+      host_key_alias: str, alias for host key entries.
+    """
+    host_key_entries = []
+    for key_type, key in host_keys.items():
+      host_key_entry = '{0} {1}'.format(key_type, key)
+      host_key_entries.append(host_key_entry)
+    host_key_entries.sort()
+    new_keys_added = known_hosts.AddMultiple(
+        host_key_alias, host_key_entries, overwrite=False)
+    if new_keys_added:
+      log.out.Print('Writing {0} keys to {1}'
+                    .format(len(host_key_entries), known_hosts.file_path))
+    if host_key_entries and not new_keys_added:
+      log.out.Print('Existing host keys found in {0}'
+                    .format(known_hosts.file_path))
+    known_hosts.Write()
+
   def _SetProjectMetadata(self, client, new_metadata):
     """Sets the project metadata to the new metadata."""
     errors = []
@@ -578,7 +641,8 @@ class BaseSSHHelper(object):
             compute_client, user, instance)
     return keys_newly_added
 
-  def GetConfig(self, host_key_alias, strict_host_key_checking=None):
+  def GetConfig(self, host_key_alias, strict_host_key_checking=None,
+                host_keys_to_add=None):
     """Returns a dict of default `ssh-config(5)` options on the OpenSSH format.
 
     Args:
@@ -586,6 +650,8 @@ class BaseSSHHelper(object):
       strict_host_key_checking: str or None, whether to enforce strict host key
         checking. If None, it will be determined by existence of host_key_alias
         in the known hosts file. Accepted strings are 'yes', 'ask' and 'no'.
+      host_keys_to_add: dict, A dictionary of host keys to add to the known
+        hosts file.
 
     Returns:
       Dict with OpenSSH options.
@@ -598,10 +664,14 @@ class BaseSSHHelper(object):
     config['CheckHostIP'] = 'no'
 
     if not strict_host_key_checking:
-      if known_hosts.ContainsAlias(host_key_alias):
+      if known_hosts.ContainsAlias(host_key_alias) or host_keys_to_add:
         strict_host_key_checking = 'yes'
       else:
         strict_host_key_checking = 'no'
+    if host_keys_to_add:
+      self.WriteHostKeysToKnownHosts(
+          known_hosts, host_keys_to_add, host_key_alias)
+
     config['StrictHostKeyChecking'] = strict_host_key_checking
     config['HostKeyAlias'] = host_key_alias
     return config

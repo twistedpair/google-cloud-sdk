@@ -360,6 +360,7 @@ class _BaseInstances(object):
     instance_resource.region = reducers.Region(args.region, _GetZone(args))
     instance_resource.databaseVersion = args.database_version
     instance_resource.masterInstanceName = args.master_instance_name
+    instance_resource.rootPassword = args.root_password
 
     # BETA: Set the host port and return early if external master instance.
     if _IsBetaOrNewer(release_track) and args.IsSpecified('source_ip_address'):

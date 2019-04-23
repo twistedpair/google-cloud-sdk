@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20190326",
+ "revision": "20190417",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1218,6 +1218,14 @@
     "sourceImageEncryptionKey": {
      "$ref": "CustomerEncryptionKey",
      "description": "The customer-supplied encryption key of the source image. Required if the source image is protected by a customer-supplied encryption key.\n\nInstance templates do not store customer-supplied encryption keys, so you cannot create disks for instances in a managed instance group if the source images are encrypted with your own keys."
+    },
+    "sourceSnapshot": {
+     "type": "string",
+     "description": "The source snapshot to create this disk. When creating a new instance, one of initializeParams.sourceSnapshot or disks.source is required except for local SSD.\n\nTo create a disk with a snapshot that you created, specify the snapshot name in the following format:\nglobal/snapshots/my-backup\n\n\nIf the source snapshot is deleted later, this field will not be set."
+    },
+    "sourceSnapshotEncryptionKey": {
+     "$ref": "CustomerEncryptionKey",
+     "description": "The customer-supplied encryption key of the source snapshot."
     }
    }
   },
@@ -2688,7 +2696,7 @@
    "properties": {
     "condition": {
      "$ref": "Expr",
-     "description": "The condition that is associated with this binding. NOTE: an unsatisfied condition will not allow user access via current binding. Different bindings, including their conditions, are examined independently."
+     "description": "The condition that is associated with this binding. NOTE: An unsatisfied condition will not allow user access via current binding. Different bindings, including their conditions, are examined independently."
     },
     "members": {
      "type": "array",
@@ -6553,7 +6561,7 @@
       },
       "sha1Checksum": {
        "type": "string",
-       "description": "An optional SHA1 checksum of the disk image before unpackaging provided by the client when the disk image is created.",
+       "description": "[Deprecated] This field is deprecated. An optional SHA1 checksum of the disk image before unpackaging provided by the client when the disk image is created.",
        "pattern": "[a-f0-9]{40}"
       },
       "source": {
@@ -7426,7 +7434,7 @@
     },
     "pendingActions": {
      "$ref": "InstanceGroupManagerPendingActionsSummary",
-     "description": "[Output Only] The list of instance actions and the number of instances in this managed instance group that are pending for each of those actions."
+     "description": "[Deprecated] This field is deprecated and will be removed. Prefer using the status field instead. Please contact cloud-updater-feedback@google.com to leave feedback if your workload relies on this field. [Output Only] The list of instance actions and the number of instances in this managed instance group that are pending for each of those actions."
     },
     "region": {
      "type": "string",
@@ -7468,7 +7476,7 @@
     },
     "versions": {
      "type": "array",
-     "description": "Specifies the instance templates used by this managed instance group to create instances.\n\nEach version is defined by an instanceTemplate. Every template can appear at most once per instance group. This field overrides the top-level instanceTemplate field. Read more about the relationships between these fields. Exactly one version must leave the targetSize field unset. That version will be applied to all remaining instances. For more information, read about canary updates.",
+     "description": "Specifies the instance templates used by this managed instance group to create instances.\n\nEach version is defined by an instanceTemplate and a name. Every version can appear at most once per instance group. This field overrides the top-level instanceTemplate field. Read more about the relationships between these fields. Exactly one version must leave the targetSize field unset. That version will be applied to all remaining instances. For more information, read about canary updates.",
      "items": {
       "$ref": "InstanceGroupManagerVersion"
      }
@@ -7776,22 +7784,22 @@
    "properties": {
     "creating": {
      "type": "integer",
-     "description": "[Output Only] The number of instances in the managed instance group that are pending to be created.",
+     "description": "[Deprecated] This field is deprecated and will be removed. Prefer using the status field instead. Please contact cloud-updater-feedback@google.com to leave feedback if your workload relies on this field. [Output Only] The number of instances in the managed instance group that are pending to be created.",
      "format": "int32"
     },
     "deleting": {
      "type": "integer",
-     "description": "[Output Only] The number of instances in the managed instance group that are pending to be deleted.",
+     "description": "[Deprecated] This field is deprecated and will be removed. Prefer using the status field instead. Please contact cloud-updater-feedback@google.com to leave feedback if your workload relies on this field. [Output Only] The number of instances in the managed instance group that are pending to be deleted.",
      "format": "int32"
     },
     "recreating": {
      "type": "integer",
-     "description": "[Output Only] The number of instances in the managed instance group that are pending to be recreated.",
+     "description": "[Deprecated] This field is deprecated and will be removed. Prefer using the status field instead. Please contact cloud-updater-feedback@google.com to leave feedback if your workload relies on this field. [Output Only] The number of instances in the managed instance group that are pending to be recreated.",
      "format": "int32"
     },
     "restarting": {
      "type": "integer",
-     "description": "[Output Only] The number of instances in the managed instance group that are pending to be restarted.",
+     "description": "[Deprecated] This field is deprecated and will be removed. Prefer using the status field instead. Please contact cloud-updater-feedback@google.com to leave feedback if your workload relies on this field. [Output Only] The number of instances in the managed instance group that are pending to be restarted.",
      "format": "int32"
     }
    }
@@ -7824,6 +7832,17 @@
    "id": "InstanceGroupManagerUpdatePolicy",
    "type": "object",
    "properties": {
+    "instanceRedistributionType": {
+     "type": "string",
+     "enum": [
+      "NONE",
+      "PROACTIVE"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
     "maxSurge": {
      "$ref": "FixedOrPercent",
      "description": "The maximum number of instances that can be created above the specified targetSize during the update process. By default, a fixed value of 1 is used. This value can be either a fixed number or a percentage if the instance group has 10 or more instances. If you set a percentage, the number of instances will be rounded up if necessary.\n\nAt least one of either maxSurge or maxUnavailable must be greater than 0. Learn more about maxSurge."
@@ -7867,7 +7886,8 @@
    "type": "object",
    "properties": {
     "instanceTemplate": {
-     "type": "string"
+     "type": "string",
+     "description": "The URL of the instance template that is specified for this managed instance group. The group uses this template to create new instances in the managed instance group until the `targetSize` for this version is reached."
     },
     "name": {
      "type": "string",
@@ -10740,7 +10760,7 @@
    "properties": {
     "logMode": {
      "type": "string",
-     "description": "Whether Gin logging should happen in a fail-closed manner at the caller. This is relevant only in the LocalIAM implementation, for now.\n\nNOTE: Logging to Gin in a fail-closed manner is currently unsupported while work is being done to satisfy the requirements of go/345. Currently, setting LOG_FAIL_CLOSED mode will have no effect, but still exists because there is active work being done to support it (b/115874152).",
+     "description": "Whether Gin logging should happen in a fail-closed manner at the caller. This is relevant only in the LocalIAM implementation, for now.",
      "enum": [
       "LOG_FAIL_CLOSED",
       "LOG_MODE_UNSPECIFIED"
@@ -12265,7 +12285,7 @@
   "NodeGroup": {
    "id": "NodeGroup",
    "type": "object",
-   "description": "A NodeGroup resource. (== resource_for beta.nodeGroups ==) (== resource_for v1.nodeGroups ==)",
+   "description": "A NodeGroup resource. To create a node group, you must first create a node templates. To learn more about node groups and sole-tenant nodes, read the Sole-tenant nodes documentation. (== resource_for beta.nodeGroups ==) (== resource_for v1.nodeGroups ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -12830,7 +12850,7 @@
   "NodeTemplate": {
    "id": "NodeTemplate",
    "type": "object",
-   "description": "A Node Template resource.",
+   "description": "A Node Template resource. To learn more about node templates and sole-tenant nodes, read the Sole-tenant nodes documentation. (== resource_for beta.nodeTemplates ==) (== resource_for v1.nodeTemplates ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -16185,6 +16205,22 @@
     "snapshotSchedulePolicy": {
      "$ref": "ResourcePolicySnapshotSchedulePolicy",
      "description": "Resource policy for persistent disks for creating snapshots."
+    },
+    "status": {
+     "type": "string",
+     "description": "[Output Only] The status of resource policy creation.",
+     "enum": [
+      "CREATING",
+      "DELETING",
+      "INVALID",
+      "READY"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      ""
+     ]
     }
    }
   },
@@ -25725,6 +25761,7 @@
       },
       "guestFlush": {
        "type": "boolean",
+       "description": "Application consistent snapshot (ie. VSS).",
        "location": "query"
       },
       "project": {

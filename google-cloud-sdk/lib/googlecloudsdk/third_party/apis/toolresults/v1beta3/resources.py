@@ -69,6 +69,14 @@ class Collections(enum.Enum):
       [u'projectId', u'historyId', u'executionId', u'stepId', u'sampleSeriesId'],
       True
   )
+  PROJECTS_HISTORIES_EXECUTIONS_STEPS_TESTCASES = (
+      'projects.histories.executions.steps.testCases',
+      'projects/{projectId}/histories/{historyId}/executions/{executionId}/'
+      'steps/{stepId}/testCases/{testCaseId}',
+      {},
+      [u'projectId', u'historyId', u'executionId', u'stepId', u'testCaseId'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

@@ -54,12 +54,11 @@ class NetworkEndpointGroupsClient(object):
                           .NetworkEndpointTypeValueValuesEnum)
     network_endpoint_group = self.messages.NetworkEndpointGroup(
         name=neg_ref.Name(),
-        networkEndpointType=arg_utils.ChoiceToEnum(
-            network_endpoint_type, endpoint_type_enum),
-        loadBalancer=self.messages.NetworkEndpointGroupLbNetworkEndpointGroup(
-            defaultPort=default_port,
-            network=network_uri,
-            subnetwork=subnet_uri))
+        networkEndpointType=arg_utils.ChoiceToEnum(network_endpoint_type,
+                                                   endpoint_type_enum),
+        defaultPort=default_port,
+        network=network_uri,
+        subnetwork=subnet_uri)
     request = self.messages.ComputeNetworkEndpointGroupsInsertRequest(
         networkEndpointGroup=network_endpoint_group,
         project=neg_ref.project,

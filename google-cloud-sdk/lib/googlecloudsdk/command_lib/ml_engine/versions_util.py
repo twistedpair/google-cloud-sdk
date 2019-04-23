@@ -23,7 +23,6 @@ from googlecloudsdk.command_lib.ml_engine import models_util
 from googlecloudsdk.command_lib.ml_engine import uploads
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import repeated
-from googlecloudsdk.command_lib.util.args import update_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -79,7 +78,7 @@ def Create(versions_client, operations_client, version_id,
            model=None, origin=None, staging_bucket=None, runtime_version=None,
            config_file=None, asyncronous=None, labels=None, machine_type=None,
            description=None, framework=None, python_version=None,
-           model_class=None, package_uris=None, accelerator_config=None,
+           prediction_class=None, package_uris=None, accelerator_config=None,
            service_account=None):
   """Create a version, optionally waiting for creation to finish."""
   if origin:
@@ -101,7 +100,7 @@ def Create(versions_client, operations_client, version_id,
                                          framework=framework,
                                          python_version=python_version,
                                          package_uris=package_uris,
-                                         model_class=model_class,
+                                         prediction_class=prediction_class,
                                          accelerator_config=accelerator_config,
                                          service_account=service_account)
   if not version.deploymentUri:
@@ -135,30 +134,15 @@ def List(versions_client, model=None):
   return versions_client.List(model_ref)
 
 
-def Update(versions_client, operations_client, version_ref, args,
-           enable_user_code=False):
+def Update(versions_client, operations_client, version_ref, args):
   """Update the given version."""
   get_result = repeated.CachedResult.FromFunc(
       versions_client.Get, version_ref)
   labels_update = ParseUpdateLabels(versions_client, get_result, args)
   all_args = ['update_labels', 'clear_labels', 'remove_labels', 'description']
 
-  if enable_user_code:
-    all_args.extend([
-        'clear_model_class', 'model_class',
-        'add_package_uris', 'remove_package_uris', 'clear_package_uris',
-        'set_package_uris'])
-    model_class_update = update_util.ParseClearableField(args, 'model_class')
-    package_uris = repeated.ParsePrimitiveArgs(
-        args, 'package_uris', get_result.GetAttrThunk('packageUris'))
-  else:
-    model_class_update = None
-    package_uris = None
-
   try:
-    op = versions_client.Patch(version_ref, labels_update, args.description,
-                               model_class_update=model_class_update,
-                               package_uris=package_uris)
+    op = versions_client.Patch(version_ref, labels_update, args.description)
   except versions_api.NoFieldsSpecifiedError:
     if not any(args.IsSpecified(arg) for arg in all_args):
       raise

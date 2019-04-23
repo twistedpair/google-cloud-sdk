@@ -43,8 +43,8 @@ class ModelsClient(object):
     self.client = client or apis.GetClientInstance('ml', 'v1')
     self.messages = messages or self.client.MESSAGES_MODULE
 
-  def Create(self, model_name, regions, enable_logging=False, labels=None,
-             description=None):
+  def Create(self, model_name, regions, enable_logging=False,
+             enable_console_logging=False, labels=None, description=None):
     """Create a new model."""
     model_ref = _ParseModel(model_name)
     regions_list = regions or []
@@ -56,6 +56,7 @@ class ModelsClient(object):
             name=model_ref.Name(),
             regions=regions_list,
             onlinePredictionLogging=enable_logging,
+            onlinePredictionConsoleLogging=enable_console_logging,
             description=description,
             labels=labels))
     return self.client.projects_models.Create(req)

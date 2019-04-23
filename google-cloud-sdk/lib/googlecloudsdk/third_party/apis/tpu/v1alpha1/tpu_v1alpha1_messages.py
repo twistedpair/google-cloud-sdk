@@ -228,7 +228,7 @@ class Node(_messages.Message):
       models to serve The contents of the model_config.pbtxt is a
       ModelServerConfig proto.
     modelName: Inference Mode: Model name for tensorflow serving to serve to
-      incoming requests. If non is provided, "serving_default" will be used.
+      incoming requests. If none is provided, "serving_default" will be used.
     name: Output only. The immutable name of the TPU
     network: The name of a network they wish to peer the TPU node to. It must
       be a preexisting Compute Engine network inside of the project on which
@@ -290,7 +290,7 @@ class Node(_messages.Message):
       DELETING: TPU node is being deleted.
       REPAIRING: TPU node is being repaired and may be unusable. Details can
         be found in the `help_description` field.
-      STOPPED: 7 - Reserved. Was SUSPENDED. TPU node is stopped.
+      STOPPED: TPU node is stopped.
       STOPPING: TPU node is currently stopping.
       STARTING: TPU node is currently starting.
       PREEMPTED: TPU node has been preempted. Only applies to Preemptible TPU

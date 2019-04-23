@@ -35,12 +35,53 @@ class MlV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.operations = self.OperationsService(self)
     self.projects_jobs = self.ProjectsJobsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_models_versions = self.ProjectsModelsVersionsService(self)
     self.projects_models = self.ProjectsModelsService(self)
     self.projects_operations = self.ProjectsOperationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class OperationsService(base_api.BaseApiService):
+    """Service class for the operations resource."""
+
+    _NAME = u'operations'
+
+    def __init__(self, client):
+      super(MlV1.OperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a long-running operation. This method indicates that the client is.
+no longer interested in the operation result. It does not cancel the
+operation. If the server doesn't support this method, it returns
+`google.rpc.Code.UNIMPLEMENTED`.
+
+      Args:
+        request: (MlOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/operations/{operationsId}',
+        http_method=u'DELETE',
+        method_id=u'ml.operations.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'MlOperationsDeleteRequest',
+        response_type_name=u'GoogleProtobufEmpty',
+        supports_download=False,
+    )
 
   class ProjectsJobsService(base_api.BaseApiService):
     """Service class for the projects_jobs resource."""
@@ -850,36 +891,6 @@ corresponding to `Code.CANCELLED`.
         relative_path=u'v1/{+name}:cancel',
         request_field='',
         request_type_name=u'MlProjectsOperationsCancelRequest',
-        response_type_name=u'GoogleProtobufEmpty',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a long-running operation. This method indicates that the client is.
-no longer interested in the operation result. It does not cancel the
-operation. If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.
-
-      Args:
-        request: (MlProjectsOperationsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleProtobufEmpty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'ml.projects.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1/{+name}',
-        request_field='',
-        request_type_name=u'MlProjectsOperationsDeleteRequest',
         response_type_name=u'GoogleProtobufEmpty',
         supports_download=False,
     )

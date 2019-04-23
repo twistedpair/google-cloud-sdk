@@ -66,16 +66,14 @@ def WarnOnDeprecatedFlags(args):
         ' instead. It will be removed in a future release.')
 
 
-def _GetBalancingModes(supports_neg):
+def _GetBalancingModes():
   """Returns the --balancing-modes flag value choices name:description dict."""
   per_rate_flags = '*--max-rate-per-instance*'
   per_connection_flags = '*--max-connections-per-instance*'
-  utilization_extra_help = ''
-  if supports_neg:
-    per_rate_flags += '/*--max-rate-per-endpoint*'
-    per_connection_flags += '*--max-max-per-endpoint*'
-    utilization_extra_help = (
-        'This is incompatible with --network-endpoint-group.')
+  per_rate_flags += '/*--max-rate-per-endpoint*'
+  per_connection_flags += '*--max-max-per-endpoint*'
+  utilization_extra_help = (
+      'This is incompatible with --network-endpoint-group.')
   balancing_modes = {
       'RATE': """\
           Spreads load based on how many HTTP requests per second (RPS) the
@@ -110,48 +108,44 @@ def _GetBalancingModes(supports_neg):
   return balancing_modes
 
 
-def AddBalancingMode(parser, supports_neg=False):
+def AddBalancingMode(parser):
   """Add balancing mode arguments."""
   parser.add_argument(
       '--balancing-mode',
-      choices=_GetBalancingModes(supports_neg),
+      choices=_GetBalancingModes(),
       type=lambda x: x.upper(),
       help="""\
       Defines the strategy for balancing load.""")
 
 
-def AddCapacityLimits(parser, supports_neg=False):
+def AddCapacityLimits(parser):
   """Add capacity thresholds arguments."""
   AddMaxUtilization(parser)
   capacity_group = parser.add_group(mutex=True)
-  rate_group, connections_group = capacity_group, capacity_group
-  if supports_neg:
-    rate_group = capacity_group.add_group(mutex=True)
-    connections_group = capacity_group.add_group(mutex=True)
-    rate_group.add_argument(
-        '--max-rate-per-endpoint',
-        type=float,
-        help="""\
-        Only valid for network endpoint group backends. Defines a maximum
-        number of HTTP requests per second (RPS) per endpoint if all endpoints
-        are healthy. When one or more endpoints are unhealthy, an effective
-        maximum rate per healthy endpoint is calculated by multiplying
-        MAX_RATE_PER_ENDPOINT by the number of endpoints in the network
-        endpoint group, then dividing by the number of healthy endpoints.
-        """)
-    connections_group.add_argument(
-        '--max-connections-per-endpoint',
-        type=int,
-        help="""\
-        Only valid for network endpoint group backends. Defines a maximum
-        number of connections per endpoint if all endpoints are healthy. When
-        one or more endpoints are unhealthy, an effective maximum number of
-        connections per healthy endpoint is calculated by multiplying
-        MAX_CONNECTIONS_PER_ENDPOINT by the number of endpoints in the network
-        endpoint group, then dividing by the number of healthy endpoints.
-        """)
+  capacity_group.add_argument(
+      '--max-rate-per-endpoint',
+      type=float,
+      help="""\
+      Only valid for network endpoint group backends. Defines a maximum
+      number of HTTP requests per second (RPS) per endpoint if all endpoints
+      are healthy. When one or more endpoints are unhealthy, an effective
+      maximum rate per healthy endpoint is calculated by multiplying
+      MAX_RATE_PER_ENDPOINT by the number of endpoints in the network
+      endpoint group, then dividing by the number of healthy endpoints.
+      """)
+  capacity_group.add_argument(
+      '--max-connections-per-endpoint',
+      type=int,
+      help="""\
+      Only valid for network endpoint group backends. Defines a maximum
+      number of connections per endpoint if all endpoints are healthy. When
+      one or more endpoints are unhealthy, an effective maximum number of
+      connections per healthy endpoint is calculated by multiplying
+      MAX_CONNECTIONS_PER_ENDPOINT by the number of endpoints in the network
+      endpoint group, then dividing by the number of healthy endpoints.
+      """)
 
-  rate_group.add_argument(
+  capacity_group.add_argument(
       '--max-rate',
       type=int,
       help="""\
@@ -160,7 +154,7 @@ def AddCapacityLimits(parser, supports_neg=False):
       Must not be defined if the backend is a managed instance group using
       autoscaling based on load balancing.
       """)
-  rate_group.add_argument(
+  capacity_group.add_argument(
       '--max-rate-per-instance',
       type=float,
       help="""\
@@ -173,14 +167,14 @@ def AddCapacityLimits(parser, supports_neg=False):
       parameter is compatible with managed instance group backends that use
       autoscaling based on load balancing.
       """)
-  connections_group.add_argument(
+  capacity_group.add_argument(
       '--max-connections',
       type=int,
       help="""\
       Maximum concurrent connections that the backend can handle.
       Valid for instance group and network endpoint group backends.
       """)
-  connections_group.add_argument(
+  capacity_group.add_argument(
       '--max-connections-per-instance',
       type=int,
       help="""\

@@ -613,6 +613,35 @@ class Entity(_messages.Message):
       WORK_OF_ART: Artwork
       CONSUMER_GOOD: Consumer product
       OTHER: Other types of entities
+      PHONE_NUMBER: Phone number<br><br> The metadata lists the phone number,
+        formatted according to local convention, plus whichever additional
+        elements appear in the text:<ul> <li><code>number</code> &ndash; the
+        actual number, broken down into sections as per local convention</li>
+        <li><code>national_prefix</code> &ndash; country code, if
+        detected</li> <li><code>area_code</code> &ndash; region or area code,
+        if detected</li> <li><code>extension</code> &ndash; phone extension
+        (to be dialed after connection), if detected</li></ul>
+      ADDRESS: Address<br><br> The metadata identifies the street number and
+        locality plus whichever additional elements appear in the text:<ul>
+        <li><code>street_number</code> &ndash; street number</li>
+        <li><code>locality</code> &ndash; city or town</li>
+        <li><code>street_name</code> &ndash; street/route name, if
+        detected</li> <li><code>postal_code</code> &ndash; postal code, if
+        detected</li> <li><code>country</code> &ndash; country, if
+        detected</li> <li><code>broad_region</code> &ndash; administrative
+        area, such as the state, if detected</li>
+        <li><code>narrow_region</code> &ndash; smaller administrative area,
+        such as county, if detected</li> <li><code>sublocality</code> &ndash;
+        used in Asian addresses to demark a district within a city, if
+        detected</li></ul>
+      DATE: Date<br><br> The metadata identifies the components of the
+        date:<ul> <li><code>year</code> &ndash; four digit year, if
+        detected</li> <li><code>month</code> &ndash; two digit month number,
+        if detected</li> <li><code>day</code> &ndash; two digit day number, if
+        detected</li></ul>
+      NUMBER: Number<br><br> The metadata is the number itself.
+      PRICE: Price<br><br> The metadata identifies the <code>value</code> and
+        <code>currency</code>.
     """
     UNKNOWN = 0
     PERSON = 1
@@ -622,6 +651,11 @@ class Entity(_messages.Message):
     WORK_OF_ART = 5
     CONSUMER_GOOD = 6
     OTHER = 7
+    PHONE_NUMBER = 8
+    ADDRESS = 9
+    DATE = 10
+    NUMBER = 11
+    PRICE = 12
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):

@@ -933,11 +933,6 @@
       "description": "GitHubEventsConfig describes the configuration of a trigger that creates a\nbuild whenever a GitHub event is received.\n\nThis message is experimental.",
       "type": "object",
       "properties": {
-        "installationId": {
-          "description": "The installationID that emmits the GitHub event.",
-          "type": "string",
-          "format": "int64"
-        },
         "owner": {
           "description": "Owner of the repository.",
           "type": "string"

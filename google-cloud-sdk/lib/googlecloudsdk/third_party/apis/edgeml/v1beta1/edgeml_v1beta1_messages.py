@@ -104,6 +104,67 @@ class AnalyzeOperationMetadata(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
+class CompilationReport(_messages.Message):
+  r"""Detailed information about the compilation.
+
+  Enums:
+    ConversionResultsValueListEntryValuesEnum:
+
+  Fields:
+    compilerVersion: The version of the compiler used, e.g. "0.14.3".
+    conversionResults: Conversion result per layer/operation, in the same
+      order in which the operators are serialized in the input TFLite file.
+    opConversionStats: Conversion histogram per opcode.
+    subgraphStats: Conversion statistics for each subgraph.
+    tpuSubgraphCount: Number of subgraphs in the generated TFLite.
+  """
+
+  class ConversionResultsValueListEntryValuesEnum(_messages.Enum):
+    r"""ConversionResultsValueListEntryValuesEnum enum type.
+
+    Values:
+      CONVERSION_RESULT_UNSPECIFIED: <no description>
+      SUCCEEDED: <no description>
+      FAILED_PARTITIONING: <no description>
+      FAILED_UNSUPPORTED_OP: <no description>
+      FAILED_OTHER_LIMITATION: <no description>
+      FAILED_UNSUPPORTED_DATA_TYPE: <no description>
+      FAILED_UNSUPPORTED_RANK: <no description>
+      FAILED_UNSUPPORTED_ACTIVATION_FUNCTION: <no description>
+      FAILED_NON_CONSTANT_PARAMETERS: <no description>
+      FAILED_OPERATING_IN_BATCH: <no description>
+      FAILED_OPERATING_IN_Z: <no description>
+      FAILED_FULLY_CONNECTED_WEIGHTS_FORMAT: <no description>
+      FAILED_SOFTMAX_EXCEEDS_MAX_SIZE: <no description>
+      FAILED_STRIDED_SLICE_NON_UNITARY_STRIDES: <no description>
+      FAILED_STRIDED_SLICE_NON_ZERO_ELLIPSIS_OR_NEW_AXIS_MASK: <no
+        description>
+      FAILED_IMPRECISE_SAMPLING: <no description>
+    """
+    CONVERSION_RESULT_UNSPECIFIED = 0
+    SUCCEEDED = 1
+    FAILED_PARTITIONING = 2
+    FAILED_UNSUPPORTED_OP = 3
+    FAILED_OTHER_LIMITATION = 4
+    FAILED_UNSUPPORTED_DATA_TYPE = 5
+    FAILED_UNSUPPORTED_RANK = 6
+    FAILED_UNSUPPORTED_ACTIVATION_FUNCTION = 7
+    FAILED_NON_CONSTANT_PARAMETERS = 8
+    FAILED_OPERATING_IN_BATCH = 9
+    FAILED_OPERATING_IN_Z = 10
+    FAILED_FULLY_CONNECTED_WEIGHTS_FORMAT = 11
+    FAILED_SOFTMAX_EXCEEDS_MAX_SIZE = 12
+    FAILED_STRIDED_SLICE_NON_UNITARY_STRIDES = 13
+    FAILED_STRIDED_SLICE_NON_ZERO_ELLIPSIS_OR_NEW_AXIS_MASK = 14
+    FAILED_IMPRECISE_SAMPLING = 15
+
+  compilerVersion = _messages.StringField(1)
+  conversionResults = _messages.EnumField('ConversionResultsValueListEntryValuesEnum', 2, repeated=True)
+  opConversionStats = _messages.MessageField('OpConversionStats', 3, repeated=True)
+  subgraphStats = _messages.MessageField('SubgraphConversionStats', 4, repeated=True)
+  tpuSubgraphCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
 class CompileModelRequest(_messages.Message):
   r"""Request for `CompileModel`. Will be served in
   `google.longrunning.Operation.result.response`
@@ -149,6 +210,8 @@ class CompileModelResponse(_messages.Message):
   Fields:
     additionalMessage: Additional message, if any. For example, warning
       messages emitted while compiling.
+    compilationReport: Detailed information of the compilation. Even if the
+      compilation succeeded, the model might only be compiled partially.
     compileDuration: How long did it take to finish the compilation.
     fileSizeBytes: Size(in bytes) of the compiled file.
     modelSignature: The information of input and output vectors of the
@@ -156,9 +219,10 @@ class CompileModelResponse(_messages.Message):
   """
 
   additionalMessage = _messages.StringField(1)
-  compileDuration = _messages.StringField(2)
-  fileSizeBytes = _messages.IntegerField(3)
-  modelSignature = _messages.MessageField('ModelSignature', 4)
+  compilationReport = _messages.MessageField('CompilationReport', 2)
+  compileDuration = _messages.StringField(3)
+  fileSizeBytes = _messages.IntegerField(4)
+  modelSignature = _messages.MessageField('ModelSignature', 5)
 
 
 class CompileOperationMetadata(_messages.Message):
@@ -439,6 +503,77 @@ class ModelSignature(_messages.Message):
   outputTensors = _messages.MessageField('TensorRef', 2, repeated=True)
 
 
+class OpConversionStats(_messages.Message):
+  r"""Compilation statistics per op.
+
+  Enums:
+    ConversionResultValueValuesEnum: Conversion result of the op.
+
+  Fields:
+    conversionResult: Conversion result of the op.
+    count: Number of ops.
+    opcode: Opcode. See https://github.com/tensorflow/tensorflow/blob/master/t
+      ensorflow/lite/builtin_ops.h for the list of TFLite builtin opcodes.
+  """
+
+  class ConversionResultValueValuesEnum(_messages.Enum):
+    r"""Conversion result of the op.
+
+    Values:
+      CONVERSION_RESULT_UNSPECIFIED: Default: not specified.
+      SUCCEEDED: Mapped to Edge TPU.
+      FAILED_PARTITIONING: Could have been mapped, but skipped to prevent
+        small sub-graphs.
+      FAILED_UNSUPPORTED_OP: Unsupported op.
+      FAILED_OTHER_LIMITATION: Could not be mapped due to an unspecified
+        limitation other than the limitations listed below.
+      FAILED_UNSUPPORTED_DATA_TYPE: Op is given an unsupported data type.
+      FAILED_UNSUPPORTED_RANK: Tensor has unsupported rank. Currently only up
+        to 3 innermost dimensions are supported.
+      FAILED_UNSUPPORTED_ACTIVATION_FUNCTION: A layer may not support the
+        given fused activation function.
+      FAILED_NON_CONSTANT_PARAMETERS: Filter or bias were not compile-time
+        bound.
+      FAILED_OPERATING_IN_BATCH: Operation not supported because it operates
+        in batch dimension. For example, a fully-connected or softmax layer
+        with 2d output.
+      FAILED_OPERATING_IN_Z: Mean and Pad layers can't operate along
+        z-dimension.
+      FAILED_FULLY_CONNECTED_WEIGHTS_FORMAT: Unsupported weights format for
+        fully-connected layers.
+      FAILED_SOFTMAX_EXCEEDS_MAX_SIZE: Too many elements for softmax. Softmax
+        currently supports up to 16000 elements.
+      FAILED_STRIDED_SLICE_NON_UNITARY_STRIDES: Strided-Slice is not supported
+        unless it is with unitary strides, i.e. Strided-Slice is supported
+        only if it is effectively a simple Stride operation.
+      FAILED_STRIDED_SLICE_NON_ZERO_ELLIPSIS_OR_NEW_AXIS_MASK: Non-zero
+        ellipsis-mask or new-axis-mask is not supported on Strided-Slice
+        layers.
+      FAILED_IMPRECISE_SAMPLING: Image-interpolation layers that wouldn't run
+        precisely enough on TPU.
+    """
+    CONVERSION_RESULT_UNSPECIFIED = 0
+    SUCCEEDED = 1
+    FAILED_PARTITIONING = 2
+    FAILED_UNSUPPORTED_OP = 3
+    FAILED_OTHER_LIMITATION = 4
+    FAILED_UNSUPPORTED_DATA_TYPE = 5
+    FAILED_UNSUPPORTED_RANK = 6
+    FAILED_UNSUPPORTED_ACTIVATION_FUNCTION = 7
+    FAILED_NON_CONSTANT_PARAMETERS = 8
+    FAILED_OPERATING_IN_BATCH = 9
+    FAILED_OPERATING_IN_Z = 10
+    FAILED_FULLY_CONNECTED_WEIGHTS_FORMAT = 11
+    FAILED_SOFTMAX_EXCEEDS_MAX_SIZE = 12
+    FAILED_STRIDED_SLICE_NON_UNITARY_STRIDES = 13
+    FAILED_STRIDED_SLICE_NON_ZERO_ELLIPSIS_OR_NEW_AXIS_MASK = 14
+    FAILED_IMPRECISE_SAMPLING = 15
+
+  conversionResult = _messages.EnumField('ConversionResultValueValuesEnum', 1)
+  count = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  opcode = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -695,6 +830,17 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class SubgraphConversionStats(_messages.Message):
+  r"""The status of the conversion of the subgraph
+
+  Fields:
+    mappedOpIndices: Operators mapped to the EdgeTPU subgraph, represented by
+      their index (the serialization order in the input TFLite file).
+  """
+
+  mappedOpIndices = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
 
 
 class TensorInfo(_messages.Message):

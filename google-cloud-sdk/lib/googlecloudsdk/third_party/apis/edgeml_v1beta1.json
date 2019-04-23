@@ -459,6 +459,155 @@
         "additionalMessage": {
           "description": "Additional message, if any. For example, warning messages emitted while\ncompiling.",
           "type": "string"
+        },
+        "compilationReport": {
+          "description": "Detailed information of the compilation. Even if the compilation succeeded,\nthe model might only be compiled partially.",
+          "$ref": "CompilationReport"
+        }
+      }
+    },
+    "CompilationReport": {
+      "id": "CompilationReport",
+      "description": "Detailed information about the compilation.",
+      "type": "object",
+      "properties": {
+        "compilerVersion": {
+          "description": "The version of the compiler used, e.g. \"0.14.3\".",
+          "type": "string"
+        },
+        "tpuSubgraphCount": {
+          "description": "Number of subgraphs in the generated TFLite.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "opConversionStats": {
+          "description": "Conversion histogram per opcode.",
+          "type": "array",
+          "items": {
+            "$ref": "OpConversionStats"
+          }
+        },
+        "conversionResults": {
+          "description": "Conversion result per layer\/operation, in the same order in which the\noperators are serialized in the input TFLite file.",
+          "enumDescriptions": [
+            "Default: not specified.",
+            "Mapped to Edge TPU.",
+            "Could have been mapped, but skipped to prevent small sub-graphs.",
+            "Unsupported op.",
+            "Could not be mapped due to an unspecified limitation other than the\nlimitations listed below.",
+            "Op is given an unsupported data type.",
+            "Tensor has unsupported rank. Currently only up to 3 innermost dimensions\nare supported.",
+            "A layer may not support the given fused activation function.",
+            "Filter or bias were not compile-time bound.",
+            "Operation not supported because it operates in batch dimension. For\nexample, a fully-connected or softmax layer with 2d output.",
+            "Mean and Pad layers can't operate along z-dimension.",
+            "Unsupported weights format for fully-connected layers.",
+            "Too many elements for softmax. Softmax currently supports up to 16000\nelements.",
+            "Strided-Slice is not supported unless it is with unitary strides, i.e.\nStrided-Slice is supported only if it is effectively a simple Stride\noperation.",
+            "Non-zero ellipsis-mask or new-axis-mask is not supported on Strided-Slice\nlayers.",
+            "Image-interpolation layers that wouldn't run precisely enough on TPU."
+          ],
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "CONVERSION_RESULT_UNSPECIFIED",
+              "SUCCEEDED",
+              "FAILED_PARTITIONING",
+              "FAILED_UNSUPPORTED_OP",
+              "FAILED_OTHER_LIMITATION",
+              "FAILED_UNSUPPORTED_DATA_TYPE",
+              "FAILED_UNSUPPORTED_RANK",
+              "FAILED_UNSUPPORTED_ACTIVATION_FUNCTION",
+              "FAILED_NON_CONSTANT_PARAMETERS",
+              "FAILED_OPERATING_IN_BATCH",
+              "FAILED_OPERATING_IN_Z",
+              "FAILED_FULLY_CONNECTED_WEIGHTS_FORMAT",
+              "FAILED_SOFTMAX_EXCEEDS_MAX_SIZE",
+              "FAILED_STRIDED_SLICE_NON_UNITARY_STRIDES",
+              "FAILED_STRIDED_SLICE_NON_ZERO_ELLIPSIS_OR_NEW_AXIS_MASK",
+              "FAILED_IMPRECISE_SAMPLING"
+            ]
+          }
+        },
+        "subgraphStats": {
+          "description": "Conversion statistics for each subgraph.",
+          "type": "array",
+          "items": {
+            "$ref": "SubgraphConversionStats"
+          }
+        }
+      }
+    },
+    "OpConversionStats": {
+      "id": "OpConversionStats",
+      "description": "Compilation statistics per op.",
+      "type": "object",
+      "properties": {
+        "opcode": {
+          "description": "Opcode. See\nhttps:\/\/github.com\/tensorflow\/tensorflow\/blob\/master\/tensorflow\/lite\/builtin_ops.h\nfor the list of TFLite builtin opcodes.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "conversionResult": {
+          "description": "Conversion result of the op.",
+          "enumDescriptions": [
+            "Default: not specified.",
+            "Mapped to Edge TPU.",
+            "Could have been mapped, but skipped to prevent small sub-graphs.",
+            "Unsupported op.",
+            "Could not be mapped due to an unspecified limitation other than the\nlimitations listed below.",
+            "Op is given an unsupported data type.",
+            "Tensor has unsupported rank. Currently only up to 3 innermost dimensions\nare supported.",
+            "A layer may not support the given fused activation function.",
+            "Filter or bias were not compile-time bound.",
+            "Operation not supported because it operates in batch dimension. For\nexample, a fully-connected or softmax layer with 2d output.",
+            "Mean and Pad layers can't operate along z-dimension.",
+            "Unsupported weights format for fully-connected layers.",
+            "Too many elements for softmax. Softmax currently supports up to 16000\nelements.",
+            "Strided-Slice is not supported unless it is with unitary strides, i.e.\nStrided-Slice is supported only if it is effectively a simple Stride\noperation.",
+            "Non-zero ellipsis-mask or new-axis-mask is not supported on Strided-Slice\nlayers.",
+            "Image-interpolation layers that wouldn't run precisely enough on TPU."
+          ],
+          "type": "string",
+          "enum": [
+            "CONVERSION_RESULT_UNSPECIFIED",
+            "SUCCEEDED",
+            "FAILED_PARTITIONING",
+            "FAILED_UNSUPPORTED_OP",
+            "FAILED_OTHER_LIMITATION",
+            "FAILED_UNSUPPORTED_DATA_TYPE",
+            "FAILED_UNSUPPORTED_RANK",
+            "FAILED_UNSUPPORTED_ACTIVATION_FUNCTION",
+            "FAILED_NON_CONSTANT_PARAMETERS",
+            "FAILED_OPERATING_IN_BATCH",
+            "FAILED_OPERATING_IN_Z",
+            "FAILED_FULLY_CONNECTED_WEIGHTS_FORMAT",
+            "FAILED_SOFTMAX_EXCEEDS_MAX_SIZE",
+            "FAILED_STRIDED_SLICE_NON_UNITARY_STRIDES",
+            "FAILED_STRIDED_SLICE_NON_ZERO_ELLIPSIS_OR_NEW_AXIS_MASK",
+            "FAILED_IMPRECISE_SAMPLING"
+          ]
+        },
+        "count": {
+          "description": "Number of ops.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "SubgraphConversionStats": {
+      "id": "SubgraphConversionStats",
+      "description": "The status of the conversion of the subgraph",
+      "type": "object",
+      "properties": {
+        "mappedOpIndices": {
+          "description": "Operators mapped to the EdgeTPU subgraph, represented by their index\n(the serialization order in the input TFLite file).",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
         }
       }
     },

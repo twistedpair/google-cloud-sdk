@@ -42,7 +42,8 @@ class FailoverInstanceRequest(_messages.Message):
     default.
 
     Values:
-      DATA_PROTECTION_MODE_UNSPECIFIED: <no description>
+      DATA_PROTECTION_MODE_UNSPECIFIED: Defaults to LIMITED_DATA_LOSS if a
+        data protection mode is not specified.
       LIMITED_DATA_LOSS: Instance failover will be protected with data loss
         control. More specifically, the failover will only be performed if the
         current replication offset diff between master and replica is under a
@@ -587,7 +588,7 @@ class RedisProjectsLocationsInstancesCreateRequest(_messages.Message):
       Must be unique within the customer project / location
     parent: Required. The resource name of the instance location using the
       form:     `projects/{project_id}/locations/{location_id}` where
-      `location_id` refers to a GCP region
+      `location_id` refers to a GCP region.
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -601,7 +602,7 @@ class RedisProjectsLocationsInstancesDeleteRequest(_messages.Message):
   Fields:
     name: Required. Redis instance resource name using the form:
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
-      where `location_id` refers to a GCP region
+      where `location_id` refers to a GCP region.
   """
 
   name = _messages.StringField(1, required=True)
@@ -615,7 +616,7 @@ class RedisProjectsLocationsInstancesFailoverRequest(_messages.Message):
       as the request body.
     name: Required. Redis instance resource name using the form:
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
-      where `location_id` refers to a GCP region
+      where `location_id` refers to a GCP region.
   """
 
   failoverInstanceRequest = _messages.MessageField('FailoverInstanceRequest', 1)
@@ -628,7 +629,7 @@ class RedisProjectsLocationsInstancesGetRequest(_messages.Message):
   Fields:
     name: Required. Redis instance resource name using the form:
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
-      where `location_id` refers to a GCP region
+      where `location_id` refers to a GCP region.
   """
 
   name = _messages.StringField(1, required=True)
@@ -647,7 +648,7 @@ class RedisProjectsLocationsInstancesListRequest(_messages.Message):
       request, if any.
     parent: Required. The resource name of the instance location using the
       form:     `projects/{project_id}/locations/{location_id}` where
-      `location_id` refers to a GCP region
+      `location_id` refers to a GCP region.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)

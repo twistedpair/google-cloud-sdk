@@ -844,7 +844,8 @@ class AutomaticScaling(_messages.Message):
       initializing, during which the collected usage would not be reliable.
       Only applicable in the App Engine flexible environment.
     cpuUtilization: Target scaling by CPU usage.
-    customMetrics: Target scaling by user-provided metrics.
+    customMetrics: Target scaling by user-provided metrics. Only applicable in
+      the App Engine flexible environment.
     diskUtilization: Target scaling by disk usage.
     maxConcurrentRequests: Number of concurrent requests an automatic scaling
       instance can accept before the scheduler spawns a new instance.Defaults

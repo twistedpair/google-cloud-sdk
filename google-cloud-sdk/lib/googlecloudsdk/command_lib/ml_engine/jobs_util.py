@@ -78,7 +78,7 @@ _ACCELERATOR_MAP = arg_utils.ChoiceEnumMapper(
 
 _SCALE_TIER_CHOICES = {
     'BASIC': ('basic', ('Single worker instance. This tier is suitable for '
-                        'learning how to use Cloud ML Engine, and for '
+                        'learning how to use AI Platform, and for '
                         'experimenting with new models using small datasets.')),
     'STANDARD_1': ('standard-1', 'Many workers and a few parameter servers.'),
     'PREMIUM_1': ('premium-1',
@@ -219,7 +219,7 @@ class TrainingCustomInputServerConfig(object):
         parameter_accelerator_count=args.parameter_server_accelerator.get(
             'count') if args.parameter_server_accelerator else None,
         worker_machine_type=args.worker_machine_type,
-        worker_machine_count=args.worker_server_count,
+        worker_machine_count=args.worker_count,
         worker_image_uri=args.worker_image_uri,
         work_accelerator_type=(args.worker_accelerator.get('type')
                                if args.worker_accelerator else None),
@@ -289,11 +289,11 @@ def StreamLogs(job, task_name, polling_interval,
 _FOLLOW_UP_MESSAGE = """\
 Your job is still active. You may view the status of your job with the command
 
-  $ gcloud ml-engine jobs describe {job_id}
+  $ gcloud ai-platform jobs describe {job_id}
 
 or continue streaming the logs with the command
 
-  $ gcloud ml-engine jobs stream-logs {job_id}\
+  $ gcloud ai-platform jobs stream-logs {job_id}\
 """
 
 

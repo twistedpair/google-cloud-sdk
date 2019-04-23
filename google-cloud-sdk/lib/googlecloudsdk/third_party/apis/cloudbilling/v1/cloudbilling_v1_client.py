@@ -187,7 +187,8 @@ account, which is often given to billing account
 
     def List(self, request, global_params=None):
       r"""Lists the billing accounts that the current authenticated user has.
-permission to [view](https://cloud.google.com/billing/docs/how-to/billing-access).
+permission to
+[view](https://cloud.google.com/billing/docs/how-to/billing-access).
 
       Args:
         request: (CloudbillingBillingAccountsListRequest) input message

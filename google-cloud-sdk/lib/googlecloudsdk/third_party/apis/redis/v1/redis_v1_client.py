@@ -117,8 +117,8 @@ deleted.
     )
 
     def Failover(self, request, global_params=None):
-      r"""Failover the master role to current replica node against a specific.
-STANDARD tier redis instance.
+      r"""Initiates a failover of the master node to current replica node for a.
+specific STANDARD tier Cloud Memorystore for Redis instance.
 
       Args:
         request: (RedisProjectsLocationsInstancesFailoverRequest) input message

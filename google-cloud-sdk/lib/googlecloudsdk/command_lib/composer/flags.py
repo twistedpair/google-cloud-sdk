@@ -28,6 +28,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.composer import parsers
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import properties
+import ipaddress
 
 
 AIRFLOW_VERSION_TYPE = arg_parsers.RegexpValidator(
@@ -61,6 +62,8 @@ LOCATION_FLAG = base.Argument(
 _ENV_VAR_NAME_ERROR = (
     'Only upper and lowercase letters, digits, and underscores are allowed. '
     'Environment variable names may not start with a digit.')
+
+_INVALID_IPV4_CIDR_BLOCK_ERROR = ('Invalid format of IPV4 CIDR block.')
 
 AIRFLOW_CONFIGS_FLAG_GROUP_DESCRIPTION = (
     'Group of arguments for modifying the Airflow configuration.')
@@ -247,6 +250,84 @@ REMOVE_PYPI_PACKAGES_FLAG = base.Argument(
     `--clear-pypi-packages` flags.
     """)
 
+ENABLE_IP_ALIAS_FLAG = base.Argument(
+    '--enable-ip-alias',
+    default=None,
+    action='store_true',
+    help="""\
+    Enable use of alias IPs (https://cloud.google.com/compute/docs/alias-ip/)
+    for pod IPs within the Environment cluster. This will create two secondary
+    ranges, one for the pod IPs and another to reserve space for the services
+    range.
+    """)
+
+CLUSTER_SECONDARY_RANGE_NAME_FLAG = base.Argument(
+    '--cluster-secondary-range-name',
+    default=None,
+    help="""\
+    Secondary range to be used as the source for pod IPs. Alias ranges will be
+    allocated from this secondary range. NAME must be the name of an existing
+    secondary range in the cluster subnetwork.
+
+    Cannot be specified unless '--enable-ip-alias' is also specified.
+    """)
+
+SERVICES_SECONDARY_RANGE_NAME_FLAG = base.Argument(
+    '--services-secondary-range-name',
+    default=None,
+    help="""\
+    Secondary range to be used for services (e.g. ClusterIPs). NAME must be the
+    name of an existing secondary range in the cluster subnetwork.
+
+    Cannot be specified unless '--enable-ip-alias' is also specified.
+    """)
+
+
+def _IsValidIpv4CidrBlock(ipv4_cidr_block):
+  """Validates that IPV4 CIDR block arg has valid format.
+
+  Intended to be used as an argparse validator.
+
+  Args:
+    ipv4_cidr_block: str, the IPV4 CIDR block string to validate
+
+  Returns:
+    bool, True if and only if the IPV4 CIDR block is valid
+  """
+  return ipaddress.IPv4Network(ipv4_cidr_block) is not None
+
+
+IPV4_CIDR_BLOCK_FORMAT_VALIDATOR = arg_parsers.CustomFunctionValidator(
+    _IsValidIpv4CidrBlock, _INVALID_IPV4_CIDR_BLOCK_ERROR)
+
+CLUSTER_IPV4_CIDR_FLAG = base.Argument(
+    '--cluster-ipv4-cidr',
+    default=None,
+    type=IPV4_CIDR_BLOCK_FORMAT_VALIDATOR,
+    help="""\
+    IP address range for the pods in this cluster in CIDR notation
+    (e.g. 10.0.0.0/14).
+
+    Cannot be specified unless '--enable-ip-alias' is also specified.
+    """)
+
+SERVICES_IPV4_CIDR_FLAG = base.Argument(
+    '--services-ipv4-cidr',
+    default=None,
+    type=IPV4_CIDR_BLOCK_FORMAT_VALIDATOR,
+    help="""\
+    IP range for the services IPs.
+
+    Can be specified as a netmask size (e.g. '/20') or as in CIDR notion
+    (e.g. '10.100.0.0/20'). If given as a netmask size, the IP range will
+    be chosen automatically from the available space in the network.
+
+    If unspecified, the services CIDR range will be chosen with a default
+    mask size.
+
+    Cannot be specified unless '--enable-ip-alias' is also specified.
+    """)
+
 ENABLE_PRIVATE_ENVIRONMENT_FLAG = base.Argument(
     '--enable-private-environment',
     default=None,
@@ -256,6 +337,8 @@ ENABLE_PRIVATE_ENVIRONMENT_FLAG = base.Argument(
     nodes.
 
     If not specified, cluster nodes will be assigned public IP addresses.
+
+    Cannot be specified unless '--enable-ip-alias' is also specified.
     """)
 
 ENABLE_PRIVATE_ENDPOINT_FLAG = base.Argument(
@@ -276,8 +359,8 @@ ENABLE_PRIVATE_ENDPOINT_FLAG = base.Argument(
 
 MASTER_IPV4_CIDR_FLAG = base.Argument(
     '--master-ipv4-cidr',
-    type=str,
     default=None,
+    type=IPV4_CIDR_BLOCK_FORMAT_VALIDATOR,
     help="""\
     IPv4 CIDR range to use for the master network. This should have a netmask
     of size /28.
@@ -474,8 +557,8 @@ def AddNodeCountUpdateFlagToGroup(update_type_group):
       help='The new number of nodes running the environment. Must be >= 3.')
 
 
-def AddPrivateEnvironmentFlags(update_type_group):
-  """Adds flags related to private clusters to parser.
+def AddPrivateIpAndIpAliasEnvironmentFlags(update_type_group):
+  """Adds flags related to private clusters and IP alias to parser.
 
   Private cluster flags are related to similar flags found within GKE SDK:
     /third_party/py/googlecloudsdk/command_lib/container/flags.py
@@ -483,10 +566,16 @@ def AddPrivateEnvironmentFlags(update_type_group):
   Args:
     update_type_group: argument group, the group to which flag should be added.
   """
-  group = update_type_group.add_group(help='Private Clusters')
+  group = update_type_group.add_group(
+      help='Private Clusters and IP Alias (VPC-native)')
   ENABLE_PRIVATE_ENVIRONMENT_FLAG.AddToParser(group)
   ENABLE_PRIVATE_ENDPOINT_FLAG.AddToParser(group)
   MASTER_IPV4_CIDR_FLAG.AddToParser(group)
+  ENABLE_IP_ALIAS_FLAG.AddToParser(group)
+  CLUSTER_IPV4_CIDR_FLAG.AddToParser(group)
+  SERVICES_IPV4_CIDR_FLAG.AddToParser(group)
+  CLUSTER_SECONDARY_RANGE_NAME_FLAG.AddToParser(group)
+  SERVICES_SECONDARY_RANGE_NAME_FLAG.AddToParser(group)
 
 
 def AddPypiUpdateFlagsToGroup(update_type_group):

@@ -240,7 +240,7 @@ def PromptToEnableApi(project, service_token, exception,
     raise exception
 
 
-def _CheckResponse(response):
+def CheckResponseForApiEnablement(response):
   """Checks API error and if it's an enablement error, prompt to enable & retry.
 
   Args:
@@ -297,8 +297,9 @@ def GetClientInstance(api_name, api_version, no_http=False,
     base_api.BaseApiClient, An instance of the specified API client.
   """
   # pylint:disable=protected-access
-  return apis_internal._GetClientInstance(
-      api_name, api_version, no_http, _CheckResponse, enable_resource_quota)
+  return apis_internal._GetClientInstance(api_name, api_version, no_http,
+                                          CheckResponseForApiEnablement,
+                                          enable_resource_quota)
 
 
 def GetEffectiveApiEndpoint(api_name, api_version, client_class=None):

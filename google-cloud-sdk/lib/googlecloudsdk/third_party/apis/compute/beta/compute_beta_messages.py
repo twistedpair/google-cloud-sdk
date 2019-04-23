@@ -1414,6 +1414,14 @@ class AttachedDiskInitializeParams(_messages.Message):
       supplied encryption keys, so you cannot create disks for instances in a
       managed instance group if the source images are encrypted with your own
       keys.
+    sourceSnapshot: The source snapshot to create this disk. When creating a
+      new instance, one of initializeParams.sourceSnapshot or disks.source is
+      required except for local SSD.  To create a disk with a snapshot that
+      you created, specify the snapshot name in the following format:
+      global/snapshots/my-backup   If the source snapshot is deleted later,
+      this field will not be set.
+    sourceSnapshotEncryptionKey: The customer-supplied encryption key of the
+      source snapshot.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1451,6 +1459,8 @@ class AttachedDiskInitializeParams(_messages.Message):
   resourcePolicies = _messages.StringField(7, repeated=True)
   sourceImage = _messages.StringField(8)
   sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 9)
+  sourceSnapshot = _messages.StringField(10)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 11)
 
 
 class AuditConfig(_messages.Message):
@@ -3181,7 +3191,7 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: an
+    condition: The condition that is associated with this binding. NOTE: An
       unsatisfied condition will not allow user access via current binding.
       Different bindings, including their conditions, are examined
       independently.
@@ -4989,7 +4999,7 @@ class ComputeDisksCreateSnapshotRequest(_messages.Message):
 
   Fields:
     disk: Name of the persistent disk to snapshot.
-    guestFlush: A boolean attribute.
+    guestFlush: Application consistent snapshot (ie. VSS).
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -21312,8 +21322,9 @@ class Image(_messages.Message):
         which should be TAR. This is just a container and transmission format
         and not a runtime format. Provided by the client when the disk image
         is created.
-      sha1Checksum: An optional SHA1 checksum of the disk image before
-        unpackaging provided by the client when the disk image is created.
+      sha1Checksum: [Deprecated] This field is deprecated. An optional SHA1
+        checksum of the disk image before unpackaging provided by the client
+        when the disk image is created.
       source: The full Google Cloud Storage URL where the disk image is
         stored. You must provide either this property or the sourceDisk
         property but not both.
@@ -22201,8 +22212,11 @@ class InstanceGroupManager(_messages.Message):
       characters long, and comply with RFC1035.
     namedPorts: Named ports configured for the Instance Groups complementary
       to this Instance Group Manager.
-    pendingActions: [Output Only] The list of instance actions and the number
-      of instances in this managed instance group that are pending for each of
+    pendingActions: [Deprecated] This field is deprecated and will be removed.
+      Prefer using the status field instead. Please contact cloud-updater-
+      feedback@google.com to leave feedback if your workload relies on this
+      field. [Output Only] The list of instance actions and the number of
+      instances in this managed instance group that are pending for each of
       those actions.
     region: [Output Only] The URL of the region where the managed instance
       group resides (for regional resources).
@@ -22223,12 +22237,12 @@ class InstanceGroupManager(_messages.Message):
     updatePolicy: The update policy for this managed instance group.
     versions: Specifies the instance templates used by this managed instance
       group to create instances.  Each version is defined by an
-      instanceTemplate. Every template can appear at most once per instance
-      group. This field overrides the top-level instanceTemplate field. Read
-      more about the relationships between these fields. Exactly one version
-      must leave the targetSize field unset. That version will be applied to
-      all remaining instances. For more information, read about canary
-      updates.
+      instanceTemplate and a name. Every version can appear at most once per
+      instance group. This field overrides the top-level instanceTemplate
+      field. Read more about the relationships between these fields. Exactly
+      one version must leave the targetSize field unset. That version will be
+      applied to all remaining instances. For more information, read about
+      canary updates.
     zone: [Output Only] The URL of the zone where the managed instance group
       is located (for zonal resources).
   """
@@ -22618,13 +22632,25 @@ class InstanceGroupManagerPendingActionsSummary(_messages.Message):
   r"""A InstanceGroupManagerPendingActionsSummary object.
 
   Fields:
-    creating: [Output Only] The number of instances in the managed instance
+    creating: [Deprecated] This field is deprecated and will be removed.
+      Prefer using the status field instead. Please contact cloud-updater-
+      feedback@google.com to leave feedback if your workload relies on this
+      field. [Output Only] The number of instances in the managed instance
       group that are pending to be created.
-    deleting: [Output Only] The number of instances in the managed instance
+    deleting: [Deprecated] This field is deprecated and will be removed.
+      Prefer using the status field instead. Please contact cloud-updater-
+      feedback@google.com to leave feedback if your workload relies on this
+      field. [Output Only] The number of instances in the managed instance
       group that are pending to be deleted.
-    recreating: [Output Only] The number of instances in the managed instance
+    recreating: [Deprecated] This field is deprecated and will be removed.
+      Prefer using the status field instead. Please contact cloud-updater-
+      feedback@google.com to leave feedback if your workload relies on this
+      field. [Output Only] The number of instances in the managed instance
       group that are pending to be recreated.
-    restarting: [Output Only] The number of instances in the managed instance
+    restarting: [Deprecated] This field is deprecated and will be removed.
+      Prefer using the status field instead. Please contact cloud-updater-
+      feedback@google.com to leave feedback if your workload relies on this
+      field. [Output Only] The number of instances in the managed instance
       group that are pending to be restarted.
   """
 
@@ -22670,6 +22696,7 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
   r"""A InstanceGroupManagerUpdatePolicy object.
 
   Enums:
+    InstanceRedistributionTypeValueValuesEnum:
     MinimalActionValueValuesEnum: Minimal action to be taken on an instance.
       You can specify either RESTART to restart existing instances or REPLACE
       to delete and create new instances from the target template. If you
@@ -22680,6 +22707,8 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
     TypeValueValuesEnum:
 
   Fields:
+    instanceRedistributionType: A InstanceRedistributionTypeValueValuesEnum
+      attribute.
     maxSurge: The maximum number of instances that can be created above the
       specified targetSize during the update process. By default, a fixed
       value of 1 is used. This value can be either a fixed number or a
@@ -22710,6 +22739,16 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
     type: A TypeValueValuesEnum attribute.
   """
 
+  class InstanceRedistributionTypeValueValuesEnum(_messages.Enum):
+    r"""InstanceRedistributionTypeValueValuesEnum enum type.
+
+    Values:
+      NONE: <no description>
+      PROACTIVE: <no description>
+    """
+    NONE = 0
+    PROACTIVE = 1
+
   class MinimalActionValueValuesEnum(_messages.Enum):
     r"""Minimal action to be taken on an instance. You can specify either
     RESTART to restart existing instances or REPLACE to delete and create new
@@ -22735,18 +22774,22 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
     OPPORTUNISTIC = 0
     PROACTIVE = 1
 
-  maxSurge = _messages.MessageField('FixedOrPercent', 1)
-  maxUnavailable = _messages.MessageField('FixedOrPercent', 2)
-  minReadySec = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 4)
-  type = _messages.EnumField('TypeValueValuesEnum', 5)
+  instanceRedistributionType = _messages.EnumField('InstanceRedistributionTypeValueValuesEnum', 1)
+  maxSurge = _messages.MessageField('FixedOrPercent', 2)
+  maxUnavailable = _messages.MessageField('FixedOrPercent', 3)
+  minReadySec = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
 
 
 class InstanceGroupManagerVersion(_messages.Message):
   r"""A InstanceGroupManagerVersion object.
 
   Fields:
-    instanceTemplate: A string attribute.
+    instanceTemplate: The URL of the instance template that is specified for
+      this managed instance group. The group uses this template to create new
+      instances in the managed instance group until the `targetSize` for this
+      version is reached.
     name: Name of the version. Unique among all versions in the scope of this
       managed instance group.
     targetSize: Specifies the intended number of instances to be created from
@@ -26002,29 +26045,16 @@ class LogConfigDataAccessOptions(_messages.Message):
   Enums:
     LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
       manner at the caller. This is relevant only in the LocalIAM
-      implementation, for now.  NOTE: Logging to Gin in a fail-closed manner
-      is currently unsupported while work is being done to satisfy the
-      requirements of go/345. Currently, setting LOG_FAIL_CLOSED mode will
-      have no effect, but still exists because there is active work being done
-      to support it (b/115874152).
+      implementation, for now.
 
   Fields:
     logMode: Whether Gin logging should happen in a fail-closed manner at the
       caller. This is relevant only in the LocalIAM implementation, for now.
-      NOTE: Logging to Gin in a fail-closed manner is currently unsupported
-      while work is being done to satisfy the requirements of go/345.
-      Currently, setting LOG_FAIL_CLOSED mode will have no effect, but still
-      exists because there is active work being done to support it
-      (b/115874152).
   """
 
   class LogModeValueValuesEnum(_messages.Enum):
     r"""Whether Gin logging should happen in a fail-closed manner at the
     caller. This is relevant only in the LocalIAM implementation, for now.
-    NOTE: Logging to Gin in a fail-closed manner is currently unsupported
-    while work is being done to satisfy the requirements of go/345. Currently,
-    setting LOG_FAIL_CLOSED mode will have no effect, but still exists because
-    there is active work being done to support it (b/115874152).
 
     Values:
       LOG_FAIL_CLOSED: <no description>
@@ -27782,8 +27812,10 @@ class NetworksUpdatePeeringRequest(_messages.Message):
 
 
 class NodeGroup(_messages.Message):
-  r"""A NodeGroup resource. (== resource_for beta.nodeGroups ==) (==
-  resource_for v1.nodeGroups ==)
+  r"""A NodeGroup resource. To create a node group, you must first create a
+  node templates. To learn more about node groups and sole-tenant nodes, read
+  the Sole-tenant nodes documentation. (== resource_for beta.nodeGroups ==)
+  (== resource_for v1.nodeGroups ==)
 
   Enums:
     StatusValueValuesEnum:
@@ -28425,7 +28457,9 @@ class NodeGroupsSetNodeTemplateRequest(_messages.Message):
 
 
 class NodeTemplate(_messages.Message):
-  r"""A Node Template resource.
+  r"""A Node Template resource. To learn more about node templates and sole-
+  tenant nodes, read the Sole-tenant nodes documentation. (== resource_for
+  beta.nodeTemplates ==) (== resource_for v1.nodeTemplates ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the node template. One
@@ -32174,6 +32208,10 @@ class ResourcePoliciesScopedList(_messages.Message):
 class ResourcePolicy(_messages.Message):
   r"""A ResourcePolicy object.
 
+  Enums:
+    StatusValueValuesEnum: [Output Only] The status of resource policy
+      creation.
+
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -32194,7 +32232,22 @@ class ResourcePolicy(_messages.Message):
       resource.
     snapshotSchedulePolicy: Resource policy for persistent disks for creating
       snapshots.
+    status: [Output Only] The status of resource policy creation.
   """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The status of resource policy creation.
+
+    Values:
+      CREATING: <no description>
+      DELETING: <no description>
+      INVALID: <no description>
+      READY: <no description>
+    """
+    CREATING = 0
+    DELETING = 1
+    INVALID = 2
+    READY = 3
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
@@ -32204,6 +32257,7 @@ class ResourcePolicy(_messages.Message):
   region = _messages.StringField(6)
   selfLink = _messages.StringField(7)
   snapshotSchedulePolicy = _messages.MessageField('ResourcePolicySnapshotSchedulePolicy', 8)
+  status = _messages.EnumField('StatusValueValuesEnum', 9)
 
 
 class ResourcePolicyAggregatedList(_messages.Message):

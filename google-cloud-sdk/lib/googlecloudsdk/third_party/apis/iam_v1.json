@@ -538,7 +538,7 @@
           }
         },
         "condition": {
-          "description": "The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.",
+          "description": "The condition that is associated with this binding.\nNOTE: An unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.",
           "$ref": "Expr"
         }
       }
@@ -1048,6 +1048,38 @@
         }
       }
     },
+    "AdminAuditData": {
+      "id": "AdminAuditData",
+      "description": "Audit log information specific to Cloud IAM admin APIs. This message is\nserialized as an `Any` type in the `ServiceData` message of an\n`AuditLog` message.",
+      "type": "object",
+      "properties": {
+        "permissionDelta": {
+          "description": "The permission_delta when when creating or updating a Role.",
+          "$ref": "PermissionDelta"
+        }
+      }
+    },
+    "PermissionDelta": {
+      "id": "PermissionDelta",
+      "description": "A PermissionDelta message to record the added_permissions and\nremoved_permissions inside a role.",
+      "type": "object",
+      "properties": {
+        "addedPermissions": {
+          "description": "Added permissions.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "removedPermissions": {
+          "description": "Removed permissions.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "AuditData": {
       "id": "AuditData",
       "description": "Audit log information specific to Cloud IAM. This message is serialized\nas an `Any` type in the `ServiceData` message of an\n`AuditLog` message.",
@@ -1227,7 +1259,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Note: This method is in the process of being deprecated. Use\nPatchServiceAccount instead.\n\nUpdates a ServiceAccount.\n\nCurrently, only the following fields are updatable:\n`display_name` .\nThe `etag` is mandatory."
+              "description": "Note: This method is in the process of being deprecated. Use\nPatchServiceAccount instead.\n\nUpdates a ServiceAccount.\n\nCurrently, only the following fields are updatable:\n`display_name` and `description`."
             },
             "patch": {
               "id": "iam.projects.serviceAccounts.patch",

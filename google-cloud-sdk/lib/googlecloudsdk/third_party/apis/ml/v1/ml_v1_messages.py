@@ -24,8 +24,8 @@ class GoogleApiHttpBody(_messages.Message):
   1;        // The raw HTTP body is bound to this field.
   google.api.HttpBody http_body = 2;     }      service ResourceService {
   rpc GetResource(GetResourceRequest) returns (google.api.HttpBody);       rpc
-  UpdateResource(google.api.HttpBody) returns (google.protobuf.Empty);     }
-  Example with streaming methods:      service CaldavService {       rpc
+  UpdateResource(google.api.HttpBody) returns       (google.protobuf.Empty);
+  }  Example with streaming methods:      service CaldavService {       rpc
   GetCalendar(stream google.api.HttpBody)         returns (stream
   google.api.HttpBody);       rpc UpdateCalendar(stream google.api.HttpBody)
   returns (stream google.api.HttpBody);     }  Use of this type only changes
@@ -74,20 +74,37 @@ class GoogleApiHttpBody(_messages.Message):
   extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
 
 
+class GoogleCloudMlV1AblationAttribution(_messages.Message):
+  r"""Attributes credit to model inputs by ablating features (ie. setting them
+  to their default/missing values) and computing corresponding model score
+  delta per feature. The term "ablation" is in reference to running an
+  "ablation study" to analyze input effects on the outcome of interest, which
+  in this case is the model's output. This attribution method is supported for
+  Tensorflow and XGBoost models.
+
+  Fields:
+    numFeatureInteractions: Number of feature interactions to account for in
+      the ablation process, capped at the maximum number of provided input
+      features. Currently, only the value 1 is supported.
+  """
+
+  numFeatureInteractions = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudMlV1AcceleratorConfig(_messages.Message):
   r"""Represents a hardware accelerator request config.
 
   Enums:
-    TypeValueValuesEnum: The available types of accelerators.
+    TypeValueValuesEnum: The type of accelerator to use.
 
   Fields:
     count: The number of accelerators to attach to each machine running the
       job.
-    type: The available types of accelerators.
+    type: The type of accelerator to use.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The available types of accelerators.
+    r"""The type of accelerator to use.
 
     Values:
       ACCELERATOR_TYPE_UNSPECIFIED: Unspecified accelerator type. Default to
@@ -97,7 +114,7 @@ class GoogleCloudMlV1AcceleratorConfig(_messages.Message):
       NVIDIA_TESLA_V100: Nvidia Tesla V100 GPU.
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
-      TPU_V2: TPU V2
+      TPU_V2: TPU v2.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -138,6 +155,25 @@ class GoogleCloudMlV1AutoScaling(_messages.Message):
   """
 
   minNodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudMlV1BuiltInAlgorithmOutput(_messages.Message):
+  r"""Represents output related to a built-in algorithm Job.
+
+  Fields:
+    framework: Framework on which the built-in algorithm was trained.
+    modelPath: The Cloud Storage path to the `model/` directory where the
+      training job saves the trained model. Only set for successful jobs that
+      don't use hyperparameter tuning.
+    pythonVersion: Python version on which the built-in algorithm was trained.
+    runtimeVersion: Cloud ML Engine runtime version on which the built-in
+      algorithm was trained.
+  """
+
+  framework = _messages.StringField(1)
+  modelPath = _messages.StringField(2)
+  pythonVersion = _messages.StringField(3)
+  runtimeVersion = _messages.StringField(4)
 
 
 class GoogleCloudMlV1CancelJobRequest(_messages.Message):
@@ -204,6 +240,186 @@ class GoogleCloudMlV1Config(_messages.Message):
   tpuServiceAccount = _messages.StringField(1)
 
 
+class GoogleCloudMlV1ExplanationConfig(_messages.Message):
+  r"""Message holding configuration options for explaining model predictions.
+  Currently, the only supported mechanism to explain a model's prediction is
+  through attributing its output back to its inputs which is essentially a
+  credit assignment task. We support multiple attribution methods, some
+  specific to particular frameworks like Tensorflow and XGBoost.
+
+  Fields:
+    ablationAttribution: A GoogleCloudMlV1AblationAttribution attribute.
+    integratedGradientsAttribution: A
+      GoogleCloudMlV1IntegratedGradientsAttribution attribute.
+    sabaasAttribution: A GoogleCloudMlV1SaabasAttribution attribute.
+    treeShapAttribution: A GoogleCloudMlV1TreeShapAttribution attribute.
+  """
+
+  ablationAttribution = _messages.MessageField('GoogleCloudMlV1AblationAttribution', 1)
+  integratedGradientsAttribution = _messages.MessageField('GoogleCloudMlV1IntegratedGradientsAttribution', 2)
+  sabaasAttribution = _messages.MessageField('GoogleCloudMlV1SaabasAttribution', 3)
+  treeShapAttribution = _messages.MessageField('GoogleCloudMlV1TreeShapAttribution', 4)
+
+
+class GoogleCloudMlV1ExplanationInput(_messages.Message):
+  r"""Represents input parameters for a model explanation job.
+
+  Enums:
+    DataFormatValueValuesEnum: Required. The format of the input data.
+    FrameworkValueValuesEnum: Optional. The framework used to train this
+      model. Only needed if model_version is a GCS path. Otherwise the
+      framework specified during version creation will be used.
+    OutputDataFormatValueValuesEnum: Optional. The format of the output data,
+      defaults to BIGQUERY.
+
+  Fields:
+    accelerator: Optional. The type and number of accelerators to be attached
+      to each machine running the job.
+    batchSize: Optional. Number of records per batch, defaults to 64. The
+      service will buffer batch_size number of records in memory before
+      invoking one Tensorflow prediction call internally. So take the record
+      size and memory available into consideration when setting this
+      parameter.
+    dataFormat: Required. The format of the input data.
+    explanationConfig: Required only if model_version is specified through a
+      uri, otherwise the same explanation config specified at model version
+      creation will be used. Configures explainability features on the model's
+      version. Some explanation features require additional metadata to be
+      loaded as part of the model payload.
+    framework: Optional. The framework used to train this model. Only needed
+      if model_version is a GCS path. Otherwise the framework specified during
+      version creation will be used.
+    initialWorkerCount: Optional. The initial number of workers to be used for
+      parallel processing. Defaults to 0 if one wants the service to figure
+      out the number. The actual number of workers being used may change after
+      the job starts depending on the autoscaling policy.
+    inputPaths: Required when data_format is JSON. The Cloud Storage location
+      of the input data. May contain <a
+      href="/storage/docs/gsutil/addlhelp/WildcardNames">wildcards</a>.
+    maxWorkerCount: Optional. The maximum number of workers to be used for
+      parallel processing. Defaults to 10 if not specified.
+    modelName: Use this field if you want to use the default version for the
+      specified model. The string must use the following format:
+      `"projects/YOUR_PROJECT/models/YOUR_MODEL"`
+    outputBigqueryTable: Required when output_data_format is BIGQUERY. The
+      output fully qualified BigQuery table name in the format of
+      "[project_id].[dataset_name].[table_name]".
+    outputDataFormat: Optional. The format of the output data, defaults to
+      BIGQUERY.
+    region: Required. The Google Compute Engine region to run the explanation
+      job in. See the <a href="/ml-engine/docs/tensorflow/regions">available
+      regions</a> for ML Engine services.
+    runtimeVersion: Required. The Cloud ML Engine runtime version to use for
+      the explanation job. See <a href="https://cloud.google.com/ml-
+      engine/docs/tensorflow/runtime-version-list</a> for available runtime
+      versions. Must be >=1.12.
+    signatureName: Optional. The name of the signature defined in the
+      SavedModel to use for this job. Please refer to
+      [SavedModel](https://tensorflow.github.io/serving/serving_basic.html)
+      for information about how to use signatures.  Defaults to [DEFAULT_SERVI
+      NG_SIGNATURE_DEF_KEY](https://www.tensorflow.org/api_docs/python/tf/save
+      d_model/signature_constants) , which is "serving_default".
+    tagsOverride: Optional. The set of tags to select which meta graph defined
+      in the SavedModel to use for this job. Please refer to
+      [SavedModel](https://www.tensorflow.org/serving/serving_basic) for
+      information about how to use tags.  Overrides the default tags when
+      predicting from a deployed model version.  When predicting from a model
+      directory, the tag defaults to [SERVING](https://www.tensorflow.org/api_
+      docs/python/tf/saved_model/tag_constants) , which is "serve".
+    uri: Use this field if you want to specify a Google Cloud Storage path for
+      the model to use, e.g. gs://{BUCKET}/{MODEL_DIR}/{MODEL_NAME}.
+    versionName: Use this field if you want to specify a version of the model
+      to use. The string is formatted the same way as `model_version`, with
+      the addition of the version information:
+      `"projects/YOUR_PROJECT/models/YOUR_MODEL/versions/YOUR_VERSION"`
+    workerType: Optional. The type of virtual machine to use for the
+      explanation job's worker nodes. It supports all machine types available
+      on GCP ( https://cloud.google.com/compute/docs/machine-types), subject
+      to the availability in the specific region the job runs.
+  """
+
+  class DataFormatValueValuesEnum(_messages.Enum):
+    r"""Required. The format of the input data.
+
+    Values:
+      DATA_FORMAT_UNSPECIFIED: Unspecified format.
+      JSON: Each line of the file is a JSON dictionary representing one
+        record. Currently available only for input data.
+      BIGQUERY: Values are rows in a BigQuery table given its associated
+        schema. Currently available only for output data.
+    """
+    DATA_FORMAT_UNSPECIFIED = 0
+    JSON = 1
+    BIGQUERY = 2
+
+  class FrameworkValueValuesEnum(_messages.Enum):
+    r"""Optional. The framework used to train this model. Only needed if
+    model_version is a GCS path. Otherwise the framework specified during
+    version creation will be used.
+
+    Values:
+      FRAMEWORK_UNSPECIFIED: Unspecified framework. Assigns a value based on
+        the file suffix.
+      TENSORFLOW: Tensorflow framework.
+      SCIKIT_LEARN: Scikit-learn framework.
+      XGBOOST: XGBoost framework.
+    """
+    FRAMEWORK_UNSPECIFIED = 0
+    TENSORFLOW = 1
+    SCIKIT_LEARN = 2
+    XGBOOST = 3
+
+  class OutputDataFormatValueValuesEnum(_messages.Enum):
+    r"""Optional. The format of the output data, defaults to BIGQUERY.
+
+    Values:
+      DATA_FORMAT_UNSPECIFIED: Unspecified format.
+      JSON: Each line of the file is a JSON dictionary representing one
+        record. Currently available only for input data.
+      BIGQUERY: Values are rows in a BigQuery table given its associated
+        schema. Currently available only for output data.
+    """
+    DATA_FORMAT_UNSPECIFIED = 0
+    JSON = 1
+    BIGQUERY = 2
+
+  accelerator = _messages.MessageField('GoogleCloudMlV1AcceleratorConfig', 1)
+  batchSize = _messages.IntegerField(2)
+  dataFormat = _messages.EnumField('DataFormatValueValuesEnum', 3)
+  explanationConfig = _messages.MessageField('GoogleCloudMlV1ExplanationConfig', 4)
+  framework = _messages.EnumField('FrameworkValueValuesEnum', 5)
+  initialWorkerCount = _messages.IntegerField(6)
+  inputPaths = _messages.StringField(7, repeated=True)
+  maxWorkerCount = _messages.IntegerField(8)
+  modelName = _messages.StringField(9)
+  outputBigqueryTable = _messages.StringField(10)
+  outputDataFormat = _messages.EnumField('OutputDataFormatValueValuesEnum', 11)
+  region = _messages.StringField(12)
+  runtimeVersion = _messages.StringField(13)
+  signatureName = _messages.StringField(14)
+  tagsOverride = _messages.StringField(15, repeated=True)
+  uri = _messages.StringField(16)
+  versionName = _messages.StringField(17)
+  workerType = _messages.StringField(18)
+
+
+class GoogleCloudMlV1ExplanationOutput(_messages.Message):
+  r"""Represents results of an explanation job.
+
+  Fields:
+    errorCount: The number of data instances which resulted in errors.
+    explanationCount: The number of generated explanations.
+    nodeHours: Node hours used by the batch explanation job.
+    outputBigqueryTable: The output BigQuery table name provided at the job
+      creation time.
+  """
+
+  errorCount = _messages.IntegerField(1)
+  explanationCount = _messages.IntegerField(2)
+  nodeHours = _messages.FloatField(3)
+  outputBigqueryTable = _messages.StringField(4)
+
+
 class GoogleCloudMlV1GetConfigResponse(_messages.Message):
   r"""Returns service account information associated with a project.
 
@@ -231,6 +447,8 @@ class GoogleCloudMlV1HyperparameterOutput(_messages.Message):
   Fields:
     allMetrics: All recorded object metrics for this trial. This field is not
       currently populated.
+    builtInAlgorithmOutput: Details related to built-in algorithms jobs. Only
+      set for trials of built-in algorithms jobs that have succeeded.
     finalMetric: The final objective metric seen for this trial.
     hyperparameters: The hyperparameters given to this trial.
     isTrialStoppedEarly: True if the trial is stopped early.
@@ -263,10 +481,11 @@ class GoogleCloudMlV1HyperparameterOutput(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   allMetrics = _messages.MessageField('GoogleCloudMlV1HyperparameterOutputHyperparameterMetric', 1, repeated=True)
-  finalMetric = _messages.MessageField('GoogleCloudMlV1HyperparameterOutputHyperparameterMetric', 2)
-  hyperparameters = _messages.MessageField('HyperparametersValue', 3)
-  isTrialStoppedEarly = _messages.BooleanField(4)
-  trialId = _messages.StringField(5)
+  builtInAlgorithmOutput = _messages.MessageField('GoogleCloudMlV1BuiltInAlgorithmOutput', 2)
+  finalMetric = _messages.MessageField('GoogleCloudMlV1HyperparameterOutputHyperparameterMetric', 3)
+  hyperparameters = _messages.MessageField('HyperparametersValue', 4)
+  isTrialStoppedEarly = _messages.BooleanField(5)
+  trialId = _messages.StringField(6)
 
 
 class GoogleCloudMlV1HyperparameterOutputHyperparameterMetric(_messages.Message):
@@ -305,6 +524,11 @@ class GoogleCloudMlV1HyperparameterSpec(_messages.Message):
       For versions of Tensorflow prior to 0.12, this should be only the tag
       passed to tf.Summary. By default, "training/hptuning/metric" will be
       used.
+    maxFailedTrials: Optional. The number of failed trials that need to be
+      seen before failing the hyperparameter tuning job. You can specify this
+      field to override the default failing criteria for Cloud ML Engine
+      hyperparameter tuning jobs.  Defaults to zero, which means the service
+      decides when a hyperparameter job should fail.
     maxParallelTrials: Optional. The number of training trials to run
       concurrently. You can reduce the time it takes to perform hyperparameter
       tuning by adding trials in parallel. However, each trail only benefits
@@ -354,10 +578,25 @@ class GoogleCloudMlV1HyperparameterSpec(_messages.Message):
   enableTrialEarlyStopping = _messages.BooleanField(2)
   goal = _messages.EnumField('GoalValueValuesEnum', 3)
   hyperparameterMetricTag = _messages.StringField(4)
-  maxParallelTrials = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  maxTrials = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  params = _messages.MessageField('GoogleCloudMlV1ParameterSpec', 7, repeated=True)
-  resumePreviousJobId = _messages.StringField(8)
+  maxFailedTrials = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  maxParallelTrials = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  maxTrials = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  params = _messages.MessageField('GoogleCloudMlV1ParameterSpec', 8, repeated=True)
+  resumePreviousJobId = _messages.StringField(9)
+
+
+class GoogleCloudMlV1IntegratedGradientsAttribution(_messages.Message):
+  r"""Attributes credit by computing the Aumann-Shapley value taking advantage
+  of the model's fully differentiable structure. Refer to this paper for more
+  details: http://proceedings.mlr.press/v70/sundararajan17a.html
+
+  Fields:
+    numIntegralSteps: Number of steps for approximating the path integral. A
+      good value to start is 50 and gradually increase until the sum to diff
+      property is met within the desired error range.
+  """
+
+  numIntegralSteps = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudMlV1Job(_messages.Message):
@@ -384,6 +623,8 @@ class GoogleCloudMlV1Job(_messages.Message):
       conditions: An `etag` is returned in the response to `GetJob`, and
       systems are expected to put that etag in the request to `UpdateJob` to
       ensure that their change will be applied to the same version of the job.
+    explanationInput: Input parameters to create an explanation job.
+    explanationOutput: The current explanation job result.
     jobId: Required. The user-specified id of the job.
     labels: Optional. One or more labels that you can add, to organize your
       jobs. Each label is a key-value pair, where both the key and the value
@@ -455,14 +696,16 @@ class GoogleCloudMlV1Job(_messages.Message):
   endTime = _messages.StringField(2)
   errorMessage = _messages.StringField(3)
   etag = _messages.BytesField(4)
-  jobId = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  predictionInput = _messages.MessageField('GoogleCloudMlV1PredictionInput', 7)
-  predictionOutput = _messages.MessageField('GoogleCloudMlV1PredictionOutput', 8)
-  startTime = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  trainingInput = _messages.MessageField('GoogleCloudMlV1TrainingInput', 11)
-  trainingOutput = _messages.MessageField('GoogleCloudMlV1TrainingOutput', 12)
+  explanationInput = _messages.MessageField('GoogleCloudMlV1ExplanationInput', 5)
+  explanationOutput = _messages.MessageField('GoogleCloudMlV1ExplanationOutput', 6)
+  jobId = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  predictionInput = _messages.MessageField('GoogleCloudMlV1PredictionInput', 9)
+  predictionOutput = _messages.MessageField('GoogleCloudMlV1PredictionOutput', 10)
+  startTime = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  trainingInput = _messages.MessageField('GoogleCloudMlV1TrainingInput', 13)
+  trainingOutput = _messages.MessageField('GoogleCloudMlV1TrainingOutput', 14)
 
 
 class GoogleCloudMlV1ListJobsResponse(_messages.Message):
@@ -577,8 +820,19 @@ class GoogleCloudMlV1Model(_messages.Message):
       labels">using labels</a>.
     name: Required. The name specified for the model when it was created.  The
       model name must be unique within the project it is created in.
-    onlinePredictionLogging: Optional. If true, enables StackDriver Logging
-      for online prediction. Default is false.
+    onlinePredictionConsoleLogging: Optional. If true, enables logging of
+      stderr and stdout streams for online prediction in Stackdriver Logging.
+      These can be more verbose than the standard access logs (see
+      `online_prediction_logging`) and thus can incur higher cost. However,
+      they are helpful for debugging. Note that since Stackdriver logs may
+      incur a cost, particularly if the total QPS in your project is high, be
+      sure to estimate your costs before enabling this flag.  Default is
+      false.
+    onlinePredictionLogging: Optional. If true, online prediction access logs
+      are sent to StackDriver Logging. These logs are like standard server
+      access logs, containing information like timestamp and latency for each
+      request. Note that Stackdriver logs may incur a cost, particular if the
+      total QPS in your project is high.  Default is false.
     regions: Optional. The list of regions where the model is going to be
       deployed. Currently only one region per model is supported. Defaults to
       'us-central1' if nothing is set. See the <a href="/ml-
@@ -623,8 +877,9 @@ class GoogleCloudMlV1Model(_messages.Message):
   etag = _messages.BytesField(3)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  onlinePredictionLogging = _messages.BooleanField(6)
-  regions = _messages.StringField(7, repeated=True)
+  onlinePredictionConsoleLogging = _messages.BooleanField(6)
+  onlinePredictionLogging = _messages.BooleanField(7)
+  regions = _messages.StringField(8, repeated=True)
 
 
 class GoogleCloudMlV1OperationMetadata(_messages.Message):
@@ -802,6 +1057,9 @@ class GoogleCloudMlV1PredictionInput(_messages.Message):
 
   Enums:
     DataFormatValueValuesEnum: Required. The format of the input data files.
+    FrameworkValueValuesEnum: Optional. The framework used to train this
+      model. Only needed if model_version is a GCS path. Otherwise the
+      framework specified during version creation will be used.
     OutputDataFormatValueValuesEnum: Optional. Format of the output data
       files, defaults to JSON.
 
@@ -814,8 +1072,16 @@ class GoogleCloudMlV1PredictionInput(_messages.Message):
       size and memory available into consideration when setting this
       parameter.
     dataFormat: Required. The format of the input data files.
-    inputPaths: Required. The Google Cloud Storage location of the input data
-      files. May contain wildcards.
+    framework: Optional. The framework used to train this model. Only needed
+      if model_version is a GCS path. Otherwise the framework specified during
+      version creation will be used.
+    initialWorkerCount: Optional. The initial number of workers to be used for
+      parallel processing. Defaults to 0 if one wants the service to figure
+      out the number. The actual number of workers being used may change after
+      the job starts depending on the autoscaling policy.
+    inputPaths: Required. The Cloud Storage location of the input data files.
+      May contain <a
+      href="/storage/docs/gsutil/addlhelp/WildcardNames">wildcards</a>.
     maxWorkerCount: Optional. The maximum number of workers to be used for
       parallel processing. Defaults to 10 if not specified.
     modelName: Use this field if you want to use the default version for the
@@ -838,12 +1104,23 @@ class GoogleCloudMlV1PredictionInput(_messages.Message):
       for information about how to use signatures.  Defaults to [DEFAULT_SERVI
       NG_SIGNATURE_DEF_KEY](https://www.tensorflow.org/api_docs/python/tf/save
       d_model/signature_constants) , which is "serving_default".
+    tagsOverride: Optional. The set of tags to select which meta graph defined
+      in the SavedModel to use for this job. Please refer to
+      [SavedModel](https://www.tensorflow.org/serving/serving_basic) for
+      information about how to use tags.  Overrides the default tags when
+      predicting from a deployed model version.  When predicting from a model
+      directory, the tag defaults to [SERVING](https://www.tensorflow.org/api_
+      docs/python/tf/saved_model/tag_constants) , which is "serve".
     uri: Use this field if you want to specify a Google Cloud Storage path for
       the model to use.
     versionName: Use this field if you want to specify a version of the model
       to use. The string is formatted the same way as `model_version`, with
       the addition of the version information:
       `"projects/YOUR_PROJECT/models/YOUR_MODEL/versions/YOUR_VERSION"`
+    workerType: Optional. The type of virtual machine to use for batch
+      prediction job's worker nodes. It supports all machine types available
+      on GCP ( https://cloud.google.com/compute/docs/machine-types), subject
+      to the availability in the specific region the job runs.
   """
 
   class DataFormatValueValuesEnum(_messages.Enum):
@@ -854,13 +1131,14 @@ class GoogleCloudMlV1PredictionInput(_messages.Message):
       JSON: Each line of the file is a JSON dictionary representing one
         record.
       TEXT: Deprecated. Use JSON instead.
-      TF_RECORD: INPUT ONLY. The source file is a TFRecord file.
-      TF_RECORD_GZIP: INPUT ONLY. The source file is a GZIP-compressed
-        TFRecord file.
-      FILE_LIST: INPUT ONLY. Each line of the file is the location of an
-        instance to process.
-      CSV: OUTPUT ONLY. Output values will be in comma-separated rows, with
-        keys in a separate file.
+      TF_RECORD: The source file is a TFRecord file. Currently available only
+        for input data.
+      TF_RECORD_GZIP: The source file is a GZIP-compressed TFRecord file.
+        Currently available only for input data.
+      FILE_LIST: Each line of the file is the location of an instance to
+        process. Currently available only for input data.
+      CSV: Values are comma-separated rows, with keys in a separate file.
+        Currently available only for output data.
     """
     DATA_FORMAT_UNSPECIFIED = 0
     JSON = 1
@@ -870,6 +1148,23 @@ class GoogleCloudMlV1PredictionInput(_messages.Message):
     FILE_LIST = 5
     CSV = 6
 
+  class FrameworkValueValuesEnum(_messages.Enum):
+    r"""Optional. The framework used to train this model. Only needed if
+    model_version is a GCS path. Otherwise the framework specified during
+    version creation will be used.
+
+    Values:
+      FRAMEWORK_UNSPECIFIED: Unspecified framework. Assigns a value based on
+        the file suffix.
+      TENSORFLOW: Tensorflow framework.
+      SCIKIT_LEARN: Scikit-learn framework.
+      XGBOOST: XGBoost framework.
+    """
+    FRAMEWORK_UNSPECIFIED = 0
+    TENSORFLOW = 1
+    SCIKIT_LEARN = 2
+    XGBOOST = 3
+
   class OutputDataFormatValueValuesEnum(_messages.Enum):
     r"""Optional. Format of the output data files, defaults to JSON.
 
@@ -878,13 +1173,14 @@ class GoogleCloudMlV1PredictionInput(_messages.Message):
       JSON: Each line of the file is a JSON dictionary representing one
         record.
       TEXT: Deprecated. Use JSON instead.
-      TF_RECORD: INPUT ONLY. The source file is a TFRecord file.
-      TF_RECORD_GZIP: INPUT ONLY. The source file is a GZIP-compressed
-        TFRecord file.
-      FILE_LIST: INPUT ONLY. Each line of the file is the location of an
-        instance to process.
-      CSV: OUTPUT ONLY. Output values will be in comma-separated rows, with
-        keys in a separate file.
+      TF_RECORD: The source file is a TFRecord file. Currently available only
+        for input data.
+      TF_RECORD_GZIP: The source file is a GZIP-compressed TFRecord file.
+        Currently available only for input data.
+      FILE_LIST: Each line of the file is the location of an instance to
+        process. Currently available only for input data.
+      CSV: Values are comma-separated rows, with keys in a separate file.
+        Currently available only for output data.
     """
     DATA_FORMAT_UNSPECIFIED = 0
     JSON = 1
@@ -897,16 +1193,20 @@ class GoogleCloudMlV1PredictionInput(_messages.Message):
   accelerator = _messages.MessageField('GoogleCloudMlV1AcceleratorConfig', 1)
   batchSize = _messages.IntegerField(2)
   dataFormat = _messages.EnumField('DataFormatValueValuesEnum', 3)
-  inputPaths = _messages.StringField(4, repeated=True)
-  maxWorkerCount = _messages.IntegerField(5)
-  modelName = _messages.StringField(6)
-  outputDataFormat = _messages.EnumField('OutputDataFormatValueValuesEnum', 7)
-  outputPath = _messages.StringField(8)
-  region = _messages.StringField(9)
-  runtimeVersion = _messages.StringField(10)
-  signatureName = _messages.StringField(11)
-  uri = _messages.StringField(12)
-  versionName = _messages.StringField(13)
+  framework = _messages.EnumField('FrameworkValueValuesEnum', 4)
+  initialWorkerCount = _messages.IntegerField(5)
+  inputPaths = _messages.StringField(6, repeated=True)
+  maxWorkerCount = _messages.IntegerField(7)
+  modelName = _messages.StringField(8)
+  outputDataFormat = _messages.EnumField('OutputDataFormatValueValuesEnum', 9)
+  outputPath = _messages.StringField(10)
+  region = _messages.StringField(11)
+  runtimeVersion = _messages.StringField(12)
+  signatureName = _messages.StringField(13)
+  tagsOverride = _messages.StringField(14, repeated=True)
+  uri = _messages.StringField(15)
+  versionName = _messages.StringField(16)
+  workerType = _messages.StringField(17)
 
 
 class GoogleCloudMlV1PredictionOutput(_messages.Message):
@@ -927,16 +1227,47 @@ class GoogleCloudMlV1PredictionOutput(_messages.Message):
 
 
 class GoogleCloudMlV1ReplicaConfig(_messages.Message):
-  r"""Represents the configration for a replica in a cluster.
+  r"""Represents the configuration for a replica in a cluster.
 
   Fields:
-    acceleratorConfig: A GoogleCloudMlV1AcceleratorConfig attribute.
-    imageUri: The docker image to run on worker. This image must be in Google
-      Container Registry.
+    acceleratorConfig: Represents the type and number of accelerators used by
+      the replica. [Learn about restrictions on accelerator configurations for
+      training.](/ml-engine/docs/tensorflow/using-gpus#compute-engine-machine-
+      types-with-gpu)
+    imageUri: The Docker image to run on the replica. This image must be in
+      Container Registry. Learn more about [configuring custom containers
+      ](/ml-engine/docs/distributed-training-containers).
   """
 
   acceleratorConfig = _messages.MessageField('GoogleCloudMlV1AcceleratorConfig', 1)
   imageUri = _messages.StringField(2)
+
+
+class GoogleCloudMlV1RequestLoggingConfig(_messages.Message):
+  r"""Configurations for logging request-response pairs. Currently only
+  BigQuery logging is supported. The request and response will be converted to
+  raw string and stored within the specified BigQuery table. The schema is:
+  model: STRING   version: STRING   time: Timestamp   raw_data: STRING
+  raw_prediction: STRING   ground_truth: STRING
+
+  Fields:
+    bigqueryTableName: Fully qualified BigQuery table name in the format of
+      "[project_id].[dataset_name].[table_name]".
+    samplingPercentage: Percentage of the request being logged. The sampling
+      window is the lifetime of the Version. Defaults to 0.
+  """
+
+  bigqueryTableName = _messages.StringField(1)
+  samplingPercentage = _messages.FloatField(2)
+
+
+class GoogleCloudMlV1SaabasAttribution(_messages.Message):
+  r"""Attributes credit by running a faster aproximation to the TreeShap
+  method. Please refer to this link for more details:
+  https://blog.datadive.net/interpreting-random-forests/ This attribution
+  method is only supported for XGBoost models.
+  """
+
 
 
 class GoogleCloudMlV1SetDefaultVersionRequest(_messages.Message):
@@ -962,8 +1293,15 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       TensorFlow program as the '--job-dir' command-line argument. The benefit
       of specifying this field is that Cloud ML validates the path for use in
       training.
-    masterConfig: Optional. The configuration for master.  Only one of
-      `masterConfig.imageUri` and `runtimeVersion` should be set.
+    masterConfig: Optional. The configuration for your master worker.  You
+      should only set `masterConfig.acceleratorConfig` if `masterType` is set
+      to a Compute Engine machine type. Learn about [restrictions on
+      accelerator configurations for training.](/ml-engine/docs/tensorflow
+      /using-gpus#compute-engine-machine-types-with-gpu)  Set
+      `masterConfig.imageUri` only if you build a custom image. Only one of
+      `masterConfig.imageUri` and `runtimeVersion` should be set. Learn more
+      about [configuring custom containers](/ml-engine/docs/distributed-
+      training-containers).
     masterType: Optional. Specifies the type of virtual machine to use for
       your training job's master worker.  The following types are supported:
       <dl>   <dt>standard</dt>   <dd>   A basic machine configuration suitable
@@ -1000,14 +1338,29 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       <i>complex_model_l</i> that   also includes eight NVIDIA Tesla V100
       GPUs.   </dd>   <dt>cloud_tpu</dt>   <dd>   A TPU VM including one Cloud
       TPU. See more about   <a href="/ml-engine/docs/tensorflow/using-
-      tpus">using TPUs to train   your model</a>.   </dd> </dl>  You must set
-      this value when `scaleTier` is set to `CUSTOM`.
+      tpus">using TPUs to train   your model</a>.   </dd> </dl>  You may also
+      use certain Compute Engine machine types directly in this field. The
+      following types are supported:  - `n1-standard-4` - `n1-standard-8` -
+      `n1-standard-16` - `n1-standard-32` - `n1-standard-64` -
+      `n1-standard-96` - `n1-highmem-2` - `n1-highmem-4` - `n1-highmem-8` -
+      `n1-highmem-16` - `n1-highmem-32` - `n1-highmem-64` - `n1-highmem-96` -
+      `n1-highcpu-16` - `n1-highcpu-32` - `n1-highcpu-64` - `n1-highcpu-96`
+      See more about [using Compute Engine machine types](/ml-
+      engine/docs/tensorflow/machine-types#compute-engine-machine-types).  You
+      must set this value when `scaleTier` is set to `CUSTOM`.
     packageUris: Required. The Google Cloud Storage location of the packages
       with the training program and any additional dependencies. The maximum
       number of package URIs is 100.
-    parameterServerConfig: Optional. The config of parameter servers.  If
-      `parameterServerConfig.imageUri` has not been set, the value of
-      `masterConfig.imageUri` will be used.
+    parameterServerConfig: Optional. The configuration for parameter servers.
+      You should only set `parameterServerConfig.acceleratorConfig` if
+      `parameterServerConfigType` is set to a Compute Engine machine type.
+      [Learn about restrictions on accelerator configurations for training
+      .](/ml-engine/docs/tensorflow/using-gpus#compute-engine-machine-types-
+      with-gpu)  Set `parameterServerConfig.imageUri` only if you build a
+      custom image for your parameter server. If
+      `parameterServerConfig.imageUri` has not been set, Cloud ML Engine uses
+      the value of `masterConfig.imageUri`. Learn more about [configuring
+      custom containers](/ml-engine/docs/distributed-training-containers).
     parameterServerCount: Optional. The number of parameter server replicas to
       use for the training job. Each replica in the cluster will be of the
       type specified in `parameter_server_type`.  This value can only be used
@@ -1016,8 +1369,11 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
     parameterServerType: Optional. Specifies the type of virtual machine to
       use for your training job's parameter server.  The supported values are
       the same as those described in the entry for `master_type`.  This value
-      must be present when `scaleTier` is set to `CUSTOM` and
-      `parameter_server_count` is greater than zero.
+      must be consistent with the category of machine type that `masterType`
+      uses. In other words, both must be Cloud ML Engine machine types or both
+      must be Compute Engine machine types.  This value must be present when
+      `scaleTier` is set to `CUSTOM` and `parameter_server_count` is greater
+      than zero.
     pythonModule: Required. The Python module name to run after installing the
       packages.
     pythonVersion: Optional. The version of Python used in training. If not
@@ -1035,9 +1391,15 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       engine/docs/versioning">how to manage runtime versions</a>.
     scaleTier: Required. Specifies the machine types, the number of replicas
       for workers and parameter servers.
-    workerConfig: Optional. The configrations for workers.  If
-      `workerConfig.imageUri` has not been set, the value of
-      `masterConfig.imageUri` will be used.
+    workerConfig: Optional. The configuration for workers.  You should only
+      set `workerConfig.acceleratorConfig` if `workerType` is set to a Compute
+      Engine machine type. [Learn about restrictions on accelerator
+      configurations for training.](/ml-engine/docs/tensorflow/using-gpus
+      #compute-engine-machine-types-with-gpu)  Set `workerConfig.imageUri`
+      only if you build a custom image for your worker. If
+      `workerConfig.imageUri` has not been set, Cloud ML Engine uses the value
+      of `masterConfig.imageUri`. Learn more about [configuring custom
+      containers](/ml-engine/docs/distributed-training-containers).
     workerCount: Optional. The number of worker replicas to use for the
       training job. Each replica in the cluster will be of the type specified
       in `worker_type`.  This value can only be used when `scale_tier` is set
@@ -1046,8 +1408,13 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
     workerType: Optional. Specifies the type of virtual machine to use for
       your training job's worker nodes.  The supported values are the same as
       those described in the entry for `masterType`.  This value must be
-      present when `scaleTier` is set to `CUSTOM` and `workerCount` is greater
-      than zero.
+      consistent with the category of machine type that `masterType` uses. In
+      other words, both must be Cloud ML Engine machine types or both must be
+      Compute Engine machine types.  If you use `cloud_tpu` for this value,
+      see special instructions for [configuring a custom TPU machine](/ml-
+      engine/docs/tensorflow/using-tpus#configuring_a_custom_tpu_machine).
+      This value must be present when `scaleTier` is set to `CUSTOM` and
+      `workerCount` is greater than zero.
   """
 
   class ScaleTierValueValuesEnum(_messages.Enum):
@@ -1112,19 +1479,33 @@ class GoogleCloudMlV1TrainingOutput(_messages.Message):
   r"""Represents results of a training job. Output only.
 
   Fields:
+    builtInAlgorithmOutput: Details related to built-in algorithms jobs. Only
+      set for built-in algorithms jobs.
     completedTrialCount: The number of hyperparameter tuning trials that
       completed successfully. Only set for hyperparameter tuning jobs.
     consumedMLUnits: The amount of ML units consumed by the job.
+    isBuiltInAlgorithmJob: Whether this job is a built-in Algorithm job.
     isHyperparameterTuningJob: Whether this job is a hyperparameter tuning
       job.
     trials: Results for individual Hyperparameter trials. Only set for
       hyperparameter tuning jobs.
   """
 
-  completedTrialCount = _messages.IntegerField(1)
-  consumedMLUnits = _messages.FloatField(2)
-  isHyperparameterTuningJob = _messages.BooleanField(3)
-  trials = _messages.MessageField('GoogleCloudMlV1HyperparameterOutput', 4, repeated=True)
+  builtInAlgorithmOutput = _messages.MessageField('GoogleCloudMlV1BuiltInAlgorithmOutput', 1)
+  completedTrialCount = _messages.IntegerField(2)
+  consumedMLUnits = _messages.FloatField(3)
+  isBuiltInAlgorithmJob = _messages.BooleanField(4)
+  isHyperparameterTuningJob = _messages.BooleanField(5)
+  trials = _messages.MessageField('GoogleCloudMlV1HyperparameterOutput', 6, repeated=True)
+
+
+class GoogleCloudMlV1TreeShapAttribution(_messages.Message):
+  r"""Attributes credit by computing the Shapley value taking advantage of the
+  model's tree ensemble structure. Refer to this paper for more details:
+  http://papers.nips.cc/paper/7062-a-unified-approach-to-interpreting-model-
+  predictions.pdf. This attribution method is supported for XGBoost models.
+  """
+
 
 
 class GoogleCloudMlV1Version(_messages.Message):
@@ -1132,7 +1513,7 @@ class GoogleCloudMlV1Version(_messages.Message):
   deployed in the cloud, ready to handle prediction requests. A model can have
   multiple versions. You can get information about all of the versions of a
   given model by calling [projects.models.versions.list](/ml-
-  engine/reference/rest/v1/projects.models.versions/list).
+  engine/reference/rest/v1/projects.models.versions/list). Next ID: 30
 
   Enums:
     FrameworkValueValuesEnum: Optional. The machine learning framework Cloud
@@ -1176,6 +1557,9 @@ class GoogleCloudMlV1Version(_messages.Message):
       conditions: An `etag` is returned in the response to `GetVersion`, and
       systems are expected to put that etag in the request to `UpdateVersion`
       to ensure that their change will be applied to the model as intended.
+    explanationConfig: Optional. Configures explainability features on the
+      model's version. Some explanation features require additional metadata
+      to be loaded as part of the model payload.
     framework: Optional. The machine learning framework Cloud ML Engine uses
       to train this version of the model. Valid values are `TENSORFLOW`,
       `SCIKIT_LEARN`, `XGBOOST`. If you do not specify a framework, Cloud ML
@@ -1196,11 +1580,12 @@ class GoogleCloudMlV1Version(_messages.Message):
     lastUseTime: Output only. The time the version was last used for
       prediction.
     machineType: Optional. The type of machine on which to serve the model.
-      Currently only applies to online prediction service. The following are
-      currently supported and will be deprecated in Beta release.
-      mls1-highmem-1    1 core    2 Gb RAM   mls1-highcpu-4    4 core    2 Gb
-      RAM The following are available in Beta:   mls1-c1-m2        1 core    2
-      Gb RAM   Default   mls1-c4-m2        4 core    2 Gb RAM
+      Currently only applies to online prediction service. <dl>
+      <dt>mls1-c1-m2</dt>   <dd>   The <b>default</b> machine type, with 1
+      core and 2 GB RAM. The deprecated   name for this machine type is
+      "mls1-highmem-1".   </dd>   <dt>mls1-c4-m2</dt>   <dd>   In <b>Beta</b>.
+      This machine type has 4 cores and 2 GB RAM. The   deprecated name for
+      this machine type is "mls1-highcpu-4".   </dd> </dl>
     manualScaling: Manually select the number of nodes to use for serving the
       model. You should generally use `auto_scaling` with an appropriate
       `min_nodes` instead, but this option is available if you want more
@@ -1238,6 +1623,8 @@ class GoogleCloudMlV1Version(_messages.Message):
       set, the default version is '2.7'. Python '3.5' is available when
       `runtime_version` is set to '1.4' and above. Python '2.7' works with all
       supported runtime versions.
+    requestLoggingConfig: Optional. Configures the request-response pair
+      logging on predictions from this Version.
     runtimeVersion: Optional. The Cloud ML Engine runtime version to use for
       this deployment. If not set, Cloud ML Engine uses the default stable
       version, 1.0. For more information, see the [runtime version list](/ml-
@@ -1328,21 +1715,23 @@ class GoogleCloudMlV1Version(_messages.Message):
   description = _messages.StringField(5)
   errorMessage = _messages.StringField(6)
   etag = _messages.BytesField(7)
-  framework = _messages.EnumField('FrameworkValueValuesEnum', 8)
-  imageUri = _messages.StringField(9)
-  isDefault = _messages.BooleanField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  lastUseTime = _messages.StringField(12)
-  machineType = _messages.StringField(13)
-  manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 14)
-  modelClass = _messages.StringField(15)
-  name = _messages.StringField(16)
-  packageUris = _messages.StringField(17, repeated=True)
-  predictionClass = _messages.StringField(18)
-  pythonVersion = _messages.StringField(19)
-  runtimeVersion = _messages.StringField(20)
-  serviceAccount = _messages.StringField(21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
+  explanationConfig = _messages.MessageField('GoogleCloudMlV1ExplanationConfig', 8)
+  framework = _messages.EnumField('FrameworkValueValuesEnum', 9)
+  imageUri = _messages.StringField(10)
+  isDefault = _messages.BooleanField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  lastUseTime = _messages.StringField(13)
+  machineType = _messages.StringField(14)
+  manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 15)
+  modelClass = _messages.StringField(16)
+  name = _messages.StringField(17)
+  packageUris = _messages.StringField(18, repeated=True)
+  predictionClass = _messages.StringField(19)
+  pythonVersion = _messages.StringField(20)
+  requestLoggingConfig = _messages.MessageField('GoogleCloudMlV1RequestLoggingConfig', 21)
+  runtimeVersion = _messages.StringField(22)
+  serviceAccount = _messages.StringField(23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
 
 
 class GoogleIamV1AuditConfig(_messages.Message):
@@ -1417,10 +1806,10 @@ class GoogleIamV1Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: Unimplemented. The condition that is associated with this
-      binding. NOTE: an unsatisfied condition will not allow user access via
-      current binding. Different bindings, including their conditions, are
-      examined independently.
+    condition: The condition that is associated with this binding. NOTE: An
+      unsatisfied condition will not allow user access via current binding.
+      Different bindings, including their conditions, are examined
+      independently.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -1432,8 +1821,8 @@ class GoogleIamV1Binding(_messages.Message):
       service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: A Google Apps domain name that represents all the
-      users of that domain. For example, `google.com` or `example.com`.
+      * `domain:{domain}`: The G Suite domain (primary) that represents all
+      the    users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -1757,6 +2146,16 @@ class GoogleTypeExpr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class MlOperationsDeleteRequest(_messages.Message):
+  r"""A MlOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class MlProjectsGetConfigRequest(_messages.Message):
@@ -2150,16 +2549,6 @@ class MlProjectsOperationsCancelRequest(_messages.Message):
 
   Fields:
     name: The name of the operation resource to be cancelled.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class MlProjectsOperationsDeleteRequest(_messages.Message):
-  r"""A MlProjectsOperationsDeleteRequest object.
-
-  Fields:
-    name: The name of the operation resource to be deleted.
   """
 
   name = _messages.StringField(1, required=True)

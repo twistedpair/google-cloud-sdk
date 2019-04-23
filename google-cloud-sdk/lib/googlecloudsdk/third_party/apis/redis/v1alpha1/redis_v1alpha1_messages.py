@@ -109,7 +109,7 @@ class Instance(_messages.Message):
       latest supported version will be used. Updating the version will perform
       an upgrade/downgrade to the new version. Currently, the supported values
       are:   *   `REDIS_4_0` for Redis 4.0 compatibility  *   `REDIS_3_2` for
-      Redis 3.2 compatibility
+      Redis 3.2 compatibility (default)
     reservedIpRange: Optional. The CIDR range of internal addresses that are
       reserved for this instance. If not provided, the service will choose an
       unused /29 block, for example, 10.0.0.0/29 or 192.168.0.0/29. Ranges
@@ -561,7 +561,7 @@ class RedisProjectsLocationsInstancesCreateRequest(_messages.Message):
       Must be unique within the customer project / location
     parent: Required. The resource name of the instance location using the
       form:     `projects/{project_id}/locations/{location_id}` where
-      `location_id` refers to a GCP region
+      `location_id` refers to a GCP region.
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -575,7 +575,7 @@ class RedisProjectsLocationsInstancesDeleteRequest(_messages.Message):
   Fields:
     name: Required. Redis instance resource name using the form:
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
-      where `location_id` refers to a GCP region
+      where `location_id` refers to a GCP region.
   """
 
   name = _messages.StringField(1, required=True)
@@ -587,7 +587,7 @@ class RedisProjectsLocationsInstancesGetRequest(_messages.Message):
   Fields:
     name: Required. Redis instance resource name using the form:
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
-      where `location_id` refers to a GCP region
+      where `location_id` refers to a GCP region.
   """
 
   name = _messages.StringField(1, required=True)
@@ -606,7 +606,7 @@ class RedisProjectsLocationsInstancesListRequest(_messages.Message):
       request, if any.
     parent: Required. The resource name of the instance location using the
       form:     `projects/{project_id}/locations/{location_id}` where
-      `location_id` refers to a GCP region
+      `location_id` refers to a GCP region.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)

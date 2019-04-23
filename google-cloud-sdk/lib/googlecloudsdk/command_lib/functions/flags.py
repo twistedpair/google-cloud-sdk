@@ -186,15 +186,18 @@ def AddRuntimeFlag(parser):
   parser.add_argument(
       '--runtime',
       help="""\
-          The runtime in which to run the function.
+          Runtime in which to run the function.
+
+          Required when deploying a new function; optional when updating
+          an existing function.
 
           Choices:
 
-          - `nodejs6`: Node.js 6
           - `nodejs8`: Node.js 8
           - `nodejs10`: Node.js 10
           - `python37`: Python 3.7
           - `go111`: Go 1.11
+          - `nodejs6`: Node.js 6 (deprecated)
           """)
 
 

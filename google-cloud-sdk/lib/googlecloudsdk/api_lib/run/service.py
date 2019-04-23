@@ -101,3 +101,9 @@ class Service(k8s_object.KubernetesObject):
   @property
   def last_modifier(self):
     return self.annotations.get(u'serving.knative.dev/lastModifier')
+
+  @property
+  def last_transition_time(self):
+    return next((c.lastTransitionTime
+                 for c in self.status.conditions
+                 if c.type == u'Ready'), None)

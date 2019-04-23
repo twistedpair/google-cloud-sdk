@@ -418,6 +418,7 @@ class Resource(object):
     """Returns resource reference values."""
     return [getattr(self, param) for param in self._params]
 
+  # TODO(b/130649099): add support for domain-splitting style URI.
   def SelfLink(self):
     """Returns URI for this resource."""
     return self._self_link

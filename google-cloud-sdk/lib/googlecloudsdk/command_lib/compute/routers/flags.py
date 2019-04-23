@@ -420,3 +420,13 @@ def AddIncrementalCustomAdvertisementArgs(parser, resource_str):
               exist in the current set of custom advertisements. This field can
               only be specified in custom advertisement mode.""".format(
                   resource_str))
+
+
+def AddGetNatMappingInfoArgs(parser, include_nat_name_filter):
+  """Adds common arguments for get-nat-mapping-info."""
+
+  if include_nat_name_filter:
+    parser.add_argument(
+        '--nat-name',
+        required=False,
+        help='The NAT name to filter out NAT mapping information')

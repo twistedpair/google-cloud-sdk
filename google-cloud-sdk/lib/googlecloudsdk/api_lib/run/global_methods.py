@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.run import service
 from googlecloudsdk.api_lib.runtime_config import util
 from googlecloudsdk.api_lib.util import apis
 
@@ -42,3 +43,25 @@ def ListRegions():
           name=project_resource_relname,
           pageSize=100))
   return [l.locationId for l in response.locations]
+
+
+def ListServices(locations):
+  """Get the global services for a OnePlatform project.
+
+  Args:
+    locations: (str), The relative name of the locations resource
+      with either an actual location name e.g.
+      'projects/my-project/locations/us-central1)
+      to query the specified location 'or a wildcard name, '-'
+      (e.g. 'projects/my-project/locations/-') to query all locations.
+
+  Returns:
+    List of googlecloudsdk.api_lib.run import service.Service objects.
+  """
+  client = apis.GetClientInstance(SERVERLESS_API_NAME, SERVERLESS_API_VERSION)
+  request = client.MESSAGES_MODULE.RunProjectsLocationsServicesListRequest(
+      parent=locations
+  )
+  response = client.projects_locations_services.List(request)
+  return [service.Service(
+      item, client.MESSAGES_MODULE) for item in response.items]

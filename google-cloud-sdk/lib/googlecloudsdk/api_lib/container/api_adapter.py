@@ -440,7 +440,7 @@ class CreateClusterOptions(object):
                metadata=None,
                enable_network_egress_metering=None,
                identity_namespace=None,
-               enable_shielded_containers=None):
+               enable_shielded_nodes=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -522,7 +522,7 @@ class CreateClusterOptions(object):
     self.metadata = metadata
     self.enable_network_egress_metering = enable_network_egress_metering
     self.identity_namespace = identity_namespace
-    self.enable_shielded_containers = enable_shielded_containers
+    self.enable_shielded_nodes = enable_shielded_nodes
 
 
 class UpdateClusterOptions(object):
@@ -945,8 +945,8 @@ class APIAdapter(object):
           self.messages.AuthenticatorGroupsConfig(
               enabled=True,
               securityGroup=options.security_group))
-    if options.enable_shielded_containers:
-      cluster.shieldedContainers = self.messages.ShieldedContainers(
+    if options.enable_shielded_nodes:
+      cluster.shieldedNodes = self.messages.ShieldedNodes(
           enabled=True)
 
     self.ParseIPAliasOptions(options, cluster)

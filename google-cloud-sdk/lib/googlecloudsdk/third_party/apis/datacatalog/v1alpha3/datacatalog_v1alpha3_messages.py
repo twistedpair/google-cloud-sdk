@@ -2,7 +2,7 @@
 
 Google Cloud Data Catalog API provides features to attach metadata to Google
 Cloud Platform resources like BigQuery Tables.<br> Key critical resources
-include: <ul>     <li>Entries  (Datahub representation of a cloud
+include: <ul>     <li>Entries (Data Catalog representation of a cloud
 resource)</li>     <li>Tag Templates (Definition of columns and value types
 for attaching metadata)</li>     <li>Tags (Values associated with Tag
 templates and attached to Entries.)</li> </ul> Google Cloud Data Catalog API

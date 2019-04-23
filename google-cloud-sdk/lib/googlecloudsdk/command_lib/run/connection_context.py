@@ -212,8 +212,8 @@ def GetConnectionContext(args):
     A GKE or regional ConnectionInfo object.
   """
 
-  cluster_ref = args.CONCEPTS.cluster.Parse()
-  if cluster_ref:
+  if flags.IsGKE(args):
+    cluster_ref = args.CONCEPTS.cluster.Parse()
     return _GKEConnectionContext(cluster_ref)
 
   flags.ValidateClusterArgs(args)

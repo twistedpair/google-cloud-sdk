@@ -245,8 +245,9 @@ it was dispatched or not.
 WARNING: Using this method may have unintended side effects if you are
 using an App Engine `queue.yaml` or `queue.xml` file to manage your queues.
 Read
-[Overview of Queue Management and queue.yaml](https://cloud.google.com/tasks/docs/queue-yaml)
-before using this method.
+[Overview of Queue Management and
+queue.yaml](https://cloud.google.com/tasks/docs/queue-yaml) before using
+this method.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesCreateRequest) input message
@@ -283,8 +284,9 @@ for 7 days.
 WARNING: Using this method may have unintended side effects if you are
 using an App Engine `queue.yaml` or `queue.xml` file to manage your queues.
 Read
-[Overview of Queue Management and queue.yaml](https://cloud.google.com/tasks/docs/queue-yaml)
-before using this method.
+[Overview of Queue Management and
+queue.yaml](https://cloud.google.com/tasks/docs/queue-yaml) before using
+this method.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesDeleteRequest) input message
@@ -414,8 +416,9 @@ it was dispatched or not.
 WARNING: Using this method may have unintended side effects if you are
 using an App Engine `queue.yaml` or `queue.xml` file to manage your queues.
 Read
-[Overview of Queue Management and queue.yaml](https://cloud.google.com/tasks/docs/queue-yaml)
-before using this method.
+[Overview of Queue Management and
+queue.yaml](https://cloud.google.com/tasks/docs/queue-yaml) before using
+this method.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesPatchRequest) input message
@@ -518,7 +521,8 @@ will be set to RUNNING.
 WARNING: Resuming many high-QPS queues at the same time can
 lead to target overloading. If you are resuming high-QPS
 queues, follow the 500/50/5 pattern described in
-[Managing Cloud Tasks Scaling Risks](https://cloud.google.com/tasks/docs/manage-cloud-task-scaling).
+[Managing Cloud Tasks Scaling
+Risks](https://cloud.google.com/tasks/docs/manage-cloud-task-scaling).
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesResumeRequest) input message

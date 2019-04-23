@@ -220,8 +220,8 @@ class DatabaseInstance(_messages.Message):
     databaseVersion: The database engine type and version. The databaseVersion
       field can not be changed after instance creation. MySQL Second
       Generation instances: MYSQL_5_7 (default) or MYSQL_5_6. PostgreSQL
-      instances: POSTGRES_9_6 MySQL First Generation instances: MYSQL_5_6
-      (default) or MYSQL_5_5
+      instances: POSTGRES_9_6 (default) or POSTGRES_11 Beta. MySQL First
+      Generation instances: MYSQL_5_6 (default) or MYSQL_5_5
     diskEncryptionConfiguration: Disk encryption configuration specific to an
       instance. Applies only to Second Generation instances.
     diskEncryptionStatus: Disk encryption status specific to an instance.
@@ -259,6 +259,7 @@ class DatabaseInstance(_messages.Message):
     replicaConfiguration: Configuration specific to failover replicas and read
       replicas.
     replicaNames: The replicas of the instance.
+    rootPassword: Initial root password. Use only on creation.
     selfLink: The URI of this resource.
     serverCaCert: SSL configuration.
     serviceAccountEmailAddress: The service account email address assigned to
@@ -314,12 +315,13 @@ class DatabaseInstance(_messages.Message):
   region = _messages.StringField(19)
   replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 20)
   replicaNames = _messages.StringField(21, repeated=True)
-  selfLink = _messages.StringField(22)
-  serverCaCert = _messages.MessageField('SslCert', 23)
-  serviceAccountEmailAddress = _messages.StringField(24)
-  settings = _messages.MessageField('Settings', 25)
-  state = _messages.StringField(26)
-  suspensionReason = _messages.StringField(27, repeated=True)
+  rootPassword = _messages.StringField(22)
+  selfLink = _messages.StringField(23)
+  serverCaCert = _messages.MessageField('SslCert', 24)
+  serviceAccountEmailAddress = _messages.StringField(25)
+  settings = _messages.MessageField('Settings', 26)
+  state = _messages.StringField(27)
+  suspensionReason = _messages.StringField(28, repeated=True)
 
 
 class DatabasesListResponse(_messages.Message):

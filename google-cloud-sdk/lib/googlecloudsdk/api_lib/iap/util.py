@@ -247,7 +247,7 @@ class AppEngineService(IapIamResource):
         params={
             'project': project.projectNumber,
             'iapWebId': _AppEngineAppId(project.projectId),
-            'appServiceId': self.service_id,
+            'serviceId': self.service_id,
         },
         collection=IAP_WEB_SERVICES_COLLECTION)
 
@@ -271,7 +271,7 @@ class AppEngineServiceVersion(IapIamResource):
         params={
             'project': project.projectNumber,
             'iapWebId': _AppEngineAppId(project.projectId),
-            'appServiceId': self.service_id,
+            'serviceId': self.service_id,
             'versionId': self.version_id,
         },
         collection=IAP_WEB_SERVICES_VERSIONS_COLLECTION)
@@ -316,7 +316,7 @@ class BackendService(IapIamResource):
         params={
             'project': project.projectNumber,
             'iapWebId': BACKEND_SERVICES,
-            'appServiceId': self.service_id,
+            'serviceId': self.service_id,
         },
         collection=IAP_WEB_SERVICES_COLLECTION)
 

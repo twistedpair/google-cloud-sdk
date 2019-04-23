@@ -38,7 +38,7 @@ class Binding(_messages.Message):
   r"""Associates members with a role.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: an
+    condition: The condition that is associated with this binding. NOTE: An
       unsatisfied condition will not allow user access via current binding.
       Different bindings, including their conditions, are examined
       independently.
@@ -1391,7 +1391,8 @@ class GceClusterConfig(_messages.Message):
       machine communications. Cannot be specified with network_uri.A full URL,
       partial URI, or short name are valid. Examples:
       https://www.googleapis.com/compute/v1/projects/[project_id]/regions/us-
-      east1/sub0 projects/[project_id]/regions/us-east1/sub0 sub0
+      east1/subnetworks/sub0 projects/[project_id]/regions/us-
+      east1/subnetworks/sub0 sub0
     tags: The Compute Engine tags to add to all instances (see Tagging
       instances).
     zoneUri: Optional. The zone where the Compute Engine cluster will be

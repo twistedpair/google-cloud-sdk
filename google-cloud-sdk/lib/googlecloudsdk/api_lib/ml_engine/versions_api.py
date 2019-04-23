@@ -48,7 +48,8 @@ class VersionsClient(object):
   _ALLOWED_YAML_FIELDS = set(['autoScaling', 'description', 'deploymentUri',
                               'runtimeVersion', 'manualScaling', 'labels',
                               'machineType', 'framework', 'pythonVersion',
-                              'modelClass', 'packageUris', 'serviceAccount'])
+                              'predictionClass', 'packageUris',
+                              'serviceAccount'])
 
   def __init__(self, client=None, messages=None):
     self.client = client or GetClientInstance()
@@ -77,7 +78,7 @@ class VersionsClient(object):
             version=version))
 
   def Patch(self, version_ref, labels_update, description=None,
-            model_class_update=None, package_uris=None):
+            prediction_class_update=None, package_uris=None):
     """Update a version."""
     version = self.messages.GoogleCloudMlV1Version()
     update_mask = []
@@ -89,9 +90,9 @@ class VersionsClient(object):
       version.description = description
       update_mask.append('description')
 
-    if model_class_update is not None and model_class_update.needs_update:
-      update_mask.append('modelClass')
-      version.modelClass = model_class_update.value
+    if prediction_class_update is not None and prediction_class_update.needs_update:
+      update_mask.append('predictionClass')
+      version.predictionClass = prediction_class_update.value
 
     if package_uris is not None:
       update_mask.append('packageUris')
@@ -140,7 +141,7 @@ class VersionsClient(object):
                    description=None,
                    framework=None,
                    python_version=None,
-                   model_class=None,
+                   prediction_class=None,
                    package_uris=None,
                    accelerator_config=None,
                    service_account=None):
@@ -165,7 +166,7 @@ class VersionsClient(object):
       framework: FrameworkValueValuesEnum, the ML framework used to train this
         version of the model.
       python_version: str, The version of Python used to train the model.
-      model_class: str, the FQN of a Python class implementing the Model
+      prediction_class: str, the FQN of a Python class implementing the Model
         interface for custom prediction.
       package_uris: list of str, Cloud Storage URIs containing user-supplied
         Python code to use.
@@ -214,7 +215,7 @@ class VersionsClient(object):
         'description': description,
         'framework': framework,
         'pythonVersion': python_version,
-        'modelClass': model_class,
+        'predictionClass': prediction_class,
         'packageUris': package_uris,
         'acceleratorConfig': accelerator_config,
         'serviceAccount': service_account

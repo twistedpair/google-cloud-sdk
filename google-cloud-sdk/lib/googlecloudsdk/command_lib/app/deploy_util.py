@@ -461,12 +461,15 @@ def ArgsDeploy(parser):
       '--stop-previous-version',
       action=actions.StoreBooleanProperty(
           properties.VALUES.app.stop_previous_version),
-      help='Stop the previously running version when deploying a new version '
-           'that receives all traffic. Note that if the version is running on '
-           'an instance of an auto-scaled service, using '
-           '`--stop-previous-version` will not work and the previous version '
-           'will continue to run because auto-scaled service instances are '
-           'always running.')
+      help="""\
+      Stop the previously running version when deploying a new version that
+      receives all traffic.
+
+      Note that if the version is running on an instance
+      of an auto-scaled service in the App Engine Standard
+      environment, using `--stop-previous-version` will not work
+      and the previous version will continue to run because auto-scaled service
+      instances are always running.""")
   parser.add_argument(
       '--image-url',
       help='Deploy with a specific Docker image.  Docker url must be from one '

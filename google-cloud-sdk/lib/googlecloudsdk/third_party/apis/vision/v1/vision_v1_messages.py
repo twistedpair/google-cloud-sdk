@@ -1664,8 +1664,9 @@ class GoogleCloudVisionV1p1beta1ProductSearchResults(_messages.Message):
   r"""Results for a product search request.
 
   Fields:
-    indexTime: Timestamp of the index which provided these results. Changes
-      made after this time are not reflected in the current results.
+    indexTime: Timestamp of the index which provided these results. Products
+      added to the product set and products removed from the product set after
+      this time are not reflected in the current results.
     productGroupedResults: List of results grouped by products detected in the
       query image. Each entry corresponds to one bounding polygon in the query
       image, and contains the matching products specific to that region. There
@@ -2931,8 +2932,9 @@ class GoogleCloudVisionV1p2beta1ProductSearchResults(_messages.Message):
   r"""Results for a product search request.
 
   Fields:
-    indexTime: Timestamp of the index which provided these results. Changes
-      made after this time are not reflected in the current results.
+    indexTime: Timestamp of the index which provided these results. Products
+      added to the product set and products removed from the product set after
+      this time are not reflected in the current results.
     productGroupedResults: List of results grouped by products detected in the
       query image. Each entry corresponds to one bounding polygon in the query
       image, and contains the matching products specific to that region. There
@@ -4256,8 +4258,9 @@ class GoogleCloudVisionV1p3beta1ProductSearchResults(_messages.Message):
   r"""Results for a product search request.
 
   Fields:
-    indexTime: Timestamp of the index which provided these results. Changes
-      made after this time are not reflected in the current results.
+    indexTime: Timestamp of the index which provided these results. Products
+      added to the product set and products removed from the product set after
+      this time are not reflected in the current results.
     productGroupedResults: List of results grouped by products detected in the
       query image. Each entry corresponds to one bounding polygon in the query
       image, and contains the matching products specific to that region. There
@@ -5635,8 +5638,9 @@ class GoogleCloudVisionV1p4beta1ProductSearchResults(_messages.Message):
   r"""Results for a product search request.
 
   Fields:
-    indexTime: Timestamp of the index which provided these results. Changes
-      made after this time are not reflected in the current results.
+    indexTime: Timestamp of the index which provided these results. Products
+      added to the product set and products removed from the product set after
+      this time are not reflected in the current results.
     productGroupedResults: List of results grouped by products detected in the
       query image. Each entry corresponds to one bounding polygon in the query
       image, and contains the matching products specific to that region. There
@@ -6805,9 +6809,10 @@ class ProductSearchParams(_messages.Message):
     filter: The filtering expression. This can be used to restrict search
       results based on Product labels. We currently support an AND of OR of
       key-value expressions, where each expression within an OR must have the
-      same key.  For example, "(color = red OR color = blue) AND brand =
-      Google" is acceptable, but not "(color = red OR brand = Google)" or
-      "color: red".
+      same key. An '=' should be used to connect the key and value.  For
+      example, "(color = red OR color = blue) AND brand = Google" is
+      acceptable, but "(color = red OR brand = Google)" is not acceptable.
+      "color: red" is not acceptable because it uses a ':' instead of an '='.
     productCategories: The list of product categories to search in. Currently,
       we only consider the first category, and either "homegoods", "apparel",
       or "toys" should be specified.
@@ -6826,8 +6831,9 @@ class ProductSearchResults(_messages.Message):
   r"""Results for a product search request.
 
   Fields:
-    indexTime: Timestamp of the index which provided these results. Changes
-      made after this time are not reflected in the current results.
+    indexTime: Timestamp of the index which provided these results. Products
+      added to the product set and products removed from the product set after
+      this time are not reflected in the current results.
     productGroupedResults: List of results grouped by products detected in the
       query image. Each entry corresponds to one bounding polygon in the query
       image, and contains the matching products specific to that region. There

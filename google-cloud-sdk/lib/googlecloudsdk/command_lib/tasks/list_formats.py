@@ -110,11 +110,11 @@ def _TranformQueueType(r):
   if _IsPullQueue(r):
     return constants.PULL_QUEUE
   if _IsAppEngineQueue(r):
-    return constants.APP_ENGINE_QUEUE
+    return constants.PUSH_QUEUE
 
 
 def _TranformTaskType(r):
   if _IsPullTask(r):
     return constants.PULL_QUEUE
   if _IsAppEngineTask(r):
-    return constants.APP_ENGINE_QUEUE
+    return constants.PUSH_QUEUE

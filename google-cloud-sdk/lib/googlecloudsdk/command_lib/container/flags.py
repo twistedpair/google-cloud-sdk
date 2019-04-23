@@ -2010,7 +2010,6 @@ def AddVerticalPodAutoscalingFlag(parser, hidden=False):
       action='store_true')
 
 
-# TODO(b/112194849): Explain limitation to the sandbox pods and the nodes.
 def AddSandboxFlag(parser, hidden=False):
   """Adds a --sandbox flag to the given parser.
 
@@ -2031,7 +2030,7 @@ def AddSandboxFlag(parser, hidden=False):
       help="""\
 Enables the requested sandbox on all nodes in the node-pool. Example:
 
-  $ {command} node-pool-1 --cluster=example-cluster --sandbox type=gvisor
+  $ {command} node-pool-1 --cluster=example-cluster --sandbox="type=gvisor"
 
 The only supported type is 'gvisor'.
       """)
@@ -2233,14 +2232,14 @@ def AddMetadataFlags(parser):
       metavar='KEY=LOCAL_FILE_PATH')
 
 
-def AddEnableShieldedContainersFlags(parser):
-  """Adds a --enable-shielded-containers flag to the given parser."""
+def AddEnableShieldedNodesFlags(parser):
+  """Adds a --enable-shielded-nodes flag to the given parser."""
   help_text = """\
-Enable shielded containers for this cluster. Enabling shielded containers
-will enable a more secure Node credential bootstrapping implementation.
+Enable Shielded Nodes for this cluster. Enabling Shielded Nodes will enable a
+more secure Node credential bootstrapping implementation.
 """
   parser.add_argument(
-      '--enable-shielded-containers',
+      '--enable-shielded-nodes',
       action='store_true',
       help=help_text,
       hidden=True)

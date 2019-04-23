@@ -611,6 +611,42 @@ class KnownHosts(object):
     else:
       self.known_hosts.append(new_key_entry)
 
+  def AddMultiple(self, hostname, host_keys, overwrite=False):
+    """Add or update multiple entries for the given hostname.
+
+    If there is no entry for the given hostname, the keys will be added. If
+    there is an entry already, and overwrite keys is False, nothing will be
+    changed. If there is an entry and overwrite_keys is True, all  current
+    entries for the given hostname will be removed and the new keys added.
+
+    Args:
+      hostname: str, The hostname for the known_hosts entry.
+      host_keys: list, A list of host keys for the given hostname.
+      overwrite: bool, If true, will overwrite the entries corresponding to
+        hostname with the new host_key if it already exists. If false and an
+        entry already exists for hostname, will ignore the new host_key values.
+    Returns:
+      bool, True if new keys were added.
+    """
+    new_keys_added = False
+    new_key_entries = ['{0} {1}'.format(hostname, host_key)
+                       for host_key in host_keys]
+    if not new_key_entries:
+      return new_keys_added
+    existing_entries = [key for key in self.known_hosts
+                        if key.startswith(hostname)]
+    if existing_entries:
+      if overwrite:
+        self.known_hosts = [key for key in self.known_hosts
+                            if not key.startswith(hostname)]
+        self.known_hosts.extend(new_key_entries)
+        new_keys_added = True
+    else:
+      self.known_hosts.extend(new_key_entries)
+      new_keys_added = True
+
+    return new_keys_added
+
   def Write(self):
     """Writes the file to disk."""
     files.WriteFileContents(
@@ -725,8 +761,8 @@ def CheckForOsloginAndGetUser(instance, project, requested_user, public_key,
     elif pa.primary:
       oslogin_user = pa.username
 
-  log.warning('Using OS Login user [{0}] instead of default user [{1}]'
-              .format(oslogin_user, requested_user))
+  log.out.Print('Using OS Login user [{0}] instead of default user [{1}]'
+                .format(oslogin_user, requested_user))
   return oslogin_user, use_oslogin
 
 

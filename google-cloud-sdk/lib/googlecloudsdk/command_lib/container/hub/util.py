@@ -152,7 +152,7 @@ NAMESPACE_DELETION_INITIAL_POLL_INTERVAL_MS = 1000 * 5
 # The Connect agent image to use by default.
 DEFAULT_CONNECT_AGENT_IMAGE = 'gcr.io/gkeconnect/gkeconnect-gce'
 # The Connect agent image tag to use by default.
-DEFAULT_CONNECT_AGENT_TAG = 'latest'
+DEFAULT_CONNECT_AGENT_TAG = 'release'
 
 
 def AddCommonArgs(parser):

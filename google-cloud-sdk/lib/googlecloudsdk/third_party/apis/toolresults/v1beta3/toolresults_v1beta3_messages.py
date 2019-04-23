@@ -687,6 +687,18 @@ class ListStepsResponse(_messages.Message):
   steps = _messages.MessageField('Step', 2, repeated=True)
 
 
+class ListTestCasesResponse(_messages.Message):
+  r"""Response message for StepService.ListTestCases.
+
+  Fields:
+    nextPageToken: A string attribute.
+    testCases: List of test cases.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  testCases = _messages.MessageField('TestCase', 2, repeated=True)
+
+
 class MemoryInfo(_messages.Message):
   r"""A MemoryInfo object.
 
@@ -1267,6 +1279,53 @@ class SuccessDetail(_messages.Message):
   otherNativeCrash = _messages.BooleanField(1)
 
 
+class TestCase(_messages.Message):
+  r"""A TestCase object.
+
+  Enums:
+    StatusValueValuesEnum: The status of the test case.  Required.
+
+  Fields:
+    endTime: The end time of the test case.  Optional.
+    skippedMessage: Why the test case was skipped.  Present only for skipped
+      test case
+    stackTraces: The stack trace details if the test case failed or
+      encountered an error.  The maximum size of the stack traces is 100KiB,
+      beyond which the stack track will be truncated.  Zero if the test case
+      passed.
+    startTime: The start time of the test case.  Optional.
+    status: The status of the test case.  Required.
+    testCaseId: A unique identifier within a Step for this Test Case.
+    testCaseReference: Test case reference, e.g. name, class name and test
+      suite name.  Required.
+    toolOutputs: References to opaque files of any format output by the tool
+      execution.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""The status of the test case.  Required.
+
+    Values:
+      error: <no description>
+      failed: <no description>
+      passed: <no description>
+      skipped: <no description>
+    """
+    error = 0
+    failed = 1
+    passed = 2
+    skipped = 3
+
+  endTime = _messages.MessageField('Timestamp', 1)
+  skippedMessage = _messages.StringField(2)
+  stackTraces = _messages.MessageField('StackTrace', 3, repeated=True)
+  startTime = _messages.MessageField('Timestamp', 4)
+  status = _messages.EnumField('StatusValueValuesEnum', 5)
+  testCaseId = _messages.StringField(6)
+  testCaseReference = _messages.MessageField('TestCaseReference', 7)
+  toolOutputs = _messages.MessageField('ToolOutputReference', 8, repeated=True)
+
+
 class TestCaseReference(_messages.Message):
   r"""A reference to a test case.  Test case references are canonically
   ordered lexicographically by these three factors: * First, by
@@ -1382,6 +1441,7 @@ class TestIssue(_messages.Message):
       iosException: <no description>
       launcherActivityNotFound: <no description>
       nativeCrash: <no description>
+      nonSdkApiUsageReport: <no description>
       nonSdkApiUsageViolation: <no description>
       performedGoogleLogin: <no description>
       performedMonkeyActions: <no description>
@@ -1406,14 +1466,15 @@ class TestIssue(_messages.Message):
     iosException = 12
     launcherActivityNotFound = 13
     nativeCrash = 14
-    nonSdkApiUsageViolation = 15
-    performedGoogleLogin = 16
-    performedMonkeyActions = 17
-    startActivityNotFound = 18
-    unspecifiedType = 19
-    unusedRoboDirective = 20
-    usedRoboDirective = 21
-    usedRoboIgnoreDirective = 22
+    nonSdkApiUsageReport = 15
+    nonSdkApiUsageViolation = 16
+    performedGoogleLogin = 17
+    performedMonkeyActions = 18
+    startActivityNotFound = 19
+    unspecifiedType = 20
+    unusedRoboDirective = 21
+    usedRoboDirective = 22
+    usedRoboIgnoreDirective = 23
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   errorMessage = _messages.StringField(2)
@@ -1974,6 +2035,50 @@ class ToolresultsProjectsHistoriesExecutionsStepsPublishXunitXmlFilesRequest(_me
   projectId = _messages.StringField(3, required=True)
   publishXunitXmlFilesRequest = _messages.MessageField('PublishXunitXmlFilesRequest', 4)
   stepId = _messages.StringField(5, required=True)
+
+
+class ToolresultsProjectsHistoriesExecutionsStepsTestCasesGetRequest(_messages.Message):
+  r"""A ToolresultsProjectsHistoriesExecutionsStepsTestCasesGetRequest object.
+
+  Fields:
+    executionId: A Execution id  Required.
+    historyId: A History id.  Required.
+    projectId: A Project id.  Required.
+    stepId: A Step id. Note: This step must include a TestExecutionStep.
+      Required.
+    testCaseId: A Test Case id.  Required.
+  """
+
+  executionId = _messages.StringField(1, required=True)
+  historyId = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+  stepId = _messages.StringField(4, required=True)
+  testCaseId = _messages.StringField(5, required=True)
+
+
+class ToolresultsProjectsHistoriesExecutionsStepsTestCasesListRequest(_messages.Message):
+  r"""A ToolresultsProjectsHistoriesExecutionsStepsTestCasesListRequest
+  object.
+
+  Fields:
+    executionId: A Execution id  Required.
+    historyId: A History id.  Required.
+    pageSize: The maximum number of TestCases to fetch.  Default value: 100.
+      The server will use this default if the field is not set or has a value
+      of 0.  Optional.
+    pageToken: A continuation token to resume the query at the next item.
+      Optional.
+    projectId: A Project id.  Required.
+    stepId: A Step id. Note: This step must include a TestExecutionStep.
+      Required.
+  """
+
+  executionId = _messages.StringField(1, required=True)
+  historyId = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  projectId = _messages.StringField(5, required=True)
+  stepId = _messages.StringField(6, required=True)
 
 
 class ToolresultsProjectsHistoriesExecutionsStepsThumbnailsListRequest(_messages.Message):

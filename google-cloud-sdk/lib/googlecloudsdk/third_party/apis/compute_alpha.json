@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20190401",
+ "revision": "20190417",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -2991,7 +2991,7 @@
    "properties": {
     "condition": {
      "$ref": "Expr",
-     "description": "The condition that is associated with this binding. NOTE: an unsatisfied condition will not allow user access via current binding. Different bindings, including their conditions, are examined independently."
+     "description": "The condition that is associated with this binding. NOTE: An unsatisfied condition will not allow user access via current binding. Different bindings, including their conditions, are examined independently."
     },
     "members": {
      "type": "array",
@@ -6146,6 +6146,32 @@
     }
    }
   },
+  "GlobalNetworkEndpointGroupsAttachEndpointsRequest": {
+   "id": "GlobalNetworkEndpointGroupsAttachEndpointsRequest",
+   "type": "object",
+   "properties": {
+    "networkEndpoints": {
+     "type": "array",
+     "description": "The list of network endpoints to be attached.",
+     "items": {
+      "$ref": "NetworkEndpoint"
+     }
+    }
+   }
+  },
+  "GlobalNetworkEndpointGroupsDetachEndpointsRequest": {
+   "id": "GlobalNetworkEndpointGroupsDetachEndpointsRequest",
+   "type": "object",
+   "properties": {
+    "networkEndpoints": {
+     "type": "array",
+     "description": "The list of network endpoints to be detached.",
+     "items": {
+      "$ref": "NetworkEndpoint"
+     }
+    }
+   }
+  },
   "GlobalSetLabelsRequest": {
    "id": "GlobalSetLabelsRequest",
    "type": "object",
@@ -7976,7 +8002,7 @@
       },
       "sha1Checksum": {
        "type": "string",
-       "description": "An optional SHA1 checksum of the disk image before unpackaging provided by the client when the disk image is created.",
+       "description": "[Deprecated] This field is deprecated. An optional SHA1 checksum of the disk image before unpackaging provided by the client when the disk image is created.",
        "pattern": "[a-f0-9]{40}"
       },
       "source": {
@@ -8928,7 +8954,7 @@
     },
     "pendingActions": {
      "$ref": "InstanceGroupManagerPendingActionsSummary",
-     "description": "[Output Only] The list of instance actions and the number of instances in this managed instance group that are pending for each of those actions."
+     "description": "[Deprecated] This field is deprecated and will be removed. Prefer using the status field instead. Please contact cloud-updater-feedback@google.com to leave feedback if your workload relies on this field. [Output Only] The list of instance actions and the number of instances in this managed instance group that are pending for each of those actions."
     },
     "region": {
      "type": "string",
@@ -8978,7 +9004,7 @@
     },
     "versions": {
      "type": "array",
-     "description": "Specifies the instance templates used by this managed instance group to create instances.\n\nEach version is defined by an instanceTemplate. Every template can appear at most once per instance group. This field overrides the top-level instanceTemplate field. Read more about the relationships between these fields. Exactly one version must leave the targetSize field unset. That version will be applied to all remaining instances. For more information, read about canary updates.",
+     "description": "Specifies the instance templates used by this managed instance group to create instances.\n\nEach version is defined by an instanceTemplate and a name. Every version can appear at most once per instance group. This field overrides the top-level instanceTemplate field. Read more about the relationships between these fields. Exactly one version must leave the targetSize field unset. That version will be applied to all remaining instances. For more information, read about canary updates.",
      "items": {
       "$ref": "InstanceGroupManagerVersion"
      }
@@ -9290,22 +9316,22 @@
    "properties": {
     "creating": {
      "type": "integer",
-     "description": "[Output Only] The number of instances in the managed instance group that are pending to be created.",
+     "description": "[Deprecated] This field is deprecated and will be removed. Prefer using the status field instead. Please contact cloud-updater-feedback@google.com to leave feedback if your workload relies on this field. [Output Only] The number of instances in the managed instance group that are pending to be created.",
      "format": "int32"
     },
     "deleting": {
      "type": "integer",
-     "description": "[Output Only] The number of instances in the managed instance group that are pending to be deleted.",
+     "description": "[Deprecated] This field is deprecated and will be removed. Prefer using the status field instead. Please contact cloud-updater-feedback@google.com to leave feedback if your workload relies on this field. [Output Only] The number of instances in the managed instance group that are pending to be deleted.",
      "format": "int32"
     },
     "recreating": {
      "type": "integer",
-     "description": "[Output Only] The number of instances in the managed instance group that are pending to be recreated.",
+     "description": "[Deprecated] This field is deprecated and will be removed. Prefer using the status field instead. Please contact cloud-updater-feedback@google.com to leave feedback if your workload relies on this field. [Output Only] The number of instances in the managed instance group that are pending to be recreated.",
      "format": "int32"
     },
     "restarting": {
      "type": "integer",
-     "description": "[Output Only] The number of instances in the managed instance group that are pending to be restarted.",
+     "description": "[Deprecated] This field is deprecated and will be removed. Prefer using the status field instead. Please contact cloud-updater-feedback@google.com to leave feedback if your workload relies on this field. [Output Only] The number of instances in the managed instance group that are pending to be restarted.",
      "format": "int32"
     }
    }
@@ -9318,9 +9344,23 @@
      "type": "boolean",
      "description": "[Output Only] A bit indicating whether the managed instance group is in a stable state. A stable state means that: none of the instances in the managed instance group is currently undergoing any type of change (for example, creation, restart, or deletion); no future changes are scheduled for instances in the managed instance group; and the managed instance group itself is not being modified."
     },
+    "stateful": {
+     "$ref": "InstanceGroupManagerStatusStateful",
+     "description": "[Output Only] Stateful status of the given Instance Group Manager."
+    },
     "versionTarget": {
      "$ref": "InstanceGroupManagerStatusVersionTarget",
      "description": "[Output Only] A status of consistency of Instances' versions with their target version specified by version field on Instance Group Manager."
+    }
+   }
+  },
+  "InstanceGroupManagerStatusStateful": {
+   "id": "InstanceGroupManagerStatusStateful",
+   "type": "object",
+   "properties": {
+    "isStateful": {
+     "type": "boolean",
+     "description": "[Output Only] A bit indicating whether the managed instance group is stateful, i.e. has any disks in Stateful Policy or at least one per-instance config. This is determined based on the user intent, the group may be reported as not stateful even when there is still some preserved state on managed instances."
     }
    }
   },
@@ -11126,14 +11166,18 @@
       "BPS_10G",
       "BPS_1G",
       "BPS_200M",
+      "BPS_20G",
       "BPS_2G",
       "BPS_300M",
       "BPS_400M",
       "BPS_500M",
+      "BPS_50G",
       "BPS_50M",
       "BPS_5G"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       "",
       "",
@@ -12934,7 +12978,7 @@
    "properties": {
     "logMode": {
      "type": "string",
-     "description": "Whether Gin logging should happen in a fail-closed manner at the caller. This is relevant only in the LocalIAM implementation, for now.\n\nNOTE: Logging to Gin in a fail-closed manner is currently unsupported while work is being done to satisfy the requirements of go/345. Currently, setting LOG_FAIL_CLOSED mode will have no effect, but still exists because there is active work being done to support it (b/115874152).",
+     "description": "Whether Gin logging should happen in a fail-closed manner at the caller. This is relevant only in the LocalIAM implementation, for now.",
      "enum": [
       "LOG_FAIL_CLOSED",
       "LOG_MODE_UNSPECIFIED"
@@ -15065,6 +15109,19 @@
      "type": "string",
      "description": "[Output Only] The type of the resource. Always compute#nodeGroup for node group.",
      "default": "compute#nodeGroup"
+    },
+    "managedHoldback": {
+     "type": "string",
+     "enum": [
+      "MANAGED_HOLDBACK_UNSPECIFIED",
+      "OFF",
+      "ON"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
     },
     "name": {
      "type": "string",
@@ -17529,9 +17586,11 @@
      "description": "These stateful disks will never be deleted during autohealing, update, instance recreate operations. This flag is used to configure if the disk should be deleted after it is no longer used by the group, e.g. when the given instance or the whole MIG is deleted. Note: disks attached in READ_ONLY mode cannot be auto-deleted.",
      "enum": [
       "NEVER",
+      "ON_PERMANENT_INSTANCE_DELETION",
       "WHEN_NOT_IN_USE"
      ],
      "enumDescriptions": [
+      "",
       "",
       ""
      ]
@@ -21049,7 +21108,7 @@
     },
     "mode": {
      "type": "string",
-     "description": "The BFD session initiation mode for this BGP peer. If set to ACTIVE, the Cloud Router will initiate the BFD session for this BGP peer. If set to PASSIVE, the Cloud Router will wait for the peer router to initiate the BFD session for this BGP peer. If set to DISABLED, BFD is disabled for this BGP peer. The default is PASSIVE.",
+     "description": "The BFD session initialization mode for this BGP peer. If set to ACTIVE, the Cloud Router will initiate the BFD session for this BGP peer. If set to PASSIVE, the Cloud Router will wait for the peer router to initiate the BFD session for this BGP peer. If set to DISABLED, BFD is disabled for this BGP peer. The default is PASSIVE.",
      "enum": [
       "ACTIVE",
       "DISABLED",
@@ -23877,9 +23936,11 @@
      "description": "These stateful disks will never be deleted during autohealing, update or VM instance recreate operations. This flag is used to configure if the disk should be deleted after it is no longer used by the group, e.g. when the given instance or the whole group is deleted. Note: disks attached in READ_ONLY mode cannot be auto-deleted.",
      "enum": [
       "NEVER",
+      "ON_PERMANENT_INSTANCE_DELETION",
       "WHEN_NOT_IN_USE"
      ],
      "enumDescriptions": [
+      "",
       "",
       ""
      ]
@@ -31448,6 +31509,7 @@
       },
       "guestFlush": {
        "type": "boolean",
+       "description": "Application consistent snapshot (ie. VSS).",
        "location": "query"
       },
       "project": {
@@ -33430,6 +33492,298 @@
      },
      "response": {
       "$ref": "TestPermissionsResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    }
+   }
+  },
+  "globalNetworkEndpointGroups": {
+   "methods": {
+    "attachNetworkEndpoints": {
+     "id": "compute.globalNetworkEndpointGroups.attachNetworkEndpoints",
+     "path": "{project}/global/networkEndpointGroups/{networkEndpointGroup}/attachNetworkEndpoints",
+     "httpMethod": "POST",
+     "description": "Attach a network endpoint to the specified network endpoint group.",
+     "parameters": {
+      "networkEndpointGroup": {
+       "type": "string",
+       "description": "The name of the network endpoint group where you are attaching network endpoints to. It should comply with RFC1035.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "networkEndpointGroup"
+     ],
+     "request": {
+      "$ref": "GlobalNetworkEndpointGroupsAttachEndpointsRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "delete": {
+     "id": "compute.globalNetworkEndpointGroups.delete",
+     "path": "{project}/global/networkEndpointGroups/{networkEndpointGroup}",
+     "httpMethod": "DELETE",
+     "description": "Deletes the specified network endpoint group.Note that the NEG cannot be deleted if there are backend services referencing it.",
+     "parameters": {
+      "networkEndpointGroup": {
+       "type": "string",
+       "description": "The name of the network endpoint group to delete. It should comply with RFC1035.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "networkEndpointGroup"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "detachNetworkEndpoints": {
+     "id": "compute.globalNetworkEndpointGroups.detachNetworkEndpoints",
+     "path": "{project}/global/networkEndpointGroups/{networkEndpointGroup}/detachNetworkEndpoints",
+     "httpMethod": "POST",
+     "description": "Detach the network endpoint from the specified network endpoint group.",
+     "parameters": {
+      "networkEndpointGroup": {
+       "type": "string",
+       "description": "The name of the network endpoint group where you are removing network endpoints. It should comply with RFC1035.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "networkEndpointGroup"
+     ],
+     "request": {
+      "$ref": "GlobalNetworkEndpointGroupsDetachEndpointsRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "get": {
+     "id": "compute.globalNetworkEndpointGroups.get",
+     "path": "{project}/global/networkEndpointGroups/{networkEndpointGroup}",
+     "httpMethod": "GET",
+     "description": "Returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request.",
+     "parameters": {
+      "networkEndpointGroup": {
+       "type": "string",
+       "description": "The name of the network endpoint group. It should comply with RFC1035.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "networkEndpointGroup"
+     ],
+     "response": {
+      "$ref": "NetworkEndpointGroup"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "insert": {
+     "id": "compute.globalNetworkEndpointGroups.insert",
+     "path": "{project}/global/networkEndpointGroups",
+     "httpMethod": "POST",
+     "description": "Creates a network endpoint group in the specified project using the parameters that are included in the request.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "request": {
+      "$ref": "NetworkEndpointGroup"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "list": {
+     "id": "compute.globalNetworkEndpointGroups.list",
+     "path": "{project}/global/networkEndpointGroups",
+     "httpMethod": "GET",
+     "description": "Retrieves the list of network endpoint groups that are located in the specified project.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, \u003e, or \u003c.\n\nFor example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance.\n\nYou can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true).",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "response": {
+      "$ref": "NetworkEndpointGroupList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "listNetworkEndpoints": {
+     "id": "compute.globalNetworkEndpointGroups.listNetworkEndpoints",
+     "path": "{project}/global/networkEndpointGroups/{networkEndpointGroup}/listNetworkEndpoints",
+     "httpMethod": "POST",
+     "description": "Lists the network endpoints in the specified network endpoint group.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, \u003e, or \u003c.\n\nFor example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance.\n\nYou can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true).",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "networkEndpointGroup": {
+       "type": "string",
+       "description": "The name of the network endpoint group from which you want to generate a list of included network endpoints. It should comply with RFC1035.",
+       "required": true,
+       "location": "path"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "networkEndpointGroup"
+     ],
+     "response": {
+      "$ref": "NetworkEndpointGroupsListNetworkEndpoints"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -45298,6 +45652,7 @@
       },
       "guestFlush": {
        "type": "boolean",
+       "description": "Application consistent snapshot (ie. VSS).",
        "location": "query"
       },
       "project": {

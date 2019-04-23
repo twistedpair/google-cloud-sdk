@@ -153,6 +153,5 @@ def AddArtifactUrlFlag(parser, required=True):
       '--artifact-url',
       required=required,
       type=str,
-      help=('Container URL.  May be in the '
-            '`*.gcr.io/repository/image` format, or may '
-            'optionally contain the `http` or `https` scheme'))
+      help=('Container URL. May be in the `gcr.io/repository/image` format,'
+            ' or may optionally contain the `http` or `https` scheme'))

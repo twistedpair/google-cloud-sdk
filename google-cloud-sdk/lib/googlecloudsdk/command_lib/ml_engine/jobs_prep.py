@@ -16,7 +16,7 @@
 
 The main entry point is UploadPythonPackages, which takes in parameters derived
 from the command line arguments and returns a list of URLs to be given to the
-Cloud ML Engine API. See its docstring for details.
+AI Platform API. See its docstring for details.
 """
 
 from __future__ import absolute_import
@@ -81,10 +81,10 @@ class SysExecutableMissingError(UploadFailureError):
   """Error indicating that sys.executable was empty."""
 
   def __init__(self):
-    super(SysExecutableMissingError, self).__init__(textwrap.dedent("""\
+    super(SysExecutableMissingError, self).__init__(
+        textwrap.dedent("""\
         No Python executable found on path. A Python executable with setuptools
-        installed on the PYTHONPATH is required for building Cloud ML Engine
-        training jobs.
+        installed on the PYTHONPATH is required for building AI Platform training jobs.
         """))
 
 
@@ -486,7 +486,7 @@ def UploadPythonPackages(packages=(), package_path=None, staging_location=None,
                          supports_container_training=False):
   """Uploads Python packages (if necessary), building them as-specified.
 
-  A Cloud ML Engine job needs one or more Python packages to run. These Python
+  An AI Platform job needs one or more Python packages to run. These Python
   packages can be specified in one of three ways:
 
     1. As a path to a local, pre-built Python package file.
@@ -495,15 +495,15 @@ def UploadPythonPackages(packages=(), package_path=None, staging_location=None,
     3. As a local Python source tree (the `--package-path` flag).
 
   In case 1, we upload the local files to Cloud Storage[1] and provide their
-  paths. These can then be given to the Cloud ML Engine API, which can fetch
+  paths. These can then be given to the AI Platform API, which can fetch
   these files.
 
   In case 2, we don't need to do anything. We can just send these paths directly
-  to the Cloud ML Engine API.
+  to the AI Platform API.
 
   In case 3, we perform a build using setuptools[2], and upload the resulting
   artifacts to Cloud Storage[1]. The paths to these artifacts can be given to
-  the Cloud ML Engine API. See the `BuildPackages` method.
+  the AI Platform API. See the `BuildPackages` method.
 
   These methods of specifying Python packages may be combined.
 

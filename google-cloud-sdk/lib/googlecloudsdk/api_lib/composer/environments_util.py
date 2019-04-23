@@ -45,6 +45,11 @@ def Create(environment_ref,
            python_version=None,
            image_version=None,
            airflow_executor_type=None,
+           use_ip_aliases=None,
+           cluster_secondary_range_name=None,
+           services_secondary_range_name=None,
+           cluster_ipv4_cidr_block=None,
+           services_ipv4_cidr_block=None,
            private_environment=None,
            private_endpoint=None,
            master_ipv4_cidr=None,
@@ -80,6 +85,15 @@ def Create(environment_ref,
         format of 'composer-(version)-airflow-(version)'
     airflow_executor_type: str or None, the airflow executor type to run task
         instances.
+    use_ip_aliases: bool or None, create env cluster nodes using alias IPs.
+    cluster_secondary_range_name: str or None, the name of secondary range to
+        allocate IP addresses to pods in GKE cluster.
+    services_secondary_range_name: str or None, the name of the secondary range
+        to allocate IP addresses to services in GKE cluster.
+    cluster_ipv4_cidr_block: str or None, the IP address range to allocate IP
+        adresses to pods in GKE cluster.
+    services_ipv4_cidr_block: str or None, the IP address range to allocate IP
+        addresses to services in GKE cluster.
     private_environment: bool or None, create env cluster nodes with no public
         IP addresses.
     private_endpoint: bool or None, managed env cluster using the private IP
@@ -133,28 +147,31 @@ def Create(environment_ref,
           messages.SoftwareConfig.AirflowExecutorTypeValueValuesEnum,
           airflow_executor_type)
 
-  if private_environment:
+  if use_ip_aliases:
     is_config_empty = False
-    # VPC-native/IP-aliases must be enabled to allow creation of private envs.
-    # (There is no flag implemented for enable-ip-aliases at this time.)
     config.nodeConfig.ipAllocationPolicy = messages.IPAllocationPolicy(
-        useIpAliases=True)
+        useIpAliases=use_ip_aliases,
+        clusterSecondaryRangeName=cluster_secondary_range_name,
+        servicesSecondaryRangeName=services_secondary_range_name,
+        clusterIpv4CidrBlock=cluster_ipv4_cidr_block,
+        servicesIpv4CidrBlock=services_ipv4_cidr_block,
+    )
 
-    # Adds a PrivateClusterConfig, if necessary.
-    # TODO(b/128636528): Restore when API bug is addressed.
-    # private_cluster_config = None
-    if master_ipv4_cidr is None:
-      master_ipv4_cidr = '172.16.0.0/28'  # Assigns default value.
+    if private_environment:
+      # TODO(b/128636528): Restore when API bug is addressed.
+      if master_ipv4_cidr is None:
+        master_ipv4_cidr = '172.16.0.0/28'  # Assigns default value.
 
-    private_cluster_config = None
-    if private_endpoint or master_ipv4_cidr:
-      private_cluster_config = messages.PrivateClusterConfig(
-          enablePrivateEndpoint=private_endpoint,
-          masterIpv4CidrBlock=master_ipv4_cidr)
+      # Adds a PrivateClusterConfig, if necessary.
+      private_cluster_config = None
+      if private_endpoint or master_ipv4_cidr:
+        private_cluster_config = messages.PrivateClusterConfig(
+            enablePrivateEndpoint=private_endpoint,
+            masterIpv4CidrBlock=master_ipv4_cidr)
 
-    config.privateEnvironmentConfig = messages.PrivateEnvironmentConfig(
-        enablePrivateEnvironment=private_environment,
-        privateClusterConfig=private_cluster_config)
+      config.privateEnvironmentConfig = messages.PrivateEnvironmentConfig(
+          enablePrivateEnvironment=private_environment,
+          privateClusterConfig=private_cluster_config)
 
   # Builds environment message and attaches the configuration
   environment = messages.Environment(name=environment_ref.RelativeName())
