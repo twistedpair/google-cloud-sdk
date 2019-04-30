@@ -2303,7 +2303,7 @@
           "type": "string"
         },
         "actions": {
-          "description": "Actions to execute at the completion of the job. Are executed in the order\nprovided.",
+          "description": "Actions to execute at the completion of the job.",
           "type": "array",
           "items": {
             "$ref": "GooglePrivacyDlpV2Action"

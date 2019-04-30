@@ -225,7 +225,7 @@
           }
         },
         "condition": {
-          "description": "The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.",
+          "description": "The condition that is associated with this binding.\nNOTE: An unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.",
           "$ref": "Expr"
         }
       }
@@ -669,11 +669,11 @@
       "type": "object",
       "properties": {
         "destinationDataset": {
-          "description": "The name of the dataset resource to which the redacted data should be\nwritten (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}`).\nThe new dataset must not exist, or the request will fail.",
+          "description": "The name of the dataset resource to create and write the redacted data to\n(e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}`).\n\n * The destination dataset must not exist.\n * The destination dataset must be in the same project as the source\n   dataset. De-identifying data across multiple projects is not supported.",
           "type": "string"
         },
         "config": {
-          "description": "Deidentify configuration",
+          "description": "Deidentify configuration.",
           "$ref": "DeidentifyConfig"
         }
       }
@@ -695,9 +695,21 @@
           "description": "Configures de-identification of image pixels wherever they are found in the\nsource_dataset.",
           "$ref": "ImageConfig"
         },
+        "annotation": {
+          "description": "Configures how annotations (such as the location and infoTypes of sensitive\ninformation that was found) are created during de-identification.\nIf unspecified, no annotations will be created.",
+          "$ref": "AnnotationConfig"
+        },
         "text": {
           "description": "Configures de-identification of text wherever it is found in the\nsource_dataset.",
           "$ref": "TextConfig"
+        },
+        "inspectionConfig": {
+          "description": "Configuration for how inspection occurs on text and images.",
+          "$ref": "InspectionConfig"
+        },
+        "transformationConfig": {
+          "description": "Configuration for how transformations occur on annotations of text and\nimages.",
+          "$ref": "TransformationConfig"
         }
       }
     },
@@ -706,6 +718,10 @@
       "description": "Specifies the parameters needed for de-identification of DICOM stores.",
       "type": "object",
       "properties": {
+        "skipIdRedaction": {
+          "description": "If set, skip the redaction. Otherwise, all IDs are redacted.",
+          "type": "boolean"
+        },
         "keepList": {
           "description": "List of tags to keep. Remove all other tags.",
           "$ref": "TagFilterList"
@@ -740,7 +756,7 @@
       "type": "object",
       "properties": {
         "tags": {
-          "description": "Tags to be filtered. Tags must be DICOM Data Elements, File Meta\nElements, or Directory Structuring Elements, as defined at:\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part06.html#table_6-1,.\nThey may be provided by \"Keyword\" or \"Tag\". For example \"PatientID\",\n\"0010,0010\".",
+          "description": "Tags to be filtered. Tags must be DICOM Data Elements, File Meta\nElements, or Directory Structuring Elements, as defined at:\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part06.html#table_6-1,.\nThey may be provided by \"Keyword\" or \"Tag\". For example \"PatientID\",\n\"00100010\".",
           "type": "array",
           "items": {
             "type": "string"
@@ -779,7 +795,7 @@
           "enumDescriptions": [
             "No action specified.",
             "Transform the entire field.",
-            "Should be inspected and any PHI found should be\ntransformed.",
+            "Inspect and transform any found PHI. When `AnnotationConfig` is\nprovided, annotations of PHI will be generated, except for Date and Datetime.",
             "Do not transform."
           ],
           "type": "string",
@@ -812,6 +828,21 @@
             "REDACT_SENSITIVE_TEXT",
             "REDACT_NO_TEXT"
           ]
+        }
+      }
+    },
+    "AnnotationConfig": {
+      "id": "AnnotationConfig",
+      "description": "Specifies how to store annotations during de-identification operation.",
+      "type": "object",
+      "properties": {
+        "annotationStoreName": {
+          "description": "The name of the annotation store, in the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`).\n\n * The destination dataset must exist if it is different than the\n   de-identify operation's output dataset.\n * The destination annotation store must be in the same project as the\n   source data. De-identifying data across multiple projects is not\n   supported.\n * The destination annotation store must not exist.",
+          "type": "string"
+        },
+        "storeQuote": {
+          "description": "If set to true, the sensitive texts will be included in\nSensitiveTextAnnotation\nof Annotation.",
+          "type": "boolean"
         }
       }
     },
@@ -913,6 +944,57 @@
       "description": "When using the INSPECT_AND_TRANSFORM action, each match is replaced with\nthe name of the info_type. For example, \"My name is Jake\" becomes \"My name is\n[PERSON_NAME].\" The TRANSFORM action is equivalent to redacting.",
       "type": "object",
       "properties": {
+      }
+    },
+    "InspectionConfig": {
+      "id": "InspectionConfig",
+      "description": "Specifies how sensitive information is inspected.",
+      "type": "object",
+      "properties": {
+        "annotation": {
+          "description": "Configures how annotations (such as the location and infoTypes of\nsensitive information that was found) are created during inspection.\nIf unspecified, no annotations will be created.",
+          "$ref": "AnnotationConfig"
+        },
+        "textInspectorConfigs": {
+          "description": "Configures for text inspection.",
+          "$ref": "TextInspectorConfig"
+        }
+      }
+    },
+    "TextInspectorConfig": {
+      "id": "TextInspectorConfig",
+      "description": "The configurations to apply to text inspection.\nIf more than one model is specified, the same data will be processed by\nspecified models. Final inspection results will be a combination.",
+      "type": "object",
+      "properties": {
+        "models": {
+          "description": "Configures which Inspector to use.\nLeaving this field unspecified will use the default model.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "infoTypes": {
+          "description": "The list of infoTypes for inspection.\nSee https:\/\/cloud.google.com\/dlp\/docs\/infotypes-reference#global\nfor valid infoType values.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "TransformationConfig": {
+      "id": "TransformationConfig",
+      "description": "Configures how a transformation is applied.",
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "Configuration for how a transformation is applied to text.",
+          "$ref": "TextConfig"
+        },
+        "image": {
+          "description": "Configuration for how a transformation is applied to an image.",
+          "$ref": "ImageConfig"
+        }
       }
     },
     "DicomStore": {
@@ -1035,7 +1117,7 @@
     },
     "HttpBody": {
       "id": "HttpBody",
-      "description": "Message that represents an arbitrary HTTP body. It should only be used for\npayload formats that can't be represented as JSON, such as raw binary or\nan HTML page.\n\n\nThis message can be used both in streaming and non-streaming API methods in\nthe request as well as the response.\n\nIt can be used as a top-level request field, which is convenient if one\nwants to extract parameters from either the URL or HTTP template into the\nrequest fields and also want access to the raw HTTP body.\n\nExample:\n\n    message GetResourceRequest {\n      \/\/ A unique request id.\n      string request_id = 1;\n\n      \/\/ The raw HTTP body is bound to this field.\n      google.api.HttpBody http_body = 2;\n    }\n\n    service ResourceService {\n      rpc GetResource(GetResourceRequest) returns (google.api.HttpBody);\n      rpc UpdateResource(google.api.HttpBody) returns (google.protobuf.Empty);\n    }\n\nExample with streaming methods:\n\n    service CaldavService {\n      rpc GetCalendar(stream google.api.HttpBody)\n        returns (stream google.api.HttpBody);\n      rpc UpdateCalendar(stream google.api.HttpBody)\n        returns (stream google.api.HttpBody);\n    }\n\nUse of this type only changes how the request and response bodies are\nhandled, all other features will continue to work unchanged.",
+      "description": "Message that represents an arbitrary HTTP body. It should only be used for\npayload formats that can't be represented as JSON, such as raw binary or\nan HTML page.\n\n\nThis message can be used both in streaming and non-streaming API methods in\nthe request as well as the response.\n\nIt can be used as a top-level request field, which is convenient if one\nwants to extract parameters from either the URL or HTTP template into the\nrequest fields and also want access to the raw HTTP body.\n\nExample:\n\n    message GetResourceRequest {\n      \/\/ A unique request id.\n      string request_id = 1;\n\n      \/\/ The raw HTTP body is bound to this field.\n      google.api.HttpBody http_body = 2;\n    }\n\n    service ResourceService {\n      rpc GetResource(GetResourceRequest) returns (google.api.HttpBody);\n      rpc UpdateResource(google.api.HttpBody) returns\n      (google.protobuf.Empty);\n    }\n\nExample with streaming methods:\n\n    service CaldavService {\n      rpc GetCalendar(stream google.api.HttpBody)\n        returns (stream google.api.HttpBody);\n      rpc UpdateCalendar(stream google.api.HttpBody)\n        returns (stream google.api.HttpBody);\n    }\n\nUse of this type only changes how the request and response bodies are\nhandled, all other features will continue to work unchanged.",
       "type": "object",
       "properties": {
         "contentType": {
@@ -1298,8 +1380,8 @@
           "description": "The content structure in the source location. The default is\nBUNDLE.",
           "enumDescriptions": [
             "",
-            "Each unit is a bundle, which contains one or more resources. Set the\nbundle type to `history` to import resource versions.",
-            "Each unit is a single resource."
+            "Each line is a bundle, which contains one or more resources. Set the\nbundle type to `history` to import resource versions.",
+            "Each line is a single resource."
           ],
           "type": "string",
           "enum": [
@@ -3907,8 +3989,8 @@
                 },
                 "fhirStores": {
                   "methods": {
-                    "getMetadata": {
-                      "id": "healthcare.projects.locations.datasets.fhirStores.getMetadata",
+                    "capabilities": {
+                      "id": "healthcare.projects.locations.datasets.fhirStores.capabilities",
                       "path": "v1alpha2/{+name}/metadata",
                       "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/metadata",
                       "httpMethod": "GET",
@@ -3930,35 +4012,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets the FHIR capability statement for the store, which contains a\ndescription of functionality supported by the server.\n"
-                    },
-                    "executeBundle": {
-                      "id": "healthcare.projects.locations.datasets.fhirStores.executeBundle",
-                      "path": "v1alpha2/{+parent}/fhir",
-                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "parent": {
-                          "description": "Name of the FHIR store in which this bundle will be executed.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "request": {
-                        "$ref": "HttpBody"
-                      },
-                      "response": {
-                        "$ref": "HttpBody"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Executes all the requests in the given Bundle."
+                      "description": "Gets the FHIR [capability\nstatement](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/capabilitystatement.html)\nfor the store, which contains a description of functionality supported by\nthe server.\n\nImplements the FHIR standard [capabilities\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#capabilities).\n\nOn success, the response body will contain a JSON-encoded representation\nof a `CapabilityStatement` resource."
                     },
                     "import": {
                       "id": "healthcare.projects.locations.datasets.fhirStores.import",
@@ -4260,8 +4314,8 @@
                   "resources": {
                     "fhir": {
                       "methods": {
-                        "createResource": {
-                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.createResource",
+                        "create": {
+                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.create",
                           "path": "v1alpha2/{+parent}/fhir/{+type}",
                           "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir/{fhirId}",
                           "httpMethod": "POST",
@@ -4294,10 +4348,10 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Creates a FHIR resource.\n"
+                          "description": "Creates a FHIR resource.\n\nImplements the FHIR standard [create\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#create),\nwhich creates a new resource with a server-assigned resource ID.\n\nAlso supports the FHIR standard [conditional create\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#ccreate),\nspecified by supplying an `If-None-Exist` header containing a FHIR search\nquery. If no resources match this search query, the server processes the\ncreate operation as normal.\n\nThe request body must contain a JSON-encoded FHIR resource, and the request\nheaders must contain `Content-Type: application\/fhir+json`.\n\nOn success, the response body will contain a JSON-encoded representation\nof the resource as it was created on the server, including the\nserver-assigned resource ID and version ID.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead."
                         },
-                        "get": {
-                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.get",
+                        "read": {
+                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.read",
                           "path": "v1alpha2/{+name}",
                           "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir/{fhirId}/{fhirId1}",
                           "httpMethod": "GET",
@@ -4319,7 +4373,32 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Gets a FHIR resource.\n"
+                          "description": "Gets the contents of a FHIR resource.\n\nImplements the FHIR standard [read\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#read).\n\nAlso supports the FHIR standard [conditional read\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#cread)\nspecified by supplying an `If-Modified-Since` header with a date\/time value\nor an `If-None-Match` header with an ETag value.\n\nOn success, the response body will contain a JSON-encoded representation\nof the resource.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead."
+                        },
+                        "vread": {
+                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.vread",
+                          "path": "v1alpha2/{+name}",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir/{fhirId}/{fhirId1}/_history/{_historyId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the resource version to retrieve.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+\/fhir\/[^\/]+\/[^\/]+\/_history\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "HttpBody"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets the contents of a version (current or historical) of a FHIR resource\nby version ID.\n\nImplements the FHIR standard [vread\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#vread).\n\nOn success, the response body will contain a JSON-encoded representation\nof the resource.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead."
                         },
                         "delete": {
                           "id": "healthcare.projects.locations.datasets.fhirStores.fhir.delete",
@@ -4344,10 +4423,10 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Deletes a FHIR resource.\n\nNote: unless resource versioning is disabled by setting the\ndisable_resource_versioning flag\non the FHIR store, the deleted resources will be moved to a history\nrepository that can still be retrieved through GetResourceVersion and\nrelated methods, unless they are removed by the DeleteResourceVersions\nmethod."
+                          "description": "Deletes a FHIR resource.\n\nImplements the FHIR standard [delete\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#delete).\n\nNote: Unless resource versioning is disabled by setting the\ndisable_resource_versioning flag\non the FHIR store, the deleted resources will be moved to a history\nrepository that can still be retrieved through vread\nand related methods, unless they are removed by the\npurge method."
                         },
-                        "conditionalDeleteResource": {
-                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.conditionalDeleteResource",
+                        "conditionalDelete": {
+                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.conditionalDelete",
                           "path": "v1alpha2/{+parent}/fhir/{+type}",
                           "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir/{fhirId}",
                           "httpMethod": "DELETE",
@@ -4377,7 +4456,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Deletes FHIR resources matching a search query.\n\nNote: unless resource versioning is disabled by setting the\ndisable_resource_versioning flag\non the FHIR store, the deleted resources will be moved to a history\nrepository that can still be retrieved through GetResourceVersion and\nrelated methods, unless they are removed by the DeleteResourceVersions\nmethod."
+                          "description": "Deletes FHIR resources that match a search query.\n\nImplements the FHIR standard [conditional delete\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#2.21.0.13.1).\nIf multiple resources match, all of them will be deleted.\n\nSearch terms are provided as query parameters following the same pattern as\nthe search method.\n\nNote: Unless resource versioning is disabled by setting the\ndisable_resource_versioning flag\non the FHIR store, the deleted resources will be moved to a history\nrepository that can still be retrieved through vread\nand related methods, unless they are removed by the\npurge method."
                         },
                         "update": {
                           "id": "healthcare.projects.locations.datasets.fhirStores.fhir.update",
@@ -4405,10 +4484,10 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Updates the entire resource or creates a new resource with a client\nspecified ID if the resource does not exist and the FHIR store has\nenable_update_create set.\n"
+                          "description": "Updates the entire contents of a resource.\n\nImplements the FHIR standard [update\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#update).\n\nIf the specified resource does\nnot exist and the FHIR store has\n[enable_update_create](FhirStore.enable_update_create) set, creates the\nresource with the client-specified ID.\n\nThe request body must contain a JSON-encoded FHIR resource, and the request\nheaders must contain `Content-Type: application\/fhir+json`. The resource\nmust contain an `id` element having an identical value to the ID in the\nREST path of the request.\n\nOn success, the response body will contain a JSON-encoded representation\nof the updated resource, including the server-assigned version ID.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead."
                         },
-                        "conditionalUpdateResource": {
-                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.conditionalUpdateResource",
+                        "conditionalUpdate": {
+                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.conditionalUpdate",
                           "path": "v1alpha2/{+parent}/fhir/{+type}",
                           "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir/{fhirId}",
                           "httpMethod": "PUT",
@@ -4441,7 +4520,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Updates the entire resource if the resource exists based on the\nsearch criteria specified via query parameters.\n"
+                          "description": "If a resource is found based on the search criteria specified in the query\nparameters, updates the entire contents of that resource.\n\nImplements the FHIR standard [conditional update\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#cond-update).\n\nSearch terms are provided as query parameters following the same pattern as\nthe search method.\n\nIf the search criteria identify more than one match, the request will\nreturn a `412 Precondition Failed` error.\nIf the search criteria identify zero matches, and the supplied resource\nbody contains an `id`, and the FHIR store has\n[enable_update_create](FhirStore.enable_update_create) set, creates the\nresource with the client-specified ID. If the search criteria identify zero\nmatches, and the supplied resource body does not contain an `id`, the\nresource will be created with a server-assigned ID as per the\ncreate method.\n\nThe request body must contain a JSON-encoded FHIR resource, and the request\nheaders must contain `Content-Type: application\/fhir+json`.\n\nOn success, the response body will contain a JSON-encoded representation\nof the updated resource, including the server-assigned version ID.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead."
                         },
                         "patch": {
                           "id": "healthcare.projects.locations.datasets.fhirStores.fhir.patch",
@@ -4469,10 +4548,10 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Updates part of an existing resource.\n"
+                          "description": "Updates part of an existing resource by applying the operations specified\nin a [JSON Patch](http:\/\/jsonpatch.com\/) document.\n\nImplements the FHIR standard [patch\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#patch).\n\nThe request body must contain a JSON Patch document, and the request\nheaders must contain `Content-Type: application\/json-patch+json`.\n\nOn success, the response body will contain a JSON-encoded representation\nof the updated resource, including the server-assigned version ID.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead."
                         },
-                        "conditionalPatchResource": {
-                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.conditionalPatchResource",
+                        "conditionalPatch": {
+                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.conditionalPatch",
                           "path": "v1alpha2/{+parent}/fhir/{+type}",
                           "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir/{fhirId}",
                           "httpMethod": "PATCH",
@@ -4505,10 +4584,10 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Updates parts of a resource if the resource exists based on the\nsearch criteria specified via query parameters."
+                          "description": "If a resource is found based on the search criteria specified in the query\nparameters, updates part of that resource by applying the operations\nspecified in a [JSON Patch](http:\/\/jsonpatch.com\/) document.\n\nImplements the FHIR standard [conditional patch\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#patch).\n\nSearch terms are provided as query parameters following the same pattern as\nthe search method.\n\nIf the search criteria identify more than one match, the request will\nreturn a `412 Precondition Failed` error.\n\nThe request body must contain a JSON Patch document, and the request\nheaders must contain `Content-Type: application\/json-patch+json`.\n\nOn success, the response body will contain a JSON-encoded representation\nof the updated resource, including the server-assigned version ID.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead."
                         },
-                        "searchResources": {
-                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.searchResources",
+                        "search": {
+                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.search",
                           "path": "v1alpha2/{+parent}/fhir/{+resourceType}",
                           "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir/{fhirId}",
                           "httpMethod": "GET",
@@ -4538,10 +4617,10 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Searches resources in the given FHIR store.\n\n# Search Parameters\n\nThe server's capability statement, retrieved through\nGetCapabilityStatement, indicates which search\nparameters are supported on each FHIR resource.\n\n# Search Modifiers\n\nModifier   | Supported\n----------- | ---------\n`:missing`  | Yes\n`:exact`    | Yes\n`:contains` | Yes\n`:text`     | Yes\n`:in`       | Yes\n`:not-in`   | Yes\n`:above`    | Yes\n`:below`    | Yes\n`:[type]`   | Yes\n`:not`      | Yes\n`:recurse`  | No"
+                          "description": "Searches for resources in the given FHIR store according to criteria\nspecified as query parameters.\n\nImplements the FHIR standard [search\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#search)\nusing the search semantics described in the [FHIR Search\nspecification](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/search.html).\n\nSupports three methods of search defined by the specification:\n\n*  `GET [base]?[parameters]` to search across all resources.\n*  `GET [base]\/[type]?[parameters]` to search resources of a specified\ntype.\n*  `POST [base]\/[type]\/_search?[parameters]` as an alternate form having\nthe same semantics as the `GET` method.\n\nThe `GET` methods do not support compartment searches. The `POST` method\ndoes not support `application\/x-www-form-urlencoded` search parameters.\n\nOn success, the response body will contain a JSON-encoded representation\nof a `Bundle` resource of type `searchset`, containing the results of the\nsearch.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead.\n\n# Search Parameters\n\nThe server's capability statement, retrieved through\ncapabilities, indicates what search parameters\nare supported on each FHIR resource. A list of all search parameters\ndefined by the specification can be found in the [FHIR Search Parameter\nRegistry](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/searchparameter-registry.html).\n\n# Search Modifiers\n\nModifier   | Supported\n----------- | ---------\n`:missing`  | Yes\n`:exact`    | Yes\n`:contains` | Yes\n`:text`     | Yes\n`:in`       | Yes\n`:not-in`   | Yes\n`:above`    | Yes\n`:below`    | Yes\n`:[type]`   | Yes\n`:not`      | Yes\n`:recurse`  | No"
                         },
-                        "_search": {
-                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir._search",
+                        "search": {
+                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.search",
                           "path": "v1alpha2/{+parent}/fhir/{resourceType}/_search",
                           "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir/{resourceType}/_search",
                           "httpMethod": "POST",
@@ -4573,10 +4652,10 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Searches resources in the given FHIR store.\n\n# Search Parameters\n\nThe server's capability statement, retrieved through\nGetCapabilityStatement, indicates which search\nparameters are supported on each FHIR resource.\n\n# Search Modifiers\n\nModifier   | Supported\n----------- | ---------\n`:missing`  | Yes\n`:exact`    | Yes\n`:contains` | Yes\n`:text`     | Yes\n`:in`       | Yes\n`:not-in`   | Yes\n`:above`    | Yes\n`:below`    | Yes\n`:[type]`   | Yes\n`:not`      | Yes\n`:recurse`  | No"
+                          "description": "Searches for resources in the given FHIR store according to criteria\nspecified as query parameters.\n\nImplements the FHIR standard [search\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#search)\nusing the search semantics described in the [FHIR Search\nspecification](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/search.html).\n\nSupports three methods of search defined by the specification:\n\n*  `GET [base]?[parameters]` to search across all resources.\n*  `GET [base]\/[type]?[parameters]` to search resources of a specified\ntype.\n*  `POST [base]\/[type]\/_search?[parameters]` as an alternate form having\nthe same semantics as the `GET` method.\n\nThe `GET` methods do not support compartment searches. The `POST` method\ndoes not support `application\/x-www-form-urlencoded` search parameters.\n\nOn success, the response body will contain a JSON-encoded representation\nof a `Bundle` resource of type `searchset`, containing the results of the\nsearch.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead.\n\n# Search Parameters\n\nThe server's capability statement, retrieved through\ncapabilities, indicates what search parameters\nare supported on each FHIR resource. A list of all search parameters\ndefined by the specification can be found in the [FHIR Search Parameter\nRegistry](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/searchparameter-registry.html).\n\n# Search Modifiers\n\nModifier   | Supported\n----------- | ---------\n`:missing`  | Yes\n`:exact`    | Yes\n`:contains` | Yes\n`:text`     | Yes\n`:in`       | Yes\n`:not-in`   | Yes\n`:above`    | Yes\n`:below`    | Yes\n`:[type]`   | Yes\n`:not`      | Yes\n`:recurse`  | No"
                         },
-                        "_search": {
-                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir._search",
+                        "search": {
+                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.search",
                           "path": "v1alpha2/{+parent}/fhir/_search",
                           "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir/_search",
                           "httpMethod": "POST",
@@ -4601,10 +4680,45 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Searches resources in the given FHIR store.\n\n# Search Parameters\n\nThe server's capability statement, retrieved through\nGetCapabilityStatement, indicates which search\nparameters are supported on each FHIR resource.\n\n# Search Modifiers\n\nModifier   | Supported\n----------- | ---------\n`:missing`  | Yes\n`:exact`    | Yes\n`:contains` | Yes\n`:text`     | Yes\n`:in`       | Yes\n`:not-in`   | Yes\n`:above`    | Yes\n`:below`    | Yes\n`:[type]`   | Yes\n`:not`      | Yes\n`:recurse`  | No"
+                          "description": "Searches for resources in the given FHIR store according to criteria\nspecified as query parameters.\n\nImplements the FHIR standard [search\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#search)\nusing the search semantics described in the [FHIR Search\nspecification](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/search.html).\n\nSupports three methods of search defined by the specification:\n\n*  `GET [base]?[parameters]` to search across all resources.\n*  `GET [base]\/[type]?[parameters]` to search resources of a specified\ntype.\n*  `POST [base]\/[type]\/_search?[parameters]` as an alternate form having\nthe same semantics as the `GET` method.\n\nThe `GET` methods do not support compartment searches. The `POST` method\ndoes not support `application\/x-www-form-urlencoded` search parameters.\n\nOn success, the response body will contain a JSON-encoded representation\nof a `Bundle` resource of type `searchset`, containing the results of the\nsearch.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead.\n\n# Search Parameters\n\nThe server's capability statement, retrieved through\ncapabilities, indicates what search parameters\nare supported on each FHIR resource. A list of all search parameters\ndefined by the specification can be found in the [FHIR Search Parameter\nRegistry](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/searchparameter-registry.html).\n\n# Search Modifiers\n\nModifier   | Supported\n----------- | ---------\n`:missing`  | Yes\n`:exact`    | Yes\n`:contains` | Yes\n`:text`     | Yes\n`:in`       | Yes\n`:not-in`   | Yes\n`:above`    | Yes\n`:below`    | Yes\n`:[type]`   | Yes\n`:not`      | Yes\n`:recurse`  | No"
                         },
-                        "getMetadata": {
-                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.getMetadata",
+                        "Patient-everything": {
+                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.Patient-everything",
+                          "path": "v1alpha2/{+name}/$everything",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir/Patient/{PatientId}/$everything",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "Name of the `Patient` resource for which the information is required.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+\/fhir\/Patient\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "start": {
+                              "description": "The response includes records subsequent to the start date. If no start\ndate is provided, all records prior to the end date are in scope.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "end": {
+                              "description": "The response includes records prior to the end date. If no end date is\nprovided, all records subsequent to the start date are in scope.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "HttpBody"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Retrieves all the resources in the patient compartment for a `Patient`\nresource.\n\nImplements the FHIR extended operation\n[Patient-everything](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/patient-operations.html#everything).\n\nOn success, the response body will contain a JSON-encoded representation\nof a `Bundle` resource of type `searchset`, containing the results of the\noperation.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead."
+                        },
+                        "capabilities": {
+                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.capabilities",
                           "path": "v1alpha2/{+name}/fhir/metadata",
                           "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir/metadata",
                           "httpMethod": "GET",
@@ -4626,10 +4740,84 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Gets the FHIR capability statement for the store, which contains a\ndescription of functionality supported by the server.\n"
+                          "description": "Gets the FHIR [capability\nstatement](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/capabilitystatement.html)\nfor the store, which contains a description of functionality supported by\nthe server.\n\nImplements the FHIR standard [capabilities\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#capabilities).\n\nOn success, the response body will contain a JSON-encoded representation\nof a `CapabilityStatement` resource."
                         },
-                        "delete$purge": {
-                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.delete$purge",
+                        "executeBundle": {
+                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.executeBundle",
+                          "path": "v1alpha2/{+parent}/fhir",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "parent": {
+                              "description": "Name of the FHIR store in which this bundle will be executed.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "request": {
+                            "$ref": "HttpBody"
+                          },
+                          "response": {
+                            "$ref": "HttpBody"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Executes all the requests in the given Bundle.\n\nImplements the FHIR standard [batch\/transaction\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#transaction).\n\nSupports all interactions within a bundle, except search. This method\naccepts Bundles of type `batch` and `transaction`, processing them\naccording to the [batch processing\nrules](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#2.21.0.17.1)\nand [transaction processing\nrules](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#2.21.0.17.2).\n\nThe request body must contain a JSON-encoded FHIR `Bundle` resource, and\nthe request headers must contain `Content-Type: application\/fhir+json`.\n\nFor a batch bundle or a successful transaction the response body will\ncontain a JSON-encoded representation of a `Bundle` resource of type\n`batch-response` or `transaction-response` containing one entry for each\nentry in the request, with the outcome of processing the entry. In the\ncase of an error for a transaction bundle, the response body will contain\na JSON-encoded `OperationOutcome` resource describing the reason for the\nerror. If the request cannot be mapped to a valid API method on a FHIR\nstore, a generic GCP error might be returned instead."
+                        },
+                        "history": {
+                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.history",
+                          "path": "v1alpha2/{+name}/_history",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir/{fhirId}/{fhirId1}/_history",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the resource to retrieve.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+\/fhir\/[^\/]+\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "count": {
+                              "description": "The maximum number of search results on a page. Defaults to 1000.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "since": {
+                              "description": "Only include resource versions that were created at or after the given\ninstant in time. The instant in time uses the format\nYYYY-MM-DDThh:mm:ss.sss+zz:zz (for example 2015-02-07T13:28:17.239+02:00 or\n2017-01-01T00:00:00Z). The time must be specified to the second and\ninclude a time zone.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "at": {
+                              "description": "Only include resource versions that were current at some point during the\ntime period specified in the date time value. The date parameter format is\nyyyy-mm-ddThh:mm:ss[Z|(+|-)hh:mm]\n\nClients may specify any of the following:\n\n*  An entire year: `_at=2019`\n*  An entire month: `_at=2019-01`\n*  A specific day: `_at=2019-01-20`\n*  A specific second: `_at=2018-12-31T23:59:58Z`",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "page": {
+                              "description": "Used to retrieve the first, previous, next, or last page of resource\nversions when using pagination. Value should be set to the value of the\n`link.url` field returned in the response to the previous request, where\n`link.relation` is \"first\", \"previous\", \"next\" or \"last\".\n\nOmit `page` if no previous request has been made.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "HttpBody"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists all the versions of a resource (including the current version and\ndeleted versions) from the FHIR store.\n\nImplements the per-resource form of the FHIR standard [history\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#history).\n\nOn success, the response body will contain a JSON-encoded representation\nof a `Bundle` resource of type `history`, containing the version history\nsorted from most recent to oldest versions.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead."
+                        },
+                        "Resource-purge": {
+                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.Resource-purge",
                           "path": "v1alpha2/{+name}/$purge",
                           "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir/{fhirId}/{fhirId1}/$purge",
                           "httpMethod": "DELETE",
@@ -4651,124 +4839,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Deletes all the historical versions of a resource (excluding current\nversion) from the FHIR store. To remove all versions of a resource, first\ndelete the current version and call this method."
-                        }
-                      }
-                      ,
-                      "resources": {
-                        "_history": {
-                          "methods": {
-                            "get": {
-                              "id": "healthcare.projects.locations.datasets.fhirStores.fhir._history.get",
-                              "path": "v1alpha2/{+name}",
-                              "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir/{fhirId}/{fhirId1}/_history/{_historyId}",
-                              "httpMethod": "GET",
-                              "parameters": {
-                                "name": {
-                                  "description": "The name of the resource version to retrieve.",
-                                  "location": "path",
-                                  "required": true,
-                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+\/fhir\/[^\/]+\/[^\/]+\/_history\/[^\/]+$",
-                                  "type": "string"
-                                }
-                              },
-                              "parameterOrder": [
-                                "name"
-                              ],
-                              "response": {
-                                "$ref": "HttpBody"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform"
-                              ],
-                              "description": "Gets a version (current or historical) of FHIR resource by version id.\n"
-                            },
-                            "list": {
-                              "id": "healthcare.projects.locations.datasets.fhirStores.fhir._history.list",
-                              "path": "v1alpha2/{+name}/_history",
-                              "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir/{fhirId}/{fhirId1}/_history",
-                              "httpMethod": "GET",
-                              "parameters": {
-                                "name": {
-                                  "description": "The name of the resource to retrieve.",
-                                  "location": "path",
-                                  "required": true,
-                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+\/fhir\/[^\/]+\/[^\/]+$",
-                                  "type": "string"
-                                },
-                                "count": {
-                                  "description": "The maximum number of search results on a page.",
-                                  "location": "query",
-                                  "type": "integer",
-                                  "format": "int32"
-                                },
-                                "since": {
-                                  "description": "Only include resource versions that were created at or after the given\ninstant in time. The instant in time uses the format\nYYYY-MM-DDThh:mm:ss.sss+zz:zz (for example 2015-02-07T13:28:17.239+02:00 or\n2017-01-01T00:00:00Z). The time must be specified to the second and\ninclude a time zone.",
-                                  "location": "query",
-                                  "type": "string"
-                                },
-                                "at": {
-                                  "description": "Only include resource versions that were current at some point during the\ntime period specified in the date time value. The date parameter format is\nyyyy-mm-ddThh:mm:ss[Z|(+|-)hh:mm]\nClients may specify any of the following:\nAn entire year: `_at=2019`\nAn entire month: `_at=2019-01`\nA specific day: `_at=2019-01-20`\nA specific second: `_at=2018-12-31T23:59:58Z`",
-                                  "location": "query",
-                                  "type": "string"
-                                },
-                                "page": {
-                                  "description": "Used to retrieve the first, previous, next, or last page of resource\nversions when using pagination. Value should be set to the value of the\n`link.url` field returned in the response to the previous request, where\n`link.relation` is \"first\", \"previous\", \"next\" or \"last\".\nOmit `page` if no previous request has been made.",
-                                  "location": "query",
-                                  "type": "string"
-                                }
-                              },
-                              "parameterOrder": [
-                                "name"
-                              ],
-                              "response": {
-                                "$ref": "HttpBody"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform"
-                              ],
-                              "description": "Lists all the versions of a resource (including the current version and\ndeleted versions) from the FHIR store.\n"
-                            }
-                          }
-                        },
-                        "Patient": {
-                          "methods": {
-                            "get$everything": {
-                              "id": "healthcare.projects.locations.datasets.fhirStores.fhir.Patient.get$everything",
-                              "path": "v1alpha2/{+name}/$everything",
-                              "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir/Patient/{PatientId}/$everything",
-                              "httpMethod": "GET",
-                              "parameters": {
-                                "name": {
-                                  "description": "Name of the patient for which the information is required.",
-                                  "location": "path",
-                                  "required": true,
-                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+\/fhir\/Patient\/[^\/]+$",
-                                  "type": "string"
-                                },
-                                "start": {
-                                  "description": "The response includes records subsequent to the start date. If no start\ndate is provided, all records prior to the end date are in scope.",
-                                  "location": "query",
-                                  "type": "string"
-                                },
-                                "end": {
-                                  "description": "The response includes records prior to the end date. If no end date is\nprovided, all records subsequent to the start date are in scope.",
-                                  "location": "query",
-                                  "type": "string"
-                                }
-                              },
-                              "parameterOrder": [
-                                "name"
-                              ],
-                              "response": {
-                                "$ref": "HttpBody"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform"
-                              ],
-                              "description": "Gets all the resources in the patient compartment.\n"
-                            }
-                          }
+                          "description": "Deletes all the historical versions of a resource (excluding the current\nversion) from the FHIR store. To remove all versions of a resource, first\ndelete the current version and then call this method.\n\nThis is not a FHIR standard operation."
                         }
                       }
                     },

@@ -556,6 +556,21 @@ class DataDiskAssignment(_messages.Message):
   vmInstance = _messages.StringField(2)
 
 
+class DataflowProjectsDeleteSnapshotsRequest(_messages.Message):
+  r"""A DataflowProjectsDeleteSnapshotsRequest object.
+
+  Fields:
+    location: The location that contains this snapshot.
+    projectId: The ID of the Cloud Platform project that the snapshot belongs
+      to.
+    snapshotId: The ID of the snapshot.
+  """
+
+  location = _messages.StringField(1)
+  projectId = _messages.StringField(2, required=True)
+  snapshotId = _messages.StringField(3)
+
+
 class DataflowProjectsJobsAggregatedRequest(_messages.Message):
   r"""A DataflowProjectsJobsAggregatedRequest object.
 
@@ -1232,6 +1247,65 @@ class DataflowProjectsLocationsJobsWorkItemsReportStatusRequest(_messages.Messag
   reportWorkItemStatusRequest = _messages.MessageField('ReportWorkItemStatusRequest', 4)
 
 
+class DataflowProjectsLocationsSnapshotsDeleteRequest(_messages.Message):
+  r"""A DataflowProjectsLocationsSnapshotsDeleteRequest object.
+
+  Fields:
+    location: The location that contains this snapshot.
+    projectId: The ID of the Cloud Platform project that the snapshot belongs
+      to.
+    snapshotId: The ID of the snapshot.
+  """
+
+  location = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+  snapshotId = _messages.StringField(3, required=True)
+
+
+class DataflowProjectsLocationsSnapshotsGetRequest(_messages.Message):
+  r"""A DataflowProjectsLocationsSnapshotsGetRequest object.
+
+  Fields:
+    location: The location that contains this snapshot.
+    projectId: The ID of the Cloud Platform project that the snapshot belongs
+      to.
+    snapshotId: The ID of the snapshot.
+  """
+
+  location = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+  snapshotId = _messages.StringField(3, required=True)
+
+
+class DataflowProjectsLocationsSnapshotsListRequest(_messages.Message):
+  r"""A DataflowProjectsLocationsSnapshotsListRequest object.
+
+  Fields:
+    location: The location to list snapshots in.
+    projectId: The project ID to list snapshots for.
+  """
+
+  location = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+
+
+class DataflowProjectsLocationsSqlValidateRequest(_messages.Message):
+  r"""A DataflowProjectsLocationsSqlValidateRequest object.
+
+  Fields:
+    location: The [regional endpoint]
+      (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints) to
+      which to direct the request.
+    projectId: Required. The ID of the Cloud Platform project that the job
+      belongs to.
+    query: The sql query to validate.
+  """
+
+  location = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+  query = _messages.StringField(3)
+
+
 class DataflowProjectsLocationsTemplatesCreateRequest(_messages.Message):
   r"""A DataflowProjectsLocationsTemplatesCreateRequest object.
 
@@ -1326,6 +1400,33 @@ class DataflowProjectsLocationsWorkerMessagesRequest(_messages.Message):
   location = _messages.StringField(1, required=True)
   projectId = _messages.StringField(2, required=True)
   sendWorkerMessagesRequest = _messages.MessageField('SendWorkerMessagesRequest', 3)
+
+
+class DataflowProjectsSnapshotsGetRequest(_messages.Message):
+  r"""A DataflowProjectsSnapshotsGetRequest object.
+
+  Fields:
+    location: The location that contains this snapshot.
+    projectId: The ID of the Cloud Platform project that the snapshot belongs
+      to.
+    snapshotId: The ID of the snapshot.
+  """
+
+  location = _messages.StringField(1)
+  projectId = _messages.StringField(2, required=True)
+  snapshotId = _messages.StringField(3, required=True)
+
+
+class DataflowProjectsSnapshotsListRequest(_messages.Message):
+  r"""A DataflowProjectsSnapshotsListRequest object.
+
+  Fields:
+    location: The location to list snapshots in.
+    projectId: The project ID to list snapshots for.
+  """
+
+  location = _messages.StringField(1)
+  projectId = _messages.StringField(2, required=True)
 
 
 class DataflowProjectsTemplatesCreateRequest(_messages.Message):
@@ -1426,6 +1527,10 @@ class DatastoreIODetails(_messages.Message):
 
   namespace = _messages.StringField(1)
   projectId = _messages.StringField(2)
+
+
+class DeleteSnapshotResponse(_messages.Message):
+  r"""Response from deleting a snapshot."""
 
 
 class DerivedSource(_messages.Message):
@@ -2828,6 +2933,16 @@ class ListJobsResponse(_messages.Message):
   failedLocation = _messages.MessageField('FailedLocation', 1, repeated=True)
   jobs = _messages.MessageField('Job', 2, repeated=True)
   nextPageToken = _messages.StringField(3)
+
+
+class ListSnapshotsResponse(_messages.Message):
+  r"""List of snapshots.
+
+  Fields:
+    snapshots: Returned snapshots.
+  """
+
+  snapshots = _messages.MessageField('Snapshot', 1, repeated=True)
 
 
 class MapTask(_messages.Message):
@@ -4876,6 +4991,16 @@ class TransformSummary(_messages.Message):
   kind = _messages.EnumField('KindValueValuesEnum', 4)
   name = _messages.StringField(5)
   outputCollectionName = _messages.StringField(6, repeated=True)
+
+
+class ValidateResponse(_messages.Message):
+  r"""Response to the validation request.
+
+  Fields:
+    errorMessage: Will be empty if validation succeeds.
+  """
+
+  errorMessage = _messages.StringField(1)
 
 
 class WorkItem(_messages.Message):

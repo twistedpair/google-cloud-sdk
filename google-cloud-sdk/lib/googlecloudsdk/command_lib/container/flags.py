@@ -1259,22 +1259,21 @@ def AddWorkloadMetadataFromNodeFlag(parser, hidden=False):
     parser: A given parser.
     hidden: Whether or not to hide the help text.
   """
-  help_text = """\
-Sets the node metadata option for workload metadata configuration. This feature
-is scheduled to be deprecated in the future and later removed.
-"""
 
   parser.add_argument(
       '--workload-metadata-from-node',
       default=None,
       choices={
-          'SECURE': 'Prevents workloads not in hostNetwork from accessing '
+          'SECURE': 'Prevents pods not in hostNetwork from accessing '
                     'certain VM metadata, specifically kube-env, which '
                     'contains Kubelet credentials, and the instance identity '
                     'token. This is a temporary security solution available '
                     'while the bootstrapping process for cluster nodes is '
-                    'being redesigned with significant security improvements.',
-          'EXPOSED': 'Exposes all VM metadata to workloads.',
+                    'being redesigned with significant security improvements. '
+                    'This feature is scheduled to be deprecated in the future '
+                    'and later removed.',
+          'EXPOSED': "Pods running in this nodepool have access to the node's "
+                     "underlying Compute Engine Metadata Server.",
           'GKE_METADATA_SERVER':
               'Run the Kubernetes Engine Metadata Server on this node. The Kubernetes '
               'Engine Metadata Server exposes a metadata API to workloads that is '
@@ -1285,7 +1284,7 @@ is scheduled to be deprecated in the future and later removed.
       },
       type=lambda x: x.upper(),
       hidden=hidden,
-      help=help_text)
+      help='Type of metadata server available to pods running in the nodepool.')
 
 
 def AddTagOrDigestPositional(parser,
@@ -1883,6 +1882,19 @@ Service Accounts, through the provided identity namespace.
 
 Currently, the only accepted identity namespace is the identity namespace of
 the Cloud project containing the cluster, `PROJECT_NAME.svc.id.goog`.
+""")
+
+
+def AddWorkloadIdentityUpdateFlags(parser):
+  # TODO(b/126751755): Once we have a beta docs page, update the documentation
+  # link in the help text.
+  parser.add_argument(
+      '--disable-workload-identity',
+      default=False,
+      action='store_true',
+      hidden=True,
+      help="""\
+Disable Workload Identity on the cluster.
 """)
 
 

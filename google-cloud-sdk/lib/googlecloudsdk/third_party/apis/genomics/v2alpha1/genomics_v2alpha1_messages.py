@@ -1471,6 +1471,8 @@ class VirtualMachine(_messages.Message):
       https://cloud.google.com/compute/docs/instances/specify-min-cpu-
       platform.
     disks: The list of disks to create and attach to the VM.
+    enableStackdriverMonitoring: Whether Stackdriver monitoring should be
+      enabled on the VM.
     labels: Optional set of labels to apply to the VM and any attached disk
       resources. These labels must adhere to the name and value restrictions
       on VM labels imposed by Compute Engine.  Labels applied at creation time
@@ -1528,12 +1530,13 @@ class VirtualMachine(_messages.Message):
   bootImage = _messages.StringField(3)
   cpuPlatform = _messages.StringField(4)
   disks = _messages.MessageField('Disk', 5, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 6)
-  machineType = _messages.StringField(7)
-  network = _messages.MessageField('Network', 8)
-  nvidiaDriverVersion = _messages.StringField(9)
-  preemptible = _messages.BooleanField(10)
-  serviceAccount = _messages.MessageField('ServiceAccount', 11)
+  enableStackdriverMonitoring = _messages.BooleanField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  machineType = _messages.StringField(8)
+  network = _messages.MessageField('Network', 9)
+  nvidiaDriverVersion = _messages.StringField(10)
+  preemptible = _messages.BooleanField(11)
+  serviceAccount = _messages.MessageField('ServiceAccount', 12)
 
 
 class WorkerAssignedEvent(_messages.Message):

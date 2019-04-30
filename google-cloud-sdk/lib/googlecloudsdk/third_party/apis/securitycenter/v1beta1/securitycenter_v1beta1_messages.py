@@ -352,6 +352,68 @@ class GetIamPolicyRequest(_messages.Message):
   r"""Request message for `GetIamPolicy` method."""
 
 
+class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
+  r"""Response of asset discovery run
+
+  Enums:
+    StateValueValuesEnum: The state of an asset discovery run.
+
+  Fields:
+    duration: The duration between asset discovery run start and end
+    state: The state of an asset discovery run.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The state of an asset discovery run.
+
+    Values:
+      STATE_UNSPECIFIED: Asset discovery run state was unspecified.
+      COMPLETED: Asset discovery run completed successfully.
+      SUPERSEDED: Asset discovery run was cancelled with tasks still pending,
+        as another run for the same organization was started with a higher
+        priority.
+      TERMINATED: Asset discovery run was killed and terminated.
+    """
+    STATE_UNSPECIFIED = 0
+    COMPLETED = 1
+    SUPERSEDED = 2
+    TERMINATED = 3
+
+  duration = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class GoogleCloudSecuritycenterV1beta1RunAssetDiscoveryResponse(_messages.Message):
+  r"""Response of asset discovery run
+
+  Enums:
+    StateValueValuesEnum: The state of an asset discovery run.
+
+  Fields:
+    duration: The duration between asset discovery run start and end
+    state: The state of an asset discovery run.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The state of an asset discovery run.
+
+    Values:
+      STATE_UNSPECIFIED: Asset discovery run state was unspecified.
+      COMPLETED: Asset discovery run completed successfully.
+      SUPERSEDED: Asset discovery run was cancelled with tasks still pending,
+        as another run for the same organization was started with a higher
+        priority.
+      TERMINATED: Asset discovery run was killed and terminated.
+    """
+    STATE_UNSPECIFIED = 0
+    COMPLETED = 1
+    SUPERSEDED = 2
+    TERMINATED = 3
+
+  duration = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
 class GroupAssetsRequest(_messages.Message):
   r"""Request message for grouping by assets.
 

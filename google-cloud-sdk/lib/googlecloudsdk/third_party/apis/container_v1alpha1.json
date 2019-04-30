@@ -366,7 +366,7 @@
           "type": "string"
         },
         "nodeIpv4CidrSize": {
-          "description": "[Output only] The size of the address space on each node for hosting\ncontainers. This is provisioned from within the `container_ipv4_cidr`\nrange.",
+          "description": "[Output only] The size of the address space on each node for hosting\ncontainers. This is provisioned from within the `container_ipv4_cidr`\nrange. This field will only be set when cluster is in route-based network\nmode.",
           "type": "integer",
           "format": "int32"
         },
@@ -530,6 +530,10 @@
         "shieldedInstanceConfig": {
           "description": "Shielded Instance options.",
           "$ref": "ShieldedInstanceConfig"
+        },
+        "linuxNodeConfig": {
+          "description": "Parameters that can be configured on Linux nodes.",
+          "$ref": "LinuxNodeConfig"
         }
       }
     },
@@ -685,7 +689,7 @@
           ]
         },
         "key": {
-          "description": "Corresponds to the label key of reservation resource. Must be\n\"googleapis.com\/allocation\" since GCE API only accepts it for now.",
+          "description": "Corresponds to the label key of reservation resource.",
           "type": "string"
         },
         "values": {
@@ -709,6 +713,20 @@
         "enableIntegrityMonitoring": {
           "description": "Defines whether the instance has integrity monitoring enabled.",
           "type": "boolean"
+        }
+      }
+    },
+    "LinuxNodeConfig": {
+      "id": "LinuxNodeConfig",
+      "description": "Parameters that can be configured on Linux nodes.",
+      "type": "object",
+      "properties": {
+        "sysctls": {
+          "description": "The Linux kernel parameters to be applied to the nodes and all pods running\non the nodes.\n",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1939,6 +1957,10 @@
         "desiredWorkloadIdentityConfig": {
           "description": "Configuration for Workload Identity.",
           "$ref": "WorkloadIdentityConfig"
+        },
+        "desiredShieldedNodes": {
+          "description": "Configuration for Shielded Nodes.",
+          "$ref": "ShieldedNodes"
         }
       }
     },

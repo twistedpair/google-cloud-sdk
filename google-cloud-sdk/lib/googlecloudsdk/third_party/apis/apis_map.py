@@ -602,12 +602,6 @@ MAP = {
         ),
     },
     'healthcare': {
-        'v1alpha': APIDef(
-            class_path='googlecloudsdk.third_party.apis.healthcare.v1alpha',
-            client_classpath='healthcare_v1alpha_client.HealthcareV1alpha',
-            messages_modulepath='healthcare_v1alpha_messages',
-            default_version=False
-        ),
         'v1alpha2': APIDef(
             class_path='googlecloudsdk.third_party.apis.healthcare.v1alpha2',
             client_classpath='healthcare_v1alpha2_client.HealthcareV1alpha2',
@@ -674,6 +668,14 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.monitoring.v3',
             client_classpath='monitoring_v3_client.MonitoringV3',
             messages_modulepath='monitoring_v3_messages',
+            default_version=True
+        ),
+    },
+    'osconfig': {
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.osconfig.v1alpha1',
+            client_classpath='osconfig_v1alpha1_client.OsconfigV1alpha1',
+            messages_modulepath='osconfig_v1alpha1_messages',
             default_version=True
         ),
     },

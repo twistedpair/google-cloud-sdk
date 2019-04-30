@@ -361,8 +361,6 @@ apis:
       discovery_doc: gkehub_v1beta1.json
       default: true
   healthcare:
-    v1alpha:
-      discovery_doc: healthcare_v1alpha.json
     v1alpha2:
       discovery_doc: healthcare_v1alpha2.json
       default: true
@@ -383,6 +381,10 @@ apis:
       resources:
         users.projects:
           path: users/{user}/projects/{project}
+  osconfig:
+    v1alpha1:
+      discovery_doc: osconfig_v1alpha1.json
+      default: true
   iam:
     v1:
       discovery_doc: iam_v1.json
@@ -556,6 +558,10 @@ apis:
       resources:
         images:
           path: images
+        projects.locations.productSets.products:
+          path: projects/{projectsId}/locations/{locationsId}/productSets/{productSetsId}/products
+        files:
+          path: files
   dlp:
     v2:
       discovery_doc: dlp_v2.json

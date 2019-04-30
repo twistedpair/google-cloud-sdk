@@ -6,6 +6,7 @@ Accesses source code repositories hosted by Google.
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'sourcerepo'
@@ -176,6 +177,113 @@ class MirrorConfig(_messages.Message):
   deployKeyId = _messages.StringField(1)
   url = _messages.StringField(2)
   webhookId = _messages.StringField(3)
+
+
+class Operation(_messages.Message):
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
+
+  Messages:
+    MetadataValue: Service-specific metadata associated with the operation.
+      It typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata.  Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    ResponseValue: The normal response of the operation in case of success.
+      If the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`.  If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      methods, the response should have the type `XxxResponse`, where `Xxx` is
+      the original method name.  For example, if the original method name is
+      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+
+  Fields:
+    done: If the value is `false`, it means the operation is still in
+      progress. If `true`, the operation is completed, and either `error` or
+      `response` is available.
+    error: The error result of the operation in case of failure or
+      cancellation.
+    metadata: Service-specific metadata associated with the operation.  It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata.  Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    name: The server-assigned name, which is only unique within the same
+      service that originally returns it. If you use the default HTTP mapping,
+      the `name` should have the format of `operations/some/unique/name`.
+    response: The normal response of the operation in case of success.  If the
+      original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`.  If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      methods, the response should have the type `XxxResponse`, where `Xxx` is
+      the original method name.  For example, if the original method name is
+      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Service-specific metadata associated with the operation.  It typically
+    contains progress information and common metadata such as create time.
+    Some services might not provide such metadata.  Any method that returns a
+    long-running operation should document the metadata type, if any.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResponseValue(_messages.Message):
+    r"""The normal response of the operation in case of success.  If the
+    original method returns no data on success, such as `Delete`, the response
+    is `google.protobuf.Empty`.  If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    methods, the response should have the type `XxxResponse`, where `Xxx` is
+    the original method name.  For example, if the original method name is
+    `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResponseValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResponseValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  done = _messages.BooleanField(1)
+  error = _messages.MessageField('Status', 2)
+  metadata = _messages.MessageField('MetadataValue', 3)
+  name = _messages.StringField(4)
+  response = _messages.MessageField('ResponseValue', 5)
 
 
 class Policy(_messages.Message):
@@ -480,6 +588,20 @@ class SourcerepoProjectsReposSetIamPolicyRequest(_messages.Message):
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
+class SourcerepoProjectsReposSyncRequest(_messages.Message):
+  r"""A SourcerepoProjectsReposSyncRequest object.
+
+  Fields:
+    name: The name of the repo to synchronize. Values are of the form
+      `projects/<project>/repos/<repo>`.
+    syncRepoRequest: A SyncRepoRequest resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  syncRepoRequest = _messages.MessageField('SyncRepoRequest', 2)
+
+
 class SourcerepoProjectsReposTestIamPermissionsRequest(_messages.Message):
   r"""A SourcerepoProjectsReposTestIamPermissionsRequest object.
 
@@ -570,6 +692,88 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class Status(_messages.Message):
+  r"""The `Status` type defines a logical error model that is suitable for
+  different programming environments, including REST APIs and RPC APIs. It is
+  used by [gRPC](https://github.com/grpc). The error model is designed to be:
+  - Simple to use and understand for most users - Flexible enough to meet
+  unexpected needs  # Overview  The `Status` message contains three pieces of
+  data: error code, error message, and error details. The error code should be
+  an enum value of google.rpc.Code, but it may accept additional error codes
+  if needed.  The error message should be a developer-facing English message
+  that helps developers *understand* and *resolve* the error. If a localized
+  user-facing error message is needed, put the localized message in the error
+  details or localize it in the client. The optional error details may contain
+  arbitrary information about the error. There is a predefined set of error
+  detail types in the package `google.rpc` that can be used for common error
+  conditions.  # Language mapping  The `Status` message is the logical
+  representation of the error model, but it is not necessarily the actual wire
+  format. When the `Status` message is exposed in different client libraries
+  and different wire protocols, it can be mapped differently. For example, it
+  will likely be mapped to some exceptions in Java, but more likely mapped to
+  some error codes in C.  # Other uses  The error model and the `Status`
+  message can be used in a variety of environments, either with or without
+  APIs, to provide a consistent developer experience across different
+  environments.  Example uses of this error model include:  - Partial errors.
+  If a service needs to return partial errors to the client,     it may embed
+  the `Status` in the normal response to indicate the partial     errors.  -
+  Workflow errors. A typical workflow has multiple steps. Each step may
+  have a `Status` message for error reporting.  - Batch operations. If a
+  client uses batch request and batch response, the     `Status` message
+  should be used directly inside batch response, one for     each error sub-
+  response.  - Asynchronous operations. If an API call embeds asynchronous
+  operation     results in its response, the status of those operations should
+  be     represented directly using the `Status` message.  - Logging. If some
+  API errors are stored in logs, the message `Status` could     be used
+  directly after any stripping needed for security/privacy reasons.
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    details: A list of messages that carry the error details.  There is a
+      common set of message types for APIs to use.
+    message: A developer-facing error message, which should be in English. Any
+      user-facing error message should be localized and sent in the
+      google.rpc.Status.details field, or localized by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  message = _messages.StringField(3)
+
+
+class SyncRepoRequest(_messages.Message):
+  r"""Request for SyncRepo."""
 
 
 class TestIamPermissionsRequest(_messages.Message):

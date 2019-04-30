@@ -31,7 +31,7 @@ def CreateConnection(project_number, service, network, ranges):
     project_number: The number of the project for which to peer the service.
     service: The name of the service to peer with.
     network: The network in consumer project to peer with.
-    ranges: The IP CIDR ranges for peering service to use.
+    ranges: The names of IP CIDR ranges for peering service to use.
 
   Raises:
     exceptions.CreateConnectionsPermissionDeniedException: when the create
@@ -66,7 +66,7 @@ def UpdateConnection(project_number, service, network, ranges, force):
     project_number: The number of the project for which to peer the service.
     service: The name of the service to peer with.
     network: The network in consumer project to peer with.
-    ranges: The IP CIDR ranges for peering service to use.
+    ranges: The names of IP CIDR ranges for peering service to use.
     force: update the connection even if the update can be destructive.
 
   Raises:

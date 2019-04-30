@@ -346,6 +346,18 @@
         }
       }
     },
+    "UploadServiceAccountKeyRequest": {
+      "id": "UploadServiceAccountKeyRequest",
+      "description": "The service account key upload request.",
+      "type": "object",
+      "properties": {
+        "publicKeyData": {
+          "description": "A field that allows clients to upload their own public key. If set,\nuse this public key data to create a service account key for given\nservice account.\nPlease note, the expected format for this field is X509_PEM.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
     "ServiceAccountIdentityBinding": {
       "id": "ServiceAccountIdentityBinding",
       "description": "Represents a service account identity provider reference.\n\nA service account has at most one identity binding for the EAP.\n\nThis is an alternative to service account keys and enables the service\naccount to be configured to trust an external IDP through the provided\nidentity binding.",
@@ -1638,6 +1650,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Creates a ServiceAccountKey\nand returns it."
+                },
+                "upload": {
+                  "id": "iam.projects.serviceAccounts.keys.upload",
+                  "path": "v1/{+name}/keys:upload",
+                  "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/keys:upload",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "UploadServiceAccountKeyRequest"
+                  },
+                  "response": {
+                    "$ref": "ServiceAccountKey"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Upload public key for a given service account.\nThis rpc will create a\nServiceAccountKey that has the\nprovided public key and returns it."
                 },
                 "delete": {
                   "id": "iam.projects.serviceAccounts.keys.delete",

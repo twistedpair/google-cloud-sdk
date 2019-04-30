@@ -5,21 +5,43 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 244.0.0 (2019-04-30)
+
+### Cloud Scheduler
+
+* Added auth flags to `gcloud beta scheduler jobs create http`.
+
+### Kubernetes Engine
+
+* Promote list usable subnetworks from Beta to GA.
+* Added the `--workload-metadata-from-node` flag to `gcloud beta container
+  node-pools update` for changing the type of metadata server visible to pods
+  running in the nodepool.
+
+### Vision API
+
+* Added `--detect_objects`, `--detect_text_pdf`, `--detect_text_tiff` commands to `gcloud ml vision`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 243.0.0 (2019-04-23)
 
 ### Breaking Changes
 
-*   **(AI Platform)** Renamed `--worker-server-count` flag in `gcloud ml-engine jobs submit training` to `--worker-count`
-*   **(App Engine)** Update `app repair` description
-  `app repair` will no longer recreate a deleted service account.
-*   **(Cloud Machine Learning Engine)** Renamed `--worker-server-count` flag in `gcloud ml-engine jobs submit training` to `--worker-count`
-*   **(Cloud Machine Learning Engine)** Deprecated the `gcloud ml-engine` command group. Use `gcloud ai-platform`  instead.
+*   **(AI Platform)** Renamed `--worker-server-count` flag of
+    `gcloud ml-engine jobs submit training ` to `--worker-count`.
+*   **(App Engine)** Updated `gcloud app repair` to no longer recreate
+    a deleted service account.
+*   **(Cloud Machine Learning Engine)** Deprecated the
+    `gcloud ml-engine` command group. Use `gcloud ai-platform`  instead.
 
 
 ### AI Platform
 
 * Added the `gcloud ai-platform` command group to replace `gcloud ml-engine`.
-* Promoted `gcloud ai-platform versions create|update` to beta.
+* Promoted `gcloud ai-platform versions <create|update>` to beta.
 * Added the `--enable-console-logging` flag to `gcloud beta ai-platform models
   create` to enable logging of stderr and stdout streams for online prediction
   in Stackdriver Logging.
@@ -36,9 +58,9 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Firestore Emulator
 
-* Release Cloud Firestore Emulator version 1.4.5
-  * Fix bug for Firestore REST API
-  * Accept secure JWTs with warnings
+* Released Cloud Firestore Emulator version 1.4.5
+  * Fixed bug for Firestore REST API
+  * Added support to allow secure JWTs with warnings
 
 ### Cloud SQL
 
@@ -46,48 +68,43 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Tasks
 
-*   Replaced `gcloud tasks queues <create|update>-app-engine-queue` with `gcloud tasks queues <create|update>` in beta and GA.
+*   Replaced `gcloud tasks queues <create|update>-app-engine-queue` with
+    `gcloud tasks queues <create|update>` in beta and GA.
 
 ### Compute Engine
 
-* Promoted the `--storage-location` and `--labels` flag in `gcloud compute disks snapshot`to GA.
-* Promoted 'gcloud compute network-endpoint-groups' command group to GA.
+* Promoted `gcloud compute network-endpoint-groups` command group to GA.
+* Promoted the `--storage-location` and `--labels` flag of
+  `gcloud compute disks snapshot` to GA.
 * Promoted `--network-endpoint-group` and `--network-endpoint-group-zone`
-flags to GA in following commands:
-  * `gcloud compute backend-services add-backend`
-  * `gcloud compute backend-services remove-backend`
-  * `gcloud compute backend-services update-backend`
+  flags of `gcloud compute backend-services
+  <add-backend|remove-backend|update-backend>` to GA.
 * Promoted `--max-connections-per-endpoint` and `--max-rate-per-endpoint`
-flags to GA in following commands:
-  * `gcloud compute backend-services add-backend`
-  * `gcloud compute backend-services update-backend`
-* Promoted `--use-serving-port` flag to GA in following commands:
-  * `gcloud compute health-checks http create`
-  * `gcloud compute health-checks https create`
-  * `gcloud compute health-checks http2 create`
-  * `gcloud compute health-checks ssl create`
+  flags of `gcloud compute backend-services <add-backend|update-backend>` to GA.
+* Promoted `--use-serving-port` flag of `gcloud compute health-checks
+  <http|https|http2|ssl> create` to GA.
 * Promoted `--custom-request-headers` and `--no-custom-request-headers` flags of
   `gcloud compute backend-services <create|update>` to GA.
 * Promoted `--no-guest-environment`, `--network`, and `--subnet` flags of `gcloud
   compute images import` to GA.
+* Changed `--no-guest-environment` to `--guest-environment` flag in `gcloud
+  compute images import`.
 * Promoted `--subnet` flag of `gcloud compute images export` to GA.
 * Promoted feature allowing `gcloud beta compute images <import|export>` to use
-  temporary bucket in the same region as source/destination buckets. This avoids
+  temporary buckets in the same region as source/destination buckets. This avoids
   cross-region copying and its associated cost and performance penalty.
 * Promoted `--container-mount-disk-*` flags of
   `gcloud compute instances <create-with-container|update-container>` to GA.
 * Promoted `--container-mount-disk-*` flags of
   `gcloud compute instance-templates create-with-container` to GA.
-* Changed `--no-guest-environment` to `--guest-environment` flag of `gcloud
-  compute images import`
 
 ### Kubernetes Engine
 
-* Support --update-addons=CloudRun=ENABLED|DISABLED to to enable or disable the
- Cloud Run on Google Kubernetes Engine addon for existing Google Kubernetes
- Engine cluster.
+* Added `--update-addons=CloudRun=ENABLED|DISABLED` to allow enabling
+  and disabling the Cloud Run on Google Kubernetes Engine add-on for existing
+  GKE clusters.
 * Promoted the `--sandbox` flag of `gcloud container node-pools create` to beta.
-The flag enables the requested sandbox on all nodes in the node-pool.
+  This flag enables the requested sandbox on all nodes in the node-pool.
 
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
@@ -236,7 +253,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
     to accept three additional parameters for Redis 4.0 compatible instances:
     `activedefrag`, `lfu-decay-time`, `lfu-log-factor`.
 
-### Cloud PubSub
+### Cloud Pub/Sub
 
 * Added optional flags `--push-auth-service-account` and
  `--push-auth-token-audience` for defining an authenticated push subscription in
@@ -3017,7 +3034,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
    gcloud functions deploy --trigger-event \
    providers/cloud.storage/eventTypes/object.change \
    --trigger-resource <your_bucket_name>
-* **(MODIFIED)** The schema for pub/sub events has changed. `eventId`,
+* **(MODIFIED)** The schema for Pub/Sub events has changed. `eventId`,
   `timestamp`, `resource`, and `eventType` have all been moved inside the
   context property e.g., context.timestamp. All functions deployed using
   `--trigger-topic` flag will use the new schema. To get the legacy behavior,
@@ -3101,7 +3118,7 @@ date, apps will be blocked from deploying until you specify the SSL library
   `gcloud dataproc jobs submit` are now mutually exclusive. The previous usage
   had been deprecated for more than a year.
 *  **(MODIFIED)** Soon changing the default event schema returned by Cloud
-   Functions with a pub/sub trigger(e.g. `--trigger-topic`). The `eventId`,
+   Functions with a Pub/Sub trigger(e.g. `--trigger-topic`). The `eventId`,
    `timestamp`, `eventType`, and `resource` properties will all be moved into
    the `event.context` property.
    *   To opt-in to the new behavior early, run
@@ -7776,7 +7793,7 @@ The alpha commands will remain, as is, until at least March of 2017.
 
 ### Emulators
 
-*   Fixed behavior of pub/sub emulator subscription topic names when their
+*   Fixed behavior of Pub/Sub emulator subscription topic names when their
     respective topics are deleted. They should now be set to `_deleted-topic_`.
 
 

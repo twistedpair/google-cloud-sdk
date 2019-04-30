@@ -336,7 +336,7 @@
           "type": "string"
         },
         "nodeIpv4CidrSize": {
-          "description": "[Output only] The size of the address space on each node for hosting\ncontainers. This is provisioned from within the `container_ipv4_cidr`\nrange.",
+          "description": "[Output only] The size of the address space on each node for hosting\ncontainers. This is provisioned from within the `container_ipv4_cidr`\nrange. This field will only be set when cluster is in route-based network\nmode.",
           "type": "integer",
           "format": "int32"
         },
@@ -1246,6 +1246,10 @@
         "publicEndpoint": {
           "description": "Output only. The external IP address of this cluster's master endpoint.",
           "type": "string"
+        },
+        "enablePeeringRouteSharing": {
+          "description": "Whether to enable route sharing over the network peering.",
+          "type": "boolean"
         }
       }
     },
@@ -1564,7 +1568,7 @@
           "$ref": "AddonsConfig"
         },
         "desiredNodePoolId": {
-          "description": "The node pool to be upgraded. This field is mandatory if\n\"desired_node_version\", \"desired_image_family\" or\n\"desired_node_pool_autoscaling\" is specified and there is more than one\nnode pool on the cluster.",
+          "description": "The node pool to be upgraded. This field is mandatory if\n\"desired_node_version\", \"desired_image_family\",\n\"desired_node_pool_autoscaling\", or \"desired_workload_metadata_config\"\nis specified and there is more than one node pool on the cluster.",
           "type": "string"
         },
         "desiredImageType": {
@@ -1610,6 +1614,10 @@
           "description": "Cluster-level Vertical Pod Autoscaling configuration.",
           "$ref": "VerticalPodAutoscaling"
         },
+        "desiredPrivateClusterConfig": {
+          "description": "The desired private cluster configuration.",
+          "$ref": "PrivateClusterConfig"
+        },
         "desiredIntraNodeVisibilityConfig": {
           "description": "The desired config of Intra-node visibility.",
           "$ref": "IntraNodeVisibilityConfig"
@@ -1633,6 +1641,10 @@
         "desiredWorkloadIdentityConfig": {
           "description": "Configuration for Workload Identity.",
           "$ref": "WorkloadIdentityConfig"
+        },
+        "desiredShieldedNodes": {
+          "description": "Configuration for Shielded Nodes.",
+          "$ref": "ShieldedNodes"
         }
       }
     },
@@ -1683,6 +1695,10 @@
         "imageProject": {
           "description": "The project containing the desired image to use for this node pool.\nThis is used to create clusters using a custom image.",
           "type": "string"
+        },
+        "workloadMetadataConfig": {
+          "description": "The desired image type for the node pool.",
+          "$ref": "WorkloadMetadataConfig"
         },
         "name": {
           "description": "The name (project, location, cluster, node pool) of the node pool to\nupdate. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",

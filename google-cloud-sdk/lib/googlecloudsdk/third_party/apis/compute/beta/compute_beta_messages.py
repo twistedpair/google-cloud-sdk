@@ -17532,9 +17532,9 @@ class Disk(_messages.Message):
     storageType: [Deprecated] Storage type of the persistent disk.
     type: URL of the disk type resource describing which disk type to use to
       create the disk. Provide this when creating the disk. For example:
-      project/zones/zone/diskTypes/pd-standard or pd-ssd
+      projects/project/zones/zone/diskTypes/pd-standard or pd-ssd
     users: [Output Only] Links to the users of the disk (attached instances)
-      in form: project/zones/zone/instances/instance
+      in form: projects/project/zones/zone/instances/instance
     zone: [Output Only] URL of the zone where the disk resides. You must
       specify this field as part of the HTTP request URL. It is not settable
       as a field in the request body.
@@ -21569,8 +21569,8 @@ class Instance(_messages.Message):
       These specify how interfaces are configured to interact with other
       network services, such as connecting to the internet. Multiple
       interfaces are supported per instance.
-    reservationAffinity: The configuration of desired allocations which this
-      Instance could consume capacity from.
+    reservationAffinity: The configuration of desired reservations from which
+      this Instance can consume capacity from.
     scheduling: Sets the scheduling options for this instance.
     selfLink: [Output Only] Server-defined URL for this resource.
     serviceAccounts: A list of service accounts, with their specified scopes,
@@ -31612,16 +31612,24 @@ class ReservationAffinity(_messages.Message):
   instance could take capacity from.
 
   Enums:
-    ConsumeReservationTypeValueValuesEnum:
+    ConsumeReservationTypeValueValuesEnum: Specifies the type of reservation
+      from which this instance can consume resources: ANY_RESERVATION
+      (default), SPECIFIC_RESERVATION, or NO_RESERVATION. See  Consuming
+      reserved instances for examples.
 
   Fields:
-    consumeReservationType: A ConsumeReservationTypeValueValuesEnum attribute.
+    consumeReservationType: Specifies the type of reservation from which this
+      instance can consume resources: ANY_RESERVATION (default),
+      SPECIFIC_RESERVATION, or NO_RESERVATION. See  Consuming reserved
+      instances for examples.
     key: Corresponds to the label key of reservation resource.
     values: Corresponds to the label values of reservation resource.
   """
 
   class ConsumeReservationTypeValueValuesEnum(_messages.Enum):
-    r"""ConsumeReservationTypeValueValuesEnum enum type.
+    r"""Specifies the type of reservation from which this instance can consume
+    resources: ANY_RESERVATION (default), SPECIFIC_RESERVATION, or
+    NO_RESERVATION. See  Consuming reserved instances for examples.
 
     Values:
       ANY_RESERVATION: <no description>

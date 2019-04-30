@@ -28,7 +28,6 @@ from googlecloudsdk.core.util import files
 
 import six
 
-
 _API_NAME = 'cloudbuild'
 _API_VERSION = 'v1'
 _ALPHA_API_VERSION = 'v1alpha1'
@@ -66,16 +65,26 @@ def EncodeSubstitutions(substitutions, messages):
   # TODO(b/35470611): Use map encoder function instead when implemented
   for key, value in sorted(six.iteritems(substitutions)):  # Sort for tests
     substition_properties.append(
-        messages.Build.SubstitutionsValue.AdditionalProperty(key=key,
-                                                             value=value))
+        messages.Build.SubstitutionsValue.AdditionalProperty(
+            key=key, value=value))
   return messages.Build.SubstitutionsValue(
       additionalProperties=substition_properties)
 
 
-class ParserError(exceptions.Error):
-  """Error parsing YAML into a dictionary.
+def EncodeTriggerSubstitutions(substitutions, messages):
+  if not substitutions:
+    return None
+  substition_properties = []
+  for key, value in sorted(six.iteritems(substitutions)):  # Sort for tests
+    substition_properties.append(
+        messages.BuildTrigger.SubstitutionsValue.AdditionalProperty(
+            key=key, value=value))
+  return messages.BuildTrigger.SubstitutionsValue(
+      additionalProperties=substition_properties)
 
-  """
+
+class ParserError(exceptions.Error):
+  """Error parsing YAML into a dictionary."""
 
   def __init__(self, path, msg):
     msg = 'parsing {path}: {msg}'.format(
@@ -86,9 +95,7 @@ class ParserError(exceptions.Error):
 
 
 class ParseProtoException(exceptions.Error):
-  """Error interpreting a dictionary as a specific proto message.
-
-  """
+  """Error interpreting a dictionary as a specific proto message."""
 
   def __init__(self, path, proto_name, msg):
     msg = 'interpreting {path} as {proto_name}: {msg}'.format(

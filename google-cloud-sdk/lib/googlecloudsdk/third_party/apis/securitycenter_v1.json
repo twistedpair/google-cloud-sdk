@@ -903,6 +903,62 @@
           }
         }
       }
+    },
+    "GoogleCloudSecuritycenterV1beta1RunAssetDiscoveryResponse": {
+      "id": "GoogleCloudSecuritycenterV1beta1RunAssetDiscoveryResponse",
+      "description": "Response of asset discovery run",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "The state of an asset discovery run.",
+          "enumDescriptions": [
+            "Asset discovery run state was unspecified.",
+            "Asset discovery run completed successfully.",
+            "Asset discovery run was cancelled with tasks still pending, as another\nrun for the same organization was started with a higher priority.",
+            "Asset discovery run was killed and terminated."
+          ],
+          "type": "string",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "COMPLETED",
+            "SUPERSEDED",
+            "TERMINATED"
+          ]
+        },
+        "duration": {
+          "description": "The duration between asset discovery run start and end",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse": {
+      "id": "GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse",
+      "description": "Response of asset discovery run",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "The state of an asset discovery run.",
+          "enumDescriptions": [
+            "Asset discovery run state was unspecified.",
+            "Asset discovery run completed successfully.",
+            "Asset discovery run was cancelled with tasks still pending, as another\nrun for the same organization was started with a higher priority.",
+            "Asset discovery run was killed and terminated."
+          ],
+          "type": "string",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "COMPLETED",
+            "SUPERSEDED",
+            "TERMINATED"
+          ]
+        },
+        "duration": {
+          "description": "The duration between asset discovery run start and end",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
     }
   },
   "resources": {

@@ -138,6 +138,7 @@ def _GetToolEnv(env=None):
   """
   if env is None:
     env = dict(os.environ)
+  env = encoding.EncodeEnv(env)
   encoding.SetEncodedValue(env, 'CLOUDSDK_WRAPPER', '1')
 
   # Flags can set properties which override the properties file and the existing
@@ -300,7 +301,7 @@ def Exec(args,
   # started and the original is killed.  When running in a shell, the prompt
   # returns as soon as the parent is killed even though the child is still
   # running.  subprocess waits for the new process to finish before returning.
-  env = encoding.EncodeEnv(_GetToolEnv(env=env))
+  env = _GetToolEnv(env=env)
 
   process_holder = _ProcessHolder()
   with _ReplaceSignal(signal.SIGTERM, process_holder.Handler):
@@ -433,7 +434,7 @@ def KillSubprocess(p):
     # subprocesses from the main process down
 
     # set env LANG for subprocess.Popen to be 'en_US.UTF-8'
-    new_env = dict(os.environ)
+    new_env = encoding.EncodeEnv(dict(os.environ))
     new_env['LANG'] = 'en_US.UTF-8'
     get_pids_process = subprocess.Popen(['ps', '-e',
                                          '-o', 'ppid=', '-o', 'pid='],

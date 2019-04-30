@@ -191,16 +191,18 @@ def AddCommonArgs(parser,
       """
   if with_service_account:
     target_tags_help = """\
-      A list of instance tags indicating the set of instances on the
-      network which may accept inbound connections that match the
-      firewall rule. If both target tags and target service account
-      are omitted, all instances on the network can receive inbound
-      connections that match the rule.
 
-      Tags can be assigned to instances during instance creation.
+      List of instance tags indicating the set of instances on the
+      network which may accept connections that match the
+      firewall rule.
+      Note that tags can be assigned to instances during instance creation.
 
-      If target tags are specified then neither a source nor target
+      If target tags are specified, then neither a source nor target
       service account can also be specified.
+
+      If both target tags and target service account
+      are omitted, all instances on the network can receive
+      connections that match the rule.
       """
   if for_update:
     target_tags_help += """

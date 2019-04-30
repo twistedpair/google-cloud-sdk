@@ -1889,6 +1889,163 @@
         }
       }
     },
+    "BatchAnnotateFilesRequest": {
+      "id": "BatchAnnotateFilesRequest",
+      "description": "A list of requests to annotate files using the BatchAnnotateFiles API.",
+      "type": "object",
+      "properties": {
+        "requests": {
+          "description": "The list of file annotation requests. Right now we support only one\nAnnotateFileRequest in BatchAnnotateFilesRequest.",
+          "type": "array",
+          "items": {
+            "$ref": "AnnotateFileRequest"
+          }
+        }
+      }
+    },
+    "AnnotateFileRequest": {
+      "id": "AnnotateFileRequest",
+      "description": "A request to annotate one single file, e.g. a PDF, TIFF or GIF file.",
+      "type": "object",
+      "properties": {
+        "inputConfig": {
+          "description": "Required. Information about the input file.",
+          "$ref": "InputConfig"
+        },
+        "features": {
+          "description": "Required. Requested features.",
+          "type": "array",
+          "items": {
+            "$ref": "Feature"
+          }
+        },
+        "imageContext": {
+          "description": "Additional context that may accompany the image(s) in the file.",
+          "$ref": "ImageContext"
+        },
+        "pages": {
+          "description": "Pages of the file to perform image annotation.\n\nPages starts from 1, we assume the first page of the file is page 1.\nAt most 5 pages are supported per request. Pages can be negative.\n\nPage 1 means the first page.\nPage 2 means the second page.\nPage -1 means the last page.\nPage -2 means the second to the last page.\n\nIf the file is GIF instead of PDF or TIFF, page refers to GIF frames.\n\nIf this field is empty, by default the service performs image annotation\nfor the first 5 pages of the file.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      }
+    },
+    "InputConfig": {
+      "id": "InputConfig",
+      "description": "The desired input location and metadata.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "The Google Cloud Storage location to read the input from.",
+          "$ref": "GcsSource"
+        },
+        "content": {
+          "description": "File content, represented as a stream of bytes.\nNote: As with all `bytes` fields, protobuffers use a pure binary\nrepresentation, whereas JSON representations use base64.\n\nCurrently, this field only works for BatchAnnotateFiles requests. It does\nnot work for AsyncBatchAnnotateFiles requests.",
+          "type": "string",
+          "format": "byte"
+        },
+        "mimeType": {
+          "description": "The type of the file. Currently only \"application\/pdf\" and \"image\/tiff\"\nare supported. Wildcards are not supported.",
+          "type": "string"
+        }
+      }
+    },
+    "GcsSource": {
+      "id": "GcsSource",
+      "description": "The Google Cloud Storage location where the input will be read from.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Google Cloud Storage URI for the input file. This must only be a\nGoogle Cloud Storage object. Wildcards are not currently supported.",
+          "type": "string"
+        }
+      }
+    },
+    "BatchAnnotateFilesResponse": {
+      "id": "BatchAnnotateFilesResponse",
+      "description": "A list of file annotation responses.",
+      "type": "object",
+      "properties": {
+        "responses": {
+          "description": "The list of file annotation responses, each response corresponding to each\nAnnotateFileRequest in BatchAnnotateFilesRequest.",
+          "type": "array",
+          "items": {
+            "$ref": "AnnotateFileResponse"
+          }
+        }
+      }
+    },
+    "AnnotateFileResponse": {
+      "id": "AnnotateFileResponse",
+      "description": "Response to a single file annotation request. A file may contain one or more\nimages, which individually have their own responses.",
+      "type": "object",
+      "properties": {
+        "inputConfig": {
+          "description": "Information about the file for which this response is generated.",
+          "$ref": "InputConfig"
+        },
+        "responses": {
+          "description": "Individual responses to images found within the file.",
+          "type": "array",
+          "items": {
+            "$ref": "AnnotateImageResponse"
+          }
+        },
+        "totalPages": {
+          "description": "This field gives the total number of pages in the file.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "AsyncBatchAnnotateImagesRequest": {
+      "id": "AsyncBatchAnnotateImagesRequest",
+      "description": "Request for async image annotation for a list of images.",
+      "type": "object",
+      "properties": {
+        "requests": {
+          "description": "Individual image annotation requests for this batch.",
+          "type": "array",
+          "items": {
+            "$ref": "AnnotateImageRequest"
+          }
+        },
+        "outputConfig": {
+          "description": "Required. The desired output location and metadata (e.g. format).",
+          "$ref": "OutputConfig"
+        }
+      }
+    },
+    "OutputConfig": {
+      "id": "OutputConfig",
+      "description": "The desired output location and metadata.",
+      "type": "object",
+      "properties": {
+        "gcsDestination": {
+          "description": "The Google Cloud Storage location to write the output(s) to.",
+          "$ref": "GcsDestination"
+        },
+        "batchSize": {
+          "description": "The max number of response protos to put into each output JSON file on\nGoogle Cloud Storage.\nThe valid range is [1, 100]. If not specified, the default value is 20.\n\nFor example, for one pdf file with 100 pages, 100 response protos will\nbe generated. If `batch_size` = 20, then 5 json files each\ncontaining 20 response protos will be written under the prefix\n`gcs_destination`.`uri`.\n\nCurrently, batch_size only applies to GcsDestination, with potential future\nsupport for other output configurations.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GcsDestination": {
+      "id": "GcsDestination",
+      "description": "The Google Cloud Storage location where the output will be written to.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Google Cloud Storage URI prefix where the results will be stored. Results\nwill be in JSON format and preceded by its corresponding input URI prefix.\nThis field can either represent a gcs file prefix or gcs directory. In\neither case, the uri should be unique because in order to get all of the\noutput files, you will need to do a wildcard gcs search on the uri prefix\nyou provide.\n\nExamples:\n\n*    File Prefix: gs:\/\/bucket-name\/here\/filenameprefix   The output files\nwill be created in gs:\/\/bucket-name\/here\/ and the names of the\noutput files will begin with \"filenameprefix\".\n\n*    Directory Prefix: gs:\/\/bucket-name\/some\/location\/   The output files\nwill be created in gs:\/\/bucket-name\/some\/location\/ and the names of the\noutput files could be anything because there was no filename prefix\nspecified.\n\nIf multiple outputs, each response is still AnnotateFileResponse, each of\nwhich contains some subset of the full list of AnnotateImageResponse.\nMultiple outputs can happen if, for example, the output JSON is too large\nand overflows into multiple sharded files.",
+          "type": "string"
+        }
+      }
+    },
     "AsyncBatchAnnotateFilesRequest": {
       "id": "AsyncBatchAnnotateFilesRequest",
       "description": "Multiple async file annotation requests are batched into a single service\ncall.",
@@ -1929,77 +2086,6 @@
         }
       }
     },
-    "InputConfig": {
-      "id": "InputConfig",
-      "description": "The desired input location and metadata.",
-      "type": "object",
-      "properties": {
-        "gcsSource": {
-          "description": "The Google Cloud Storage location to read the input from.",
-          "$ref": "GcsSource"
-        },
-        "mimeType": {
-          "description": "The type of the file. Currently only \"application\/pdf\" and \"image\/tiff\"\nare supported. Wildcards are not supported.",
-          "type": "string"
-        }
-      }
-    },
-    "GcsSource": {
-      "id": "GcsSource",
-      "description": "The Google Cloud Storage location where the input will be read from.",
-      "type": "object",
-      "properties": {
-        "uri": {
-          "description": "Google Cloud Storage URI for the input file. This must only be a\nGoogle Cloud Storage object. Wildcards are not currently supported.",
-          "type": "string"
-        }
-      }
-    },
-    "OutputConfig": {
-      "id": "OutputConfig",
-      "description": "The desired output location and metadata.",
-      "type": "object",
-      "properties": {
-        "gcsDestination": {
-          "description": "The Google Cloud Storage location to write the output(s) to.",
-          "$ref": "GcsDestination"
-        },
-        "batchSize": {
-          "description": "The max number of response protos to put into each output JSON file on\nGoogle Cloud Storage.\nThe valid range is [1, 100]. If not specified, the default value is 20.\n\nFor example, for one pdf file with 100 pages, 100 response protos will\nbe generated. If `batch_size` = 20, then 5 json files each\ncontaining 20 response protos will be written under the prefix\n`gcs_destination`.`uri`.\n\nCurrently, batch_size only applies to GcsDestination, with potential future\nsupport for other output configurations.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "GcsDestination": {
-      "id": "GcsDestination",
-      "description": "The Google Cloud Storage location where the output will be written to.",
-      "type": "object",
-      "properties": {
-        "uri": {
-          "description": "Google Cloud Storage URI prefix where the results will be stored. Results\nwill be in JSON format and preceded by its corresponding input URI prefix.\nThis field can either represent a gcs file prefix or gcs directory. In\neither case, the uri should be unique because in order to get all of the\noutput files, you will need to do a wildcard gcs search on the uri prefix\nyou provide.\n\nExamples:\n\n*    File Prefix: gs:\/\/bucket-name\/here\/filenameprefix   The output files\nwill be created in gs:\/\/bucket-name\/here\/ and the names of the\noutput files will begin with \"filenameprefix\".\n\n*    Directory Prefix: gs:\/\/bucket-name\/some\/location\/   The output files\nwill be created in gs:\/\/bucket-name\/some\/location\/ and the names of the\noutput files could be anything because there was no filename prefix\nspecified.\n\nIf multiple outputs, each response is still AnnotateFileResponse, each of\nwhich contains some subset of the full list of AnnotateImageResponse.\nMultiple outputs can happen if, for example, the output JSON is too large\nand overflows into multiple sharded files.",
-          "type": "string"
-        }
-      }
-    },
-    "AnnotateFileResponse": {
-      "id": "AnnotateFileResponse",
-      "description": "Response to a single file annotation request. A file may contain one or more\nimages, which individually have their own responses.",
-      "type": "object",
-      "properties": {
-        "inputConfig": {
-          "description": "Information about the file for which this response is generated.",
-          "$ref": "InputConfig"
-        },
-        "responses": {
-          "description": "Individual responses to images found within the file.",
-          "type": "array",
-          "items": {
-            "$ref": "AnnotateImageResponse"
-          }
-        }
-      }
-    },
     "AsyncBatchAnnotateFilesResponse": {
       "id": "AsyncBatchAnnotateFilesResponse",
       "description": "Response to an async batch file annotation request.",
@@ -2021,6 +2107,17 @@
       "properties": {
         "outputConfig": {
           "description": "The output location and metadata from AsyncAnnotateFileRequest.",
+          "$ref": "OutputConfig"
+        }
+      }
+    },
+    "AsyncBatchAnnotateImagesResponse": {
+      "id": "AsyncBatchAnnotateImagesResponse",
+      "description": "Response to an async batch image annotation request.",
+      "type": "object",
+      "properties": {
+        "outputConfig": {
+          "description": "The output location and metadata from AsyncBatchAnnotateImagesRequest.",
           "$ref": "OutputConfig"
         }
       }
@@ -2131,6 +2228,11 @@
           "items": {
             "$ref": "GoogleCloudVisionV1p1beta1AnnotateImageResponse"
           }
+        },
+        "totalPages": {
+          "description": "This field gives the total number of pages in the file.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -2142,6 +2244,11 @@
         "gcsSource": {
           "description": "The Google Cloud Storage location to read the input from.",
           "$ref": "GoogleCloudVisionV1p1beta1GcsSource"
+        },
+        "content": {
+          "description": "File content, represented as a stream of bytes.\nNote: As with all `bytes` fields, protobuffers use a pure binary\nrepresentation, whereas JSON representations use base64.\n\nCurrently, this field only works for BatchAnnotateFiles requests. It does\nnot work for AsyncBatchAnnotateFiles requests.",
+          "type": "string",
+          "format": "byte"
         },
         "mimeType": {
           "description": "The type of the file. Currently only \"application\/pdf\" and \"image\/tiff\"\nare supported. Wildcards are not supported.",
@@ -3495,6 +3602,11 @@
           "items": {
             "$ref": "GoogleCloudVisionV1p2beta1AnnotateImageResponse"
           }
+        },
+        "totalPages": {
+          "description": "This field gives the total number of pages in the file.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -3506,6 +3618,11 @@
         "gcsSource": {
           "description": "The Google Cloud Storage location to read the input from.",
           "$ref": "GoogleCloudVisionV1p2beta1GcsSource"
+        },
+        "content": {
+          "description": "File content, represented as a stream of bytes.\nNote: As with all `bytes` fields, protobuffers use a pure binary\nrepresentation, whereas JSON representations use base64.\n\nCurrently, this field only works for BatchAnnotateFiles requests. It does\nnot work for AsyncBatchAnnotateFiles requests.",
+          "type": "string",
+          "format": "byte"
         },
         "mimeType": {
           "description": "The type of the file. Currently only \"application\/pdf\" and \"image\/tiff\"\nare supported. Wildcards are not supported.",
@@ -4992,6 +5109,11 @@
           "items": {
             "$ref": "GoogleCloudVisionV1p3beta1AnnotateImageResponse"
           }
+        },
+        "totalPages": {
+          "description": "This field gives the total number of pages in the file.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -5003,6 +5125,11 @@
         "gcsSource": {
           "description": "The Google Cloud Storage location to read the input from.",
           "$ref": "GoogleCloudVisionV1p3beta1GcsSource"
+        },
+        "content": {
+          "description": "File content, represented as a stream of bytes.\nNote: As with all `bytes` fields, protobuffers use a pure binary\nrepresentation, whereas JSON representations use base64.\n\nCurrently, this field only works for BatchAnnotateFiles requests. It does\nnot work for AsyncBatchAnnotateFiles requests.",
+          "type": "string",
+          "format": "byte"
         },
         "mimeType": {
           "description": "The type of the file. Currently only \"application\/pdf\" and \"image\/tiff\"\nare supported. Wildcards are not supported.",
@@ -8601,11 +8728,53 @@
             "https://www.googleapis.com/auth/cloud-vision"
           ],
           "description": "Run image detection and annotation for a batch of images."
+        },
+        "asyncBatchAnnotate": {
+          "id": "vision.images.asyncBatchAnnotate",
+          "path": "v1/images:asyncBatchAnnotate",
+          "flatPath": "v1/images:asyncBatchAnnotate",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "AsyncBatchAnnotateImagesRequest"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-vision"
+          ],
+          "description": "Run asynchronous image detection and annotation for a list of images.\n\nProgress and results can be retrieved through the\n`google.longrunning.Operations` interface.\n`Operation.metadata` contains `OperationMetadata` (metadata).\n`Operation.response` contains `AsyncBatchAnnotateImagesResponse` (results).\n\nThis service will write image annotation outputs to json files in customer\nGCS bucket, each json file containing BatchAnnotateImagesResponse proto."
         }
       }
     },
     "files": {
       "methods": {
+        "annotate": {
+          "id": "vision.files.annotate",
+          "path": "v1/files:annotate",
+          "flatPath": "v1/files:annotate",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "BatchAnnotateFilesRequest"
+          },
+          "response": {
+            "$ref": "BatchAnnotateFilesResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-vision"
+          ],
+          "description": "Service that performs image detection and annotation for a batch of files.\nNow only \"application\/pdf\", \"image\/tiff\" and \"image\/gif\" are supported.\n\nThis service will extract at most 5 (customers can specify which 5 in\nAnnotateFileRequest.pages) frames (gif) or pages (pdf or tiff) from each\nfile provided and perform detection and annotation for each image\nextracted."
+        },
         "asyncBatchAnnotate": {
           "id": "vision.files.asyncBatchAnnotate",
           "path": "v1/files:asyncBatchAnnotate",

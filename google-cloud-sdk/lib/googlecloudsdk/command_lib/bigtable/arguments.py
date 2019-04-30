@@ -46,6 +46,15 @@ class InstanceCompleter(completers.ListCommandCompleter):
         **kwargs)
 
 
+class TableCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(TableCompleter, self).__init__(
+        collection='bigtableadmin.projects.instances.tables',
+        list_command='beta bigtable instances tables list --uri',
+        **kwargs)
+
+
 def ProcessInstanceTypeAndNodes(args, instance_type):
   """Ensure that --instance-type and --num-nodes are consistent.
 
@@ -156,6 +165,15 @@ class ArgAdder(object):
     self.parser.add_argument(name, **args)
     return self
 
+  def AddTable(self):
+    """Add table argument."""
+    self.parser.add_argument(
+        '--table',
+        completer=TableCompleter,
+        help='ID of the table.',
+        required=True)
+    return self
+
   def AddAppProfileRouting(self, required=True):
     """Adds arguments for app_profile routing to parser."""
     routing_group = self.parser.add_mutually_exclusive_group(required=required)
@@ -231,6 +249,11 @@ def InstanceAttributeConfig():
       name='instance', help_text='Cloud Bigtable instance for the {resource}.')
 
 
+def TableAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='table', help_text='Cloud Bigtable table for the {resource}.')
+
+
 def ClusterAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='cluster', help_text='Cloud Bigtable cluster for the {resource}.')
@@ -247,6 +270,17 @@ def GetInstanceResourceSpec():
   return concepts.ResourceSpec(
       'bigtableadmin.projects.instances',
       resource_name='instance',
+      instancesId=InstanceAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False)
+
+
+def GetTableResourceSpec():
+  """Return the resource specification for a Bigtable table."""
+  return concepts.ResourceSpec(
+      'bigtableadmin.projects.instances.tables',
+      resource_name='table',
+      tablesId=TableAttributeConfig(),
       instancesId=InstanceAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False)
@@ -289,6 +323,16 @@ def AddInstanceResourceArg(parser, verb, positional=False):
       'instance' if positional else '--instance',
       GetInstanceResourceSpec(),
       'The instance {}.'.format(verb),
+      required=True,
+      plural=False).AddToParser(parser)
+
+
+def AddTableResourceArg(parser, verb, positional=False):
+  """Add --table resource argument to the parser."""
+  concept_parsers.ConceptParser.ForResource(
+      'table' if positional else '--table',
+      GetTableResourceSpec(),
+      'The table {}.'.format(verb),
       required=True,
       plural=False).AddToParser(parser)
 

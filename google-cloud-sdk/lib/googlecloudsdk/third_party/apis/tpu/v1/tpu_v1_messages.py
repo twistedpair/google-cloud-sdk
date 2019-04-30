@@ -490,9 +490,11 @@ class SchedulingConfig(_messages.Message):
 
   Fields:
     preemptible: A boolean attribute.
+    reserved: Whether the node is created under a reservation.
   """
 
   preemptible = _messages.BooleanField(1)
+  reserved = _messages.BooleanField(2)
 
 
 class StandardQueryParameters(_messages.Message):

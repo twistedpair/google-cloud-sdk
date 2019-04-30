@@ -306,7 +306,8 @@ class Cluster(_messages.Message):
       node_pool.config instead.
     nodeIpv4CidrSize: [Output only] The size of the address space on each node
       for hosting containers. This is provisioned from within the
-      `container_ipv4_cidr` range.
+      `container_ipv4_cidr` range. This field will only be set when cluster is
+      in route-based network mode.
     nodePools: The node pools associated with this cluster. This field should
       not be set if "node_config" or "initial_node_count" are specified.
     podSecurityPolicyConfig: Configuration for the PodSecurityPolicy feature.
@@ -524,9 +525,9 @@ class ClusterUpdate(_messages.Message):
       cluster and desired_node_pool_id is not provided then the change applies
       to that single node pool.
     desiredNodePoolId: The node pool to be upgraded. This field is mandatory
-      if "desired_node_version", "desired_image_family" or
-      "desired_node_pool_autoscaling" is specified and there is more than one
-      node pool on the cluster.
+      if "desired_node_version", "desired_image_family",
+      "desired_node_pool_autoscaling", or "desired_workload_metadata_config"
+      is specified and there is more than one node pool on the cluster.
     desiredNodeVersion: The Kubernetes version to change the nodes to
       (typically an upgrade).  Users may specify either explicit versions
       offered by Kubernetes Engine or version aliases, which have the
@@ -537,8 +538,10 @@ class ClusterUpdate(_messages.Message):
       picks the Kubernetes master version
     desiredPodSecurityPolicyConfig: The desired configuration options for the
       PodSecurityPolicy feature.
+    desiredPrivateClusterConfig: The desired private cluster configuration.
     desiredResourceUsageExportConfig: The desired configuration for exporting
       resource usage.
+    desiredShieldedNodes: Configuration for Shielded Nodes.
     desiredVerticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
       configuration.
     desiredWorkloadIdentityConfig: Configuration for Workload Identity.
@@ -561,9 +564,11 @@ class ClusterUpdate(_messages.Message):
   desiredNodePoolId = _messages.StringField(15)
   desiredNodeVersion = _messages.StringField(16)
   desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 17)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 18)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 19)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 20)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 18)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 19)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 20)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 21)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 22)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -2177,6 +2182,8 @@ class PrivateClusterConfig(_messages.Message):
   r"""Configuration options for private clusters.
 
   Fields:
+    enablePeeringRouteSharing: Whether to enable route sharing over the
+      network peering.
     enablePrivateEndpoint: Whether the master's internal IP address is used as
       the cluster endpoint.
     enablePrivateNodes: Whether nodes have internal IP addresses only. If
@@ -2193,11 +2200,12 @@ class PrivateClusterConfig(_messages.Message):
       master endpoint.
   """
 
-  enablePrivateEndpoint = _messages.BooleanField(1)
-  enablePrivateNodes = _messages.BooleanField(2)
-  masterIpv4CidrBlock = _messages.StringField(3)
-  privateEndpoint = _messages.StringField(4)
-  publicEndpoint = _messages.StringField(5)
+  enablePeeringRouteSharing = _messages.BooleanField(1)
+  enablePrivateEndpoint = _messages.BooleanField(2)
+  enablePrivateNodes = _messages.BooleanField(3)
+  masterIpv4CidrBlock = _messages.StringField(4)
+  privateEndpoint = _messages.StringField(5)
+  publicEndpoint = _messages.StringField(6)
 
 
 class ResourceLimit(_messages.Message):
@@ -2881,6 +2889,7 @@ class UpdateNodePoolRequest(_messages.Message):
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
+    workloadMetadataConfig: The desired image type for the node pool.
     zone: Deprecated. The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides. This
       field has been deprecated and replaced by the name field.
@@ -2894,7 +2903,8 @@ class UpdateNodePoolRequest(_messages.Message):
   nodePoolId = _messages.StringField(6)
   nodeVersion = _messages.StringField(7)
   projectId = _messages.StringField(8)
-  zone = _messages.StringField(9)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 9)
+  zone = _messages.StringField(10)
 
 
 class UsableSubnetwork(_messages.Message):

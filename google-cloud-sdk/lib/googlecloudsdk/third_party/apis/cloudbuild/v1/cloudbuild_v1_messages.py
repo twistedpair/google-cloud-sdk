@@ -815,6 +815,7 @@ class GitHubEventsConfig(_messages.Message):
   Fields:
     checkSuite: Output only. Indicates that a build was generated from a check
       suite event.
+    installationId: The installationID that emmits the GitHub event.
     name: Name of the repository.
     owner: Owner of the repository.
     pullRequest: filter to match changes in pull requests.
@@ -822,10 +823,11 @@ class GitHubEventsConfig(_messages.Message):
   """
 
   checkSuite = _messages.MessageField('CheckSuiteFilter', 1)
-  name = _messages.StringField(2)
-  owner = _messages.StringField(3)
-  pullRequest = _messages.MessageField('PullRequestFilter', 4)
-  push = _messages.MessageField('PushFilter', 5)
+  installationId = _messages.IntegerField(2)
+  name = _messages.StringField(3)
+  owner = _messages.StringField(4)
+  pullRequest = _messages.MessageField('PullRequestFilter', 5)
+  push = _messages.MessageField('PushFilter', 6)
 
 
 class Hash(_messages.Message):

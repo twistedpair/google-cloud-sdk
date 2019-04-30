@@ -97,29 +97,6 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
-  PROJECTS_LOCATIONS_DATASETS_FHIRSTORES_FHIR = (
-      'projects.locations.datasets.fhirStores.fhir',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/datasets/'
-              '{datasetsId}/fhirStores/{fhirStoresId}/fhir/{fhirId}/{fhirId1}',
-      },
-      [u'name'],
-      True
-  )
-  PROJECTS_LOCATIONS_DATASETS_FHIRSTORES_FHIR__HISTORY = (
-      'projects.locations.datasets.fhirStores.fhir._history',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/datasets/'
-              '{datasetsId}/fhirStores/{fhirStoresId}/fhir/{fhirId}/'
-              '{fhirId1}/_history/{_historyId}',
-      },
-      [u'name'],
-      True
-  )
   PROJECTS_LOCATIONS_DATASETS_HL7V2STORES = (
       'projects.locations.datasets.hl7V2Stores',
       '{+name}',

@@ -244,6 +244,35 @@ existing policy.
         supports_download=False,
     )
 
+    def Sync(self, request, global_params=None):
+      r"""Synchronize a connected repo.
+
+The response contains SyncRepoMetadata in the metadata field.
+
+      Args:
+        request: (SourcerepoProjectsReposSyncRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Sync')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Sync.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/repos/{reposId}:sync',
+        http_method=u'POST',
+        method_id=u'sourcerepo.projects.repos.sync',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:sync',
+        request_field=u'syncRepoRequest',
+        request_type_name=u'SourcerepoProjectsReposSyncRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of

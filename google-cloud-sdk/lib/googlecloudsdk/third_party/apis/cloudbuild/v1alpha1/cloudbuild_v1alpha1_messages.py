@@ -987,7 +987,7 @@ class WorkerPool(_messages.Message):
     deleteTime: Output only. Time at which the request to delete the
       `WorkerPool` was received.
     name: User-defined name of the `WorkerPool`.
-    projectId: The project ID of the GCP project in which the `WorkerPool` is
+    projectId: The project ID of the GCP project for which the `WorkerPool` is
       created.
     regions: List of regions to create the `WorkerPool`. Regions can't be
       empty. If Cloud Build adds a new GCP region in the future, the existing

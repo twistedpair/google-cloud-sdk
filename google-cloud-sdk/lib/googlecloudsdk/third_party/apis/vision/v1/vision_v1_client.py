@@ -59,6 +59,38 @@ class VisionV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Annotate(self, request, global_params=None):
+      r"""Service that performs image detection and annotation for a batch of files.
+Now only "application/pdf", "image/tiff" and "image/gif" are supported.
+
+This service will extract at most 5 (customers can specify which 5 in
+AnnotateFileRequest.pages) frames (gif) or pages (pdf or tiff) from each
+file provided and perform detection and annotation for each image
+extracted.
+
+      Args:
+        request: (BatchAnnotateFilesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BatchAnnotateFilesResponse) The response message.
+      """
+      config = self.GetMethodConfig('Annotate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Annotate.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'vision.files.annotate',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/files:annotate',
+        request_field='<request>',
+        request_type_name=u'BatchAnnotateFilesRequest',
+        response_type_name=u'BatchAnnotateFilesResponse',
+        supports_download=False,
+    )
+
     def AsyncBatchAnnotate(self, request, global_params=None):
       r"""Run asynchronous image detection and annotation for a list of generic.
 files, such as PDF files, which may contain multiple pages and multiple
@@ -123,6 +155,40 @@ images per page. Progress and results can be retrieved through the
         request_field='<request>',
         request_type_name=u'BatchAnnotateImagesRequest',
         response_type_name=u'BatchAnnotateImagesResponse',
+        supports_download=False,
+    )
+
+    def AsyncBatchAnnotate(self, request, global_params=None):
+      r"""Run asynchronous image detection and annotation for a list of images.
+
+Progress and results can be retrieved through the
+`google.longrunning.Operations` interface.
+`Operation.metadata` contains `OperationMetadata` (metadata).
+`Operation.response` contains `AsyncBatchAnnotateImagesResponse` (results).
+
+This service will write image annotation outputs to json files in customer
+GCS bucket, each json file containing BatchAnnotateImagesResponse proto.
+
+      Args:
+        request: (AsyncBatchAnnotateImagesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AsyncBatchAnnotate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AsyncBatchAnnotate.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'vision.images.asyncBatchAnnotate',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/images:asyncBatchAnnotate',
+        request_field='<request>',
+        request_type_name=u'AsyncBatchAnnotateImagesRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 

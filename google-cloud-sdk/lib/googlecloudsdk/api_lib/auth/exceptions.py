@@ -36,3 +36,7 @@ class WrongAccountError(exceptions.Error):
 
 class GitCredentialHelperError(exceptions.Error):
   """Raised for issues related to passing auth credentials to Git."""
+
+
+class InvalidIdentityTokenError(exceptions.Error):
+  """Raised when identity token of credential is None."""

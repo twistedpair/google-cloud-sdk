@@ -1172,6 +1172,8 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
   Enums:
     AudioEncodingValueValuesEnum: Required. Audio encoding of the audio
       content to process.
+    ModelVariantValueValuesEnum: Optional. Which variant of the Speech model
+      to use.
 
   Fields:
     audioEncoding: Required. Audio encoding of the audio content to process.
@@ -1181,6 +1183,7 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
       enterprise/docs/reference/language) for a list of the currently
       supported language codes. Note that queries in the same session do not
       necessarily need to specify the same language.
+    modelVariant: Optional. Which variant of the Speech model to use.
     phraseHints: Optional. The collection of phrase hints which are used to
       boost accuracy of speech recognition. Refer to [Cloud Speech API
       documentation](https://cloud.google.com/speech-to-text/docs/basics
@@ -1236,10 +1239,40 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
     AUDIO_ENCODING_OGG_OPUS = 6
     AUDIO_ENCODING_SPEEX_WITH_HEADER_BYTE = 7
 
+  class ModelVariantValueValuesEnum(_messages.Enum):
+    r"""Optional. Which variant of the Speech model to use.
+
+    Values:
+      SPEECH_MODEL_VARIANT_UNSPECIFIED: No model variant specified. In this
+        case we default to USE_BEST_AVAILABLE.
+      USE_BEST_AVAILABLE: Use the best available variant of the Speech model
+        that the caller is eligible for.  Please see the [Dialogflow
+        docs](https://cloud.google.com/dialogflow-enterprise/docs/data-
+        logging) for how to make your project eligible for enhanced models.
+      USE_STANDARD: Use standard model variant even if an enhanced model is
+        available.  See the [Cloud Speech
+        documentation](https://cloud.google.com/speech-to-text/docs/enhanced-
+        models) for details about enhanced models.
+      USE_ENHANCED: Use an enhanced model variant:  * If an enhanced variant
+        does not exist for the given   model and request language, we fall
+        back to the   standard variant.    The [Cloud Speech
+        documentation](https://cloud.google.com/speech-to-text/docs/enhanced-
+        models)   describes which models have enhanced variants.  * If the API
+        caller isn't eligible for enhanced models, we return an error.
+        Please see the [Dialogflow   docs](https://cloud.google.com
+        /dialogflow-enterprise/docs/data-logging)   for how to make your
+        project eligible.
+    """
+    SPEECH_MODEL_VARIANT_UNSPECIFIED = 0
+    USE_BEST_AVAILABLE = 1
+    USE_STANDARD = 2
+    USE_ENHANCED = 3
+
   audioEncoding = _messages.EnumField('AudioEncodingValueValuesEnum', 1)
   languageCode = _messages.StringField(2)
-  phraseHints = _messages.StringField(3, repeated=True)
-  sampleRateHertz = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  modelVariant = _messages.EnumField('ModelVariantValueValuesEnum', 3)
+  phraseHints = _messages.StringField(4, repeated=True)
+  sampleRateHertz = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudDialogflowV2Intent(_messages.Message):

@@ -143,12 +143,12 @@
           "type": "string"
         },
         "initialNodeCount": {
-          "description": "The number of nodes to create in this cluster. You must ensure that your\nCompute Engine <a href=\"\/compute\/docs\/resource-quotas\">resource quota<\/a>\nis sufficient for this number of instances. You must also have available\nfirewall and routes quota.\nFor requests, this field should only be used in lieu of a\n\"node_pool\" object, since this configuration (along with the\n\"node_config\") will be used to create a \"NodePool\" object with an\nauto-generated name. Do not use this and a node_pool at the same time.",
+          "description": "The number of nodes to create in this cluster. You must ensure that your\nCompute Engine <a href=\"\/compute\/docs\/resource-quotas\">resource quota<\/a>\nis sufficient for this number of instances. You must also have available\nfirewall and routes quota.\nFor requests, this field should only be used in lieu of a\n\"node_pool\" object, since this configuration (along with the\n\"node_config\") will be used to create a \"NodePool\" object with an\nauto-generated name. Do not use this and a node_pool at the same time.\n\nThis field is deprecated, use node_pool.initial_node_count instead.",
           "type": "integer",
           "format": "int32"
         },
         "nodeConfig": {
-          "description": "Parameters used in creating the cluster's nodes.\nSee `nodeConfig` for the description of its properties.\nFor requests, this field should only be used in lieu of a\n\"node_pool\" object, since this configuration (along with the\n\"initial_node_count\") will be used to create a \"NodePool\" object with an\nauto-generated name. Do not use this and a node_pool at the same time.\nFor responses, this field will be populated with the node configuration of\nthe first node pool.\n\nIf unspecified, the defaults are used.",
+          "description": "Parameters used in creating the cluster's nodes.\nFor requests, this field should only be used in lieu of a\n\"node_pool\" object, since this configuration (along with the\n\"initial_node_count\") will be used to create a \"NodePool\" object with an\nauto-generated name. Do not use this and a node_pool at the same time.\nFor responses, this field will be populated with the node configuration of\nthe first node pool. (For configuration of each node pool, see\n`node_pool.config`)\n\nIf unspecified, the defaults are used.\nThis field is deprecated, use node_pool.config instead.",
           "$ref": "NodeConfig"
         },
         "masterAuth": {
@@ -295,7 +295,7 @@
           "type": "string"
         },
         "nodeIpv4CidrSize": {
-          "description": "[Output only] The size of the address space on each node for hosting\ncontainers. This is provisioned from within the `container_ipv4_cidr`\nrange.",
+          "description": "[Output only] The size of the address space on each node for hosting\ncontainers. This is provisioned from within the `container_ipv4_cidr`\nrange. This field will only be set when cluster is in route-based network\nmode.",
           "type": "integer",
           "format": "int32"
         },
@@ -679,6 +679,11 @@
           "items": {
             "$ref": "StatusCondition"
           }
+        },
+        "podIpv4CidrSize": {
+          "description": "[Output only] The pod CIDR block size per node in this node pool.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -877,7 +882,7 @@
           "type": "boolean"
         },
         "cidrBlocks": {
-          "description": "cidr_blocks define up to 10 external networks that could access\nKubernetes master through HTTPS.",
+          "description": "cidr_blocks define up to 50 external networks that could access\nKubernetes master through HTTPS.",
           "type": "array",
           "items": {
             "$ref": "CidrBlock"
@@ -1548,43 +1553,43 @@
       "type": "object",
       "properties": {
         "issuer": {
-          "description": "NOLINT",
+          "description": "OIDC Issuer.",
           "type": "string"
         },
         "jwks_uri": {
-          "description": "NOLINT",
+          "description": "JSON Web Key uri.",
           "type": "string"
         },
         "response_types_supported": {
-          "description": "NOLINT",
+          "description": "Supported response types.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "subject_types_supported": {
-          "description": "NOLINT",
+          "description": "Supported subject types.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "id_token_signing_alg_values_supported": {
-          "description": "NOLINT",
+          "description": "supported ID Token signing Algorithms.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "claims_supported": {
-          "description": "NOLINT",
+          "description": "Supported claims.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "grant_types": {
-          "description": "NOLINT",
+          "description": "Supported grant types.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1612,39 +1617,39 @@
       "type": "object",
       "properties": {
         "kty": {
-          "description": "NOLINT",
+          "description": "Key Type.",
           "type": "string"
         },
         "alg": {
-          "description": "NOLINT",
+          "description": "Algorithm.",
           "type": "string"
         },
         "use": {
-          "description": "NOLINT",
+          "description": "Permitted uses for the public keys.",
           "type": "string"
         },
         "kid": {
-          "description": "NOLINT",
+          "description": "Key ID.",
           "type": "string"
         },
         "n": {
-          "description": "Fields for RSA keys.\nNOLINT",
+          "description": "Used for RSA keys.",
           "type": "string"
         },
         "e": {
-          "description": "NOLINT",
+          "description": "Used for RSA keys.",
           "type": "string"
         },
         "x": {
-          "description": "Fields for ECDSA keys.\nNOLINT",
+          "description": "Used for ECDSA keys.",
           "type": "string"
         },
         "y": {
-          "description": "NOLINT",
+          "description": "Used for ECDSA keys.",
           "type": "string"
         },
         "crv": {
-          "description": "NOLINT",
+          "description": "Used for ECDSA keys.",
           "type": "string"
         }
       }
@@ -2431,9 +2436,6 @@
                   "response": {
                     "$ref": "GetJSONWebKeysResponse"
                   },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
                   "description": "Gets the public component of the cluster signing keys in\nJSON Web Key format.\nThis API is not yet intended for general use, and is not available for all\nclusters."
                 },
                 "setResourceLabels": {
@@ -2931,9 +2933,6 @@
                       "response": {
                         "$ref": "GetOpenIDConfigResponse"
                       },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
                       "description": "Gets the OIDC discovery document for the cluster.\nSee the\n[OpenID Connect Discovery 1.0\nspecification](https:\/\/openid.net\/specs\/openid-connect-discovery-1_0.html)\nfor details.\nThis API is not yet intended for general use, and is not available for all\nclusters."
                     }
                   }

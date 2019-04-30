@@ -131,3 +131,12 @@ snapshot:
   - parameter_name: snapshot
     attribute_name: snapshot_name
     help: The name of the Google Compute Engine snapshot.
+
+machine_image:
+  name: machine_image
+  collection: compute.machineImages
+  attributes:
+  - *project
+  - parameter_name: machineImage
+    attribute_name: machine_image
+    help: The name of the Google Compute Engine machine image.

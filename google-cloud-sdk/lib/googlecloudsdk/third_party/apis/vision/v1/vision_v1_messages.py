@@ -25,6 +25,29 @@ class AddProductToProductSetRequest(_messages.Message):
   product = _messages.StringField(1)
 
 
+class AnnotateFileRequest(_messages.Message):
+  r"""A request to annotate one single file, e.g. a PDF, TIFF or GIF file.
+
+  Fields:
+    features: Required. Requested features.
+    imageContext: Additional context that may accompany the image(s) in the
+      file.
+    inputConfig: Required. Information about the input file.
+    pages: Pages of the file to perform image annotation.  Pages starts from
+      1, we assume the first page of the file is page 1. At most 5 pages are
+      supported per request. Pages can be negative.  Page 1 means the first
+      page. Page 2 means the second page. Page -1 means the last page. Page -2
+      means the second to the last page.  If the file is GIF instead of PDF or
+      TIFF, page refers to GIF frames.  If this field is empty, by default the
+      service performs image annotation for the first 5 pages of the file.
+  """
+
+  features = _messages.MessageField('Feature', 1, repeated=True)
+  imageContext = _messages.MessageField('ImageContext', 2)
+  inputConfig = _messages.MessageField('InputConfig', 3)
+  pages = _messages.IntegerField(4, repeated=True, variant=_messages.Variant.INT32)
+
+
 class AnnotateFileResponse(_messages.Message):
   r"""Response to a single file annotation request. A file may contain one or
   more images, which individually have their own responses.
@@ -33,10 +56,12 @@ class AnnotateFileResponse(_messages.Message):
     inputConfig: Information about the file for which this response is
       generated.
     responses: Individual responses to images found within the file.
+    totalPages: This field gives the total number of pages in the file.
   """
 
   inputConfig = _messages.MessageField('InputConfig', 1)
   responses = _messages.MessageField('AnnotateImageResponse', 2, repeated=True)
+  totalPages = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class AnnotateImageRequest(_messages.Message):
@@ -151,6 +176,52 @@ class AsyncBatchAnnotateFilesResponse(_messages.Message):
   """
 
   responses = _messages.MessageField('AsyncAnnotateFileResponse', 1, repeated=True)
+
+
+class AsyncBatchAnnotateImagesRequest(_messages.Message):
+  r"""Request for async image annotation for a list of images.
+
+  Fields:
+    outputConfig: Required. The desired output location and metadata (e.g.
+      format).
+    requests: Individual image annotation requests for this batch.
+  """
+
+  outputConfig = _messages.MessageField('OutputConfig', 1)
+  requests = _messages.MessageField('AnnotateImageRequest', 2, repeated=True)
+
+
+class AsyncBatchAnnotateImagesResponse(_messages.Message):
+  r"""Response to an async batch image annotation request.
+
+  Fields:
+    outputConfig: The output location and metadata from
+      AsyncBatchAnnotateImagesRequest.
+  """
+
+  outputConfig = _messages.MessageField('OutputConfig', 1)
+
+
+class BatchAnnotateFilesRequest(_messages.Message):
+  r"""A list of requests to annotate files using the BatchAnnotateFiles API.
+
+  Fields:
+    requests: The list of file annotation requests. Right now we support only
+      one AnnotateFileRequest in BatchAnnotateFilesRequest.
+  """
+
+  requests = _messages.MessageField('AnnotateFileRequest', 1, repeated=True)
+
+
+class BatchAnnotateFilesResponse(_messages.Message):
+  r"""A list of file annotation responses.
+
+  Fields:
+    responses: The list of file annotation responses, each response
+      corresponding to each AnnotateFileRequest in BatchAnnotateFilesRequest.
+  """
+
+  responses = _messages.MessageField('AnnotateFileResponse', 1, repeated=True)
 
 
 class BatchAnnotateImagesRequest(_messages.Message):
@@ -846,10 +917,12 @@ class GoogleCloudVisionV1p1beta1AnnotateFileResponse(_messages.Message):
     inputConfig: Information about the file for which this response is
       generated.
     responses: Individual responses to images found within the file.
+    totalPages: This field gives the total number of pages in the file.
   """
 
   inputConfig = _messages.MessageField('GoogleCloudVisionV1p1beta1InputConfig', 1)
   responses = _messages.MessageField('GoogleCloudVisionV1p1beta1AnnotateImageResponse', 2, repeated=True)
+  totalPages = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudVisionV1p1beta1AnnotateImageResponse(_messages.Message):
@@ -1452,13 +1525,19 @@ class GoogleCloudVisionV1p1beta1InputConfig(_messages.Message):
   r"""The desired input location and metadata.
 
   Fields:
+    content: File content, represented as a stream of bytes. Note: As with all
+      `bytes` fields, protobuffers use a pure binary representation, whereas
+      JSON representations use base64.  Currently, this field only works for
+      BatchAnnotateFiles requests. It does not work for
+      AsyncBatchAnnotateFiles requests.
     gcsSource: The Google Cloud Storage location to read the input from.
     mimeType: The type of the file. Currently only "application/pdf" and
       "image/tiff" are supported. Wildcards are not supported.
   """
 
-  gcsSource = _messages.MessageField('GoogleCloudVisionV1p1beta1GcsSource', 1)
-  mimeType = _messages.StringField(2)
+  content = _messages.BytesField(1)
+  gcsSource = _messages.MessageField('GoogleCloudVisionV1p1beta1GcsSource', 2)
+  mimeType = _messages.StringField(3)
 
 
 class GoogleCloudVisionV1p1beta1LocalizedObjectAnnotation(_messages.Message):
@@ -2114,10 +2193,12 @@ class GoogleCloudVisionV1p2beta1AnnotateFileResponse(_messages.Message):
     inputConfig: Information about the file for which this response is
       generated.
     responses: Individual responses to images found within the file.
+    totalPages: This field gives the total number of pages in the file.
   """
 
   inputConfig = _messages.MessageField('GoogleCloudVisionV1p2beta1InputConfig', 1)
   responses = _messages.MessageField('GoogleCloudVisionV1p2beta1AnnotateImageResponse', 2, repeated=True)
+  totalPages = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudVisionV1p2beta1AnnotateImageResponse(_messages.Message):
@@ -2720,13 +2801,19 @@ class GoogleCloudVisionV1p2beta1InputConfig(_messages.Message):
   r"""The desired input location and metadata.
 
   Fields:
+    content: File content, represented as a stream of bytes. Note: As with all
+      `bytes` fields, protobuffers use a pure binary representation, whereas
+      JSON representations use base64.  Currently, this field only works for
+      BatchAnnotateFiles requests. It does not work for
+      AsyncBatchAnnotateFiles requests.
     gcsSource: The Google Cloud Storage location to read the input from.
     mimeType: The type of the file. Currently only "application/pdf" and
       "image/tiff" are supported. Wildcards are not supported.
   """
 
-  gcsSource = _messages.MessageField('GoogleCloudVisionV1p2beta1GcsSource', 1)
-  mimeType = _messages.StringField(2)
+  content = _messages.BytesField(1)
+  gcsSource = _messages.MessageField('GoogleCloudVisionV1p2beta1GcsSource', 2)
+  mimeType = _messages.StringField(3)
 
 
 class GoogleCloudVisionV1p2beta1LocalizedObjectAnnotation(_messages.Message):
@@ -3382,10 +3469,12 @@ class GoogleCloudVisionV1p3beta1AnnotateFileResponse(_messages.Message):
     inputConfig: Information about the file for which this response is
       generated.
     responses: Individual responses to images found within the file.
+    totalPages: This field gives the total number of pages in the file.
   """
 
   inputConfig = _messages.MessageField('GoogleCloudVisionV1p3beta1InputConfig', 1)
   responses = _messages.MessageField('GoogleCloudVisionV1p3beta1AnnotateImageResponse', 2, repeated=True)
+  totalPages = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudVisionV1p3beta1AnnotateImageResponse(_messages.Message):
@@ -4046,13 +4135,19 @@ class GoogleCloudVisionV1p3beta1InputConfig(_messages.Message):
   r"""The desired input location and metadata.
 
   Fields:
+    content: File content, represented as a stream of bytes. Note: As with all
+      `bytes` fields, protobuffers use a pure binary representation, whereas
+      JSON representations use base64.  Currently, this field only works for
+      BatchAnnotateFiles requests. It does not work for
+      AsyncBatchAnnotateFiles requests.
     gcsSource: The Google Cloud Storage location to read the input from.
     mimeType: The type of the file. Currently only "application/pdf" and
       "image/tiff" are supported. Wildcards are not supported.
   """
 
-  gcsSource = _messages.MessageField('GoogleCloudVisionV1p3beta1GcsSource', 1)
-  mimeType = _messages.StringField(2)
+  content = _messages.BytesField(1)
+  gcsSource = _messages.MessageField('GoogleCloudVisionV1p3beta1GcsSource', 2)
+  mimeType = _messages.StringField(3)
 
 
 class GoogleCloudVisionV1p3beta1LocalizedObjectAnnotation(_messages.Message):
@@ -6297,13 +6392,19 @@ class InputConfig(_messages.Message):
   r"""The desired input location and metadata.
 
   Fields:
+    content: File content, represented as a stream of bytes. Note: As with all
+      `bytes` fields, protobuffers use a pure binary representation, whereas
+      JSON representations use base64.  Currently, this field only works for
+      BatchAnnotateFiles requests. It does not work for
+      AsyncBatchAnnotateFiles requests.
     gcsSource: The Google Cloud Storage location to read the input from.
     mimeType: The type of the file. Currently only "application/pdf" and
       "image/tiff" are supported. Wildcards are not supported.
   """
 
-  gcsSource = _messages.MessageField('GcsSource', 1)
-  mimeType = _messages.StringField(2)
+  content = _messages.BytesField(1)
+  gcsSource = _messages.MessageField('GcsSource', 2)
+  mimeType = _messages.StringField(3)
 
 
 class KeyValue(_messages.Message):

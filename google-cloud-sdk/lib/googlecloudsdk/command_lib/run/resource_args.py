@@ -169,7 +169,7 @@ def ClusterLocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='location',
       help_text='Specific to Cloud Run on Kubernetes Engine: '
-      'Location of the {resource}. Alternatively, set the '
+      'Zone in which the {resource} is located. Alternatively, set the '
       'property [run/cluster_location].',
       fallthroughs=[
           deps.PropertyFallthrough(

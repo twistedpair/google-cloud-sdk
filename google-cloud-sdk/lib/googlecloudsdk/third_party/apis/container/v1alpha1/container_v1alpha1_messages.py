@@ -334,7 +334,8 @@ class Cluster(_messages.Message):
       node_pool.config instead.
     nodeIpv4CidrSize: [Output only] The size of the address space on each node
       for hosting containers. This is provisioned from within the
-      `container_ipv4_cidr` range.
+      `container_ipv4_cidr` range. This field will only be set when cluster is
+      in route-based network mode.
     nodePools: The node pools associated with this cluster. This field should
       not be set if "node_config" or "initial_node_count" are specified.
     nodeSchedulingStrategy: Defines behaviour of k8s scheduler.
@@ -614,6 +615,7 @@ class ClusterUpdate(_messages.Message):
       this cluster.
     desiredResourceUsageExportConfig: The desired configuration for exporting
       resource usage.
+    desiredShieldedNodes: Configuration for Shielded Nodes.
     desiredVerticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
       configuration.
     desiredWorkloadIdentityConfig: Configuration for Workload Identity.
@@ -642,9 +644,10 @@ class ClusterUpdate(_messages.Message):
   desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 20)
   desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 21)
   desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 22)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 23)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 24)
-  securityProfile = _messages.MessageField('SecurityProfile', 25)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 23)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 24)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 25)
+  securityProfile = _messages.MessageField('SecurityProfile', 26)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1685,6 +1688,46 @@ class LegacyAbac(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
+class LinuxNodeConfig(_messages.Message):
+  r"""Parameters that can be configured on Linux nodes.
+
+  Messages:
+    SysctlsValue: The Linux kernel parameters to be applied to the nodes and
+      all pods running on the nodes.
+
+  Fields:
+    sysctls: The Linux kernel parameters to be applied to the nodes and all
+      pods running on the nodes.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SysctlsValue(_messages.Message):
+    r"""The Linux kernel parameters to be applied to the nodes and all pods
+    running on the nodes.
+
+    Messages:
+      AdditionalProperty: An additional property for a SysctlsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type SysctlsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SysctlsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  sysctls = _messages.MessageField('SysctlsValue', 1)
+
+
 class ListClustersResponse(_messages.Message):
   r"""ListClustersResponse is the result of ListClustersRequest.
 
@@ -2002,6 +2045,7 @@ class NodeConfig(_messages.Message):
       more information, including usage and the valid values, see:
       https://kubernetes.io/docs/concepts/overview/working-with-
       objects/labels/
+    linuxNodeConfig: Parameters that can be configured on Linux nodes.
     localSsdCount: The number of local SSD disks to be attached to the node.
       The limit for this value is dependant upon the maximum number of disks
       available on a machine per zone. See:
@@ -2142,22 +2186,23 @@ class NodeConfig(_messages.Message):
   diskType = _messages.StringField(3)
   imageType = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
-  localSsdCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  localSsdVolumeConfigs = _messages.MessageField('LocalSsdVolumeConfig', 7, repeated=True)
-  machineType = _messages.StringField(8)
-  metadata = _messages.MessageField('MetadataValue', 9)
-  minCpuPlatform = _messages.StringField(10)
-  nodeGroup = _messages.StringField(11)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 12)
-  oauthScopes = _messages.StringField(13, repeated=True)
-  preemptible = _messages.BooleanField(14)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 15)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 16)
-  serviceAccount = _messages.StringField(17)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 18)
-  tags = _messages.StringField(19, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 20, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 21)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 6)
+  localSsdCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  localSsdVolumeConfigs = _messages.MessageField('LocalSsdVolumeConfig', 8, repeated=True)
+  machineType = _messages.StringField(9)
+  metadata = _messages.MessageField('MetadataValue', 10)
+  minCpuPlatform = _messages.StringField(11)
+  nodeGroup = _messages.StringField(12)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 13)
+  oauthScopes = _messages.StringField(14, repeated=True)
+  preemptible = _messages.BooleanField(15)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 16)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 17)
+  serviceAccount = _messages.StringField(18)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 19)
+  tags = _messages.StringField(20, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 21, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 22)
 
 
 class NodeManagement(_messages.Message):
@@ -2562,8 +2607,7 @@ class ReservationAffinity(_messages.Message):
   Fields:
     consumeReservationType: Corresponds to the type of reservation
       consumption.
-    key: Corresponds to the label key of reservation resource. Must be
-      "googleapis.com/allocation" since GCE API only accepts it for now.
+    key: Corresponds to the label key of reservation resource.
     values: Corresponds to the label value(s) of reservation resource(s).
   """
 

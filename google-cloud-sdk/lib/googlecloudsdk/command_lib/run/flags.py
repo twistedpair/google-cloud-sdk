@@ -360,6 +360,9 @@ def GetRegion(args, prompt=False):
     idx = console_io.PromptChoice(
         all_regions, message='Please specify a region:\n', cancel_option=True)
     region = all_regions[idx]
+    # set the region on args, so we're not embarassed the next time we call
+    # GetRegion
+    args.region = region
     log.status.Print(
         'To make this the default region, run '
         '`gcloud config set run/region {}`.\n'.format(region))

@@ -52,11 +52,25 @@ class Collections(enum.Enum):
       [u'projectId', u'location', u'jobId'],
       True
   )
+  PROJECTS_LOCATIONS_SNAPSHOTS = (
+      'projects.locations.snapshots',
+      'projects/{projectId}/locations/{location}/snapshots/{snapshotId}',
+      {},
+      [u'projectId', u'location', u'snapshotId'],
+      True
+  )
   PROJECTS_LOCATIONS_TEMPLATES = (
       'projects.locations.templates',
       'projects/{projectId}/locations/{location}/templates:get',
       {},
       [u'projectId', u'location'],
+      True
+  )
+  PROJECTS_SNAPSHOTS = (
+      'projects.snapshots',
+      'projects/{projectId}/snapshots/{snapshotId}',
+      {},
+      [u'projectId', u'snapshotId'],
       True
   )
   PROJECTS_TEMPLATES = (

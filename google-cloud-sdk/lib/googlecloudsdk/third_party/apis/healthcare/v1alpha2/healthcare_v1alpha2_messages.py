@@ -33,6 +33,25 @@ class Annotation(_messages.Message):
   textAnnotation = _messages.MessageField('SensitiveTextAnnotation', 5)
 
 
+class AnnotationConfig(_messages.Message):
+  r"""Specifies how to store annotations during de-identification operation.
+
+  Fields:
+    annotationStoreName: The name of the annotation store, in the form `projec
+      ts/{project_id}/locations/{location_id}/datasets/{dataset_id}/annotation
+      Stores/{annotation_store_id}`).   * The destination dataset must exist
+      if it is different than the    de-identify operation's output dataset.
+      * The destination annotation store must be in the same project as the
+      source data. De-identifying data across multiple projects is not
+      supported.  * The destination annotation store must not exist.
+    storeQuote: If set to true, the sensitive texts will be included in
+      SensitiveTextAnnotation of Annotation.
+  """
+
+  annotationStoreName = _messages.StringField(1)
+  storeQuote = _messages.BooleanField(2)
+
+
 class AnnotationSource(_messages.Message):
   r"""AnnotationSource holds the source information of the annotation.
 
@@ -178,7 +197,7 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: an
+    condition: The condition that is associated with this binding. NOTE: An
       unsatisfied condition will not allow user access via current binding.
       Different bindings, including their conditions, are examined
       independently.
@@ -300,29 +319,41 @@ class DeidentifyConfig(_messages.Message):
   media type or subtype. Configs are applied in a nested manner at runtime.
 
   Fields:
+    annotation: Configures how annotations (such as the location and infoTypes
+      of sensitive information that was found) are created during de-
+      identification. If unspecified, no annotations will be created.
     dicom: Configures de-id of application/DICOM content.
     fhir: Configures de-id of application/FHIR content.
     image: Configures de-identification of image pixels wherever they are
       found in the source_dataset.
+    inspectionConfig: Configuration for how inspection occurs on text and
+      images.
     text: Configures de-identification of text wherever it is found in the
       source_dataset.
+    transformationConfig: Configuration for how transformations occur on
+      annotations of text and images.
   """
 
-  dicom = _messages.MessageField('DicomConfig', 1)
-  fhir = _messages.MessageField('FhirConfig', 2)
-  image = _messages.MessageField('ImageConfig', 3)
-  text = _messages.MessageField('TextConfig', 4)
+  annotation = _messages.MessageField('AnnotationConfig', 1)
+  dicom = _messages.MessageField('DicomConfig', 2)
+  fhir = _messages.MessageField('FhirConfig', 3)
+  image = _messages.MessageField('ImageConfig', 4)
+  inspectionConfig = _messages.MessageField('InspectionConfig', 5)
+  text = _messages.MessageField('TextConfig', 6)
+  transformationConfig = _messages.MessageField('TransformationConfig', 7)
 
 
 class DeidentifyDatasetRequest(_messages.Message):
   r"""Redacts identifying information from the specified dataset.
 
   Fields:
-    config: Deidentify configuration
-    destinationDataset: The name of the dataset resource to which the redacted
-      data should be written (e.g.,
+    config: Deidentify configuration.
+    destinationDataset: The name of the dataset resource to create and write
+      the redacted data to (e.g.,
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`).
-      The new dataset must not exist, or the request will fail.
+      * The destination dataset must not exist.  * The destination dataset
+      must be in the same project as the source    dataset. De-identifying
+      data across multiple projects is not supported.
   """
 
   config = _messages.MessageField('DeidentifyConfig', 1)
@@ -380,6 +411,8 @@ class DicomConfig(_messages.Message):
       keep/remove.
     keepList: List of tags to keep. Remove all other tags.
     removeList: List of tags to remove. Keep all other tags.
+    skipIdRedaction: If set, skip the redaction. Otherwise, all IDs are
+      redacted.
   """
 
   class FilterProfileValueValuesEnum(_messages.Enum):
@@ -408,6 +441,7 @@ class DicomConfig(_messages.Message):
   filterProfile = _messages.EnumField('FilterProfileValueValuesEnum', 1)
   keepList = _messages.MessageField('TagFilterList', 2)
   removeList = _messages.MessageField('TagFilterList', 3)
+  skipIdRedaction = _messages.BooleanField(4)
 
 
 class DicomStore(_messages.Message):
@@ -704,8 +738,9 @@ class FieldMetadata(_messages.Message):
     Values:
       ACTION_UNSPECIFIED: No action specified.
       TRANSFORM: Transform the entire field.
-      INSPECT_AND_TRANSFORM: Should be inspected and any PHI found should be
-        transformed.
+      INSPECT_AND_TRANSFORM: Inspect and transform any found PHI. When
+        `AnnotationConfig` is provided, annotations of PHI will be generated,
+        except for Date and Datetime.
       DO_NOT_TRANSFORM: Do not transform.
     """
     ACTION_UNSPECIFIED = 0
@@ -1653,6 +1688,17 @@ class HealthcareProjectsLocationsDatasetsDicomStoresTestIamPermissionsRequest(_m
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class HealthcareProjectsLocationsDatasetsFhirStoresCapabilitiesRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresCapabilitiesRequest
+  object.
+
+  Fields:
+    name: Name of the FHIR store to retrieve the capabilities for.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class HealthcareProjectsLocationsDatasetsFhirStoresCreateRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresCreateRequest object.
 
@@ -1678,19 +1724,6 @@ class HealthcareProjectsLocationsDatasetsFhirStoresDeleteRequest(_messages.Messa
   name = _messages.StringField(1, required=True)
 
 
-class HealthcareProjectsLocationsDatasetsFhirStoresExecuteBundleRequest(_messages.Message):
-  r"""A HealthcareProjectsLocationsDatasetsFhirStoresExecuteBundleRequest
-  object.
-
-  Fields:
-    httpBody: A HttpBody resource to be passed as the request body.
-    parent: Name of the FHIR store in which this bundle will be executed.
-  """
-
-  httpBody = _messages.MessageField('HttpBody', 1)
-  parent = _messages.StringField(2, required=True)
-
-
 class HealthcareProjectsLocationsDatasetsFhirStoresExportRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresExportRequest object.
 
@@ -1706,9 +1739,21 @@ class HealthcareProjectsLocationsDatasetsFhirStoresExportRequest(_messages.Messa
   name = _messages.StringField(2, required=True)
 
 
-class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalDeleteResourceRequest(_messages.Message):
-  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalDeleteReso
-  urceRequest object.
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirCapabilitiesRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirCapabilitiesRequest
+  object.
+
+  Fields:
+    name: Name of the FHIR store to retrieve the capabilities for.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalDeleteRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalDeleteRequest
+  object.
 
   Fields:
     parent: The name of the FHIR store this resource belongs to.
@@ -1719,39 +1764,40 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalDeleteResource
   type = _messages.StringField(2, required=True)
 
 
-class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalPatchResourceRequest(_messages.Message):
-  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalPatchResou
-  rceRequest object.
-
-  Fields:
-    httpBody: A HttpBody resource to be passed as the request body.
-    parent: The name of the FHIR store this resource belongs to.
-    type: The type of the resource to update.
-  """
-
-  httpBody = _messages.MessageField('HttpBody', 1)
-  parent = _messages.StringField(2, required=True)
-  type = _messages.StringField(3, required=True)
-
-
-class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalUpdateResourceRequest(_messages.Message):
-  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalUpdateReso
-  urceRequest object.
-
-  Fields:
-    httpBody: A HttpBody resource to be passed as the request body.
-    parent: The name of the FHIR store this resource belongs to.
-    type: The type of the resource to update.
-  """
-
-  httpBody = _messages.MessageField('HttpBody', 1)
-  parent = _messages.StringField(2, required=True)
-  type = _messages.StringField(3, required=True)
-
-
-class HealthcareProjectsLocationsDatasetsFhirStoresFhirCreateResourceRequest(_messages.Message):
-  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirCreateResourceRequest
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalPatchRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalPatchRequest
   object.
+
+  Fields:
+    httpBody: A HttpBody resource to be passed as the request body.
+    parent: The name of the FHIR store this resource belongs to.
+    type: The type of the resource to update.
+  """
+
+  httpBody = _messages.MessageField('HttpBody', 1)
+  parent = _messages.StringField(2, required=True)
+  type = _messages.StringField(3, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalUpdateRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalUpdateRequest
+  object.
+
+  Fields:
+    httpBody: A HttpBody resource to be passed as the request body.
+    parent: The name of the FHIR store this resource belongs to.
+    type: The type of the resource to update.
+  """
+
+  httpBody = _messages.MessageField('HttpBody', 1)
+  parent = _messages.StringField(2, required=True)
+  type = _messages.StringField(3, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirCreateRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirCreateRequest object.
 
   Fields:
     httpBody: A HttpBody resource to be passed as the request body.
@@ -1764,17 +1810,6 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirCreateResourceRequest(_me
   type = _messages.StringField(3, required=True)
 
 
-class HealthcareProjectsLocationsDatasetsFhirStoresFhirDeletePurgeRequest(_messages.Message):
-  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirDeletePurgeRequest
-  object.
-
-  Fields:
-    name: The name of the resource to purge.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class HealthcareProjectsLocationsDatasetsFhirStoresFhirDeleteRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirDeleteRequest object.
 
@@ -1785,56 +1820,37 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirDeleteRequest(_messages.M
   name = _messages.StringField(1, required=True)
 
 
-class HealthcareProjectsLocationsDatasetsFhirStoresFhirGetMetadataRequest(_messages.Message):
-  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirGetMetadataRequest
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirExecuteBundleRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirExecuteBundleRequest
   object.
 
   Fields:
-    name: Name of the FHIR store to retrieve the capabilities for.
+    httpBody: A HttpBody resource to be passed as the request body.
+    parent: Name of the FHIR store in which this bundle will be executed.
   """
 
-  name = _messages.StringField(1, required=True)
+  httpBody = _messages.MessageField('HttpBody', 1)
+  parent = _messages.StringField(2, required=True)
 
 
-class HealthcareProjectsLocationsDatasetsFhirStoresFhirGetRequest(_messages.Message):
-  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirGetRequest object.
-
-  Fields:
-    name: The name of the resource to retrieve.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class HealthcareProjectsLocationsDatasetsFhirStoresFhirHistoryGetRequest(_messages.Message):
-  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirHistoryGetRequest
-  object.
-
-  Fields:
-    name: The name of the resource version to retrieve.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class HealthcareProjectsLocationsDatasetsFhirStoresFhirHistoryListRequest(_messages.Message):
-  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirHistoryListRequest
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirHistoryRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirHistoryRequest
   object.
 
   Fields:
     at: Only include resource versions that were current at some point during
       the time period specified in the date time value. The date parameter
-      format is yyyy-mm-ddThh:mm:ss[Z|(+|-)hh:mm] Clients may specify any of
-      the following: An entire year: `_at=2019` An entire month: `_at=2019-01`
-      A specific day: `_at=2019-01-20` A specific second:
+      format is yyyy-mm-ddThh:mm:ss[Z|(+|-)hh:mm]  Clients may specify any of
+      the following:  *  An entire year: `_at=2019` *  An entire month:
+      `_at=2019-01` *  A specific day: `_at=2019-01-20` *  A specific second:
       `_at=2018-12-31T23:59:58Z`
-    count: The maximum number of search results on a page.
+    count: The maximum number of search results on a page. Defaults to 1000.
     name: The name of the resource to retrieve.
     page: Used to retrieve the first, previous, next, or last page of resource
       versions when using pagination. Value should be set to the value of the
       `link.url` field returned in the response to the previous request, where
-      `link.relation` is "first", "previous", "next" or "last". Omit `page` if
-      no previous request has been made.
+      `link.relation` is "first", "previous", "next" or "last".  Omit `page`
+      if no previous request has been made.
     since: Only include resource versions that were created at or after the
       given instant in time. The instant in time uses the format YYYY-MM-
       DDThh:mm:ss.sss+zz:zz (for example 2015-02-07T13:28:17.239+02:00 or
@@ -1861,15 +1877,16 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirPatchRequest(_messages.Me
   name = _messages.StringField(2, required=True)
 
 
-class HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientGetEverythingRequest(_messages.Message):
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientEverythingRequest(_messages.Message):
   r"""A
-  HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientGetEverythingRequest
+  HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientEverythingRequest
   object.
 
   Fields:
     end: The response includes records prior to the end date. If no end date
       is provided, all records subsequent to the start date are in scope.
-    name: Name of the patient for which the information is required.
+    name: Name of the `Patient` resource for which the information is
+      required.
     start: The response includes records subsequent to the start date. If no
       start date is provided, all records prior to the end date are in scope.
   """
@@ -1877,6 +1894,27 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientGetEverythingReque
   end = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   start = _messages.StringField(3)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirReadRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirReadRequest object.
+
+  Fields:
+    name: The name of the resource to retrieve.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirResourcePurgeRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirResourcePurgeRequest
+  object.
+
+  Fields:
+    name: The name of the resource to purge.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchRequest(_messages.Message):
@@ -1892,20 +1930,6 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchRequest(_messages.M
   searchResourcesRequest = _messages.MessageField('SearchResourcesRequest', 2)
 
 
-class HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchResourcesRequest(_messages.Message):
-  r"""A
-  HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchResourcesRequest
-  object.
-
-  Fields:
-    parent: Name of the FHIR store to retrieve resources from.
-    resourceType: The type of the resource to search.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  resourceType = _messages.StringField(2, required=True)
-
-
 class HealthcareProjectsLocationsDatasetsFhirStoresFhirUpdateRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirUpdateRequest object.
 
@@ -1916,6 +1940,16 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirUpdateRequest(_messages.M
 
   httpBody = _messages.MessageField('HttpBody', 1)
   name = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirVreadRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirVreadRequest object.
+
+  Fields:
+    name: The name of the resource version to retrieve.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresGetIamPolicyRequest(_messages.Message):
@@ -1929,17 +1963,6 @@ class HealthcareProjectsLocationsDatasetsFhirStoresGetIamPolicyRequest(_messages
   """
 
   resource = _messages.StringField(1, required=True)
-
-
-class HealthcareProjectsLocationsDatasetsFhirStoresGetMetadataRequest(_messages.Message):
-  r"""A HealthcareProjectsLocationsDatasetsFhirStoresGetMetadataRequest
-  object.
-
-  Fields:
-    name: Name of the FHIR store to retrieve the capabilities for.
-  """
-
-  name = _messages.StringField(1, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresGetRequest(_messages.Message):
@@ -2554,8 +2577,8 @@ class HttpBody(_messages.Message):
   1;        // The raw HTTP body is bound to this field.
   google.api.HttpBody http_body = 2;     }      service ResourceService {
   rpc GetResource(GetResourceRequest) returns (google.api.HttpBody);       rpc
-  UpdateResource(google.api.HttpBody) returns (google.protobuf.Empty);     }
-  Example with streaming methods:      service CaldavService {       rpc
+  UpdateResource(google.api.HttpBody) returns       (google.protobuf.Empty);
+  }  Example with streaming methods:      service CaldavService {       rpc
   GetCalendar(stream google.api.HttpBody)         returns (stream
   google.api.HttpBody);       rpc UpdateCalendar(stream google.api.HttpBody)
   returns (stream google.api.HttpBody);     }  Use of this type only changes
@@ -2701,9 +2724,9 @@ class ImportResourcesRequest(_messages.Message):
 
     Values:
       CONTENT_STRUCTURE_UNSPECIFIED: <no description>
-      BUNDLE: Each unit is a bundle, which contains one or more resources. Set
+      BUNDLE: Each line is a bundle, which contains one or more resources. Set
         the bundle type to `history` to import resource versions.
-      RESOURCE: Each unit is a single resource.
+      RESOURCE: Each line is a single resource.
     """
     CONTENT_STRUCTURE_UNSPECIFIED = 0
     BUNDLE = 1
@@ -2757,6 +2780,20 @@ class IngestMessageResponse(_messages.Message):
 
   hl7Ack = _messages.BytesField(1)
   message = _messages.MessageField('Message', 2)
+
+
+class InspectionConfig(_messages.Message):
+  r"""Specifies how sensitive information is inspected.
+
+  Fields:
+    annotation: Configures how annotations (such as the location and infoTypes
+      of sensitive information that was found) are created during inspection.
+      If unspecified, no annotations will be created.
+    textInspectorConfigs: Configures for text inspection.
+  """
+
+  annotation = _messages.MessageField('AnnotationConfig', 1)
+  textInspectorConfigs = _messages.MessageField('TextInspectorConfig', 2)
 
 
 class ListAnnotationStoresResponse(_messages.Message):
@@ -3629,7 +3666,7 @@ class TagFilterList(_messages.Message):
       Elements, or Directory Structuring Elements, as defined at: http://dicom
       .nema.org/medical/dicom/current/output/html/part06.html#table_6-1,. They
       may be provided by "Keyword" or "Tag". For example "PatientID",
-      "0010,0010".
+      "00100010".
   """
 
   tags = _messages.StringField(1, repeated=True)
@@ -3671,6 +3708,35 @@ class TextConfig(_messages.Message):
 
   experimentalConfig = _messages.StringField(1)
   transformations = _messages.MessageField('InfoTypeTransformation', 2, repeated=True)
+
+
+class TextInspectorConfig(_messages.Message):
+  r"""The configurations to apply to text inspection. If more than one model
+  is specified, the same data will be processed by specified models. Final
+  inspection results will be a combination.
+
+  Fields:
+    infoTypes: The list of infoTypes for inspection. See
+      https://cloud.google.com/dlp/docs/infotypes-reference#global for valid
+      infoType values.
+    models: Configures which Inspector to use. Leaving this field unspecified
+      will use the default model.
+  """
+
+  infoTypes = _messages.StringField(1, repeated=True)
+  models = _messages.StringField(2, repeated=True)
+
+
+class TransformationConfig(_messages.Message):
+  r"""Configures how a transformation is applied.
+
+  Fields:
+    image: Configuration for how a transformation is applied to an image.
+    text: Configuration for how a transformation is applied to text.
+  """
+
+  image = _messages.MessageField('ImageConfig', 1)
+  text = _messages.MessageField('TextConfig', 2)
 
 
 class Vertex(_messages.Message):

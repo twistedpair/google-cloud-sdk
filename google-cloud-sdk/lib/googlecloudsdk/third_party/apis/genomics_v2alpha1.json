@@ -469,6 +469,10 @@
         "nvidiaDriverVersion": {
           "description": "The NVIDIA driver version to use when attaching an NVIDIA GPU accelerator.\nThe version specified here must be compatible with the GPU libraries\ncontained in the container being executed, and must be one of the drivers\nhosted in the `nvidia-drivers-us-public` bucket on Google Cloud Storage.",
           "type": "string"
+        },
+        "enableStackdriverMonitoring": {
+          "description": "Whether Stackdriver monitoring should be enabled on the VM.",
+          "type": "boolean"
         }
       }
     },

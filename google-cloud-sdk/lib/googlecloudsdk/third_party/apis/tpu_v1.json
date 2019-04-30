@@ -406,6 +406,10 @@
       "properties": {
         "preemptible": {
           "type": "boolean"
+        },
+        "reserved": {
+          "description": "Whether the node is created under a reservation.",
+          "type": "boolean"
         }
       }
     },

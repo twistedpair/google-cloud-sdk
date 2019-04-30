@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20190417",
+ "revision": "20190419",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -2057,9 +2057,11 @@
      "enum": [
       "EXTERNAL",
       "INTERNAL",
+      "INTERNAL_SELF_MANAGED",
       "INVALID_LOAD_BALANCING_SCHEME"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       ""
@@ -3312,11 +3314,11 @@
     },
     "type": {
      "type": "string",
-     "description": "URL of the disk type resource describing which disk type to use to create the disk. Provide this when creating the disk. For example: project/zones/zone/diskTypes/pd-standard or pd-ssd"
+     "description": "URL of the disk type resource describing which disk type to use to create the disk. Provide this when creating the disk. For example: projects/project/zones/zone/diskTypes/pd-standard or pd-ssd"
     },
     "users": {
      "type": "array",
-     "description": "[Output Only] Links to the users of the disk (attached instances) in form: project/zones/zone/instances/instance",
+     "description": "[Output Only] Links to the users of the disk (attached instances) in form: projects/project/zones/zone/instances/instance",
      "items": {
       "type": "string"
      }
@@ -4506,9 +4508,11 @@
      "enum": [
       "EXTERNAL",
       "INTERNAL",
+      "INTERNAL_SELF_MANAGED",
       "INVALID"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       ""

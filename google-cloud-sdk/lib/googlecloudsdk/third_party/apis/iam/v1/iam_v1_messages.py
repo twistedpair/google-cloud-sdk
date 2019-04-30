@@ -899,6 +899,23 @@ class IamProjectsServiceAccountsKeysListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class IamProjectsServiceAccountsKeysUploadRequest(_messages.Message):
+  r"""A IamProjectsServiceAccountsKeysUploadRequest object.
+
+  Fields:
+    name: The resource name of the service account in the following format:
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
+      wildcard for the `PROJECT_ID` will infer the project from the account.
+      The `ACCOUNT` value can be the `email` address or the `unique_id` of the
+      service account.
+    uploadServiceAccountKeyRequest: A UploadServiceAccountKeyRequest resource
+      to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  uploadServiceAccountKeyRequest = _messages.MessageField('UploadServiceAccountKeyRequest', 2)
+
+
 class IamProjectsServiceAccountsListRequest(_messages.Message):
   r"""A IamProjectsServiceAccountsListRequest object.
 
@@ -1924,6 +1941,19 @@ class UndeleteServiceAccountResponse(_messages.Message):
   """
 
   restoredAccount = _messages.MessageField('ServiceAccount', 1)
+
+
+class UploadServiceAccountKeyRequest(_messages.Message):
+  r"""The service account key upload request.
+
+  Fields:
+    publicKeyData: A field that allows clients to upload their own public key.
+      If set, use this public key data to create a service account key for
+      given service account. Please note, the expected format for this field
+      is X509_PEM.
+  """
+
+  publicKeyData = _messages.BytesField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

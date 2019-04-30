@@ -1791,7 +1791,8 @@
                     "https://www.googleapis.com/auth/bigtable.admin.instance",
                     "https://www.googleapis.com/auth/cloud-bigtable.admin",
                     "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
-                    "https://www.googleapis.com/auth/cloud-platform"
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only"
                   ],
                   "description": "Gets information about an app profile."
                 },

@@ -294,7 +294,7 @@
           "type": "string"
         },
         "tokenEndpoint": {
-          "description": "Endpoint to be used to obtain the id_token, ex.\nhttps:\/\/www.googleapis.com\/oauth2\/v4\/token. See\nhttps:\/\/openid.net\/specs\/openid-connect-core-1_0.html#TokenEndpoint",
+          "description": "Endpoint to be used to obtain the id_token, ex.\nhttps:\/\/oauth2.googleapis.com\/token. See\nhttps:\/\/openid.net\/specs\/openid-connect-core-1_0.html#TokenEndpoint",
           "type": "string"
         },
         "tokenEndpointRoutability": {

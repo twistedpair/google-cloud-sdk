@@ -1180,4 +1180,4 @@ def GetReservationAffinity(args, client):
   return None
 
 
-_RESERVATION_AFFINITY_KEY = 'googleapis.com/reservation'
+_RESERVATION_AFFINITY_KEY = 'compute.googleapis.com/reservation-name'

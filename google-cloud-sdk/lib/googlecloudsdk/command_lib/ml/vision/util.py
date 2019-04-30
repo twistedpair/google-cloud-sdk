@@ -29,6 +29,8 @@ from googlecloudsdk.core.util import files
 VISION_API = 'vision'
 VISION_API_VERSION = 'v1'
 IMAGE_URI_FORMAT = r'^(https{,1}?|gs)://'
+FILE_URI_FORMAT = r'gs://([^/]+)/(.+)'
+FILE_PREFIX = r'gs://([^/]+)(/.*)*'
 
 
 class Error(exceptions.Error):
@@ -37,6 +39,14 @@ class Error(exceptions.Error):
 
 class ImagePathError(Error):
   """Error if an image path is improperly formatted."""
+
+
+class GcsSourceError(Error):
+  """Error if a gcsSource path is improperly formatted."""
+
+
+class GcsDestinationError(Error):
+  """Error if a gcsDestination path is improperly formatted."""
 
 
 def GetImageFromPath(path):
@@ -68,3 +78,60 @@ def GetImageFromPath(path):
         'publicly accessible image HTTP/HTTPS URL. Please double-check your '
         'input and try again.')
   return image
+
+
+def GetGcsSourceFromPath(input_file):
+  """Validate a Google Cloud Storage location to read the PDF/TIFF file from.
+
+  Args:
+    input_file: the input file path arg given to the command.
+
+  Raises:
+    GcsSourceError: if the file is not a Google Cloud Storage object.
+
+  Returns:
+    vision_v1_messages.GcsSource: Google Cloud Storage URI for the input file.
+    This must only be a Google Cloud Storage object.
+    Wildcards are not currently supported.
+  """
+  messages = apis.GetMessagesModule(VISION_API, VISION_API_VERSION)
+  gcs_source = messages.GcsSource()
+
+  if re.match(FILE_URI_FORMAT, input_file):
+    gcs_source.uri = input_file
+  else:
+    raise GcsSourceError(
+        'The URI for the input file must be a Google Cloud Storage object, '
+        'which must be in the form `gs://bucket_name/object_name.'
+        'Please double-check your input and try again.')
+  return gcs_source
+
+
+def GetGcsDestinationFromPath(path):
+  """Validate a Google Cloud Storage location to write the output to.
+
+  Args:
+    path: the path arg given to the command.
+
+  Raises:
+    GcsDestinationError: if the file is not a Google Cloud Storage object.
+
+  Returns:
+    vision_v1_messages.GcsDestination:Google Cloud Storage URI prefix
+    where the results will be stored.
+    This must only be a Google Cloud Storage object.
+    Wildcards are not currently supported.
+  """
+  messages = apis.GetMessagesModule(VISION_API, VISION_API_VERSION)
+  gcs_destination = messages.GcsDestination()
+
+  if re.match(FILE_PREFIX, path):
+    gcs_destination.uri = path
+  else:
+    raise GcsDestinationError(
+        'The URI for the input file must be a Google Cloud Storage object, '
+        'which must be in the File prefix format `gs://bucket_name/here/file_name_prefix.'
+        'or directory prefix format `gs://bucket_name/some/location/. '
+        'Please double-check your input and try again.')
+  return gcs_destination
+

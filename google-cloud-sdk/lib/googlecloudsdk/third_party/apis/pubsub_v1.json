@@ -312,6 +312,10 @@
           "description": "The time at which the message was published, populated by the server when\nit receives the `Publish` call. It must not be populated by the\npublisher in a `Publish` call.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "orderingKey": {
+          "description": "Identifies related messages for which publish order should be respected.\nIf a `Subscription` has `enable_message_ordering` set to `true`, messages\npublished with the same `ordering_key` value will be delivered to\nsubscribers in the order in which they are received by the Pub\/Sub system.\n<b>EXPERIMENTAL:<\/b> This feature is part of a closed alpha release. This\nAPI might be changed in backward-incompatible ways and is not recommended\nfor production use. It is not subject to any SLA or deprecation policy.",
+          "type": "string"
         }
       }
     },
@@ -427,6 +431,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "enableMessageOrdering": {
+          "description": "If true, messages published with the same `ordering_key` in `PubsubMessage`\nwill be delivered to the subscribers in the order in which they\nare received by the Pub\/Sub system. Otherwise, they may be delivered in\nany order.\n<b>EXPERIMENTAL:<\/b> This feature is part of a closed alpha release. This\nAPI might be changed in backward-incompatible ways and is not recommended\nfor production use. It is not subject to any SLA or deprecation policy.",
+          "type": "boolean"
         },
         "expirationPolicy": {
           "description": "A policy that specifies the conditions for this subscription's expiration.\nA subscription is considered active as long as any connected subscriber is\nsuccessfully consuming messages from the subscription or is issuing\noperations on the subscription. If `expiration_policy` is not set, a\n*default policy* with `ttl` of 31 days will be used. The minimum allowed\nvalue for `expiration_policy.ttl` is 1 day.\n<b>BETA:<\/b> This feature is part of a beta release. This API might be\nchanged in backward-incompatible ways and is not recommended for production\nuse. It is not subject to any SLA or deprecation policy.",

@@ -39,7 +39,7 @@ _GROUP_CHOICES = {
     'ALL_SUBNETS': 'Automatically advertise all available subnets.',
 }
 
-_BFD_MODE_CHOICES = {
+_BFD_SESSION_INITIALIZATION_MODE_CHOICES = {
     'ACTIVE':
         'The Cloud Router will initiate the BFD session for this BGP peer.',
     'PASSIVE':
@@ -244,12 +244,12 @@ def AddBgpPeerArgs(parser,
     bfd_group = parser.add_group(help=bfd_group_help,
                                  hidden=True)
     bfd_group.add_argument(
-        '--bfd-mode',
-        choices=_BFD_MODE_CHOICES,
+        '--bfd-session-initialization-mode',
+        choices=_BFD_SESSION_INITIALIZATION_MODE_CHOICES,
         type=lambda mode: mode.upper(),
-        metavar='BFD_MODE',
+        metavar='BFD_SESSION_INITIALIZATION_MODE',
         hidden=True,
-        help='The BFD session initiation mode for this BGP peer. Must be one '
+        help='The BFD session initialization mode for this BGP peer. Must be one '
         'of:\n\n'
         'ACTIVE - The Cloud Router will initiate the BFD session for this BGP '
         'peer.\n\n'

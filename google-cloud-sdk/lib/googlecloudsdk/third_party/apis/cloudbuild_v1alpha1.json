@@ -119,7 +119,7 @@
           "type": "string"
         },
         "projectId": {
-          "description": "The project ID of the GCP project in which the `WorkerPool` is created.",
+          "description": "The project ID of the GCP project for which the `WorkerPool` is created.",
           "type": "string"
         },
         "serviceAccountEmail": {

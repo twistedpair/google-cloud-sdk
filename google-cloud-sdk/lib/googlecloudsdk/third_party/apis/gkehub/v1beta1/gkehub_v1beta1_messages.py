@@ -531,7 +531,7 @@ class OidcConfig(_messages.Message):
       issuer-url configured for the cluster.
     scopes: Scopes to be requested from Identity Provider
     tokenEndpoint: Endpoint to be used to obtain the id_token, ex.
-      https://www.googleapis.com/oauth2/v4/token. See https://openid.net/specs
+      https://oauth2.googleapis.com/token. See https://openid.net/specs
       /openid-connect-core-1_0.html#TokenEndpoint
     tokenEndpointRoutability: Connection method to be used when accessing the
       token endpoint.

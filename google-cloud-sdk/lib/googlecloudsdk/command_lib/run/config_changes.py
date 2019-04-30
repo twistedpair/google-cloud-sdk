@@ -24,6 +24,7 @@ import abc
 from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.util.args import repeated
 
+
 import six
 
 
@@ -105,14 +106,14 @@ _CLOUDSQL_ANNOTATION = 'run.googleapis.com/cloudsql-instances'
 
 
 class CloudSQLChanges(ConfigChanger):
-  """Represents the intent to update the cloudsql instances."""
+  """Represents the intent to update the Cloug SQL instances."""
 
   def __init__(self, project, region, args):
-    """Initializes the intent to update the cloudsql instances.
+    """Initializes the intent to update the Cloud SQL instances.
 
     Args:
-      project: Project to use as the default project for CloudSQL instances.
-      region: Region to use as the default region for CloudSQL instances
+      project: Project to use as the default project for Cloud SQL instances.
+      region: Region to use as the default region for Cloud SQL instances
       args: Args to the command.
     """
     self._project = project
@@ -153,13 +154,22 @@ class CloudSQLChanges(ConfigChanger):
 
     instances = repeated.ParsePrimitiveArgs(
         self, 'cloudsql-instances', GetCurrentInstances)
-    config.revision_annotations[_CLOUDSQL_ANNOTATION] = ','.join(instances)
+    if instances is not None:
+      config.revision_annotations[_CLOUDSQL_ANNOTATION] = ','.join(instances)
 
   def _Augment(self, instance_str):
     instance = instance_str.split(':')
     if len(instance) == 3:
       ret = tuple(instance)
     elif len(instance) == 1:
+      if not self._project:
+        raise exceptions.CloudSQLError(
+            'To specify a Cloud SQL instance by plain name, you must specify a '
+            'project.')
+      if not self._region:
+        raise exceptions.CloudSQLError(
+            'To specify a Cloud SQL instance by plain name, you must be '
+            'deploying to a managed Cloud Run region.')
       ret = self._project, self._region, instance[0]
     else:
       raise exceptions.CloudSQLError(

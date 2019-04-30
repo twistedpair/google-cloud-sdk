@@ -155,8 +155,7 @@ class CompositeType(_messages.Message):
       long and must conform to the following regular expression:
       [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63
       characters long and must conform to the regular expression
-      ([a-z]([-a-z0-9]*[a-z0-9])?)? TODO(b/124441274): clean up label after
-      migration to op is complete
+      ([a-z]([-a-z0-9]*[a-z0-9])?)?
     name: Name of the composite type, must follow the expression:
       [a-z]([-a-z0-9_.]{0,61}[a-z0-9])?.
     operation: Output only. The Operation that most recently ran, or is
@@ -286,8 +285,7 @@ class Deployment(_messages.Message):
       long and must conform to the following regular expression:
       [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63
       characters long and must conform to the regular expression
-      ([a-z]([-a-z0-9]*[a-z0-9])?)? TODO(b/124441274): clean up label after
-      migration to op is complete
+      ([a-z]([-a-z0-9]*[a-z0-9])?)?
     manifest: Output only. URL of the manifest representing the last manifest
       that was successfully deployed.
     name: Name of the resource; provided by the client when the resource is
@@ -363,8 +361,7 @@ class DeploymentUpdate(_messages.Message):
       1 and 63 characters long and must conform to the following regular
       expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0
       and 63 characters long and must conform to the regular expression
-      ([a-z]([-a-z0-9]*[a-z0-9])?)? TODO(b/124441274): clean up label after
-      migration to op is complete
+      ([a-z]([-a-z0-9]*[a-z0-9])?)?
     manifest: Output only. URL of the manifest representing the update
       configuration of this deployment.
   """
@@ -1472,11 +1469,6 @@ class LogConfigDataAccessOptions(_messages.Message):
   Fields:
     logMode: Whether Gin logging should happen in a fail-closed manner at the
       caller. This is relevant only in the LocalIAM implementation, for now.
-      NOTE: Logging to Gin in a fail-closed manner is currently unsupported
-      while work is being done to satisfy the requirements of go/345.
-      Currently, setting LOG_FAIL_CLOSED mode will have no effect, but still
-      exists because there is active work being done to support it
-      (b/115874152).
   """
 
   logMode = _messages.StringField(1)
@@ -2174,8 +2166,7 @@ class Type(_messages.Message):
       long and must conform to the following regular expression:
       [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63
       characters long and must conform to the regular expression
-      ([a-z]([-a-z0-9]*[a-z0-9])?)? TODO(b/124441274): clean up label after
-      migration to op is complete
+      ([a-z]([-a-z0-9]*[a-z0-9])?)?
     name: Name of the type.
     operation: Output only. The Operation that most recently ran, or is
       currently running, on this type.
@@ -2263,8 +2254,7 @@ class TypeProvider(_messages.Message):
       long and must conform to the following regular expression:
       [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63
       characters long and must conform to the regular expression
-      ([a-z]([-a-z0-9]*[a-z0-9])?)? TODO(b/124441274): clean up label after
-      migration to op is complete
+      ([a-z]([-a-z0-9]*[a-z0-9])?)?
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the

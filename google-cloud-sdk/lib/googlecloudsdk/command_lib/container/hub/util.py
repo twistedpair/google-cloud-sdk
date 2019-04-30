@@ -48,6 +48,8 @@ AGENT_POD_LABEL = 'gke_connect_agent'
 # credentials, if they are provided.
 IMAGE_PULL_SECRET_NAME = 'connect-image-pull-secret'
 
+CONNECT_RESOURCE_LABEL = 'hub.gke.io/project'
+
 MANIFEST_SAVED_MESSAGE = """\
 Manifest saved to [{0}]. Please apply the manifest to your cluster with \
 `kubectl apply -f {0}`. You must have `cluster-admin` privilege in order to \
@@ -106,7 +108,7 @@ kind: ClusterRoleBinding
 metadata:
   name: {project_id}-gke-connect-agent-role-binding
   labels:
-    hub.gke.io/project: {project_id}
+    {connect_resource_label}: {project_id}
 subjects:
 - kind: ServiceAccount
   name: default
@@ -124,7 +126,7 @@ metadata:
   name: {name}
   namespace: {namespace}
   labels:
-    hub.gke.io/project: {project_id}
+    {connect_resource_label}: {project_id}
 data:
   .dockerconfigjson: {image_pull_secret}
 type: kubernetes.io/dockerconfigjson"""
@@ -137,7 +139,7 @@ kind: Namespace
 metadata:
   name: {namespace}
   labels:
-    hub.gke.io/project: {project_id}"""
+    {connect_resource_label}: {project_id}"""
 
 AGENT_POD_INITIAL_WAIT_MS = 1000 * 2
 AGENT_POD_TIMEOUT_MS = 1000 * 45
@@ -307,11 +309,13 @@ def ImageDigestForContainerImage(name, tag):
       return r.digest()
 
 
-def GenerateInstallManifest(image, sa_key_data, image_pull_secret_data,
-                            membership_name, proxy):
+def GenerateInstallManifest(project_id, namespace, image, sa_key_data,
+                            image_pull_secret_data, membership_name, proxy):
   """Generates the contents of the GKE Connect agent install manifest.
 
   Args:
+    project_id: The GCP project identifier.
+    namespace: The namespace into which to deploy the Connect agent.
     image: The container image to use in the Connect agent pod (and, later,
       deployment).
     sa_key_data: The contents of a GCP SA keyfile, base64-encoded.
@@ -327,17 +331,16 @@ def GenerateInstallManifest(image, sa_key_data, image_pull_secret_data,
       a string, a YAML manifest that can be used to install the agent,
       a string, the subset of the manifest that relates to the agent install
         pod, and can be reverted,
-      the namespace in which the namespaced objects in the manifest are created,
       the name of the connect agent install pod
     )
   """
-  project_id = properties.VALUES.core.project.GetOrFail()
   project_number = p_util.GetProjectNumber(project_id)
-  namespace = _GKEConnectNamespace(project_id)
   agent_pod_name = 'gke-connect-agent-{}'.format(uuid.uuid4().hex)
 
   namespace_manifest = NAMESPACE_MANIFEST_TEMPLATE.format(
-      namespace=namespace, project_id=project_id)
+      connect_resource_label=CONNECT_RESOURCE_LABEL,
+      namespace=namespace,
+      project_id=project_id)
 
   pod_manifest = INSTALL_POD_MANIFEST_TEMPLATE.format(
       namespace=namespace,
@@ -347,6 +350,7 @@ def GenerateInstallManifest(image, sa_key_data, image_pull_secret_data,
       image=image)
 
   non_deleted_resources_manifest = MANIFEST_TEMPLATE_FOR_NON_DELETED_RESOURCES.format(
+      connect_resource_label=CONNECT_RESOURCE_LABEL,
       namespace=namespace,
       project_id=project_id,
       project_number=project_number,
@@ -366,13 +370,14 @@ def GenerateInstallManifest(image, sa_key_data, image_pull_secret_data,
         pod_manifest, image_pull_secret_section,
         IMAGE_PULL_SECRET_TEMPLATE.format(
             name=IMAGE_PULL_SECRET_NAME,
+            connect_resource_label=CONNECT_RESOURCE_LABEL,
             namespace=namespace,
             project_id=project_id,
             image_pull_secret=image_pull_secret_data))
 
   return '{}\n---\n{}\n---\n{}'.format(
       namespace_manifest, pod_manifest,
-      non_deleted_resources_manifest), pod_manifest, namespace, agent_pod_name
+      non_deleted_resources_manifest), pod_manifest, agent_pod_name
 
 
 def Base64EncodedFileContents(filename):
@@ -424,10 +429,13 @@ def DeployConnectAgent(args,
       raise exceptions.Error(
           'could not determine image digest for {}:{}: {}'.format(
               DEFAULT_CONNECT_AGENT_IMAGE, DEFAULT_CONNECT_AGENT_TAG, exp))
-  full_manifest, pod_manifest, namespace, agent_pod_name = (
-      GenerateInstallManifest(image, service_account_key_data,
-                              docker_credential_data, args.CLUSTER_NAME,
-                              args.proxy))
+
+  project_id = properties.VALUES.core.project.GetOrFail()
+  namespace = _GKEConnectNamespace(kube_client, project_id)
+
+  full_manifest, pod_manifest, agent_pod_name = GenerateInstallManifest(
+      project_id, namespace, image, service_account_key_data,
+      docker_credential_data, args.CLUSTER_NAME, args.proxy)
 
   # Generate a manifest file if necessary.
   if args.manifest_output_file:
@@ -666,6 +674,14 @@ class KubernetesClient(object):
 
     return out.replace("'", '')
 
+  def NamespacesWithLabelSelector(self, label):
+    cmd = ['get', 'namespace', '-l', label, '-o', 'jsonpath={..metadata.name}']
+    out, err = self._RunKubectl(cmd, None)
+    if err:
+      raise exceptions.Error(
+          'Failed to list namespaces in the cluster: {}'.format(err))
+    return out.strip().split(' ') if out else []
+
   def NamespaceExists(self, namespace):
     _, err = self._RunKubectl(['get', 'namespace', namespace])
     return err is None
@@ -769,11 +785,14 @@ def DeleteConnectNamespace(args):
     calliope_exceptions.MinimumArgumentException: if a kubeconfig file cannot
       be deduced from the command line flags or environment
   """
-  namespace = _GKEConnectNamespace(properties.VALUES.core.project.GetOrFail())
+
+  kube_client = KubernetesClient(args)
+  namespace = _GKEConnectNamespace(kube_client,
+                                   properties.VALUES.core.project.GetOrFail())
   cleanup_msg = 'Please delete namespace {} manually in your cluster.'.format(
       namespace)
 
-  err = KubernetesClient(args).DeleteNamespace(namespace)
+  err = kube_client.DeleteNamespace(namespace)
   if err:
     if 'NotFound' in err:
       # If the namespace was not found, then do not log an error.
@@ -787,13 +806,30 @@ def DeleteConnectNamespace(args):
     return
 
 
-def _GKEConnectNamespace(project_id):
-  """Returns the namespace into which to install the connect agent.
+def _GKEConnectNamespace(kube_client, project_id):
+  """Returns the namespace into which to install or update the connect agent.
+
+  Connect namespaces are identified by the presence of the hub.gke.io/project
+  label. If there is one existing namespace with this label in the cluster, its
+  name is returned; otherwise, a connect agent namespace with the project
+  number as a suffix is returned. If there are multiple namespaces with the
+  hub.gke.io/project label, an error is raised.
 
   Args:
-    project_id: A GCP project identifier.
+    kube_client: a KubernetesClient
+    project_id: A GCP project identifier
 
   Returns:
     a string, the namespace
+
+  Raises:
+    exceptions.Error: if there are multiple Connect namespaces in the cluster
   """
-  return 'gke-connect-{}'.format(p_util.GetProjectNumber(project_id))
+  selector = '{}={}'.format(CONNECT_RESOURCE_LABEL, project_id)
+  namespaces = kube_client.NamespacesWithLabelSelector(selector)
+  if not namespaces:
+    return 'gke-connect-{}'.format(p_util.GetProjectNumber(project_id))
+  if len(namespaces) == 1:
+    return namespaces[0]
+  raise exceptions.Error(
+      'Multiple GKE Connect namespaces in cluster: {}'.format(namespaces))

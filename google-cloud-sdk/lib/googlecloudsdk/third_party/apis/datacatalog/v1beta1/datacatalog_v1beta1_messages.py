@@ -29,9 +29,12 @@ class DatacatalogEntriesLookupRequest(_messages.Message):
       jects/projectId/datasets/datasetId/tables/tableId".
       "//pubsub.googleapis.com/projects/projectId/topics/topicId"
     sqlResource: The SQL name of the entry. SQL names are case-sensitive.
-      Examples: 1. cloud_pubsub.project_id.topic_id 2.
-      bigquery.project_id.dataset_id.table_id 3.
-      datacatalog.project_id.location_id.entry_group_id.entry_id
+      Examples: <ul>   <li>cloud_pubsub.project_id.topic_id</li>
+      <li>pubsub.project_id.`topic.id.with.dots`</li>
+      <li>bigquery.project_id.dataset_id.table_id</li>
+      <li>datacatalog.project_id.location_id.entry_group_id.entry_id</li>
+      </ul> *_ids shoud satisfy the standard SQL rules for identifiers.
+      https://cloud.google.com/bigquery/docs/reference/standard-sql/lexical
   """
 
   linkedResource = _messages.StringField(1)
@@ -136,8 +139,8 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
       paragraphs that describe entry contents.
     displayName: Display information such as title and description. A short
       name to identify the entry, for example, "Analytics Data - Jan 2011".
-    linkedResource: The full name of the cloud resource the entry belongs to.
-      See:
+    linkedResource: Output only. The full name of the cloud resource the entry
+      belongs to. See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name
       Data Catalog supports resources from select Google Cloud Platform
       systems. `linked_resource` is the full name of the Google Cloud Platform
@@ -148,8 +151,8 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
       format. For example, "projects/{project_id}/locations/{location}/entryGr
       oups/{entry_group_id}/entries/{entry_id}".
     schema: Schema of the entry.
-    sourceSystemTimestamps: Timestamps about the underlying Google Cloud
-      Platform resource -- not about this Data Catalog Entry.
+    sourceSystemTimestamps: Output only. Timestamps about the underlying
+      Google Cloud Platform resource -- not about this Data Catalog Entry.
     type: Type of entry.
   """
 

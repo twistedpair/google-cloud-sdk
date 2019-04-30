@@ -24,6 +24,13 @@ DOCS_URL = 'https://cloud.google.com/vision/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  FILES = (
+      'files',
+      'files',
+      {},
+      [],
+      True
+  )
   IMAGES = (
       'images',
       'images',
@@ -92,6 +99,14 @@ class Collections(enum.Enum):
               '{productSetsId}',
       },
       [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_PRODUCTSETS_PRODUCTS = (
+      'projects.locations.productSets.products',
+      'projects/{projectsId}/locations/{locationsId}/productSets/'
+      '{productSetsId}/products',
+      {},
+      [u'projectsId', u'locationsId', u'productSetsId'],
       True
   )
   PROJECTS_LOCATIONS_PRODUCTS = (

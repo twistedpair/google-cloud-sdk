@@ -780,6 +780,36 @@ by key id.
         supports_download=False,
     )
 
+    def Upload(self, request, global_params=None):
+      r"""Upload public key for a given service account.
+This rpc will create a
+ServiceAccountKey that has the
+provided public key and returns it.
+
+      Args:
+        request: (IamProjectsServiceAccountsKeysUploadRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceAccountKey) The response message.
+      """
+      config = self.GetMethodConfig('Upload')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Upload.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/keys:upload',
+        http_method=u'POST',
+        method_id=u'iam.projects.serviceAccounts.keys.upload',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}/keys:upload',
+        request_field=u'uploadServiceAccountKeyRequest',
+        request_type_name=u'IamProjectsServiceAccountsKeysUploadRequest',
+        response_type_name=u'ServiceAccountKey',
+        supports_download=False,
+    )
+
   class ProjectsServiceAccountsService(base_api.BaseApiService):
     """Service class for the projects_serviceAccounts resource."""
 

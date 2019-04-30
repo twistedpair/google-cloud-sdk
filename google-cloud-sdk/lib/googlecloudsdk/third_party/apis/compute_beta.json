@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20190417",
+ "revision": "20190419",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -3506,11 +3506,11 @@
     },
     "type": {
      "type": "string",
-     "description": "URL of the disk type resource describing which disk type to use to create the disk. Provide this when creating the disk. For example: project/zones/zone/diskTypes/pd-standard or pd-ssd"
+     "description": "URL of the disk type resource describing which disk type to use to create the disk. Provide this when creating the disk. For example: projects/project/zones/zone/diskTypes/pd-standard or pd-ssd"
     },
     "users": {
      "type": "array",
-     "description": "[Output Only] Links to the users of the disk (attached instances) in form: project/zones/zone/instances/instance",
+     "description": "[Output Only] Links to the users of the disk (attached instances) in form: projects/project/zones/zone/instances/instance",
      "items": {
       "type": "string"
      }
@@ -6860,7 +6860,7 @@
     },
     "reservationAffinity": {
      "$ref": "ReservationAffinity",
-     "description": "The configuration of desired allocations which this Instance could consume capacity from."
+     "description": "The configuration of desired reservations from which this Instance can consume capacity from."
     },
     "scheduling": {
      "$ref": "Scheduling",
@@ -15671,6 +15671,7 @@
    "properties": {
     "consumeReservationType": {
      "type": "string",
+     "description": "Specifies the type of reservation from which this instance can consume resources: ANY_RESERVATION (default), SPECIFIC_RESERVATION, or NO_RESERVATION. See  Consuming reserved instances for examples.",
      "enum": [
       "ANY_RESERVATION",
       "NO_RESERVATION",

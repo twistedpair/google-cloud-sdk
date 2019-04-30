@@ -199,11 +199,6 @@ ADDONS_OPTIONS = DEFAULT_ADDONS + [DASHBOARD, ISTIO, NETWORK_POLICY]
 BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [CLOUDRUN]
 ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS + [NODELOCALDNS]
 
-UNSPECIFIED = 'UNSPECIFIED'
-SECURE = 'SECURE'
-EXPOSED = 'EXPOSED'
-GKE_METADATA_SERVER = 'GKE_METADATA_SERVER'
-
 
 def CheckResponse(response):
   """Wrap http_wrapper.CheckResponse to skip retry on 503."""
@@ -256,11 +251,6 @@ def InitAPIAdapter(api_version, adapter):
 
 _SERVICE_ACCOUNT_SCOPES = ('https://www.googleapis.com/auth/cloud-platform',
                            'https://www.googleapis.com/auth/userinfo.email')
-
-# Hidden alias for version-specific added scopes.  For clusters & node pools
-# v1.9 and below, GKE API adds compute & storage-ro to maintain same behavior as
-# before; for clusters v1.10+ these extra scopes are added.
-_VERSION_DEFAULT_SCOPE = ('gke-version-default',)
 
 _OLD_REQUIRED_SCOPES = (
     'https://www.googleapis.com/auth/compute',
@@ -315,22 +305,7 @@ is specified in --scopes. To use these scopes, add them explicitly to \
           options.scopes += _ENDPOINTS_SCOPES
           break
     else:
-      # Don't print a warning here because the only way to get here is by
-      # specifying --no-enable-cloud-endpoints explicitly, which will trigger a
-      # deprecation warning regardless.
       options.scopes = [x for x in options.scopes if x not in _ENDPOINTS_SCOPES]
-    # Add compute-rw and devstorage-ro as necessary.
-    for scope in _OLD_REQUIRED_SCOPES:
-      if scope not in options.scopes:
-        log.warning("""\
-Starting in Kubernetes v1.10, new clusters will no longer get compute-rw and \
-storage-ro scopes added to what is specified in --scopes (though the latter \
-will remain included in the default --scopes). To use these scopes, add them \
-explicitly to --scopes. To use the new behavior, set \
-container/new_scopes_behavior property (gcloud config set \
-container/new_scopes_behavior true).""")
-        options.scopes += _VERSION_DEFAULT_SCOPE
-        break
   node_config.oauthScopes = sorted(set(options.scopes))
 
 
@@ -554,7 +529,10 @@ class UpdateClusterOptions(object):
                enable_intra_node_visibility=None,
                security_profile=None,
                security_profile_runtime_rules=None,
-               autoscaling_profile=None):
+               autoscaling_profile=None,
+               enable_peering_route_sharing=None,
+               identity_namespace=None,
+               disable_workload_identity=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -581,6 +559,9 @@ class UpdateClusterOptions(object):
     self.security_profile_runtime_rules = security_profile_runtime_rules
     self.autoscaling_profile = autoscaling_profile
     self.enable_intra_node_visibility = enable_intra_node_visibility
+    self.enable_peering_route_sharing = enable_peering_route_sharing
+    self.identity_namespace = identity_namespace
+    self.disable_workload_identity = disable_workload_identity
 
 
 class SetMasterAuthOptions(object):
@@ -679,19 +660,28 @@ class UpdateNodePoolOptions(object):
                enable_autoscaling=None,
                max_nodes=None,
                min_nodes=None,
-               enable_autoprovisioning=None):
+               enable_autoprovisioning=None,
+               workload_metadata_from_node=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.enable_autoscaling = enable_autoscaling
     self.max_nodes = max_nodes
     self.min_nodes = min_nodes
     self.enable_autoprovisioning = enable_autoprovisioning
+    self.workload_metadata_from_node = workload_metadata_from_node
 
   def IsAutoscalingUpdate(self):
     return (self.enable_autoscaling is not None or
             self.max_nodes is not None or
             self.min_nodes is not None or
             self.enable_autoprovisioning is not None)
+
+  def IsNodePoolManagementUpdate(self):
+    return (self.enable_autorepair is not None or
+            self.enable_autoupgrade is not None)
+
+  def IsUpdateNodePoolRequest(self):
+    return self.workload_metadata_from_node is not None
 
 
 class APIAdapter(object):
@@ -1265,6 +1255,7 @@ class APIAdapter(object):
 
   def UpdateClusterCommon(self, cluster_ref, options):
     """Returns an UpdateCluster operation."""
+
     update = None
     if not options.version:
       options.version = '-'
@@ -1359,8 +1350,7 @@ class APIAdapter(object):
       # security_profile is set in update command
       security_profile = self.messages.SecurityProfile(
           name=options.security_profile)
-      update = self.messages.ClusterUpdate(
-          securityProfile=security_profile)
+      update = self.messages.ClusterUpdate(securityProfile=security_profile)
     elif options.enable_intra_node_visibility is not None:
       intra_node_visibility_config = self.messages.IntraNodeVisibilityConfig(
           enabled=options.enable_intra_node_visibility)
@@ -1373,6 +1363,33 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredPrivateClusterConfig=private_cluster_config)
 
+    if (options.security_profile is not None and
+        options.security_profile_runtime_rules is not None):
+      update.securityProfile.disableRuntimeRules = \
+          not options.security_profile_runtime_rules
+    if (options.master_authorized_networks and
+        not options.enable_master_authorized_networks):
+      # Raise error if use --master-authorized-networks without
+      # --enable-master-authorized-networks.
+      raise util.Error(MISMATCH_AUTHORIZED_NETWORKS_ERROR_MSG)
+
+    return update
+
+  def UpdateCluster(self, cluster_ref, options):
+    """Handles UpdateCluster options that are specific to a release track.
+
+    Overridden in each release track.
+
+    Args:
+      cluster_ref: Name and location of the cluster.
+      options: An UpdateClusterOptions containining the user-specified options.
+
+    Returns:
+      The operation to be executed.
+    """
+
+    update = self.UpdateClusterCommon(cluster_ref, options)
+
     if not update:
       # if reached here, it's possible:
       # - someone added update flags but not handled
@@ -1382,19 +1399,6 @@ class APIAdapter(object):
       # to catch this error.
       raise util.Error(NOTHING_TO_UPDATE_ERROR_MSG)
 
-    if (options.security_profile is not None
-        and options.security_profile_runtime_rules is not None):
-      update.securityProfile.disableRuntimeRules = \
-          not options.security_profile_runtime_rules
-    if (options.master_authorized_networks
-        and not options.enable_master_authorized_networks):
-      # Raise error if use --master-authorized-networks without
-      # --enable-master-authorized-networks.
-      raise util.Error(MISMATCH_AUTHORIZED_NETWORKS_ERROR_MSG)
-    return update
-
-  def UpdateCluster(self, cluster_ref, options):
-    update = self.UpdateClusterCommon(cluster_ref, options)
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
             name=ProjectLocationCluster(cluster_ref.projectId,
@@ -1961,6 +1965,34 @@ class APIAdapter(object):
   def SetIamPolicy(self, cluster_ref):
     raise NotImplementedError('GetIamPolicy is not overridden')
 
+  def ListUsableSubnets(self, project_ref, network_project, filter_arg):
+    """List usable subnets for a given project.
+
+    Args:
+      project_ref: project where clusters will be created.
+      network_project: project ID where clusters will be created.
+      filter_arg: value of filter flag.
+
+    Returns:
+      Response containing the list of subnetworks and a next page token.
+    """
+    filters = []
+    if network_project is not None:
+      filters.append('networkProjectId=' + network_project)
+
+    if filter_arg is not None:
+      filters.append(filter_arg)
+
+    filters = ' AND '.join(filters)
+
+    req = self.messages.ContainerProjectsAggregatedUsableSubnetworksListRequest(
+        # parent example: 'projects/abc'
+        parent=project_ref.RelativeName(),
+        # max pageSize accepted by GKE
+        pageSize=500,
+        filter=filters)
+    return self.client.projects_aggregated_usableSubnetworks.List(req)
+
 
 class V1Adapter(APIAdapter):
   """APIAdapter for v1."""
@@ -2020,6 +2052,25 @@ class V1Beta1Adapter(V1Adapter):
 
   def UpdateCluster(self, cluster_ref, options):
     update = self.UpdateClusterCommon(cluster_ref, options)
+
+    if options.identity_namespace:
+      update = self.messages.ClusterUpdate(
+          desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
+              identityNamespace=options.identity_namespace))
+    elif options.disable_workload_identity:
+      update = self.messages.ClusterUpdate(
+          desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
+              identityNamespace=''))
+
+    if not update:
+      # if reached here, it's possible:
+      # - someone added update flags but not handled
+      # - none of the update flags specified from command line
+      # so raise an error with readable message like:
+      #   Nothing to update
+      # to catch this error.
+      raise util.Error(NOTHING_TO_UPDATE_ERROR_MSG)
+
     if options.disable_addons is not None:
       if options.disable_addons.get(ISTIO) is not None:
         istio_auth = self.messages.IstioConfig.AuthValueValuesEnum.AUTH_NONE
@@ -2119,6 +2170,33 @@ class V1Beta1Adapter(V1Adapter):
           maximum=options.max_accelerator.get('count', 0)))
     return new_resource_limits
 
+  def UpdateNodePoolRequest(self, node_pool_ref, options):
+    """Creates an UpdateNodePoolRequest from the provided options.
+
+    Arguments:
+
+      node_pool_ref: The node pool to act on.
+      options: UpdateNodePoolOptions with the user-specified options.
+
+    Returns:
+
+      An UpdateNodePoolRequest.
+    """
+
+    update_request = self.messages.UpdateNodePoolRequest(
+        name=ProjectLocationClusterNodePool(
+            node_pool_ref.projectId,
+            node_pool_ref.zone,
+            node_pool_ref.clusterId,
+            node_pool_ref.nodePoolId,
+        )
+    )
+
+    if options.workload_metadata_from_node is not None:
+      _AddWorkloadMetadataToNodeConfig(update_request, options, self.messages)
+
+    return update_request
+
   def UpdateNodePool(self, node_pool_ref, options):
     if options.IsAutoscalingUpdate():
       autoscaling = self.UpdateNodePoolAutoscaling(node_pool_ref, options)
@@ -2132,7 +2210,7 @@ class V1Beta1Adapter(V1Adapter):
                                           node_pool_ref.clusterId),
               update=update))
       return self.ParseOperation(operation.name, node_pool_ref.zone)
-    else:
+    elif options.IsNodePoolManagementUpdate():
       management = self.UpdateNodePoolNodeManagement(node_pool_ref, options)
       req = (self.messages.SetNodePoolManagementRequest(
           name=ProjectLocationClusterNodePool(
@@ -2143,35 +2221,13 @@ class V1Beta1Adapter(V1Adapter):
           management=management))
       operation = (
           self.client.projects_locations_clusters_nodePools.SetManagement(req))
-      return self.ParseOperation(operation.name, node_pool_ref.zone)
+    elif options.IsUpdateNodePoolRequest():
+      req = self.UpdateNodePoolRequest(node_pool_ref, options)
+      operation = self.client.projects_locations_clusters_nodePools.Update(req)
+    else:
+      raise util.Error('Unhandled node pool update mode')
 
-  def ListUsableSubnets(self, project_ref, network_project, filter_arg):
-    """List usable subnets for a given project.
-
-    Args:
-      project_ref: project where clusters will be created.
-      network_project: project ID where clusters will be created.
-      filter_arg: value of filter flag.
-
-    Returns:
-      Response containing the list of subnetworks and a next page token.
-    """
-    filters = []
-    if network_project is not None:
-      filters.append('networkProjectId=' + network_project)
-
-    if filter_arg is not None:
-      filters.append(filter_arg)
-
-    filters = ' AND '.join(filters)
-
-    req = self.messages.ContainerProjectsAggregatedUsableSubnetworksListRequest(
-        # parent example: 'projects/abc'
-        parent=project_ref.RelativeName(),
-        # max pageSize accepted by GKE
-        pageSize=500,
-        filter=filters)
-    return self.client.projects_aggregated_usableSubnetworks.List(req)
+    return self.ParseOperation(operation.name, node_pool_ref.zone)
 
 
 class V1Alpha1Adapter(V1Beta1Adapter):
@@ -2266,6 +2322,25 @@ class V1Alpha1Adapter(V1Beta1Adapter):
 
   def UpdateCluster(self, cluster_ref, options):
     update = self.UpdateClusterCommon(cluster_ref, options)
+
+    if options.identity_namespace:
+      update = self.messages.ClusterUpdate(
+          desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
+              identityNamespace=options.identity_namespace))
+    elif options.disable_workload_identity:
+      update = self.messages.ClusterUpdate(
+          desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
+              identityNamespace=''))
+
+    if not update:
+      # if reached here, it's possible:
+      # - someone added update flags but not handled
+      # - none of the update flags specified from command line
+      # so raise an error with readable message like:
+      #   Nothing to update
+      # to catch this error.
+      raise util.Error(NOTHING_TO_UPDATE_ERROR_MSG)
+
     if options.disable_addons is not None:
       if options.disable_addons.get(ISTIO) is not None:
         istio_auth = self.messages.IstioConfig.AuthValueValuesEnum.AUTH_NONE
@@ -2460,21 +2535,21 @@ def _AddNodeLabelsToNodeConfig(node_config, options):
 
 def _AddWorkloadMetadataToNodeConfig(node_config, options, messages):
   """Adds WorkLoadMetadata to NodeConfig."""
-  if options.workload_metadata_from_node:
+  if options.workload_metadata_from_node is not None:
     option = options.workload_metadata_from_node
-    if option == UNSPECIFIED:
+    if option == 'UNSPECIFIED':
       node_config.workloadMetadataConfig = messages.WorkloadMetadataConfig(
           nodeMetadata=messages.WorkloadMetadataConfig.
           NodeMetadataValueValuesEnum.UNSPECIFIED)
-    elif option == SECURE:
+    elif option == 'SECURE':
       node_config.workloadMetadataConfig = messages.WorkloadMetadataConfig(
           nodeMetadata=messages.WorkloadMetadataConfig.
           NodeMetadataValueValuesEnum.SECURE)
-    elif option == EXPOSED:
+    elif option == 'EXPOSED':
       node_config.workloadMetadataConfig = messages.WorkloadMetadataConfig(
           nodeMetadata=messages.WorkloadMetadataConfig.
           NodeMetadataValueValuesEnum.EXPOSE)
-    elif option == GKE_METADATA_SERVER:
+    elif option == 'GKE_METADATA_SERVER':
       node_config.workloadMetadataConfig = messages.WorkloadMetadataConfig(
           nodeMetadata=messages.WorkloadMetadataConfig
           .NodeMetadataValueValuesEnum.GKE_METADATA_SERVER)

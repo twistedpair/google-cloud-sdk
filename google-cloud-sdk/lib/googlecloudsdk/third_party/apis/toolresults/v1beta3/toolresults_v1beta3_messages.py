@@ -562,7 +562,10 @@ class IndividualOutcome(_messages.Message):
     OutcomeSummaryValueValuesEnum:
 
   Fields:
+    multistepNumber: Unique int given to each step. Ranges from 0(inclusive)
+      to total number of steps(exclusive). The primary step is 0.
     outcomeSummary: A OutcomeSummaryValueValuesEnum attribute.
+    runDuration: How long it took for this step to run.
     stepId: A string attribute.
   """
 
@@ -584,8 +587,10 @@ class IndividualOutcome(_messages.Message):
     success = 4
     unset = 5
 
-  outcomeSummary = _messages.EnumField('OutcomeSummaryValueValuesEnum', 1)
-  stepId = _messages.StringField(2)
+  multistepNumber = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  outcomeSummary = _messages.EnumField('OutcomeSummaryValueValuesEnum', 2)
+  runDuration = _messages.MessageField('Duration', 3)
+  stepId = _messages.StringField(4)
 
 
 class ListExecutionsResponse(_messages.Message):

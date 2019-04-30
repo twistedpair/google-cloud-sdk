@@ -5,7 +5,7 @@
  "name": "toolresults",
  "canonicalName": "Tool Results",
  "version": "v1beta3",
- "revision": "20190412",
+ "revision": "20190419",
  "title": "Cloud Tool Results API",
  "description": "Reads and publishes results from Firebase Test Lab.",
  "ownerDomain": "google.com",
@@ -596,6 +596,11 @@
    "description": "Step Id and outcome of each individual step that was run as a group with other steps with the same configuration.",
    "externalTypeName": "google.devtools.toolresults.v1.IndividualOutcome",
    "properties": {
+    "multistepNumber": {
+     "type": "integer",
+     "description": "Unique int given to each step. Ranges from 0(inclusive) to total number of steps(exclusive). The primary step is 0.",
+     "format": "int32"
+    },
     "outcomeSummary": {
      "type": "string",
      "enum": [
@@ -614,6 +619,10 @@
       "",
       ""
      ]
+    },
+    "runDuration": {
+     "$ref": "Duration",
+     "description": "How long it took for this step to run."
     },
     "stepId": {
      "type": "string"

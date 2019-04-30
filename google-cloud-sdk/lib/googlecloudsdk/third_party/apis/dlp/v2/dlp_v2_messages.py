@@ -2664,8 +2664,7 @@ class GooglePrivacyDlpV2InspectJobConfig(_messages.Message):
   r"""A GooglePrivacyDlpV2InspectJobConfig object.
 
   Fields:
-    actions: Actions to execute at the completion of the job. Are executed in
-      the order provided.
+    actions: Actions to execute at the completion of the job.
     inspectConfig: How and what to scan for.
     inspectTemplateName: If provided, will be used as the default for all
       values in InspectConfig. `inspect_config` will be merged into the values
