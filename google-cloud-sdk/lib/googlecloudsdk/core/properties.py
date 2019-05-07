@@ -881,7 +881,8 @@ class _SectionBuilds(_Section):
     self.timeout = self._Add(
         'timeout',
         validator=_BuildTimeoutValidator,
-        help_text='Timeout, in seconds, to wait for builds to complete.')
+        help_text='Timeout, in seconds, to wait for builds to complete. If '
+        'unset, defaults to 10 minutes.')
     self.check_tag = self._AddBool(
         'check_tag',
         default=True,
@@ -926,20 +927,6 @@ class _SectionContainer(_Section):
         default=False,
         help_text='If True, use application default credentials to authenticate'
         ' to the cluster API server.')
-    self.new_scopes_behavior = self._AddBool(
-        'new_scopes_behavior',
-        default=False,
-        help_text='If True, use new scopes behavior and do not add `compute-rw`'
-        ', `storage-ro`, `service-control`, or `service-management` scopes. The'
-        ' former two (`compute-rw` and `storage-ro`) only apply to clusters '
-        'at Kubernetes v1.9 and below; starting v1.10, `compute-rw` and '
-        '`storage-ro` are not added by default. Any of these scopes '
-        'may be added explicitly using `--scopes`. Using new scopes behavior '
-        'will be the default in a future release. Additionally, if '
-        'this property is set to True, using `--[no-]enable-cloud-endpoints` '
-        'is not allowed. This property is ignored in alpha and beta, since '
-        'these tracks always use the new behavior. See `--scopes` help for '
-        'more info.')
 
     self.build_timeout = self._Add(
         'build_timeout',

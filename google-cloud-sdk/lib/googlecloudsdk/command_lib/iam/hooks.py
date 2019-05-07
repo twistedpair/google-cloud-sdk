@@ -97,3 +97,24 @@ def ValidateUpdateFieldMask(ref, unused_args, request):
     raise gcloud_exceptions.OneOfArgumentsRequiredException(
         update_fields, 'Specify at least one field to update.')
   return request
+
+
+def GeneratePublicKeyDataFromFile(path):
+  """Generate public key data from a path.
+
+  Args:
+    path: (bytes) the public key file path given by the command.
+
+  Raises:
+    InvalidArgumentException: if the public key file path provided does not
+                              exist or is too large.
+  Returns:
+    A public key encoded using the UTF-8 charset.
+  """
+  try:
+    public_key_data = arg_parsers.BufferedFileInput()(path).strip()
+  except arg_parsers.ArgumentTypeError as e:
+    raise gcloud_exceptions.InvalidArgumentException(
+        'public_key_file',
+        '{}. Please double check your input and try again.'.format(e))
+  return public_key_data.encode('utf-8')

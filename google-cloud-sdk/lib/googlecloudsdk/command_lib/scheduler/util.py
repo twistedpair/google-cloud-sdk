@@ -26,6 +26,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.command_lib.app import create_util
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import http_encoding
@@ -44,6 +45,20 @@ def _GetSchedulerClient():
 
 def _GetSchedulerMessages():
   return apis.GetMessagesModule('cloudscheduler', 'v1beta1')
+
+
+def LogPauseSuccess(unused_response, unused_args):
+  """Log message if job was successfully paused."""
+  _LogSuccessMessage('paused')
+
+
+def LogResumeSuccess(unused_response, unused_args):
+  """Log message if job was successfully resumed."""
+  _LogSuccessMessage('resumed')
+
+
+def _LogSuccessMessage(action):
+  log.status.Print('Job has been {0}.'.format(action))
 
 
 def ModifyCreateJobRequest(job_ref, args, create_job_req):

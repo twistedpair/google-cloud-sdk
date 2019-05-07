@@ -33,25 +33,6 @@ class Annotation(_messages.Message):
   textAnnotation = _messages.MessageField('SensitiveTextAnnotation', 5)
 
 
-class AnnotationConfig(_messages.Message):
-  r"""Specifies how to store annotations during de-identification operation.
-
-  Fields:
-    annotationStoreName: The name of the annotation store, in the form `projec
-      ts/{project_id}/locations/{location_id}/datasets/{dataset_id}/annotation
-      Stores/{annotation_store_id}`).   * The destination dataset must exist
-      if it is different than the    de-identify operation's output dataset.
-      * The destination annotation store must be in the same project as the
-      source data. De-identifying data across multiple projects is not
-      supported.  * The destination annotation store must not exist.
-    storeQuote: If set to true, the sensitive texts will be included in
-      SensitiveTextAnnotation of Annotation.
-  """
-
-  annotationStoreName = _messages.StringField(1)
-  storeQuote = _messages.BooleanField(2)
-
-
 class AnnotationSource(_messages.Message):
   r"""AnnotationSource holds the source information of the annotation.
 
@@ -319,28 +300,18 @@ class DeidentifyConfig(_messages.Message):
   media type or subtype. Configs are applied in a nested manner at runtime.
 
   Fields:
-    annotation: Configures how annotations (such as the location and infoTypes
-      of sensitive information that was found) are created during de-
-      identification. If unspecified, no annotations will be created.
     dicom: Configures de-id of application/DICOM content.
     fhir: Configures de-id of application/FHIR content.
     image: Configures de-identification of image pixels wherever they are
       found in the source_dataset.
-    inspectionConfig: Configuration for how inspection occurs on text and
-      images.
     text: Configures de-identification of text wherever it is found in the
       source_dataset.
-    transformationConfig: Configuration for how transformations occur on
-      annotations of text and images.
   """
 
-  annotation = _messages.MessageField('AnnotationConfig', 1)
-  dicom = _messages.MessageField('DicomConfig', 2)
-  fhir = _messages.MessageField('FhirConfig', 3)
-  image = _messages.MessageField('ImageConfig', 4)
-  inspectionConfig = _messages.MessageField('InspectionConfig', 5)
-  text = _messages.MessageField('TextConfig', 6)
-  transformationConfig = _messages.MessageField('TransformationConfig', 7)
+  dicom = _messages.MessageField('DicomConfig', 1)
+  fhir = _messages.MessageField('FhirConfig', 2)
+  image = _messages.MessageField('ImageConfig', 3)
+  text = _messages.MessageField('TextConfig', 4)
 
 
 class DeidentifyDatasetRequest(_messages.Message):
@@ -411,8 +382,6 @@ class DicomConfig(_messages.Message):
       keep/remove.
     keepList: List of tags to keep. Remove all other tags.
     removeList: List of tags to remove. Keep all other tags.
-    skipIdRedaction: If set, skip the redaction. Otherwise, all IDs are
-      redacted.
   """
 
   class FilterProfileValueValuesEnum(_messages.Enum):
@@ -441,7 +410,6 @@ class DicomConfig(_messages.Message):
   filterProfile = _messages.EnumField('FilterProfileValueValuesEnum', 1)
   keepList = _messages.MessageField('TagFilterList', 2)
   removeList = _messages.MessageField('TagFilterList', 3)
-  skipIdRedaction = _messages.BooleanField(4)
 
 
 class DicomStore(_messages.Message):
@@ -1865,6 +1833,18 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirHistoryRequest(_messages.
   since = _messages.StringField(5)
 
 
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirObservationLastnRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsFhirStoresFhirObservationLastnRequest
+  object.
+
+  Fields:
+    parent: Name of the FHIR store to retrieve resources from.
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
 class HealthcareProjectsLocationsDatasetsFhirStoresFhirPatchRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirPatchRequest object.
 
@@ -2782,20 +2762,6 @@ class IngestMessageResponse(_messages.Message):
   message = _messages.MessageField('Message', 2)
 
 
-class InspectionConfig(_messages.Message):
-  r"""Specifies how sensitive information is inspected.
-
-  Fields:
-    annotation: Configures how annotations (such as the location and infoTypes
-      of sensitive information that was found) are created during inspection.
-      If unspecified, no annotations will be created.
-    textInspectorConfigs: Configures for text inspection.
-  """
-
-  annotation = _messages.MessageField('AnnotationConfig', 1)
-  textInspectorConfigs = _messages.MessageField('TextInspectorConfig', 2)
-
-
 class ListAnnotationStoresResponse(_messages.Message):
   r"""Lists the Annotation stores in the given dataset.
 
@@ -3708,35 +3674,6 @@ class TextConfig(_messages.Message):
 
   experimentalConfig = _messages.StringField(1)
   transformations = _messages.MessageField('InfoTypeTransformation', 2, repeated=True)
-
-
-class TextInspectorConfig(_messages.Message):
-  r"""The configurations to apply to text inspection. If more than one model
-  is specified, the same data will be processed by specified models. Final
-  inspection results will be a combination.
-
-  Fields:
-    infoTypes: The list of infoTypes for inspection. See
-      https://cloud.google.com/dlp/docs/infotypes-reference#global for valid
-      infoType values.
-    models: Configures which Inspector to use. Leaving this field unspecified
-      will use the default model.
-  """
-
-  infoTypes = _messages.StringField(1, repeated=True)
-  models = _messages.StringField(2, repeated=True)
-
-
-class TransformationConfig(_messages.Message):
-  r"""Configures how a transformation is applied.
-
-  Fields:
-    image: Configuration for how a transformation is applied to an image.
-    text: Configuration for how a transformation is applied to text.
-  """
-
-  image = _messages.MessageField('ImageConfig', 1)
-  text = _messages.MessageField('TextConfig', 2)
 
 
 class Vertex(_messages.Message):

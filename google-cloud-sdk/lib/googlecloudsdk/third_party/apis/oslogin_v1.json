@@ -7,7 +7,7 @@
   "version": "v1",
   "revision": "0",
   "title": "Cloud OS Login API",
-  "description": "Manages OS login configuration for Google account users.",
+  "description": "You can use OS Login to manage access to your VM instances using IAM roles. For more information, read [OS Login](\/compute\/docs\/oslogin\/).",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

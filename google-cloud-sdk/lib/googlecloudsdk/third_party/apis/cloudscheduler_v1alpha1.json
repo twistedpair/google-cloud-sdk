@@ -399,7 +399,7 @@
           "$ref": "OAuthToken"
         },
         "oidcToken": {
-          "description": "If specified, an\n[OIDC](https:\/\/developers.google.com\/identity\/protocols\/OpenIDConnect)\ntoken will be generated and attached as an `Authorization` header in the\nHTTP request.\n\nThis type of authorization should be used when sending requests to third\nparty endpoints.",
+          "description": "If specified, an\n[OIDC](https:\/\/developers.google.com\/identity\/protocols\/OpenIDConnect)\ntoken will be generated and attached as an `Authorization` header in the\nHTTP request.\n\nThis type of authorization should be used when sending requests to third\nparty endpoints or Cloud Run.",
           "$ref": "OidcToken"
         }
       }
@@ -421,7 +421,7 @@
     },
     "OidcToken": {
       "id": "OidcToken",
-      "description": "Contains information needed for generating an\n[OpenID Connect\ntoken](https:\/\/developers.google.com\/identity\/protocols\/OpenIDConnect). This\ntype of authorization should be used when sending requests to third party\nendpoints.",
+      "description": "Contains information needed for generating an\n[OpenID Connect\ntoken](https:\/\/developers.google.com\/identity\/protocols\/OpenIDConnect). This\ntype of authorization should be used when sending requests to third party\nendpoints or Cloud Run.",
       "type": "object",
       "properties": {
         "serviceAccountEmail": {

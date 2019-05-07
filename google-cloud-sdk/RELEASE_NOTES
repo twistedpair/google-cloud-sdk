@@ -5,6 +5,55 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 245.0.0 (2019-05-07)
+
+### Breaking Changes
+
+*   **(Kubernetes Engine)** Removed deprecated `--enable-cloud-endpoints` flag.
+*   **(Kubernetes Engine)** Removed container/new_scopes_behavior property (new_scopes_behavior is now default behavior).
+
+
+### Cloud SDK
+
+* Run `gcloud alpha survey` to help improve the gcloud command-line tool experience by answering a customer satisfaction survey.
+* Reminders for the survey will be made periodically.
+
+### App Engine
+
+* Updated the Java SDK to version 1.9.74.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/java/release-notes
+
+### Cloud Asset Inventory
+
+* Added `--output-path-prefix` flag to `gcloud beta asset export`.
+
+### Cloud Run
+
+*   Fixed `--uri` flag support for `list` commands in `gcloud beta run`.
+*   Cloud SQL flags are now available in beta.
+
+### Cloud Scheduler
+
+* Added `gcloud beta scheduler jobs pause|resume` commands.
+
+### Compute Engine
+
+* Promoted `--instance-redistribution-type` flag of
+  `gcloud compute instance-groups managed <create|update>` to beta.
+Add `--multi-writer` flag to `gcloud alpha compute disks create`. This flag allows you to create a "shared" persistent disk that can be attached to multiple VMs in read-write mode.
+
+
+### Kubernetes Engine
+
+* Modified `gcloud container clusters create` and `gcloud container node-pools
+ create` to allow simultaneously specifying both `--scopes` and
+ `--service-account` flags.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 244.0.0 (2019-04-30)
 
 ### Cloud Scheduler

@@ -318,6 +318,36 @@
         "vpcConnector": {
           "description": "The VPC Network Connector that this cloud function can connect to. It can\nbe either the fully-qualified URI, or the short name of the network\nconnector resource. The format of this field is\n`projects\/*\/locations\/*\/connectors\/*`\n\nThis field is mutually exclusive with `network` field and will eventually\nreplace it.\n\nSee [the VPC documentation](https:\/\/cloud.google.com\/compute\/docs\/vpc) for\nmore information on connecting Cloud projects.\n\nThis feature is currently in alpha, available only for whitelisted users.",
           "type": "string"
+        },
+        "vpcConnectorEgressSettings": {
+          "description": "The egress settings for the connector, controlling what traffic is diverted\nthrough it.",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Use the VPC Access Connector only for private IP space from RFC1918.",
+            "Force the use of VPC Access Connector for all egress traffic from the\nfunction."
+          ],
+          "type": "string",
+          "enum": [
+            "VPC_CONNECTOR_EGRESS_SETTINGS_UNSPECIFIED",
+            "PRIVATE_RANGES_ONLY",
+            "ALL_TRAFFIC"
+          ]
+        },
+        "ingressSettings": {
+          "description": "The ingress settings for the function, controlling what traffic can reach\nit.",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Allow HTTP traffic from public and private sources.",
+            "Allow HTTP traffic from only private VPC sources.",
+            "Allow HTTP traffic from private VPC sources and through GCLB."
+          ],
+          "type": "string",
+          "enum": [
+            "INGRESS_SETTINGS_UNSPECIFIED",
+            "ALLOW_ALL",
+            "ALLOW_INTERNAL_ONLY",
+            "ALLOW_INTERNAL_AND_GCLB"
+          ]
         }
       }
     },

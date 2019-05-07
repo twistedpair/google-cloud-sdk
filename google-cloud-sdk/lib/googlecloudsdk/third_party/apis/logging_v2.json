@@ -294,6 +294,10 @@
           "description": "Optional. This field applies only to sinks owned by organizations and folders. If the field is false, the default, only the logs owned by the sink's parent resource are available for export. If the field is true, then logs from all the projects, folders, and billing accounts contained in the sink's parent resource are also available for export. Whether a particular log entry from the children is exported depends on the sink's filter expression. For example, if this field is true, then the filter resource.type=gce_instance would export all Compute Engine VM instance log entries from all projects in the sink's parent. To only export entries from certain child projects, filter on the project part of the log name:\nlogName:(\"projects\/test-project1\/\" OR \"projects\/test-project2\/\") AND\nresource.type=gce_instance\n",
           "type": "boolean"
         },
+        "dlpOptions": {
+          "description": "Optional. Settings for Data Loss Prevention (DLP) enabled sinks.",
+          "$ref": "DlpOptions"
+        },
         "createTime": {
           "description": "Output only. The creation timestamp of the sink.This field may not be present for older sinks.",
           "type": "string",
@@ -336,6 +340,28 @@
           "description": "Output only. The last update timestamp of the exclusion.This field may not be present for older exclusions.",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "DlpOptions": {
+      "id": "DlpOptions",
+      "description": "Options specific to sinks that require de-identification by the Data Loss Prevention (DLP) API.",
+      "type": "object",
+      "properties": {
+        "inspectTemplateName": {
+          "description": "Required. DLP template used to specify what types of data within a log to inspect. See Creating Cloud DLP inspection templates. For example:\n\"projects\/[PROJECT_ID]\/inspectTemplates\/[TEMPLATE_ID]\"\n",
+          "type": "string"
+        },
+        "deidentifyTemplateName": {
+          "description": "Required. DLP template used to specify how to perform the de-identification of log data. See Creating Cloud DLP de-identification templates. For example:\n\"projects\/[PROJECT_ID]\/deidentifyTemplates\/[TEMPLATE_ID]\"\n",
+          "type": "string"
+        },
+        "includedFields": {
+          "description": "Optional. Fields within the log entries to include in DLP de-identification. Each field is identified using the advanced logs filter syntax. If any fields are specified, the de-identification will only be applied to these fields and other fields will remain unmodified. If no fields are specified, payload and http_request fields will be included in the de-identification. Specifying included fields is useful for limiting the amount of billable data sent to the DLP API. For example:\"httpRequest.remoteIp\"  \"jsonPayload.user.phoneNumber\"  \"jsonPayload.person.socialSecurityNumber\"",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -774,6 +800,26 @@
           "items": {
             "$ref": "LabelDescriptor"
           }
+        },
+        "launchStage": {
+          "description": "Optional. The launch stage of the monitored resource definition.",
+          "enumDescriptions": [
+            "Do not use this default value.",
+            "Early Access features are limited to a closed group of testers. To use these features, you must sign up in advance and sign a Trusted Tester agreement (which includes confidentiality provisions). These features may be unstable, changed in backward-incompatible ways, and are not guaranteed to be released.",
+            "Alpha is a limited availability test for releases before they are cleared for widespread use. By Alpha, all significant design issues are resolved and we are in the process of verifying functionality. Alpha customers need to apply for access, agree to applicable terms, and have their projects whitelisted. Alpha releases don\u2019t have to be feature complete, no SLAs are provided, and there are no technical support obligations, but they will be far enough along that customers can actually use them in test environments or for limited-use tests -- just like they would in normal production cases.",
+            "Beta is the point at which we are ready to open a release for any customer to use. There are no SLA or technical support obligations in a Beta release. Products will be complete from a feature perspective, but may have some open outstanding issues. Beta releases are suitable for limited production use cases.",
+            "GA features are open to all developers and are considered stable and fully qualified for production use.",
+            "Deprecated features are scheduled to be shut down and removed. For more information, see the \u201CDeprecation Policy\u201D section of our Terms of Service (https:\/\/cloud.google.com\/terms\/) and the Google Cloud Platform Subject to the Deprecation Policy (https:\/\/cloud.google.com\/terms\/deprecation) documentation."
+          ],
+          "type": "string",
+          "enum": [
+            "LAUNCH_STAGE_UNSPECIFIED",
+            "EARLY_ACCESS",
+            "ALPHA",
+            "BETA",
+            "GA",
+            "DEPRECATED"
+          ]
         }
       }
     },

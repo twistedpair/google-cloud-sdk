@@ -20,39 +20,35 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import abc
 import os
 import re
 
+from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.run import flags
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
 
-class ServicePromptFallthrough(deps.Fallthrough):
-  """Fall through to reading the service from an interactive prompt."""
+class PromptFallthrough(deps.Fallthrough):
+  """Fall through to reading from an interactive prompt."""
 
-  def __init__(self):
-    super(ServicePromptFallthrough, self).__init__(
-        function=None,
-        hint='specify the service name at an interactive prompt')
+  def __init__(self, hint):
+    super(PromptFallthrough, self).__init__(function=None, hint=hint)
+
+  @abc.abstractmethod
+  def _Prompt(self, parsed_args):
+    pass
 
   def _Call(self, parsed_args):
     if not console_io.CanPrompt():
       return None
-    source_ref = None
-    if hasattr(parsed_args, 'source') or hasattr(parsed_args, 'image'):
-      source_ref = flags.GetSourceRef(parsed_args.source, parsed_args.image)
-    message = 'Service name:'
-    if source_ref:
-      default_name = GenerateServiceName(source_ref)
-      service_name = console_io.PromptWithDefault(
-          message=message, default=default_name)
-    else:
-      service_name = console_io.PromptResponse(message=message)
-    return service_name
+    return self._Prompt(parsed_args)
 
 
 def GenerateServiceName(source_ref):
@@ -76,6 +72,27 @@ def GenerateServiceName(source_ref):
   return re.sub(r'[^a-zA-Z0-9-]', '', base_name).strip('-').lower()
 
 
+class ServicePromptFallthrough(PromptFallthrough):
+  """Fall through to reading the service name from an interactive prompt."""
+
+  def __init__(self):
+    super(ServicePromptFallthrough, self).__init__(
+        'specify the service name from an interactive prompt')
+
+  def _Prompt(self, parsed_args):
+    source_ref = None
+    if hasattr(parsed_args, 'source') or hasattr(parsed_args, 'image'):
+      source_ref = flags.GetSourceRef(parsed_args.source, parsed_args.image)
+    message = 'Service name'
+    if source_ref:
+      default_name = GenerateServiceName(source_ref)
+      service_name = console_io.PromptWithDefault(
+          message=message, default=default_name)
+    else:
+      service_name = console_io.PromptResponse(message='{}: '.format(message))
+    return service_name
+
+
 class DefaultFallthrough(deps.Fallthrough):
   """Use the namespace "default".
 
@@ -92,7 +109,9 @@ class DefaultFallthrough(deps.Fallthrough):
 
   def _Call(self, parsed_args):
     if (getattr(parsed_args, 'cluster', None) or
-        properties.VALUES.run.cluster.Get()):
+        properties.VALUES.run.cluster.Get()) or (
+            getattr(parsed_args, 'cluster_location', None) or
+            properties.VALUES.run.cluster_location.Get()):
       return 'default'
     elif not (getattr(parsed_args, 'project', None) or
               properties.VALUES.core.project.Get()):
@@ -119,10 +138,9 @@ def NamespaceAttributeConfig():
 
 
 def ServiceAttributeConfig(prompt=False):
+  """Attribute config with fallthrough prompt only if requested."""
   if prompt:
-    fallthroughs = [
-        ServicePromptFallthrough(),
-    ]
+    fallthroughs = [ServicePromptFallthrough()]
   else:
     fallthroughs = []
   return concepts.ResourceParameterAttributeConfig(
@@ -155,6 +173,46 @@ def DomainAttributeConfig():
       help_text='Name of the domain to be mapped to.')
 
 
+class ClusterPromptFallthrough(PromptFallthrough):
+  """Fall through to reading the cluster name from an interactive prompt."""
+
+  def __init__(self):
+    super(ClusterPromptFallthrough, self).__init__(
+        'specify the cluster from a list of available clusters')
+
+  def _Prompt(self, parsed_args):
+    """Fallthrough to reading the cluster name from an interactive prompt.
+
+    Only prompt for cluster name if cluster location is already defined.
+
+    Args:
+      parsed_args: Namespace, the args namespace.
+
+    Returns:
+      A cluster name string
+    """
+    cluster_location = (
+        getattr(parsed_args, 'cluster_location', None) or
+        properties.VALUES.run.cluster_location.Get())
+
+    if cluster_location:
+      clusters = global_methods.ListClusters(cluster_location)
+      if not clusters:
+        raise exceptions.ConfigurationError(
+            'No clusters found for cluster location [{}]. '
+            'Ensure your clusters have Cloud Run on GKE enabled.'
+            .format(cluster_location))
+      cluster_names = [c.name for c in clusters]
+      idx = console_io.PromptChoice(
+          cluster_names,
+          message='GKE cluster name:',
+          cancel_option=True)
+      name = cluster_names[idx]
+      log.status.Print('To make this the default cluster, run '
+                       '`gcloud config set run/cluster {}`.\n'.format(name))
+      return name
+
+
 def ClusterAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='cluster',
@@ -162,7 +220,52 @@ def ClusterAttributeConfig():
       'Name of the Kubernetes Engine cluster to use. Alternatively, set the'
       ' property [run/cluster].',
       fallthroughs=[
-          deps.PropertyFallthrough(properties.VALUES.run.cluster)])
+          deps.PropertyFallthrough(properties.VALUES.run.cluster),
+          ClusterPromptFallthrough()
+      ])
+
+
+class ClusterLocationPromptFallthrough(PromptFallthrough):
+  """Fall through to reading the cluster name from an interactive prompt."""
+
+  def __init__(self):
+    super(ClusterLocationPromptFallthrough, self).__init__(
+        'specify the cluster location from a list of available zones')
+
+  def _Prompt(self, parsed_args):
+    """Fallthrough to reading the cluster location from an interactive prompt.
+
+    Only prompt for cluster location name if cluster name is already defined.
+
+    Args:
+      parsed_args: Namespace, the args namespace.
+
+    Returns:
+      A cluster location string
+    """
+    cluster_name = (
+        getattr(parsed_args, 'cluster', None) or
+        properties.VALUES.run.cluster.Get())
+    if cluster_name:
+      clusters = [
+          c for c in global_methods.ListClusters() if c.name == cluster_name
+      ]
+      if not clusters:
+        raise exceptions.ConfigurationError(
+            'No cluster locations found for cluster [{}]. '
+            'Ensure your clusters have Cloud Run on GKE enabled.'
+            .format(cluster_name))
+      cluster_locations = [c.zone for c in clusters]
+      idx = console_io.PromptChoice(
+          cluster_locations,
+          message='GKE cluster location for [{}]:'.format(
+              cluster_name),
+          cancel_option=True)
+      location = cluster_locations[idx]
+      log.status.Print(
+          'To make this the default cluster location, run '
+          '`gcloud config set run/cluster_location {}`.\n'.format(location))
+      return location
 
 
 def ClusterLocationAttributeConfig():
@@ -172,8 +275,9 @@ def ClusterLocationAttributeConfig():
       'Zone in which the {resource} is located. Alternatively, set the '
       'property [run/cluster_location].',
       fallthroughs=[
-          deps.PropertyFallthrough(
-              properties.VALUES.run.cluster_location)])
+          deps.PropertyFallthrough(properties.VALUES.run.cluster_location),
+          ClusterLocationPromptFallthrough()
+      ])
 
 
 def GetClusterResourceSpec():

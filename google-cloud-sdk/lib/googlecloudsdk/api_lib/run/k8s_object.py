@@ -182,6 +182,11 @@ class KubernetesObject(object):
     return self._m.metadata.resourceVersion
 
   @property
+  def self_link(self):
+    self.AssertFullObject()
+    return self._m.metadata.selfLink.lstrip('/')
+
+  @property
   def region(self):
     self.AssertFullObject()
     return self.labels[REGION_LABEL]

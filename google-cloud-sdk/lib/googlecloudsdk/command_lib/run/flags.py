@@ -143,8 +143,11 @@ def AddCloudSQLFlags(parser):
       parser,
       'Service',
       'cloudsql-instances',
-      'CloudSQL instances',
-      """You can specify a name of a CloudSQL instance if it's in the same
+      'Cloud SQL instances',
+      auto_group_help=False,
+      additional_help="""\
+      These flags modify the Cloud SQL instances this Service connects to.
+      You can specify a name of a Cloud SQL instance if it's in the same
       project and region as your Cloud Run service; otherwise specify
       <project>:<region>:<instance> for the instance.""")
 
@@ -356,7 +359,8 @@ def GetRegion(args, prompt=False):
   if properties.VALUES.compute.region.IsExplicitlySet():
     return properties.VALUES.compute.region.Get()
   if prompt and console_io.CanPrompt():
-    all_regions = global_methods.ListRegions()
+    client = global_methods.GetServerlessClientInstance()
+    all_regions = global_methods.ListRegions(client)
     idx = console_io.PromptChoice(
         all_regions, message='Please specify a region:\n', cancel_option=True)
     region = all_regions[idx]
@@ -370,22 +374,27 @@ def GetRegion(args, prompt=False):
 
 
 def ValidateClusterArgs(args):
-  """Raise an error if a cluster is provided with no region.
+  """Raise an error if a cluster is provided with no region or vice versa.
 
   Args:
     args: Namespace, The args namespace.
 
   Raises:
-    ConfigurationError if a cluster is specified without a location.
+    ConfigurationError if a cluster is specified without a location or a
+    location is specified without a cluster.
   """
-  cluster_name = properties.VALUES.run.cluster.Get() or args.cluster
-  cluster_location = (properties.VALUES.run.cluster_location.Get() or
-                      args.cluster_location)
+  cluster_name = args.cluster or properties.VALUES.run.cluster.Get()
+  cluster_location = (args.cluster_location or
+                      properties.VALUES.run.cluster_location.Get())
+  error_msg = ('Connecting to a cluster requires a {} to be specified. '
+               'Either set the {} property or use the `{}` flag.')
   if cluster_name and not cluster_location:
     raise serverless_exceptions.ConfigurationError(
-        'Connecting to a cluster requires a cluster location to be specified.'
-        'Either set the run/cluster_location property '
-        'or use the --cluster-location flag.')
+        error_msg.format('cluster location', 'run/cluster_location',
+                         '--cluster-location'))
+  if cluster_location and not cluster_name:
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format('cluster name', 'run/cluster', '--cluster'))
 
 
 def VerifyOnePlatformFlags(args):
@@ -413,13 +422,14 @@ def VerifyGKEFlags(args):
         'is not supported with Cloud Run on GKE.')
 
 
-def IsGKE(args):
-  """Returns True if args specify GKE.
+def ValidateIsGKE(args):
+  """Returns True if args properly specify GKE.
 
   Args:
-    args: Namespace, The args namespace.
-
-  Caller must add resource_args.CLUSTER_PRESENTATION to concept parser
-  first.
+    args: Namespace, The args namespace.  Caller must add
+      resource_args.CLUSTER_PRESENTATION to concept parser first.
   """
-  return bool(args.CONCEPTS.cluster.Parse())
+  cluster_ref = args.CONCEPTS.cluster.Parse()
+  if not cluster_ref:
+    ValidateClusterArgs(args)
+  return bool(cluster_ref)

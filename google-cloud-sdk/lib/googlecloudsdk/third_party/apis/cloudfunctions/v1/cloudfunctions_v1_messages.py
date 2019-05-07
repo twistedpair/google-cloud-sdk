@@ -143,7 +143,11 @@ class CloudFunction(_messages.Message):
   LINT.IfChange
 
   Enums:
+    IngressSettingsValueValuesEnum: The ingress settings for the function,
+      controlling what traffic can reach it.
     StatusValueValuesEnum: Output only. Status of the function deployment.
+    VpcConnectorEgressSettingsValueValuesEnum: The egress settings for the
+      connector, controlling what traffic is diverted through it.
 
   Messages:
     EnvironmentVariablesValue: Environment variables that shall be available
@@ -166,6 +170,8 @@ class CloudFunction(_messages.Message):
       another service.
     httpsTrigger: An HTTPS endpoint type of source that can be triggered via
       URL.
+    ingressSettings: The ingress settings for the function, controlling what
+      traffic can reach it.
     labels: Labels associated with this Cloud Function.
     maxInstances: The limit on the maximum number of function instances that
       may coexist at a given time.
@@ -209,7 +215,25 @@ class CloudFunction(_messages.Message):
       documentation](https://cloud.google.com/compute/docs/vpc) for more
       information on connecting Cloud projects.  This feature is currently in
       alpha, available only for whitelisted users.
+    vpcConnectorEgressSettings: The egress settings for the connector,
+      controlling what traffic is diverted through it.
   """
+
+  class IngressSettingsValueValuesEnum(_messages.Enum):
+    r"""The ingress settings for the function, controlling what traffic can
+    reach it.
+
+    Values:
+      INGRESS_SETTINGS_UNSPECIFIED: Unspecified.
+      ALLOW_ALL: Allow HTTP traffic from public and private sources.
+      ALLOW_INTERNAL_ONLY: Allow HTTP traffic from only private VPC sources.
+      ALLOW_INTERNAL_AND_GCLB: Allow HTTP traffic from private VPC sources and
+        through GCLB.
+    """
+    INGRESS_SETTINGS_UNSPECIFIED = 0
+    ALLOW_ALL = 1
+    ALLOW_INTERNAL_ONLY = 2
+    ALLOW_INTERNAL_AND_GCLB = 3
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""Output only. Status of the function deployment.
@@ -230,6 +254,21 @@ class CloudFunction(_messages.Message):
     DEPLOY_IN_PROGRESS = 3
     DELETE_IN_PROGRESS = 4
     UNKNOWN = 5
+
+  class VpcConnectorEgressSettingsValueValuesEnum(_messages.Enum):
+    r"""The egress settings for the connector, controlling what traffic is
+    diverted through it.
+
+    Values:
+      VPC_CONNECTOR_EGRESS_SETTINGS_UNSPECIFIED: Unspecified.
+      PRIVATE_RANGES_ONLY: Use the VPC Access Connector only for private IP
+        space from RFC1918.
+      ALL_TRAFFIC: Force the use of VPC Access Connector for all egress
+        traffic from the function.
+    """
+    VPC_CONNECTOR_EGRESS_SETTINGS_UNSPECIFIED = 0
+    PRIVATE_RANGES_ONLY = 1
+    ALL_TRAFFIC = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class EnvironmentVariablesValue(_messages.Message):
@@ -288,20 +327,22 @@ class CloudFunction(_messages.Message):
   environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 4)
   eventTrigger = _messages.MessageField('EventTrigger', 5)
   httpsTrigger = _messages.MessageField('HttpsTrigger', 6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  maxInstances = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  name = _messages.StringField(9)
-  network = _messages.StringField(10)
-  runtime = _messages.StringField(11)
-  serviceAccountEmail = _messages.StringField(12)
-  sourceArchiveUrl = _messages.StringField(13)
-  sourceRepository = _messages.MessageField('SourceRepository', 14)
-  sourceUploadUrl = _messages.StringField(15)
-  status = _messages.EnumField('StatusValueValuesEnum', 16)
-  timeout = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
-  versionId = _messages.IntegerField(19)
-  vpcConnector = _messages.StringField(20)
+  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  maxInstances = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  name = _messages.StringField(10)
+  network = _messages.StringField(11)
+  runtime = _messages.StringField(12)
+  serviceAccountEmail = _messages.StringField(13)
+  sourceArchiveUrl = _messages.StringField(14)
+  sourceRepository = _messages.MessageField('SourceRepository', 15)
+  sourceUploadUrl = _messages.StringField(16)
+  status = _messages.EnumField('StatusValueValuesEnum', 17)
+  timeout = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
+  versionId = _messages.IntegerField(20)
+  vpcConnector = _messages.StringField(21)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 22)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):

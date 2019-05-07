@@ -163,6 +163,7 @@ class ClusterConfig(_messages.Message):
       http://metadata/computeMetadata/v1/instance/attributes/dataproc-role) if
       [[ "${ROLE}" == 'Master' ]]; then   ... master specific actions ... else
       ... worker specific actions ... fi
+    lifecycleConfig: Optional. Lifecycle setting for the cluster.
     masterConfig: Optional. The Compute Engine config settings for the master
       instance in a cluster.
     secondaryWorkerConfig: Optional. The Compute Engine config settings for
@@ -178,11 +179,12 @@ class ClusterConfig(_messages.Message):
   encryptionConfig = _messages.MessageField('EncryptionConfig', 2)
   gceClusterConfig = _messages.MessageField('GceClusterConfig', 3)
   initializationActions = _messages.MessageField('NodeInitializationAction', 4, repeated=True)
-  masterConfig = _messages.MessageField('InstanceGroupConfig', 5)
-  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 6)
-  securityConfig = _messages.MessageField('SecurityConfig', 7)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 8)
-  workerConfig = _messages.MessageField('InstanceGroupConfig', 9)
+  lifecycleConfig = _messages.MessageField('LifecycleConfig', 5)
+  masterConfig = _messages.MessageField('InstanceGroupConfig', 6)
+  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 7)
+  securityConfig = _messages.MessageField('SecurityConfig', 8)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 9)
+  workerConfig = _messages.MessageField('InstanceGroupConfig', 10)
 
 
 class ClusterMetrics(_messages.Message):
@@ -1984,6 +1986,28 @@ class KerberosConfig(_messages.Message):
   tgtLifetimeHours = _messages.IntegerField(12, variant=_messages.Variant.INT32)
   truststorePasswordUri = _messages.StringField(13)
   truststoreUri = _messages.StringField(14)
+
+
+class LifecycleConfig(_messages.Message):
+  r"""Specifies the cluster auto-delete schedule configuration.
+
+  Fields:
+    autoDeleteTime: Optional. The time when cluster will be auto-deleted.
+    autoDeleteTtl: Optional. The lifetime duration of cluster. The cluster
+      will be auto-deleted at the end of this period. Valid range: 10m,
+      14d.Example: "1d", to delete the cluster 1 day after its creation..
+    idleDeleteTtl: Optional. The duration to keep the cluster alive while
+      idling. Passing this threshold will cause the cluster to be deleted.
+      Valid range: 10m, 14d.Example: "10m", the minimum value, to delete the
+      cluster when it has had no jobs running for 10 minutes.
+    idleStartTime: Output only. The time when cluster became idle (most recent
+      job finished) and became eligible for deletion due to idleness.
+  """
+
+  autoDeleteTime = _messages.StringField(1)
+  autoDeleteTtl = _messages.StringField(2)
+  idleDeleteTtl = _messages.StringField(3)
+  idleStartTime = _messages.StringField(4)
 
 
 class ListClustersResponse(_messages.Message):

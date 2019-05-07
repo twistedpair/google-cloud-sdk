@@ -1266,7 +1266,7 @@
                           ]
                         },
                         "pageSize": {
-                          "description": "Requested page size. Fewer tasks than requested might be returned.\n\nThe maximum page size is 1000. If unspecified, the page size will\nbe the maximum. Fewer tasks than requested might be returned,\neven if more tasks exist; use\nnext_page_token in the\nresponse to determine if more tasks exist.",
+                          "description": "Maximum page size.\n\nFewer tasks than requested might be returned, even if more tasks exist; use\nnext_page_token in the response to\ndetermine if more tasks exist.\n\nThe maximum page size is 1000. If unspecified, the page size will be the\nmaximum.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"

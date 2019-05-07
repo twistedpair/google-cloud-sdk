@@ -876,8 +876,24 @@ and returns it.
     )
 
     def Disable(self, request, global_params=None):
-      r"""Disables a ServiceAccount.
-The API is currently in alpha phase.
+      r"""DisableServiceAccount is currently in the alpha launch stage.
+
+Disables a ServiceAccount,
+which immediately prevents the service account from authenticating and
+gaining access to APIs.
+
+Disabled service accounts can be safely restored by using
+EnableServiceAccount at any point. Deleted service accounts cannot be
+restored using this method.
+
+Disabling a service account that is bound to VMs, Apps, Functions, or
+other jobs will cause those jobs to lose access to resources if they are
+using the disabled service account.
+
+To improve reliability of your services and avoid unexpected outages, it
+is recommended to first disable a service account rather than delete it.
+After disabling the service account, wait at least 24 hours to verify there
+are no unintended consequences, and then delete the service account.
 
       Args:
         request: (IamProjectsServiceAccountsDisableRequest) input message
@@ -904,8 +920,16 @@ The API is currently in alpha phase.
     )
 
     def Enable(self, request, global_params=None):
-      r"""Enables a ServiceAccount.
- The API is currently in alpha phase.
+      r"""EnableServiceAccount is currently in the alpha launch stage.
+
+ Restores a disabled ServiceAccount
+ that has been manually disabled by using DisableServiceAccount. Service
+ accounts that have been disabled by other means or for other reasons,
+ such as abuse, cannot be restored using this method.
+
+ EnableServiceAccount will have no effect on a service account that is
+ not disabled.  Enabling an already enabled service account will have no
+ effect.
 
       Args:
         request: (IamProjectsServiceAccountsEnableRequest) input message

@@ -1394,38 +1394,18 @@ Monitoring service with Kubernetes-native resource model enabled),
   parser.add_argument('--monitoring-service', help=help_str)
 
 
-def AddNodeIdentityFlags(parser, example_target, new_behavior=True):
+def AddNodeIdentityFlags(parser, example_target):
   """Adds node identity flags to the given parser.
 
-  Node identity flags are --scopes, --[no-]enable-cloud-endpoints (deprecated),
-  and --service-account.  --service-account is mutually exclusive with the
-  others.  --[no-]enable-cloud-endpoints is not allowed if property
-  container/new_scopes_behavior is set to true, and is removed completely if
-  new_behavior is set to true.
+  Node identity flags are --scopes and --service-account.
 
   Args:
     parser: A given parser.
     example_target: the target for the command, e.g. mycluster.
-    new_behavior: Use new (alpha & beta) behavior: remove
-    --[no-]enable-cloud-endpoints.
   """
   node_identity_group = parser.add_group(
-      mutex=True, help='Options to specify the node identity.')
+      help='Options to specify the node identity.')
   scopes_group = node_identity_group.add_group(help='Scopes options.')
-
-  if new_behavior:
-    track_help = """
-Unless container/new_scopes_behavior property is true, compute-rw and storage-ro
-are always added, even if not explicitly specified, and --enable-cloud-endpoints
-(by default) adds service-control and service-management scopes.
-
-If container/new_scopes_behavior property is true, none of the above scopes are
-added (though storage-ro, service-control, and service-management are all
-included in the default scopes.  In a future release, this will be the default
-behavior.
-"""
-  else:
-    track_help = ''
   scopes_group.add_argument(
       '--scopes',
       type=arg_parsers.ArgList(),
@@ -1442,36 +1422,10 @@ Multiple SCOPEs can be specified, separated by commas. `logging-write`
 and/or `monitoring` are added unless Cloud Logging and/or Cloud Monitoring
 are disabled (see `--enable-cloud-logging` and `--enable-cloud-monitoring`
 for more information).
-{track_help}
 {scopes_help}
 """.format(
     example_target=example_target,
-    track_help=track_help,
     scopes_help=compute_constants.ScopesHelp()))
-
-  cloud_endpoints_help_text = """\
-Automatically enable Google Cloud Endpoints to take advantage of API management
-features by adding service-control and service-management scopes.
-
-If `--no-enable-cloud-endpoints` is set, remove service-control and
-service-management scopes, even if they are implicitly (via default) or
-explicitly set via `--scopes`.
-
-`--[no-]enable-cloud-endpoints` is not allowed if
-`container/new_scopes_behavior` property is set to true.
-"""
-  scopes_group.add_argument(
-      '--enable-cloud-endpoints',
-      action=actions.DeprecationAction(
-          '--[no-]enable-cloud-endpoints',
-          warn='Flag --[no-]enable-cloud-endpoints is deprecated and will be '
-          'removed in a future release.  Scopes necessary for Google Cloud '
-          'Endpoints are now included in the default set and may be '
-          'excluded using --scopes.',
-          removed=new_behavior,
-          action='store_true'),
-      default=True,
-      help=cloud_endpoints_help_text)
 
   sa_help_text = (
       'The Google Cloud Platform Service Account to be used by the node VMs. '
@@ -1494,20 +1448,6 @@ def AddClusterNodeIdentityFlags(parser):
   AddNodeIdentityFlags(parser, example_target='example-cluster')
 
 
-def AddDeprecatedClusterNodeIdentityFlags(parser):
-  """Adds node identity flags to the given parser.
-
-  This is a wrapper around AddNodeIdentityFlags for [alpha|beta] cluster, as it
-  provides example-cluster as the example and uses non-deprecated scopes
-  behavior.
-
-  Args:
-    parser: A given parser.
-  """
-  AddNodeIdentityFlags(
-      parser, example_target='example-cluster', new_behavior=False)
-
-
 def AddNodePoolNodeIdentityFlags(parser):
   """Adds node identity flags to the given parser.
 
@@ -1519,21 +1459,6 @@ def AddNodePoolNodeIdentityFlags(parser):
   """
   AddNodeIdentityFlags(
       parser, example_target='node-pool-1 --cluster=example-cluster')
-
-
-def AddDeprecatedNodePoolNodeIdentityFlags(parser):
-  """Adds node identity flags to the given parser.
-
-  This is a wrapper around AddNodeIdentityFlags for (GA) node-pools, as it
-  provides node-pool-1 as the example and uses non-deprecated scopes behavior.
-
-  Args:
-    parser: A given parser.
-  """
-  AddNodeIdentityFlags(
-      parser,
-      example_target='node-pool-1 --cluster=example-cluster',
-      new_behavior=False)
 
 
 def AddAddonsFlagsWithOptions(parser, addon_options):
@@ -2253,6 +2178,7 @@ more secure Node credential bootstrapping implementation.
   parser.add_argument(
       '--enable-shielded-nodes',
       action='store_true',
+      default=None,
       help=help_text,
       hidden=True)
 
@@ -2308,3 +2234,32 @@ always at least 3 (5 - 2) available each time the node pool is upgraded:
       default=1,
       help=max_unavailable_upgrade_help,
       hidden=hidden)
+
+
+def AddLinuxSysctlFlags(parser, for_node_pool=False):
+  """Adds Linux sysctl flag to the given parser."""
+  if for_node_pool:
+    help_text = """\
+Linux kernel parameters to be applied to all nodes in the new node-pool as well
+as the pods running on the nodes.
+
+Example:
+
+  $ {command} node-pool-1 --linux-sysctls="net.core.somaxconn=1024,net.ipv4.tcp_rmem=4096 87380 6291456"
+"""
+  else:
+    help_text = """\
+Linux kernel parameters to be applied to all nodes in the new cluster's default
+node pool as well as the pods running on the nodes.
+
+Example:
+
+  $ {command} example-cluster --linux-sysctls="net.core.somaxconn=1024,net.ipv4.tcp_rmem=4096 87380 6291456"
+"""
+  parser.add_argument(
+      '--linux-sysctls',
+      type=arg_parsers.ArgDict(min_length=1),
+      default={},
+      help=help_text,
+      metavar='KEY=VALUE',
+      action=arg_parsers.StoreOnceAction)

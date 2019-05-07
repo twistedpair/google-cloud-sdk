@@ -42,6 +42,7 @@ class BigtableadminV2(base_api.BaseApiClient):
     self.projects_instances_clusters = self.ProjectsInstancesClustersService(self)
     self.projects_instances_tables = self.ProjectsInstancesTablesService(self)
     self.projects_instances = self.ProjectsInstancesService(self)
+    self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
   class OperationsProjectsOperationsService(base_api.BaseApiService):
@@ -1071,6 +1072,70 @@ labels, use PartialUpdateInstance.
         request_field='<request>',
         request_type_name=u'Instance',
         response_type_name=u'Instance',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsService(base_api.BaseApiService):
+    """Service class for the projects_locations resource."""
+
+    _NAME = u'projects_locations'
+
+    def __init__(self, client):
+      super(BigtableadminV2.ProjectsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets information about a location.
+
+      Args:
+        request: (BigtableadminProjectsLocationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Location) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}',
+        http_method=u'GET',
+        method_id=u'bigtableadmin.projects.locations.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}',
+        request_field='',
+        request_type_name=u'BigtableadminProjectsLocationsGetRequest',
+        response_type_name=u'Location',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists information about the supported locations for this service.
+
+      Args:
+        request: (BigtableadminProjectsLocationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLocationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/locations',
+        http_method=u'GET',
+        method_id=u'bigtableadmin.projects.locations.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v2/{+name}/locations',
+        request_field='',
+        request_type_name=u'BigtableadminProjectsLocationsListRequest',
+        response_type_name=u'ListLocationsResponse',
         supports_download=False,
     )
 

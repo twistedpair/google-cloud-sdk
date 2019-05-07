@@ -166,7 +166,7 @@ class GoogleCloudMlV1BuiltInAlgorithmOutput(_messages.Message):
       training job saves the trained model. Only set for successful jobs that
       don't use hyperparameter tuning.
     pythonVersion: Python version on which the built-in algorithm was trained.
-    runtimeVersion: Cloud ML Engine runtime version on which the built-in
+    runtimeVersion: AI Platform runtime version on which the built-in
       algorithm was trained.
   """
 
@@ -306,11 +306,11 @@ class GoogleCloudMlV1ExplanationInput(_messages.Message):
       "[project_id].[dataset_name].[table_name]".
     outputDataFormat: Optional. The format of the output data, defaults to
       BIGQUERY.
-    region: Required. The Google Compute Engine region to run the explanation
-      job in. See the <a href="/ml-engine/docs/tensorflow/regions">available
-      regions</a> for ML Engine services.
-    runtimeVersion: Required. The Cloud ML Engine runtime version to use for
-      the explanation job. See <a href="https://cloud.google.com/ml-
+    region: Required. The Compute Engine region to run the explanation job in.
+      See the <a href="/ml-engine/docs/tensorflow/regions">available
+      regions</a> for AI Platform services.
+    runtimeVersion: Required. The AI Platform runtime version to use for the
+      explanation job. See <a href="https://cloud.google.com/ml-
       engine/docs/tensorflow/runtime-version-list</a> for available runtime
       versions. Must be >=1.12.
     signatureName: Optional. The name of the signature defined in the
@@ -505,15 +505,15 @@ class GoogleCloudMlV1HyperparameterSpec(_messages.Message):
 
   Enums:
     AlgorithmValueValuesEnum: Optional. The search algorithm specified for the
-      hyperparameter tuning job. Uses the default CloudML Engine
-      hyperparameter tuning algorithm if unspecified.
+      hyperparameter tuning job. Uses the default AI Platform hyperparameter
+      tuning algorithm if unspecified.
     GoalValueValuesEnum: Required. The type of goal to use for tuning.
       Available types are `MAXIMIZE` and `MINIMIZE`.  Defaults to `MAXIMIZE`.
 
   Fields:
     algorithm: Optional. The search algorithm specified for the hyperparameter
-      tuning job. Uses the default CloudML Engine hyperparameter tuning
-      algorithm if unspecified.
+      tuning job. Uses the default AI Platform hyperparameter tuning algorithm
+      if unspecified.
     enableTrialEarlyStopping: Optional. Indicates if the hyperparameter tuning
       job enables auto trial early stopping.
     goal: Required. The type of goal to use for tuning. Available types are
@@ -526,7 +526,7 @@ class GoogleCloudMlV1HyperparameterSpec(_messages.Message):
       used.
     maxFailedTrials: Optional. The number of failed trials that need to be
       seen before failing the hyperparameter tuning job. You can specify this
-      field to override the default failing criteria for Cloud ML Engine
+      field to override the default failing criteria for AI Platform
       hyperparameter tuning jobs.  Defaults to zero, which means the service
       decides when a hyperparameter job should fail.
     maxParallelTrials: Optional. The number of training trials to run
@@ -546,7 +546,7 @@ class GoogleCloudMlV1HyperparameterSpec(_messages.Message):
 
   class AlgorithmValueValuesEnum(_messages.Enum):
     r"""Optional. The search algorithm specified for the hyperparameter tuning
-    job. Uses the default CloudML Engine hyperparameter tuning algorithm if
+    job. Uses the default AI Platform hyperparameter tuning algorithm if
     unspecified.
 
     Values:
@@ -820,23 +820,25 @@ class GoogleCloudMlV1Model(_messages.Message):
       labels">using labels</a>.
     name: Required. The name specified for the model when it was created.  The
       model name must be unique within the project it is created in.
-    onlinePredictionConsoleLogging: Optional. If true, enables logging of
-      stderr and stdout streams for online prediction in Stackdriver Logging.
-      These can be more verbose than the standard access logs (see
-      `online_prediction_logging`) and thus can incur higher cost. However,
-      they are helpful for debugging. Note that since Stackdriver logs may
-      incur a cost, particularly if the total QPS in your project is high, be
-      sure to estimate your costs before enabling this flag.  Default is
-      false.
+    onlinePredictionConsoleLogging: Optional. If true, online prediction nodes
+      send `stderr` and `stdout` streams to Stackdriver Logging. These can be
+      more verbose than the standard access logs (see
+      `onlinePredictionLogging`) and can incur higher cost. However, they are
+      helpful for debugging. Note that [Stackdriver logs may incur a
+      cost](/stackdriver/pricing), especially if your project receives
+      prediction requests at a high QPS. Estimate your costs before enabling
+      this option.  Default is false.
     onlinePredictionLogging: Optional. If true, online prediction access logs
       are sent to StackDriver Logging. These logs are like standard server
       access logs, containing information like timestamp and latency for each
-      request. Note that Stackdriver logs may incur a cost, particular if the
-      total QPS in your project is high.  Default is false.
+      request. Note that [Stackdriver logs may incur a
+      cost](/stackdriver/pricing), especially if your project receives
+      prediction requests at a high queries per second rate (QPS). Estimate
+      your costs before enabling this option.  Default is false.
     regions: Optional. The list of regions where the model is going to be
       deployed. Currently only one region per model is supported. Defaults to
       'us-central1' if nothing is set. See the <a href="/ml-
-      engine/docs/tensorflow/regions">available regions</a> for ML Engine
+      engine/docs/tensorflow/regions">available regions</a> for AI Platform
       services. Note: *   No matter where a model is deployed, it can always
       be accessed by     users from anywhere, both for online and batch
       prediction. *   The region for a batch prediction job is set by the
@@ -1092,11 +1094,11 @@ class GoogleCloudMlV1PredictionInput(_messages.Message):
     outputPath: Required. The output Google Cloud Storage location.
     region: Required. The Google Compute Engine region to run the prediction
       job in. See the <a href="/ml-engine/docs/tensorflow/regions">available
-      regions</a> for ML Engine services.
-    runtimeVersion: Optional. The Cloud ML Engine runtime version to use for
-      this batch prediction. If not set, Cloud ML Engine will pick the runtime
-      version used during the CreateVersion request for this model version, or
-      choose the latest stable version when model version information is not
+      regions</a> for AI Platform services.
+    runtimeVersion: Optional. The AI Platform runtime version to use for this
+      batch prediction. If not set, AI Platform will pick the runtime version
+      used during the CreateVersion request for this model version, or choose
+      the latest stable version when model version information is not
       available such as when the model is specified by uri.
     signatureName: Optional. The name of the signature defined in the
       SavedModel to use for this job. Please refer to
@@ -1358,9 +1360,9 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       .](/ml-engine/docs/tensorflow/using-gpus#compute-engine-machine-types-
       with-gpu)  Set `parameterServerConfig.imageUri` only if you build a
       custom image for your parameter server. If
-      `parameterServerConfig.imageUri` has not been set, Cloud ML Engine uses
-      the value of `masterConfig.imageUri`. Learn more about [configuring
-      custom containers](/ml-engine/docs/distributed-training-containers).
+      `parameterServerConfig.imageUri` has not been set, AI Platform uses the
+      value of `masterConfig.imageUri`. Learn more about [configuring custom
+      containers](/ml-engine/docs/distributed-training-containers).
     parameterServerCount: Optional. The number of parameter server replicas to
       use for the training job. Each replica in the cluster will be of the
       type specified in `parameter_server_type`.  This value can only be used
@@ -1370,7 +1372,7 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       use for your training job's parameter server.  The supported values are
       the same as those described in the entry for `master_type`.  This value
       must be consistent with the category of machine type that `masterType`
-      uses. In other words, both must be Cloud ML Engine machine types or both
+      uses. In other words, both must be AI Platform machine types or both
       must be Compute Engine machine types.  This value must be present when
       `scaleTier` is set to `CUSTOM` and `parameter_server_count` is greater
       than zero.
@@ -1383,11 +1385,11 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       versions</a>.
     region: Required. The Google Compute Engine region to run the training job
       in. See the <a href="/ml-engine/docs/tensorflow/regions">available
-      regions</a> for ML Engine services.
-    runtimeVersion: Optional. The Cloud ML Engine runtime version to use for
-      training. If not set, Cloud ML Engine uses the default stable version,
-      1.0. For more information, see the <a href="/ml-engine/docs/runtime-
-      version-list">runtime version list</a> and <a href="/ml-
+      regions</a> for AI Platform services.
+    runtimeVersion: Optional. The AI Platform runtime version to use for
+      training. If not set, AI Platform uses the default stable version, 1.0.
+      For more information, see the <a href="/ml-engine/docs/runtime-version-
+      list">runtime version list</a> and <a href="/ml-
       engine/docs/versioning">how to manage runtime versions</a>.
     scaleTier: Required. Specifies the machine types, the number of replicas
       for workers and parameter servers.
@@ -1397,9 +1399,9 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       configurations for training.](/ml-engine/docs/tensorflow/using-gpus
       #compute-engine-machine-types-with-gpu)  Set `workerConfig.imageUri`
       only if you build a custom image for your worker. If
-      `workerConfig.imageUri` has not been set, Cloud ML Engine uses the value
-      of `masterConfig.imageUri`. Learn more about [configuring custom
-      containers](/ml-engine/docs/distributed-training-containers).
+      `workerConfig.imageUri` has not been set, AI Platform uses the value of
+      `masterConfig.imageUri`. Learn more about [configuring custom containers
+      ](/ml-engine/docs/distributed-training-containers).
     workerCount: Optional. The number of worker replicas to use for the
       training job. Each replica in the cluster will be of the type specified
       in `worker_type`.  This value can only be used when `scale_tier` is set
@@ -1409,7 +1411,7 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       your training job's worker nodes.  The supported values are the same as
       those described in the entry for `masterType`.  This value must be
       consistent with the category of machine type that `masterType` uses. In
-      other words, both must be Cloud ML Engine machine types or both must be
+      other words, both must be AI Platform machine types or both must be
       Compute Engine machine types.  If you use `cloud_tpu` for this value,
       see special instructions for [configuring a custom TPU machine](/ml-
       engine/docs/tensorflow/using-tpus#configuring_a_custom_tpu_machine).
@@ -1513,15 +1515,17 @@ class GoogleCloudMlV1Version(_messages.Message):
   deployed in the cloud, ready to handle prediction requests. A model can have
   multiple versions. You can get information about all of the versions of a
   given model by calling [projects.models.versions.list](/ml-
-  engine/reference/rest/v1/projects.models.versions/list). Next ID: 30
+  engine/reference/rest/v1/projects.models.versions/list).
 
   Enums:
-    FrameworkValueValuesEnum: Optional. The machine learning framework Cloud
-      ML Engine uses to train this version of the model. Valid values are
+    FrameworkValueValuesEnum: Optional. The machine learning framework AI
+      Platform uses to train this version of the model. Valid values are
       `TENSORFLOW`, `SCIKIT_LEARN`, `XGBOOST`. If you do not specify a
-      framework, Cloud ML Engine will analyze files in the deployment_uri to
+      framework, AI Platform will analyze files in the deployment_uri to
       determine a framework. If you choose `SCIKIT_LEARN` or `XGBOOST`, you
-      must also set the runtime version of the model to 1.4 or greater.
+      must also set the runtime version of the model to 1.4 or greater.  Do
+      **not** specify a framework if you're deploying a [custom prediction
+      routine](/ml-engine/docs/tensorflow/custom-prediction-routines).
     StateValueValuesEnum: Output only. The state of a version.
 
   Messages:
@@ -1538,10 +1542,10 @@ class GoogleCloudMlV1Version(_messages.Message):
       taken to ramp up traffic according to the model's ability to scale or
       you will start seeing increases in latency and 429 response codes.
     createTime: Output only. The time the version was created.
-    deploymentUri: Required. The Google Cloud Storage location of the trained
-      model used to create the version. See the [guide to model deployment
-      ](/ml-engine/docs/tensorflow/deploying-models) for more information.
-      When passing Version to [projects.models.versions.create](/ml-
+    deploymentUri: Required. The Cloud Storage location of the trained model
+      used to create the version. See the [guide to model deployment](/ml-
+      engine/docs/tensorflow/deploying-models) for more information.  When
+      passing Version to [projects.models.versions.create](/ml-
       engine/reference/rest/v1/projects.models.versions/create) the model
       service uses the specified location as the source of the model. Once
       deployed, the model version is hosted by the prediction service, so this
@@ -1560,12 +1564,14 @@ class GoogleCloudMlV1Version(_messages.Message):
     explanationConfig: Optional. Configures explainability features on the
       model's version. Some explanation features require additional metadata
       to be loaded as part of the model payload.
-    framework: Optional. The machine learning framework Cloud ML Engine uses
-      to train this version of the model. Valid values are `TENSORFLOW`,
-      `SCIKIT_LEARN`, `XGBOOST`. If you do not specify a framework, Cloud ML
-      Engine will analyze files in the deployment_uri to determine a
+    framework: Optional. The machine learning framework AI Platform uses to
+      train this version of the model. Valid values are `TENSORFLOW`,
+      `SCIKIT_LEARN`, `XGBOOST`. If you do not specify a framework, AI
+      Platform will analyze files in the deployment_uri to determine a
       framework. If you choose `SCIKIT_LEARN` or `XGBOOST`, you must also set
-      the runtime version of the model to 1.4 or greater.
+      the runtime version of the model to 1.4 or greater.  Do **not** specify
+      a framework if you're deploying a [custom prediction routine](/ml-
+      engine/docs/tensorflow/custom-prediction-routines).
     imageUri: Optional. The docker image to run for custom serving container.
       This image must be in Google Container Registry.
     isDefault: Output only. If true, this version will be used to handle
@@ -1595,39 +1601,55 @@ class GoogleCloudMlV1Version(_messages.Message):
     modelClass: A string attribute.
     name: Required.The name specified for the version when it was created.
       The version name must be unique within the model it is created in.
-    packageUris: Optional. The Google Cloud Storage location of the packages
-      for custom prediction and any additional dependencies.
-    predictionClass: class PredictionClass(object):   " " "A Model performs
-      predictions on a given list of instances.    The input instances are the
-      raw values sent by the user. It is the   responsibility of a Model to
-      translate these instances into   actual predictions.    The input
-      instances and the output use python data types. The input   instances
-      have been decoded prior to being passed to the predict   method. The
-      output, which should use python data types is   encoded after being
-      returned from the predict method.   " " "    def predict(self,
-      instances, **kwargs):     " " "Returns predictions for the provided
-      instances.      Instances are the decoded values from the request.
-      Clients need not     worry about decoding json nor base64 decoding.
-      Args:       instances: A list of instances, as described in the API.
-      **kwargs: Additional keyword arguments, will be passed into the
-      client's predict method.      Returns:       A list of outputs
-      containing the prediction results.     " " "    @classmethod   def
-      from_path(cls, model_path):     " " "Creates a model using the given
-      model path.      Path is useful, e.g., to load files from the exported
-      directory     containing the model.      Args:       model_path: The
-      local directory that contains the exported model           file along
-      with any additional files uploaded when creating the           version
-      resource.      Returns:       An instance implementing this Model class.
-      " " "
+    packageUris: Optional. Cloud Storage paths (`gs://...`) of packages for
+      [custom prediction routines](/ml-engine/docs/tensorflow/custom-
+      prediction-routines) or [scikit-learn pipelines with custom code](/ml-
+      engine/docs/scikit/exporting-for-prediction#custom-pipeline-code).  For
+      a custom prediction routine, one of these packages must contain your
+      Predictor class (see
+      [`predictionClass`](#Version.FIELDS.prediction_class)). Additionally,
+      include any dependencies used by your Predictor or scikit-learn pipeline
+      uses that are not already included in your selected [runtime version
+      ](/ml-engine/docs/tensorflow/runtime-version-list).  If you specify this
+      field, you must also set
+      [`runtimeVersion`](#Version.FIELDS.runtime_version) to 1.4 or greater.
+    predictionClass: Optional. The fully qualified name
+      (<var>module_name</var>.<var>class_name</var>) of a class that
+      implements the Predictor interface described in this reference field.
+      The module containing this class should be included in a package
+      provided to the [`packageUris` field](#Version.FIELDS.package_uris).
+      Specify this field if and only if you are deploying a [custom prediction
+      routine (beta)](/ml-engine/docs/tensorflow/custom-prediction-routine).
+      If you specify this field, you must set
+      [`runtimeVersion`](#Version.FIELDS.runtime_version) to 1.4 or greater.
+      The following code sample provides the Predictor interface:  ```py class
+      Predictor(object): " " "Interface for constructing custom predictors." "
+      "  def predict(self, instances, **kwargs):     " " "Performs custom
+      prediction.      Instances are the decoded values from the request. They
+      have already     been deserialized from JSON.      Args:
+      instances: A list of prediction input instances.         **kwargs: A
+      dictionary of keyword args provided as additional             fields on
+      the predict request body.      Returns:         A list of outputs
+      containing the prediction results. This list must         be JSON
+      serializable.     " " "     raise NotImplementedError()  @classmethod
+      def from_path(cls, model_dir):     " " "Creates an instance of Predictor
+      using the given path.      Loading of the predictor should be done in
+      this method.      Args:         model_dir: The local directory that
+      contains the exported model             file along with any additional
+      files uploaded when creating the             version resource.
+      Returns:         An instance implementing this Predictor class.     " "
+      "     raise NotImplementedError() ```  Learn more about [the Predictor
+      interface and custom prediction routines](/ml-engine/docs/tensorflow
+      /custom-prediction-routines).
     pythonVersion: Optional. The version of Python used in prediction. If not
       set, the default version is '2.7'. Python '3.5' is available when
       `runtime_version` is set to '1.4' and above. Python '2.7' works with all
       supported runtime versions.
     requestLoggingConfig: Optional. Configures the request-response pair
       logging on predictions from this Version.
-    runtimeVersion: Optional. The Cloud ML Engine runtime version to use for
-      this deployment. If not set, Cloud ML Engine uses the default stable
-      version, 1.0. For more information, see the [runtime version list](/ml-
+    runtimeVersion: Optional. The AI Platform runtime version to use for this
+      deployment. If not set, AI Platform uses the default stable version,
+      1.0. For more information, see the [runtime version list](/ml-
       engine/docs/runtime-version-list) and [how to manage runtime versions
       ](/ml-engine/docs/versioning).
     serviceAccount: Optional. Specifies the service account for resource
@@ -1636,12 +1658,14 @@ class GoogleCloudMlV1Version(_messages.Message):
   """
 
   class FrameworkValueValuesEnum(_messages.Enum):
-    r"""Optional. The machine learning framework Cloud ML Engine uses to train
+    r"""Optional. The machine learning framework AI Platform uses to train
     this version of the model. Valid values are `TENSORFLOW`, `SCIKIT_LEARN`,
-    `XGBOOST`. If you do not specify a framework, Cloud ML Engine will analyze
+    `XGBOOST`. If you do not specify a framework, AI Platform will analyze
     files in the deployment_uri to determine a framework. If you choose
     `SCIKIT_LEARN` or `XGBOOST`, you must also set the runtime version of the
-    model to 1.4 or greater.
+    model to 1.4 or greater.  Do **not** specify a framework if you're
+    deploying a [custom prediction routine](/ml-engine/docs/tensorflow/custom-
+    prediction-routines).
 
     Values:
       FRAMEWORK_UNSPECIFIED: Unspecified framework. Assigns a value based on
@@ -2223,9 +2247,9 @@ class MlProjectsJobsListRequest(_messages.Message):
     filter: Optional. Specifies the subset of jobs to retrieve. You can filter
       on the value of one or more attributes of the job object. For example,
       retrieve jobs with a job identifier that starts with 'census':
-      <p><code>gcloud ml-engine jobs list --filter='jobId:census*'</code>
+      <p><code>gcloud ai-platform jobs list --filter='jobId:census*'</code>
       <p>List all failed jobs with names that start with 'rnn':
-      <p><code>gcloud ml-engine jobs list --filter='jobId:rnn* AND
+      <p><code>gcloud ai-platform jobs list --filter='jobId:rnn* AND
       state:FAILED'</code> <p>For more examples, see the guide to <a href
       ="/ml-engine/docs/tensorflow/monitor-training">monitoring jobs</a>.
     pageSize: Optional. The number of jobs to retrieve per "page" of results.

@@ -30,6 +30,7 @@ from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.run import build_template
 from googlecloudsdk.api_lib.run import configuration
 from googlecloudsdk.api_lib.run import domain_mapping
+from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import metric_names
 from googlecloudsdk.api_lib.run import revision
@@ -925,12 +926,25 @@ class ServerlessOperations(object):
           exceptions.reraise(serverless_exceptions.BadImageError(e))
       exceptions.reraise(e)
     except api_exceptions.HttpNotFoundError as e:
-      # TODO(b/118339293): List available regions to check whether provided
-      # region is invalid or not.
-      raise serverless_exceptions.DeploymentFailedError(
-          'Deployment endpoint was not found. Perhaps the provided '
-          'region was invalid. Set the `run/region` property to a valid '
-          'region and retry. Ex: `gcloud config set run/region us-central1`')
+      error_msg = 'Deployment endpoint was not found.'
+      if not self._region:
+        all_clusters = global_methods.ListClusters()
+        clusters = ['* {} in {}'.format(c.name, c.zone) for c in all_clusters]
+        error_msg += (' Perhaps the provided cluster was invalid or '
+                      'does not have Cloud Run enabled. Pass the '
+                      '`--cluster` and `--cluster-location` flags or set the '
+                      '`run/cluster` and `run/cluster_location` properties to '
+                      'a valid cluster and zone and retry.'
+                      '\nAvailable clusters:\n{}'.format('\n'.join(clusters)))
+      else:
+        all_regions = global_methods.ListRegions(self._op_client)
+        if self._region not in all_regions:
+          regions = ['* {}'.format(r) for r in all_regions]
+          error_msg += (' The provided region was invalid. '
+                        'Pass the `--region` flag or set the '
+                        '`run/region` property to a valid region and retry.'
+                        '\nAvailable regions:\n{}'.format('\n'.join(regions)))
+      raise serverless_exceptions.DeploymentFailedError(error_msg)
 
   def ReleaseService(self, service_ref, config_changes, tracker=None,
                      asyn=False, private_endpoint=None,

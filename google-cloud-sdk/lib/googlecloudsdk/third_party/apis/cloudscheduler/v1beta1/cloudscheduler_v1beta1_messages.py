@@ -424,7 +424,7 @@ class HttpTarget(_messages.Message):
       [OIDC](https://developers.google.com/identity/protocols/OpenIDConnect)
       token will be generated and attached as an `Authorization` header in the
       HTTP request.  This type of authorization should be used when sending
-      requests to third party endpoints.
+      requests to third party endpoints or Cloud Run.
     uri: Required.  The full URI path that the request will be sent to. This
       string must begin with either "http://" or "https://". Some examples of
       valid values for uri are: `http://acme.com` and
@@ -733,7 +733,7 @@ class OidcToken(_messages.Message):
   r"""Contains information needed for generating an [OpenID Connect
   token](https://developers.google.com/identity/protocols/OpenIDConnect). This
   type of authorization should be used when sending requests to third party
-  endpoints.
+  endpoints or Cloud Run.
 
   Fields:
     audience: Audience to be used when generating OIDC token. If not

@@ -649,7 +649,7 @@ class HmacKey(_messages.Message):
   """
 
   kind = _messages.StringField(1, default=u'storage#hmacKey')
-  metadata = _messages.MessageField('extra_types.JsonValue', 2)
+  metadata = _messages.MessageField('HmacKeyMetadata', 2)
   secret = _messages.StringField(3)
 
 

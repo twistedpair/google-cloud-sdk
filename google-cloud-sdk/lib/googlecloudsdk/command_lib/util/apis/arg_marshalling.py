@@ -160,6 +160,7 @@ class DeclarativeArgumentGenerator(object):
     return resources.REGISTRY.Parse(
         id_value,
         collection=self.method.collection.full_name,
+        api_version=self.method.collection.api_version,
         params=parent_ref.AsDict())
 
   def Limit(self, namespace):
@@ -509,6 +510,7 @@ class AutoArgumentGenerator(object):
     defaults.update(params)
     return resources.REGISTRY.Parse(
         r, collection=self.method.request_collection.full_name,
+        api_version=self.method.request_collection.api_version,
         params=defaults)
 
   def _GetArgName(self, field_name, field_help=None):

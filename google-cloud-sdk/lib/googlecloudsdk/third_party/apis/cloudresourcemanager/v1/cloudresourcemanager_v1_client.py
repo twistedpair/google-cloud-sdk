@@ -998,13 +998,22 @@ values including `POLICY_TYPE_NOT_SET` for the `policy_type oneof`. The
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Projects that are visible to the user and satisfy the.
-specified filter. This method returns Projects in an unspecified order.
+      r"""Lists Projects that the caller has the `resourcemanager.projects.get`.
+permission on and satisfy the specified filter.
+
+This method returns Projects in an unspecified order.
 This method is eventually consistent with project mutations; this means
 that a newly created project may not appear in the results or recent
 updates to an existing project may not be reflected in the results. To
 retrieve the latest state of a project, use the
 GetProject method.
+
+NOTE: If the request filter contains a `parent.type` and `parent.id` and
+the caller has the `resourcemanager.projects.list` permission on the
+parent, the results will be drawn from an alternate index which provides
+more consistent results. In future versions of this API, this List method
+will be split into List and Search to properly capture the behavorial
+difference.
 
       Args:
         request: (CloudresourcemanagerProjectsListRequest) input message

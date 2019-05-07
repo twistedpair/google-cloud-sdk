@@ -1244,7 +1244,7 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
 
     Values:
       SPEECH_MODEL_VARIANT_UNSPECIFIED: No model variant specified. In this
-        case we default to USE_BEST_AVAILABLE.
+        case Dialogflow defaults to USE_BEST_AVAILABLE.
       USE_BEST_AVAILABLE: Use the best available variant of the Speech model
         that the caller is eligible for.  Please see the [Dialogflow
         docs](https://cloud.google.com/dialogflow-enterprise/docs/data-
@@ -1254,12 +1254,12 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
         documentation](https://cloud.google.com/speech-to-text/docs/enhanced-
         models) for details about enhanced models.
       USE_ENHANCED: Use an enhanced model variant:  * If an enhanced variant
-        does not exist for the given   model and request language, we fall
-        back to the   standard variant.    The [Cloud Speech
+        does not exist for the given   model and request language, Dialogflow
+        falls   back to the standard variant.    The [Cloud Speech
         documentation](https://cloud.google.com/speech-to-text/docs/enhanced-
         models)   describes which models have enhanced variants.  * If the API
-        caller isn't eligible for enhanced models, we return an error.
-        Please see the [Dialogflow   docs](https://cloud.google.com
+        caller isn't eligible for enhanced models, Dialogflow returns   an
+        error. Please see the [Dialogflow   docs](https://cloud.google.com
         /dialogflow-enterprise/docs/data-logging)   for how to make your
         project eligible.
     """
@@ -2014,7 +2014,7 @@ class GoogleCloudDialogflowV2OriginalDetectIntentRequest(_messages.Message):
 
 
 class GoogleCloudDialogflowV2OutputAudioConfig(_messages.Message):
-  r"""Instructs the speech synthesizer how to generate the output audio
+  r"""Instructs the speech synthesizer on how to generate the output audio
   content.
 
   Enums:

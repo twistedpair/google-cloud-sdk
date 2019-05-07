@@ -91,10 +91,11 @@ def AddContentTypeArgs(parser, required):
       help=help_text)
 
 
-def AddOutputPathArgs(parser):
+def AddOutputPathArgs(parser, required):
   parser.add_argument(
       '--output-path',
-      required=True,
+      metavar='OUTPUT_PATH',
+      required=required,
       type=arg_parsers.RegexpValidator(
           r'^gs://.*',
           '--output-path must be a Google Cloud Storage URI starting with '
@@ -102,6 +103,31 @@ def AddOutputPathArgs(parser):
       help='Google Cloud Storage URI where the results will go. '
       'URI must start with "gs://". For example, "gs://bucket_name/object_name"'
   )
+
+
+def AddOutputPathPrefixArgs(parser):
+  parser.add_argument(
+      '--output-path-prefix',
+      type=arg_parsers.RegexpValidator(
+          r'^gs://.*/.*',
+          '--output-path-prefix must be a Google Cloud Storage URI starting '
+          'with "gs://". For example, "gs://bucket_name/object_name_prefix"'),
+      help=(
+          'Google Cloud Storage URI where the results will go. '
+          'URI must start with "gs://". For example, '
+          '"gs://bucket_name/object_name_prefix", in which case each exported '
+          'object uri is in format: '
+          '"gs://bucket_name/object_name_prefix/<asset type>/<shard number>" '
+          'and it only contains assets for that type.'))
+
+
+def AddDestinationArgs(parser):
+  destination_group = parser.add_group(
+      mutex=True,
+      required=True,
+      help='The destination path for exporting assets.')
+  AddOutputPathArgs(destination_group, required=False)
+  AddOutputPathPrefixArgs(destination_group)
 
 
 def AddAssetNamesArgs(parser):

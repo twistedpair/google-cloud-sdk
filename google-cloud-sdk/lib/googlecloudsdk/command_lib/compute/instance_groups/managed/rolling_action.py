@@ -27,7 +27,6 @@ from googlecloudsdk.core.util import times
 
 
 def CreateRequest(args,
-                  cleared_fields,
                   client,
                   resources,
                   minimal_action,
@@ -36,7 +35,6 @@ def CreateRequest(args,
 
   Args:
     args: argparse namespace
-    cleared_fields: Fields which are left cleared, but should be send in request
     client: The compute client
     resources: The compute resources
     minimal_action: MinimalActionValueValuesEnum value
@@ -107,13 +105,4 @@ def CreateRequest(args,
         instanceGroupManagerResource=igm_resource,
         project=igm_ref.project,
         region=igm_ref.region)
-  # Due to 'Patch' semantics, we have to clear either 'fixed' or 'percent'.
-  # Otherwise, we'll get an error that both 'fixed' and 'percent' are set.
-  if max_surge is not None:
-    cleared_fields.append('updatePolicy.maxSurge.fixed' if max_surge.fixed is
-                          None else 'updatePolicy.maxSurge.percent')
-  if max_unavailable is not None:
-    cleared_fields.append('updatePolicy.maxUnavailable.fixed'
-                          if max_unavailable.fixed is None else
-                          'updatePolicy.maxUnavailable.percent')
   return (service, 'Patch', request)

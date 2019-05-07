@@ -39,6 +39,35 @@ class BucketOptions(_messages.Message):
   linearBuckets = _messages.MessageField('Linear', 3)
 
 
+class DlpOptions(_messages.Message):
+  r"""Options specific to sinks that require de-identification by the Data
+  Loss Prevention (DLP) API.
+
+  Fields:
+    deidentifyTemplateName: Required. DLP template used to specify how to
+      perform the de-identification of log data. See Creating Cloud DLP de-
+      identification templates. For example:
+      "projects/[PROJECT_ID]/deidentifyTemplates/[TEMPLATE_ID]"
+    includedFields: Optional. Fields within the log entries to include in DLP
+      de-identification. Each field is identified using the advanced logs
+      filter syntax. If any fields are specified, the de-identification will
+      only be applied to these fields and other fields will remain unmodified.
+      If no fields are specified, payload and http_request fields will be
+      included in the de-identification. Specifying included fields is useful
+      for limiting the amount of billable data sent to the DLP API. For
+      example:"httpRequest.remoteIp"  "jsonPayload.user.phoneNumber"
+      "jsonPayload.person.socialSecurityNumber"
+    inspectTemplateName: Required. DLP template used to specify what types of
+      data within a log to inspect. See Creating Cloud DLP inspection
+      templates. For example:
+      "projects/[PROJECT_ID]/inspectTemplates/[TEMPLATE_ID]"
+  """
+
+  deidentifyTemplateName = _messages.StringField(1)
+  includedFields = _messages.StringField(2, repeated=True)
+  inspectTemplateName = _messages.StringField(3)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -955,6 +984,8 @@ class LogSink(_messages.Message):
       sink's writer_identity, set when the sink is created, must have
       permission to write to the destination or else the log entries are not
       exported. For more information, see Exporting Logs with Sinks.
+    dlpOptions: Optional. Settings for Data Loss Prevention (DLP) enabled
+      sinks.
     exclusions: Optional. Log entries that match any of the exclusion filters
       will not be exported. If a log entry is matched by both filter and one
       of exclusion_filters it will not be exported.
@@ -1010,13 +1041,14 @@ class LogSink(_messages.Message):
 
   createTime = _messages.StringField(1)
   destination = _messages.StringField(2)
-  exclusions = _messages.MessageField('LogExclusion', 3, repeated=True)
-  filter = _messages.StringField(4)
-  includeChildren = _messages.BooleanField(5)
-  name = _messages.StringField(6)
-  outputVersionFormat = _messages.EnumField('OutputVersionFormatValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
-  writerIdentity = _messages.StringField(9)
+  dlpOptions = _messages.MessageField('DlpOptions', 3)
+  exclusions = _messages.MessageField('LogExclusion', 4, repeated=True)
+  filter = _messages.StringField(5)
+  includeChildren = _messages.BooleanField(6)
+  name = _messages.StringField(7)
+  outputVersionFormat = _messages.EnumField('OutputVersionFormatValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
+  writerIdentity = _messages.StringField(10)
 
 
 class LoggingBillingAccountsBucketsGetRequest(_messages.Message):
@@ -3251,6 +3283,10 @@ class MonitoredResourceDescriptor(_messages.Message):
   monitored resource types. APIs generally provide a list method that returns
   the monitored resource descriptors used by the API.
 
+  Enums:
+    LaunchStageValueValuesEnum: Optional. The launch stage of the monitored
+      resource definition.
+
   Fields:
     description: Optional. A detailed description of the monitored resource
       type that might be used in documentation.
@@ -3262,6 +3298,8 @@ class MonitoredResourceDescriptor(_messages.Message):
       monitored resource type. For example, an individual Google Cloud SQL
       database is identified by values for the labels "database_id" and
       "zone".
+    launchStage: Optional. The launch stage of the monitored resource
+      definition.
     name: Optional. The resource name of the monitored resource descriptor:
       "projects/{project_id}/monitoredResourceDescriptors/{type}" where {type}
       is the value of the type field in this object and {project_id} is a
@@ -3273,11 +3311,51 @@ class MonitoredResourceDescriptor(_messages.Message):
       maximum length of this value is 256 characters.
   """
 
+  class LaunchStageValueValuesEnum(_messages.Enum):
+    r"""Optional. The launch stage of the monitored resource definition.
+
+    Values:
+      LAUNCH_STAGE_UNSPECIFIED: Do not use this default value.
+      EARLY_ACCESS: Early Access features are limited to a closed group of
+        testers. To use these features, you must sign up in advance and sign a
+        Trusted Tester agreement (which includes confidentiality provisions).
+        These features may be unstable, changed in backward-incompatible ways,
+        and are not guaranteed to be released.
+      ALPHA: Alpha is a limited availability test for releases before they are
+        cleared for widespread use. By Alpha, all significant design issues
+        are resolved and we are in the process of verifying functionality.
+        Alpha customers need to apply for access, agree to applicable terms,
+        and have their projects whitelisted. Alpha releases don't have to be
+        feature complete, no SLAs are provided, and there are no technical
+        support obligations, but they will be far enough along that customers
+        can actually use them in test environments or for limited-use tests --
+        just like they would in normal production cases.
+      BETA: Beta is the point at which we are ready to open a release for any
+        customer to use. There are no SLA or technical support obligations in
+        a Beta release. Products will be complete from a feature perspective,
+        but may have some open outstanding issues. Beta releases are suitable
+        for limited production use cases.
+      GA: GA features are open to all developers and are considered stable and
+        fully qualified for production use.
+      DEPRECATED: Deprecated features are scheduled to be shut down and
+        removed. For more information, see the "Deprecation Policy" section of
+        our Terms of Service (https://cloud.google.com/terms/) and the Google
+        Cloud Platform Subject to the Deprecation Policy
+        (https://cloud.google.com/terms/deprecation) documentation.
+    """
+    LAUNCH_STAGE_UNSPECIFIED = 0
+    EARLY_ACCESS = 1
+    ALPHA = 2
+    BETA = 3
+    GA = 4
+    DEPRECATED = 5
+
   description = _messages.StringField(1)
   displayName = _messages.StringField(2)
   labels = _messages.MessageField('LabelDescriptor', 3, repeated=True)
-  name = _messages.StringField(4)
-  type = _messages.StringField(5)
+  launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 4)
+  name = _messages.StringField(5)
+  type = _messages.StringField(6)
 
 
 class MonitoredResourceMetadata(_messages.Message):

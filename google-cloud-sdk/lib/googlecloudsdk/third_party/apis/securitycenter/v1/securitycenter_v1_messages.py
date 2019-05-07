@@ -450,14 +450,15 @@ class GroupAssetsRequest(_messages.Message):
       `<=` for integer values. * `:`, meaning substring matching, for strings.
       The supported value types are:  * string literals in quotes. * integer
       literals without quotes. * boolean literals `true` and `false` without
-      quotes.  The following field and operator combinations are supported:
-      name | `=` update_time | `>`, `<`, `>=`, `<=` iam_policy.policy_blob |
-      '=', ':' resource_properties | '=', ':', `>`, `<`, `>=`, `<=`
-      security_marks | '=', ':' security_center_properties.resource_name |
-      '=', ':' security_center_properties.resource_type | '=', ':'
-      security_center_properties.resource_parent | '=', ':'
-      security_center_properties.resource_project | '=', ':'
-      security_center_properties.resource_owners | '=', ':'  For example,
+      quotes.  The following field and operator combinations are supported:  *
+      name: `=` * update_time: `>`, `<`, `>=`, `<=`, `=` * create_time: `>`,
+      `<`, `>=`, `<=`, `=` * iam_policy.policy_blob: `=`, `:` *
+      resource_properties: `=`, `:`, `>`, `<`, `>=`, `<=` * security_marks:
+      `=`, `:` * security_center_properties.resource_name: `=`, `:` *
+      security_center_properties.resource_type: `=`, `:` *
+      security_center_properties.resource_parent: `=`, `:` *
+      security_center_properties.resource_project: `=`, `:` *
+      security_center_properties.resource_owners: `=`, `:`  For example,
       `resource_properties.size = 100` is a valid filter string.
     groupBy: Expression that defines what assets fields to use for grouping.
       The string value should follow SQL syntax: comma separated list of
@@ -543,11 +544,12 @@ class GroupFindingsRequest(_messages.Message):
       substring matching, for strings.  The supported value types are:  *
       string literals in quotes. * integer literals without quotes. * boolean
       literals `true` and `false` without quotes.  The following field and
-      operator combinations are supported: name | `=` parent | '=', ':'
-      resource_name | '=', ':' state | '=', ':' category | '=', ':'
-      external_uri | '=', ':' event_time | `>`, `<`, `>=`, `<=` security_marks
-      | '=', ':' source_properties | '=', ':', `>`, `<`, `>=`, `<=`  For
-      example, `source_properties.size = 100` is a valid filter string.
+      operator combinations are supported:  * name: `=` * parent: `=`, `:` *
+      resource_name: `=`, `:` * state: `=`, `:` * category: `=`, `:` *
+      external_uri: `=`, `:` * event_time: `>`, `<`, `>=`, `<=` *
+      security_marks: `=`, `:` * source_properties: `=`, `:`, `>`, `<`, `>=`,
+      `<=`  For example, `source_properties.size = 100` is a valid filter
+      string.
     groupBy: Expression that defines what assets fields to use for grouping
       (including `state_change`). The string value should follow SQL syntax:
       comma separated list of fields. For example: "parent,resource_name".
@@ -1084,13 +1086,14 @@ class SecuritycenterOrganizationsAssetsListRequest(_messages.Message):
       The supported value types are:  * string literals in quotes. * integer
       literals without quotes. * boolean literals `true` and `false` without
       quotes.  The following are the allowed field and operator combinations:
-      name | `=` update_time | `>`, `<`, `>=`, `<=` iam_policy.policy_blob |
-      '=', ':' resource_properties | '=', ':', `>`, `<`, `>=`, `<=`
-      security_marks | '=', ':' security_center_properties.resource_name |
-      '=', ':' security_center_properties.resource_type | '=', ':'
-      security_center_properties.resource_parent | '=', ':'
-      security_center_properties.resource_project | '=', ':'
-      security_center_properties.resource_owners | '=', ':'  For example,
+      * name: `=` * update_time: `>`, `<`, `>=`, `<=` *
+      iam_policy.policy_blob: `=`, `:` * resource_properties: `=`, `:`, `>`,
+      `<`, `>=`, `<=` * security_marks: `=`, `:` *
+      security_center_properties.resource_name: `=`, `:` *
+      security_center_properties.resource_type: `=`, `:` *
+      security_center_properties.resource_parent: `=`, `:` *
+      security_center_properties.resource_project: `=`, `:` *
+      security_center_properties.resource_owners: `=`, `:`  For example,
       `resource_properties.size = 100` is a valid filter string.
     orderBy: Expression that defines what fields and order to use for sorting.
       The string value should follow SQL syntax: comma separated list of
@@ -1305,11 +1308,11 @@ class SecuritycenterOrganizationsSourcesFindingsListRequest(_messages.Message):
       substring matching, for strings.  The supported value types are:  *
       string literals in quotes. * integer literals without quotes. * boolean
       literals `true` and `false` without quotes.  The following field and
-      operator combinations are supported: name | `=` parent | '=', ':'
-      resource_name | '=', ':' state | '=', ':' category | '=', ':'
-      external_uri | '=', ':' event_time | `>`, `<`, `>=`, `<=` security_marks
-      | '=', ':' source_properties | '=', ':', `>`, `<`, `>=`, `<=`  For
-      example, `source_properties.size = 100` is a valid filter string.
+      operator combinations are supported:  name: `=` parent: `=`, `:`
+      resource_name: `=`, `:` state: `=`, `:` category: `=`, `:` external_uri:
+      `=`, `:` event_time: `>`, `<`, `>=`, `<=` security_marks: `=`, `:`
+      source_properties: `=`, `:`, `>`, `<`, `>=`, `<=`  For example,
+      `source_properties.size = 100` is a valid filter string.
     orderBy: Expression that defines what fields and order to use for sorting.
       The string value should follow SQL syntax: comma separated list of
       fields. For example: "name,resource_properties.a_property". The default

@@ -18,24 +18,35 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.container import api_adapter as container_api_adapter
 from googlecloudsdk.api_lib.run import service
 from googlecloudsdk.api_lib.runtime_config import util
 from googlecloudsdk.api_lib.util import apis
 
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
+
+CONTAINER_API_VERSION = 'v1beta1'
 
 SERVERLESS_API_NAME = 'run'
 SERVERLESS_API_VERSION = 'v1alpha1'
 
 
-def ListRegions():
+def GetServerlessClientInstance():
+  return apis.GetClientInstance(SERVERLESS_API_NAME, SERVERLESS_API_VERSION)
+
+
+def ListRegions(client):
   """Get the list of all available regions from control plane.
+
+  Args:
+    client: (base_api.BaseApiClient), instance of a client to use for the list
+      request.
 
   Returns:
     A list of str, which are regions.
   """
-  client = apis.GetClientInstance(SERVERLESS_API_NAME, SERVERLESS_API_VERSION)
   project_resource_relname = util.ProjectPath(
       properties.VALUES.core.project.Get(required=True))
   response = client.projects_locations.List(
@@ -45,10 +56,12 @@ def ListRegions():
   return [l.locationId for l in response.locations]
 
 
-def ListServices(locations):
+def ListServices(client, locations):
   """Get the global services for a OnePlatform project.
 
   Args:
+    client: (base_api.BaseApiClient), instance of a client to use for the list
+      request.
     locations: (str), The relative name of the locations resource
       with either an actual location name e.g.
       'projects/my-project/locations/us-central1)
@@ -58,10 +71,39 @@ def ListServices(locations):
   Returns:
     List of googlecloudsdk.api_lib.run import service.Service objects.
   """
-  client = apis.GetClientInstance(SERVERLESS_API_NAME, SERVERLESS_API_VERSION)
   request = client.MESSAGES_MODULE.RunProjectsLocationsServicesListRequest(
       parent=locations
   )
   response = client.projects_locations_services.List(request)
   return [service.Service(
       item, client.MESSAGES_MODULE) for item in response.items]
+
+
+def ListClusters(location=None):
+  """Get all clusters with Cloud Run enabled.
+
+  Args:
+    location: str optional name of location to search for clusters in. Leaving
+      this field blank will search in all locations.
+
+  Returns:
+    List of googlecloudsdk.third_party.apis.container.CONTAINER_API_VERSION
+    import container_CONTAINER_API_VERSION_messages.Cluster objects
+  """
+  container_api = container_api_adapter.NewAPIAdapter(CONTAINER_API_VERSION)
+  project = properties.VALUES.core.project.Get(required=True)
+
+  response = container_api.ListClusters(project, location)
+  if response.missingZones:
+    log.warning('The following cluster locations did not respond: {}. '
+                'List results may be incomplete.'.format(', '.join(
+                    response.missingZones)))
+
+  def _SortKey(cluster):
+    return (cluster.zone, cluster.name)
+
+  clusters = sorted(response.clusters, key=_SortKey)
+  return [
+      c for c in clusters if (c.addonsConfig.cloudRunConfig and
+                              not c.addonsConfig.cloudRunConfig.disabled)
+  ]

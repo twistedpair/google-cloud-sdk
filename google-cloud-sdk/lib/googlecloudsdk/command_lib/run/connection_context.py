@@ -161,6 +161,12 @@ class _GKEConnectionContext(ConnectionInfo):
     return False
 
 
+def DeriveRegionalEndpoint(endpoint, region):
+  scheme, netloc, path, params, query, fragment = urlparse.urlparse(endpoint)
+  netloc = '{}-{}'.format(region, netloc)
+  return urlparse.urlunparse((scheme, netloc, path, params, query, fragment))
+
+
 class _RegionalConnectionContext(ConnectionInfo):
   """Context manager to connect a particular Cloud Run region."""
 
@@ -186,11 +192,7 @@ class _RegionalConnectionContext(ConnectionInfo):
     global_endpoint = apis.GetEffectiveApiEndpoint(
         global_methods.SERVERLESS_API_NAME,
         global_methods.SERVERLESS_API_VERSION)
-    scheme, netloc, path, params, query, fragment = urlparse.urlparse(
-        global_endpoint)
-    netloc = '{}-{}'.format(self.region, netloc)
-    self.endpoint = urlparse.urlunparse(
-        (scheme, netloc, path, params, query, fragment))
+    self.endpoint = DeriveRegionalEndpoint(global_endpoint, self.region)
     with _OverrideEndpointOverrides(self.endpoint):
       yield self
 
@@ -211,12 +213,10 @@ def GetConnectionContext(args):
   Returns:
     A GKE or regional ConnectionInfo object.
   """
-
-  if flags.IsGKE(args):
+  if flags.ValidateIsGKE(args):
     cluster_ref = args.CONCEPTS.cluster.Parse()
     return _GKEConnectionContext(cluster_ref)
 
-  flags.ValidateClusterArgs(args)
   region = flags.GetRegion(args, prompt=True)
   if not region:
     raise flags.ArgumentError('You must specify either a cluster or a region.')

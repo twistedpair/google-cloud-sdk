@@ -306,6 +306,12 @@ MAP = {
         ),
     },
     'cloudtasks': {
+        'v2': APIDef(
+            class_path='googlecloudsdk.third_party.apis.cloudtasks.v2',
+            client_classpath='cloudtasks_v2_client.CloudtasksV2',
+            messages_modulepath='cloudtasks_v2_messages',
+            default_version=False
+        ),
         'v2beta2': APIDef(
             class_path='googlecloudsdk.third_party.apis.cloudtasks.v2beta2',
             client_classpath='cloudtasks_v2beta2_client.CloudtasksV2beta2',

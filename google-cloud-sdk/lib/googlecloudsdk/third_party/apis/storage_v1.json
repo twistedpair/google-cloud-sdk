@@ -4,7 +4,7 @@
  "id": "storage:v1",
  "name": "storage",
  "version": "v1",
- "revision": "20190419",
+ "revision": "20190429",
  "title": "Cloud Storage JSON API",
  "description": "Stores and retrieves potentially large, immutable data objects.",
  "ownerDomain": "google.com",
@@ -702,7 +702,7 @@
      "default": "storage#hmacKey"
     },
     "metadata": {
-     "type": "any",
+     "$ref": "HmacKeyMetadata",
      "description": "Key metadata."
     },
     "secret": {

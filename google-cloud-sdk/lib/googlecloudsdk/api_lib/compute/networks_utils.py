@@ -47,6 +47,11 @@ def CreateNetworkResourceFromArgs(messages, network_ref, network_args):
   network = messages.Network(
       name=network_ref.Name(), description=network_args.description)
 
+  if hasattr(network_args,
+             'multicast_mode') and network_args.multicast_mode is not None:
+    network.multicastMode = messages.Network.MulticastModeValueValuesEnum(
+        network_args.multicast_mode.upper())
+
   if network_args.subnet_mode == 'legacy':
     network.IPv4Range = network_args.range
   elif network_args.subnet_mode == 'custom':

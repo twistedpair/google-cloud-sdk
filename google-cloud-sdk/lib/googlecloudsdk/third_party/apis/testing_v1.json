@@ -1140,6 +1140,11 @@
           "type": "integer",
           "format": "int32"
         },
+        "targetSdkVersion": {
+          "description": "Specifies the API Level on which the application is designed to run.",
+          "type": "integer",
+          "format": "int32"
+        },
         "applicationLabel": {
           "description": "User-readable name for the application.",
           "type": "string"

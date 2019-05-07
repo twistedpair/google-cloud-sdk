@@ -623,11 +623,10 @@ class CloudtasksProjectsLocationsQueuesTasksListRequest(_messages.Message):
       IAM](https://cloud.google.com/iam/) permission on the Task resource.
 
   Fields:
-    pageSize: Requested page size. Fewer tasks than requested might be
-      returned.  The maximum page size is 1000. If unspecified, the page size
-      will be the maximum. Fewer tasks than requested might be returned, even
-      if more tasks exist; use next_page_token in the response to determine if
-      more tasks exist.
+    pageSize: Maximum page size.  Fewer tasks than requested might be
+      returned, even if more tasks exist; use next_page_token in the response
+      to determine if more tasks exist.  The maximum page size is 1000. If
+      unspecified, the page size will be the maximum.
     pageToken: A token identifying the page of results to return.  To request
       the first page results, page_token must be empty. To request the next
       page of results, page_token must be the value of next_page_token
@@ -1033,6 +1032,9 @@ class Queue(_messages.Message):
       were created by the App Engine SDK. See   [App Engine   documentation](h
       ttps://cloud.google.com/appengine/docs/standard/python/taskqueue/push
       /retrying-tasks).
+    stackdriverLoggingConfig: Configuration options for writing logs to
+      [Stackdriver Logging](https://cloud.google.com/logging/docs/). If this
+      field is unset, then no logs are written.
     state: Output only. The state of the queue.  `state` can only be changed
       by called PauseQueue, ResumeQueue, or uploading [queue.yaml/xml](https:/
       /cloud.google.com/appengine/docs/python/config/queueref). UpdateQueue
@@ -1074,7 +1076,8 @@ class Queue(_messages.Message):
   purgeTime = _messages.StringField(3)
   rateLimits = _messages.MessageField('RateLimits', 4)
   retryConfig = _messages.MessageField('RetryConfig', 5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
+  stackdriverLoggingConfig = _messages.MessageField('StackdriverLoggingConfig', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
 
 
 class RateLimits(_messages.Message):
@@ -1248,6 +1251,20 @@ class SetIamPolicyRequest(_messages.Message):
   """
 
   policy = _messages.MessageField('Policy', 1)
+
+
+class StackdriverLoggingConfig(_messages.Message):
+  r"""Configuration options for writing logs to [Stackdriver
+  Logging](https://cloud.google.com/logging/docs/).
+
+  Fields:
+    samplingRatio: Specifies the fraction of operations to write to
+      [Stackdriver Logging](https://cloud.google.com/logging/docs/). This
+      field may contain any value between 0.0 and 1.0, inclusive. 0.0 is the
+      default and means that no operations are logged.
+  """
+
+  samplingRatio = _messages.FloatField(1)
 
 
 class StandardQueryParameters(_messages.Message):

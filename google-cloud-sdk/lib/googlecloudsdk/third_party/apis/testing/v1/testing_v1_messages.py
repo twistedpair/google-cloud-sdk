@@ -392,6 +392,8 @@ class ApkManifest(_messages.Message):
     minSdkVersion: Minimum API level required for the application to run.
     packageName: Full Java-style package name for this application, e.g.
       "com.example.foo".
+    targetSdkVersion: Specifies the API Level on which the application is
+      designed to run.
   """
 
   applicationLabel = _messages.StringField(1)
@@ -399,6 +401,7 @@ class ApkManifest(_messages.Message):
   maxSdkVersion = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   minSdkVersion = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   packageName = _messages.StringField(5)
+  targetSdkVersion = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class AppBundle(_messages.Message):

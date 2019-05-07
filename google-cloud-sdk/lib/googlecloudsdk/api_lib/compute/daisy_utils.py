@@ -41,6 +41,8 @@ from googlecloudsdk.core.console import console_io
 
 _DAISY_BUILDER = 'gcr.io/compute-image-tools/daisy:release'
 
+_IMAGE_IMPORT_BUILDER = 'gcr.io/compute-image-tools/gce_vm_image_import:release'
+
 _OVF_IMPORT_BUILDER = 'gcr.io/compute-image-tools/gce_ovf_import:release'
 
 SERVICE_ACCOUNT_ROLES = [
@@ -293,14 +295,13 @@ def ExtractNetworkAndSubnetDaisyVariables(args, operation):
   """Extracts network/subnet out of CLI args in the form of Daisy variables.
 
   Args:
-    args: CLI args that might contain network/subnet args.
+    args: list of str, CLI args that might contain network/subnet args.
     operation: ImageOperation, specifies if this call is for import or export
 
   Returns:
     list of strs, network/subnet variables, if specified in args. Can be empty.
   """
   variables = []
-  add_network_variable = False
   network_full_path = None
   if args.subnet:
     variables.append('{0}_subnet=regions/{1}/subnetworks/{2}'.format(
@@ -308,18 +309,40 @@ def ExtractNetworkAndSubnetDaisyVariables(args, operation):
 
     # network variable should be empty string in case subnet is specified
     # and network is not. Otherwise, Daisy will default network to
-    # `global/networks/default` which will fail except for default networks
+    # `global/networks/default` which will fail except for default networks.
     network_full_path = ''
-    add_network_variable = True
 
   if args.network:
-    add_network_variable = True
     network_full_path = 'global/networks/{0}'.format(args.network.lower())
 
-  if add_network_variable:
+  if network_full_path is not None:
     variables.append('{0}_network={1}'.format(operation, network_full_path))
 
   return variables
+
+
+def AppendNetworkAndSubnetArgs(args, import_args):
+  """Extracts network/subnet out of CLI args and append for importer.
+
+  Args:
+    args: list of str, CLI args that might contain network/subnet args.
+    import_args: list of str, args for importer.
+  """
+  network_full_path = None
+  if args.subnet:
+    AppendArg(import_args, 'subnet', 'regions/{0}/subnetworks/{1}'.format(
+        GetSubnetRegion(), args.subnet.lower()))
+
+    # The network variable should be empty string when subnet is specified
+    # and network is not. Otherwise, Daisy will default network to
+    # `global/networks/default` which will fail except for default networks.
+    network_full_path = ''
+
+  if args.network:
+    network_full_path = 'global/networks/{0}'.format(args.network.lower())
+
+  if network_full_path is not None:
+    AppendArg(import_args, 'network', network_full_path)
 
 
 def RunDaisyBuild(args,
@@ -332,7 +355,7 @@ def RunDaisyBuild(args,
   """Run a build with Daisy on Google Cloud Builder.
 
   Args:
-    args: an argparse namespace. All the arguments that were provided to this
+    args: An argparse namespace. All the arguments that were provided to this
       command invocation.
     workflow: The path to the Daisy workflow to run.
     variables: A string of key-value pairs to pass to Daisy.
@@ -357,14 +380,9 @@ def RunDaisyBuild(args,
 
   _CheckIamPermissions(project_id)
 
-  # Make Daisy time out before gcloud by shaving off 2% from the timeout time,
-  # up to a max of 5m (300s).
-  two_percent = int(args.timeout * 0.02)
-  daisy_timeout = args.timeout - min(two_percent, 300)
-
   daisy_args = [
       '-gcs_path=gs://{0}/'.format(daisy_bucket),
-      '-default_timeout={0}s'.format(daisy_timeout),
+      '-default_timeout={0}s'.format(GetDaisyTimeout(args)),
       '-variables={0}'.format(variables),
       workflow,
   ]
@@ -377,6 +395,42 @@ def RunDaisyBuild(args,
 
   return _RunCloudBuild(args, _DAISY_BUILDER, daisy_args, build_tags,
                         output_filter, args.log_location)
+
+
+def RunImageImport(args, import_args, tags, output_filter):
+  """Run a build over gce_vm_image_import on Google Cloud Builder.
+
+  Args:
+    args: An argparse namespace. All the arguments that were provided to this
+      command invocation.
+    import_args: A list of key-value pairs to pass to importer.
+    tags: A list of strings for adding tags to the Argo build.
+    output_filter: A list of strings indicating what lines from the log should
+      be output. Only lines that start with one of the strings in output_filter
+      will be displayed.
+
+  Returns:
+    A build object that either streams the output or is displayed as a
+    link to the build.
+
+  Raises:
+    FailedBuildException: If the build is completed and not 'SUCCESS'.
+  """
+  project_id = projects_util.ParseProject(
+      properties.VALUES.core.project.GetOrFail())
+
+  _CheckIamPermissions(project_id)
+
+  return _RunCloudBuild(args, _IMAGE_IMPORT_BUILDER, import_args,
+                        ['gce-daisy'] + tags, output_filter, args.log_location)
+
+
+def GetDaisyTimeout(args):
+  # Make Daisy time out before gcloud by shaving off 2% from the timeout time,
+  # up to a max of 5m (300s).
+  two_percent = int(args.timeout * 0.02)
+  daisy_timeout = args.timeout - min(two_percent, 300)
+  return daisy_timeout
 
 
 def _RunCloudBuild(args,
@@ -506,30 +560,30 @@ def RunOVFImportBuild(args, instance_names, source_uri, no_guest_environment,
   ovf_import_timeout = args.timeout - min(two_percent, 300)
 
   ovf_importer_args = []
-  _AppendArg(ovf_importer_args, 'instance-names', ','.join(instance_names))
-  _AppendArg(ovf_importer_args, 'client-id', 'gcloud')
-  _AppendArg(ovf_importer_args, 'ovf-gcs-path', source_uri)
-  _AppendBoolArg(ovf_importer_args, 'no-guest-environment',
-                 no_guest_environment)
-  _AppendBoolArg(ovf_importer_args, 'can-ip-forward', can_ip_forward)
-  _AppendBoolArg(ovf_importer_args, 'deletion-protection', deletion_protection)
-  _AppendArg(ovf_importer_args, 'description', description)
+  AppendArg(ovf_importer_args, 'instance-names', ','.join(instance_names))
+  AppendArg(ovf_importer_args, 'client-id', 'gcloud')
+  AppendArg(ovf_importer_args, 'ovf-gcs-path', source_uri)
+  AppendBoolArg(ovf_importer_args, 'no-guest-environment',
+                no_guest_environment)
+  AppendBoolArg(ovf_importer_args, 'can-ip-forward', can_ip_forward)
+  AppendBoolArg(ovf_importer_args, 'deletion-protection', deletion_protection)
+  AppendArg(ovf_importer_args, 'description', description)
   if labels:
-    _AppendArg(ovf_importer_args, 'labels',
-               ','.join(['{}={}'.format(k, v) for k, v in labels.items()]))
-  _AppendArg(ovf_importer_args, 'machine-type', machine_type)
-  _AppendArg(ovf_importer_args, 'network', network)
-  _AppendArg(ovf_importer_args, 'network-tier', network_tier)
-  _AppendArg(ovf_importer_args, 'subnet', subnet)
-  _AppendArg(ovf_importer_args, 'private-network-ip', private_network_ip)
-  _AppendBoolArg(ovf_importer_args, 'no-restart-on-failure',
-                 no_restart_on_failure)
-  _AppendArg(ovf_importer_args, 'os', os)
+    AppendArg(ovf_importer_args, 'labels',
+              ','.join(['{}={}'.format(k, v) for k, v in labels.items()]))
+  AppendArg(ovf_importer_args, 'machine-type', machine_type)
+  AppendArg(ovf_importer_args, 'network', network)
+  AppendArg(ovf_importer_args, 'network-tier', network_tier)
+  AppendArg(ovf_importer_args, 'subnet', subnet)
+  AppendArg(ovf_importer_args, 'private-network-ip', private_network_ip)
+  AppendBoolArg(ovf_importer_args, 'no-restart-on-failure',
+                no_restart_on_failure)
+  AppendArg(ovf_importer_args, 'os', os)
   if tags:
-    _AppendArg(ovf_importer_args, 'tags', ','.join(tags))
-  _AppendArg(ovf_importer_args, 'zone', zone)
-  _AppendArg(ovf_importer_args, 'timeout', ovf_import_timeout, '-{0}={1}s')
-  _AppendArg(ovf_importer_args, 'project', project)
+    AppendArg(ovf_importer_args, 'tags', ','.join(tags))
+  AppendArg(ovf_importer_args, 'zone', zone)
+  AppendArg(ovf_importer_args, 'timeout', ovf_import_timeout, '-{0}={1}s')
+  AppendArg(ovf_importer_args, 'project', project)
 
   build_tags = ['gce-ovf-import']
 
@@ -538,13 +592,13 @@ def RunOVFImportBuild(args, instance_names, source_uri, no_guest_environment,
                         build_tags, output_filter)
 
 
-def _AppendArg(args, name, arg, format_pattern='-{0}={1}'):
+def AppendArg(args, name, arg, format_pattern='-{0}={1}'):
   if arg:
     args.append(format_pattern.format(name, arg))
 
 
-def _AppendBoolArg(args, name, arg):
-  _AppendArg(args, name, arg, '-{0}')
+def AppendBoolArg(args, name, arg=True):
+  AppendArg(args, name, arg, '-{0}')
 
 
 def MakeGcsUri(uri):

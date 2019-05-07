@@ -252,60 +252,39 @@ def InitAPIAdapter(api_version, adapter):
 _SERVICE_ACCOUNT_SCOPES = ('https://www.googleapis.com/auth/cloud-platform',
                            'https://www.googleapis.com/auth/userinfo.email')
 
-_OLD_REQUIRED_SCOPES = (
-    'https://www.googleapis.com/auth/compute',
-    'https://www.googleapis.com/auth/devstorage.read_only')
-
-_ENDPOINTS_SCOPES = (
-    'https://www.googleapis.com/auth/servicecontrol',
-    'https://www.googleapis.com/auth/service.management.readonly')
-
 
 def NodeIdentityOptionsToNodeConfig(options, node_config):
   """Convert node identity options into node config.
 
-  If a service account was provided, use that and cloud-platform/userinfo.email
-  scopes.  Otherwise, if options.new_scopes_behavior is True (we're in alpha or
-  beta track), or container/new_scopes_behavior property is set, just use what's
-  passed to --scopes (or the default).  Otherwise, emulate the deprecated
-  behavior: expand the scopes, add or remove endpoints scopes as necessary, add
-  compute-rw and devstorage-ro, sort, and return.  Print warnings as necessary.
-
+  If scopes are specified with the `--scopes` flag, respect them.
+  If no scopes are presented, 'gke-default' will be passed here indicating that
+  we should use the default set:
+  - If no service account is specified, default set is GKE_DEFAULT_SCOPES which
+    is handled by ExpandScopeURIs:
+    - https://www.googleapis.com/auth/devstorage.read_only,
+    - https://www.googleapis.com/auth/logging.write',
+    - https://www.googleapis.com/auth/monitoring,
+    - https://www.googleapis.com/auth/servicecontrol,
+    - https://www.googleapis.com/auth/service.management.readonly,
+    - https://www.googleapis.com/auth/trace.append,
+  - If a service account is specified, default set is _SERVICE_ACCOUNT_SCOPES:
+    - https://www.googleapis.com/auth/cloud-platform
+    - https://www.googleapis.com/auth/userinfo.email
   Args:
     options: the CreateCluster or CreateNodePool options.
     node_config: the messages.node_config object to be populated.
   """
-  if properties.VALUES.container.new_scopes_behavior.GetBool():
-    options.new_scopes_behavior = True
   if options.service_account:
     node_config.serviceAccount = options.service_account
-    options.scopes = _SERVICE_ACCOUNT_SCOPES
-  elif options.new_scopes_behavior:
-    options.scopes = ExpandScopeURIs(options.scopes)
-  else:
-    if not options.scopes:
-      options.scopes = []
-    # The interactions between --scopes, compute-rw and storage-ro, and
-    # --[no-]enable-cloud-endpoints is all kind of whacky behavior.  Expand
-    # scope aliases _before_ munging with _OLD_REQUIRED_SCOPES and endpoints
-    # scopes so we can avoid adding _OLD_REQUIRED_SCOPES if it's unnecessary,
-    # filter out scopes if the --no-enable-cloud-endpoints is set, and print
-    # only relevant deprecation warnings.  See b/69554175 and b/69431751.
-    options.scopes = ExpandScopeURIs(options.scopes)
-    # Add or remove endpoints scopes as necessary.
-    if options.enable_cloud_endpoints:
-      for scope in _ENDPOINTS_SCOPES:
-        if scope not in options.scopes:
-          log.warning("""\
-The behavior of --scopes will change in a future gcloud release: \
-service-control and service-management scopes will no longer be added to what \
-is specified in --scopes. To use these scopes, add them explicitly to \
---scopes. To use the new behavior, set container/new_scopes_behavior property \
-(gcloud config set container/new_scopes_behavior true).""")
-          options.scopes += _ENDPOINTS_SCOPES
-          break
-    else:
-      options.scopes = [x for x in options.scopes if x not in _ENDPOINTS_SCOPES]
+    replaced_scopes = []
+    for scope in options.scopes:
+      if scope == 'gke-default':
+        replaced_scopes.extend(_SERVICE_ACCOUNT_SCOPES)
+      else:
+        replaced_scopes.append(scope)
+    options.scopes = replaced_scopes
+
+  options.scopes = ExpandScopeURIs(options.scopes)
   node_config.oauthScopes = sorted(set(options.scopes))
 
 
@@ -338,8 +317,6 @@ class CreateClusterOptions(object):
                node_source_image=None,
                node_disk_size_gb=None,
                scopes=None,
-               enable_cloud_endpoints=None,
-               new_scopes_behavior=None,
                num_nodes=None,
                additional_zones=None,
                node_locations=None,
@@ -415,13 +392,12 @@ class CreateClusterOptions(object):
                metadata=None,
                enable_network_egress_metering=None,
                identity_namespace=None,
-               enable_shielded_nodes=None):
+               enable_shielded_nodes=None,
+               linux_sysctls=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
     self.scopes = scopes
-    self.enable_cloud_endpoints = enable_cloud_endpoints
-    self.new_scopes_behavior = new_scopes_behavior
     self.num_nodes = num_nodes
     self.additional_zones = additional_zones
     self.node_locations = node_locations
@@ -498,6 +474,7 @@ class CreateClusterOptions(object):
     self.enable_network_egress_metering = enable_network_egress_metering
     self.identity_namespace = identity_namespace
     self.enable_shielded_nodes = enable_shielded_nodes
+    self.linux_sysctls = linux_sysctls
 
 
 class UpdateClusterOptions(object):
@@ -532,7 +509,8 @@ class UpdateClusterOptions(object):
                autoscaling_profile=None,
                enable_peering_route_sharing=None,
                identity_namespace=None,
-               disable_workload_identity=None):
+               disable_workload_identity=None,
+               enable_shielded_nodes=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -562,6 +540,7 @@ class UpdateClusterOptions(object):
     self.enable_peering_route_sharing = enable_peering_route_sharing
     self.identity_namespace = identity_namespace
     self.disable_workload_identity = disable_workload_identity
+    self.enable_shielded_nodes = enable_shielded_nodes
 
 
 class SetMasterAuthOptions(object):
@@ -591,8 +570,6 @@ class CreateNodePoolOptions(object):
                disk_size_gb=None,
                scopes=None,
                node_version=None,
-               enable_cloud_endpoints=None,
-               new_scopes_behavior=None,
                num_nodes=None,
                local_ssd_count=None,
                local_ssd_volume_configs=None,
@@ -617,13 +594,12 @@ class CreateNodePoolOptions(object):
                workload_metadata_from_node=None,
                max_pods_per_node=None,
                sandbox=None,
-               metadata=None):
+               metadata=None,
+               linux_sysctls=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
     self.node_version = node_version
-    self.enable_cloud_endpoints = enable_cloud_endpoints
-    self.new_scopes_behavior = new_scopes_behavior
     self.num_nodes = num_nodes
     self.local_ssd_count = local_ssd_count
     self.local_ssd_volume_configs = local_ssd_volume_configs
@@ -649,6 +625,7 @@ class CreateNodePoolOptions(object):
     self.max_pods_per_node = max_pods_per_node
     self.sandbox = sandbox
     self.metadata = metadata
+    self.linux_sysctls = linux_sysctls
 
 
 class UpdateNodePoolOptions(object):
@@ -1021,6 +998,7 @@ class APIAdapter(object):
       node_config.minCpuPlatform = options.min_cpu_platform
 
     _AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
+    _AddLinuxNodeConfigToNodeConfig(node_config, options, self.messages)
 
     return node_config
 
@@ -1673,6 +1651,7 @@ class APIAdapter(object):
       node_config.minCpuPlatform = options.min_cpu_platform
 
     _AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
+    _AddLinuxNodeConfigToNodeConfig(node_config, options, self.messages)
 
     if options.sandbox is not None:
       node_config.sandboxConfig = self.messages.SandboxConfig(
@@ -2062,6 +2041,11 @@ class V1Beta1Adapter(V1Adapter):
           desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
               identityNamespace=''))
 
+    if options.enable_shielded_nodes is not None:
+      update = self.messages.ClusterUpdate(
+          desiredShieldedNodes=self.messages.ShieldedNodes(
+              enabled=options.enable_shielded_nodes))
+
     if not update:
       # if reached here, it's possible:
       # - someone added update flags but not handled
@@ -2332,6 +2316,11 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
               identityNamespace=''))
 
+    if options.enable_shielded_nodes is not None:
+      update = self.messages.ClusterUpdate(
+          desiredShieldedNodes=self.messages.ShieldedNodes(
+              enabled=options.enable_shielded_nodes))
+
     if not update:
       # if reached here, it's possible:
       # - someone added update flags but not handled
@@ -2556,6 +2545,22 @@ def _AddWorkloadMetadataToNodeConfig(node_config, options, messages):
     else:
       raise util.Error(
           UNKNOWN_WORKLOAD_METADATA_FROM_NODE_ERROR_MSG.format(option=option))
+
+
+def _AddLinuxNodeConfigToNodeConfig(node_config, options, messages):
+  """Adds LinuxNodeConfig to NodeConfig."""
+
+  # Linux kernel parameters (sysctls).
+  if options.linux_sysctls:
+    if not node_config.linuxNodeConfig:
+      node_config.linuxNodeConfig = messages.LinuxNodeConfig()
+    linux_sysctls = node_config.linuxNodeConfig.SysctlsValue()
+    props = []
+    for key, value in six.iteritems(options.linux_sysctls):
+      props.append(linux_sysctls.AdditionalProperty(key=key, value=value))
+    linux_sysctls.additionalProperties = props
+
+    node_config.linuxNodeConfig.sysctls = linux_sysctls
 
 
 def ProjectLocation(project, location):

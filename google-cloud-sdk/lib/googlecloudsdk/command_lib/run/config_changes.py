@@ -70,9 +70,13 @@ class EnvVarChanges(ConfigChanger):
       env_vars_to_remove: [str], List of env vars to remove.
       clear_others: bool, If true, clear all non-updated env vars.
     """
+    self._to_update = None
+    self._to_remove = None
     self._clear_others = clear_others
-    self._to_update = env_vars_to_update
-    self._to_remove = env_vars_to_remove
+    if env_vars_to_update:
+      self._to_update = {k.strip(): v for k, v in env_vars_to_update.items()}
+    if env_vars_to_remove:
+      self._to_remove = [k.lstrip() for k in env_vars_to_remove]
 
   def AdjustConfiguration(self, config, metadata):
     """Mutates the given config's env vars to match the desired changes."""

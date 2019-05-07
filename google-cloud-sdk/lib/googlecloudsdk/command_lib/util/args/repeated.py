@@ -64,6 +64,7 @@ Makes a command that works like so:
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import print_function
 from __future__ import unicode_literals
 
 import functools
@@ -230,7 +231,8 @@ def AddPrimitiveArgs(parser,
                      property_name,
                      additional_help='',
                      metavar=None,
-                     is_dict_args=False):
+                     is_dict_args=False,
+                     auto_group_help=True):
   """Add arguments for updating a field to the given parser.
 
   Adds `--{add,remove,set,clear-<resource>` arguments.
@@ -247,12 +249,16 @@ def AddPrimitiveArgs(parser,
     metavar: str, the name of the metavar to use (if different from
       arg_name.upper()).
     is_dict_args: boolean, True when the primitive args are dict args.
+    auto_group_help: bool, True to generate a summary help.
   """
   properties_name = property_name
-  group_help = 'These flags modify the member {} of this {}.'.format(
-      properties_name, resource_name)
-  if additional_help:
-    group_help += ' ' + additional_help
+  if auto_group_help:
+    group_help = 'These flags modify the member {} of this {}.'.format(
+        properties_name, resource_name)
+    if additional_help:
+      group_help += ' ' + additional_help
+  else:
+    group_help = additional_help
   group = parser.add_mutually_exclusive_group(group_help)
   metavar = metavar or arg_name.upper()
   args = [

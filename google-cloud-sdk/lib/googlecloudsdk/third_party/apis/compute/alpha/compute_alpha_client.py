@@ -287,7 +287,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an address resource in the specified project using the data included in the request.
+      r"""Creates an address resource in the specified project by using the data included in the request.
 
       Args:
         request: (ComputeAddressesInsertRequest) input message
@@ -2327,7 +2327,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an address resource in the specified project using the data included in the request.
+      r"""Creates an address resource in the specified project by using the data included in the request.
 
       Args:
         request: (ComputeGlobalAddressesInsertRequest) input message
@@ -6352,7 +6352,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id=u'compute.interconnectAttachments.insert',
         ordered_params=[u'project', u'region'],
         path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
+        query_params=[u'requestId', u'validateOnly'],
         relative_path=u'projects/{project}/regions/{region}/interconnectAttachments',
         request_field=u'interconnectAttachment',
         request_type_name=u'ComputeInterconnectAttachmentsInsertRequest',
@@ -9143,7 +9143,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def DisableXpnResource(self, request, global_params=None):
-      r"""Disable a serivce resource (a.k.a service project) associated with this host project.
+      r"""Disable a service resource (also known as service project) associated with this host project.
 
       Args:
         request: (ComputeProjectsDisableXpnResourceRequest) input message
