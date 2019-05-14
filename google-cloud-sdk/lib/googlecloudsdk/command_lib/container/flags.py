@@ -213,9 +213,10 @@ def AddClusterAutoscalingFlags(parser, update_group=None, hidden=False):
 
   Args:
     parser: A given parser.
-    update_group: An optional group of mutually exclusive flag options
-        to which an --enable-autoscaling flag is added.
+    update_group: An optional group of mutually exclusive flag options to which
+      an --enable-autoscaling flag is added.
     hidden: If true, suppress help text for added options.
+
   Returns:
     Argument group for autoscaling flags.
   """
@@ -366,9 +367,10 @@ and memory limits to be specified.""",
       hidden=hidden,
       help="""\
 Path of the JSON/YAML file which contains information about the
-cluster's autoscaling configuration. Currently it only contains
-a list of resource limits of the cluster.
+cluster's node autoprovisioning configuration. Currently it contains
+a list of resource limits and identity defaults for autoprovisioning.
 
+Resource limits are specified in the field 'resourceLimits'.
 Each resource limits definition contains three fields:
 resourceType, maximum and minimum.
 Resource type can be "cpu", "memory" or an accelerator (e.g.
@@ -376,10 +378,19 @@ Resource type can be "cpu", "memory" or an accelerator (e.g.
 list to learn about available accelerator types.
 Maximum is the maximum allowed amount with the unit of the resource.
 Minimum is the minimum allowed amount with the unit of the resource.
+
+Identity default contains at most one of the below fields:
+serviceAccount: The Google Cloud Platform Service Account to be used by node VMs in
+autoprovisioined node pools. If not specified, the project default service account
+is used.
+scopes: A list of scopes be used by node instances in autoprovisioined node pools.
+Multiple scopes can be specified, separated by commas. For information on defaults,
+look at:
+https://cloud.google.com/sdk/gcloud/reference/container/clusters/create#--scopes
 """)
 
-  from_flags_group = limits_group.add_argument_group('Flags to configure '
-                                                     'resource limits:')
+  from_flags_group = limits_group.add_argument_group(
+      'Flags to configure autoprovisioned nodes')
   from_flags_group.add_argument(
       '--max-cpu',
       required=True,
@@ -453,6 +464,28 @@ accelerator-types list``` to learn about all available accelerator types.
 
 *count*::: (Required) The minimum number of accelerators
 to which the cluster can be scaled.
+""")
+  identity_group = from_flags_group.add_argument_group(
+      'Flags to specify identity for autoprovisioned nodes:', mutex=True)
+  identity_group.add_argument(
+      '--autoprovisioning-service-account',
+      type=str,
+      hidden=True,
+      help="""\
+The Google Cloud Platform Service Account to be used by node VMs in
+autoprovisioined node pools. If not specified, the project default
+service account is used.
+""")
+  identity_group.add_argument(
+      '--autoprovisioning-scopes',
+      type=arg_parsers.ArgList(),
+      metavar='SCOPE',
+      hidden=True,
+      help="""\
+The scopes be used by node instances in autoprovisioined node pools.
+Multiple scopes can be specified, separated by commas. For information
+on defaults, look at:
+https://cloud.google.com/sdk/gcloud/reference/container/clusters/create#--scopes
 """)
 
 

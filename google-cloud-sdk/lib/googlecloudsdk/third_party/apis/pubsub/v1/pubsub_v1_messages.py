@@ -1282,6 +1282,10 @@ class Topic(_messages.Message):
     kmsKeyName: The resource name of the Cloud KMS CryptoKey to be used to
       protect access to messages published on this topic.  The expected format
       is `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
+      <b>EXPERIMENTAL:</b> This feature is part of a closed alpha release.
+      This API might be changed in backward-incompatible ways and is not
+      recommended for production use. It is not subject to any SLA or
+      deprecation policy.
     labels: See <a href="https://cloud.google.com/pubsub/docs/labels">
       Creating and managing labels</a>.
     messageStoragePolicy: Policy constraining how messages published to the

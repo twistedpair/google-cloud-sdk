@@ -675,6 +675,18 @@ class CompleteIPRotationRequest(_messages.Message):
   zone = _messages.StringField(4)
 
 
+class ConsumptionMeteringConfig(_messages.Message):
+  r"""Parameters for controlling consumption metering.
+
+  Fields:
+    enabled: Whether to enable consumption metering for this cluster. If
+      enabled, a second BigQuery table will be created to hold resource
+      consumption records.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class ContainerProjectsAggregatedUsableSubnetworksListRequest(_messages.Message):
   r"""A ContainerProjectsAggregatedUsableSubnetworksListRequest object.
 
@@ -1693,17 +1705,61 @@ class LinuxNodeConfig(_messages.Message):
 
   Messages:
     SysctlsValue: The Linux kernel parameters to be applied to the nodes and
-      all pods running on the nodes.
+      all pods running on the nodes.  The following parameters are supported.
+      kernel.pid_max kernel.threads-max fs.inotify.max_queued_events
+      fs.inotify.max_user_instances fs.inotify.max_user_watches
+      net.core.netdev_budget net.core.netdev_budget_usecs
+      net.core.netdev_max_backlog net.core.rmem_default net.core.rmem_max
+      net.core.wmem_default net.core.wmem_max net.core.optmem_max
+      net.core.somaxconn net.ipv4.tcp_rmem net.ipv4.tcp_wmem net.ipv4.tcp_mem
+      net.ipv4.tcp_fin_timeout net.ipv4.tcp_keepalive_intvl
+      net.ipv4.tcp_keepalive_probes net.ipv4.tcp_keepalive_time
+      net.ipv4.tcp_max_orphans net.ipv4.tcp_max_syn_backlog
+      net.ipv4.tcp_max_tw_buckets net.ipv4.tcp_syn_retries
+      net.ipv4.tcp_tw_reuse net.ipv4.udp_mem net.ipv4.udp_rmem_min
+      net.ipv4.udp_wmem_min net.netfilter.nf_conntrack_generic_timeout
+      net.netfilter.nf_conntrack_max
+      net.netfilter.nf_conntrack_tcp_timeout_close_wait
+      net.netfilter.nf_conntrack_tcp_timeout_established
 
   Fields:
     sysctls: The Linux kernel parameters to be applied to the nodes and all
-      pods running on the nodes.
+      pods running on the nodes.  The following parameters are supported.
+      kernel.pid_max kernel.threads-max fs.inotify.max_queued_events
+      fs.inotify.max_user_instances fs.inotify.max_user_watches
+      net.core.netdev_budget net.core.netdev_budget_usecs
+      net.core.netdev_max_backlog net.core.rmem_default net.core.rmem_max
+      net.core.wmem_default net.core.wmem_max net.core.optmem_max
+      net.core.somaxconn net.ipv4.tcp_rmem net.ipv4.tcp_wmem net.ipv4.tcp_mem
+      net.ipv4.tcp_fin_timeout net.ipv4.tcp_keepalive_intvl
+      net.ipv4.tcp_keepalive_probes net.ipv4.tcp_keepalive_time
+      net.ipv4.tcp_max_orphans net.ipv4.tcp_max_syn_backlog
+      net.ipv4.tcp_max_tw_buckets net.ipv4.tcp_syn_retries
+      net.ipv4.tcp_tw_reuse net.ipv4.udp_mem net.ipv4.udp_rmem_min
+      net.ipv4.udp_wmem_min net.netfilter.nf_conntrack_generic_timeout
+      net.netfilter.nf_conntrack_max
+      net.netfilter.nf_conntrack_tcp_timeout_close_wait
+      net.netfilter.nf_conntrack_tcp_timeout_established
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SysctlsValue(_messages.Message):
     r"""The Linux kernel parameters to be applied to the nodes and all pods
-    running on the nodes.
+    running on the nodes.  The following parameters are supported.
+    kernel.pid_max kernel.threads-max fs.inotify.max_queued_events
+    fs.inotify.max_user_instances fs.inotify.max_user_watches
+    net.core.netdev_budget net.core.netdev_budget_usecs
+    net.core.netdev_max_backlog net.core.rmem_default net.core.rmem_max
+    net.core.wmem_default net.core.wmem_max net.core.optmem_max
+    net.core.somaxconn net.ipv4.tcp_rmem net.ipv4.tcp_wmem net.ipv4.tcp_mem
+    net.ipv4.tcp_fin_timeout net.ipv4.tcp_keepalive_intvl
+    net.ipv4.tcp_keepalive_probes net.ipv4.tcp_keepalive_time
+    net.ipv4.tcp_max_orphans net.ipv4.tcp_max_syn_backlog
+    net.ipv4.tcp_max_tw_buckets net.ipv4.tcp_syn_retries net.ipv4.tcp_tw_reuse
+    net.ipv4.udp_mem net.ipv4.udp_rmem_min net.ipv4.udp_wmem_min
+    net.netfilter.nf_conntrack_generic_timeout net.netfilter.nf_conntrack_max
+    net.netfilter.nf_conntrack_tcp_timeout_close_wait
+    net.netfilter.nf_conntrack_tcp_timeout_established
 
     Messages:
       AdditionalProperty: An additional property for a SysctlsValue object.
@@ -2652,13 +2708,16 @@ class ResourceUsageExportConfig(_messages.Message):
   Fields:
     bigqueryDestination: Configuration to use BigQuery as usage export
       destination.
+    consumptionMeteringConfig: Configuration to enable resource consumption
+      metering.
     enableNetworkEgressMetering: Whether to enable network egress metering for
       this cluster. If enabled, a daemonset will be created in the cluster to
       meter network egress traffic.
   """
 
   bigqueryDestination = _messages.MessageField('BigQueryDestination', 1)
-  enableNetworkEgressMetering = _messages.BooleanField(2)
+  consumptionMeteringConfig = _messages.MessageField('ConsumptionMeteringConfig', 2)
+  enableNetworkEgressMetering = _messages.BooleanField(3)
 
 
 class RollbackNodePoolUpgradeRequest(_messages.Message):

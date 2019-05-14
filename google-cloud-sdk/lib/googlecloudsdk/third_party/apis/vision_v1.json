@@ -136,7 +136,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
+          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should be a resource name ending with `operations\/{unique_id}`.",
           "type": "string"
         },
         "metadata": {
@@ -9831,7 +9831,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloud-vision"
                   ],
-                  "description": "Permanently deletes a ProductSet. Products and ReferenceImages in the\nProductSet are not deleted.\n\nThe actual image files are not deleted from Google Cloud Storage.\n\nPossible errors:\n\nnone"
+                  "description": "Permanently deletes a ProductSet. Products and ReferenceImages in the\nProductSet are not deleted.\n\nThe actual image files are not deleted from Google Cloud Storage."
                 },
                 "addProduct": {
                   "id": "vision.projects.locations.productSets.addProduct",
@@ -9889,7 +9889,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloud-vision"
                   ],
-                  "description": "Removes a Product from the specified ProductSet.\n\nPossible errors:\n\nnone"
+                  "description": "Removes a Product from the specified ProductSet."
                 },
                 "import": {
                   "id": "vision.projects.locations.productSets.import",
@@ -10124,7 +10124,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloud-vision"
                   ],
-                  "description": "Permanently deletes a product and its reference images.\n\nMetadata of the product and all its images will be deleted right away, but\nsearch queries against ProductSets containing the product may still work\nuntil all related caches are refreshed.\n\nPossible errors:\n\nnone"
+                  "description": "Permanently deletes a product and its reference images.\n\nMetadata of the product and all its images will be deleted right away, but\nsearch queries against ProductSets containing the product may still work\nuntil all related caches are refreshed."
                 }
               }
               ,
@@ -10189,7 +10189,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/cloud-vision"
                       ],
-                      "description": "Permanently deletes a reference image.\n\nThe image metadata will be deleted right away, but search queries\nagainst ProductSets containing the image may still work until all related\ncaches are refreshed.\n\nThe actual image files are not deleted from Google Cloud Storage.\n\nPossible errors:\n\nnone"
+                      "description": "Permanently deletes a reference image.\n\nThe image metadata will be deleted right away, but search queries\nagainst ProductSets containing the image may still work until all related\ncaches are refreshed.\n\nThe actual image files are not deleted from Google Cloud Storage."
                     },
                     "list": {
                       "id": "vision.projects.locations.products.referenceImages.list",

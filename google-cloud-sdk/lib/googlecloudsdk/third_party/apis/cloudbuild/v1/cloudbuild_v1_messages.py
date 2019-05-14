@@ -525,6 +525,7 @@ class BuildTrigger(_messages.Message):
       is not empty, then we make sure that at least one of those files matches
       a included_files glob. If not, then we do not trigger a build.
     substitutions: Substitutions data for Build resource.
+    tags: Tags for annotation of a `BuildTrigger`
     triggerTemplate: Template describing the types of source changes to
       trigger a build.  Branch and tag names in trigger templates are
       interpreted as regular expressions. Any branch or tag change that
@@ -566,7 +567,8 @@ class BuildTrigger(_messages.Message):
   ignoredFiles = _messages.StringField(8, repeated=True)
   includedFiles = _messages.StringField(9, repeated=True)
   substitutions = _messages.MessageField('SubstitutionsValue', 10)
-  triggerTemplate = _messages.MessageField('RepoSource', 11)
+  tags = _messages.StringField(11, repeated=True)
+  triggerTemplate = _messages.MessageField('RepoSource', 12)
 
 
 class BuiltImage(_messages.Message):
@@ -926,7 +928,8 @@ class Operation(_messages.Message):
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
-      the `name` should have the format of `operations/some/unique/name`.
+      the `name` should be a resource name ending with
+      `operations/{unique_id}`.
     response: The normal response of the operation in case of success.  If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`.  If the original method is standard

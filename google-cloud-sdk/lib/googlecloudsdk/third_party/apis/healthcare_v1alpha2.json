@@ -353,7 +353,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
+          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should be a resource name ending with `operations\/{unique_id}`.",
           "type": "string"
         },
         "metadata": {
@@ -1284,7 +1284,7 @@
       "type": "object",
       "properties": {
         "resourceType": {
-          "description": "The type of the resource to search.",
+          "description": "The FHIR resource type to search, such as Patient or Observation. For a\ncomplete list, see the [FHIR Resource\nIndex](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/resourcelist.html).",
           "type": "string"
         }
       }
@@ -4246,7 +4246,7 @@
                               "type": "string"
                             },
                             "type": {
-                              "description": "The type of the resource to create.",
+                              "description": "The FHIR resource type to create, such as Patient or Observation. For a\ncomplete list, see the [FHIR Resource\nIndex](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/resourcelist.html).\nMust match the resource type in the provided content.",
                               "location": "path",
                               "required": true,
                               "pattern": "^[^\/]+$",
@@ -4357,7 +4357,7 @@
                               "type": "string"
                             },
                             "type": {
-                              "description": "The type of the resource to update.",
+                              "description": "The FHIR resource type to delete, such as Patient or Observation. For a\ncomplete list, see the [FHIR Resource\nIndex](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/resourcelist.html).",
                               "location": "path",
                               "required": true,
                               "pattern": "^[^\/]+$",
@@ -4418,7 +4418,7 @@
                               "type": "string"
                             },
                             "type": {
-                              "description": "The type of the resource to update.",
+                              "description": "The FHIR resource type to update, such as Patient or Observation. For a\ncomplete list, see the [FHIR Resource\nIndex](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/resourcelist.html).\nMust match the resource type in the provided content.",
                               "location": "path",
                               "required": true,
                               "pattern": "^[^\/]+$",
@@ -4482,7 +4482,7 @@
                               "type": "string"
                             },
                             "type": {
-                              "description": "The type of the resource to update.",
+                              "description": "The FHIR resource type to update, such as Patient or Observation. For a\ncomplete list, see the [FHIR Resource\nIndex](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/resourcelist.html).",
                               "location": "path",
                               "required": true,
                               "pattern": "^[^\/]+$",
@@ -4518,7 +4518,7 @@
                               "type": "string"
                             },
                             "resourceType": {
-                              "description": "The type of the resource to search.",
+                              "description": "The FHIR resource type to search, such as Patient or Observation. For a\ncomplete list, see the [FHIR Resource\nIndex](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/resourcelist.html).",
                               "location": "path",
                               "required": true,
                               "pattern": "^.+$",
@@ -4551,7 +4551,7 @@
                               "type": "string"
                             },
                             "resourceType": {
-                              "description": "The type of the resource to search.",
+                              "description": "The FHIR resource type to search, such as Patient or Observation. For a\ncomplete list, see the [FHIR Resource\nIndex](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/resourcelist.html).",
                               "location": "path",
                               "required": true,
                               "type": "string"

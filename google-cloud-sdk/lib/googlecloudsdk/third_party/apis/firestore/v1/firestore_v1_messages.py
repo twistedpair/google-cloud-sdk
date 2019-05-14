@@ -1289,9 +1289,13 @@ class GoogleFirestoreAdminV1Index(_messages.Message):
         queries against a collection that is the child of a specific document,
         specified at query time, and that has the collection id specified by
         the index.
+      COLLECTION_GROUP: Indexes with a collection group query scope specified
+        allow queries against all collections that has the collection id
+        specified by the index.
     """
     QUERY_SCOPE_UNSPECIFIED = 0
     COLLECTION = 1
+    COLLECTION_GROUP = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The serving state of the index.
@@ -1565,7 +1569,8 @@ class GoogleLongrunningOperation(_messages.Message):
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
-      the `name` should have the format of `operations/some/unique/name`.
+      the `name` should be a resource name ending with
+      `operations/{unique_id}`.
     response: The normal response of the operation in case of success.  If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`.  If the original method is standard

@@ -138,7 +138,7 @@ def GetRegionalTarget(client,
                       resources,
                       args,
                       forwarding_rule_ref=None,
-                      include_alpha=False,
+                      include_l7_internal_load_balancing=False,
                       include_traffic_director=False):
   """Return the forwarding target for a regionally scoped request."""
   _ValidateRegionalArgs(args, include_traffic_director)
@@ -178,11 +178,13 @@ def GetRegionalTarget(client,
     target_region = target_ref.region
   elif args.target_http_proxy:
     target_ref = flags.TargetHttpProxyArg(
-        include_alpha=include_alpha).ResolveAsResource(args, resources)
+        include_l7_internal_load_balancing=include_l7_internal_load_balancing
+    ).ResolveAsResource(args, resources)
     target_region = region_arg
   elif args.target_https_proxy:
     target_ref = flags.TargetHttpsProxyArg(
-        include_alpha=include_alpha).ResolveAsResource(args, resources)
+        include_l7_internal_load_balancing=include_l7_internal_load_balancing
+    ).ResolveAsResource(args, resources)
     target_region = region_arg
   elif args.target_ssl_proxy:
     target_ref = flags.TARGET_SSL_PROXY_ARG.ResolveAsResource(args, resources)

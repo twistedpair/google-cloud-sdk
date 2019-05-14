@@ -25,7 +25,7 @@ QUEUES_COLLECTION = 'cloudtasks.projects.locations.queues'
 TASKS_COLLECTION = 'cloudtasks.projects.locations.queues.tasks'
 
 PULL_QUEUE = 'pull'
-PUSH_QUEUE = 'app-engine'
+PUSH_QUEUE = 'push'
 VALID_QUEUE_TYPES = [PULL_QUEUE, PUSH_QUEUE]
 
 APP_ENGINE_ROUTING_KEYS = ['service', 'version', 'instance']

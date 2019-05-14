@@ -936,6 +936,7 @@ class ResultStorage(_messages.Message):
 
   Fields:
     googleCloudStorage: Required.
+    resultsUrl: Output only. URL to the results in the Firebase Web Console.
     toolResultsExecution: Output only. The tool results execution that results
       are written to.
     toolResultsHistory: The tool results history that contains the tool
@@ -944,8 +945,9 @@ class ResultStorage(_messages.Message):
   """
 
   googleCloudStorage = _messages.MessageField('GoogleCloudStorage', 1)
-  toolResultsExecution = _messages.MessageField('ToolResultsExecution', 2)
-  toolResultsHistory = _messages.MessageField('ToolResultsHistory', 3)
+  resultsUrl = _messages.StringField(2)
+  toolResultsExecution = _messages.MessageField('ToolResultsExecution', 3)
+  toolResultsHistory = _messages.MessageField('ToolResultsHistory', 4)
 
 
 class RoboDirective(_messages.Message):
@@ -1200,6 +1202,8 @@ class TestMatrix(_messages.Message):
   Enums:
     InvalidMatrixDetailsValueValuesEnum: Output only. Describes why the matrix
       is considered invalid. Only useful for matrices in the INVALID state.
+    OutcomeSummaryValueValuesEnum: The overall outcome of the test matrix run.
+      Only set when the test matrix state is FINISHED. @OutputOnly
     StateValueValuesEnum: Output only. Indicates the current progress of the
       test matrix (e.g., FINISHED).
 
@@ -1212,6 +1216,8 @@ class TestMatrix(_messages.Message):
       reruns.
     invalidMatrixDetails: Output only. Describes why the matrix is considered
       invalid. Only useful for matrices in the INVALID state.
+    outcomeSummary: The overall outcome of the test matrix run. Only set when
+      the test matrix state is FINISHED. @OutputOnly
     projectId: The cloud project that owns the test matrix.
     resultStorage: Required. Where the results for the matrix are written.
     state: Output only. Indicates the current progress of the test matrix
@@ -1333,6 +1339,29 @@ class TestMatrix(_messages.Message):
     INVALID_INPUT_APK = 31
     INVALID_APK_PREVIEW_SDK = 32
 
+  class OutcomeSummaryValueValuesEnum(_messages.Enum):
+    r"""The overall outcome of the test matrix run. Only set when the test
+    matrix state is FINISHED. @OutputOnly
+
+    Values:
+      OUTCOME_SUMMARY_UNSPECIFIED: <no description>
+      SUCCESS: The test matrix run was successful, for instance: - All the
+        test cases passed. - Robo did not detect a crash of the application
+        under test.
+      FAILURE: A run failed, for instance: - One or more test case failed. - A
+        test timed out. - The application under test crashed.
+      INCONCLUSIVE: Something unexpected happened. The run should still be
+        considered unsuccessful but this is likely a transient problem and re-
+        running the test might be successful.
+      SKIPPED: All tests were skipped, for instance: - All device
+        configurations were incompatible.
+    """
+    OUTCOME_SUMMARY_UNSPECIFIED = 0
+    SUCCESS = 1
+    FAILURE = 2
+    INCONCLUSIVE = 3
+    SKIPPED = 4
+
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Indicates the current progress of the test matrix (e.g.,
     FINISHED).
@@ -1382,13 +1411,14 @@ class TestMatrix(_messages.Message):
   environmentMatrix = _messages.MessageField('EnvironmentMatrix', 2)
   flakyTestAttempts = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   invalidMatrixDetails = _messages.EnumField('InvalidMatrixDetailsValueValuesEnum', 4)
-  projectId = _messages.StringField(5)
-  resultStorage = _messages.MessageField('ResultStorage', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  testExecutions = _messages.MessageField('TestExecution', 8, repeated=True)
-  testMatrixId = _messages.StringField(9)
-  testSpecification = _messages.MessageField('TestSpecification', 10)
-  timestamp = _messages.StringField(11)
+  outcomeSummary = _messages.EnumField('OutcomeSummaryValueValuesEnum', 5)
+  projectId = _messages.StringField(6)
+  resultStorage = _messages.MessageField('ResultStorage', 7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  testExecutions = _messages.MessageField('TestExecution', 9, repeated=True)
+  testMatrixId = _messages.StringField(10)
+  testSpecification = _messages.MessageField('TestSpecification', 11)
+  timestamp = _messages.StringField(12)
 
 
 class TestSetup(_messages.Message):

@@ -3946,19 +3946,43 @@ class Sink(_messages.Message):
 class Snapshot(_messages.Message):
   r"""Represents a snapshot of a job.
 
+  Enums:
+    StateValueValuesEnum: State of the snapshot.
+
   Fields:
     creationTime: The time this snapshot was created.
     id: The unique ID of this snapshot.
     projectId: The project this snapshot belongs to.
     sourceJobId: The job this snapshot was created from.
+    state: State of the snapshot.
     ttl: The time after which this snapshot will be automatically deleted.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of the snapshot.
+
+    Values:
+      UNKNOWN_SNAPSHOT_STATE: Unknown state.
+      PENDING: Snapshot intent to create has been persisted, snapshotting of
+        state has not yet started.
+      RUNNING: Snapshotting is being performed.
+      READY: Snapshot has been created and is ready to be used.
+      FAILED: Snapshot failed to be created.
+      DELETED: Snapshot has been deleted.
+    """
+    UNKNOWN_SNAPSHOT_STATE = 0
+    PENDING = 1
+    RUNNING = 2
+    READY = 3
+    FAILED = 4
+    DELETED = 5
 
   creationTime = _messages.StringField(1)
   id = _messages.StringField(2)
   projectId = _messages.StringField(3)
   sourceJobId = _messages.StringField(4)
-  ttl = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  ttl = _messages.StringField(6)
 
 
 class SnapshotJobRequest(_messages.Message):
@@ -5194,6 +5218,7 @@ class WorkerHealthReport(_messages.Message):
     PodsValueListEntry: A PodsValueListEntry object.
 
   Fields:
+    msg: A message describing any unusual health reports.
     pods: The pods running on the worker. See: http://kubernetes.io/v1.1/docs
       /api-reference/v1/definitions.html#_v1_pod  This field is used by the
       worker to send the status of the indvidual containers running on each
@@ -5201,7 +5226,10 @@ class WorkerHealthReport(_messages.Message):
     reportInterval: The interval at which the worker is sending health
       reports. The default value of 0 should be interpreted as the field is
       not being explicitly set by the worker.
-    vmIsHealthy: Whether the VM is healthy.
+    vmIsBroken: Whether the VM is in a permanently broken state. Broken VMs
+      should be abandoned or deleted ASAP to avoid assigning or completing any
+      work.
+    vmIsHealthy: Whether the VM is currently healthy.
     vmStartupTime: The time the VM was booted.
   """
 
@@ -5230,10 +5258,12 @@ class WorkerHealthReport(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  pods = _messages.MessageField('PodsValueListEntry', 1, repeated=True)
-  reportInterval = _messages.StringField(2)
-  vmIsHealthy = _messages.BooleanField(3)
-  vmStartupTime = _messages.StringField(4)
+  msg = _messages.StringField(1)
+  pods = _messages.MessageField('PodsValueListEntry', 2, repeated=True)
+  reportInterval = _messages.StringField(3)
+  vmIsBroken = _messages.BooleanField(4)
+  vmIsHealthy = _messages.BooleanField(5)
+  vmStartupTime = _messages.StringField(6)
 
 
 class WorkerHealthReportResponse(_messages.Message):

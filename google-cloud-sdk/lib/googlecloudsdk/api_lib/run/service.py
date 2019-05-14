@@ -34,6 +34,9 @@ class Service(k8s_object.KubernetesObject):
   """
   API_CATEGORY = 'serving.knative.dev'
   KIND = 'Service'
+  # Field names that are present in Cloud Run messages, but should not be
+  # initialized because they aren't supported by the control plane yet.
+  FIELD_BLACKLIST = ['manual', 'release', 'template']
 
   @classmethod
   def New(cls, client, namespace, private_endpoint=None):

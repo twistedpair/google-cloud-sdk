@@ -384,7 +384,8 @@ class Operation(_messages.Message):
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
-      the `name` should have the format of `operations/some/unique/name`.
+      the `name` should be a resource name ending with
+      `operations/{unique_id}`.
     response: The normal response of the operation in case of success.  If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`.  If the original method is standard
@@ -644,6 +645,9 @@ class RecognitionConfig(_messages.Message):
         as specified in RFC 5574. In other words, each RTP header is replaced
         with a single byte containing the block length. Only Speex wideband is
         supported. `sample_rate_hertz` must be 16000.
+      MP3: MP3 audio. Support all standard MP3 bitrates (which range from
+        32-320 kbps) If using this encoding, then 'sample_rate_hertz' can be
+        optionally unset if not known.
     """
     ENCODING_UNSPECIFIED = 0
     LINEAR16 = 1
@@ -653,6 +657,7 @@ class RecognitionConfig(_messages.Message):
     AMR_WB = 5
     OGG_OPUS = 6
     SPEEX_WITH_HEADER_BYTE = 7
+    MP3 = 8
 
   alternativeLanguageCodes = _messages.StringField(1, repeated=True)
   audioChannelCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)

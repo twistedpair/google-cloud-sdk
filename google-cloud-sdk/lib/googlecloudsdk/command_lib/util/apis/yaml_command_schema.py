@@ -160,6 +160,8 @@ class Async(object):
     self.result_attribute = data.get('result_attribute')
     self.state = AsyncStateField(data.get('state', {}))
     self.error = AsyncErrorField(data.get('error', {}))
+    self.modify_request_hooks = [
+        util.Hook.FromPath(p) for p in data.get('modify_request_hooks', [])]
 
 
 class IamData(object):

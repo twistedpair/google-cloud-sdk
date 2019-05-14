@@ -1353,6 +1353,7 @@ class GoogleCloudDialogflowV2Intent(_messages.Message):
       LINE: <no description>
       VIBER: <no description>
       ACTIONS_ON_GOOGLE: <no description>
+      GOOGLE_HANGOUTS: <no description>
     """
     PLATFORM_UNSPECIFIED = 0
     FACEBOOK = 1
@@ -1363,6 +1364,7 @@ class GoogleCloudDialogflowV2Intent(_messages.Message):
     LINE = 6
     VIBER = 7
     ACTIONS_ON_GOOGLE = 8
+    GOOGLE_HANGOUTS = 9
 
   class WebhookStateValueValuesEnum(_messages.Enum):
     r"""Optional. Indicates whether webhooks are enabled for the intent.
@@ -1489,6 +1491,7 @@ class GoogleCloudDialogflowV2IntentMessage(_messages.Message):
         [                 "key two"               ]             },
         "title": "must not be empty, but unique"           }         ]       }
         },     "intent": "actions.intent.OPTION"   } }</pre>
+      GOOGLE_HANGOUTS: Google Hangouts.
     """
     PLATFORM_UNSPECIFIED = 0
     FACEBOOK = 1
@@ -1499,6 +1502,7 @@ class GoogleCloudDialogflowV2IntentMessage(_messages.Message):
     LINE = 6
     VIBER = 7
     ACTIONS_ON_GOOGLE = 8
+    GOOGLE_HANGOUTS = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PayloadValue(_messages.Message):
@@ -2946,6 +2950,7 @@ class GoogleCloudDialogflowV2beta1Intent(_messages.Message):
       VIBER: <no description>
       ACTIONS_ON_GOOGLE: <no description>
       TELEPHONY: <no description>
+      GOOGLE_HANGOUTS: <no description>
     """
     PLATFORM_UNSPECIFIED = 0
     FACEBOOK = 1
@@ -2957,6 +2962,7 @@ class GoogleCloudDialogflowV2beta1Intent(_messages.Message):
     VIBER = 7
     ACTIONS_ON_GOOGLE = 8
     TELEPHONY = 9
+    GOOGLE_HANGOUTS = 10
 
   class WebhookStateValueValuesEnum(_messages.Enum):
     r"""Optional. Indicates whether webhooks are enabled for the intent.
@@ -3081,6 +3087,7 @@ class GoogleCloudDialogflowV2beta1IntentMessage(_messages.Message):
         "title": "must not be empty, but unique"           }         ]       }
         },     "intent": "actions.intent.OPTION"   } }</pre>
       TELEPHONY: Telephony Gateway.
+      GOOGLE_HANGOUTS: Google Hangouts.
     """
     PLATFORM_UNSPECIFIED = 0
     FACEBOOK = 1
@@ -3092,6 +3099,7 @@ class GoogleCloudDialogflowV2beta1IntentMessage(_messages.Message):
     VIBER = 7
     ACTIONS_ON_GOOGLE = 8
     TELEPHONY = 9
+    GOOGLE_HANGOUTS = 10
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PayloadValue(_messages.Message):
@@ -4034,7 +4042,8 @@ class GoogleLongrunningOperation(_messages.Message):
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
-      the `name` should have the format of `operations/some/unique/name`.
+      the `name` should be a resource name ending with
+      `operations/{unique_id}`.
     response: The normal response of the operation in case of success.  If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`.  If the original method is standard

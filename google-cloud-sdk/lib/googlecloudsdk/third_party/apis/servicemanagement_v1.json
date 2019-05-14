@@ -141,7 +141,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
+          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should be a resource name ending with `operations\/{unique_id}`.",
           "type": "string"
         },
         "metadata": {
@@ -2904,6 +2904,21 @@
         "service": {
           "description": "Revived service resource.",
           "$ref": "ManagedService"
+        }
+      }
+    },
+    "FlowErrorDetails": {
+      "id": "FlowErrorDetails",
+      "description": "Encapsulation of flow-specific error details for debugging.\nUsed as a details field on an error Status, not intended for external use.",
+      "type": "object",
+      "properties": {
+        "flowStepId": {
+          "description": "The step that failed.",
+          "type": "string"
+        },
+        "exceptionType": {
+          "description": "The type of exception (as a class name).",
+          "type": "string"
         }
       }
     }

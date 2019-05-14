@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import encoding
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.tasks import app
 from googlecloudsdk.command_lib.tasks import constants
 from googlecloudsdk.core import exceptions
@@ -107,24 +108,31 @@ def ParseCreateOrUpdateQueueArgs(args,
                                  queue_type,
                                  messages,
                                  is_update=False,
-                                 is_alpha=False):
+                                 release_track=base.ReleaseTrack.GA):
   """Parses queue level args."""
-  if is_alpha:
+  if release_track == base.ReleaseTrack.ALPHA:
     return messages.Queue(
         retryConfig=_ParseRetryConfigArgs(args, queue_type, messages,
-                                          is_update, is_alpha),
+                                          is_update, is_alpha=True),
         rateLimits=_ParseAlphaRateLimitsArgs(args, queue_type, messages,
                                              is_update),
         pullTarget=_ParsePullTargetArgs(args, queue_type, messages, is_update),
         appEngineHttpTarget=_ParseAppEngineHttpTargetArgs(
             args, queue_type, messages, is_update))
-  else:
+  elif release_track == base.ReleaseTrack.BETA:
     return messages.Queue(
         retryConfig=_ParseRetryConfigArgs(args, queue_type, messages,
-                                          is_update, is_alpha),
+                                          is_update, is_alpha=False),
         rateLimits=_ParseRateLimitsArgs(args, queue_type, messages, is_update),
         appEngineHttpQueue=_ParseAppEngineHttpQueueArgs(args, queue_type,
                                                         messages, is_update))
+  else:
+    return messages.Queue(
+        retryConfig=_ParseRetryConfigArgs(args, queue_type, messages,
+                                          is_update, is_alpha=False),
+        rateLimits=_ParseRateLimitsArgs(args, queue_type, messages, is_update),
+        appEngineRoutingOverride=_ParseAppEngineRoutingOverrideArgs(
+            args, queue_type, messages, is_update))
 
 
 def ParseCreateTaskArgs(args, task_type, messages, is_alpha=False):
@@ -248,11 +256,8 @@ def _ParsePullTargetArgs(unused_args, queue_type, messages, is_update):
 def _ParseAppEngineHttpTargetArgs(args, queue_type, messages, is_update):
   """Parses the attributes of 'args' for Queue.appEngineHttpTarget."""
   if queue_type == constants.PUSH_QUEUE:
-    routing_override = None
-    if args.IsSpecified('routing_override'):
-      routing_override = messages.AppEngineRouting(**args.routing_override)
-    elif is_update and args.IsSpecified('clear_routing_override'):
-      routing_override = messages.AppEngineRouting()
+    routing_override = _ParseAppEngineRoutingOverrideArgs(args, queue_type,
+                                                          messages, is_update)
     return messages.AppEngineHttpTarget(
         appEngineRoutingOverride=routing_override)
 
@@ -260,13 +265,20 @@ def _ParseAppEngineHttpTargetArgs(args, queue_type, messages, is_update):
 def _ParseAppEngineHttpQueueArgs(args, queue_type, messages, is_update):
   """Parses the attributes of 'args' for Queue.appEngineHttpQueue."""
   if queue_type == constants.PUSH_QUEUE:
-    routing_override = None
-    if args.IsSpecified('routing_override'):
-      routing_override = messages.AppEngineRouting(**args.routing_override)
-    elif is_update and args.IsSpecified('clear_routing_override'):
-      routing_override = messages.AppEngineRouting()
+    routing_override = _ParseAppEngineRoutingOverrideArgs(args, queue_type,
+                                                          messages, is_update)
     return messages.AppEngineHttpQueue(
         appEngineRoutingOverride=routing_override)
+
+
+def _ParseAppEngineRoutingOverrideArgs(args, queue_type, messages, is_update):
+  """Parses the attributes of 'args' for AppEngineRouting."""
+  if queue_type == constants.PUSH_QUEUE:
+    if args.IsSpecified('routing_override'):
+      return messages.AppEngineRouting(**args.routing_override)
+    elif is_update and args.IsSpecified('clear_routing_override'):
+      return messages.AppEngineRouting()
+    return None
 
 
 def _ParsePullMessageArgs(args, task_type, messages):

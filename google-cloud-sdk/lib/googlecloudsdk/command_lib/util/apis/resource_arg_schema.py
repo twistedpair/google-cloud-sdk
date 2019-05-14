@@ -49,7 +49,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
     return cls(
         data['spec'],
         data['help_text'],
-        is_positional=data.get('is_positional', True),
+        is_positional=data.get('is_positional'),
         is_parent_resource=data.get('is_parent_resource', False),
         removed_flags=data.get('removed_flags'),
         disable_auto_completers=data['spec'].get(
@@ -80,7 +80,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
 
     return cls(data, None)
 
-  def __init__(self, data, group_help, is_positional=True, removed_flags=None,
+  def __init__(self, data, group_help, is_positional=None, removed_flags=None,
                is_parent_resource=False, disable_auto_completers=True,
                arg_name=None, command_level_fallthroughs=None,
                display_name_hook=None, override_resource_collection=False):
@@ -197,7 +197,7 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
     return cls(
         data['spec'],
         data['help_text'],
-        is_positional=data.get('is_positional', True),
+        is_positional=data.get('is_positional'),
         is_parent_resource=data.get('is_parent_resource', False),
         removed_flags=data.get('removed_flags'),
         arg_name=data.get('arg_name'),
@@ -205,7 +205,7 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
         display_name_hook=data.get('display_name_hook')
     )
 
-  def __init__(self, data, group_help, is_positional=True, removed_flags=None,
+  def __init__(self, data, group_help, is_positional=None, removed_flags=None,
                is_parent_resource=False, disable_auto_completers=True,
                arg_name=None, command_level_fallthroughs=None,
                display_name_hook=None):

@@ -62,12 +62,14 @@ definitions:
     items:
       type: object
       additionalProperties: false
+      required: [arg_value]
       properties:
         # The choice as it appears on the command line
         # (should be lower-kebab-case).
         arg_value: {type: [string, number, boolean]}
         # The string representation of the API enum value that will be used
-        # when this choice is selected.
+        # when this choice is selected. Default is derived from arg_value by
+        # converting to upper case and replacing hyphens with underscores.
         enum_value: {type: string}
         # The help text to show next to the choice on the man page.
         help_text: {type: string}
@@ -515,6 +517,16 @@ properties:
       # extract_resource_result is False, this is an attribute on the
       # operation, if True it is on the resource itself.
       result_attribute: {$ref: "#/definitions/attribute"}
+      # The module path to a function to call to modify the API request
+      # before it is invoked. All registered arguments will be processed
+      # into the request, before this is called. This is a function
+      # that takes 3 arguments: a resource ref to the parsed resource,
+      # the parsed args namespace, and the created request. It must return
+      # an apitools request message that will be passed to the API method
+      # defined in this section.
+      modify_request_hooks:
+        type: array
+        items: {$ref: "#/definitions/python_hook"}
       state:
         type: object
         additionalProperties: false

@@ -998,6 +998,8 @@ class ServerlessOperations(object):
   def ListRevisions(self, namespace_ref, service_name):
     """List all revisions for the given service.
 
+    Revision list gets sorted by service name and creation timestamp.
+
     Args:
       namespace_ref: Resource, namespace to list revisions in
       service_name: str, The service for which to list revisions.
@@ -1016,7 +1018,13 @@ class ServerlessOperations(object):
           service_name)
     with metrics.RecordDuration(metric_names.LIST_REVISIONS):
       response = self._client.namespaces_revisions.List(request)
-    return [revision.Revision(item, messages) for item in response.items]
+
+    # Server does not sort the response so we'll need to sort client-side
+    revisions = [revision.Revision(item, messages) for item in response.items]
+    # Newest first
+    revisions.sort(key=lambda r: r.creation_timestamp, reverse=True)
+    revisions.sort(key=lambda r: r.service_name)
+    return revisions
 
   def ListDomainMappings(self, namespace_ref):
     """List all domain mappings.

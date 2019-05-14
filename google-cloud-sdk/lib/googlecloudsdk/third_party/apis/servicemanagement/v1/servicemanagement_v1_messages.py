@@ -1256,6 +1256,19 @@ class Field(_messages.Message):
   typeUrl = _messages.StringField(10)
 
 
+class FlowErrorDetails(_messages.Message):
+  r"""Encapsulation of flow-specific error details for debugging. Used as a
+  details field on an error Status, not intended for external use.
+
+  Fields:
+    exceptionType: The type of exception (as a class name).
+    flowStepId: The step that failed.
+  """
+
+  exceptionType = _messages.StringField(1)
+  flowStepId = _messages.StringField(2)
+
+
 class GenerateConfigReportRequest(_messages.Message):
   r"""Request message for GenerateConfigReport method.
 
@@ -2280,7 +2293,8 @@ class Operation(_messages.Message):
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
-      the `name` should have the format of `operations/some/unique/name`.
+      the `name` should be a resource name ending with
+      `operations/{unique_id}`.
     response: The normal response of the operation in case of success.  If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`.  If the original method is standard

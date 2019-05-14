@@ -133,7 +133,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
+          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should be a resource name ending with `operations\/{unique_id}`.",
           "type": "string"
         },
         "metadata": {
@@ -1342,6 +1342,40 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a snapshot."
+                },
+                "patch": {
+                  "id": "file.projects.locations.snapshots.patch",
+                  "path": "v1p1alpha1/{+name}",
+                  "flatPath": "v1p1alpha1/projects/{projectsId}/locations/{locationsId}/snapshots/{snapshotsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only.\nThe resource name of the snapshot, in the format\nprojects\/{project_id}\/locations\/{location_id}\/snapshots\/{snapshot_id}.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/snapshots\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Mask of fields to update.  At least one path must be supplied in this\nfield.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Snapshot"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the settings of a specific snapshot."
                 }
               }
             }

@@ -59,3 +59,7 @@ class InvalidConditionError(Error):
 
 class InvalidFlagError(InvalidConditionError):
   pass
+
+
+class ServiceNotFound(Error):
+  pass

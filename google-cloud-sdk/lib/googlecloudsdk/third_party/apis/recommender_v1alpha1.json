@@ -276,7 +276,7 @@
       "type": "object",
       "properties": {
         "action": {
-          "description": "Required. Type of this operation. Supports 'and', 'remove', 'replace',\n'move', 'copy', 'test' and custom operations. This field is also\ncase-insensitive.",
+          "description": "Required. Type of this operation. Supports 'add', 'remove', 'replace',\n'move', 'copy', 'test' and custom operations. This field is also\ncase-insensitive.",
           "type": "string"
         },
         "resourceType": {
@@ -534,7 +534,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
+          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should be a resource name ending with `operations\/{unique_id}`.",
           "type": "string"
         },
         "metadata": {

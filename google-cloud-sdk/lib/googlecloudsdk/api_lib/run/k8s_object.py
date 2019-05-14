@@ -31,22 +31,32 @@ import six
 REGION_LABEL = 'cloud.googleapis.com/location'
 
 
-def InitializedInstance(msg_cls):
+def InitializedInstance(msg_cls, excluded_fields=None):
   """Produce an instance of msg_cls, with all sub-messages initialized.
 
   Args:
     msg_cls: A message-class to be instantiated.
+    excluded_fields: [str], List of field names to exclude from instantiation.
   Returns:
     An instance of the given class, with all fields initialized blank objects.
   """
   def Instance(field):
     if field.repeated:
       return []
-    return InitializedInstance(field.message_type)
+    return InitializedInstance(field.message_type, excluded_fields)
+
+  def IncludeField(field):
+    if not isinstance(field, messages.MessageField):
+      return False
+
+    if excluded_fields and field.name in excluded_fields:
+      return False
+
+    return True
 
   args = {
       field.name: Instance(field) for field in msg_cls.all_fields()
-      if isinstance(field, messages.MessageField)
+      if IncludeField(field)
   }
   return msg_cls(**args)
 
@@ -65,6 +75,8 @@ class KubernetesObject(object):
   """
 
   READY_CONDITION = 'Ready'
+  # Message fields to exclude from instantiation of this object.
+  FIELD_BLACKLIST = []
 
   @classmethod
   def SpecOnly(cls, spec, messages_mod):
@@ -99,7 +111,8 @@ class KubernetesObject(object):
     """
     api_version = '{}/{}'.format(cls.API_CATEGORY, getattr(client, '_VERSION'))
     messages_mod = client.MESSAGES_MODULE
-    ret = InitializedInstance(getattr(messages_mod, cls.KIND))
+    ret = InitializedInstance(getattr(messages_mod, cls.KIND),
+                              cls.FIELD_BLACKLIST)
     try:
       ret.kind = cls.KIND
       ret.apiVersion = api_version

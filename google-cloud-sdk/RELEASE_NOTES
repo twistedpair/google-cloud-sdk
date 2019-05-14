@@ -5,6 +5,49 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 246.0.0 (2019-05-14)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Removed redundant `--bandwidth` flag values with `bps-` prefix from `gcloud compute interconnects attachments dedicated create`, `gcloud compute interconnects attachments dedicated update`, `gcloud compute interconnects attachments provider create`, and `gcloud compute interconnects attachments provider update` commands. Use matching values without this prefix instead.
+
+
+### Cloud SDK
+
+* Added the `--billing-project` flag to all gcloud commands, for explicitly
+  specifying a project to bill.
+
+### Cloud Functions
+
+* Added `--allow-unauthenticated` flag to `gcloud beta functions deploy`.
+
+
+### Cloud PubSub
+
+*   Promoted `--expiration-period` in `gcloud pubsub subscriptions
+    <create|update>` to GA.
+
+### Cloud Scheduler
+
+* Added attempt-deadline flag to `gcloud beta scheduler jobs create`.
+
+### Cloud Tasks
+
+* Promoted `gcloud tasks` command group to GA.
+
+### Compute Engine
+
+* Added `--accelerator` flag to `gcloud compute instances create-with-container.`
+* Added '--resource-policy' flag to `gcloud beta compute instances create-disk`
+
+### Vision API
+
+* Added `gcloud beta ml vision product-search` command group.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 245.0.0 (2019-05-07)
 
 ### Breaking Changes
@@ -35,20 +78,19 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Scheduler
 
-* Added `gcloud beta scheduler jobs pause|resume` commands.
+* Added `gcloud beta scheduler jobs <pause|resume>` commands.
 
 ### Compute Engine
 
 * Promoted `--instance-redistribution-type` flag of
   `gcloud compute instance-groups managed <create|update>` to beta.
-Add `--multi-writer` flag to `gcloud alpha compute disks create`. This flag allows you to create a "shared" persistent disk that can be attached to multiple VMs in read-write mode.
 
 
 ### Kubernetes Engine
 
 * Modified `gcloud container clusters create` and `gcloud container node-pools
- create` to allow simultaneously specifying both `--scopes` and
- `--service-account` flags.
+  create` to allow simultaneously specifying both `--scopes` and
+  `--service-account` flags.
 
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
@@ -62,7 +104,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Kubernetes Engine
 
-* Promote list usable subnetworks from Beta to GA.
+* Promoted `gcloud container subnets list-usable` to GA.
 * Added the `--workload-metadata-from-node` flag to `gcloud beta container
   node-pools update` for changing the type of metadata server visible to pods
   running in the nodepool.

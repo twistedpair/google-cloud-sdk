@@ -46,3 +46,27 @@ entry:
     attribute_name: entry
     help: |
       Entry of the {resource}.
+
+crawler:
+  name: crawler
+  collection: datacatalog.projects.crawlers
+  request_id_field: crawlerId
+  attributes:
+  - *project
+  - &crawler
+    parameter_name: crawlersId
+    attribute_name: crawler
+    help: |
+      The Cloud Data Catalog crawler for the {resource}.
+
+crawler_run:
+  name: crawler run
+  collection: datacatalog.projects.crawlers.crawlerRuns
+  attributes:
+  - *project
+  - *crawler
+  - &crawler_run
+    parameter_name: crawlerRunsId
+    attribute_name: crawler_run
+    help: |
+      The Cloud Data Catalog crawler run for the {resource}.

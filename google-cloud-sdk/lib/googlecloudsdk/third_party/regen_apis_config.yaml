@@ -185,11 +185,11 @@ apis:
   cloudtasks:
     v2beta2:
       discovery_doc: cloudtasks_v2beta2.json
-      default: true
     v2beta3:
       discovery_doc: cloudtasks_v2beta3.json
     v2:
       discovery_doc: cloudtasks_v2.json
+      default: true
   cloudscheduler:
     v1alpha1:
       discovery_doc: cloudscheduler_v1alpha1.json

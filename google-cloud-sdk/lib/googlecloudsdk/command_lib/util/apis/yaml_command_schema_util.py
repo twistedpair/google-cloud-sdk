@@ -216,7 +216,10 @@ class Choice(object):
     if isinstance(self.arg_value, six.string_types):
       # We always do a case insensitive comparison.
       self.arg_value = self.arg_value.lower()
-    self.enum_value = data['enum_value']
+    if 'enum_value' in data:
+      self.enum_value = data['enum_value']
+    else:
+      self.enum_value = arg_utils.ChoiceToEnumName(self.arg_value)
     self.help_text = data.get('help_text')
 
   @classmethod

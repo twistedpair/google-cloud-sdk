@@ -119,13 +119,15 @@ def MaybeGetKmsKey(args, messages, current_value, boot_disk_prefix=False):
   return current_value
 
 
-def MaybeGetKmsKeyFromDict(args, messages, current_value):
+def MaybeGetKmsKeyFromDict(args, messages, current_value,
+                           conflicting_arg='--csek-key-file'):
   """Gets the Cloud KMS CryptoKey reference for a boot disk's initialize params.
 
   Args:
     args: A dictionary of a boot disk's initialize params.
     messages: Compute API messages module.
     current_value: Current CustomerEncryptionKey value.
+    conflicting_arg: name of conflicting argument
 
   Returns:
     CustomerEncryptionKey message with the KMS key populated if args has a key.
@@ -135,6 +137,6 @@ def MaybeGetKmsKeyFromDict(args, messages, current_value):
   if bool(_GetSpecifiedKmsDict(args)):
     if current_value:
       raise calliope_exceptions.ConflictingArgumentsException(
-          '--csek-key-file', *_GetSpecifiedKmsArgs(args))
+          conflicting_arg, *_GetSpecifiedKmsArgs(args))
     return _DictToMessage(args, messages)
   return current_value

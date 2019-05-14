@@ -239,7 +239,7 @@
           "$ref": "MessageStoragePolicy"
         },
         "kmsKeyName": {
-          "description": "The resource name of the Cloud KMS CryptoKey to be used to protect access\nto messages published on this topic.\n\nThe expected format is `projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*`.",
+          "description": "The resource name of the Cloud KMS CryptoKey to be used to protect access\nto messages published on this topic.\n\nThe expected format is `projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*`.\n<b>EXPERIMENTAL:<\/b> This feature is part of a closed alpha release. This\nAPI might be changed in backward-incompatible ways and is not recommended\nfor production use. It is not subject to any SLA or deprecation policy.",
           "type": "string"
         }
       }

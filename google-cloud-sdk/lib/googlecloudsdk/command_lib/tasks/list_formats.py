@@ -34,7 +34,6 @@ _ALPHA_QUEUE_LIST_FORMAT = '''table(
 
 _QUEUE_LIST_FORMAT = '''table(
     name.basename():label="QUEUE_NAME",
-    queuetype():label=TYPE,
     state,
     rateLimits.maxConcurrentDispatches.yesno(no="unlimited").format("{0}").sub("-1", "unlimited"):label="MAX_NUM_OF_TASKS",
     rateLimits.maxDispatchesPerSecond.yesno(no="unlimited"):label="MAX_RATE (/sec)",
@@ -70,14 +69,15 @@ _LOCATION_LIST_FORMAT = '''table(
 
 
 def AddListQueuesFormats(parser, is_alpha=False):
-  parser.display_info.AddTransforms({'queuetype': _TranformQueueType})
+  if is_alpha:
+    parser.display_info.AddTransforms({'queuetype': _TransformQueueType})
   parser.display_info.AddFormat(
       _ALPHA_QUEUE_LIST_FORMAT if is_alpha else _QUEUE_LIST_FORMAT)
   parser.display_info.AddUriFunc(parsers.QueuesUriFunc)
 
 
 def AddListTasksFormats(parser, is_alpha=False):
-  parser.display_info.AddTransforms({'tasktype': _TranformTaskType})
+  parser.display_info.AddTransforms({'tasktype': _TransformTaskType})
   parser.display_info.AddFormat(
       _ALPHA_TASK_LIST_FORMAT if is_alpha else _TASK_LIST_FORMAT)
   parser.display_info.AddUriFunc(parsers.TasksUriFunc)
@@ -92,10 +92,11 @@ def _IsPullQueue(r):
   return 'pullTarget' in r
 
 
-def _IsAppEngineQueue(r):
+def _IsPushQueue(r):
   # appEngineHttpTarget is used in the v2beta2 version of the API but will be
   # deprecated soon.
-  return 'appEngineHttpTarget' in r or 'appEngineHttpQueue' in r
+  return ('appEngineHttpTarget' in r or 'appEngineHttpQueue' in r
+          or 'appEngineRoutingOverride' in r)
 
 
 def _IsPullTask(r):
@@ -106,15 +107,21 @@ def _IsAppEngineTask(r):
   return 'appEngineHttpRequest' in r
 
 
-def _TranformQueueType(r):
+def _IsHttpTask(r):
+  return 'httpRequest' in r
+
+
+def _TransformQueueType(r):
   if _IsPullQueue(r):
     return constants.PULL_QUEUE
-  if _IsAppEngineQueue(r):
+  if _IsPushQueue(r):
     return constants.PUSH_QUEUE
 
 
-def _TranformTaskType(r):
+def _TransformTaskType(r):
   if _IsPullTask(r):
     return constants.PULL_QUEUE
   if _IsAppEngineTask(r):
-    return constants.PUSH_QUEUE
+    return 'app-engine'
+  if _IsHttpTask(r):
+    return 'http'

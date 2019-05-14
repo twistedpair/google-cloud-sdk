@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ class ReleaseNotes(object):
 
   # Google Cloud SDK - Release Notes
 
-  Copyright 2014-2015 Google Inc. All rights reserved.
+  Copyright 2014-2015 Google LLC. All rights reserved.
 
   ## 0.9.78 (2015/09/16)
 

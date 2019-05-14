@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager Alpha",
  "version": "alpha",
- "revision": "20190429",
+ "revision": "20190506",
  "title": "Google Cloud Deployment Manager Alpha API",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -794,7 +794,7 @@
   "Operation": {
    "id": "Operation",
    "type": "object",
-   "description": "An Operation resource, used to manage asynchronous API requests. (== resource_for v1.globalOperations ==) (== resource_for beta.globalOperations ==) (== resource_for v1.regionOperations ==) (== resource_for beta.regionOperations ==) (== resource_for v1.zoneOperations ==) (== resource_for beta.zoneOperations ==)",
+   "description": "Represents an Operation resource.\n\nYou can use an operation resource to manage asynchronous API requests. For more information, read Handling API responses.\n\nOperations can be global, regional or zonal.  \n- For global operations, use the globalOperations resource. \n- For regional operations, use the regionOperations resource. \n- For zonal operations, use the zonalOperations resource.  \n\nFor more information, read  Global, Regional, and Zonal Resources. (== resource_for v1.globalOperations ==) (== resource_for beta.globalOperations ==) (== resource_for v1.regionOperations ==) (== resource_for beta.regionOperations ==) (== resource_for v1.zoneOperations ==) (== resource_for beta.zoneOperations ==)",
    "properties": {
     "clientOperationId": {
      "type": "string",

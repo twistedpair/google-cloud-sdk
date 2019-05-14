@@ -55,8 +55,8 @@ def AddCreatePullQueueFlags(parser):
     flag.AddToParser(parser)
 
 
-def AddCreateAppEngineQueueFlags(parser, is_alpha=False):
-  flags = _AlphaAppEngineQueueFlags() if is_alpha else _AppEngineQueueFlags()
+def AddCreatePushQueueFlags(parser, is_alpha=False):
+  flags = _AlphaPushQueueFlags() if is_alpha else _PushQueueFlags()
   for flag in flags:
     flag.AddToParser(parser)
 
@@ -66,8 +66,8 @@ def AddUpdatePullQueueFlags(parser):
     _AddFlagAndItsClearEquivalent(flag, parser)
 
 
-def AddUpdateAppEngineQueueFlags(parser, is_alpha=False):
-  flags = _AlphaAppEngineQueueFlags() if is_alpha else _AppEngineQueueFlags()
+def AddUpdatePushQueueFlags(parser, is_alpha=False):
+  flags = _AlphaPushQueueFlags() if is_alpha else _PushQueueFlags()
   for flag in flags:
     _AddFlagAndItsClearEquivalent(flag, parser)
 
@@ -171,7 +171,7 @@ def _PullQueueFlags():
   ]
 
 
-def _BaseAppEngineQueueFlags():
+def _BasePushQueueFlags():
   return _PullQueueFlags() + [
       base.Argument(
           '--max-doublings',
@@ -218,8 +218,8 @@ def _BaseAppEngineQueueFlags():
   ]
 
 
-def _AlphaAppEngineQueueFlags():
-  return _BaseAppEngineQueueFlags() + [
+def _AlphaPushQueueFlags():
+  return _BasePushQueueFlags() + [
       base.Argument(
           '--max-tasks-dispatched-per-second',
           type=float,
@@ -238,8 +238,8 @@ def _AlphaAppEngineQueueFlags():
   ]
 
 
-def _AppEngineQueueFlags():
-  return _BaseAppEngineQueueFlags() + [
+def _PushQueueFlags():
+  return _BasePushQueueFlags() + [
       base.Argument(
           '--max-dispatches-per-second',
           type=float,

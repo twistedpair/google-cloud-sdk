@@ -1,0 +1,18 @@
+crawler:
+  description:
+    arg_name: description
+    api_field: googleCloudDatacatalogV1alpha3Crawler.description
+    help_text: |-
+      Textual description of the crawler.
+  display_name:
+    arg_name: display-name
+    api_field: googleCloudDatacatalogV1alpha3Crawler.displayName
+    help_text: |-
+      Human-readable display name for the crawler.
+  bundle_specs:
+    arg_name: bundle-specs
+    api_field: googleCloudDatacatalogV1alpha3Crawler.config.bundleSpecs
+    metavar: PATTERN
+    help_text: |-
+      A list of bundling specifications for the crawler. Bundling specifications direct the crawler
+      to bundle files into filesets based on the patterns provided.

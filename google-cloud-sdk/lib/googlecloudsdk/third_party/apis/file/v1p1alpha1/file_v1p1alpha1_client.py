@@ -474,6 +474,33 @@ or for all locations.
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates the settings of a specific snapshot.
+
+      Args:
+        request: (FileProjectsLocationsSnapshotsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/snapshots/{snapshotsId}',
+        http_method=u'PATCH',
+        method_id=u'file.projects.locations.snapshots.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1p1alpha1/{+name}',
+        request_field=u'snapshot',
+        request_type_name=u'FileProjectsLocationsSnapshotsPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 

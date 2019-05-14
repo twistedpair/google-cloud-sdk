@@ -317,6 +317,7 @@ class Cluster(_messages.Message):
       field is deprecated, use private_cluster_config.enable_private_nodes
       instead.
     privateClusterConfig: Configuration for private cluster.
+    releaseChannel: Release channel configuration.
     resourceLabels: The resource labels for the cluster to use to annotate any
       related Google Compute Engine resources.
     resourceUsageExportConfig: Configuration for exporting resource usages.
@@ -439,18 +440,19 @@ class Cluster(_messages.Message):
   podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 39)
   privateCluster = _messages.BooleanField(40)
   privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 41)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 42)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 43)
-  selfLink = _messages.StringField(44)
-  servicesIpv4Cidr = _messages.StringField(45)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 46)
-  status = _messages.EnumField('StatusValueValuesEnum', 47)
-  statusMessage = _messages.StringField(48)
-  subnetwork = _messages.StringField(49)
-  tpuIpv4CidrBlock = _messages.StringField(50)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 51)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 52)
-  zone = _messages.StringField(53)
+  releaseChannel = _messages.MessageField('ReleaseChannel', 42)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 43)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 44)
+  selfLink = _messages.StringField(45)
+  servicesIpv4Cidr = _messages.StringField(46)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 47)
+  status = _messages.EnumField('StatusValueValuesEnum', 48)
+  statusMessage = _messages.StringField(49)
+  subnetwork = _messages.StringField(50)
+  tpuIpv4CidrBlock = _messages.StringField(51)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 52)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 53)
+  zone = _messages.StringField(54)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -594,6 +596,18 @@ class CompleteIPRotationRequest(_messages.Message):
   name = _messages.StringField(2)
   projectId = _messages.StringField(3)
   zone = _messages.StringField(4)
+
+
+class ConsumptionMeteringConfig(_messages.Message):
+  r"""Parameters for controlling consumption metering.
+
+  Fields:
+    enabled: Whether to enable consumption metering for this cluster. If
+      enabled, a second BigQuery table will be created to hold resource
+      consumption records.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class ContainerProjectsAggregatedUsableSubnetworksListRequest(_messages.Message):
@@ -2208,6 +2222,38 @@ class PrivateClusterConfig(_messages.Message):
   publicEndpoint = _messages.StringField(6)
 
 
+class ReleaseChannel(_messages.Message):
+  r"""ReleaseChannel indicates which release channel a cluster is subscribed
+  to. Release channels are arranged in order of risk and frequency of updates;
+  RAPID channel clusters are the first to receive the latest releases of
+  Kubernetes and other components.  When a cluster is subscribed to a release
+  channel, Google maintains both the master version and the node version. Node
+  auto-upgrade defaults to true and cannot be disabled. Updates to version
+  related fields (e.g. current_master_version) return an error.
+
+  Enums:
+    ChannelValueValuesEnum: channel specified which release channel the
+      cluster is subscribed to.
+
+  Fields:
+    channel: channel specified which release channel the cluster is subscribed
+      to.
+  """
+
+  class ChannelValueValuesEnum(_messages.Enum):
+    r"""channel specified which release channel the cluster is subscribed to.
+
+    Values:
+      UNSPECIFIED: No channel specified.
+      RAPID: Clusters subscribed to RAPID receive the latest qualified
+        components, before any other channel.
+    """
+    UNSPECIFIED = 0
+    RAPID = 1
+
+  channel = _messages.EnumField('ChannelValueValuesEnum', 1)
+
+
 class ResourceLimit(_messages.Message):
   r"""Contains information about amount of some resource in the cluster. For
   memory, value should be in GB.
@@ -2229,13 +2275,16 @@ class ResourceUsageExportConfig(_messages.Message):
   Fields:
     bigqueryDestination: Configuration to use BigQuery as usage export
       destination.
+    consumptionMeteringConfig: Configuration to enable resource consumption
+      metering.
     enableNetworkEgressMetering: Whether to enable network egress metering for
       this cluster. If enabled, a daemonset will be created in the cluster to
       meter network egress traffic.
   """
 
   bigqueryDestination = _messages.MessageField('BigQueryDestination', 1)
-  enableNetworkEgressMetering = _messages.BooleanField(2)
+  consumptionMeteringConfig = _messages.MessageField('ConsumptionMeteringConfig', 2)
+  enableNetworkEgressMetering = _messages.BooleanField(3)
 
 
 class RollbackNodePoolUpgradeRequest(_messages.Message):

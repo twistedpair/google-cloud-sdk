@@ -277,6 +277,10 @@
           "description": "Shielded Nodes configuration.",
           "$ref": "ShieldedNodes"
         },
+        "releaseChannel": {
+          "description": "Release channel configuration.",
+          "$ref": "ReleaseChannel"
+        },
         "workloadIdentityConfig": {
           "description": "Configuration for the use of Kubernetes Service Accounts in GCP IAM\npolicies.",
           "$ref": "WorkloadIdentityConfig"
@@ -1070,7 +1074,7 @@
       "type": "object",
       "properties": {
         "startTime": {
-          "description": "Time within the maintenance window to start the maintenance operations.\nIt must be in format \"HH:MM\u201D, where HH : [00-23] and MM : [00-59] GMT.",
+          "description": "Time within the maintenance window to start the maintenance operations.\nIt must be in format \"HH:MM\", where HH : [00-23] and MM : [00-59] GMT.",
           "type": "string"
         },
         "duration": {
@@ -1193,6 +1197,10 @@
         "enableNetworkEgressMetering": {
           "description": "Whether to enable network egress metering for this cluster. If enabled, a\ndaemonset will be created in the cluster to meter network egress traffic.",
           "type": "boolean"
+        },
+        "consumptionMeteringConfig": {
+          "description": "Configuration to enable resource consumption metering.",
+          "$ref": "ConsumptionMeteringConfig"
         }
       }
     },
@@ -1204,6 +1212,17 @@
         "datasetId": {
           "description": "The ID of a BigQuery Dataset.",
           "type": "string"
+        }
+      }
+    },
+    "ConsumptionMeteringConfig": {
+      "id": "ConsumptionMeteringConfig",
+      "description": "Parameters for controlling consumption metering.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether to enable consumption metering for this cluster. If enabled, a\nsecond BigQuery table will be created to hold resource consumption\nrecords.",
+          "type": "boolean"
         }
       }
     },
@@ -1272,6 +1291,25 @@
         "enabled": {
           "description": "Whether Shielded Nodes features are enabled on all nodes in this cluster.",
           "type": "boolean"
+        }
+      }
+    },
+    "ReleaseChannel": {
+      "id": "ReleaseChannel",
+      "description": "ReleaseChannel indicates which release channel a cluster is\nsubscribed to. Release channels are arranged in order of risk and\nfrequency of updates; RAPID channel clusters are the first to\nreceive the latest releases of Kubernetes and other components.\n\nWhen a cluster is subscribed to a release channel, Google maintains\nboth the master version and the node version. Node auto-upgrade\ndefaults to true and cannot be disabled. Updates to version related\nfields (e.g. current_master_version) return an error.",
+      "type": "object",
+      "properties": {
+        "channel": {
+          "description": "channel specified which release channel the cluster is subscribed to.",
+          "enumDescriptions": [
+            "No channel specified.",
+            "Clusters subscribed to RAPID receive the latest qualified\ncomponents, before any other channel."
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED",
+            "RAPID"
+          ]
         }
       }
     },

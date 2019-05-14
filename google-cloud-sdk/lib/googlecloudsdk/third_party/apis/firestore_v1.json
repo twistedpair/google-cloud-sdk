@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1",
-  "revision": "20190429",
+  "revision": "20190507",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development.\n",
   "ownerDomain": "google.com",
@@ -188,7 +188,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
+          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should be a resource name ending with `operations\/{unique_id}`.",
           "type": "string"
         },
         "metadata": {
@@ -271,12 +271,14 @@
           "description": "Indexes with a collection query scope specified allow queries\nagainst a collection that is the child of a specific document, specified at\nquery time, and that has the same collection id.\n\nIndexes with a collection group query scope specified allow queries against\nall collections descended from a specific document, specified at query\ntime, and that have the same collection id as this index.",
           "enumDescriptions": [
             "The query scope is unspecified. Not a valid option.",
-            "Indexes with a collection query scope specified allow queries\nagainst a collection that is the child of a specific document, specified\nat query time, and that has the collection id specified by the index."
+            "Indexes with a collection query scope specified allow queries\nagainst a collection that is the child of a specific document, specified\nat query time, and that has the collection id specified by the index.",
+            "Indexes with a collection group query scope specified allow queries\nagainst all collections that has the collection id specified by the\nindex."
           ],
           "type": "string",
           "enum": [
             "QUERY_SCOPE_UNSPECIFIED",
-            "COLLECTION"
+            "COLLECTION",
+            "COLLECTION_GROUP"
           ]
         },
         "fields": {

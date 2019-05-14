@@ -2868,6 +2868,9 @@ class BackendService(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    network: The URL of the network to which this backend service belongs.
+      This field can only be spcified when the load balancing scheme is set to
+      INTERNAL.
     outlierDetection: Settings controlling eviction of unhealthy hosts from
       the load balancing pool. This field is applicable to either:   - A
       regional backend service with the service_protocol set to HTTP, HTTPS,
@@ -3034,17 +3037,18 @@ class BackendService(_messages.Message):
   localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 20)
   logConfig = _messages.MessageField('BackendServiceLogConfig', 21)
   name = _messages.StringField(22)
-  outlierDetection = _messages.MessageField('OutlierDetection', 23)
-  port = _messages.IntegerField(24, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(25)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 26)
-  region = _messages.StringField(27)
-  securityPolicy = _messages.StringField(28)
-  securitySettings = _messages.MessageField('SecuritySettings', 29)
-  selfLink = _messages.StringField(30)
-  selfLinkWithId = _messages.StringField(31)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 32)
-  timeoutSec = _messages.IntegerField(33, variant=_messages.Variant.INT32)
+  network = _messages.StringField(23)
+  outlierDetection = _messages.MessageField('OutlierDetection', 24)
+  port = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(26)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 27)
+  region = _messages.StringField(28)
+  securityPolicy = _messages.StringField(29)
+  securitySettings = _messages.MessageField('SecuritySettings', 30)
+  selfLink = _messages.StringField(31)
+  selfLinkWithId = _messages.StringField(32)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 33)
+  timeoutSec = _messages.IntegerField(34, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -27665,7 +27669,12 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       action.
     ReplacementMethodValueValuesEnum: What action should be used to replace
       instances. See minimal_action.REPLACE
-    TypeValueValuesEnum:
+    TypeValueValuesEnum: The type of update process. You can specify either
+      PROACTIVE so that the instance group manager proactively executes
+      actions in order to bring instances to their target versions or
+      OPPORTUNISTIC so that no action is proactively executed but the update
+      will be performed as part of other actions (for example, resizes or
+      recreateInstances calls).
 
   Fields:
     instanceRedistributionType: A InstanceRedistributionTypeValueValuesEnum
@@ -27699,7 +27708,11 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       perform the update, it might perform a more disruptive action.
     replacementMethod: What action should be used to replace instances. See
       minimal_action.REPLACE
-    type: A TypeValueValuesEnum attribute.
+    type: The type of update process. You can specify either PROACTIVE so that
+      the instance group manager proactively executes actions in order to
+      bring instances to their target versions or OPPORTUNISTIC so that no
+      action is proactively executed but the update will be performed as part
+      of other actions (for example, resizes or recreateInstances calls).
   """
 
   class InstanceRedistributionTypeValueValuesEnum(_messages.Enum):
@@ -27743,7 +27756,11 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
     SUBSTITUTE = 1
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""TypeValueValuesEnum enum type.
+    r"""The type of update process. You can specify either PROACTIVE so that
+    the instance group manager proactively executes actions in order to bring
+    instances to their target versions or OPPORTUNISTIC so that no action is
+    proactively executed but the update will be performed as part of other
+    actions (for example, resizes or recreateInstances calls).
 
     Values:
       OPPORTUNISTIC: <no description>
@@ -44274,20 +44291,19 @@ class StatefulPolicyPreservedState(_messages.Message):
 
   Messages:
     DisksValue: Disks created on the instances that will be preserved on
-      instance delete, resize down, etc. This map is keyed with the device
-      names of the disks.
+      instance delete, update, etc. This map is keyed with the device names of
+      the disks.
 
   Fields:
     disks: Disks created on the instances that will be preserved on instance
-      delete, resize down, etc. This map is keyed with the device names of the
+      delete, update, etc. This map is keyed with the device names of the
       disks.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DisksValue(_messages.Message):
     r"""Disks created on the instances that will be preserved on instance
-    delete, resize down, etc. This map is keyed with the device names of the
-    disks.
+    delete, update, etc. This map is keyed with the device names of the disks.
 
     Messages:
       AdditionalProperty: An additional property for a DisksValue object.

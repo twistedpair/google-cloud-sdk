@@ -272,6 +272,22 @@ class FileProjectsLocationsSnapshotsListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
+class FileProjectsLocationsSnapshotsPatchRequest(_messages.Message):
+  r"""A FileProjectsLocationsSnapshotsPatchRequest object.
+
+  Fields:
+    name: Output only. The resource name of the snapshot, in the format
+      projects/{project_id}/locations/{location_id}/snapshots/{snapshot_id}.
+    snapshot: A Snapshot resource to be passed as the request body.
+    updateMask: Mask of fields to update.  At least one path must be supplied
+      in this field.
+  """
+
+  name = _messages.StringField(1, required=True)
+  snapshot = _messages.MessageField('Snapshot', 2)
+  updateMask = _messages.StringField(3)
+
+
 class FileShareConfig(_messages.Message):
   r"""File share configuration for the instance.
 
@@ -1000,7 +1016,8 @@ class Operation(_messages.Message):
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
-      the `name` should have the format of `operations/some/unique/name`.
+      the `name` should be a resource name ending with
+      `operations/{unique_id}`.
     response: The normal response of the operation in case of success.  If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`.  If the original method is standard

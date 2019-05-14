@@ -1427,11 +1427,16 @@ class ManifestsListResponse(_messages.Message):
 
 
 class Operation(_messages.Message):
-  r"""An Operation resource, used to manage asynchronous API requests. (==
-  resource_for v1.globalOperations ==) (== resource_for beta.globalOperations
-  ==) (== resource_for v1.regionOperations ==) (== resource_for
-  beta.regionOperations ==) (== resource_for v1.zoneOperations ==) (==
-  resource_for beta.zoneOperations ==)
+  r"""Represents an Operation resource.  You can use an operation resource to
+  manage asynchronous API requests. For more information, read Handling API
+  responses.  Operations can be global, regional or zonal.   - For global
+  operations, use the globalOperations resource.  - For regional operations,
+  use the regionOperations resource.  - For zonal operations, use the
+  zonalOperations resource.    For more information, read  Global, Regional,
+  and Zonal Resources. (== resource_for v1.globalOperations ==) (==
+  resource_for beta.globalOperations ==) (== resource_for v1.regionOperations
+  ==) (== resource_for beta.regionOperations ==) (== resource_for
+  v1.zoneOperations ==) (== resource_for beta.zoneOperations ==)
 
   Messages:
     ErrorValue: [Output Only] If errors are generated during processing of the

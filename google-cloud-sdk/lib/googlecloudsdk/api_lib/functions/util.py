@@ -26,7 +26,6 @@ import os
 import re
 
 from apitools.base.py import exceptions as apitools_exceptions
-
 from googlecloudsdk.api_lib.functions import exceptions
 from googlecloudsdk.api_lib.functions import operations
 from googlecloudsdk.api_lib.storage import storage_util
@@ -35,6 +34,7 @@ from googlecloudsdk.api_lib.util import exceptions as exceptions_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope import exceptions as base_exceptions
+from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -76,6 +76,10 @@ def _GetApiVersion(track=calliope_base.ReleaseTrack.GA):  # pylint: disable=unus
 
 def GetApiClientInstance(track=calliope_base.ReleaseTrack.GA):
   return apis.GetClientInstance(_API_NAME, _GetApiVersion(track))
+
+
+def GetResourceManagerApiClientInstance():
+  return apis.GetClientInstance('cloudresourcemanager', 'v1')
 
 
 def GetApiMessagesModule(track=calliope_base.ReleaseTrack.GA):
@@ -334,35 +338,115 @@ def GetFunction(function_name):
 
 
 @CatchHTTPErrorRaiseHTTPException
+def WaitForFunctionUpdateOperation(op):
+  """Wait for the specied function update to complete.
+
+  Args:
+    op: Cloud operation to wait on.
+  """
+  client = GetApiClientInstance()
+  operations.Wait(op, client.MESSAGES_MODULE, client, _DEPLOY_WAIT_NOTICE)
+
+
+@CatchHTTPErrorRaiseHTTPException
 def PatchFunction(function, fields_to_patch):
   """Call the api to patch a function based on updated fields.
 
   Args:
     function: the function to patch
     fields_to_patch: the fields to patch on the function
+
   Returns:
-    The patched function.
+    The cloud operation for the Patch.
   """
   client = GetApiClientInstance()
   messages = client.MESSAGES_MODULE
   fields_to_patch_str = ','.join(sorted(fields_to_patch))
-  op = client.projects_locations_functions.Patch(
+  return client.projects_locations_functions.Patch(
       messages.CloudfunctionsProjectsLocationsFunctionsPatchRequest(
           cloudFunction=function,
           name=function.name,
           updateMask=fields_to_patch_str,
       )
   )
-  operations.Wait(op, messages, client, _DEPLOY_WAIT_NOTICE)
-  return GetFunction(function.name)
 
 
 @CatchHTTPErrorRaiseHTTPException
 def CreateFunction(function, location):
+  """Call the api to create a function.
+
+  Args:
+    function: the function to create
+    location: location for function
+
+  Returns:
+    Cloud operation for the create.
+  """
   client = GetApiClientInstance()
   messages = client.MESSAGES_MODULE
-  op = client.projects_locations_functions.Create(
+  return client.projects_locations_functions.Create(
       messages.CloudfunctionsProjectsLocationsFunctionsCreateRequest(
           location=location, cloudFunction=function))
-  operations.Wait(op, messages, client, _DEPLOY_WAIT_NOTICE)
-  return GetFunction(function.name)
+
+
+@CatchHTTPErrorRaiseHTTPException
+def GetFunctionIamPolicy(function_resource_name):
+  client = GetApiClientInstance()
+  messages = client.MESSAGES_MODULE
+  return client.projects_locations_functions.GetIamPolicy(
+      messages.CloudfunctionsProjectsLocationsFunctionsGetIamPolicyRequest(
+          resource=function_resource_name))
+
+
+@CatchHTTPErrorRaiseHTTPException
+def AddFunctionIamPolicyBinding(function_resource_name,
+                                member='allUsers',
+                                role='roles/cloudfunctions.invoker'):
+  client = GetApiClientInstance()
+  messages = client.MESSAGES_MODULE
+  policy = GetFunctionIamPolicy(function_resource_name)
+  iam_util.AddBindingToIamPolicy(messages.Binding, policy, member, role)
+  return client.projects_locations_functions.SetIamPolicy(
+      messages.CloudfunctionsProjectsLocationsFunctionsSetIamPolicyRequest(
+          resource=function_resource_name,
+          setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy)))
+
+
+@CatchHTTPErrorRaiseHTTPException
+def RemoveFunctionIamPolicyBindingIfFound(
+    function_resource_name,
+    member='allUsers',
+    role='roles/cloudfunctions.invoker'):
+  """Removes the specified policy binding if it is found."""
+  client = GetApiClientInstance()
+  messages = client.MESSAGES_MODULE
+  policy = GetFunctionIamPolicy(function_resource_name)
+  if iam_util.BindingInPolicy(policy, member, role):
+    iam_util.RemoveBindingFromIamPolicy(policy, member, role)
+    result = client.projects_locations_functions.SetIamPolicy(
+        messages.CloudfunctionsProjectsLocationsFunctionsSetIamPolicyRequest(
+            resource=function_resource_name,
+            setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy)))
+  else:
+    result = policy
+  return result
+
+
+@CatchHTTPErrorRaiseHTTPException
+def CanAddFunctionIamPolicyBinding(project):
+  """Returns True iff the caller can add policy bindings for project."""
+  client = GetResourceManagerApiClientInstance()
+  messages = client.MESSAGES_MODULE
+  needed_permissions = [
+      'resourcemanager.projects.getIamPolicy',
+      'resourcemanager.projects.setIamPolicy']
+  iam_request = messages.CloudresourcemanagerProjectsTestIamPermissionsRequest(
+      resource=project,
+      testIamPermissionsRequest=messages.TestIamPermissionsRequest(
+          permissions=needed_permissions))
+  iam_response = client.projects.TestIamPermissions(iam_request)
+  can_add = True
+  for needed_permission in needed_permissions:
+    if needed_permission not in iam_response.permissions:
+      can_add = False
+  return can_add

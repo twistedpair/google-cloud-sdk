@@ -546,10 +546,6 @@ ProductSet are not deleted.
 
 The actual image files are not deleted from Google Cloud Storage.
 
-Possible errors:
-
-none
-
       Args:
         request: (VisionProjectsLocationsProductSetsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -711,10 +707,6 @@ Possible errors:
     def RemoveProduct(self, request, global_params=None):
       r"""Removes a Product from the specified ProductSet.
 
-Possible errors:
-
-none
-
       Args:
         request: (VisionProjectsLocationsProductSetsRemoveProductRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -802,10 +794,6 @@ against ProductSets containing the image may still work until all related
 caches are refreshed.
 
 The actual image files are not deleted from Google Cloud Storage.
-
-Possible errors:
-
-none
 
       Args:
         request: (VisionProjectsLocationsProductsReferenceImagesDeleteRequest) input message
@@ -945,10 +933,6 @@ Possible errors:
 Metadata of the product and all its images will be deleted right away, but
 search queries against ProductSets containing the product may still work
 until all related caches are refreshed.
-
-Possible errors:
-
-none
 
       Args:
         request: (VisionProjectsLocationsProductsDeleteRequest) input message

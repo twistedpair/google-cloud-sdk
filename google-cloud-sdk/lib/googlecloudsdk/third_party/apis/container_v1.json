@@ -933,7 +933,7 @@
       "type": "object",
       "properties": {
         "startTime": {
-          "description": "Time within the maintenance window to start the maintenance operations.\nTime format should be in [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt)\nformat \"HH:MM\u201D, where HH : [00-23] and MM : [00-59] GMT.",
+          "description": "Time within the maintenance window to start the maintenance operations.\nTime format should be in [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt)\nformat \"HH:MM\", where HH : [00-23] and MM : [00-59] GMT.",
           "type": "string"
         },
         "duration": {

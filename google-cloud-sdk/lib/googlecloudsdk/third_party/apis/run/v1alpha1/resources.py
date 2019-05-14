@@ -81,6 +81,16 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  NAMESPACES_TRIGGERS = (
+      'namespaces.triggers',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/triggers/{triggersId}',
+      },
+      [u'name'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
@@ -146,6 +156,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/services/'
               '{servicesId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_TRIGGERS = (
+      'projects.locations.triggers',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/triggers/'
+              '{triggersId}',
       },
       [u'name'],
       True

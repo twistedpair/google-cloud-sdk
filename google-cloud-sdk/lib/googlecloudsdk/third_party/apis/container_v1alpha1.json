@@ -722,7 +722,7 @@
       "type": "object",
       "properties": {
         "sysctls": {
-          "description": "The Linux kernel parameters to be applied to the nodes and all pods running\non the nodes.\n",
+          "description": "The Linux kernel parameters to be applied to the nodes and all pods running\non the nodes.\n\nThe following parameters are supported.\n\nkernel.pid_max\nkernel.threads-max\nfs.inotify.max_queued_events\nfs.inotify.max_user_instances\nfs.inotify.max_user_watches\nnet.core.netdev_budget\nnet.core.netdev_budget_usecs\nnet.core.netdev_max_backlog\nnet.core.rmem_default\nnet.core.rmem_max\nnet.core.wmem_default\nnet.core.wmem_max\nnet.core.optmem_max\nnet.core.somaxconn\nnet.ipv4.tcp_rmem\nnet.ipv4.tcp_wmem\nnet.ipv4.tcp_mem\nnet.ipv4.tcp_fin_timeout\nnet.ipv4.tcp_keepalive_intvl\nnet.ipv4.tcp_keepalive_probes\nnet.ipv4.tcp_keepalive_time\nnet.ipv4.tcp_max_orphans\nnet.ipv4.tcp_max_syn_backlog\nnet.ipv4.tcp_max_tw_buckets\nnet.ipv4.tcp_syn_retries\nnet.ipv4.tcp_tw_reuse\nnet.ipv4.udp_mem\nnet.ipv4.udp_rmem_min\nnet.ipv4.udp_wmem_min\nnet.netfilter.nf_conntrack_generic_timeout\nnet.netfilter.nf_conntrack_max\nnet.netfilter.nf_conntrack_tcp_timeout_close_wait\nnet.netfilter.nf_conntrack_tcp_timeout_established",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -1290,7 +1290,7 @@
       "type": "object",
       "properties": {
         "startTime": {
-          "description": "Time within the maintenance window to start the maintenance operations.\nIt must be in format \"HH:MM\u201D, where HH : [00-23] and MM : [00-59] GMT.",
+          "description": "Time within the maintenance window to start the maintenance operations.\nIt must be in format \"HH:MM\", where HH : [00-23] and MM : [00-59] GMT.",
           "type": "string"
         },
         "duration": {
@@ -1452,6 +1452,10 @@
         "enableNetworkEgressMetering": {
           "description": "Whether to enable network egress metering for this cluster. If enabled, a\ndaemonset will be created in the cluster to meter network egress traffic.",
           "type": "boolean"
+        },
+        "consumptionMeteringConfig": {
+          "description": "Configuration to enable resource consumption metering.",
+          "$ref": "ConsumptionMeteringConfig"
         }
       }
     },
@@ -1463,6 +1467,17 @@
         "datasetId": {
           "description": "The ID of a BigQuery Dataset.",
           "type": "string"
+        }
+      }
+    },
+    "ConsumptionMeteringConfig": {
+      "id": "ConsumptionMeteringConfig",
+      "description": "Parameters for controlling consumption metering.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether to enable consumption metering for this cluster. If enabled, a\nsecond BigQuery table will be created to hold resource consumption\nrecords.",
+          "type": "boolean"
         }
       }
     },

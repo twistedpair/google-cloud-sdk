@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20190501",
+ "revision": "20190507",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -2414,6 +2414,10 @@
      "type": "string",
      "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
      "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
+    },
+    "network": {
+     "type": "string",
+     "description": "The URL of the network to which this backend service belongs. This field can only be spcified when the load balancing scheme is set to INTERNAL."
     },
     "outlierDetection": {
      "$ref": "OutlierDetection",
@@ -9448,6 +9452,7 @@
     },
     "type": {
      "type": "string",
+     "description": "The type of update process. You can specify either PROACTIVE so that the instance group manager proactively executes actions in order to bring instances to their target versions or OPPORTUNISTIC so that no action is proactively executed but the update will be performed as part of other actions (for example, resizes or recreateInstances calls).",
      "enum": [
       "OPPORTUNISTIC",
       "PROACTIVE"
@@ -23967,7 +23972,7 @@
    "properties": {
     "disks": {
      "type": "object",
-     "description": "Disks created on the instances that will be preserved on instance delete, resize down, etc. This map is keyed with the device names of the disks.",
+     "description": "Disks created on the instances that will be preserved on instance delete, update, etc. This map is keyed with the device names of the disks.",
      "additionalProperties": {
       "$ref": "StatefulPolicyPreservedStateDiskDevice"
      }

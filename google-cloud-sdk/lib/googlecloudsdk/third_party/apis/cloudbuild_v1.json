@@ -133,7 +133,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
+          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should be a resource name ending with `operations\/{unique_id}`.",
           "type": "string"
         },
         "metadata": {
@@ -879,6 +879,13 @@
         "description": {
           "description": "Human-readable description of this trigger.",
           "type": "string"
+        },
+        "tags": {
+          "description": "Tags for annotation of a `BuildTrigger`",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "triggerTemplate": {
           "description": "Template describing the types of source changes to trigger a build.\n\nBranch and tag names in trigger templates are interpreted as regular\nexpressions. Any branch or tag change that matches that regular expression\nwill trigger a build.",

@@ -442,7 +442,7 @@ def ChoiceToEnum(choice, enum_type, item_type='choice', valid_choices=None):
   """Converts the typed choice into an apitools Enum value."""
   if choice is None:
     return None
-  name = choice.replace('-', '_').upper()
+  name = ChoiceToEnumName(choice)
   valid_choices = (valid_choices or
                    [EnumNameToChoice(n) for n in enum_type.names()])
   try:
@@ -453,6 +453,11 @@ def ChoiceToEnum(choice, enum_type, item_type='choice', valid_choices=None):
             item=item_type,
             selection=EnumNameToChoice(name),
             values=', '.join(c for c in sorted(valid_choices))))
+
+
+def ChoiceToEnumName(choice):
+  """Converts a typeable choice to the string representation of the Enum."""
+  return choice.replace('-', '_').upper()
 
 
 def EnumNameToChoice(name):

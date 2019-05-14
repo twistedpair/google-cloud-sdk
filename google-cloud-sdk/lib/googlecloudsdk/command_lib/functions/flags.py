@@ -36,6 +36,20 @@ API_VERSION = 'v1'
 LOCATIONS_COLLECTION = API + '.projects.locations'
 
 SEVERITIES = ['DEBUG', 'INFO', 'ERROR']
+EGRESS_SETTINGS = ['UNSPECIFIED', 'PRIVATE', 'ALL']
+INGRESS_SETTINGS = ['UNSPECIFIED', 'ALL', 'INTERNAL-ONLY', 'INTERNAL-AND-GCLB']
+INGRESS_SETTINGS_MAPPING = {
+    'ALLOW_ALL': 'all',
+    'ALLOW_INTERNAL_ONLY': 'internal-only',
+    'ALLOW_INTERNAL_AND_GCLB': 'internal-and-gclb',
+    'INGRESS_SETTINGS_UNSPECIFIED': 'unspecified',
+}
+
+EGRESS_SETTINGS_MAPPING = {
+    'PRIVATE_RANGES_ONLY': 'private',
+    'ALL_TRAFFIC': 'all',
+    'VPC_CONNECTOR_EGRESS_SETTINGS_UNSPECIFIED': 'unspecified',
+}
 
 
 def AddMinLogLevelFlag(parser):
@@ -45,6 +59,26 @@ def AddMinLogLevelFlag(parser):
       help_str='Minimum level of logs to be fetched.'
   )
   min_log_arg.AddToParser(parser)
+
+
+def AddIngressSettingsFlag(parser):
+  ingress_settings_arg = base.ChoiceArgument(
+      '--ingress-settings',
+      choices=[x.lower() for x in INGRESS_SETTINGS],
+      help_str='Ingress settings controls what traffic can reach the function.'
+  )
+  ingress_settings_arg.AddToParser(parser)
+
+
+def AddEgressSettingsFlag(parser):
+  egress_settings_arg = base.ChoiceArgument(
+      '--egress-settings',
+      choices=[x.lower() for x in EGRESS_SETTINGS],
+      help_str='Egress settings controls what traffic is diverted through the '
+               'VPC Access Connector resource. '
+               'By default private_ranges_only will be used.'
+  )
+  egress_settings_arg.AddToParser(parser)
 
 
 def GetLocationsUri(resource):
@@ -93,6 +127,31 @@ def AddFunctionRetryFlag(parser):
             'failure.'),
       action='store_true',
   )
+
+
+def AddAllowUnauthenticatedFlag(parser):
+  """Add the --allow-unauthenticated flag."""
+  parser.add_argument(
+      '--allow-unauthenticated',
+      default=False,
+      action='store_true',
+      help=('If set, makes this a public function. This will allow all '
+            'callers, without checking authentication.'))
+
+
+def ShouldEnsureAllUsersInvoke(args):
+  if args.allow_unauthenticated:
+    return True
+  else:
+    return False
+
+
+def ShouldDenyAllUsersInvoke(args):
+  if (args.IsSpecified('allow_unauthenticated')
+      and not args.allow_unauthenticated):
+    return True
+  else:
+    return False
 
 
 def AddSourceFlag(parser):
@@ -201,15 +260,9 @@ def AddRuntimeFlag(parser):
           """)
 
 
-def AddVPCMutexGroup(parser, enable_connected_vpc):
-  """Add mutex group for --connected-vpc and --vpc-connector."""
-  mutex_group = parser.add_group(mutex=True)
-  if enable_connected_vpc:
-    mutex_group.add_argument(
-        '--connected-vpc',
-        help='Specifies the VPC network to connect the function to.',
-        hidden=True)
-  mutex_group.add_argument(
+def AddVPCConnectorFlag(parser):
+  """Add flag for specyfying VPC connector to the parser."""
+  parser.add_argument(
       '--vpc-connector',
       help="""\
         The VPC Access connector that the function can connect to. It

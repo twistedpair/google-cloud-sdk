@@ -228,16 +228,15 @@ def AddSubscriptionSettingsFlags(parser, track, is_update=False):
   AddAckDeadlineFlag(parser)
   AddPushConfigFlags(parser, track)
   AddMessageRetentionFlags(parser, is_update)
-  if track in [base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA]:
-    parser.add_argument(
-        '--expiration-period',
-        type=ParseExpirationPeriodWithNeverSentinel,
-        help="""The subscription will expire if it is inactive for the given
-            period. Valid values are strings of the form INTEGER[UNIT], where
-            UNIT is one of "s", "m", "h", and "d" for seconds, minutes, hours,
-            and days, respectively. If the unit is omitted, seconds is
-            assumed. This flag additionally accepts the special value "never" to
-            indicate that the subscription will never expire.""")
+  parser.add_argument(
+      '--expiration-period',
+      type=ParseExpirationPeriodWithNeverSentinel,
+      help="""The subscription will expire if it is inactive for the given
+          period. Valid values are strings of the form INTEGER[UNIT], where
+          UNIT is one of "s", "m", "h", and "d" for seconds, minutes, hours,
+          and days, respectively. If the unit is omitted, seconds is
+          assumed. This flag additionally accepts the special value "never" to
+          indicate that the subscription will never expire.""")
 
 
 def AddPublishMessageFlags(parser, add_deprecated=False):

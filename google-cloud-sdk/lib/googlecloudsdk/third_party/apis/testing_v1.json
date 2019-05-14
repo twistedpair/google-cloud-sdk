@@ -258,6 +258,24 @@
           "description": "The number of times a TestExecution should be re-attempted if one or more\nof its test cases fail for any reason.\nThe maximum number of reruns allowed is 10.\n\nDefault is 0, which implies no reruns.",
           "type": "integer",
           "format": "int32"
+        },
+        "outcomeSummary": {
+          "description": "The overall outcome of the test matrix run.\nOnly set when the test matrix state is FINISHED.\n@OutputOnly",
+          "enumDescriptions": [
+            "",
+            "The test matrix run was successful, for instance:\n- All the test cases passed.\n- Robo did not detect a crash of the application under test.",
+            "A run failed, for instance:\n- One or more test case failed.\n- A test timed out.\n- The application under test crashed.",
+            "Something unexpected happened. The run should still be considered\nunsuccessful but this is likely a transient problem and re-running the\ntest might be successful.",
+            "All tests were skipped, for instance:\n- All device configurations were incompatible."
+          ],
+          "type": "string",
+          "enum": [
+            "OUTCOME_SUMMARY_UNSPECIFIED",
+            "SUCCESS",
+            "FAILURE",
+            "INCONCLUSIVE",
+            "SKIPPED"
+          ]
         }
       }
     },
@@ -1015,6 +1033,10 @@
         "toolResultsExecution": {
           "description": "Output only. The tool results execution that results are written to.",
           "$ref": "ToolResultsExecution"
+        },
+        "resultsUrl": {
+          "description": "Output only. URL to the results in the Firebase Web Console.",
+          "type": "string"
         }
       }
     },

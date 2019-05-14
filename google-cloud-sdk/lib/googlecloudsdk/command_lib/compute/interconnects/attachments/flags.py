@@ -39,18 +39,6 @@ _BANDWIDTH_CHOICES_ALPHA = OrderedDict([
     ('10g', '10 Gbit/s'),
     ('20g', '20 Gbit/s'),
     ('50g', '50 Gbit/s'),
-    ('bps-50m', '50 Mbit/s'),
-    ('bps-100m', '100 Mbit/s'),
-    ('bps-200m', '200 Mbit/s'),
-    ('bps-300m', '300 Mbit/s'),
-    ('bps-400m', '400 Mbit/s'),
-    ('bps-500m', '500 Mbit/s'),
-    ('bps-1g', '1 Gbit/s'),
-    ('bps-2g', '2 Gbit/s'),
-    ('bps-5g', '5 Gbit/s'),
-    ('bps-10g', '10 Gbit/s'),
-    ('bps-20g', '20 Gbit/s'),
-    ('bps-50g', '50 Gbit/s'),
 ])
 
 # TODO(b/130817246): Clean up when large IA bandwidth API is promoted to GA
@@ -65,16 +53,6 @@ _BANDWIDTH_CHOICES_BETA = OrderedDict([
     ('2g', '2 Gbit/s'),
     ('5g', '5 Gbit/s'),
     ('10g', '10 Gbit/s'),
-    ('bps-50m', '50 Mbit/s'),
-    ('bps-100m', '100 Mbit/s'),
-    ('bps-200m', '200 Mbit/s'),
-    ('bps-300m', '300 Mbit/s'),
-    ('bps-400m', '400 Mbit/s'),
-    ('bps-500m', '500 Mbit/s'),
-    ('bps-1g', '1 Gbit/s'),
-    ('bps-2g', '2 Gbit/s'),
-    ('bps-5g', '5 Gbit/s'),
-    ('bps-10g', '10 Gbit/s'),
 ])
 
 _BANDWIDTH_CHOICES_GA = OrderedDict([
@@ -88,16 +66,6 @@ _BANDWIDTH_CHOICES_GA = OrderedDict([
     ('2g', '2 Gbit/s'),
     ('5g', '5 Gbit/s'),
     ('10g', '10 Gbit/s'),
-    ('bps-50m', '50 Mbit/s'),
-    ('bps-100m', '100 Mbit/s'),
-    ('bps-200m', '200 Mbit/s'),
-    ('bps-300m', '300 Mbit/s'),
-    ('bps-400m', '400 Mbit/s'),
-    ('bps-500m', '500 Mbit/s'),
-    ('bps-1g', '1 Gbit/s'),
-    ('bps-2g', '2 Gbit/s'),
-    ('bps-5g', '5 Gbit/s'),
-    ('bps-10g', '10 Gbit/s'),
 ])
 
 _EDGE_AVAILABILITY_DOMAIN_CHOICES = {

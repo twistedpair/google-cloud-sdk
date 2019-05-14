@@ -484,7 +484,7 @@ def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False,
 
 
 def AddCreateDiskArgs(parser, enable_kms=False, enable_snapshots=False,
-                      container_mount_enabled=False):
+                      container_mount_enabled=False, resource_policy=False):
   """Adds create-disk argument for instances and instance-templates."""
 
   disk_device_name_help = _GetDiskDeviceNameHelp(
@@ -610,6 +610,16 @@ def AddCreateDiskArgs(parser, enable_kms=False, enable_snapshots=False,
         * snapshot
       """
     spec['source-snapshot'] = str
+
+  if resource_policy:
+    disk_help += """
+      *disk-resource-policy*::: Resource policy that will be applied to created
+      disk. You can provide full or partial URL. See
+        * https://cloud.google.com/sdk/gcloud/reference/beta/compute/resource-policies/
+        * https://cloud.google.com/compute/docs/disks/scheduled-snapshots
+      for more details about resource-policies.
+      """
+    spec['disk-resource-policy'] = arg_parsers.ArgList(max_length=1)
 
   parser.add_argument(
       '--create-disk',
@@ -1417,8 +1427,8 @@ def AddAcceleratorArgs(parser):
       of accelerator to attach to the instances. Use 'gcloud compute
       accelerator-types list' to learn about all available accelerator types.
 
-      *count*::: The number of pieces of the accelerator to attach to the
-      instances. The default value is 1.
+      *count*::: Number of accelerators to attach to each
+      instance. The default value is 1.
       """)
 
 

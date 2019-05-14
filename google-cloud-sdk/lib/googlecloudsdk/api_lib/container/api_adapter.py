@@ -67,8 +67,18 @@ NO_AUTOPROVISIONING_LIMITS_ERROR_MSG = """\
 Must specify both --max-cpu and --max-memory to enable autoprovisioning.
 """
 
+ATMOST_ONE_IDENTITY_FOR_AUTOPROVISIONING_ERROR_MSG = """\
+At most one of --autoprovisioning-service-account and \
+--autoprovisioning-scopes \
+can be specified"""
+
 LIMITS_WITHOUT_AUTOPROVISIONING_MSG = """\
 Must enable node autoprovisioning to specify resource limits for autoscaling.
+"""
+
+IDENTITY_DEFAULTS_WITHOUT_AUTOPROVISIONING_MSG = """\
+Must enable node autoprovisioning to specify default service account or scopes \
+for node autoprovisioning
 """
 
 LIMITS_WITHOUT_AUTOPROVISIONING_FLAG_MSG = """\
@@ -194,6 +204,9 @@ CLOUDRUN = 'CloudRun'
 ISTIO = 'Istio'
 NETWORK_POLICY = 'NetworkPolicy'
 NODELOCALDNS = 'NodeLocalDNS'
+RESOURCE_LIMITS = 'resourceLimits'
+SERVICE_ACCOUNT = 'serviceAccount'
+SCOPES = 'scopes'
 DEFAULT_ADDONS = [INGRESS, HPA]
 ADDONS_OPTIONS = DEFAULT_ADDONS + [DASHBOARD, ISTIO, NETWORK_POLICY]
 BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [CLOUDRUN]
@@ -393,7 +406,9 @@ class CreateClusterOptions(object):
                enable_network_egress_metering=None,
                identity_namespace=None,
                enable_shielded_nodes=None,
-               linux_sysctls=None):
+               linux_sysctls=None,
+               autoprovisioning_service_account=None,
+               autoprovisioning_scopes=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -475,6 +490,8 @@ class CreateClusterOptions(object):
     self.identity_namespace = identity_namespace
     self.enable_shielded_nodes = enable_shielded_nodes
     self.linux_sysctls = linux_sysctls
+    self.autoprovisioning_service_account = autoprovisioning_service_account
+    self.autoprovisioning_scopes = autoprovisioning_scopes
 
 
 class UpdateClusterOptions(object):
@@ -510,7 +527,9 @@ class UpdateClusterOptions(object):
                enable_peering_route_sharing=None,
                identity_namespace=None,
                disable_workload_identity=None,
-               enable_shielded_nodes=None):
+               enable_shielded_nodes=None,
+               autoprovisioning_service_account=None,
+               autoprovisioning_scopes=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -541,6 +560,8 @@ class UpdateClusterOptions(object):
     self.identity_namespace = identity_namespace
     self.disable_workload_identity = disable_workload_identity
     self.enable_shielded_nodes = enable_shielded_nodes
+    self.autoprovisioning_service_account = autoprovisioning_service_account
+    self.autoprovisioning_scopes = autoprovisioning_scopes
 
 
 class SetMasterAuthOptions(object):
@@ -2094,10 +2115,25 @@ class V1Beta1Adapter(V1Adapter):
     resource_limits = []
     if options.autoprovisioning_config_file is not None:
       # Create using config file only.
-      resource_limits = yaml.load(options.autoprovisioning_config_file)
+      autoprovisioning_options = yaml.load(options.autoprovisioning_config_file)
+      resource_limits = autoprovisioning_options.get(RESOURCE_LIMITS)
+      service_account = autoprovisioning_options.get(SERVICE_ACCOUNT)
+      scopes = autoprovisioning_options.get(SCOPES)
     else:
       resource_limits = self.ResourceLimitsFromFlags(options)
-    autoscaling.resourceLimits = resource_limits
+      service_account = options.autoprovisioning_service_account
+      scopes = options.autoprovisioning_scopes
+
+    if options.enable_autoprovisioning is not None:
+      autoscaling.enableNodeAutoprovisioning = options.enable_autoprovisioning
+      if resource_limits is None:
+        resource_limits = []
+      autoscaling.resourceLimits = resource_limits
+      if scopes is None:
+        scopes = []
+      autoscaling.autoprovisioningNodePoolDefaults = self.messages \
+        .AutoprovisioningNodePoolDefaults(serviceAccount=service_account,
+                                          oauthScopes=scopes)
 
     self.ValidateClusterAutoscaling(autoscaling)
     return autoscaling
@@ -2119,8 +2155,16 @@ class V1Beta1Adapter(V1Adapter):
           mem_found = True
       if not cpu_found or not mem_found:
         raise util.Error(NO_AUTOPROVISIONING_LIMITS_ERROR_MSG)
+      if autoscaling.autoprovisioningNodePoolDefaults \
+        and autoscaling.autoprovisioningNodePoolDefaults.serviceAccount \
+        and autoscaling.autoprovisioningNodePoolDefaults.oauthScopes:
+        raise util.Error(ATMOST_ONE_IDENTITY_FOR_AUTOPROVISIONING_ERROR_MSG)
     elif autoscaling.resourceLimits:
       raise util.Error(LIMITS_WITHOUT_AUTOPROVISIONING_MSG)
+    elif autoscaling.autoprovisioningNodePoolDefaults and \
+        (autoscaling.autoprovisioningNodePoolDefaults.serviceAccount or
+         autoscaling.autoprovisioningNodePoolDefaults.oauthScopes):
+      raise util.Error(IDENTITY_DEFAULTS_WITHOUT_AUTOPROVISIONING_MSG)
 
   def ResourceLimitsFromFlags(self, options):
     """Create cluster's autoscaling resource limits from command line flags.
@@ -2392,13 +2436,26 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     resource_limits = []
     if options.autoprovisioning_config_file is not None:
       # Create using config file only.
-      resource_limits = yaml.load(options.autoprovisioning_config_file)
+      autoprovisioning_options = yaml.load(options.autoprovisioning_config_file)
+      resource_limits = autoprovisioning_options.get(RESOURCE_LIMITS)
+      service_account = autoprovisioning_options.get(SERVICE_ACCOUNT)
+      scopes = autoprovisioning_options.get(SCOPES)
     else:
       resource_limits = self.ResourceLimitsFromFlags(options)
+      service_account = options.autoprovisioning_service_account
+      scopes = options.autoprovisioning_scopes
 
     if options.enable_autoprovisioning is not None:
       autoscaling.enableNodeAutoprovisioning = options.enable_autoprovisioning
+      if resource_limits is None:
+        resource_limits = []
       autoscaling.resourceLimits = resource_limits
+      if scopes is None:
+        scopes = []
+      autoscaling.autoprovisioningNodePoolDefaults = self.messages \
+        .AutoprovisioningNodePoolDefaults(
+            serviceAccount=service_account,
+            oauthScopes=scopes)
 
     if options.autoscaling_profile is not None:
       autoscaling.autoscalingProfile = \

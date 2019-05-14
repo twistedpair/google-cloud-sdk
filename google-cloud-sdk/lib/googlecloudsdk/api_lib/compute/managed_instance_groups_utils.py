@@ -27,6 +27,7 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import path_simplifier
+from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -1205,3 +1206,80 @@ def ApplyInstanceRedistributionTypeToUpdatePolicy(
         InstanceRedistributionTypeValueValuesEnum)(
             instance_redistribution_type)
   return update_policy
+
+
+def ListPerInstanceConfigs(client, igm_ref):
+  """Lists per-instance-configs for a given IGM."""
+  if not hasattr(client.messages,
+                 'ComputeInstanceGroupManagersListPerInstanceConfigsRequest'):
+    return []
+  if igm_ref.Collection() == 'compute.instanceGroupManagers':
+    service = client.apitools_client.instanceGroupManagers
+    request = (client.messages
+               .ComputeInstanceGroupManagersListPerInstanceConfigsRequest)(
+                   instanceGroupManager=igm_ref.Name(),
+                   project=igm_ref.project,
+                   zone=igm_ref.zone,
+               )
+  elif igm_ref.Collection() == 'compute.regionInstanceGroupManagers':
+    service = client.apitools_client.regionInstanceGroupManagers
+    request = (client.messages.
+               ComputeRegionInstanceGroupManagersListPerInstanceConfigsRequest)(
+                   instanceGroupManager=igm_ref.Name(),
+                   project=igm_ref.project,
+                   region=igm_ref.region,
+               )
+  else:
+    raise ValueError('Unknown reference type {0}'.format(igm_ref.Collection()))
+
+  errors = []
+  results = list(
+      request_helper.MakeRequests(
+          requests=[(service, 'ListPerInstanceConfigs', request)],
+          http=client.apitools_client.http,
+          batch_url=client.batch_url,
+          errors=errors))
+
+  if not results:
+    return []
+  return results[0].items
+
+
+def IsStateful(client, igm_info, igm_ref):
+  """For a given IGM, returns if it is stateful."""
+  # TODO(b/129752312): use igm.is_stateful field when launched
+  pics = ListPerInstanceConfigs(client, igm_ref)
+  has_policy = (
+      hasattr(igm_info, 'statefulPolicy') and
+      igm_info.statefulPolicy is not None)
+
+  return has_policy or pics
+
+
+def ValidateIgmReadyForStatefulness(igm_resource, client):
+  """Throws exception if IGM is in state not ready for adding statefulness."""
+  if not igm_resource.updatePolicy:
+    return
+
+  client_update_policy = client.messages.InstanceGroupManagerUpdatePolicy
+  type_is_proactive = (
+      igm_resource.updatePolicy.type == (
+          client_update_policy.TypeValueValuesEnum.PROACTIVE))
+  replacement_method_is_substitute = (
+      igm_resource.updatePolicy.replacementMethod == (
+          client_update_policy.ReplacementMethodValueValuesEnum.SUBSTITUTE))
+  instance_redistribution_type_is_proactive = (
+      igm_resource.updatePolicy.instanceRedistributionType == (
+          client_update_policy.InstanceRedistributionTypeValueValuesEnum
+          .PROACTIVE))
+
+  if type_is_proactive and replacement_method_is_substitute:
+    raise exceptions.Error(
+        'Stateful IGMs cannot use SUBSTITUTE replacement method. '
+        'Try `gcloud alpha compute instance-groups managed '
+        'rolling-update stop-proactive-update')
+  if instance_redistribution_type_is_proactive:
+    raise exceptions.Error(
+        'Stateful regional IGMs cannot use proactive instance redistribution. '
+        'Try `gcloud alpha compute instance-groups managed '
+        'update --instance-redistribution-type=NONE')

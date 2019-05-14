@@ -864,7 +864,7 @@ class CommandBuilder(object):
   def _WaitForOperation(self, operation_ref, resource_ref,
                         extract_resource_result, args=None):
     poller = AsyncOperationPoller(
-        self.spec, resource_ref if extract_resource_result else None)
+        self.spec, resource_ref if extract_resource_result else None, args)
     progress_string = self._Format(
         'Waiting for operation [{{{}}}] to complete'.format(
             yaml_command_schema.NAME_FORMAT_KEY),
@@ -1010,7 +1010,7 @@ class CommandBuilder(object):
 class AsyncOperationPoller(waiter.OperationPoller):
   """An implementation of a operation poller."""
 
-  def __init__(self, spec, resource_ref):
+  def __init__(self, spec, resource_ref, args):
     """Creates the poller.
 
     Args:
@@ -1020,6 +1020,7 @@ class AsyncOperationPoller(waiter.OperationPoller):
         being operated on (not the operation itself). If None, the operation
         will just be returned when it is done instead of getting the resulting
         resource.
+      args: Namespace, The args namespace.
     """
     self.spec = spec
     self.resource_ref = resource_ref
@@ -1028,6 +1029,7 @@ class AsyncOperationPoller(waiter.OperationPoller):
     self.method = registry.GetMethod(
         spec.async.collection, spec.async.method,
         api_version=spec.async.api_version or spec.request.api_version)
+    self.args = args
 
   def IsDone(self, operation):
     """Overrides."""
@@ -1064,7 +1066,10 @@ class AsyncOperationPoller(waiter.OperationPoller):
             self.spec.async.operation_get_method_params.get(f.name, f.name),
             relative_name)
         for f in request_type.all_fields()}
-    return self.method.Call(request_type(**fields))
+    request = request_type(**fields)
+    for hook in self.spec.async.modify_request_hooks:
+      request = hook(operation_ref, self.args, request)
+    return self.method.Call(request)
 
   def GetResult(self, operation):
     """Overrides.

@@ -28,9 +28,10 @@ from googlecloudsdk.calliope import base
 API_NAME = 'cloudtasks'
 ALPHA_API_VERSION = 'v2beta2'
 BETA_API_VERSION = 'v2beta3'
+GA_API_VERSION = 'v2'
 
 
-class UnsupportedReleaseTrack(Exception):
+class UnsupportedReleaseTrackError(Exception):
   """Raised when requesting an api for an unsupported release track."""
 
 
@@ -39,8 +40,10 @@ def GetApiAdapter(release_track):
     return AlphaApiAdapter()
   if release_track == base.ReleaseTrack.BETA:
     return BetaApiAdapter()
+  if release_track == base.ReleaseTrack.GA:
+    return GaApiAdapter()
   else:
-    raise UnsupportedReleaseTrack(release_track)
+    raise UnsupportedReleaseTrackError(release_track)
 
 
 class BaseApiAdapter(object):
@@ -66,6 +69,16 @@ class BetaApiAdapter(BaseApiAdapter):
 
   def __init__(self):
     super(BetaApiAdapter, self).__init__(BETA_API_VERSION)
+    self.queues = queues.BetaQueues(self.client.MESSAGES_MODULE,
+                                    self.client.projects_locations_queues)
+    self.tasks = tasks.Tasks(self.client.MESSAGES_MODULE,
+                             self.client.projects_locations_queues_tasks)
+
+
+class GaApiAdapter(BaseApiAdapter):
+
+  def __init__(self):
+    super(GaApiAdapter, self).__init__(GA_API_VERSION)
     self.queues = queues.Queues(self.client.MESSAGES_MODULE,
                                 self.client.projects_locations_queues)
     self.tasks = tasks.Tasks(self.client.MESSAGES_MODULE,

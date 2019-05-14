@@ -212,47 +212,32 @@ BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     region_explanation=('If not specified, it will be set to the'
                         ' region of the forwarding rule.'))
 
-NETWORK_ARG_ALPHA = compute_flags.ResourceArgument(
-    name='--network',
-    required=False,
-    resource_name='networks',
-    global_collection='compute.networks',
-    short_help='Network that this forwarding rule applies to.',
-    detailed_help="""\
-        (Only for --load-balancing-scheme=INTERNAL,
+
+def NetworkArg(include_traffic_director, include_l7_internal_load_balancing):
+  """Returns the network parameter."""
+
+  load_balancing_scheme = '--load-balancing-scheme=INTERNAL'
+  if include_traffic_director and not include_l7_internal_load_balancing:
+    load_balancing_scheme += ("""
+        or --load-balancing-scheme=INTERNAL_SELF_MANAGED""")
+  elif include_traffic_director and include_l7_internal_load_balancing:
+    load_balancing_scheme += (""",
         --load-balancing-scheme=INTERNAL_MANAGED, or
-        --load-balancing-scheme=INTERNAL_SELF_MANAGED) Network that this
-        forwarding rule applies to. If this field is not specified, the default
-        network will be used. In the absence of the default network, this field
-        must be specified.
-        """)
+        --load-balancing-scheme=INTERNAL_SELF_MANAGED""")
 
-NETWORK_ARG_BETA = compute_flags.ResourceArgument(
-    name='--network',
-    required=False,
-    resource_name='networks',
-    global_collection='compute.networks',
-    short_help='Network that this forwarding rule applies to.',
-    detailed_help="""\
-        (Only for --load-balancing-scheme=INTERNAL or
-        --load-balancing-scheme=INTERNAL_SELF_MANAGED) Network that this
-        forwarding rule applies to. If this field is not specified, the default
-        network will be used. In the absence of the default network, this field
-        must be specified.
-        """)
+  return compute_flags.ResourceArgument(
+      name='--network',
+      required=False,
+      resource_name='networks',
+      global_collection='compute.networks',
+      short_help='Network that this forwarding rule applies to.',
+      detailed_help="""\
+          (Only for %s) Network that this
+          forwarding rule applies to. If this field is not specified, the default
+          network will be used. In the absence of the default network, this field
+          must be specified.
+          """ % load_balancing_scheme)
 
-NETWORK_ARG = compute_flags.ResourceArgument(
-    name='--network',
-    required=False,
-    resource_name='networks',
-    global_collection='compute.networks',
-    short_help='Network that this forwarding rule applies to.',
-    detailed_help="""\
-        (Only for --load-balancing-scheme=INTERNAL) Network that this
-        forwarding rule applies to. If this field is not specified, the default
-        network will be used. In the absence of the default network, this field
-        must be specified.
-        """)
 
 SUBNET_ARG = compute_flags.ResourceArgument(
     name='--subnet',
@@ -271,7 +256,7 @@ SUBNET_ARG = compute_flags.ResourceArgument(
                         ' region of the forwarding rule.'))
 
 
-def TargetHttpProxyArg(include_alpha=False):
+def TargetHttpProxyArg(include_l7_internal_load_balancing=False):
   """Return a resource argument for parsing a target http proxy."""
 
   target_http_proxy_arg = compute_flags.ResourceArgument(
@@ -280,16 +265,16 @@ def TargetHttpProxyArg(include_alpha=False):
       resource_name='http proxy',
       global_collection='compute.targetHttpProxies',
       regional_collection='compute.regionTargetHttpProxies'
-      if include_alpha else None,
+      if include_l7_internal_load_balancing else None,
       short_help='Target HTTP proxy that will receive the traffic.',
       detailed_help=('Target HTTP proxy that will receive the traffic. '
                      'Acceptable values for --ports flag are: 80, 8080.'),
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
-      if include_alpha else None)
+      if include_l7_internal_load_balancing else None)
   return target_http_proxy_arg
 
 
-def TargetHttpsProxyArg(include_alpha=False):
+def TargetHttpsProxyArg(include_l7_internal_load_balancing=False):
   """Return a resource argument for parsing a target https proxy."""
 
   target_https_proxy_arg = compute_flags.ResourceArgument(
@@ -298,12 +283,12 @@ def TargetHttpsProxyArg(include_alpha=False):
       resource_name='https proxy',
       global_collection='compute.targetHttpsProxies',
       regional_collection='compute.regionTargetHttpsProxies'
-      if include_alpha else None,
+      if include_l7_internal_load_balancing else None,
       short_help='Target HTTPS proxy that will receive the traffic.',
       detailed_help=('Target HTTPS proxy that will receive the traffic. '
                      'Acceptable values for --ports flag are: 443.'),
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
-      if include_alpha else None)
+      if include_l7_internal_load_balancing else None)
   return target_https_proxy_arg
 
 TARGET_INSTANCE_ARG = compute_flags.ResourceArgument(
@@ -368,11 +353,12 @@ TARGET_VPN_GATEWAY_ARG = compute_flags.ResourceArgument(
                         ' region of the forwarding rule.'))
 
 
-def AddressArgHelp(include_l7_ilb, include_traffic_director):
+def AddressArgHelp(include_l7_internal_load_balancing,
+                   include_traffic_director):
   """Build the help text for the address argument."""
 
   lb_schemes = '(EXTERNAL, INTERNAL'
-  if include_l7_ilb:
+  if include_l7_internal_load_balancing:
     lb_schemes += ', INTERNAL_MANAGED'
   if include_traffic_director:
     lb_schemes += ', INTERNAL_SELF_MANAGED'
@@ -425,50 +411,34 @@ def AddressArgHelp(include_l7_ilb, include_traffic_director):
   return textwrap.dedent(detailed_help)
 
 
-ADDRESS_ARG_ALPHA = compute_flags.ResourceArgument(
-    name='--address',
-    required=False,
-    resource_name='address',
-    completer=addresses_flags.AddressesCompleter,
-    regional_collection='compute.addresses',
-    global_collection='compute.globalAddresses',
-    region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
-    short_help='IP address that the forwarding rule will serve.',
-    detailed_help=AddressArgHelp(
-        include_l7_ilb=True, include_traffic_director=True))
-
-ADDRESS_ARG_BETA = compute_flags.ResourceArgument(
-    name='--address',
-    required=False,
-    resource_name='address',
-    completer=addresses_flags.AddressesCompleter,
-    regional_collection='compute.addresses',
-    global_collection='compute.globalAddresses',
-    region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
-    short_help='IP address that the forwarding rule will serve.',
-    detailed_help=AddressArgHelp(
-        include_l7_ilb=False, include_traffic_director=True))
-
-ADDRESS_ARG = compute_flags.ResourceArgument(
-    name='--address',
-    required=False,
-    resource_name='address',
-    completer=addresses_flags.AddressesCompleter,
-    regional_collection='compute.addresses',
-    global_collection='compute.globalAddresses',
-    region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
-    short_help='IP address that the forwarding rule will serve.',
-    detailed_help=AddressArgHelp(
-        include_l7_ilb=False, include_traffic_director=False))
+def AddressArg(include_traffic_director, include_l7_internal_load_balancing):
+  return compute_flags.ResourceArgument(
+      name='--address',
+      required=False,
+      resource_name='address',
+      completer=addresses_flags.AddressesCompleter,
+      regional_collection='compute.addresses',
+      global_collection='compute.globalAddresses',
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
+      short_help='IP address that the forwarding rule will serve.',
+      detailed_help=AddressArgHelp(
+          include_l7_internal_load_balancing=include_l7_internal_load_balancing,
+          include_traffic_director=include_traffic_director))
 
 
-def AddUpdateArgs(parser, include_beta=False, include_alpha=False):
+def AddUpdateArgs(parser,
+                  include_traffic_director=False,
+                  include_l7_internal_load_balancing=False):
   """Adds common flags for mutating forwarding rule targets."""
   target = parser.add_mutually_exclusive_group(required=True)
 
-  TargetHttpProxyArg(include_alpha=include_alpha).AddArgument(
+  TargetHttpProxyArg(
+      include_l7_internal_load_balancing=include_l7_internal_load_balancing
+  ).AddArgument(
       parser, mutex_group=target)
-  TargetHttpsProxyArg(include_alpha=include_alpha).AddArgument(
+  TargetHttpsProxyArg(
+      include_l7_internal_load_balancing=include_l7_internal_load_balancing
+  ).AddArgument(
       parser, mutex_group=target)
   TARGET_INSTANCE_ARG.AddArgument(parser, mutex_group=target)
   TARGET_POOL_ARG.AddArgument(parser, mutex_group=target)
@@ -477,24 +447,16 @@ def AddUpdateArgs(parser, include_beta=False, include_alpha=False):
   TARGET_VPN_GATEWAY_ARG.AddArgument(parser, mutex_group=target)
 
   BACKEND_SERVICE_ARG.AddArgument(parser, mutex_group=target)
-  if include_alpha:
-    NETWORK_ARG_ALPHA.AddArgument(parser)
-  elif include_beta:
-    NETWORK_ARG_BETA.AddArgument(parser)
-  else:
-    NETWORK_ARG.AddArgument(parser)
+  NetworkArg(
+      include_traffic_director=include_traffic_director,
+      include_l7_internal_load_balancing=include_l7_internal_load_balancing
+  ).AddArgument(parser)
   SUBNET_ARG.AddArgument(parser)
 
-  include_traffic_director = False
-  include_l7_ilb = False
-  if include_beta:
-    include_traffic_director = True
-  if include_alpha:
-    include_l7_ilb = True
   AddLoadBalancingScheme(
       parser,
       include_traffic_director=include_traffic_director,
-      include_l7_ilb=include_l7_ilb)
+      include_l7_ilb=include_l7_internal_load_balancing)
 
 
 def AddLoadBalancingScheme(parser,
@@ -577,19 +539,16 @@ def AddIpVersionGroup(parser):
       """)
 
 
-def AddAddressesAndIPVersions(parser,
-                              required=True,
-                              include_alpha=False,
-                              include_beta=False):
+def AddAddressesAndIPVersions(parser, required, include_traffic_director,
+                              include_l7_internal_load_balancing):
   """Adds Addresses and IP versions flag."""
+
+  address_arg = AddressArg(
+      include_l7_internal_load_balancing=include_l7_internal_load_balancing,
+      include_traffic_director=include_traffic_director)
   group = parser.add_mutually_exclusive_group(required=required)
   AddIpVersionGroup(group)
-  if include_alpha:
-    ADDRESS_ARG_ALPHA.AddArgument(parser, mutex_group=group)
-  elif include_beta:
-    ADDRESS_ARG_BETA.AddArgument(parser, mutex_group=group)
-  else:
-    ADDRESS_ARG.AddArgument(parser, mutex_group=group)
+  address_arg.AddArgument(parser, mutex_group=group)
 
 
 def AddDescription(parser):

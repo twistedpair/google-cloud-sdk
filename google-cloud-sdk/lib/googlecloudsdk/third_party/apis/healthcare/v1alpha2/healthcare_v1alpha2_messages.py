@@ -1725,7 +1725,9 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalDeleteRequest(
 
   Fields:
     parent: The name of the FHIR store this resource belongs to.
-    type: The type of the resource to update.
+    type: The FHIR resource type to delete, such as Patient or Observation.
+      For a complete list, see the [FHIR Resource
+      Index](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html).
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1740,7 +1742,9 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalPatchRequest(_
   Fields:
     httpBody: A HttpBody resource to be passed as the request body.
     parent: The name of the FHIR store this resource belongs to.
-    type: The type of the resource to update.
+    type: The FHIR resource type to update, such as Patient or Observation.
+      For a complete list, see the [FHIR Resource
+      Index](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html).
   """
 
   httpBody = _messages.MessageField('HttpBody', 1)
@@ -1756,7 +1760,10 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalUpdateRequest(
   Fields:
     httpBody: A HttpBody resource to be passed as the request body.
     parent: The name of the FHIR store this resource belongs to.
-    type: The type of the resource to update.
+    type: The FHIR resource type to update, such as Patient or Observation.
+      For a complete list, see the [FHIR Resource
+      Index](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html).
+      Must match the resource type in the provided content.
   """
 
   httpBody = _messages.MessageField('HttpBody', 1)
@@ -1770,7 +1777,10 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirCreateRequest(_messages.M
   Fields:
     httpBody: A HttpBody resource to be passed as the request body.
     parent: The name of the FHIR store this resource belongs to.
-    type: The type of the resource to create.
+    type: The FHIR resource type to create, such as Patient or Observation.
+      For a complete list, see the [FHIR Resource
+      Index](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html).
+      Must match the resource type in the provided content.
   """
 
   httpBody = _messages.MessageField('HttpBody', 1)
@@ -3097,7 +3107,8 @@ class Operation(_messages.Message):
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
-      the `name` should have the format of `operations/some/unique/name`.
+      the `name` should be a resource name ending with
+      `operations/{unique_id}`.
     response: The normal response of the operation in case of success.  If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`.  If the original method is standard
@@ -3349,7 +3360,9 @@ class SearchResourcesRequest(_messages.Message):
   r"""Request to search the resources in the specified FHIR store.
 
   Fields:
-    resourceType: The type of the resource to search.
+    resourceType: The FHIR resource type to search, such as Patient or
+      Observation. For a complete list, see the [FHIR Resource
+      Index](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html).
   """
 
   resourceType = _messages.StringField(1)

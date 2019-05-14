@@ -324,7 +324,7 @@ class GoogleCloudRecommenderV1alpha1Operation(_messages.Message):
       "/versions/*/name" : "it-123"   "/versions/*/targetSize/percent": "20" }
 
   Fields:
-    action: Required. Type of this operation. Supports 'and', 'remove',
+    action: Required. Type of this operation. Supports 'add', 'remove',
       'replace', 'move', 'copy', 'test' and custom operations. This field is
       also case-insensitive.
     path: Required. Path to the target field being operated on. If the
@@ -642,7 +642,8 @@ class GoogleLongrunningOperation(_messages.Message):
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
-      the `name` should have the format of `operations/some/unique/name`.
+      the `name` should be a resource name ending with
+      `operations/{unique_id}`.
     response: The normal response of the operation in case of success.  If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`.  If the original method is standard

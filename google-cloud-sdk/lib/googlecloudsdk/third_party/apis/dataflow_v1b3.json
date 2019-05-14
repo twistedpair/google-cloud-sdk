@@ -201,6 +201,26 @@
           "description": "The time after which this snapshot will be automatically deleted.",
           "type": "string",
           "format": "google-duration"
+        },
+        "state": {
+          "description": "State of the snapshot.",
+          "enumDescriptions": [
+            "Unknown state.",
+            "Snapshot intent to create has been persisted, snapshotting of state has not\nyet started.",
+            "Snapshotting is being performed.",
+            "Snapshot has been created and is ready to be used.",
+            "Snapshot failed to be created.",
+            "Snapshot has been deleted."
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN_SNAPSHOT_STATE",
+            "PENDING",
+            "RUNNING",
+            "READY",
+            "FAILED",
+            "DELETED"
+          ]
         }
       }
     },
@@ -3953,8 +3973,16 @@
       "type": "object",
       "properties": {
         "vmIsHealthy": {
-          "description": "Whether the VM is healthy.",
+          "description": "Whether the VM is currently healthy.",
           "type": "boolean"
+        },
+        "vmIsBroken": {
+          "description": "Whether the VM is in a permanently broken state.\nBroken VMs should be abandoned or deleted ASAP to avoid assigning or\ncompleting any work.",
+          "type": "boolean"
+        },
+        "msg": {
+          "description": "A message describing any unusual health reports.",
+          "type": "string"
         },
         "vmStartupTime": {
           "description": "The time the VM was booted.",

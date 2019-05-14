@@ -185,8 +185,12 @@ class DeclarativeArgumentGenerator(object):
     else:
       flag_name = self.resource_arg.name or self.resource_spec.name
 
-    anchor_arg_is_flag = (
-        not self.resource_arg.is_positional or self.method.IsList())
+    # If left unspecified, decide whether the resource is positional based on
+    # the method.
+    if self.resource_arg.is_positional is None:
+      anchor_arg_is_flag = self.method.IsList()
+    else:
+      anchor_arg_is_flag = not self.resource_arg.is_positional
     anchor_arg_name = (
         '--' + flag_name if anchor_arg_is_flag
         else flag_name)

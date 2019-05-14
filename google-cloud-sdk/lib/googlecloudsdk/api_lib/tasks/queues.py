@@ -89,6 +89,50 @@ class Queues(BaseQueues):
   """Client for queues service in the Cloud Tasks API."""
 
   def Create(self, parent_ref, queue_ref, retry_config=None,
+             rate_limits=None, app_engine_routing_override=None):
+    """Prepares and sends a Create request for creating a queue."""
+    queue = self.messages.Queue(
+        name=queue_ref.RelativeName(), retryConfig=retry_config,
+        rateLimits=rate_limits,
+        appEngineRoutingOverride=app_engine_routing_override)
+    request = self.messages.CloudtasksProjectsLocationsQueuesCreateRequest(
+        parent=parent_ref.RelativeName(), queue=queue)
+    return self.queues_service.Create(request)
+
+  def Patch(self, queue_ref, retry_config=None, rate_limits=None,
+            app_engine_routing_override=None):
+    """Prepares and sends a Patch request for modifying a queue."""
+
+    if not any([retry_config, rate_limits, app_engine_routing_override]):
+      raise NoFieldsSpecifiedError('Must specify at least one field to update.')
+
+    queue = self.messages.Queue(name=queue_ref.RelativeName())
+
+    updated_fields = []
+    if retry_config is not None:
+      queue.retryConfig = retry_config
+      updated_fields.append('retryConfig')
+    if rate_limits is not None:
+      queue.rateLimits = rate_limits
+      updated_fields.append('rateLimits')
+    if app_engine_routing_override is not None:
+      if _IsEmptyConfig(app_engine_routing_override):
+        queue.appEngineRoutingOverride = (
+            self.messages.AppEngineRouting())
+      else:
+        queue.appEngineRoutingOverride = app_engine_routing_override
+      updated_fields.append('appEngineRoutingOverride')
+    update_mask = ','.join(updated_fields)
+
+    request = self.messages.CloudtasksProjectsLocationsQueuesPatchRequest(
+        name=queue_ref.RelativeName(), queue=queue, updateMask=update_mask)
+    return self.queues_service.Patch(request)
+
+
+class BetaQueues(BaseQueues):
+  """Client for queues service in the Cloud Tasks API."""
+
+  def Create(self, parent_ref, queue_ref, retry_config=None,
              rate_limits=None, app_engine_http_queue=None):
     """Prepares and sends a Create request for creating a queue."""
     queue = self.messages.Queue(

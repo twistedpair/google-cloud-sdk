@@ -111,10 +111,10 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: Unimplemented. The condition that is associated with this
-      binding. NOTE: an unsatisfied condition will not allow user access via
-      current binding. Different bindings, including their conditions, are
-      examined independently.
+    condition: The condition that is associated with this binding. NOTE: An
+      unsatisfied condition will not allow user access via current binding.
+      Different bindings, including their conditions, are examined
+      independently.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -126,8 +126,8 @@ class Binding(_messages.Message):
       service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: A Google Apps domain name that represents all the
-      users of that domain. For example, `google.com` or `example.com`.
+      * `domain:{domain}`: The G Suite domain (primary) that represents all
+      the    users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -231,10 +231,13 @@ class ConfigurationSpec(_messages.Message):
       conventions.md#associate-modifications-with-revisions  Cloud Run does
       not currently support referencing a build that is responsible for
       materializing the container image from source.
+    template: Template holds the latest specification for the Revision to be
+      stamped out.
   """
 
   generation = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   revisionTemplate = _messages.MessageField('RevisionTemplate', 2)
+  template = _messages.MessageField('RevisionTemplate', 3)
 
 
 class ConfigurationStatus(_messages.Message):
@@ -437,8 +440,6 @@ class DomainMappingCondition(_messages.Message):
   r"""DomainMappingCondition contains state information for a DomainMapping.
 
   Fields:
-    internalMessage: Human readable message that contains additional details
-      not shared with external users.
     message: Human readable message indicating details about the current
       status. +optional
     reason: One-word CamelCase reason for the condition's current status.
@@ -447,11 +448,10 @@ class DomainMappingCondition(_messages.Message):
     type: Type of domain mapping condition.
   """
 
-  internalMessage = _messages.StringField(1)
-  message = _messages.StringField(2)
-  reason = _messages.StringField(3)
-  status = _messages.StringField(4)
-  type = _messages.StringField(5)
+  message = _messages.StringField(1)
+  reason = _messages.StringField(2)
+  status = _messages.StringField(3)
+  type = _messages.StringField(4)
 
 
 class DomainMappingSpec(_messages.Message):
@@ -475,10 +475,13 @@ class DomainMappingSpec(_messages.Message):
 
     Values:
       CERTIFICATE_MODE_UNSPECIFIED: <no description>
-      AUTOMATIC: <no description>
+      NONE: Do not provision an HTTPS certificate.
+      AUTOMATIC: Automatically provisions an HTTPS certificate via
+        LetsEncrypt.
     """
     CERTIFICATE_MODE_UNSPECIFIED = 0
-    AUTOMATIC = 1
+    NONE = 1
+    AUTOMATIC = 2
 
   certificateMode = _messages.EnumField('CertificateModeValueValuesEnum', 1)
   forceOverride = _messages.BooleanField(2)
@@ -491,6 +494,8 @@ class DomainMappingStatus(_messages.Message):
   Fields:
     conditions: Array of observed DomainMappingConditions, indicating the
       current state of the DomainMapping.
+    mappedRouteName: The name of the route that the mapping currently points
+      to.
     observedGeneration: ObservedGeneration is the 'Generation' of the
       DomainMapping that was last processed by the controller.  Clients
       polling for completed reconciliation should poll until
@@ -502,8 +507,9 @@ class DomainMappingStatus(_messages.Message):
   """
 
   conditions = _messages.MessageField('DomainMappingCondition', 1, repeated=True)
-  observedGeneration = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  resourceRecords = _messages.MessageField('ResourceRecord', 3, repeated=True)
+  mappedRouteName = _messages.StringField(2)
+  observedGeneration = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  resourceRecords = _messages.MessageField('ResourceRecord', 4, repeated=True)
 
 
 class Empty(_messages.Message):
@@ -636,68 +642,6 @@ class Handler(_messages.Message):
   exec_ = _messages.MessageField('ExecAction', 1)
   httpGet = _messages.MessageField('HTTPGetAction', 2)
   tcpSocket = _messages.MessageField('TCPSocketAction', 3)
-
-
-class HttpBody(_messages.Message):
-  r"""Message that represents an arbitrary HTTP body. It should only be used
-  for payload formats that can't be represented as JSON, such as raw binary or
-  an HTML page.   This message can be used both in streaming and non-streaming
-  API methods in the request as well as the response.  It can be used as a
-  top-level request field, which is convenient if one wants to extract
-  parameters from either the URL or HTTP template into the request fields and
-  also want access to the raw HTTP body.  Example:      message
-  GetResourceRequest {       // A unique request id.       string request_id =
-  1;        // The raw HTTP body is bound to this field.
-  google.api.HttpBody http_body = 2;     }      service ResourceService {
-  rpc GetResource(GetResourceRequest) returns (google.api.HttpBody);       rpc
-  UpdateResource(google.api.HttpBody) returns (google.protobuf.Empty);     }
-  Example with streaming methods:      service CaldavService {       rpc
-  GetCalendar(stream google.api.HttpBody)         returns (stream
-  google.api.HttpBody);       rpc UpdateCalendar(stream google.api.HttpBody)
-  returns (stream google.api.HttpBody);     }  Use of this type only changes
-  how the request and response bodies are handled, all other features will
-  continue to work unchanged.
-
-  Messages:
-    ExtensionsValueListEntry: A ExtensionsValueListEntry object.
-
-  Fields:
-    contentType: The HTTP Content-Type header value specifying the content
-      type of the body.
-    data: The HTTP request/response body as raw binary.
-    extensions: Application specific response metadata. Must be set in the
-      first response for streaming APIs.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ExtensionsValueListEntry(_messages.Message):
-    r"""A ExtensionsValueListEntry object.
-
-    Messages:
-      AdditionalProperty: An additional property for a
-        ExtensionsValueListEntry object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ExtensionsValueListEntry object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  contentType = _messages.StringField(1)
-  data = _messages.BytesField(2)
-  extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
 
 
 class Initializer(_messages.Message):
@@ -907,6 +851,24 @@ class ListServicesResponse(_messages.Message):
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('Service', 2, repeated=True)
+  kind = _messages.StringField(3)
+  metadata = _messages.MessageField('ListMeta', 4)
+  unreachable = _messages.StringField(5, repeated=True)
+
+
+class ListTriggersResponse(_messages.Message):
+  r"""ListTriggersResponse is a list of Trigger resources.
+
+  Fields:
+    apiVersion: The API version for this call such as "v1alpha1".
+    items: List of Triggers.
+    kind: The kind of this resource, in this case "TriggerList".
+    metadata: Metadata associated with this Trigger list.
+    unreachable: Locations that could not be reached.
+  """
+
+  apiVersion = _messages.StringField(1)
+  items = _messages.MessageField('Trigger', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
   unreachable = _messages.StringField(5, repeated=True)
@@ -1200,6 +1162,47 @@ class ObjectMeta(_messages.Message):
   resourceVersion = _messages.StringField(14)
   selfLink = _messages.StringField(15)
   uid = _messages.StringField(16)
+
+
+class ObjectReference(_messages.Message):
+  r"""ObjectReference contains enough information to let you inspect or modify
+  the referred object.
+
+  Fields:
+    apiVersion: API version of the referent. +optional
+    fieldPath: If referring to a piece of an object instead of an entire
+      object, this string should contain a valid JSON/Go field access
+      statement, such as desiredState.manifest.containers[2]. For example, if
+      the object reference is to a container within a pod, this would take on
+      a value like: "spec.containers{name}" (where "name" refers to the name
+      of the container that triggered the event) or if no container name is
+      specified "spec.containers[2]" (container with index 2 in this pod).
+      This syntax is chosen only to have some well-defined way of referencing
+      a part of an object.
+    kind: Kind of the referent. More info:
+      https://git.k8s.io/community/contributors/devel/api-conventions.md
+      #types-kinds +optional
+    name: Name of the referent. More info:
+      https://kubernetes.io/docs/concepts/overview/working-with-
+      objects/names/#names +optional
+    namespace: Namespace of the referent. More info:
+      https://kubernetes.io/docs/concepts/overview/working-with-
+      objects/namespaces/ +optional
+    resourceVersion: Specific resourceVersion to which this reference is made,
+      if any. More info: https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#concurrency-control-and-consistency +optional
+    uid: UID of the referent. More info:
+      https://kubernetes.io/docs/concepts/overview/working-with-
+      objects/names/#uids +optional
+  """
+
+  apiVersion = _messages.StringField(1)
+  fieldPath = _messages.StringField(2)
+  kind = _messages.StringField(3)
+  name = _messages.StringField(4)
+  namespace = _messages.StringField(5)
+  resourceVersion = _messages.StringField(6)
+  uid = _messages.StringField(7)
 
 
 class OwnerReference(_messages.Message):
@@ -1865,16 +1868,25 @@ class RunNamespacesDomainmappingsDeleteRequest(_messages.Message):
   r"""A RunNamespacesDomainmappingsDeleteRequest object.
 
   Fields:
+    apiVersion: Cloud Run currently ignores this parameter.
+    kind: Cloud Run currently ignores this parameter.
     name: The name of the domain mapping being deleted. If needed, replace
       {namespace_id} with the project ID.
     orphanDependents: Deprecated. Specifies the cascade behavior on delete.
       Cloud Run only supports cascading behavior, so this must be false. This
-      attribute is deprecated, and might be replaced with PropagationPolicy
-      See https://github.com/kubernetes/kubernetes/issues/46659 for more info.
+      attribute is deprecated, and is now replaced with PropagationPolicy See
+      https://github.com/kubernetes/kubernetes/issues/46659 for more info.
+    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
+      currently ignores this setting, and deletes in the background. Please
+      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
+      collection/ for more information.
   """
 
-  name = _messages.StringField(1, required=True)
-  orphanDependents = _messages.BooleanField(2)
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  orphanDependents = _messages.BooleanField(4)
+  propagationPolicy = _messages.StringField(5)
 
 
 class RunNamespacesDomainmappingsGetRequest(_messages.Message):
@@ -1918,33 +1930,29 @@ class RunNamespacesDomainmappingsListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
-class RunNamespacesDomainmappingsReplaceDomainMappingRequest(_messages.Message):
-  r"""A RunNamespacesDomainmappingsReplaceDomainMappingRequest object.
-
-  Fields:
-    domainMapping: A DomainMapping resource to be passed as the request body.
-    name: The name of the domain mapping being retrieved. If needed, replace
-      {namespace_id} with the project ID.
-  """
-
-  domainMapping = _messages.MessageField('DomainMapping', 1)
-  name = _messages.StringField(2, required=True)
-
-
 class RunNamespacesRevisionsDeleteRequest(_messages.Message):
   r"""A RunNamespacesRevisionsDeleteRequest object.
 
   Fields:
+    apiVersion: Cloud Run currently ignores this parameter.
+    kind: Cloud Run currently ignores this parameter.
     name: The name of the revision being deleted. If needed, replace
       {namespace_id} with the project ID.
     orphanDependents: Deprecated. Specifies the cascade behavior on delete.
       Cloud Run only supports cascading behavior, so this must be false. This
-      attribute is deprecated, and might be replaced with PropagationPolicy
-      See https://github.com/kubernetes/kubernetes/issues/46659 for more info.
+      attribute is deprecated, and is now replaced with PropagationPolicy See
+      https://github.com/kubernetes/kubernetes/issues/46659 for more info.
+    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
+      currently ignores this setting, and deletes in the background. Please
+      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
+      collection/ for more information.
   """
 
-  name = _messages.StringField(1, required=True)
-  orphanDependents = _messages.BooleanField(2)
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  orphanDependents = _messages.BooleanField(4)
+  propagationPolicy = _messages.StringField(5)
 
 
 class RunNamespacesRevisionsGetRequest(_messages.Message):
@@ -2046,16 +2054,25 @@ class RunNamespacesServicesDeleteRequest(_messages.Message):
   r"""A RunNamespacesServicesDeleteRequest object.
 
   Fields:
+    apiVersion: Cloud Run currently ignores this parameter.
+    kind: Cloud Run currently ignores this parameter.
     name: The name of the service being deleted. If needed, replace
       {namespace_id} with the project ID.
     orphanDependents: Deprecated. Specifies the cascade behavior on delete.
       Cloud Run only supports cascading behavior, so this must be false. This
-      attribute is deprecated, and might be replaced with PropagationPolicy
-      See https://github.com/kubernetes/kubernetes/issues/46659 for more info.
+      attribute is deprecated, and is now replaced with PropagationPolicy See
+      https://github.com/kubernetes/kubernetes/issues/46659 for more info.
+    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
+      currently ignores this setting, and deletes in the background. Please
+      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
+      collection/ for more information.
   """
 
-  name = _messages.StringField(1, required=True)
-  orphanDependents = _messages.BooleanField(2)
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  orphanDependents = _messages.BooleanField(4)
+  propagationPolicy = _messages.StringField(5)
 
 
 class RunNamespacesServicesGetRequest(_messages.Message):
@@ -2099,19 +2116,6 @@ class RunNamespacesServicesListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
-class RunNamespacesServicesPatchRequest(_messages.Message):
-  r"""A RunNamespacesServicesPatchRequest object.
-
-  Fields:
-    httpBody: A HttpBody resource to be passed as the request body.
-    name: The name of the service being patched. If needed, replace
-      {namespace_id} with the project ID.
-  """
-
-  httpBody = _messages.MessageField('HttpBody', 1)
-  name = _messages.StringField(2, required=True)
-
-
 class RunNamespacesServicesReplaceServiceRequest(_messages.Message):
   r"""A RunNamespacesServicesReplaceServiceRequest object.
 
@@ -2123,6 +2127,93 @@ class RunNamespacesServicesReplaceServiceRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   service = _messages.MessageField('Service', 2)
+
+
+class RunNamespacesTriggersCreateRequest(_messages.Message):
+  r"""A RunNamespacesTriggersCreateRequest object.
+
+  Fields:
+    parent: The project ID or project number in which this trigger should be
+      created.
+    trigger: A Trigger resource to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  trigger = _messages.MessageField('Trigger', 2)
+
+
+class RunNamespacesTriggersDeleteRequest(_messages.Message):
+  r"""A RunNamespacesTriggersDeleteRequest object.
+
+  Fields:
+    apiVersion: Cloud Run currently ignores this parameter.
+    kind: Cloud Run currently ignores this parameter.
+    name: The name of the trigger being deleted. If needed, replace
+      {namespace_id} with the project ID.
+    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
+      currently ignores this setting, and deletes in the background. Please
+      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
+      collection/ for more information.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  propagationPolicy = _messages.StringField(4)
+
+
+class RunNamespacesTriggersGetRequest(_messages.Message):
+  r"""A RunNamespacesTriggersGetRequest object.
+
+  Fields:
+    name: The name of the trigger being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RunNamespacesTriggersListRequest(_messages.Message):
+  r"""A RunNamespacesTriggersListRequest object.
+
+  Fields:
+    continue_: Optional encoded string to continue paging.
+    fieldSelector: Allows to filter resources based on a specific value for a
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
+    labelSelector: Allows to filter resources based on a label. Supported
+      operations are =, !=, exists, in, and notIn.
+    limit: The maximum number of records that should be returned.
+    parent: The project ID or project number from which the triggers should be
+      listed.
+    resourceVersion: The baseline resource version from which the list or
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
+  """
+
+  continue_ = _messages.StringField(1)
+  fieldSelector = _messages.StringField(2)
+  includeUninitialized = _messages.BooleanField(3)
+  labelSelector = _messages.StringField(4)
+  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(6, required=True)
+  resourceVersion = _messages.StringField(7)
+  watch = _messages.BooleanField(8)
+
+
+class RunNamespacesTriggersReplaceTriggerRequest(_messages.Message):
+  r"""A RunNamespacesTriggersReplaceTriggerRequest object.
+
+  Fields:
+    name: The name of the trigger being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+    trigger: A Trigger resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  trigger = _messages.MessageField('Trigger', 2)
 
 
 class RunProjectsLocationsAuthorizeddomainsListRequest(_messages.Message):
@@ -2197,16 +2288,25 @@ class RunProjectsLocationsDomainmappingsDeleteRequest(_messages.Message):
   r"""A RunProjectsLocationsDomainmappingsDeleteRequest object.
 
   Fields:
+    apiVersion: Cloud Run currently ignores this parameter.
+    kind: Cloud Run currently ignores this parameter.
     name: The name of the domain mapping being deleted. If needed, replace
       {namespace_id} with the project ID.
     orphanDependents: Deprecated. Specifies the cascade behavior on delete.
       Cloud Run only supports cascading behavior, so this must be false. This
-      attribute is deprecated, and might be replaced with PropagationPolicy
-      See https://github.com/kubernetes/kubernetes/issues/46659 for more info.
+      attribute is deprecated, and is now replaced with PropagationPolicy See
+      https://github.com/kubernetes/kubernetes/issues/46659 for more info.
+    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
+      currently ignores this setting, and deletes in the background. Please
+      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
+      collection/ for more information.
   """
 
-  name = _messages.StringField(1, required=True)
-  orphanDependents = _messages.BooleanField(2)
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  orphanDependents = _messages.BooleanField(4)
+  propagationPolicy = _messages.StringField(5)
 
 
 class RunProjectsLocationsDomainmappingsGetRequest(_messages.Message):
@@ -2250,19 +2350,6 @@ class RunProjectsLocationsDomainmappingsListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
-class RunProjectsLocationsDomainmappingsReplaceDomainMappingRequest(_messages.Message):
-  r"""A RunProjectsLocationsDomainmappingsReplaceDomainMappingRequest object.
-
-  Fields:
-    domainMapping: A DomainMapping resource to be passed as the request body.
-    name: The name of the domain mapping being retrieved. If needed, replace
-      {namespace_id} with the project ID.
-  """
-
-  domainMapping = _messages.MessageField('DomainMapping', 1)
-  name = _messages.StringField(2, required=True)
-
-
 class RunProjectsLocationsListRequest(_messages.Message):
   r"""A RunProjectsLocationsListRequest object.
 
@@ -2283,16 +2370,25 @@ class RunProjectsLocationsRevisionsDeleteRequest(_messages.Message):
   r"""A RunProjectsLocationsRevisionsDeleteRequest object.
 
   Fields:
+    apiVersion: Cloud Run currently ignores this parameter.
+    kind: Cloud Run currently ignores this parameter.
     name: The name of the revision being deleted. If needed, replace
       {namespace_id} with the project ID.
     orphanDependents: Deprecated. Specifies the cascade behavior on delete.
       Cloud Run only supports cascading behavior, so this must be false. This
-      attribute is deprecated, and might be replaced with PropagationPolicy
-      See https://github.com/kubernetes/kubernetes/issues/46659 for more info.
+      attribute is deprecated, and is now replaced with PropagationPolicy See
+      https://github.com/kubernetes/kubernetes/issues/46659 for more info.
+    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
+      currently ignores this setting, and deletes in the background. Please
+      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
+      collection/ for more information.
   """
 
-  name = _messages.StringField(1, required=True)
-  orphanDependents = _messages.BooleanField(2)
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  orphanDependents = _messages.BooleanField(4)
+  propagationPolicy = _messages.StringField(5)
 
 
 class RunProjectsLocationsRevisionsGetRequest(_messages.Message):
@@ -2394,16 +2490,25 @@ class RunProjectsLocationsServicesDeleteRequest(_messages.Message):
   r"""A RunProjectsLocationsServicesDeleteRequest object.
 
   Fields:
+    apiVersion: Cloud Run currently ignores this parameter.
+    kind: Cloud Run currently ignores this parameter.
     name: The name of the service being deleted. If needed, replace
       {namespace_id} with the project ID.
     orphanDependents: Deprecated. Specifies the cascade behavior on delete.
       Cloud Run only supports cascading behavior, so this must be false. This
-      attribute is deprecated, and might be replaced with PropagationPolicy
-      See https://github.com/kubernetes/kubernetes/issues/46659 for more info.
+      attribute is deprecated, and is now replaced with PropagationPolicy See
+      https://github.com/kubernetes/kubernetes/issues/46659 for more info.
+    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
+      currently ignores this setting, and deletes in the background. Please
+      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
+      collection/ for more information.
   """
 
-  name = _messages.StringField(1, required=True)
-  orphanDependents = _messages.BooleanField(2)
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  orphanDependents = _messages.BooleanField(4)
+  propagationPolicy = _messages.StringField(5)
 
 
 class RunProjectsLocationsServicesGetIamPolicyRequest(_messages.Message):
@@ -2459,19 +2564,6 @@ class RunProjectsLocationsServicesListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
-class RunProjectsLocationsServicesPatchRequest(_messages.Message):
-  r"""A RunProjectsLocationsServicesPatchRequest object.
-
-  Fields:
-    httpBody: A HttpBody resource to be passed as the request body.
-    name: The name of the service being patched. If needed, replace
-      {namespace_id} with the project ID.
-  """
-
-  httpBody = _messages.MessageField('HttpBody', 1)
-  name = _messages.StringField(2, required=True)
-
-
 class RunProjectsLocationsServicesReplaceServiceRequest(_messages.Message):
   r"""A RunProjectsLocationsServicesReplaceServiceRequest object.
 
@@ -2513,6 +2605,93 @@ class RunProjectsLocationsServicesTestIamPermissionsRequest(_messages.Message):
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class RunProjectsLocationsTriggersCreateRequest(_messages.Message):
+  r"""A RunProjectsLocationsTriggersCreateRequest object.
+
+  Fields:
+    parent: The project ID or project number in which this trigger should be
+      created.
+    trigger: A Trigger resource to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  trigger = _messages.MessageField('Trigger', 2)
+
+
+class RunProjectsLocationsTriggersDeleteRequest(_messages.Message):
+  r"""A RunProjectsLocationsTriggersDeleteRequest object.
+
+  Fields:
+    apiVersion: Cloud Run currently ignores this parameter.
+    kind: Cloud Run currently ignores this parameter.
+    name: The name of the trigger being deleted. If needed, replace
+      {namespace_id} with the project ID.
+    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
+      currently ignores this setting, and deletes in the background. Please
+      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
+      collection/ for more information.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  propagationPolicy = _messages.StringField(4)
+
+
+class RunProjectsLocationsTriggersGetRequest(_messages.Message):
+  r"""A RunProjectsLocationsTriggersGetRequest object.
+
+  Fields:
+    name: The name of the trigger being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RunProjectsLocationsTriggersListRequest(_messages.Message):
+  r"""A RunProjectsLocationsTriggersListRequest object.
+
+  Fields:
+    continue_: Optional encoded string to continue paging.
+    fieldSelector: Allows to filter resources based on a specific value for a
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
+    labelSelector: Allows to filter resources based on a label. Supported
+      operations are =, !=, exists, in, and notIn.
+    limit: The maximum number of records that should be returned.
+    parent: The project ID or project number from which the triggers should be
+      listed.
+    resourceVersion: The baseline resource version from which the list or
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
+  """
+
+  continue_ = _messages.StringField(1)
+  fieldSelector = _messages.StringField(2)
+  includeUninitialized = _messages.BooleanField(3)
+  labelSelector = _messages.StringField(4)
+  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(6, required=True)
+  resourceVersion = _messages.StringField(7)
+  watch = _messages.BooleanField(8)
+
+
+class RunProjectsLocationsTriggersReplaceTriggerRequest(_messages.Message):
+  r"""A RunProjectsLocationsTriggersReplaceTriggerRequest object.
+
+  Fields:
+    name: The name of the trigger being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+    trigger: A Trigger resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  trigger = _messages.MessageField('Trigger', 2)
 
 
 class SELinuxOptions(_messages.Message):
@@ -2665,22 +2844,43 @@ class ServiceSpec(_messages.Message):
     generation: Deprecated and not currently populated by Cloud Run. See
       metadata.generation instead, which is the sequence number containing the
       latest generation of the desired state.  Read-only.
+    manual: Manual contains the options for configuring a manual service. See
+      ServiceSpec for more details.  Not currently supported by Cloud Run.
     pinned: Pins this service to a specific revision name. The revision must
-      be owned by the configuration provided.  Not currently supported by
+      be owned by the configuration provided.  Deprecated and not supported by
       Cloud Run. +optional
+    release: Release enables gradual promotion of new revisions by allowing
+      traffic to be split between two revisions. This type replaces the
+      deprecated Pinned type.  Not currently supported by Cloud Run.
     runLatest: RunLatest defines a simple Service. It will automatically
       configure a route that keeps the latest ready revision from the supplied
       configuration running. +optional
+    traffic: Traffic specifies how to distribute traffic over a collection of
+      Knative Revisions and Configurations. This will replace existing service
+      specs (ServiceSpecRunLatest, ServiceSpecPinnedType,
+      ServiceSpecReleaseType, and ServiceSpecManualType).  Not currently
+      supported by Cloud Run.
   """
 
   generation = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pinned = _messages.MessageField('ServiceSpecPinnedType', 2)
-  runLatest = _messages.MessageField('ServiceSpecRunLatest', 3)
+  manual = _messages.MessageField('ServiceSpecManualType', 2)
+  pinned = _messages.MessageField('ServiceSpecPinnedType', 3)
+  release = _messages.MessageField('ServiceSpecReleaseType', 4)
+  runLatest = _messages.MessageField('ServiceSpecRunLatest', 5)
+  traffic = _messages.MessageField('TrafficTarget', 6, repeated=True)
+
+
+class ServiceSpecManualType(_messages.Message):
+  r"""ServiceSpecManualType contains the options for configuring a manual
+  service. See ServiceSpec for more details.  Not currently supported by Cloud
+  Run.
+  """
+
 
 
 class ServiceSpecPinnedType(_messages.Message):
   r"""ServiceSpecPinnedType Pins this service to a specific revision name. The
-  revision must be owned by the configuration provided.  Not currently
+  revision must be owned by the configuration provided.  Deprecated and not
   supported by Cloud Run.
 
   Fields:
@@ -2691,6 +2891,29 @@ class ServiceSpecPinnedType(_messages.Message):
 
   configuration = _messages.MessageField('ConfigurationSpec', 1)
   revisionName = _messages.StringField(2)
+
+
+class ServiceSpecReleaseType(_messages.Message):
+  r"""ServiceSpecReleaseType contains the options for slowly releasing
+  revisions. See ServiceSpec for more details.  Not currently supported by
+  Cloud Run.
+
+  Fields:
+    configuration: The configuration for this service. All revisions from this
+      service must come from a single configuration.
+    revisions: Revisions is an ordered list of 1 or 2 revisions. The first is
+      the current revision, and the second is the candidate revision. If a
+      single revision is provided, traffic will be pinned at that revision.
+      "@latest" is a shortcut for usage that refers to the latest created
+      revision by the configuration.
+    rolloutPercent: RolloutPercent is the percent of traffic that should be
+      sent to the candidate revision, i.e. the 2nd revision in the revisions
+      list. Valid values are between 0 and 99 inclusive.
+  """
+
+  configuration = _messages.MessageField('ConfigurationSpec', 1)
+  revisions = _messages.StringField(2, repeated=True)
+  rolloutPercent = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class ServiceSpecRunLatest(_messages.Message):
@@ -2823,6 +3046,21 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class SubscriberSpec(_messages.Message):
+  r"""A SubscriberSpec object.
+
+  Fields:
+    ref: Reference to an object that will be used to find the target endpoint,
+      which should implement the Addressable duck type. For example, this
+      could be a reference to a Route resource or a Knative Service resource.
+    uri: Reference to a 'known' endpoint where no resolving is done. http
+      ://k8s-service for example http://myexternalhandler.example.com/foo/bar
+  """
+
+  ref = _messages.MessageField('ObjectReference', 1)
+  uri = _messages.StringField(2)
+
+
 class TCPSocketAction(_messages.Message):
   r"""TCPSocketAction describes an action based on opening a socket
 
@@ -2887,6 +3125,109 @@ class TrafficTarget(_messages.Message):
   name = _messages.StringField(2)
   percent = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   revisionName = _messages.StringField(4)
+
+
+class Trigger(_messages.Message):
+  r"""A Trigger object.
+
+  Fields:
+    apiVersion: The API version for this call such as "v1alpha1".
+    kind: The kind of resource, in this case "Trigger".
+    metadata: Metadata associated with this Trigger.
+    spec: Spec defines the desired state of the Trigger.
+    status: Status represents the current state of the Trigger. This data may
+      be out of date. +optional
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  metadata = _messages.MessageField('ObjectMeta', 3)
+  spec = _messages.MessageField('TriggerSpec', 4)
+  status = _messages.MessageField('TriggerStatus', 5)
+
+
+class TriggerCondition(_messages.Message):
+  r"""TriggerCondition contains state information for an Trigger.
+
+  Fields:
+    lastTransitionTime: Last time the condition transitioned from one status
+      to another. +optional
+    message: Human readable message indicating details about the current
+      status. +optional
+    reason: One-word CamelCase reason for the condition's current status.
+      +optional
+    status: Status of the condition, one of True, False, Unknown.
+    type: Type of Trigger condition.
+  """
+
+  lastTransitionTime = _messages.StringField(1)
+  message = _messages.StringField(2)
+  reason = _messages.StringField(3)
+  status = _messages.StringField(4)
+  type = _messages.StringField(5)
+
+
+class TriggerFilter(_messages.Message):
+  r"""A TriggerFilter object.
+
+  Fields:
+    sourceAndType: A TriggerFilterSourceAndType attribute.
+  """
+
+  sourceAndType = _messages.MessageField('TriggerFilterSourceAndType', 1)
+
+
+class TriggerFilterSourceAndType(_messages.Message):
+  r"""TriggerFilterSourceAndType filters events based on exact matches on the
+  cloud event's type and source attributes. Only exact matches will pass the
+  filter.
+
+  Fields:
+    source: A string attribute.
+    type: A string attribute.
+  """
+
+  source = _messages.StringField(1)
+  type = _messages.StringField(2)
+
+
+class TriggerSpec(_messages.Message):
+  r"""The desired state of the Trigger.
+
+  Fields:
+    broker: Broker is the broker that this trigger receives events from. If
+      not specified, will default to 'default'.  Not currently supported by
+      Cloud Run.
+    filter: Filter is the filter to apply against all events from the Broker.
+      Only events that pass this filter will be sent to the Subscriber. If not
+      specified, will default to allowing all events.  This must be specified
+      in Cloud Run.
+    subscriber: Subscriber is the addressable that receives events from the
+      Broker that pass the Filter. It is required.  E.g. https://us-
+      central1-myproject.cloudfunctions.net/myfunction or /namespaces/my-
+      project/services/my-service.
+  """
+
+  broker = _messages.StringField(1)
+  filter = _messages.MessageField('TriggerFilter', 2)
+  subscriber = _messages.MessageField('SubscriberSpec', 3)
+
+
+class TriggerStatus(_messages.Message):
+  r"""TriggerStatus represents the current state of a Trigger.
+
+  Fields:
+    conditions: Array of observed TriggerConditions, indicating the current
+      state of the Trigger.
+    observedGeneration: ObservedGeneration is the 'Generation' of the Trigger
+      that was last processed by the controller.
+    subscriberUri: SubscriberURI is the resolved URI of the receiver for this
+      Trigger.
+  """
+
+  conditions = _messages.MessageField('TriggerCondition', 1, repeated=True)
+  observedGeneration = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  subscriberUri = _messages.StringField(3)
 
 
 class VolumeDevice(_messages.Message):

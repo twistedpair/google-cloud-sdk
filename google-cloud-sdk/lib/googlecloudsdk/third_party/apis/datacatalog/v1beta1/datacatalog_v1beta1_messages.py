@@ -58,9 +58,9 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesPatchRequest(_messages.Messa
   Fields:
     googleCloudDatacatalogV1beta1Entry: A GoogleCloudDatacatalogV1beta1Entry
       resource to be passed as the request body.
-    name: Output only. The Data Catalog resource name of the entry in URL
-      format. For example, "projects/{project_id}/locations/{location}/entryGr
-      oups/{entry_group_id}/entries/{entry_id}".
+    name: The Data Catalog resource name of the entry in URL format. For
+      example, "projects/{project_id}/locations/{location}/entryGroups/{entry_
+      group_id}/entries/{entry_id}".
     updateMask: The fields to update on the entry.  If absent or empty, all
       modifiable fields are updated.  Modifiable fields in synced entries:  1.
       schema (Pub/Sub topics only)  Modifiable fields in native entries:  1.
@@ -147,9 +147,9 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
       resource. For example, the `linked_resource` for a table resource from
       BigQuery is:  "//bigquery.googleapis.com/projects/projectId/datasets/dat
       asetId/tables/tableId".
-    name: Output only. The Data Catalog resource name of the entry in URL
-      format. For example, "projects/{project_id}/locations/{location}/entryGr
-      oups/{entry_group_id}/entries/{entry_id}".
+    name: The Data Catalog resource name of the entry in URL format. For
+      example, "projects/{project_id}/locations/{location}/entryGroups/{entry_
+      group_id}/entries/{entry_id}".
     schema: Schema of the entry.
     sourceSystemTimestamps: Output only. Timestamps about the underlying
       Google Cloud Platform resource -- not about this Data Catalog Entry.

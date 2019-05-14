@@ -640,6 +640,14 @@ def _PolicyContainsCondition(policy):
   return False
 
 
+def BindingInPolicy(policy, member, role):
+  """Returns True if policy contains the specified binding."""
+  for binding in policy.bindings:
+    if binding.role == role and member in binding.members:
+      return True
+  return False
+
+
 def RemoveBindingFromIamPolicy(policy, member, role):
   """Given an IAM policy, remove bindings as specified by the args.
 

@@ -115,7 +115,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The Data Catalog resource name of the entry in URL format. For\nexample,\n\"projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id}\".",
+          "description": "The Data Catalog resource name of the entry in URL format. For example,\n\"projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id}\".",
           "type": "string"
         },
         "linkedResource": {
@@ -277,7 +277,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Output only. The Data Catalog resource name of the entry in URL format. For\nexample,\n\"projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id}\".",
+                          "description": "The Data Catalog resource name of the entry in URL format. For example,\n\"projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id}\".",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",

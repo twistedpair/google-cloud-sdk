@@ -30,8 +30,11 @@ class AcceleratorConfig(_messages.Message):
 
 
 class AcceleratorType(_messages.Message):
-  r"""An Accelerator Type resource. (== resource_for beta.acceleratorTypes ==)
-  (== resource_for v1.acceleratorTypes ==)
+  r"""Represents an Accelerator Type resource.  Google Cloud Platform provides
+  graphics processing units (accelerators) that you can add to VM instances to
+  improve or accelerate performance when working with intensive workloads. For
+  more information, read GPUs on Compute Engine. (== resource_for
+  beta.acceleratorTypes ==) (== resource_for v1.acceleratorTypes ==)
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -476,8 +479,8 @@ class AccessConfig(_messages.Message):
     kind: [Output Only] Type of the resource. Always compute#accessConfig for
       access configs.
     name: The name of this access configuration. The default and recommended
-      name is External NAT but you can use any arbitrary string you would
-      like. For example, My external IP or Network Access.
+      name is External NAT, but you can use any arbitrary string, such as My
+      external IP or Network Access.
     natIP: An external IP address associated with this instance. Specify an
       unused static external IP address available to the project or leave this
       field undefined to use an IP from a shared ephemeral IP address pool. If
@@ -490,9 +493,9 @@ class AccessConfig(_messages.Message):
       AccessConfig with a valid external IP address is specified, it must
       match that of the networkTier associated with the Address resource
       owning that IP.
-    publicPtrDomainName: The DNS domain name for the public PTR record. This
-      field can only be set when the set_public_ptr field is enabled.
-    setPublicPtr: Specifies whether a public DNS ?PTR? record should be
+    publicPtrDomainName: The DNS domain name for the public PTR record. You
+      can set this field only if the `setPublicPtr` field is enabled.
+    setPublicPtr: Specifies whether a public DNS 'PTR' record should be
       created to map the external IP address of the instance to a DNS domain
       name.
     type: The type of configuration. The default and only option is
@@ -533,26 +536,43 @@ class AccessConfig(_messages.Message):
 
 
 class Address(_messages.Message):
-  r"""A reserved address resource. (== resource_for beta.addresses ==) (==
-  resource_for v1.addresses ==) (== resource_for beta.globalAddresses ==) (==
-  resource_for v1.globalAddresses ==)
+  r"""Represents an IP Address resource.  An address resource represents a
+  regional internal IP address. Regional internal IP addresses are RFC 1918
+  addresses that come from either a primary or secondary IP range of a subnet
+  in a VPC network. Regional external IP addresses can be assigned to GCP VM
+  instances, Cloud VPN gateways, regional external forwarding rules for
+  network load balancers (in either Standard or Premium Tier), and regional
+  external forwarding rules for HTTP(S), SSL Proxy, and TCP Proxy load
+  balancers in Standard Tier. For more information, read IP addresses.  A
+  globalAddresses resource represent a global external IP address. Global
+  external IP addresses are IPv4 or IPv6 addresses. They can only be assigned
+  to global forwarding rules for HTTP(S), SSL Proxy, or TCP Proxy load
+  balancers in Premium Tier. For more information, read Global resources. (==
+  resource_for beta.addresses ==) (== resource_for v1.addresses ==) (==
+  resource_for beta.globalAddresses ==) (== resource_for v1.globalAddresses
+  ==)
 
   Enums:
     AddressTypeValueValuesEnum: The type of address to reserve, either
       INTERNAL or EXTERNAL. If unspecified, defaults to EXTERNAL.
-    IpVersionValueValuesEnum: The IP Version that will be used by this
+    IpVersionValueValuesEnum: The IP version that will be used by this
       address. Valid options are IPV4 or IPV6. This can only be specified for
       a global address.
     NetworkTierValueValuesEnum: This signifies the networking tier used for
-      configuring this Address and can only take the following values:
-      PREMIUM, STANDARD. Global forwarding rules can only be Premium Tier.
-      Regional forwarding rules can be either Premium or Standard Tier.
-      Standard Tier addresses applied to regional forwarding rules can be used
-      with any external load balancer. Regional forwarding rules in Premium
-      Tier can only be used with a Network load balancer.  If this field is
-      not specified, it is assumed to be PREMIUM.
-    PurposeValueValuesEnum: The purpose of resource, only used with INTERNAL
-      type.
+      configuring this address and can only take the following values: PREMIUM
+      or STANDARD. Global forwarding rules can only be Premium Tier. Regional
+      forwarding rules can be either Premium or Standard Tier. Standard Tier
+      addresses applied to regional forwarding rules can be used with any
+      external load balancer. Regional forwarding rules in Premium Tier can
+      only be used with a network load balancer.  If this field is not
+      specified, it is assumed to be PREMIUM.
+    PurposeValueValuesEnum: The purpose of this resource, which can be one of
+      the following values:   - `GCE_ENDPOINT` for addresses that are used by
+      VM instances, alias IP ranges, internal load balancers, and similar
+      resources.  - `DNS_RESOLVER` for a DNS resolver address in a subnetwork
+      - `VPC_PEERING` for addresses that are reserved for VPC peer networks.
+      - `NAT_AUTO` for addresses that are external IP addresses automatically
+      reserved for Cloud NAT.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
       be one of RESERVING, RESERVED, or IN_USE. An address that is RESERVING
       is currently in the process of being reserved. A RESERVED address is
@@ -565,37 +585,42 @@ class Address(_messages.Message):
       If unspecified, defaults to EXTERNAL.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
-    description: An optional description of this resource. Provide this
-      property when you create the resource.
+    description: An optional description of this resource. Provide this field
+      when you create the resource.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
-    ipVersion: The IP Version that will be used by this address. Valid options
+    ipVersion: The IP version that will be used by this address. Valid options
       are IPV4 or IPV6. This can only be specified for a global address.
     kind: [Output Only] Type of the resource. Always compute#address for
       addresses.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
-      character must be a lowercase letter, and all following characters must
-      be a dash, lowercase letter, or digit, except the last character, which
-      cannot be a dash.
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`. The first character
+      must be a lowercase letter, and all following characters (except for the
+      last character) must be a dash, lowercase letter, or digit. The last
+      character must be a lowercase letter or digit.
     network: The URL of the network in which to reserve the address. This
-      field can only be used with INTERNAL type with VPC_PEERING purpose.
+      field can only be used with INTERNAL type with the VPC_PEERING purpose.
     networkTier: This signifies the networking tier used for configuring this
-      Address and can only take the following values: PREMIUM, STANDARD.
+      address and can only take the following values: PREMIUM or STANDARD.
       Global forwarding rules can only be Premium Tier. Regional forwarding
       rules can be either Premium or Standard Tier. Standard Tier addresses
       applied to regional forwarding rules can be used with any external load
       balancer. Regional forwarding rules in Premium Tier can only be used
-      with a Network load balancer.  If this field is not specified, it is
+      with a network load balancer.  If this field is not specified, it is
       assumed to be PREMIUM.
     prefixLength: The prefix length if the resource reprensents an IP range.
-    purpose: The purpose of resource, only used with INTERNAL type.
-    region: [Output Only] URL of the region where the regional address
+    purpose: The purpose of this resource, which can be one of the following
+      values:   - `GCE_ENDPOINT` for addresses that are used by VM instances,
+      alias IP ranges, internal load balancers, and similar resources.  -
+      `DNS_RESOLVER` for a DNS resolver address in a subnetwork  -
+      `VPC_PEERING` for addresses that are reserved for VPC peer networks.  -
+      `NAT_AUTO` for addresses that are external IP addresses automatically
+      reserved for Cloud NAT.
+    region: [Output Only] The URL of the region where the regional address
       resides. This field is not applicable to global addresses. You must
-      specify this field as part of the HTTP request URL. You cannot set this
-      field in the request body.
+      specify this field as part of the HTTP request URL.
     selfLink: [Output Only] Server-defined URL for the resource.
     status: [Output Only] The status of the address, which can be one of
       RESERVING, RESERVED, or IN_USE. An address that is RESERVING is
@@ -604,8 +629,8 @@ class Address(_messages.Message):
       being used by another resource and is not available.
     subnetwork: The URL of the subnetwork in which to reserve the address. If
       an IP address is specified, it must be within the subnetwork's IP range.
-      This field can only be used with INTERNAL type with
-      GCE_ENDPOINT/DNS_RESOLVER purposes.
+      This field can only be used with INTERNAL type with a GCE_ENDPOINT or
+      DNS_RESOLVER purpose.
     users: [Output Only] The URLs of the resources that are using this
       address.
   """
@@ -624,7 +649,7 @@ class Address(_messages.Message):
     UNSPECIFIED_TYPE = 2
 
   class IpVersionValueValuesEnum(_messages.Enum):
-    r"""The IP Version that will be used by this address. Valid options are
+    r"""The IP version that will be used by this address. Valid options are
     IPV4 or IPV6. This can only be specified for a global address.
 
     Values:
@@ -637,12 +662,12 @@ class Address(_messages.Message):
     UNSPECIFIED_VERSION = 2
 
   class NetworkTierValueValuesEnum(_messages.Enum):
-    r"""This signifies the networking tier used for configuring this Address
-    and can only take the following values: PREMIUM, STANDARD. Global
+    r"""This signifies the networking tier used for configuring this address
+    and can only take the following values: PREMIUM or STANDARD. Global
     forwarding rules can only be Premium Tier. Regional forwarding rules can
     be either Premium or Standard Tier. Standard Tier addresses applied to
     regional forwarding rules can be used with any external load balancer.
-    Regional forwarding rules in Premium Tier can only be used with a Network
+    Regional forwarding rules in Premium Tier can only be used with a network
     load balancer.  If this field is not specified, it is assumed to be
     PREMIUM.
 
@@ -654,7 +679,13 @@ class Address(_messages.Message):
     STANDARD = 1
 
   class PurposeValueValuesEnum(_messages.Enum):
-    r"""The purpose of resource, only used with INTERNAL type.
+    r"""The purpose of this resource, which can be one of the following
+    values:   - `GCE_ENDPOINT` for addresses that are used by VM instances,
+    alias IP ranges, internal load balancers, and similar resources.  -
+    `DNS_RESOLVER` for a DNS resolver address in a subnetwork  - `VPC_PEERING`
+    for addresses that are reserved for VPC peer networks.  - `NAT_AUTO` for
+    addresses that are external IP addresses automatically reserved for Cloud
+    NAT.
 
     Values:
       DNS_RESOLVER: <no description>
@@ -1096,15 +1127,14 @@ class AliasIpRange(_messages.Message):
   r"""An alias IP range attached to an instance's network interface.
 
   Fields:
-    ipCidrRange: The IP CIDR range represented by this alias IP range. This IP
+    ipCidrRange: The IP alias ranges to allocate for this interface. This IP
       CIDR range must belong to the specified subnetwork and cannot contain IP
       addresses reserved by system or used by other network interfaces. This
-      range may be a single IP address (e.g. 10.2.3.4), a netmask (e.g. /24)
-      or a CIDR format string (e.g. 10.1.2.0/24).
-    subnetworkRangeName: Optional subnetwork secondary range name specifying
-      the secondary range from which to allocate the IP CIDR range for this
-      alias IP range. If left unspecified, the primary range of the subnetwork
-      will be used.
+      range may be a single IP address (such as 10.2.3.4), a netmask (such as
+      /24) or a CIDR-formatted string (such as 10.1.2.0/24).
+    subnetworkRangeName: The name of a subnetwork secondary IP range from
+      which to allocate an IP alias range. If not specified, the primary range
+      of the subnetwork is used.
   """
 
   ipCidrRange = _messages.StringField(1)
@@ -1293,6 +1323,14 @@ class AttachedDiskInitializeParams(_messages.Message):
       supplied encryption keys, so you cannot create disks for instances in a
       managed instance group if the source images are encrypted with your own
       keys.
+    sourceSnapshot: The source snapshot to create this disk. When creating a
+      new instance, one of initializeParams.sourceSnapshot or disks.source is
+      required except for local SSD.  To create a disk with a snapshot that
+      you created, specify the snapshot name in the following format:
+      global/snapshots/my-backup   If the source snapshot is deleted later,
+      this field will not be set.
+    sourceSnapshotEncryptionKey: The customer-supplied encryption key of the
+      source snapshot.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1328,6 +1366,8 @@ class AttachedDiskInitializeParams(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   sourceImage = _messages.StringField(6)
   sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 7)
+  sourceSnapshot = _messages.StringField(8)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 9)
 
 
 class AuditConfig(_messages.Message):
@@ -1426,12 +1466,14 @@ class AuthorizationLoggingOptions(_messages.Message):
 
 
 class Autoscaler(_messages.Message):
-  r"""Represents an Autoscaler resource. Autoscalers allow you to
-  automatically scale virtual machine instances in managed instance groups
-  according to an autoscaling policy that you define. For more information,
-  read Autoscaling Groups of Instances. (== resource_for beta.autoscalers ==)
-  (== resource_for v1.autoscalers ==) (== resource_for beta.regionAutoscalers
-  ==) (== resource_for v1.regionAutoscalers ==)
+  r"""Represents an Autoscaler resource.    Use autoscalers to automatically
+  add or delete instances from a managed instance group according to your
+  defined autoscaling policy. For more information, read Autoscaling Groups of
+  Instances.  For zonal managed instance groups resource, use the autoscaler
+  resource.  For regional managed instance groups, use the regionAutoscalers
+  resource. (== resource_for beta.autoscalers ==) (== resource_for
+  v1.autoscalers ==) (== resource_for beta.regionAutoscalers ==) (==
+  resource_for v1.regionAutoscalers ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the autoscaler
@@ -3034,15 +3076,12 @@ class CacheKeyPolicy(_messages.Message):
 
 
 class Commitment(_messages.Message):
-  r"""Represents a Commitment resource. Creating a Commitment resource means
-  that you are purchasing a committed use contract with an explicit start and
-  end time. You can create commitments based on vCPUs and memory usage and
-  receive discounted rates. For full details, read Signing Up for Committed
-  Use Discounts.  Committed use discounts are subject to Google Cloud
-  Platform's Service Specific Terms. By purchasing a committed use discount,
-  you agree to these terms. Committed use discounts will not renew, so you
-  must purchase a new commitment to continue receiving discounts. (==
-  resource_for beta.commitments ==) (== resource_for v1.commitments ==)
+  r"""Represents a regional Commitment resource.  Creating a commitment
+  resource means that you are purchasing a committed use contract with an
+  explicit start and end time. You can create commitments based on vCPUs and
+  memory usage and receive discounted rates. For full details, read Signing Up
+  for Committed Use Discounts. (== resource_for beta.regionCommitments ==) (==
+  resource_for v1.regionCommitments ==)
 
   Enums:
     PlanValueValuesEnum: The plan for this commitment, which determines
@@ -4665,7 +4704,10 @@ class ComputeDisksCreateSnapshotRequest(_messages.Message):
 
   Fields:
     disk: Name of the persistent disk to snapshot.
-    guestFlush: Application consistent snapshot (ie. VSS).
+    guestFlush: [Input Only] Specifies to create an application consistent
+      snapshot by informing the OS to prepare for the snapshot process.
+      Currently only supported on Windows instances using the Volume Shadow
+      Copy Service (VSS).
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -15019,8 +15061,15 @@ class DeprecationStatus(_messages.Message):
 
 
 class Disk(_messages.Message):
-  r"""A Disk resource. (== resource_for beta.disks ==) (== resource_for
-  v1.disks ==)
+  r"""Represents a Persistent Disk resource.  Persistent disks are required
+  for running your VM instances. Create both boot and non-boot (data)
+  persistent disks. For more information, read Persistent Disks. For more
+  storage options, read Storage options.  The disks resource represents a
+  zonal persistent disk. For more information, read Zonal persistent disks.
+  The regionDisks resource represents a regional persistent disk. For more
+  information, read  Regional resources. (== resource_for beta.disks ==) (==
+  resource_for v1.disks ==) (== resource_for v1.regionDisks ==) (==
+  resource_for beta.regionDisks ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of disk creation.
@@ -15037,11 +15086,12 @@ class Disk(_messages.Message):
     diskEncryptionKey: Encrypts the disk using a customer-supplied encryption
       key.  After you encrypt a disk with a customer-supplied key, you must
       provide the same key if you use the disk later (e.g. to create a disk
-      snapshot or an image, or to attach the disk to a virtual machine).
-      Customer-supplied encryption keys do not protect access to metadata of
-      the disk.  If you do not provide an encryption key when creating the
-      disk, then the disk will be encrypted using an automatically generated
-      key and you do not need to provide a key to use the disk later.
+      snapshot, to create a disk image, to create a machine image, or to
+      attach the disk to a virtual machine).  Customer-supplied encryption
+      keys do not protect access to metadata of the disk.  If you do not
+      provide an encryption key when creating the disk, then the disk will be
+      encrypted using an automatically generated key and you do not need to
+      provide a key to use the disk later.
     guestOsFeatures: A list of features to enable on the guest operating
       system. Applicable only for bootable images. Read  Enabling guest
       operating system features to see a list of available options.
@@ -15583,8 +15633,14 @@ class DiskMoveRequest(_messages.Message):
 
 
 class DiskType(_messages.Message):
-  r"""A DiskType resource. (== resource_for beta.diskTypes ==) (==
-  resource_for v1.diskTypes ==)
+  r"""Represents a Disk Type resource.  You can choose from a variety of disk
+  types based on your needs. For more information, read Storage options.  The
+  diskTypes resource represents disk types for a zonal persistent disk. For
+  more information, read Zonal persistent disks.  The regionDiskTypes resource
+  represents disk types for a regional persistent disk. For more information,
+  read Regional persistent disks. (== resource_for beta.diskTypes ==) (==
+  resource_for v1.diskTypes ==) (== resource_for v1.regionDiskTypes ==) (==
+  resource_for beta.regionDiskTypes ==)
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -16188,9 +16244,10 @@ class Firewall(_messages.Message):
 
   Enums:
     DirectionValueValuesEnum: Direction of traffic to which this firewall
-      applies; default is INGRESS. Note: For INGRESS traffic, it is NOT
-      supported to specify destinationRanges; For EGRESS traffic, it is NOT
-      supported to specify sourceRanges OR sourceTags.
+      applies, either `INGRESS` or `EGRESS`. The default is `INGRESS`. For
+      `INGRESS` traffic, you cannot specify the destinationRanges field, and
+      for `EGRESS` traffic, you cannot specify the sourceRanges or sourceTags
+      fields.
 
   Messages:
     AllowedValueListEntry: A AllowedValueListEntry object.
@@ -16205,19 +16262,18 @@ class Firewall(_messages.Message):
     denied: The list of DENY rules specified by this firewall. Each rule
       specifies a protocol and port-range tuple that describes a denied
       connection.
-    description: An optional description of this resource. Provide this
-      property when you create the resource.
-    destinationRanges: If destination ranges are specified, the firewall will
-      apply only to traffic that has destination IP address in these ranges.
+    description: An optional description of this resource. Provide this field
+      when you create the resource.
+    destinationRanges: If destination ranges are specified, the firewall rule
+      applies only to traffic that has destination IP address in these ranges.
       These ranges must be expressed in CIDR format. Only IPv4 is supported.
-    direction: Direction of traffic to which this firewall applies; default is
-      INGRESS. Note: For INGRESS traffic, it is NOT supported to specify
-      destinationRanges; For EGRESS traffic, it is NOT supported to specify
-      sourceRanges OR sourceTags.
-    disabled: Denotes whether the firewall rule is disabled, i.e not applied
-      to the network it is associated with. When set to true, the firewall
-      rule is not enforced and the network behaves as if it did not exist. If
-      this is unspecified, the firewall rule will be enabled.
+    direction: Direction of traffic to which this firewall applies, either
+      `INGRESS` or `EGRESS`. The default is `INGRESS`. For `INGRESS` traffic,
+      you cannot specify the destinationRanges field, and for `EGRESS`
+      traffic, you cannot specify the sourceRanges or sourceTags fields.
+    disabled: Denotes whether the firewall rule is disabled. When set to true,
+      the firewall rule is not enforced and the network behaves as if it did
+      not exist. If this is unspecified, the firewall rule will be enabled.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#firewall for
@@ -16228,43 +16284,46 @@ class Firewall(_messages.Message):
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
-      character must be a lowercase letter, and all following characters must
-      be a dash, lowercase letter, or digit, except the last character, which
-      cannot be a dash.
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?. The first character must
+      be a lowercase letter, and all following characters (except for the last
+      character) must be a dash, lowercase letter, or digit. The last
+      character must be a lowercase letter or digit.
     network: URL of the network resource for this firewall rule. If not
       specified when creating a firewall rule, the default network is used:
-      global/networks/default If you choose to specify this property, you can
+      global/networks/default If you choose to specify this field, you can
       specify the network as a full or partial URL. For example, the following
       are all valid URLs:   -
       https://www.googleapis.com/compute/v1/projects/myproject/global/networks
       /my-network  - projects/myproject/global/networks/my-network  -
       global/networks/default
-    priority: Priority for this rule. This is an integer between 0 and 65535,
-      both inclusive. When not specified, the value assumed is 1000. Relative
-      priorities determine precedence of conflicting rules. Lower value of
-      priority implies higher precedence (eg, a rule with priority 0 has
-      higher precedence than a rule with priority 1). DENY rules take
-      precedence over ALLOW rules having equal priority.
+    priority: Priority for this rule. This is an integer between `0` and
+      `65535`, both inclusive. The default value is `1000`. Relative
+      priorities determine which rule takes effect if multiple rules apply.
+      Lower values indicate higher priority. For example, a rule with priority
+      `0` has higher precedence than a rule with priority `1`. DENY rules take
+      precedence over ALLOW rules if they have equal priority. Note that VPC
+      networks have implied rules with a priority of `65535`. To avoid
+      conflicts with the implied rules, use a priority number less than
+      `65535`.
     selfLink: [Output Only] Server-defined URL for the resource.
-    sourceRanges: If source ranges are specified, the firewall will apply only
-      to traffic that has source IP address in these ranges. These ranges must
-      be expressed in CIDR format. One or both of sourceRanges and sourceTags
-      may be set. If both properties are set, the firewall will apply to
-      traffic that has source IP address within sourceRanges OR the source IP
-      that belongs to a tag listed in the sourceTags property. The connection
-      does not need to match both properties for the firewall to apply. Only
-      IPv4 is supported.
+    sourceRanges: If source ranges are specified, the firewall rule applies
+      only to traffic that has a source IP address in these ranges. These
+      ranges must be expressed in CIDR format. One or both of sourceRanges and
+      sourceTags may be set. If both fields are set, the rule applies to
+      traffic that has a source IP address within sourceRanges OR a source IP
+      from a resource with a matching tag listed in the sourceTags field. The
+      connection does not need to match both fields for the rule to apply.
+      Only IPv4 is supported.
     sourceServiceAccounts: If source service accounts are specified, the
-      firewall will apply only to traffic originating from an instance with a
+      firewall rules apply only to traffic originating from an instance with a
       service account in this list. Source service accounts cannot be used to
       control traffic to an instance's external IP address because service
       accounts are associated with an instance, not an IP address.
       sourceRanges can be set at the same time as sourceServiceAccounts. If
-      both are set, the firewall will apply to traffic that has source IP
-      address within sourceRanges OR the source IP belongs to an instance with
-      service account listed in sourceServiceAccount. The connection does not
-      need to match both properties for the firewall to apply.
+      both are set, the firewall applies to traffic that has a source IP
+      address within the sourceRanges OR a source IP that belongs to an
+      instance with service account listed in sourceServiceAccount. The
+      connection does not need to match both fields for the firewall to apply.
       sourceServiceAccounts cannot be used at the same time as sourceTags or
       targetTags.
     sourceTags: If source tags are specified, the firewall rule applies only
@@ -16274,10 +16333,10 @@ class Firewall(_messages.Message):
       address, it only applies to traffic between instances in the same
       virtual network. Because tags are associated with instances, not IP
       addresses. One or both of sourceRanges and sourceTags may be set. If
-      both properties are set, the firewall will apply to traffic that has
-      source IP address within sourceRanges OR the source IP that belongs to a
-      tag listed in the sourceTags property. The connection does not need to
-      match both properties for the firewall to apply.
+      both fields are set, the firewall applies to traffic that has a source
+      IP address within sourceRanges OR a source IP from a resource with a
+      matching tag listed in the sourceTags field. The connection does not
+      need to match both fields for the firewall to apply.
     targetServiceAccounts: A list of service accounts indicating sets of
       instances located in the network that may make network connections as
       specified in allowed[]. targetServiceAccounts cannot be used at the same
@@ -16292,10 +16351,10 @@ class Firewall(_messages.Message):
   """
 
   class DirectionValueValuesEnum(_messages.Enum):
-    r"""Direction of traffic to which this firewall applies; default is
-    INGRESS. Note: For INGRESS traffic, it is NOT supported to specify
-    destinationRanges; For EGRESS traffic, it is NOT supported to specify
-    sourceRanges OR sourceTags.
+    r"""Direction of traffic to which this firewall applies, either `INGRESS`
+    or `EGRESS`. The default is `INGRESS`. For `INGRESS` traffic, you cannot
+    specify the destinationRanges field, and for `EGRESS` traffic, you cannot
+    specify the sourceRanges or sourceTags fields.
 
     Values:
       EGRESS: <no description>
@@ -16311,10 +16370,10 @@ class Firewall(_messages.Message):
       IPProtocol: The IP protocol to which this rule applies. The protocol
         type is required when creating a firewall rule. This value can either
         be one of the following well known protocol strings (tcp, udp, icmp,
-        esp, ah, ipip, sctp), or the IP protocol number.
+        esp, ah, ipip, sctp) or the IP protocol number.
       ports: An optional list of ports to which this rule applies. This field
-        is only applicable for UDP or TCP protocol. Each entry must be either
-        an integer or a range. If not specified, this rule applies to
+        is only applicable for the UDP or TCP protocol. Each entry must be
+        either an integer or a range. If not specified, this rule applies to
         connections through any port.  Example inputs include: ["22"],
         ["80","443"], and ["12345-12349"].
     """
@@ -16329,10 +16388,10 @@ class Firewall(_messages.Message):
       IPProtocol: The IP protocol to which this rule applies. The protocol
         type is required when creating a firewall rule. This value can either
         be one of the following well known protocol strings (tcp, udp, icmp,
-        esp, ah, ipip, sctp), or the IP protocol number.
+        esp, ah, ipip, sctp) or the IP protocol number.
       ports: An optional list of ports to which this rule applies. This field
-        is only applicable for UDP or TCP protocol. Each entry must be either
-        an integer or a range. If not specified, this rule applies to
+        is only applicable for the UDP or TCP protocol. Each entry must be
+        either an integer or a range. If not specified, this rule applies to
         connections through any port.  Example inputs include: ["22"],
         ["80","443"], and ["12345-12349"].
     """
@@ -18192,8 +18251,9 @@ class HttpsHealthCheckList(_messages.Message):
 
 
 class Image(_messages.Message):
-  r"""An Image resource. (== resource_for beta.images ==) (== resource_for
-  v1.images ==)
+  r"""Represents an Image resource.  You can use images to create boot disks
+  for your VM instances. For more information, read Images. (== resource_for
+  beta.images ==) (== resource_for v1.images ==)
 
   Enums:
     SourceTypeValueValuesEnum: The type of the image used to create this disk.
@@ -18542,8 +18602,10 @@ class ImageList(_messages.Message):
 
 
 class Instance(_messages.Message):
-  r"""An Instance resource. (== resource_for beta.instances ==) (==
-  resource_for v1.instances ==)
+  r"""Represents an Instance resource.  An instance is a virtual machine that
+  is hosted on Google Cloud Platform. For more information, read Virtual
+  Machine Instances. (== resource_for beta.instances ==) (== resource_for
+  v1.instances ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the instance. One of
@@ -18871,9 +18933,14 @@ class InstanceAggregatedList(_messages.Message):
 
 
 class InstanceGroup(_messages.Message):
-  r"""InstanceGroups (== resource_for beta.instanceGroups ==) (== resource_for
-  v1.instanceGroups ==) (== resource_for beta.regionInstanceGroups ==) (==
-  resource_for v1.regionInstanceGroups ==)
+  r"""Represents an unmanaged Instance Group resource.  Use unmanaged instance
+  groups if you need to apply load balancing to groups of heterogeneous
+  instances or if you need to manage the instances yourself. For more
+  information, read  Instance groups.  For zonal unmanaged Instance Group, use
+  instanceGroups resource.  For regional unmanaged Instance Group, use
+  regionInstanceGroups resource. (== resource_for beta.instanceGroups ==) (==
+  resource_for v1.instanceGroups ==) (== resource_for
+  beta.regionInstanceGroups ==) (== resource_for v1.regionInstanceGroups ==)
 
   Fields:
     creationTimestamp: [Output Only] The creation timestamp for this instance
@@ -19200,7 +19267,11 @@ class InstanceGroupList(_messages.Message):
 
 
 class InstanceGroupManager(_messages.Message):
-  r"""An Instance Group Manager resource. (== resource_for
+  r"""Represents a Managed Instance Group resource.  An instance group is a
+  collection of VM instances that you can manage as a single entity. For more
+  information, read Instance groups.  For zonal Managed Instance Group, use
+  the instanceGroupManagers resource.  For regional Managed Instance Group,
+  use the regionInstanceGroupManagers resource. (== resource_for
   beta.instanceGroupManagers ==) (== resource_for v1.instanceGroupManagers ==)
   (== resource_for beta.regionInstanceGroupManagers ==) (== resource_for
   v1.regionInstanceGroupManagers ==)
@@ -19656,7 +19727,12 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       However, if the Updater determines that the minimal action you specify
       is not enough to perform the update, it might perform a more disruptive
       action.
-    TypeValueValuesEnum:
+    TypeValueValuesEnum: The type of update process. You can specify either
+      PROACTIVE so that the instance group manager proactively executes
+      actions in order to bring instances to their target versions or
+      OPPORTUNISTIC so that no action is proactively executed but the update
+      will be performed as part of other actions (for example, resizes or
+      recreateInstances calls).
 
   Fields:
     maxSurge: The maximum number of instances that can be created above the
@@ -19684,7 +19760,11 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       the Updater will attempt to perform that action only. However, if the
       Updater determines that the minimal action you specify is not enough to
       perform the update, it might perform a more disruptive action.
-    type: A TypeValueValuesEnum attribute.
+    type: The type of update process. You can specify either PROACTIVE so that
+      the instance group manager proactively executes actions in order to
+      bring instances to their target versions or OPPORTUNISTIC so that no
+      action is proactively executed but the update will be performed as part
+      of other actions (for example, resizes or recreateInstances calls).
   """
 
   class MinimalActionValueValuesEnum(_messages.Enum):
@@ -19703,7 +19783,11 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
     RESTART = 1
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""TypeValueValuesEnum enum type.
+    r"""The type of update process. You can specify either PROACTIVE so that
+    the instance group manager proactively executes actions in order to bring
+    instances to their target versions or OPPORTUNISTIC so that no action is
+    proactively executed but the update will be performed as part of other
+    actions (for example, resizes or recreateInstances calls).
 
     Values:
       OPPORTUNISTIC: <no description>
@@ -20614,8 +20698,10 @@ class InstanceReference(_messages.Message):
 
 
 class InstanceTemplate(_messages.Message):
-  r"""An Instance Template resource. (== resource_for beta.instanceTemplates
-  ==) (== resource_for v1.instanceTemplates ==)
+  r"""Represents an Instance Template resource.  You can use instance
+  templates to create VM instances and managed instance groups. For more
+  information, read Instance Templates. (== resource_for
+  beta.instanceTemplates ==) (== resource_for v1.instanceTemplates ==)
 
   Fields:
     creationTimestamp: [Output Only] The creation timestamp for this instance
@@ -21044,14 +21130,33 @@ class Interconnect(_messages.Message):
   v1.interconnects ==) (== resource_for beta.interconnects ==)
 
   Enums:
-    InterconnectTypeValueValuesEnum: Type of interconnect. Note that
-      "IT_PRIVATE" has been deprecated in favor of "DEDICATED"
-    LinkTypeValueValuesEnum: Type of link requested. This field indicates
-      speed of each of the links in the bundle, not the entire bundle.
-    OperationalStatusValueValuesEnum: [Output Only] The current status of
-      whether or not this Interconnect is functional.
-    StateValueValuesEnum: [Output Only] The current state of whether or not
-      this Interconnect is functional.
+    InterconnectTypeValueValuesEnum: Type of interconnect, which can take one
+      of the following values:  - PARTNER: A partner-managed interconnection
+      shared between customers though a partner.  - DEDICATED: A dedicated
+      physical interconnection with the customer. Note that a value IT_PRIVATE
+      has been deprecated in favor of DEDICATED.
+    LinkTypeValueValuesEnum: Type of link requested, which can take one of the
+      following values:  - LINK_TYPE_ETHERNET_10G_LR: A 10G Ethernet with LR
+      optics  - LINK_TYPE_ETHERNET_100G_LR: A 100G Ethernet with LR optics.
+      Note that this field indicates the speed of each of the links in the
+      bundle, not the speed of the entire bundle.
+    OperationalStatusValueValuesEnum: [Output Only] The current status of this
+      Interconnect's functionality, which can take one of the following
+      values:  - OS_ACTIVE: A valid Interconnect, which is turned up and is
+      ready to use. Attachments may be provisioned on this Interconnect.  -
+      OS_UNPROVISIONED: An Interconnect that has not completed turnup. No
+      attachments may be provisioned on this Interconnect.  -
+      OS_UNDER_MAINTENANCE: An Interconnect that is undergoing internal
+      maintenance. No attachments may be provisioned or updated on this
+      Interconnect.
+    StateValueValuesEnum: [Output Only] The current state of Interconnect
+      functionality, which can take one of the following values:  - ACTIVE:
+      The Interconnect is valid, turned up and ready to use. Attachments may
+      be provisioned on this Interconnect.  - UNPROVISIONED: The Interconnect
+      has not completed turnup. No attachments may be provisioned on this
+      Interconnect.  - UNDER_MAINTENANCE: The Interconnect is undergoing
+      internal maintenance. No attachments may be provisioned or updated on
+      this Interconnect.
 
   Fields:
     adminEnabled: Administrative status of the interconnect. When this is set
@@ -21077,12 +21182,18 @@ class Interconnect(_messages.Message):
       is defined by the server.
     interconnectAttachments: [Output Only] A list of the URLs of all
       InterconnectAttachments configured to use this Interconnect.
-    interconnectType: Type of interconnect. Note that "IT_PRIVATE" has been
-      deprecated in favor of "DEDICATED"
+    interconnectType: Type of interconnect, which can take one of the
+      following values:  - PARTNER: A partner-managed interconnection shared
+      between customers though a partner.  - DEDICATED: A dedicated physical
+      interconnection with the customer. Note that a value IT_PRIVATE has been
+      deprecated in favor of DEDICATED.
     kind: [Output Only] Type of the resource. Always compute#interconnect for
       interconnects.
-    linkType: Type of link requested. This field indicates speed of each of
-      the links in the bundle, not the entire bundle.
+    linkType: Type of link requested, which can take one of the following
+      values:  - LINK_TYPE_ETHERNET_10G_LR: A 10G Ethernet with LR optics  -
+      LINK_TYPE_ETHERNET_100G_LR: A 100G Ethernet with LR optics. Note that
+      this field indicates the speed of each of the links in the bundle, not
+      the speed of the entire bundle.
     location: URL of the InterconnectLocation object that represents where
       this connection is to be provisioned.
     name: Name of the resource. Provided by the client when the resource is
@@ -21096,8 +21207,15 @@ class Interconnect(_messages.Message):
       and maintenance notifications regarding this Interconnect. If specified,
       this will be used for notifications in addition to all other forms
       described, such as Stackdriver logs alerting and Cloud Notifications.
-    operationalStatus: [Output Only] The current status of whether or not this
-      Interconnect is functional.
+    operationalStatus: [Output Only] The current status of this Interconnect's
+      functionality, which can take one of the following values:  - OS_ACTIVE:
+      A valid Interconnect, which is turned up and is ready to use.
+      Attachments may be provisioned on this Interconnect.  -
+      OS_UNPROVISIONED: An Interconnect that has not completed turnup. No
+      attachments may be provisioned on this Interconnect.  -
+      OS_UNDER_MAINTENANCE: An Interconnect that is undergoing internal
+      maintenance. No attachments may be provisioned or updated on this
+      Interconnect.
     peerIpAddress: [Output Only] IP address configured on the customer side of
       the Interconnect link. The customer should configure this IP address
       during turnup when prompted by Google NOC. This can be used only for
@@ -21107,13 +21225,21 @@ class Interconnect(_messages.Message):
     requestedLinkCount: Target number of physical links in the link bundle, as
       requested by the customer.
     selfLink: [Output Only] Server-defined URL for the resource.
-    state: [Output Only] The current state of whether or not this Interconnect
-      is functional.
+    state: [Output Only] The current state of Interconnect functionality,
+      which can take one of the following values:  - ACTIVE: The Interconnect
+      is valid, turned up and ready to use. Attachments may be provisioned on
+      this Interconnect.  - UNPROVISIONED: The Interconnect has not completed
+      turnup. No attachments may be provisioned on this Interconnect.  -
+      UNDER_MAINTENANCE: The Interconnect is undergoing internal maintenance.
+      No attachments may be provisioned or updated on this Interconnect.
   """
 
   class InterconnectTypeValueValuesEnum(_messages.Enum):
-    r"""Type of interconnect. Note that "IT_PRIVATE" has been deprecated in
-    favor of "DEDICATED"
+    r"""Type of interconnect, which can take one of the following values:  -
+    PARTNER: A partner-managed interconnection shared between customers though
+    a partner.  - DEDICATED: A dedicated physical interconnection with the
+    customer. Note that a value IT_PRIVATE has been deprecated in favor of
+    DEDICATED.
 
     Values:
       DEDICATED: <no description>
@@ -21125,8 +21251,11 @@ class Interconnect(_messages.Message):
     PARTNER = 2
 
   class LinkTypeValueValuesEnum(_messages.Enum):
-    r"""Type of link requested. This field indicates speed of each of the
-    links in the bundle, not the entire bundle.
+    r"""Type of link requested, which can take one of the following values:  -
+    LINK_TYPE_ETHERNET_10G_LR: A 10G Ethernet with LR optics  -
+    LINK_TYPE_ETHERNET_100G_LR: A 100G Ethernet with LR optics. Note that this
+    field indicates the speed of each of the links in the bundle, not the
+    speed of the entire bundle.
 
     Values:
       LINK_TYPE_ETHERNET_10G_LR: <no description>
@@ -21134,8 +21263,14 @@ class Interconnect(_messages.Message):
     LINK_TYPE_ETHERNET_10G_LR = 0
 
   class OperationalStatusValueValuesEnum(_messages.Enum):
-    r"""[Output Only] The current status of whether or not this Interconnect
-    is functional.
+    r"""[Output Only] The current status of this Interconnect's functionality,
+    which can take one of the following values:  - OS_ACTIVE: A valid
+    Interconnect, which is turned up and is ready to use. Attachments may be
+    provisioned on this Interconnect.  - OS_UNPROVISIONED: An Interconnect
+    that has not completed turnup. No attachments may be provisioned on this
+    Interconnect.  - OS_UNDER_MAINTENANCE: An Interconnect that is undergoing
+    internal maintenance. No attachments may be provisioned or updated on this
+    Interconnect.
 
     Values:
       OS_ACTIVE: <no description>
@@ -21145,8 +21280,13 @@ class Interconnect(_messages.Message):
     OS_UNPROVISIONED = 1
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""[Output Only] The current state of whether or not this Interconnect is
-    functional.
+    r"""[Output Only] The current state of Interconnect functionality, which
+    can take one of the following values:  - ACTIVE: The Interconnect is
+    valid, turned up and ready to use. Attachments may be provisioned on this
+    Interconnect.  - UNPROVISIONED: The Interconnect has not completed turnup.
+    No attachments may be provisioned on this Interconnect.  -
+    UNDER_MAINTENANCE: The Interconnect is undergoing internal maintenance. No
+    attachments may be provisioned or updated on this Interconnect.
 
     Values:
       ACTIVE: <no description>
@@ -21187,29 +21327,63 @@ class InterconnectAttachment(_messages.Message):
 
   Enums:
     BandwidthValueValuesEnum: Provisioned bandwidth capacity for the
-      interconnectAttachment. Can be set by the partner to update the
-      customer's provisioned bandwidth. Output only for PARTNER type, mutable
-      for PARTNER_PROVIDER and DEDICATED.
+      interconnect attachment. For attachments of type DEDICATED, the user can
+      set the bandwidth. For attachments of type PARTNER, the Google Partner
+      that is operating the interconnect must set the bandwidth. Output only
+      for PARTNER type, mutable for PARTNER_PROVIDER and DEDICATED, and can
+      take one of the following values:  - BPS_50M: 50 Mbit/s  - BPS_100M: 100
+      Mbit/s  - BPS_200M: 200 Mbit/s  - BPS_300M: 300 Mbit/s  - BPS_400M: 400
+      Mbit/s  - BPS_500M: 500 Mbit/s  - BPS_1G: 1 Gbit/s  - BPS_2G: 2 Gbit/s
+      - BPS_5G: 5 Gbit/s  - BPS_10G: 10 Gbit/s
     EdgeAvailabilityDomainValueValuesEnum: Desired availability domain for the
-      attachment. Only available for type PARTNER, at creation time. For
-      improved reliability, customers should configure a pair of attachments
-      with one per availability domain. The selected availability domain will
-      be provided to the Partner via the pairing key so that the provisioned
-      circuit will lie in the specified domain. If not specified, the value
-      will default to AVAILABILITY_DOMAIN_ANY.
+      attachment. Only available for type PARTNER, at creation time, and can
+      take one of the following values:  - AVAILABILITY_DOMAIN_ANY  -
+      AVAILABILITY_DOMAIN_1  - AVAILABILITY_DOMAIN_2 For improved reliability,
+      customers should configure a pair of attachments, one per availability
+      domain. The selected availability domain will be provided to the Partner
+      via the pairing key, so that the provisioned circuit will lie in the
+      specified domain. If not specified, the value will default to
+      AVAILABILITY_DOMAIN_ANY.
     OperationalStatusValueValuesEnum: [Output Only] The current status of
-      whether or not this interconnect attachment is functional.
+      whether or not this interconnect attachment is functional, which can
+      take one of the following values:  - OS_ACTIVE: The attachment has been
+      turned up and is ready to use.  - OS_UNPROVISIONED: The attachment is
+      not ready to use yet, because turnup is not complete.
     StateValueValuesEnum: [Output Only] The current state of this attachment's
-      functionality.
-    TypeValueValuesEnum:
+      functionality. Enum values ACTIVE and UNPROVISIONED are shared by
+      DEDICATED/PRIVATE, PARTNER, and PARTNER_PROVIDER interconnect
+      attachments, while enum values PENDING_PARTNER,
+      PARTNER_REQUEST_RECEIVED, and PENDING_CUSTOMER are used for only PARTNER
+      and PARTNER_PROVIDER interconnect attachments. This state can take one
+      of the following values:  - ACTIVE: The attachment has been turned up
+      and is ready to use.  - UNPROVISIONED: The attachment is not ready to
+      use yet, because turnup is not complete.  - PENDING_PARTNER: A newly-
+      created PARTNER attachment that has not yet been configured on the
+      Partner side.  - PARTNER_REQUEST_RECEIVED: A PARTNER attachment is in
+      the process of provisioning after a PARTNER_PROVIDER attachment was
+      created that references it.  - PENDING_CUSTOMER: A PARTNER or
+      PARTNER_PROVIDER attachment that is waiting for a customer to activate
+      it.  - DEFUNCT: The attachment was deleted externally and is no longer
+      functional. This could be because the associated Interconnect was
+      removed, or because the other side of a Partner attachment was deleted.
+    TypeValueValuesEnum: The type of interconnect attachment this is, which
+      can take one of the following values:  - DEDICATED: an attachment to a
+      Dedicated Interconnect.  - PARTNER: an attachment to a Partner
+      Interconnect, created by the customer.  - PARTNER_PROVIDER: an
+      attachment to a Partner Interconnect, created by the partner.
 
   Fields:
     adminEnabled: Determines whether this Attachment will carry packets. Not
       present for PARTNER_PROVIDER.
-    bandwidth: Provisioned bandwidth capacity for the interconnectAttachment.
-      Can be set by the partner to update the customer's provisioned
-      bandwidth. Output only for PARTNER type, mutable for PARTNER_PROVIDER
-      and DEDICATED.
+    bandwidth: Provisioned bandwidth capacity for the interconnect attachment.
+      For attachments of type DEDICATED, the user can set the bandwidth. For
+      attachments of type PARTNER, the Google Partner that is operating the
+      interconnect must set the bandwidth. Output only for PARTNER type,
+      mutable for PARTNER_PROVIDER and DEDICATED, and can take one of the
+      following values:  - BPS_50M: 50 Mbit/s  - BPS_100M: 100 Mbit/s  -
+      BPS_200M: 200 Mbit/s  - BPS_300M: 300 Mbit/s  - BPS_400M: 400 Mbit/s  -
+      BPS_500M: 500 Mbit/s  - BPS_1G: 1 Gbit/s  - BPS_2G: 2 Gbit/s  - BPS_5G:
+      5 Gbit/s  - BPS_10G: 10 Gbit/s
     candidateSubnets: Up to 16 candidate prefixes that can be used to restrict
       the allocation of cloudRouterIpAddress and customerRouterIpAddress for
       this attachment. All prefixes must be within link-local address space
@@ -21227,12 +21401,14 @@ class InterconnectAttachment(_messages.Message):
       attachment.
     description: An optional description of this resource.
     edgeAvailabilityDomain: Desired availability domain for the attachment.
-      Only available for type PARTNER, at creation time. For improved
-      reliability, customers should configure a pair of attachments with one
-      per availability domain. The selected availability domain will be
-      provided to the Partner via the pairing key so that the provisioned
-      circuit will lie in the specified domain. If not specified, the value
-      will default to AVAILABILITY_DOMAIN_ANY.
+      Only available for type PARTNER, at creation time, and can take one of
+      the following values:  - AVAILABILITY_DOMAIN_ANY  -
+      AVAILABILITY_DOMAIN_1  - AVAILABILITY_DOMAIN_2 For improved reliability,
+      customers should configure a pair of attachments, one per availability
+      domain. The selected availability domain will be provided to the Partner
+      via the pairing key, so that the provisioned circuit will lie in the
+      specified domain. If not specified, the value will default to
+      AVAILABILITY_DOMAIN_ANY.
     googleReferenceId: [Output Only] Google reference ID, to be used when
       raising support tickets with Google or otherwise to debug backend
       connectivity issues.
@@ -21250,15 +21426,18 @@ class InterconnectAttachment(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     operationalStatus: [Output Only] The current status of whether or not this
-      interconnect attachment is functional.
+      interconnect attachment is functional, which can take one of the
+      following values:  - OS_ACTIVE: The attachment has been turned up and is
+      ready to use.  - OS_UNPROVISIONED: The attachment is not ready to use
+      yet, because turnup is not complete.
     pairingKey: [Output only for type PARTNER. Input only for
       PARTNER_PROVIDER. Not present for DEDICATED]. The opaque identifier of
       an PARTNER attachment used to initiate provisioning with a selected
       partner. Of the form "XXXXX/region/domain"
-    partnerAsn: Optional BGP ASN for the router that should be supplied by a
-      layer 3 Partner if they configured BGP on behalf of the customer. Output
-      only for PARTNER type, input only for PARTNER_PROVIDER, not available
-      for DEDICATED.
+    partnerAsn: Optional BGP ASN for the router supplied by a Layer 3 Partner
+      if they configured BGP on behalf of the customer. Output only for
+      PARTNER type, input only for PARTNER_PROVIDER, not available for
+      DEDICATED.
     partnerMetadata: Informational metadata about Partner attachments from
       Partners to display to customers. Output only for for PARTNER type,
       mutable for PARTNER_PROVIDER, not available for DEDICATED.
@@ -21274,15 +21453,41 @@ class InterconnectAttachment(_messages.Message):
       the network & region within which the Cloud Router is configured.
     selfLink: [Output Only] Server-defined URL for the resource.
     state: [Output Only] The current state of this attachment's functionality.
-    type: A TypeValueValuesEnum attribute.
+      Enum values ACTIVE and UNPROVISIONED are shared by DEDICATED/PRIVATE,
+      PARTNER, and PARTNER_PROVIDER interconnect attachments, while enum
+      values PENDING_PARTNER, PARTNER_REQUEST_RECEIVED, and PENDING_CUSTOMER
+      are used for only PARTNER and PARTNER_PROVIDER interconnect attachments.
+      This state can take one of the following values:  - ACTIVE: The
+      attachment has been turned up and is ready to use.  - UNPROVISIONED: The
+      attachment is not ready to use yet, because turnup is not complete.  -
+      PENDING_PARTNER: A newly-created PARTNER attachment that has not yet
+      been configured on the Partner side.  - PARTNER_REQUEST_RECEIVED: A
+      PARTNER attachment is in the process of provisioning after a
+      PARTNER_PROVIDER attachment was created that references it.  -
+      PENDING_CUSTOMER: A PARTNER or PARTNER_PROVIDER attachment that is
+      waiting for a customer to activate it.  - DEFUNCT: The attachment was
+      deleted externally and is no longer functional. This could be because
+      the associated Interconnect was removed, or because the other side of a
+      Partner attachment was deleted.
+    type: The type of interconnect attachment this is, which can take one of
+      the following values:  - DEDICATED: an attachment to a Dedicated
+      Interconnect.  - PARTNER: an attachment to a Partner Interconnect,
+      created by the customer.  - PARTNER_PROVIDER: an attachment to a Partner
+      Interconnect, created by the partner.
     vlanTag8021q: The IEEE 802.1Q VLAN tag for this attachment, in the range
       2-4094. Only specified at creation time.
   """
 
   class BandwidthValueValuesEnum(_messages.Enum):
-    r"""Provisioned bandwidth capacity for the interconnectAttachment. Can be
-    set by the partner to update the customer's provisioned bandwidth. Output
-    only for PARTNER type, mutable for PARTNER_PROVIDER and DEDICATED.
+    r"""Provisioned bandwidth capacity for the interconnect attachment. For
+    attachments of type DEDICATED, the user can set the bandwidth. For
+    attachments of type PARTNER, the Google Partner that is operating the
+    interconnect must set the bandwidth. Output only for PARTNER type, mutable
+    for PARTNER_PROVIDER and DEDICATED, and can take one of the following
+    values:  - BPS_50M: 50 Mbit/s  - BPS_100M: 100 Mbit/s  - BPS_200M: 200
+    Mbit/s  - BPS_300M: 300 Mbit/s  - BPS_400M: 400 Mbit/s  - BPS_500M: 500
+    Mbit/s  - BPS_1G: 1 Gbit/s  - BPS_2G: 2 Gbit/s  - BPS_5G: 5 Gbit/s  -
+    BPS_10G: 10 Gbit/s
 
     Values:
       BPS_100M: <no description>
@@ -21309,12 +21514,13 @@ class InterconnectAttachment(_messages.Message):
 
   class EdgeAvailabilityDomainValueValuesEnum(_messages.Enum):
     r"""Desired availability domain for the attachment. Only available for
-    type PARTNER, at creation time. For improved reliability, customers should
-    configure a pair of attachments with one per availability domain. The
-    selected availability domain will be provided to the Partner via the
-    pairing key so that the provisioned circuit will lie in the specified
-    domain. If not specified, the value will default to
-    AVAILABILITY_DOMAIN_ANY.
+    type PARTNER, at creation time, and can take one of the following values:
+    - AVAILABILITY_DOMAIN_ANY  - AVAILABILITY_DOMAIN_1  -
+    AVAILABILITY_DOMAIN_2 For improved reliability, customers should configure
+    a pair of attachments, one per availability domain. The selected
+    availability domain will be provided to the Partner via the pairing key,
+    so that the provisioned circuit will lie in the specified domain. If not
+    specified, the value will default to AVAILABILITY_DOMAIN_ANY.
 
     Values:
       AVAILABILITY_DOMAIN_1: <no description>
@@ -21327,7 +21533,10 @@ class InterconnectAttachment(_messages.Message):
 
   class OperationalStatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The current status of whether or not this interconnect
-    attachment is functional.
+    attachment is functional, which can take one of the following values:  -
+    OS_ACTIVE: The attachment has been turned up and is ready to use.  -
+    OS_UNPROVISIONED: The attachment is not ready to use yet, because turnup
+    is not complete.
 
     Values:
       OS_ACTIVE: <no description>
@@ -21338,6 +21547,21 @@ class InterconnectAttachment(_messages.Message):
 
   class StateValueValuesEnum(_messages.Enum):
     r"""[Output Only] The current state of this attachment's functionality.
+    Enum values ACTIVE and UNPROVISIONED are shared by DEDICATED/PRIVATE,
+    PARTNER, and PARTNER_PROVIDER interconnect attachments, while enum values
+    PENDING_PARTNER, PARTNER_REQUEST_RECEIVED, and PENDING_CUSTOMER are used
+    for only PARTNER and PARTNER_PROVIDER interconnect attachments. This state
+    can take one of the following values:  - ACTIVE: The attachment has been
+    turned up and is ready to use.  - UNPROVISIONED: The attachment is not
+    ready to use yet, because turnup is not complete.  - PENDING_PARTNER: A
+    newly-created PARTNER attachment that has not yet been configured on the
+    Partner side.  - PARTNER_REQUEST_RECEIVED: A PARTNER attachment is in the
+    process of provisioning after a PARTNER_PROVIDER attachment was created
+    that references it.  - PENDING_CUSTOMER: A PARTNER or PARTNER_PROVIDER
+    attachment that is waiting for a customer to activate it.  - DEFUNCT: The
+    attachment was deleted externally and is no longer functional. This could
+    be because the associated Interconnect was removed, or because the other
+    side of a Partner attachment was deleted.
 
     Values:
       ACTIVE: <no description>
@@ -21357,7 +21581,11 @@ class InterconnectAttachment(_messages.Message):
     UNPROVISIONED = 6
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""TypeValueValuesEnum enum type.
+    r"""The type of interconnect attachment this is, which can take one of the
+    following values:  - DEDICATED: an attachment to a Dedicated Interconnect.
+    - PARTNER: an attachment to a Partner Interconnect, created by the
+    customer.  - PARTNER_PROVIDER: an attachment to a Partner Interconnect,
+    created by the partner.
 
     Values:
       DEDICATED: <no description>
@@ -21686,7 +21914,7 @@ class InterconnectAttachmentPartnerMetadata(_messages.Message):
     partnerName: Plain text name of the Partner providing this attachment.
       This value may be validated to match approved Partner values.
     portalUrl: URL of the Partner?s portal for this Attachment. Partners may
-      customise this to be a deep-link to the specific resource on the Partner
+      customise this to be a deep link to the specific resource on the Partner
       portal. This value may be validated to match approved Partner values.
   """
 
@@ -21876,18 +22104,27 @@ class InterconnectDiagnosticsLinkLACPStatus(_messages.Message):
   r"""A InterconnectDiagnosticsLinkLACPStatus object.
 
   Enums:
-    StateValueValuesEnum:
+    StateValueValuesEnum: The state of a LACP link, which can take one of the
+      following values:  - ACTIVE: The link is configured and active within
+      the bundle.  - DETACHED: The link is not configured within the bundle.
+      This means that the rest of the object should be empty.
 
   Fields:
     googleSystemId: System ID of the port on Google?s side of the LACP
       exchange.
     neighborSystemId: System ID of the port on the neighbor?s side of the LACP
       exchange.
-    state: A StateValueValuesEnum attribute.
+    state: The state of a LACP link, which can take one of the following
+      values:  - ACTIVE: The link is configured and active within the bundle.
+      - DETACHED: The link is not configured within the bundle. This means
+      that the rest of the object should be empty.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""StateValueValuesEnum enum type.
+    r"""The state of a LACP link, which can take one of the following values:
+    - ACTIVE: The link is configured and active within the bundle.  -
+    DETACHED: The link is not configured within the bundle. This means that
+    the rest of the object should be empty.
 
     Values:
       ACTIVE: <no description>
@@ -22111,11 +22348,14 @@ class InterconnectLocation(_messages.Message):
   For more information, see  Colocation Facilities.
 
   Enums:
-    ContinentValueValuesEnum: [Output Only] Continent for this location.
+    ContinentValueValuesEnum: [Output Only] Continent for this location, which
+      can take one of the following values:  - AFRICA  - ASIA_PAC  - EUROPE  -
+      NORTH_AMERICA  - SOUTH_AMERICA
     StatusValueValuesEnum: [Output Only] The status of this
-      InterconnectLocation. If the status is AVAILABLE, new Interconnects may
-      be provisioned in this InterconnectLocation. Otherwise, no new
-      Interconnects may be provisioned.
+      InterconnectLocation, which can take one of the following values:  -
+      CLOSED: The InterconnectLocation is closed and is unavailable for
+      provisioning new Interconnects.  - AVAILABLE: The InterconnectLocation
+      is available for provisioning new Interconnects.
 
   Fields:
     address: [Output Only] The postal address of the Point of Presence, each
@@ -22127,7 +22367,9 @@ class InterconnectLocation(_messages.Message):
     city: [Output Only] Metropolitan area designator that indicates which city
       an interconnect is located. For example: "Chicago, IL", "Amsterdam,
       Netherlands".
-    continent: [Output Only] Continent for this location.
+    continent: [Output Only] Continent for this location, which can take one
+      of the following values:  - AFRICA  - ASIA_PAC  - EUROPE  -
+      NORTH_AMERICA  - SOUTH_AMERICA
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: [Output Only] An optional description of the resource.
@@ -22146,14 +22388,17 @@ class InterconnectLocation(_messages.Message):
       objects, that describe parameters pertaining to the relation between
       this InterconnectLocation and various Google Cloud regions.
     selfLink: [Output Only] Server-defined URL for the resource.
-    status: [Output Only] The status of this InterconnectLocation. If the
-      status is AVAILABLE, new Interconnects may be provisioned in this
-      InterconnectLocation. Otherwise, no new Interconnects may be
-      provisioned.
+    status: [Output Only] The status of this InterconnectLocation, which can
+      take one of the following values:  - CLOSED: The InterconnectLocation is
+      closed and is unavailable for provisioning new Interconnects.  -
+      AVAILABLE: The InterconnectLocation is available for provisioning new
+      Interconnects.
   """
 
   class ContinentValueValuesEnum(_messages.Enum):
-    r"""[Output Only] Continent for this location.
+    r"""[Output Only] Continent for this location, which can take one of the
+    following values:  - AFRICA  - ASIA_PAC  - EUROPE  - NORTH_AMERICA  -
+    SOUTH_AMERICA
 
     Values:
       AFRICA: <no description>
@@ -22179,9 +22424,10 @@ class InterconnectLocation(_messages.Message):
     SOUTH_AMERICA = 9
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""[Output Only] The status of this InterconnectLocation. If the status
-    is AVAILABLE, new Interconnects may be provisioned in this
-    InterconnectLocation. Otherwise, no new Interconnects may be provisioned.
+    r"""[Output Only] The status of this InterconnectLocation, which can take
+    one of the following values:  - CLOSED: The InterconnectLocation is closed
+    and is unavailable for provisioning new Interconnects.  - AVAILABLE: The
+    InterconnectLocation is available for provisioning new Interconnects.
 
     Values:
       AVAILABLE: <no description>
@@ -22372,14 +22618,24 @@ class InterconnectOutageNotification(_messages.Message):
   r"""Description of a planned outage on this Interconnect. Next id: 9
 
   Enums:
-    IssueTypeValueValuesEnum: Form this outage is expected to take. Note that
-      the "IT_" versions of this enum have been deprecated in favor of the
+    IssueTypeValueValuesEnum: Form this outage is expected to take, which can
+      take one of the following values:  - OUTAGE: The Interconnect may be
+      completely out of service for some or all of the specified window.  -
+      PARTIAL_OUTAGE: Some circuits comprising the Interconnect as a whole
+      should remain up, but with reduced bandwidth. Note that the versions of
+      this enum prefixed with "IT_" have been deprecated in favor of the
       unprefixed values.
-    SourceValueValuesEnum: The party that generated this notification. Note
-      that "NSRC_GOOGLE" has been deprecated in favor of "GOOGLE"
-    StateValueValuesEnum: State of this notification. Note that the "NS_"
-      versions of this enum have been deprecated in favor of the unprefixed
-      values.
+    SourceValueValuesEnum: The party that generated this notification, which
+      can take the following value:  - GOOGLE: this notification as generated
+      by Google. Note that the value of NSRC_GOOGLE has been deprecated in
+      favor of GOOGLE.
+    StateValueValuesEnum: State of this notification, which can take one of
+      the following values:  - ACTIVE: This outage notification is active. The
+      event could be in the past, present, or future. See start_time and
+      end_time for scheduling.  - CANCELLED: The outage associated with this
+      notification was cancelled before the outage was due to start. Note that
+      the versions of this enum prefixed with "NS_" have been deprecated in
+      favor of the unprefixed values.
 
   Fields:
     affectedCircuits: If issue_type is IT_PARTIAL_OUTAGE, a list of the
@@ -22387,21 +22643,35 @@ class InterconnectOutageNotification(_messages.Message):
     description: A description about the purpose of the outage.
     endTime: Scheduled end time for the outage (milliseconds since Unix
       epoch).
-    issueType: Form this outage is expected to take. Note that the "IT_"
-      versions of this enum have been deprecated in favor of the unprefixed
-      values.
+    issueType: Form this outage is expected to take, which can take one of the
+      following values:  - OUTAGE: The Interconnect may be completely out of
+      service for some or all of the specified window.  - PARTIAL_OUTAGE: Some
+      circuits comprising the Interconnect as a whole should remain up, but
+      with reduced bandwidth. Note that the versions of this enum prefixed
+      with "IT_" have been deprecated in favor of the unprefixed values.
     name: Unique identifier for this outage notification.
-    source: The party that generated this notification. Note that
-      "NSRC_GOOGLE" has been deprecated in favor of "GOOGLE"
+    source: The party that generated this notification, which can take the
+      following value:  - GOOGLE: this notification as generated by Google.
+      Note that the value of NSRC_GOOGLE has been deprecated in favor of
+      GOOGLE.
     startTime: Scheduled start time for the outage (milliseconds since Unix
       epoch).
-    state: State of this notification. Note that the "NS_" versions of this
-      enum have been deprecated in favor of the unprefixed values.
+    state: State of this notification, which can take one of the following
+      values:  - ACTIVE: This outage notification is active. The event could
+      be in the past, present, or future. See start_time and end_time for
+      scheduling.  - CANCELLED: The outage associated with this notification
+      was cancelled before the outage was due to start. Note that the versions
+      of this enum prefixed with "NS_" have been deprecated in favor of the
+      unprefixed values.
   """
 
   class IssueTypeValueValuesEnum(_messages.Enum):
-    r"""Form this outage is expected to take. Note that the "IT_" versions of
-    this enum have been deprecated in favor of the unprefixed values.
+    r"""Form this outage is expected to take, which can take one of the
+    following values:  - OUTAGE: The Interconnect may be completely out of
+    service for some or all of the specified window.  - PARTIAL_OUTAGE: Some
+    circuits comprising the Interconnect as a whole should remain up, but with
+    reduced bandwidth. Note that the versions of this enum prefixed with "IT_"
+    have been deprecated in favor of the unprefixed values.
 
     Values:
       IT_OUTAGE: <no description>
@@ -22415,8 +22685,9 @@ class InterconnectOutageNotification(_messages.Message):
     PARTIAL_OUTAGE = 3
 
   class SourceValueValuesEnum(_messages.Enum):
-    r"""The party that generated this notification. Note that "NSRC_GOOGLE"
-    has been deprecated in favor of "GOOGLE"
+    r"""The party that generated this notification, which can take the
+    following value:  - GOOGLE: this notification as generated by Google. Note
+    that the value of NSRC_GOOGLE has been deprecated in favor of GOOGLE.
 
     Values:
       GOOGLE: <no description>
@@ -22426,8 +22697,13 @@ class InterconnectOutageNotification(_messages.Message):
     NSRC_GOOGLE = 1
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""State of this notification. Note that the "NS_" versions of this enum
-    have been deprecated in favor of the unprefixed values.
+    r"""State of this notification, which can take one of the following
+    values:  - ACTIVE: This outage notification is active. The event could be
+    in the past, present, or future. See start_time and end_time for
+    scheduling.  - CANCELLED: The outage associated with this notification was
+    cancelled before the outage was due to start. Note that the versions of
+    this enum prefixed with "NS_" have been deprecated in favor of the
+    unprefixed values.
 
     Values:
       ACTIVE: <no description>
@@ -22793,8 +23069,10 @@ class LogConfigDataAccessOptions(_messages.Message):
 
 
 class MachineType(_messages.Message):
-  r"""A Machine Type resource. (== resource_for v1.machineTypes ==) (==
-  resource_for beta.machineTypes ==)
+  r"""Represents a Machine Type resource.  You can use specific machine types
+  for your VM instances based on performance and pricing requirements. For
+  more information, read Machine Types. (== resource_for v1.machineTypes ==)
+  (== resource_for beta.machineTypes ==)
 
   Messages:
     ScratchDisksValueListEntry: A ScratchDisksValueListEntry object.
@@ -23511,10 +23789,10 @@ class Network(_messages.Message):
       IP ranges.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
-    description: An optional description of this resource. Provide this
-      property when you create the resource.
+    description: An optional description of this resource. Provide this field
+      when you create the resource.
     gatewayIPv4: [Output Only] The gateway address for default routing out of
-      the network. This value is read only and is selected by GCP.
+      the network, selected by GCP.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#network for
@@ -23522,10 +23800,10 @@ class Network(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
-      character must be a lowercase letter, and all following characters must
-      be a dash, lowercase letter, or digit, except the last character, which
-      cannot be a dash.
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?. The first character must
+      be a lowercase letter, and all following characters (except for the last
+      character) must be a dash, lowercase letter, or digit. The last
+      character must be a lowercase letter or digit.
     peerings: [Output Only] A list of network peerings for the resource.
     routingConfig: The network-level routing configuration for this network.
       Used by Cloud Router to determine what type of network-wide routing
@@ -24221,8 +24499,8 @@ class NetworkInterface(_messages.Message):
       only one access config, ONE_TO_ONE_NAT, is supported. If there are no
       accessConfigs specified, then this instance will have no external
       internet access.
-    aliasIpRanges: An array of alias IP ranges for this network interface. Can
-      only be specified for network interfaces on subnet-mode networks.
+    aliasIpRanges: An array of alias IP ranges for this network interface. You
+      can only specify this field for network interfaces in VPC networks.
     fingerprint: Fingerprint hash of contents stored in this network
       interface. This field will be ignored when inserting an Instance or
       adding a NetworkInterface. An up-to-date fingerprint must be provided in
@@ -24230,30 +24508,27 @@ class NetworkInterface(_messages.Message):
       with error 412 conditionNotMet.
     kind: [Output Only] Type of the resource. Always compute#networkInterface
       for network interfaces.
-    name: [Output Only] The name of the network interface, generated by the
-      server. For network devices, these are eth0, eth1, etc.
+    name: [Output Only] The name of the network interface, which is generated
+      by the server. For network devices, these are eth0, eth1, etc.
     network: URL of the network resource for this instance. When creating an
       instance, if neither the network nor the subnetwork is specified, the
       default network global/networks/default is used; if the network is not
-      specified but the subnetwork is specified, the network is inferred.
-      This field is optional when creating a firewall rule. If not specified
-      when creating a firewall rule, the default network
-      global/networks/default is used.  If you specify this property, you can
-      specify the network as a full or partial URL. For example, the following
-      are all valid URLs:   - https://www.googleapis.com/compute/v1/projects/p
-      roject/global/networks/network  -
-      projects/project/global/networks/network  - global/networks/default
-    networkIP: An IPv4 internal network address to assign to the instance for
-      this network interface. If not specified by the user, an unused internal
-      IP is assigned by the system.
+      specified but the subnetwork is specified, the network is inferred.  If
+      you specify this property, you can specify the network as a full or
+      partial URL. For example, the following are all valid URLs:   - https://
+      www.googleapis.com/compute/v1/projects/project/global/networks/network
+      - projects/project/global/networks/network  - global/networks/default
+    networkIP: An IPv4 internal IP address to assign to the instance for this
+      network interface. If not specified by the user, an unused internal IP
+      is assigned by the system.
     subnetwork: The URL of the Subnetwork resource for this instance. If the
-      network resource is in legacy mode, do not provide this property. If the
-      network is in auto subnet mode, providing the subnetwork is optional. If
-      the network is in custom subnet mode, then this field should be
-      specified. If you specify this property, you can specify the subnetwork
-      as a full or partial URL. For example, the following are all valid URLs:
-      - https://www.googleapis.com/compute/v1/projects/project/regions/region/
-      subnetworks/subnetwork  - regions/region/subnetworks/subnetwork
+      network resource is in legacy mode, do not specify this field. If the
+      network is in auto subnet mode, specifying the subnetwork is optional.
+      If the network is in custom subnet mode, specifying the subnetwork is
+      required. If you specify this field, you can specify the subnetwork as a
+      full or partial URL. For example, the following are all valid URLs:   -
+      https://www.googleapis.com/compute/v1/projects/project/regions/region/su
+      bnetworks/subnetwork  - regions/region/subnetworks/subnetwork
   """
 
   accessConfigs = _messages.MessageField('AccessConfig', 1, repeated=True)
@@ -24397,15 +24672,17 @@ class NetworkPeering(_messages.Message):
   Google Compute Engine should automatically create routes for the peering.
 
   Enums:
-    StateValueValuesEnum: [Output Only] State for the peering.
+    StateValueValuesEnum: [Output Only] State for the peering, either `ACTIVE`
+      or `INACTIVE`. The peering is `ACTIVE` when there's a matching
+      configuration in the peer network.
 
   Fields:
-    autoCreateRoutes: This field will be deprecated soon. Prefer using
-      exchange_subnet_routes instead. Indicates whether full mesh connectivity
-      is created and managed automatically. When it is set to true, Google
-      Compute Engine will automatically create and manage the routes between
-      two networks when the state is ACTIVE. Otherwise, user needs to create
-      routes manually to route packets to peer network.
+    autoCreateRoutes: This field will be deprecated soon. Use the
+      exchange_subnet_routes field instead. Indicates whether full mesh
+      connectivity is created and managed automatically. When it is set to
+      true, Google Compute Engine will automatically create and manage the
+      routes between two networks when the state is ACTIVE. Otherwise, user
+      needs to create routes manually to route packets to peer network.
     exchangeSubnetRoutes: Whether full mesh connectivity is created and
       managed automatically. When it is set to true, Google Compute Engine
       will automatically create and manage the routes between two networks
@@ -24414,21 +24691,24 @@ class NetworkPeering(_messages.Message):
     name: Name of this peering. Provided by the client when the peering is
       created. The name must comply with RFC1035. Specifically, the name must
       be 1-63 characters long and match regular expression
-      `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
-      lowercase letter, and all the following characters must be a dash,
-      lowercase letter, or digit, except the last character, which cannot be a
-      dash.
+      `[a-z]([-a-z0-9]*[a-z0-9])?`. The first character must be a lowercase
+      letter, and all the following characters must be a dash, lowercase
+      letter, or digit, except the last character, which cannot be a dash.
     network: The URL of the peer network. It can be either full URL or partial
       URL. The peer network may belong to a different project. If the partial
       URL does not contain project, it is assumed that the peer network is in
       the same project as the current network.
-    state: [Output Only] State for the peering.
+    state: [Output Only] State for the peering, either `ACTIVE` or `INACTIVE`.
+      The peering is `ACTIVE` when there's a matching configuration in the
+      peer network.
     stateDetails: [Output Only] Details about the current state of the
       peering.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""[Output Only] State for the peering.
+    r"""[Output Only] State for the peering, either `ACTIVE` or `INACTIVE`.
+    The peering is `ACTIVE` when there's a matching configuration in the peer
+    network.
 
     Values:
       ACTIVE: <no description>
@@ -24452,24 +24732,24 @@ class NetworkRoutingConfig(_messages.Message):
 
   Enums:
     RoutingModeValueValuesEnum: The network-wide routing mode to use. If set
-      to REGIONAL, this network's cloud routers will only advertise routes
+      to REGIONAL, this network's Cloud Routers will only advertise routes
       with subnets of this network in the same region as the router. If set to
-      GLOBAL, this network's cloud routers will advertise routes with all
+      GLOBAL, this network's Cloud Routers will advertise routes with all
       subnets of this network, across regions.
 
   Fields:
     routingMode: The network-wide routing mode to use. If set to REGIONAL,
-      this network's cloud routers will only advertise routes with subnets of
+      this network's Cloud Routers will only advertise routes with subnets of
       this network in the same region as the router. If set to GLOBAL, this
-      network's cloud routers will advertise routes with all subnets of this
+      network's Cloud Routers will advertise routes with all subnets of this
       network, across regions.
   """
 
   class RoutingModeValueValuesEnum(_messages.Enum):
     r"""The network-wide routing mode to use. If set to REGIONAL, this
-    network's cloud routers will only advertise routes with subnets of this
+    network's Cloud Routers will only advertise routes with subnets of this
     network in the same region as the router. If set to GLOBAL, this network's
-    cloud routers will advertise routes with all subnets of this network,
+    Cloud Routers will advertise routes with all subnets of this network,
     across regions.
 
     Values:
@@ -24486,15 +24766,15 @@ class NetworksAddPeeringRequest(_messages.Message):
   r"""A NetworksAddPeeringRequest object.
 
   Fields:
-    autoCreateRoutes: This field will be deprecated soon. Prefer using
+    autoCreateRoutes: This field will be deprecated soon. Use
       exchange_subnet_routes in network_peering instead. Whether Google
       Compute Engine manages the routes automatically.
     name: Name of the peering, which should conform to RFC1035.
     networkPeering: Network peering parameters. In order to specify route
-      policies for peering using import/export custom routes, you will have to
-      fill all peering related parameters (name, peer network,
-      exchange_subnet_routes) in network_peeringfield. Corresponding fields in
-      NetworksAddPeeringRequest will be deprecated soon.
+      policies for peering using import and export custom routes, you must
+      specify all peering related parameters (name, peer network,
+      exchange_subnet_routes) in the network_peering field. The corresponding
+      fields in NetworksAddPeeringRequest will be deprecated soon.
     peerNetwork: URL of the peer network. It can be either full URL or partial
       URL. The peer network may belong to a different project. If the partial
       URL does not contain project, it is assumed that the peer network is in
@@ -24518,10 +24798,13 @@ class NetworksRemovePeeringRequest(_messages.Message):
 
 
 class NodeGroup(_messages.Message):
-  r"""A NodeGroup resource. To create a node group, you must first create a
-  node templates. To learn more about node groups and sole-tenant nodes, read
-  the Sole-tenant nodes documentation. (== resource_for beta.nodeGroups ==)
-  (== resource_for v1.nodeGroups ==)
+  r"""Represent a sole-tenant Node Group resource.  A sole-tenant node is a
+  physical server that is dedicated to hosting VM instances only for your
+  specific project. Use sole-tenant nodes to keep your instances physically
+  separated from instances in other projects, or to group your instances
+  together on the same host hardware. For more information, read Sole-tenant
+  nodes. (== resource_for beta.nodeGroups ==) (== resource_for v1.nodeGroups
+  ==)
 
   Enums:
     StatusValueValuesEnum:
@@ -25161,9 +25444,10 @@ class NodeGroupsSetNodeTemplateRequest(_messages.Message):
 
 
 class NodeTemplate(_messages.Message):
-  r"""A Node Template resource. To learn more about node templates and sole-
-  tenant nodes, read the Sole-tenant nodes documentation. (== resource_for
-  beta.nodeTemplates ==) (== resource_for v1.nodeTemplates ==)
+  r"""Represent a sole-tenant Node Template resource.  You can use a template
+  to define properties for nodes in a node group. For more information, read
+  Creating node groups and instances. (== resource_for beta.nodeTemplates ==)
+  (== resource_for v1.nodeTemplates ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the node template. One
@@ -25669,7 +25953,12 @@ class NodeTemplatesScopedList(_messages.Message):
 
 
 class NodeType(_messages.Message):
-  r"""A Node Type resource.
+  r"""Represent a sole-tenant Node Type resource.  Each node within a node
+  group must have a node type. A node type specifies the total amount of cores
+  and memory for that node. Currently, the only available node type is
+  n1-node-96-624 node type that has 96 vCPUs and 624 GB of memory, available
+  in multiple zones. For more information read Node types. (== resource_for
+  beta.nodeTypes ==) (== resource_for v1.nodeTypes ==)
 
   Fields:
     cpuPlatform: [Output Only] The CPU platform used by this node type.
@@ -26100,11 +26389,16 @@ class NodeTypesScopedList(_messages.Message):
 
 
 class Operation(_messages.Message):
-  r"""An Operation resource, used to manage asynchronous API requests. (==
-  resource_for v1.globalOperations ==) (== resource_for beta.globalOperations
-  ==) (== resource_for v1.regionOperations ==) (== resource_for
-  beta.regionOperations ==) (== resource_for v1.zoneOperations ==) (==
-  resource_for beta.zoneOperations ==)
+  r"""Represents an Operation resource.  You can use an operation resource to
+  manage asynchronous API requests. For more information, read Handling API
+  responses.  Operations can be global, regional or zonal.   - For global
+  operations, use the globalOperations resource.  - For regional operations,
+  use the regionOperations resource.  - For zonal operations, use the
+  zonalOperations resource.    For more information, read  Global, Regional,
+  and Zonal Resources. (== resource_for v1.globalOperations ==) (==
+  resource_for beta.globalOperations ==) (== resource_for v1.regionOperations
+  ==) (== resource_for beta.regionOperations ==) (== resource_for
+  v1.zoneOperations ==) (== resource_for beta.zoneOperations ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the operation, which
@@ -26836,7 +27130,8 @@ class Policy(_messages.Message):
 
 
 class Project(_messages.Message):
-  r"""A Project resource. For an overview of projects, see  Cloud Platform
+  r"""Represents a Project resource.  A project is used to organize resources
+  in a Google Cloud Platform environment. For more information, read about the
   Resource Hierarchy. (== resource_for v1.projects ==) (== resource_for
   beta.projects ==)
 
@@ -27173,8 +27468,9 @@ class Reference(_messages.Message):
 
 
 class Region(_messages.Message):
-  r"""Region resource. (== resource_for beta.regions ==) (== resource_for
-  v1.regions ==)
+  r"""Represents a Region resource.  A region is a geographical area where a
+  resource is located. For more information, read Regions and Zones. (==
+  resource_for beta.regions ==) (== resource_for v1.regions ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] Status of the region, either UP or
@@ -28228,8 +28524,8 @@ class Route(_messages.Message):
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
-    description: An optional description of this resource. Provide this
-      property when you create the resource.
+    description: An optional description of this resource. Provide this field
+      when you create the resource.
     destRange: The destination range of outgoing packets that this route
       applies to. Only IPv4 is supported.
     id: [Output Only] The unique identifier for the resource. This identifier
@@ -28239,14 +28535,14 @@ class Route(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
-      character must be a lowercase letter, and all following characters must
-      be a dash, lowercase letter, or digit, except the last character, which
-      cannot be a dash.
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`. The first character
+      must be a lowercase letter, and all following characters (except for the
+      last character) must be a dash, lowercase letter, or digit. The last
+      character must be a lowercase letter or digit.
     network: Fully-qualified URL of the network that this route applies to.
     nextHopGateway: The URL to a gateway that should handle matching packets.
       You can only specify the internet gateway using a full or partial valid
-      URL:  projects/<project-id>/global/gateways/default-internet-gateway
+      URL:  projects/project/global/gateways/default-internet-gateway
     nextHopInstance: The URL to an instance that should handle matching
       packets. You can specify this as a full or partial URL. For example: htt
       ps://www.googleapis.com/compute/v1/projects/project/zones/zone/instances
@@ -28261,9 +28557,9 @@ class Route(_messages.Message):
       packets.
     priority: The priority of this route. Priority is used to break ties in
       cases where there is more than one matching route of equal prefix
-      length. In the case of two routes with equal prefix length, the one with
-      the lowest-numbered priority value wins. Default value is 1000. Valid
-      range is 0 through 65535.
+      length. In cases where multiple routes have equal prefix length, the one
+      with the lowest-numbered priority value wins. The default value is
+      `1000`. The priority value must be from `0` to `65535`, inclusive.
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
     tags: A list of instance tags to which this route applies.
@@ -28515,9 +28811,10 @@ class Router(_messages.Message):
 
   Fields:
     bgp: BGP information specific to this router.
-    bgpPeers: BGP information that needs to be configured into the routing
-      stack to establish the BGP peering. It must specify peer ASN and either
-      interface name, IP, or peer IP. Please refer to RFC4273.
+    bgpPeers: BGP information that must be configured into the routing stack
+      to establish BGP peering. This information must specify the peer ASN and
+      either the interface name, IP address, or peer IP address. Please refer
+      to RFC4273.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -28525,8 +28822,8 @@ class Router(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     interfaces: Router interfaces. Each interface requires either one linked
-      resource (e.g. linkedVpnTunnel), or IP address and IP address range
-      (e.g. ipRange), or both.
+      resource, (for example, linkedVpnTunnel), or IP address and IP address
+      range (for example, ipRange), or both.
     kind: [Output Only] Type of resource. Always compute#router for routers.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
@@ -28535,7 +28832,7 @@ class Router(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
-    nats: A list of Nat services created in this router.
+    nats: A list of NAT services created in this router.
     network: URI of the network to which this router belongs.
     region: [Output Only] URI of the region where the router resides. You must
       specify this field as part of the HTTP request URL. It is not settable
@@ -28724,12 +29021,12 @@ class RouterBgp(_messages.Message):
 
   Enums:
     AdvertiseModeValueValuesEnum: User-specified flag to indicate which mode
-      to use for advertisement.
+      to use for advertisement. The options are DEFAULT or CUSTOM.
     AdvertisedGroupsValueListEntryValuesEnum:
 
   Fields:
     advertiseMode: User-specified flag to indicate which mode to use for
-      advertisement.
+      advertisement. The options are DEFAULT or CUSTOM.
     advertisedGroups: User-specified list of prefix groups to advertise in
       custom mode. This field can only be populated if advertise_mode is
       CUSTOM and is advertised to all peers of the router. These groups will
@@ -28748,6 +29045,7 @@ class RouterBgp(_messages.Message):
 
   class AdvertiseModeValueValuesEnum(_messages.Enum):
     r"""User-specified flag to indicate which mode to use for advertisement.
+    The options are DEFAULT or CUSTOM.
 
     Values:
       CUSTOM: <no description>
@@ -28778,46 +29076,50 @@ class RouterBgpPeer(_messages.Message):
       to use for advertisement.
     AdvertisedGroupsValueListEntryValuesEnum:
     ManagementTypeValueValuesEnum: [Output Only] The resource that configures
-      and manages this BGP peer. MANAGED_BY_USER is the default value and can
-      be managed by you or other users; MANAGED_BY_ATTACHMENT is a BGP peer
-      that is configured and managed by Cloud Interconnect, specifically by an
-      InterconnectAttachment of type PARTNER. Google will automatically
-      create, update, and delete this type of BGP peer when the PARTNER
+      and manages this BGP peer.  - MANAGED_BY_USER is the default value and
+      can be managed by you or other users  - MANAGED_BY_ATTACHMENT is a BGP
+      peer that is configured and managed by Cloud Interconnect, specifically
+      by an InterconnectAttachment of type PARTNER. Google automatically
+      creates, updates, and deletes this type of BGP peer when the PARTNER
       InterconnectAttachment is created, updated, or deleted.
 
   Fields:
     advertiseMode: User-specified flag to indicate which mode to use for
       advertisement.
     advertisedGroups: User-specified list of prefix groups to advertise in
-      custom mode. This field can only be populated if advertise_mode is
-      CUSTOM and overrides the list defined for the router (in Bgp message).
-      These groups will be advertised in addition to any specified prefixes.
-      Leave this field blank to advertise no custom groups.
+      custom mode, which can take one of the following options:  -
+      ALL_SUBNETS: Advertises all available subnets, including peer VPC
+      subnets.  - ALL_VPC_SUBNETS: Advertises the router's own VPC subnets.  -
+      ALL_PEER_VPC_SUBNETS: Advertises peer subnets of the router's VPC
+      network. Note that this field can only be populated if advertise_mode is
+      CUSTOM and overrides the list defined for the router (in the "bgp"
+      message). These groups are advertised in addition to any specified
+      prefixes. Leave this field blank to advertise no custom groups.
     advertisedIpRanges: User-specified list of individual IP ranges to
       advertise in custom mode. This field can only be populated if
       advertise_mode is CUSTOM and overrides the list defined for the router
-      (in Bgp message). These IP ranges will be advertised in addition to any
-      specified groups. Leave this field blank to advertise no custom IP
+      (in the "bgp" message). These IP ranges are advertised in addition to
+      any specified groups. Leave this field blank to advertise no custom IP
       ranges.
     advertisedRoutePriority: The priority of routes advertised to this BGP
-      peer. In the case where there is more than one matching route of maximum
-      length, the routes with lowest priority value win.
+      peer. Where there is more than one matching route of maximum length, the
+      routes with the lowest priority value win.
     interfaceName: Name of the interface the BGP peer is associated with.
     ipAddress: IP address of the interface inside Google Cloud Platform. Only
       IPv4 is supported.
     managementType: [Output Only] The resource that configures and manages
-      this BGP peer. MANAGED_BY_USER is the default value and can be managed
-      by you or other users; MANAGED_BY_ATTACHMENT is a BGP peer that is
-      configured and managed by Cloud Interconnect, specifically by an
-      InterconnectAttachment of type PARTNER. Google will automatically
-      create, update, and delete this type of BGP peer when the PARTNER
+      this BGP peer.  - MANAGED_BY_USER is the default value and can be
+      managed by you or other users  - MANAGED_BY_ATTACHMENT is a BGP peer
+      that is configured and managed by Cloud Interconnect, specifically by an
+      InterconnectAttachment of type PARTNER. Google automatically creates,
+      updates, and deletes this type of BGP peer when the PARTNER
       InterconnectAttachment is created, updated, or deleted.
     name: Name of this BGP peer. The name must be 1-63 characters long and
       comply with RFC1035.
-    peerAsn: Peer BGP Autonomous System Number (ASN). For VPN use case, this
-      value can be different for every tunnel.
-    peerIpAddress: IP address of the BGP interface outside Google cloud. Only
-      IPv4 is supported.
+    peerAsn: Peer BGP Autonomous System Number (ASN). Each BGP interface may
+      use a different value.
+    peerIpAddress: IP address of the BGP interface outside Google Cloud
+      Platform. Only IPv4 is supported.
   """
 
   class AdvertiseModeValueValuesEnum(_messages.Enum):
@@ -28840,12 +29142,12 @@ class RouterBgpPeer(_messages.Message):
 
   class ManagementTypeValueValuesEnum(_messages.Enum):
     r"""[Output Only] The resource that configures and manages this BGP peer.
-    MANAGED_BY_USER is the default value and can be managed by you or other
-    users; MANAGED_BY_ATTACHMENT is a BGP peer that is configured and managed
-    by Cloud Interconnect, specifically by an InterconnectAttachment of type
-    PARTNER. Google will automatically create, update, and delete this type of
-    BGP peer when the PARTNER InterconnectAttachment is created, updated, or
-    deleted.
+    - MANAGED_BY_USER is the default value and can be managed by you or other
+    users  - MANAGED_BY_ATTACHMENT is a BGP peer that is configured and
+    managed by Cloud Interconnect, specifically by an InterconnectAttachment
+    of type PARTNER. Google automatically creates, updates, and deletes this
+    type of BGP peer when the PARTNER InterconnectAttachment is created,
+    updated, or deleted.
 
     Values:
       MANAGED_BY_ATTACHMENT: <no description>
@@ -28871,32 +29173,31 @@ class RouterInterface(_messages.Message):
 
   Enums:
     ManagementTypeValueValuesEnum: [Output Only] The resource that configures
-      and manages this interface. MANAGED_BY_USER is the default value and can
-      be managed by you or other users; MANAGED_BY_ATTACHMENT is an interface
-      that is configured and managed by Cloud Interconnect, specifically by an
-      InterconnectAttachment of type PARTNER. Google will automatically
-      create, update, and delete this type of interface when the PARTNER
-      InterconnectAttachment is created, updated, or deleted.
+      and manages this interface.  - MANAGED_BY_USER is the default value and
+      can be managed directly by users.  - MANAGED_BY_ATTACHMENT is an
+      interface that is configured and managed by Cloud Interconnect,
+      specifically, by an InterconnectAttachment of type PARTNER. Google
+      automatically creates, updates, and deletes this type of interface when
+      the PARTNER InterconnectAttachment is created, updated, or deleted.
 
   Fields:
     ipRange: IP address and range of the interface. The IP range must be in
-      the RFC3927 link-local IP space. The value must be a CIDR-formatted
-      string, for example: 169.254.0.1/30. NOTE: Do not truncate the address
-      as it represents the IP address of the interface.
-    linkedInterconnectAttachment: URI of the linked interconnect attachment.
-      It must be in the same region as the router. Each interface can have at
-      most one linked resource and it could either be a VPN Tunnel or an
-      interconnect attachment.
-    linkedVpnTunnel: URI of the linked VPN tunnel. It must be in the same
-      region as the router. Each interface can have at most one linked
-      resource and it could either be a VPN Tunnel or an interconnect
+      the RFC3927 link-local IP address space. The value must be a CIDR-
+      formatted string, for example: 169.254.0.1/30. NOTE: Do not truncate the
+      address as it represents the IP address of the interface.
+    linkedInterconnectAttachment: URI of the linked Interconnect attachment.
+      It must be in the same region as the router. Each interface can have one
+      linked resource, which can be either be a VPN tunnel or an Interconnect
       attachment.
+    linkedVpnTunnel: URI of the linked VPN tunnel, which must be in the same
+      region as the router. Each interface can have one linked resource, which
+      can be either a VPN tunnel or an Interconnect attachment.
     managementType: [Output Only] The resource that configures and manages
-      this interface. MANAGED_BY_USER is the default value and can be managed
-      by you or other users; MANAGED_BY_ATTACHMENT is an interface that is
-      configured and managed by Cloud Interconnect, specifically by an
-      InterconnectAttachment of type PARTNER. Google will automatically
-      create, update, and delete this type of interface when the PARTNER
+      this interface.  - MANAGED_BY_USER is the default value and can be
+      managed directly by users.  - MANAGED_BY_ATTACHMENT is an interface that
+      is configured and managed by Cloud Interconnect, specifically, by an
+      InterconnectAttachment of type PARTNER. Google automatically creates,
+      updates, and deletes this type of interface when the PARTNER
       InterconnectAttachment is created, updated, or deleted.
     name: Name of this interface entry. The name must be 1-63 characters long
       and comply with RFC1035.
@@ -28904,10 +29205,10 @@ class RouterInterface(_messages.Message):
 
   class ManagementTypeValueValuesEnum(_messages.Enum):
     r"""[Output Only] The resource that configures and manages this interface.
-    MANAGED_BY_USER is the default value and can be managed by you or other
-    users; MANAGED_BY_ATTACHMENT is an interface that is configured and
-    managed by Cloud Interconnect, specifically by an InterconnectAttachment
-    of type PARTNER. Google will automatically create, update, and delete this
+    - MANAGED_BY_USER is the default value and can be managed directly by
+    users.  - MANAGED_BY_ATTACHMENT is an interface that is configured and
+    managed by Cloud Interconnect, specifically, by an InterconnectAttachment
+    of type PARTNER. Google automatically creates, updates, and deletes this
     type of interface when the PARTNER InterconnectAttachment is created,
     updated, or deleted.
 
@@ -29057,29 +29358,51 @@ class RouterNat(_messages.Message):
   auto-allocate ephemeral IPs if no external IPs are provided.
 
   Enums:
-    NatIpAllocateOptionValueValuesEnum: Specify the NatIpAllocateOption. If it
-      is AUTO_ONLY, then nat_ip should be empty.
-    SourceSubnetworkIpRangesToNatValueValuesEnum: Specify the Nat option. If
-      this field contains ALL_SUBNETWORKS_ALL_IP_RANGES or
+    NatIpAllocateOptionValueValuesEnum: Specify the NatIpAllocateOption, which
+      can take one of the following values:  - MANUAL_ONLY: Uses only Nat IP
+      addresses provided by customers. When there are not enough specified Nat
+      IPs, the Nat service fails for new VMs.  - AUTO_ONLY: Nat IPs are
+      allocated by Google Cloud Platform; customers can't specify any Nat IPs.
+      When choosing AUTO_ONLY, then nat_ip should be empty.
+    SourceSubnetworkIpRangesToNatValueValuesEnum: Specify the Nat option,
+      which can take one of the following values:  -
+      ALL_SUBNETWORKS_ALL_IP_RANGES: All of the IP ranges in every Subnetwork
+      are allowed to Nat.  - ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES: All of the
+      primary IP ranges in every Subnetwork are allowed to Nat.  -
+      LIST_OF_SUBNETWORKS: A list of Subnetworks are allowed to Nat (specified
+      in the field subnetwork below) The default is
+      SUBNETWORK_IP_RANGE_TO_NAT_OPTION_UNSPECIFIED. Note that if this field
+      contains ALL_SUBNETWORKS_ALL_IP_RANGES or
       ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES, then there should not be any
       other Router.Nat section in any Router for this network in this region.
 
   Fields:
     icmpIdleTimeoutSec: Timeout (in seconds) for ICMP connections. Defaults to
       30s if not set.
+    logConfig: Configure logging on this NAT.
     minPortsPerVm: Minimum number of ports allocated to a VM from this NAT
       config. If not set, a default number of ports is allocated to a VM. This
-      gets rounded up to the nearest power of 2. Eg. if the value of this
-      field is 50, at least 64 ports will be allocated to a VM.
+      is rounded up to the nearest power of 2. For example, if the value of
+      this field is 50, at least 64 ports are allocated to a VM.
     name: Unique name of this Nat service. The name must be 1-63 characters
       long and comply with RFC1035.
-    natIpAllocateOption: Specify the NatIpAllocateOption. If it is AUTO_ONLY,
-      then nat_ip should be empty.
+    natIpAllocateOption: Specify the NatIpAllocateOption, which can take one
+      of the following values:  - MANUAL_ONLY: Uses only Nat IP addresses
+      provided by customers. When there are not enough specified Nat IPs, the
+      Nat service fails for new VMs.  - AUTO_ONLY: Nat IPs are allocated by
+      Google Cloud Platform; customers can't specify any Nat IPs. When
+      choosing AUTO_ONLY, then nat_ip should be empty.
     natIps: A list of URLs of the IP resources used for this Nat service.
-      These IPs must be valid static external IP addresses assigned to the
-      project. max_length is subject to change post alpha.
-    sourceSubnetworkIpRangesToNat: Specify the Nat option. If this field
-      contains ALL_SUBNETWORKS_ALL_IP_RANGES or
+      These IP addresses must be valid static external IP addresses assigned
+      to the project.
+    sourceSubnetworkIpRangesToNat: Specify the Nat option, which can take one
+      of the following values:  - ALL_SUBNETWORKS_ALL_IP_RANGES: All of the IP
+      ranges in every Subnetwork are allowed to Nat.  -
+      ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES: All of the primary IP ranges in
+      every Subnetwork are allowed to Nat.  - LIST_OF_SUBNETWORKS: A list of
+      Subnetworks are allowed to Nat (specified in the field subnetwork below)
+      The default is SUBNETWORK_IP_RANGE_TO_NAT_OPTION_UNSPECIFIED. Note that
+      if this field contains ALL_SUBNETWORKS_ALL_IP_RANGES or
       ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES, then there should not be any
       other Router.Nat section in any Router for this network in this region.
     subnetworks: A list of Subnetwork resources whose traffic should be
@@ -29094,7 +29417,11 @@ class RouterNat(_messages.Message):
   """
 
   class NatIpAllocateOptionValueValuesEnum(_messages.Enum):
-    r"""Specify the NatIpAllocateOption. If it is AUTO_ONLY, then nat_ip
+    r"""Specify the NatIpAllocateOption, which can take one of the following
+    values:  - MANUAL_ONLY: Uses only Nat IP addresses provided by customers.
+    When there are not enough specified Nat IPs, the Nat service fails for new
+    VMs.  - AUTO_ONLY: Nat IPs are allocated by Google Cloud Platform;
+    customers can't specify any Nat IPs. When choosing AUTO_ONLY, then nat_ip
     should be empty.
 
     Values:
@@ -29105,10 +29432,16 @@ class RouterNat(_messages.Message):
     MANUAL_ONLY = 1
 
   class SourceSubnetworkIpRangesToNatValueValuesEnum(_messages.Enum):
-    r"""Specify the Nat option. If this field contains
-    ALL_SUBNETWORKS_ALL_IP_RANGES or ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES,
-    then there should not be any other Router.Nat section in any Router for
-    this network in this region.
+    r"""Specify the Nat option, which can take one of the following values:  -
+    ALL_SUBNETWORKS_ALL_IP_RANGES: All of the IP ranges in every Subnetwork
+    are allowed to Nat.  - ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES: All of the
+    primary IP ranges in every Subnetwork are allowed to Nat.  -
+    LIST_OF_SUBNETWORKS: A list of Subnetworks are allowed to Nat (specified
+    in the field subnetwork below) The default is
+    SUBNETWORK_IP_RANGE_TO_NAT_OPTION_UNSPECIFIED. Note that if this field
+    contains ALL_SUBNETWORKS_ALL_IP_RANGES or
+    ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES, then there should not be any other
+    Router.Nat section in any Router for this network in this region.
 
     Values:
       ALL_SUBNETWORKS_ALL_IP_RANGES: <no description>
@@ -29120,15 +29453,47 @@ class RouterNat(_messages.Message):
     LIST_OF_SUBNETWORKS = 2
 
   icmpIdleTimeoutSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  minPortsPerVm = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  name = _messages.StringField(3)
-  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 4)
-  natIps = _messages.StringField(5, repeated=True)
-  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 6)
-  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 7, repeated=True)
-  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  udpIdleTimeoutSec = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  logConfig = _messages.MessageField('RouterNatLogConfig', 2)
+  minPortsPerVm = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  name = _messages.StringField(4)
+  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 5)
+  natIps = _messages.StringField(6, repeated=True)
+  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 7)
+  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 8, repeated=True)
+  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  udpIdleTimeoutSec = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+
+
+class RouterNatLogConfig(_messages.Message):
+  r"""Configuration of logging on a NAT.
+
+  Enums:
+    FilterValueValuesEnum: Specifies the desired filtering of logs on this
+      NAT. If unspecified, logs are exported for all connections handled by
+      this NAT.
+
+  Fields:
+    enable: Indicates whether or not to export logs. This is false by default.
+    filter: Specifies the desired filtering of logs on this NAT. If
+      unspecified, logs are exported for all connections handled by this NAT.
+  """
+
+  class FilterValueValuesEnum(_messages.Enum):
+    r"""Specifies the desired filtering of logs on this NAT. If unspecified,
+    logs are exported for all connections handled by this NAT.
+
+    Values:
+      ALL: <no description>
+      ERRORS_ONLY: <no description>
+      TRANSLATIONS_ONLY: <no description>
+    """
+    ALL = 0
+    ERRORS_ONLY = 1
+    TRANSLATIONS_ONLY = 2
+
+  enable = _messages.BooleanField(1)
+  filter = _messages.EnumField('FilterValueValuesEnum', 2)
 
 
 class RouterNatSubnetworkToNat(_messages.Message):
@@ -29138,13 +29503,13 @@ class RouterNatSubnetworkToNat(_messages.Message):
     SourceIpRangesToNatValueListEntryValuesEnum:
 
   Fields:
-    name: URL for the subnetwork resource to use NAT.
+    name: URL for the subnetwork resource that will use NAT.
     secondaryIpRangeNames: A list of the secondary ranges of the Subnetwork
       that are allowed to use NAT. This can be populated only if
       "LIST_OF_SECONDARY_IP_RANGES" is one of the values in
       source_ip_ranges_to_nat.
     sourceIpRangesToNat: Specify the options for NAT ranges in the Subnetwork.
-      All usages of single value are valid except
+      All options of a single value are valid except
       NAT_IP_RANGE_OPTION_UNSPECIFIED. The only valid option with multiple
       values is: ["PRIMARY_IP_RANGE", "LIST_OF_SECONDARY_IP_RANGES"] Default:
       [ALL_IP_RANGES]
@@ -29960,8 +30325,10 @@ class SignedUrlKey(_messages.Message):
 
 
 class Snapshot(_messages.Message):
-  r"""A persistent disk snapshot resource. (== resource_for beta.snapshots ==)
-  (== resource_for v1.snapshots ==)
+  r"""Represents a Persistent Disk Snapshot resource.  You can use snapshots
+  to back up data on a regular interval. For more information, read  Creating
+  persistent disk snapshots. (== resource_for beta.snapshots ==) (==
+  resource_for v1.snapshots ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the snapshot. This can
@@ -30011,13 +30378,13 @@ class Snapshot(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     snapshotEncryptionKey: Encrypts the snapshot using a customer-supplied
       encryption key.  After you encrypt a snapshot using a customer-supplied
-      key, you must provide the same key if you use the image later For
+      key, you must provide the same key if you use the snapshot later. For
       example, you must provide the encryption key when you create a disk from
       the encrypted snapshot in a future request.  Customer-supplied
-      encryption keys do not protect access to metadata of the disk.  If you
-      do not provide an encryption key when creating the snapshot, then the
-      snapshot will be encrypted using an automatically generated key and you
-      do not need to provide a key to use the snapshot later.
+      encryption keys do not protect access to metadata of the snapshot.  If
+      you do not provide an encryption key when creating the snapshot, then
+      the snapshot will be encrypted using an automatically generated key and
+      you do not need to provide a key to use the snapshot later.
     sourceDisk: [Output Only] The source disk used to create this snapshot.
     sourceDiskEncryptionKey: The customer-supplied encryption key of the
       source disk. Required if the source disk is protected by a customer-
@@ -35035,8 +35402,10 @@ class XpnResourceId(_messages.Message):
 
 
 class Zone(_messages.Message):
-  r"""A Zone resource. (== resource_for beta.zones ==) (== resource_for
-  v1.zones ==) Next ID: 17
+  r"""Represents a Zone resource.  A zone is a deployment area. These
+  deployment areas are subsets of a region. For example the zone us-east1-a is
+  located in the us-east1 region. For more information, read Regions and
+  Zones. (== resource_for beta.zones ==) (== resource_for v1.zones ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] Status of the zone, either UP or
