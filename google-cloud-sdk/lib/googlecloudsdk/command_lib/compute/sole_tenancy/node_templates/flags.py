@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2018 Google Inc. All Rights Reserved.
+# Copyright 2018 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -54,6 +54,31 @@ def _IntOrAny():
     # Validate that an integer is passed.
     value = int(value)
     return str(value)
+  return _Parse
+
+
+def _BinarySizeAsStr(default_unit, lower_bound=None, upper_bound=None):
+  """Parses the value as a binary size converted to the default unit."""
+  # pylint: disable=protected-access
+  bytes_per_unit = scaled_integer.GetBinaryUnitSize(default_unit)
+  def _Parse(value):
+    value = value.lower()
+    size = arg_parsers.BinarySize(
+        lower_bound=lower_bound, upper_bound=upper_bound,
+        default_unit=default_unit)(value)
+    converted_size = size // bytes_per_unit
+    return str(converted_size)
+  return _Parse
+
+
+def _Choice(valid_choices):
+  def _Parse(value):
+    value = str(value.lower())
+    if value not in valid_choices:
+      raise arg_parsers.ArgumentTypeError(
+          '[type] must be one of [{0}]'.format(
+              ','.join(valid_choices)))
+    return value
   return _Parse
 
 
@@ -112,6 +137,38 @@ node. This value should include unit (eg. 3072MB or 9GB). If no
 units are specified, *GB is assumed*. If this key is not specified, local SSD is
 unconstrained.
       """)
+
+
+def AddDiskArgToParser(parser):
+  """Add flag for specifying disk information."""
+  parser.add_argument(
+      '--disk',
+      type=arg_parsers.ArgDict(
+          spec={
+              'type': _Choice(['local-ssd']),
+              'size': _BinarySizeAsStr(
+                  'GB', lower_bound='375GB', upper_bound='375GB'),
+              'count': str,
+          },
+          required_keys=[
+              'type',
+              'count',
+          ]),
+      help="""\
+Option to specify disk properties. It is mutually exclusive with
+'--node-requirements=[localSSD=LOCALSSD]' but
+'--node-requirements=[memory=MEMORY],[vCPU=VCPU],any' are still available.
+
+*type*::: Specifies the desired disk type on the node. This disk type must be a
+local storage type. This should be the name of the disk type. Currently
+only `local-ssd` is allowed.
+
+*size*::: The size of the disk in GiB. Currently you can specify only 375 GiB
+or no value at all.
+
+*count*::: Specifies the number of such disks.
+
+""")
 
 
 def GetServerBindingMapperFlag(messages):

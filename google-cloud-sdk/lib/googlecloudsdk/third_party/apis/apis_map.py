@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
 
 """Base template using which the apis_map.py is generated."""
 
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
 
 
@@ -278,6 +280,12 @@ MAP = {
         ),
     },
     'cloudscheduler': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.cloudscheduler.v1',
+            client_classpath='cloudscheduler_v1_client.CloudschedulerV1',
+            messages_modulepath='cloudscheduler_v1_messages',
+            default_version=False
+        ),
         'v1alpha1': APIDef(
             class_path='googlecloudsdk.third_party.apis.cloudscheduler.v1alpha1',
             client_classpath='cloudscheduler_v1alpha1_client.CloudschedulerV1alpha1',
@@ -576,6 +584,14 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.firestore.v1beta2',
             client_classpath='firestore_v1beta2_client.FirestoreV1beta2',
             messages_modulepath='firestore_v1beta2_messages',
+            default_version=True
+        ),
+    },
+    'gameservices': {
+        'v1alpha': APIDef(
+            class_path='googlecloudsdk.third_party.apis.gameservices.v1alpha',
+            client_classpath='gameservices_v1alpha_client.GameservicesV1alpha',
+            messages_modulepath='gameservices_v1alpha_messages',
             default_version=True
         ),
     },

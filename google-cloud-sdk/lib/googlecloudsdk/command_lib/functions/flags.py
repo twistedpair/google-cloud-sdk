@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2017 Google Inc. All Rights Reserved.
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -449,3 +449,10 @@ def AddIAMPolicyFileArg(parser):
       metavar='POLICY_FILE',
       help='Path to a local JSON or YAML formatted file '
       'containing a valid policy.')
+
+
+def AddIgnoreFileFlag(parser):
+  parser.add_argument(
+      '--ignore-file',
+      help='Override the .gcloudignore file and use the specified file instead.'
+      )

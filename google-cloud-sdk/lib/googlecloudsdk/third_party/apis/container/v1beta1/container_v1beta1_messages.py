@@ -461,6 +461,9 @@ class ClusterAutoscaling(_messages.Message):
   create/delete node pools based on the current needs.
 
   Fields:
+    autoprovisioningLocations: The list of Google Compute Engine
+      [zones](/compute/docs/zones#available) in which the NodePool's nodes can
+      be created by NAP.
     autoprovisioningNodePoolDefaults: AutoprovisioningNodePoolDefaults
       contains defaults for a node pool created by NAP.
     enableNodeAutoprovisioning: Enables automatic node pool creation and
@@ -469,9 +472,10 @@ class ClusterAutoscaling(_messages.Message):
       amount of resources in the cluster.
   """
 
-  autoprovisioningNodePoolDefaults = _messages.MessageField('AutoprovisioningNodePoolDefaults', 1)
-  enableNodeAutoprovisioning = _messages.BooleanField(2)
-  resourceLimits = _messages.MessageField('ResourceLimit', 3, repeated=True)
+  autoprovisioningLocations = _messages.StringField(1, repeated=True)
+  autoprovisioningNodePoolDefaults = _messages.MessageField('AutoprovisioningNodePoolDefaults', 2)
+  enableNodeAutoprovisioning = _messages.BooleanField(3)
+  resourceLimits = _messages.MessageField('ResourceLimit', 4, repeated=True)
 
 
 class ClusterUpdate(_messages.Message):
@@ -1927,6 +1931,9 @@ class NodePool(_messages.Message):
     instanceGroupUrls: [Output only] The resource URLs of the [managed
       instance groups](/compute/docs/instance-groups/creating-groups-of-
       managed-instances) associated with this node pool.
+    locations: The list of Google Compute Engine
+      [zones](/compute/docs/zones#available) in which the NodePool's nodes
+      should be located.
     management: NodeManagement configuration for this NodePool.
     maxPodsConstraint: The constraint on the maximum number of pods that can
       be run simultaneously on a node in the node pool.
@@ -1973,14 +1980,15 @@ class NodePool(_messages.Message):
   config = _messages.MessageField('NodeConfig', 3)
   initialNodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   instanceGroupUrls = _messages.StringField(5, repeated=True)
-  management = _messages.MessageField('NodeManagement', 6)
-  maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 7)
-  name = _messages.StringField(8)
-  podIpv4CidrSize = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  selfLink = _messages.StringField(10)
-  status = _messages.EnumField('StatusValueValuesEnum', 11)
-  statusMessage = _messages.StringField(12)
-  version = _messages.StringField(13)
+  locations = _messages.StringField(6, repeated=True)
+  management = _messages.MessageField('NodeManagement', 7)
+  maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 8)
+  name = _messages.StringField(9)
+  podIpv4CidrSize = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  selfLink = _messages.StringField(11)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  statusMessage = _messages.StringField(13)
+  version = _messages.StringField(14)
 
 
 class NodePoolAutoscaling(_messages.Message):
@@ -2922,6 +2930,11 @@ class UpdateNodePoolRequest(_messages.Message):
     imageProject: The project containing the desired image to use for this
       node pool. This is used to create clusters using a custom image.
     imageType: The desired image type for the node pool.
+    locations: The desired list of Google Compute Engine
+      [zones](/compute/docs/zones#available) in which the node pool's nodes
+      should be located. Changing the locations for a node pool will result in
+      nodes being either created or removed from the node pool, depending on
+      whether locations are being added or removed.
     name: The name (project, location, cluster, node pool) of the node pool to
       update. Specified in the format
       'projects/*/locations/*/clusters/*/nodePools/*'.
@@ -2948,12 +2961,13 @@ class UpdateNodePoolRequest(_messages.Message):
   image = _messages.StringField(2)
   imageProject = _messages.StringField(3)
   imageType = _messages.StringField(4)
-  name = _messages.StringField(5)
-  nodePoolId = _messages.StringField(6)
-  nodeVersion = _messages.StringField(7)
-  projectId = _messages.StringField(8)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 9)
-  zone = _messages.StringField(10)
+  locations = _messages.StringField(5, repeated=True)
+  name = _messages.StringField(6)
+  nodePoolId = _messages.StringField(7)
+  nodeVersion = _messages.StringField(8)
+  projectId = _messages.StringField(9)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 10)
+  zone = _messages.StringField(11)
 
 
 class UsableSubnetwork(_messages.Message):

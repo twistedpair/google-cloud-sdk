@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,10 @@
 
 """Debug command flags."""
 
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 SNAPSHOT_LIST_FORMAT = """
           table(
             short_status():label=STATUS,

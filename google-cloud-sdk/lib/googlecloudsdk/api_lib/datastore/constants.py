@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2017 Google Inc. All Rights Reserved.
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +14,9 @@
 # limitations under the License.
 """Constants used for Cloud Datastore."""
 
-# Special marker used for the default namespace in gcloud commands.
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
+# Special marker used for the default namespace in gcloud commands.
 DEFAULT_NAMESPACE = '(default)'

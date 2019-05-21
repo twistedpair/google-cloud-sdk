@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -1146,27 +1146,27 @@ class PropertyValue(ProtocolBuffer.ProtocolMessage):
 class Property(ProtocolBuffer.ProtocolMessage):
 
   # Meaning values
-  NO_MEANING   =    0 
-  BLOB         =   14 
-  TEXT         =   15 
-  BYTESTRING   =   16 
-  ATOM_CATEGORY =    1 
-  ATOM_LINK    =    2 
-  ATOM_TITLE   =    3 
-  ATOM_CONTENT =    4 
-  ATOM_SUMMARY =    5 
-  ATOM_AUTHOR  =    6 
-  GD_WHEN      =    7 
-  GD_EMAIL     =    8 
-  GEORSS_POINT =    9 
-  GD_IM        =   10 
-  GD_PHONENUMBER =   11 
-  GD_POSTALADDRESS =   12 
-  GD_RATING    =   13 
-  BLOBKEY      =   17 
-  ENTITY_PROTO =   19 
-  EMPTY_LIST   =   24 
-  INDEX_VALUE  =   18 
+  NO_MEANING   =    0
+  BLOB         =   14
+  TEXT         =   15
+  BYTESTRING   =   16
+  ATOM_CATEGORY =    1
+  ATOM_LINK    =    2
+  ATOM_TITLE   =    3
+  ATOM_CONTENT =    4
+  ATOM_SUMMARY =    5
+  ATOM_AUTHOR  =    6
+  GD_WHEN      =    7
+  GD_EMAIL     =    8
+  GEORSS_POINT =    9
+  GD_IM        =   10
+  GD_PHONENUMBER =   11
+  GD_POSTALADDRESS =   12
+  GD_RATING    =   13
+  BLOBKEY      =   17
+  ENTITY_PROTO =   19
+  EMPTY_LIST   =   24
+  INDEX_VALUE  =   18
 
   _Meaning_NAMES = {
     0: "NO_MEANING",
@@ -2309,9 +2309,9 @@ class User(ProtocolBuffer.ProtocolMessage):
 class EntityProto(ProtocolBuffer.ProtocolMessage):
 
   # Kind values
-  GD_CONTACT   =    1 
-  GD_EVENT     =    2 
-  GD_MESSAGE   =    3 
+  GD_CONTACT   =    1
+  GD_EVENT     =    2
+  GD_MESSAGE   =    3
 
   _Kind_NAMES = {
     1: "GD_CONTACT",
@@ -3259,9 +3259,9 @@ class CompositeProperty(ProtocolBuffer.ProtocolMessage):
 class Index_Property(ProtocolBuffer.ProtocolMessage):
 
   # Direction values
-  DIRECTION_UNSPECIFIED =    0 
-  ASCENDING    =    1 
-  DESCENDING   =    2 
+  DIRECTION_UNSPECIFIED =    0
+  ASCENDING    =    1
+  DESCENDING   =    2
 
   _Direction_NAMES = {
     0: "DIRECTION_UNSPECIFIED",
@@ -3274,9 +3274,9 @@ class Index_Property(ProtocolBuffer.ProtocolMessage):
 
 
   # Mode values
-  MODE_UNSPECIFIED =    0 
-  GEOSPATIAL   =    3 
-  ARRAY_CONTAINS =    4 
+  MODE_UNSPECIFIED =    0
+  GEOSPATIAL   =    3
+  ARRAY_CONTAINS =    4
 
   _Mode_NAMES = {
     0: "MODE_UNSPECIFIED",
@@ -3432,10 +3432,10 @@ class Index_Property(ProtocolBuffer.ProtocolMessage):
 class Index(ProtocolBuffer.ProtocolMessage):
 
   # Version values
-  VERSION_UNSPECIFIED =    0 
-  V1           =    1 
-  V2           =    2 
-  V3           =    3 
+  VERSION_UNSPECIFIED =    0
+  V1           =    1
+  V2           =    2
+  V3           =    3
 
   _Version_NAMES = {
     0: "VERSION_UNSPECIFIED",
@@ -3715,10 +3715,10 @@ class Index(ProtocolBuffer.ProtocolMessage):
 class CompositeIndex(ProtocolBuffer.ProtocolMessage):
 
   # State values
-  WRITE_ONLY   =    1 
-  READ_WRITE   =    2 
-  DELETED      =    3 
-  ERROR        =    4 
+  WRITE_ONLY   =    1
+  READ_WRITE   =    2
+  DELETED      =    3
+  ERROR        =    4
 
   _State_NAMES = {
     1: "WRITE_ONLY",
@@ -3732,9 +3732,9 @@ class CompositeIndex(ProtocolBuffer.ProtocolMessage):
 
 
   # WorkflowState values
-  PENDING      =    1 
-  ACTIVE       =    2 
-  COMPLETED    =    3 
+  PENDING      =    1
+  ACTIVE       =    2
+  COMPLETED    =    3
 
   _WorkflowState_NAMES = {
     1: "PENDING",

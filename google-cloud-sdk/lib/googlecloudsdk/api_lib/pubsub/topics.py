@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2017 Google Inc. All Rights Reserved.
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -62,19 +62,28 @@ class TopicsClient(object):
     self.messages = messages or GetMessagesModule(client)
     self._service = self.client.projects_topics
 
-  def Create(self, topic_ref, labels=None, kms_key=None):
+  def Create(self,
+             topic_ref,
+             labels=None,
+             kms_key=None,
+             message_storage_policy_allowed_regions=None):
     """Creates a Topic.
 
     Args:
       topic_ref (Resource): Resource reference to the Topic to create.
       labels (LabelsValue): Labels for the topic to create.
       kms_key (str): Full resource name of kms_key to set on Topic or None.
+      message_storage_policy_allowed_regions (list[str]): List of Cloud regions
+        in which messages are allowed to be stored at rest.
     Returns:
       Topic: The created topic.
     """
     topic = self.messages.Topic(name=topic_ref.RelativeName(), labels=labels)
     if kms_key:
       topic.kmsKeyName = kms_key
+    if message_storage_policy_allowed_regions:
+      topic.messageStoragePolicy = self.messages.MessageStoragePolicy(
+          allowedPersistenceRegions=message_storage_policy_allowed_regions)
     return self._service.Create(topic)
 
   def Get(self, topic_ref):
@@ -258,25 +267,40 @@ class TopicsClient(object):
     iam_util.RemoveBindingFromIamPolicy(policy, member, role)
     return self.SetIamPolicy(topic_ref, policy)
 
-  def Patch(self, topic_ref, labels=None,
-            recompute_message_storage_policy=False):
+  def Patch(self,
+            topic_ref,
+            labels=None,
+            recompute_message_storage_policy=False,
+            message_storage_policy_allowed_regions=None):
     """Updates a Topic.
 
     Args:
       topic_ref (Resource): Resource reference for the topic to be updated.
       labels (LabelsValue): The Cloud labels for the topic.
       recompute_message_storage_policy (bool): True to have the API recalculate
-        the policy.
+        the message storage policy.
+      message_storage_policy_allowed_regions (list[str]): List of Cloud regions
+        in which messages are allowed to be stored at rest.
     Returns:
       Topic: The updated topic.
     Raises:
       NoFieldsSpecifiedError: if no fields were specified.
+      PatchConflictingArgumentsError: if conflicting arguments were provided
     """
     update_settings = []
-    if labels is not None:
+    if labels:
       update_settings.append(_TopicUpdateSetting('labels', labels))
+
     if recompute_message_storage_policy:
       update_settings.append(_TopicUpdateSetting('messageStoragePolicy', None))
+    elif message_storage_policy_allowed_regions:
+      update_settings.append(
+          _TopicUpdateSetting(
+              'messageStoragePolicy',
+              self.messages.MessageStoragePolicy(
+                  allowedPersistenceRegions=message_storage_policy_allowed_regions
+              )))
+
     topic = self.messages.Topic(name=topic_ref.RelativeName())
 
     update_mask = []

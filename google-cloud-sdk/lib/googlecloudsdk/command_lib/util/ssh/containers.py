@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2017 Google Inc. All Rights Reserved.
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 """Utilities for using containers in conjunction with ssh."""
 
 
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
 
 

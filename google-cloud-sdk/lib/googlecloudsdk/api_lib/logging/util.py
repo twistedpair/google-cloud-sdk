@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2014 Google Inc. All Rights Reserved.
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -305,12 +305,13 @@ def ExtractLogId(log_resource):
   return log_id.replace('%2F', '/')
 
 
-def PrintPermissionInstructions(destination, writer_identity):
+def PrintPermissionInstructions(destination, writer_identity, is_dlp_sink):
   """Prints a message to remind the user to set up permissions for a sink.
 
   Args:
     destination: the sink destination (either bigquery or cloud storage).
     writer_identity: identity to which to grant write access.
+    is_dlp_sink: whether or not the sink is DLP enabled.
   """
   if writer_identity:
     grantee = '`{0}`'.format(writer_identity)
@@ -319,14 +320,18 @@ def PrintPermissionInstructions(destination, writer_identity):
 
   # TODO(b/31449674): if ladder needs test coverage
   if destination.startswith('bigquery'):
-    sdk_log.status.Print('Please remember to grant {0} '
-                         'the WRITER role on the dataset.'.format(grantee))
+    sdk_log.status.Print('Please remember to grant {0} the BigQuery Data '
+                         'Editor role on the dataset.'.format(grantee))
   elif destination.startswith('storage'):
-    sdk_log.status.Print('Please remember to grant {0} '
-                         'full-control access to the bucket.'.format(grantee))
+    sdk_log.status.Print('Please remember to grant {0} the Storage Object '
+                         'Creator role on the bucket.'.format(grantee))
   elif destination.startswith('pubsub'):
-    sdk_log.status.Print('Please remember to grant {0} Pub/Sub '
-                         'Publisher role to the topic.'.format(grantee))
+    sdk_log.status.Print('Please remember to grant {0} the Pub/Sub Publisher '
+                         'role on the topic.'.format(grantee))
+  if is_dlp_sink:
+    sdk_log.status.Print('Also remember to grant {0} DLP User and DLP Reader '
+                         'roles on the project that owns the sink '
+                         'destination.'.format(grantee))
   sdk_log.status.Print('More information about sinks can be found at https://'
                        'cloud.google.com/logging/docs/export/configure_export')
 

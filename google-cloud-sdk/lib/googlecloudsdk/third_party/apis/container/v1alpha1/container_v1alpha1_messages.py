@@ -31,6 +31,9 @@ class AddonsConfig(_messages.Message):
   cluster, enabling additional functionality.
 
   Fields:
+    cloudConnectorConfig: Configuration for the CloudConnector add-on, a
+      Kubernetes extension to manage hosted GCP services through the
+      Kubernetes API
     cloudRunConfig: Configuration for the Cloud Run addon. The `IstioConfig`
       addon must be enabled in order to enable Cloud Run. This option can only
       be enabled at cluster creation time.
@@ -52,14 +55,15 @@ class AddonsConfig(_messages.Message):
     serverlessConfig: Deprecated: use CloudRunConfig instead (same behavior).
   """
 
-  cloudRunConfig = _messages.MessageField('CloudRunConfig', 1)
-  dnsCacheConfig = _messages.MessageField('DnsCacheConfig', 2)
-  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 3)
-  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 4)
-  istioConfig = _messages.MessageField('IstioConfig', 5)
-  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 6)
-  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 7)
-  serverlessConfig = _messages.MessageField('ServerlessConfig', 8)
+  cloudConnectorConfig = _messages.MessageField('CloudConnectorConfig', 1)
+  cloudRunConfig = _messages.MessageField('CloudRunConfig', 2)
+  dnsCacheConfig = _messages.MessageField('DnsCacheConfig', 3)
+  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 4)
+  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 5)
+  istioConfig = _messages.MessageField('IstioConfig', 6)
+  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 7)
+  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 8)
+  serverlessConfig = _messages.MessageField('ServerlessConfig', 9)
 
 
 class AuthenticatorGroupsConfig(_messages.Message):
@@ -172,6 +176,16 @@ class ClientCertificateConfig(_messages.Message):
   """
 
   issueClientCertificate = _messages.BooleanField(1)
+
+
+class CloudConnectorConfig(_messages.Message):
+  r"""Configuration options for the Cloud Connector add-on.
+
+  Fields:
+    enabled: Whether Cloud Connector is enabled for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class CloudNatStatus(_messages.Message):
@@ -516,6 +530,9 @@ class ClusterAutoscaling(_messages.Message):
     AutoscalingProfileValueValuesEnum: Defines autoscaling behaviour.
 
   Fields:
+    autoprovisioningLocations: The list of Google Compute Engine
+      [zones](/compute/docs/zones#available) in which the NodePool's nodes can
+      be created by NAP.
     autoprovisioningNodePoolDefaults: AutoprovisioningNodePoolDefaults
       contains defaults for a node pool created by NAP.
     autoscalingProfile: Defines autoscaling behaviour.
@@ -535,10 +552,11 @@ class ClusterAutoscaling(_messages.Message):
     PROFILE_UNSPECIFIED = 0
     OPTIMIZE_UTILIZATION = 1
 
-  autoprovisioningNodePoolDefaults = _messages.MessageField('AutoprovisioningNodePoolDefaults', 1)
-  autoscalingProfile = _messages.EnumField('AutoscalingProfileValueValuesEnum', 2)
-  enableNodeAutoprovisioning = _messages.BooleanField(3)
-  resourceLimits = _messages.MessageField('ResourceLimit', 4, repeated=True)
+  autoprovisioningLocations = _messages.StringField(1, repeated=True)
+  autoprovisioningNodePoolDefaults = _messages.MessageField('AutoprovisioningNodePoolDefaults', 2)
+  autoscalingProfile = _messages.EnumField('AutoscalingProfileValueValuesEnum', 3)
+  enableNodeAutoprovisioning = _messages.BooleanField(4)
+  resourceLimits = _messages.MessageField('ResourceLimit', 5, repeated=True)
 
 
 class ClusterUpdate(_messages.Message):
@@ -554,9 +572,12 @@ class ClusterUpdate(_messages.Message):
     desiredBinaryAuthorization: The desired configuration options for the
       Binary Authorization feature.
     desiredCloudNatStatus: The desired status of Cloud NAT for this cluster.
+      Deprecated: use desired_default_snat_status instead.
     desiredClusterAutoscaling: The desired cluster-level autoscaling
       configuration.
     desiredDatabaseEncryption: Configuration of etcd encryption.
+    desiredDefaultSnatStatus: The desired status of whether to disable default
+      sNAT for this cluster.
     desiredImage: The desired name of the image to use for this node. This is
       used to create clusters using a custom image.
     desiredImageProject: The project containing the desired image to use for
@@ -628,26 +649,27 @@ class ClusterUpdate(_messages.Message):
   desiredCloudNatStatus = _messages.MessageField('CloudNatStatus', 4)
   desiredClusterAutoscaling = _messages.MessageField('ClusterAutoscaling', 5)
   desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 6)
-  desiredImage = _messages.StringField(7)
-  desiredImageProject = _messages.StringField(8)
-  desiredImageType = _messages.StringField(9)
-  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 10)
-  desiredLocations = _messages.StringField(11, repeated=True)
-  desiredLoggingService = _messages.StringField(12)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 13)
-  desiredMasterVersion = _messages.StringField(14)
-  desiredMonitoringService = _messages.StringField(15)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 16)
-  desiredNodePoolId = _messages.StringField(17)
-  desiredNodeVersion = _messages.StringField(18)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 19)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 20)
-  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 21)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 22)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 23)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 24)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 25)
-  securityProfile = _messages.MessageField('SecurityProfile', 26)
+  desiredDefaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 7)
+  desiredImage = _messages.StringField(8)
+  desiredImageProject = _messages.StringField(9)
+  desiredImageType = _messages.StringField(10)
+  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 11)
+  desiredLocations = _messages.StringField(12, repeated=True)
+  desiredLoggingService = _messages.StringField(13)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 14)
+  desiredMasterVersion = _messages.StringField(15)
+  desiredMonitoringService = _messages.StringField(16)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 17)
+  desiredNodePoolId = _messages.StringField(18)
+  desiredNodeVersion = _messages.StringField(19)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 20)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 21)
+  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 22)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 23)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 24)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 25)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 26)
+  securityProfile = _messages.MessageField('SecurityProfile', 27)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1298,6 +1320,17 @@ class DatabaseEncryption(_messages.Message):
 
   keyName = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class DefaultSnatStatus(_messages.Message):
+  r"""DefaultSnatStatus contains the desired state of whether default sNAT
+  should be disabled on the cluster.
+
+  Fields:
+    disabled: Disables cluster default sNAT rules.
+  """
+
+  disabled = _messages.BooleanField(1)
 
 
 class DnsCacheConfig(_messages.Message):
@@ -1991,9 +2024,14 @@ class NetworkConfig(_messages.Message):
   r"""Parameters for cluster networking.
 
   Fields:
+    disableDefaultSnat: Whether the cluster disables default in-node sNAT
+      rules. In-node sNAT rules will be disabled when this flag is true. When
+      set to false, default IP masquerade rules will be applied to the nodes
+      to prevent sNAT on cluster internal traffic.
     enableCloudNat: Whether GKE Cloud NAT is enabled for this cluster.
       Requires that the cluster has already set
-      IPAllocationPolicy.use_ip_aliases to true.
+      IPAllocationPolicy.use_ip_aliases to true. Deprecated: use
+      disable_default_snat instead.
     enableIntraNodeVisibility: Whether Intra-node visibility is enabled for
       this cluster. This enables flow logs for same node pod to pod traffic.
     enablePrivateIpv6Access: Whether or not Private IPv6 access is enabled.
@@ -2010,12 +2048,13 @@ class NetworkConfig(_messages.Message):
       Example: projects/my-project/regions/us-central1/subnetworks/my-subnet
   """
 
-  enableCloudNat = _messages.BooleanField(1)
-  enableIntraNodeVisibility = _messages.BooleanField(2)
-  enablePrivateIpv6Access = _messages.BooleanField(3)
-  enableSharedNetwork = _messages.BooleanField(4)
-  network = _messages.StringField(5)
-  subnetwork = _messages.StringField(6)
+  disableDefaultSnat = _messages.BooleanField(1)
+  enableCloudNat = _messages.BooleanField(2)
+  enableIntraNodeVisibility = _messages.BooleanField(3)
+  enablePrivateIpv6Access = _messages.BooleanField(4)
+  enableSharedNetwork = _messages.BooleanField(5)
+  network = _messages.StringField(6)
+  subnetwork = _messages.StringField(7)
 
 
 class NetworkPolicy(_messages.Message):

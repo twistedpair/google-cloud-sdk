@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2018 Google Inc. All Rights Reserved.
+# Copyright 2018 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.run import build_template
 from googlecloudsdk.api_lib.run import k8s_object
 
 
@@ -60,14 +59,6 @@ class Revision(k8s_object.KubernetesObject):
   @property
   def gcs_location(self):
     return self._m.status.gcs.location
-
-  @property
-  def language(self):
-    return self.labels.get(build_template.LANGUAGE_LABEL)
-
-  @property
-  def version(self):
-    return self.labels[build_template.VERSION_LABEL]
 
   @property
   def service_name(self):

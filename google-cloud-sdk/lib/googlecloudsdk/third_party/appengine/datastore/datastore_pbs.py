@@ -1,6 +1,6 @@
 # !/usr/bin/python2.4  # pylint: disable=g-unknown-interpreter
 #
-# Copyright 2013 Google Inc. All Rights Reserved.
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

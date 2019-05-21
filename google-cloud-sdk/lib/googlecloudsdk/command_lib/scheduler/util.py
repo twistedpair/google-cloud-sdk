@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2017 Google Inc. All Rights Reserved.
+# Copyright 2019 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import http_encoding
 
+import six
+
 
 _PUBSUB_MESSAGE_URL = 'type.googleapis.com/google.pubsub.v1.PubsubMessage'
 
@@ -45,6 +47,12 @@ def _GetSchedulerClient():
 
 def _GetSchedulerMessages():
   return apis.GetMessagesModule('cloudscheduler', 'v1beta1')
+
+
+def ClearFlag(arg):
+  """Clear the value for a flag."""
+  del arg
+  return None
 
 
 def LogPauseSuccess(unused_response, unused_args):
@@ -88,11 +96,97 @@ def ModifyCreatePubsubJobRequest(job_ref, args, create_job_req):
         the job.pubsubTarget.pubsubMessage field populated.
   """
   ModifyCreateJobRequest(job_ref, args, create_job_req)
-  create_job_req.job.pubsubTarget.data = http_encoding.Encode(
+  create_job_req.job.pubsubTarget.data = _EncodeMessageBody(
       args.message_body or args.message_body_from_file)
   if args.attributes:
     create_job_req.job.pubsubTarget.attributes = args.attributes
   return create_job_req
+
+
+def SetRequestJobName(job_ref, unused_args, update_job_req):
+  """Change the job.name field to a relative name."""
+  update_job_req.job.name = job_ref.RelativeName()
+  return update_job_req
+
+
+def SetAppEngineRequestMessageBody(unused_job_ref, args, update_job_req):
+  """Modify the App Engine update request to populate the message body."""
+  if args.clear_message_body:
+    update_job_req.job.appEngineHttpTarget.body = None
+  elif args.message_body or args.message_body_from_file:
+    update_job_req.job.appEngineHttpTarget.body = _EncodeMessageBody(
+        args.message_body or args.message_body_from_file)
+  return update_job_req
+
+
+def SetAppEngineRequestUpdateHeaders(unused_job_ref, args, update_job_req):
+  """Modify the App Engine update request to update, remove or clear headers."""
+  headers = None
+  if args.clear_headers:
+    headers = {}
+  elif args.update_headers or args.remove_headers:
+    if args.update_headers:
+      headers = args.update_headers
+    if args.remove_headers:
+      for key in args.remove_headers:
+        headers[key] = None
+
+  if headers:
+    update_job_req.job.appEngineHttpTarget.headers = \
+        _GenerateAdditionalProperties(headers)
+  return update_job_req
+
+
+def SetHTTPRequestMessageBody(unused_job_ref, args, update_job_req):
+  """Modify the HTTP update request to populate the message body."""
+  if args.clear_message_body:
+    update_job_req.job.httpTarget.body = None
+  elif args.message_body or args.message_body_from_file:
+    update_job_req.job.httpTarget.body = _EncodeMessageBody(
+        args.message_body or args.message_body_from_file)
+  return update_job_req
+
+
+def SetHTTPRequestUpdateHeaders(unused_job_ref, args, update_job_req):
+  """Modify the HTTP update request to update, remove, or clear headers."""
+  headers = None
+  if args.clear_headers:
+    headers = {}
+  elif args.update_headers or args.remove_headers:
+    if args.update_headers:
+      headers = args.update_headers
+    if args.remove_headers:
+      for key in args.remove_headers:
+        headers[key] = None
+  if headers:
+    update_job_req.job.httpTarget.headers = _GenerateAdditionalProperties(
+        headers)
+  return update_job_req
+
+
+def SetPubsubRequestMessageBody(unused_job_ref, args, update_job_req):
+  """Modify the Pubsub update request to populate the message body."""
+  if args.message_body or args.message_body_from_file:
+    update_job_req.job.pubsubTarget.data = _EncodeMessageBody(
+        args.message_body or args.message_body_from_file)
+  return update_job_req
+
+
+def SetPubsubRequestUpdateAttributes(unused_job_ref, args, update_job_req):
+  """Modify the Pubsub update request to update, remove, or clear attributes."""
+  attributes = None
+  if args.clear_attributes:
+    attributes = {}
+  elif args.update_attributes or args.remove_attributes:
+    if args.update_attributes:
+      attributes = args.update_attributes
+    if args.remove_attributes:
+      for key in args.remove_attributes:
+        attributes[key] = None
+  if attributes:
+    update_job_req.job.pubsubTarget.attributes = _GenerateAdditionalProperties(
+        attributes)
+  return update_job_req
 
 
 def ParseAttributes(attributes):
@@ -115,6 +209,155 @@ def ParseAttributes(attributes):
           [{'key': key, 'value': value}
            for key, value in sorted(attributes.items())]
   }
+
+
+def UpdateAppEngineMaskHook(unused_ref, args, req):
+  """Constructs updateMask for patch requests of AppEngine targets.
+
+  Args:
+    unused_ref: A resource ref to the parsed Job resource
+    args: The parsed args namespace from CLI
+    req: Created Patch request for the API call.
+
+  Returns:
+    Modified request for the API call.
+  """
+  app_engine_fields = {
+      '--message-body': 'appEngineHttpTarget.body',
+      '--message-body-from-file': 'appEngineHttpTarget.body',
+      '--relative-url': 'appEngineHttpTarget.relativeUri',
+      '--version': 'appEngineHttpTarget.appEngineRouting.version',
+      '--service': 'appEngineHttpTarget.appEngineRouting.service',
+      '--clear-service': 'appEngineHttpTarget.appEngineRouting.service',
+      '--clear-relative-url': 'appEngineHttpTarget.relativeUri',
+      '--clear-headers': 'appEngineHttpTarget.headers',
+      '--remove-headers': 'appEngineHttpTarget.headers',
+      '--update-headers': 'appEngineHttpTarget.headers',
+  }
+  req.updateMask = _GenerateUpdateMask(args, app_engine_fields)
+  return req
+
+
+def UpdateHTTPMaskHook(unused_ref, args, req):
+  """Constructs updateMask for patch requests of PubSub targets.
+
+  Args:
+    unused_ref: A resource ref to the parsed Job resource
+    args: The parsed args namespace from CLI
+    req: Created Patch request for the API call.
+
+  Returns:
+    Modified request for the API call.
+  """
+  http_fields = {
+      '--message-body': 'httpTarget.body',
+      '--message-body-from-file': 'httpTarget.body',
+      '--uri': 'httpTarget.uri',
+      '--http-method': 'httpTarget.httpMethod',
+      '--clear-headers': 'httpTarget.headers',
+      '--remove-headers': 'httpTarget.headers',
+      '--update-headers': 'httpTarget.headers',
+      '--oidc-service-account-email':
+          'httpTarget.oidcToken.serviceAccountEmail',
+      '--oidc-token-audience': 'httpTarget.oidcToken.audience',
+      '--oauth-service-account-email':
+          'httpTarget.oauthToken.serviceAccountEmail',
+      '--oauth-token-scope': 'httpTarget.oauthToken.scope',
+      '--clear-auth-token':
+          'httpTarget.oidcToken.serviceAccountEmail,'
+          'httpTarget.oidcToken.audience,'
+          'httpTarget.oauthToken.serviceAccountEmail,'
+          'httpTarget.oauthToken.scope',
+  }
+  req.updateMask = _GenerateUpdateMask(args, http_fields)
+  return req
+
+
+def UpdatePubSubMaskHook(unused_ref, args, req):
+  """Constructs updateMask for patch requests of PubSub targets.
+
+  Args:
+    unused_ref: A resource ref to the parsed Job resource
+    args: The parsed args namespace from CLI
+    req: Created Patch request for the API call.
+
+  Returns:
+    Modified request for the API call.
+  """
+  pubsub_fields = {
+      '--message-body': 'pubsubTarget.data',
+      '--message-body-from-file': 'pubsubTarget.data',
+      '--topic': 'pubsubTarget.topicName',
+      '--clear-attributes': 'pubsubTarget.attributes',
+      '--remove-attributes': 'pubsubTarget.attributes',
+      '--update-attributes': 'pubsubTarget.attributes',
+  }
+  req.updateMask = _GenerateUpdateMask(args, pubsub_fields)
+  return req
+
+
+def _GenerateUpdateMask(args, target_fields):
+  """Constructs updateMask for patch requests.
+
+  Args:
+    args: The parsed args namespace from CLI
+    target_fields: A Dictionary of field mappings specific to the target.
+
+  Returns:
+    String containing update mask for patch request.
+  """
+  arg_name_to_field = {
+      # Common flags
+      '--description': 'description',
+      '--schedule': 'schedule',
+      '--time-zone': 'timeZone',
+      '--clear-time-zone': 'timeZone',
+      '--attempt-deadline': 'attemptDeadline',
+      # Retry flags
+      '--max-retry-attempts': 'retryConfig.retryCount',
+      '--clear-max-retry-attempts': 'retryConfig.retryCount',
+      '--max-retry-duration': 'retryConfig.maxRetryDuration',
+      '--clear-max-retry-duration': 'retryConfig.maxRetryDuration',
+      '--min-backoff': 'retryConfig.minBackoffDuration',
+      '--clear-min-backoff': 'retryConfig.minBackoffDuration',
+      '--max-backoff': 'retryConfig.maxBackoffDuration',
+      '--clear-max-backoff': 'retryConfig.maxBackoffDuration',
+      '--max-doublings': 'retryConfig.maxDoublings',
+      '--clear-max-doublings': 'retryConfig.maxDoublings',
+  }
+  if target_fields:
+    arg_name_to_field.update(target_fields)
+
+  update_mask = []
+  for arg_name in args.GetSpecifiedArgNames():
+    if arg_name in arg_name_to_field:
+      update_mask.append(arg_name_to_field[arg_name])
+
+  return ','.join(sorted(list(set(update_mask))))
+
+
+def _EncodeMessageBody(message_body):
+  """HTTP encodes the given message body.
+
+  Args:
+    message_body: the message body to be encoded
+
+  Returns:
+    String containing HTTP encoded message body.
+  """
+  message_body_str = message_body
+  if not isinstance(message_body, six.string_types):
+    message_body_str = str(message_body, 'utf8')
+  return http_encoding.Encode(message_body_str)
+
+
+def _GenerateAdditionalProperties(values_dict):
+  """Format values_dict into additionalProperties-style dict."""
+  return {
+      'additionalProperties': [
+          {'key': key, 'value': value} for key, value
+          in sorted(values_dict.items())
+      ]}
 
 
 class RegionResolvingError(exceptions.Error):

@@ -1,0 +1,60 @@
+location:
+  name: location
+  collection: gameservices.projects.locations
+  attributes:
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: Google Cloud location.
+    property: gameservices/location
+
+allocation_policy:
+  name: allocationPolicy
+  collection: gameservices.projects.locations.allocationPolicies
+  attributes:
+  - *location
+  - &allocation-policy
+    parameter_name: allocationPolicyId
+    attribute_name: allocation_policy
+    help: Cloud Game Services Allocation Policy.
+
+game_server_cluster:
+  name: gameServerCluster
+  collection: gameservices.projects.locations.realms.gameServerClusters
+  attributes:
+  - *location
+  - *realm
+  - &game-server-cluster
+    parameter_name: gameServerClusterId
+    attribute_name: game_server_cluster
+    help: Cloud Game Services Game Server Cluster.
+
+deployment:
+  name: deployment
+  collection: gameservices.projects.locations.deployments
+  attributes:
+  - *location
+  - &deployment
+    parameter_name: deploymentId
+    attribute_name: deployment
+    help: Cloud Game Services Deployment.
+
+realm:
+  name: realm
+  collection: gameservices.projects.locations.realms
+  attributes:
+  - *location
+  - &realm
+    parameter_name: realmId
+    attribute_name: realm
+    help: Cloud Game Services Realm.
+
+scaling_policy:
+  name: scalingPolicy
+  collection: gameservices.projects.locations.scalingPolicies
+  attributes:
+  - *location
+  - &scaling-policy
+    parameter_name: scalingPolicyId
+    attribute_name: scaling_policy
+    help: Cloud Game Services Scaling Policy.

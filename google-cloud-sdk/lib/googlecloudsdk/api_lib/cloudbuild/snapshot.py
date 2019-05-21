@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -66,14 +66,16 @@ class Snapshot(object):
 
   Attributes:
     src_dir: str, The root of the snapshot source on the local disk.
+    ignore_file: Override .gcloudignore file to skip specified files.
     files: {str: FileMetadata}, A mapping from file path (relative to the
         snapshot root) to file metadata.
-    dir: [str], The list of dirs (possibly empty) in the snapshot.
+    dirs: [str], The list of dirs (possibly empty) in the snapshot.
     uncompressed_size: int, The number of bytes needed to store all of the
         files in this snapshot, uncompressed.
+    any_files_ignored: bool, any files which are ignored to skip.
   """
 
-  def __init__(self, src_dir):
+  def __init__(self, src_dir, ignore_file=None):
     self.src_dir = src_dir
     self.files = {}
     self.dirs = []
@@ -81,7 +83,8 @@ class Snapshot(object):
     self._client = core_apis.GetClientInstance('storage', 'v1')
     self._messages = core_apis.GetMessagesModule('storage', 'v1')
     file_chooser = gcloudignore.GetFileChooserForDir(self.src_dir,
-                                                     write_on_disk=False)
+                                                     write_on_disk=False,
+                                                     ignore_file=ignore_file)
     self.any_files_ignored = False
     for (dirpath, dirnames, filenames) in os.walk(self.src_dir):
       relpath = os.path.relpath(dirpath, self.src_dir)
@@ -139,13 +142,14 @@ class Snapshot(object):
       log.debug('Added [%s]', path)
     return tf
 
-  def CopyTarballToGCS(self, storage_client, gcs_object):
+  def CopyTarballToGCS(self, storage_client, gcs_object, ignore_file=None):
     """Copy a tarball of the snapshot to GCS.
 
     Args:
       storage_client: storage_api.StorageClient, The storage client to use for
                       uploading.
       gcs_object: storage.objects Resource, The GCS object to write.
+      ignore_file: Override .gcloudignore file to specify skip files.
 
     Returns:
       storage_v1_messages.Object, The written GCS object.
@@ -156,11 +160,11 @@ class Snapshot(object):
           archive_path = os.path.join(tmp, 'file.tgz')
           tf = self._MakeTarball(archive_path)
           tf.close()
-          ignore_file_path = os.path.join(self.src_dir,
+          ignore_file_path = os.path.join(self.src_dir, ignore_file or
                                           gcloudignore.IGNORE_FILE_NAME)
           if self.any_files_ignored:
             if os.path.exists(ignore_file_path):
-              log.info('Using gcloudignore file [{}]'.format(ignore_file_path))
+              log.info('Using ignore file [{}]'.format(ignore_file_path))
             else:
               log.status.Print(_IGNORED_FILE_MESSAGE.format(
                   log_file=log.GetLogFilePath()))

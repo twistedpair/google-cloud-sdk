@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2017 Google Inc. All Rights Reserved.
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -55,8 +55,11 @@ def AddCreatePullQueueFlags(parser):
     flag.AddToParser(parser)
 
 
-def AddCreatePushQueueFlags(parser, is_alpha=False):
-  flags = _AlphaPushQueueFlags() if is_alpha else _PushQueueFlags()
+def AddCreatePushQueueFlags(parser, release_track=base.ReleaseTrack.GA):
+  if release_track == base.ReleaseTrack.ALPHA:
+    flags = _AlphaPushQueueFlags()
+  else:
+    flags = _PushQueueFlags(release_track)
   for flag in flags:
     flag.AddToParser(parser)
 
@@ -66,8 +69,11 @@ def AddUpdatePullQueueFlags(parser):
     _AddFlagAndItsClearEquivalent(flag, parser)
 
 
-def AddUpdatePushQueueFlags(parser, is_alpha=False):
-  flags = _AlphaPushQueueFlags() if is_alpha else _PushQueueFlags()
+def AddUpdatePushQueueFlags(parser, release_track=base.ReleaseTrack.GA):
+  if release_track == base.ReleaseTrack.ALPHA:
+    flags = _AlphaPushQueueFlags()
+  else:
+    flags = _PushQueueFlags(release_track)
   for flag in flags:
     _AddFlagAndItsClearEquivalent(flag, parser)
 
@@ -148,6 +154,16 @@ def AddCreateAppEngineTaskFlags(parser, is_alpha=False):
   for flag in flags:
     flag.AddToParser(parser)
   _AddPayloadFlags(parser, is_alpha)
+
+
+def AddCreateHttpTaskFlags(parser):
+  """Add flags needed for creating a HTTP task to the parser."""
+  AddQueueResourceFlag(parser, required=True)
+  _GetTaskIdFlag().AddToParser(parser)
+  for flag in _HttpTaskFlags():
+    flag.AddToParser(parser)
+  _AddPayloadFlags(parser)
+  _AddAuthFlags(parser)
 
 
 def _PullQueueFlags():
@@ -238,8 +254,9 @@ def _AlphaPushQueueFlags():
   ]
 
 
-def _PushQueueFlags():
-  return _BasePushQueueFlags() + [
+def _PushQueueFlags(release_track=base.ReleaseTrack.GA):
+  """Returns flags needed by push queues."""
+  flags = _BasePushQueueFlags() + [
       base.Argument(
           '--max-dispatches-per-second',
           type=float,
@@ -256,6 +273,16 @@ def _PushQueueFlags():
           requests decreases.
           """),
   ]
+  if release_track == base.ReleaseTrack.BETA:
+    flags.append(base.Argument(
+        '--log-sampling-ratio',
+        type=float,
+        help="""\
+        Specifies the fraction of operations to write to Stackdriver Logging.
+        This field may contain any value between 0.0 and 1.0, inclusive. 0.0 is
+        the default and means that no operations are logged.
+        """))
+  return flags
 
 
 def _PullTaskFlags():
@@ -266,7 +293,7 @@ def _PullTaskFlags():
   ]
 
 
-def _BaseAppEngineTaskFlags():
+def _BasePushTaskFlags():
   return _CommonTaskFlags() + [
       base.Argument('--method', help="""\
           The HTTP method to use for the request. If not specified, "POST" will
@@ -279,6 +306,20 @@ def _BaseAppEngineTaskFlags():
           can be repeated. Repeated header fields will have their values
           overridden.
           """),
+  ]
+
+
+def _HttpTaskFlags():
+  return _BasePushTaskFlags() + [
+      base.Argument('--url', required=True, help="""\
+          The full URL path that the request will be sent to. This string must
+          begin with either "http://" or "https://".
+          """),
+  ]
+
+
+def _BaseAppEngineTaskFlags():
+  return _BasePushTaskFlags() + [
       base.Argument(
           '--routing',
           type=arg_parsers.ArgDict(key_type=_GetAppEngineRoutingKeysValidator(),
@@ -362,6 +403,44 @@ def _AddPayloadFlags(parser, is_alpha=False):
     payload_group.add_argument('--body-file', help="""\
             File containing HTTP body data sent to the task worker processing
             the task.
+            """)
+
+
+def _AddAuthFlags(parser):
+  """Add flags for http auth."""
+  auth_group = parser.add_mutually_exclusive_group(help="""\
+            How the request sent to the target when executing the task should be
+            authenticated.
+            """)
+  oidc_group = auth_group.add_argument_group(help='OpenId Connect')
+  oidc_group.add_argument('--oidc-service-account-email', required=True,
+                          help="""\
+            The service account email to be used for generating an OpenID
+            Connect token to be included in the request sent to the target when
+            executing the task. The service account must be within the same
+            project as the queue. The caller must have
+            'iam.serviceAccounts.actAs' permission for the service account.
+            """)
+  oidc_group.add_argument('--oidc-token-audience', help="""\
+            The audience to be used when generating an OpenID Connect token to
+            be included in the request sent to the target when executing the
+            task. If not specified, the URI specified in the target will be
+            used.
+            """)
+  oauth_group = auth_group.add_argument_group(help='OAuth2')
+  oauth_group.add_argument('--oauth-service-account-email', required=True,
+                           help="""\
+            The service account email to be used for generating an OAuth2 access
+            token to be included in the request sent to the target when
+            executing the task. The service account must be within the same
+            project as the queue. The caller must have
+            'iam.serviceAccounts.actAs' permission for the service account.
+            """)
+  oauth_group.add_argument('--oauth-token-scope', help="""\
+            The scope to be used when generating an OAuth2 access token to be
+            included in the request sent to the target when executing the task.
+            If not specified, 'https://www.googleapis.com/auth/cloud-platform'
+            will be used.
             """)
 
 

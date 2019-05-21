@@ -1,7 +1,108 @@
-args:
-- api_field: job.schedule
+retry_attempts: &retry_attempts
+  api_field: job.retryConfig.retryCount
+  arg_name: max-retry-attempts
+  default: 0
+  help_text: |
+    Number of times to retry the request if it fails or times out. Must
+    be in range 0-5 inclusive. Default is 0.
+
+clearable_retry_attempts:
+  group:
+    mutex: true
+    params:
+    - *retry_attempts
+    - arg_name: clear-max-retry-attempts
+      action: store_true
+      processor: googlecloudsdk.command_lib.scheduler.util:ClearFlag
+      help_text: |
+        Clear the field corresponding to `--max-retry-attempts`.
+
+retry_duration: &retry_duration
+  api_field: job.retryConfig.maxRetryDuration
+  arg_name: max-retry-duration
+  type: googlecloudsdk.core.util.times:ParseDuration
+  processor: googlecloudsdk.core.util.times:FormatDurationForJson
+  help_text: |
+    Time limit for retrying a failed task, measured from when the task was
+    first run. If specified with `--max-retry-attempts` greater than 0, the
+    task will be retried until both limits are reached. Default is 0 (which
+    means unlimited).
+
+clearable_retry_duration:
+  group:
+    mutex: true
+    params:
+    - *retry_duration
+    - arg_name: clear-max-retry-duration
+      action: store_true
+      processor: googlecloudsdk.command_lib.scheduler.util:ClearFlag
+      help_text: |
+        Clear the field corresponding to `--max-retry-duration`.
+
+min_backoff: &min_backoff
+  api_field: job.retryConfig.minBackoffDuration
+  arg_name: min-backoff
+  type: googlecloudsdk.core.util.times:ParseDuration
+  processor: googlecloudsdk.core.util.times:FormatDurationForJson
+  default: 5s
+  help_text: |
+    Minimum amount of time to wait before retrying a task after it
+    fails. For example, `10s`. Default is `5s`.
+
+clearable_min_backoff:
+  group:
+    mutex: true
+    params:
+    - *min_backoff
+    - arg_name: clear-min-backoff
+      action: store_true
+      processor: googlecloudsdk.command_lib.scheduler.util:ClearFlag
+      help_text: |
+        Clear the field corresponding to `--min-backoff`.
+
+max_backoff: &max_backoff
+  api_field: job.retryConfig.maxBackoffDuration
+  arg_name: max-backoff
+  default: 1h
+  type: googlecloudsdk.core.util.times:ParseDuration
+  processor: googlecloudsdk.core.util.times:FormatDurationForJson
+  help_text: |
+    Maximum amount of time to wait before retrying a task after it
+    fails. For example, `10m`. Default is `1h`.
+
+clearable_max_backoff:
+  group:
+    mutex: true
+    params:
+    - *max_backoff
+    - arg_name: clear-max-backoff
+      action: store_true
+      processor: googlecloudsdk.command_lib.scheduler.util:ClearFlag
+      help_text: |
+        Clear the field corresponding to `--max-backoff`.
+
+max_doublings: &max_doublings
+  api_field: job.retryConfig.maxDoublings
+  arg_name: max-doublings
+  default: 16
+  help_text: |
+    Maximum number of times that the interval between failed job
+    retries will be doubled before the increase becomes constant.
+
+clearable_max_doublings:
+  group:
+    mutex: true
+    params:
+    - *max_doublings
+    - arg_name: clear-max-doublings
+      action: store_true
+      processor: googlecloudsdk.command_lib.scheduler.util:ClearFlag
+      help_text: |
+        Clear the field corresponding to `--max-doublings`.
+
+schedule:
+  api_field: job.schedule
   arg_name: schedule
-  required: true
   help_text: |
     Schedule on which the job will be executed.
 
@@ -20,7 +121,9 @@ args:
     The schedule can be either of the following types:
     * Crontab: http://en.wikipedia.org/wiki/Cron#Overview
     * English-like schedule: https://cloud.google.com/scheduler/docs/quickstart#defining_the_job_schedule
-- api_field: job.timeZone
+
+timezone: &timezone
+  api_field: job.timeZone
   arg_name: time-zone
   default: Etc/UTC
   help_text: |
@@ -33,45 +136,125 @@ args:
     determined by the chosen time zone.
 
     For UTC use the string "utc". Default is "utc".
-- api_field: job.description
+
+clearable_timezone:
+  group:
+    mutex: true
+    params:
+    - *timezone
+    - arg_name: clear-time-zone
+      action: store_true
+      processor: googlecloudsdk.command_lib.scheduler.util:ClearFlag
+      help_text: |
+            Clear the field corresponding to `--time-zone`.
+
+attempt_deadline:
+  api_field: job.attemptDeadline
+  arg_name: attempt-deadline
+  type: googlecloudsdk.core.util.times:ParseDuration
+  processor: googlecloudsdk.core.util.times:FormatDurationForJson
+  help_text: |
+    The deadline for job attempts. If the request handler doesn't respond by this dealine,
+    the request is cancelled and the attempt is marked as failed. For example, 20s.
+
+description:
+  api_field: job.description
   arg_name: description
   help_text: |
     Human-readable description of the job.
-retry_args:
-- api_field: job.retryConfig.retryCount
-  arg_name: max-retry-attempts
-  default: 0
+
+pubsub_topic:
+  api_field: job.pubsubTarget.topicName
+  arg_name: topic
+  type: googlecloudsdk.command_lib.util.hooks.types:Resource:collection=pubsub.projects.topics
+  processor: googlecloudsdk.command_lib.util.hooks.processors:RelativeName
   help_text: |
-        Number of times to retry the request if it fails or times out. Must
-        be in range 0-5 inclusive. Default is 0.
-- api_field: job.retryConfig.maxRetryDuration
-  arg_name: max-retry-duration
-  type: googlecloudsdk.core.util.times:ParseDuration
-  processor: googlecloudsdk.core.util.times:FormatDurationForJson
-  help_text: |
-    Time limit for retrying a failed task, measured from when the task was
-    first run. If specified with `--max-retry-attempts` greater than 0, the
-    task will be retried until both limits are reached. Default is 0 (which
-    means unlimited).
-- api_field: job.retryConfig.minBackoffDuration
-  arg_name: min-backoff
-  type: googlecloudsdk.core.util.times:ParseDuration
-  processor: googlecloudsdk.core.util.times:FormatDurationForJson
-  default: 5s
-  help_text: |
-    Minimum amount of time to wait before retrying a task after it
-    fails. For example, `10s`. Default is `5s`.
-- api_field: job.retryConfig.maxBackoffDuration
-  arg_name: max-backoff
-  default: 1h
-  type: googlecloudsdk.core.util.times:ParseDuration
-  processor: googlecloudsdk.core.util.times:FormatDurationForJson
-  help_text: |
-    Maximum amount of time to wait before retrying a task after it
-    fails. For example, `10m`. Default is `1h`.
-- api_field: job.retryConfig.maxDoublings
-  arg_name: max-doublings
-  default: 16
-  help_text: |
-    Maximum number of times that the interval between failed job
-    retries will be doubled before the increase becomes constant.
+    Name of the Google Cloud Pub/Sub topic to publish to when the job runs.
+
+auth_tokens:
+  group:
+    help_text: |
+      How the request sent to the target when executing the job should be
+      authenticated.
+    mutex: true
+    params:
+    - group:
+        help_text: OpenId Connect
+        params:
+        - api_field: job.httpTarget.oidcToken.serviceAccountEmail
+          arg_name: oidc-service-account-email
+          required: true
+          help_text: |
+            The service account email to be used for generating an OpenId
+            Connect token to be included in the request sent to the target
+            when executing the job. The service account must be within the
+            same project as the job. The caller must have
+            iam.serviceAccounts.actAs permission for the service account.
+        - api_field: job.httpTarget.oidcToken.audience
+          arg_name: oidc-token-audience
+          help_text: |
+            The audience to be used when generating an OpenId Connect token
+            to be included in the request sent to the target when executing
+            the job. If not specified, the URI specified in target will be
+            used.
+    - group:
+        help_text: OAuth2
+        params:
+        - api_field: job.httpTarget.oauthToken.serviceAccountEmail
+          arg_name: oauth-service-account-email
+          required: true
+          help_text: |
+            The service account email to be used for generating an OAuth2
+            access token to be included in the request sent to the target
+            when executing the job. The service account must be within the
+            same project as the job. The caller must have
+            iam.serviceAccounts.actAs permission for the service account.
+        - api_field: job.httpTarget.oauthToken.scope
+          arg_name: oauth-token-scope
+          help_text: |
+            The scope to be used when generating an OAuth2 access token to
+            be included in the request sent to the target when executing the
+            job. If not specified,
+            "https://www.googleapis.com/auth/cloud-platform" will be used.
+
+auth_token_openid:
+  group:
+    help_text: OpenId Connect
+    params:
+    - api_field: job.httpTarget.oidcToken.serviceAccountEmail
+      arg_name: oidc-service-account-email
+      required: true
+      help_text: |
+        The service account email to be used for generating an OpenId
+        Connect token to be included in the request sent to the target
+        when executing the job. The service account must be within the
+        same project as the job. The caller must have
+        iam.serviceAccounts.actAs permission for the service account.
+    - api_field: job.httpTarget.oidcToken.audience
+      arg_name: oidc-token-audience
+      help_text: |
+        The audience to be used when generating an OpenId Connect token
+        to be included in the request sent to the target when executing
+        the job. If not specified, the URI specified in target will be
+        used.
+
+auth_token_oauth:
+  group:
+    help_text: OAuth2
+    params:
+    - api_field: job.httpTarget.oauthToken.serviceAccountEmail
+      arg_name: oauth-service-account-email
+      required: true
+      help_text: |
+        The service account email to be used for generating an OAuth2
+        access token to be included in the request sent to the target
+        when executing the job. The service account must be within the
+        same project as the job. The caller must have
+        iam.serviceAccounts.actAs permission for the service account.
+    - api_field: job.httpTarget.oauthToken.scope
+      arg_name: oauth-token-scope
+      help_text: |
+        The scope to be used when generating an OAuth2 access token to
+        be included in the request sent to the target when executing the
+        job. If not specified,
+        "https://www.googleapis.com/auth/cloud-platform" will be used.

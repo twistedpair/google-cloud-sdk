@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2018 Google Inc. All Rights Reserved.
+# Copyright 2018 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ from __future__ import unicode_literals
 
 import abc
 
+from googlecloudsdk.api_lib.run import configuration
+from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.util.args import repeated
 
@@ -56,6 +58,22 @@ class LabelChanges(ConfigChanger):
     maybe_new_labels = update_result.GetOrNone()
     if maybe_new_labels:
       metadata.labels = maybe_new_labels
+
+
+class ImageChange(ConfigChanger):
+  """A Cloud Run container deployment."""
+
+  deployment_type = 'container'
+
+  def __init__(self, image):
+    self.image = image
+
+  def AdjustConfiguration(self, conf, metadata):
+    annotations = k8s_object.AnnotationsFromMetadata(
+        conf.MessagesModule(), metadata)
+    annotations[configuration.USER_IMAGE_ANNOTATION] = (
+        self.image)
+    conf.image = self.image
 
 
 class EnvVarChanges(ConfigChanger):

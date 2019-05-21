@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2017 Google Inc. All Rights Reserved.
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,6 +27,10 @@ TASKS_COLLECTION = 'cloudtasks.projects.locations.queues.tasks'
 PULL_QUEUE = 'pull'
 PUSH_QUEUE = 'push'
 VALID_QUEUE_TYPES = [PULL_QUEUE, PUSH_QUEUE]
+
+PULL_TASK = 'pull'
+APP_ENGINE_TASK = 'app-engine'
+HTTP_TASK = 'http'
 
 APP_ENGINE_ROUTING_KEYS = ['service', 'version', 'instance']
 

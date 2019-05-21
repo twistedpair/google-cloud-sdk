@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -306,14 +306,14 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
 class Query_Filter(ProtocolBuffer.ProtocolMessage):
 
   # Operator values
-  LESS_THAN    =    1 
-  LESS_THAN_OR_EQUAL =    2 
-  GREATER_THAN =    3 
-  GREATER_THAN_OR_EQUAL =    4 
-  EQUAL        =    5 
-  IN           =    6 
-  EXISTS       =    7 
-  CONTAINED_IN_REGION =    8 
+  LESS_THAN    =    1
+  LESS_THAN_OR_EQUAL =    2
+  GREATER_THAN =    3
+  GREATER_THAN_OR_EQUAL =    4
+  EQUAL        =    5
+  IN           =    6
+  EXISTS       =    7
+  CONTAINED_IN_REGION =    8
 
   _Operator_NAMES = {
     1: "LESS_THAN",
@@ -509,8 +509,8 @@ class Query_Filter(ProtocolBuffer.ProtocolMessage):
 class Query_Order(ProtocolBuffer.ProtocolMessage):
 
   # Direction values
-  ASCENDING    =    1 
-  DESCENDING   =    2 
+  ASCENDING    =    1
+  DESCENDING   =    2
 
   _Direction_NAMES = {
     1: "ASCENDING",
@@ -634,9 +634,9 @@ class Query_Order(ProtocolBuffer.ProtocolMessage):
 class Query(ProtocolBuffer.ProtocolMessage):
 
   # Hint values
-  ORDER_FIRST  =    1 
-  ANCESTOR_FIRST =    2 
-  FILTER_FIRST =    3 
+  ORDER_FIRST  =    1
+  ANCESTOR_FIRST =    2
+  FILTER_FIRST =    3
 
   _Hint_NAMES = {
     1: "ORDER_FIRST",
@@ -4317,23 +4317,23 @@ class Cursor(ProtocolBuffer.ProtocolMessage):
 class Error(ProtocolBuffer.ProtocolMessage):
 
   # ErrorCode values
-  BAD_REQUEST  =    1 
-  CONCURRENT_TRANSACTION =    2 
-  INTERNAL_ERROR =    3 
-  NEED_INDEX   =    4 
-  TIMEOUT      =    5 
-  PERMISSION_DENIED =    6 
-  BIGTABLE_ERROR =    7 
-  COMMITTED_BUT_STILL_APPLYING =    8 
-  CAPABILITY_DISABLED =    9 
-  TRY_ALTERNATE_BACKEND =   10 
-  SAFE_TIME_TOO_OLD =   11 
-  RESOURCE_EXHAUSTED =   12 
-  NOT_FOUND    =   13 
-  ALREADY_EXISTS =   14 
-  FAILED_PRECONDITION =   15 
-  UNAUTHENTICATED =   16 
-  ABORTED      =   17 
+  BAD_REQUEST  =    1
+  CONCURRENT_TRANSACTION =    2
+  INTERNAL_ERROR =    3
+  NEED_INDEX   =    4
+  TIMEOUT      =    5
+  PERMISSION_DENIED =    6
+  BIGTABLE_ERROR =    7
+  COMMITTED_BUT_STILL_APPLYING =    8
+  CAPABILITY_DISABLED =    9
+  TRY_ALTERNATE_BACKEND =   10
+  SAFE_TIME_TOO_OLD =   11
+  RESOURCE_EXHAUSTED =   12
+  NOT_FOUND    =   13
+  ALREADY_EXISTS =   14
+  FAILED_PRECONDITION =   15
+  UNAUTHENTICATED =   16
+  ABORTED      =   17
 
   _ErrorCode_NAMES = {
     1: "BAD_REQUEST",
@@ -5500,8 +5500,8 @@ class GetResponse(ProtocolBuffer.ProtocolMessage):
 class PutRequest(ProtocolBuffer.ProtocolMessage):
 
   # AutoIdPolicy values
-  CURRENT      =    0 
-  SEQUENTIAL   =    1 
+  CURRENT      =    0
+  SEQUENTIAL   =    1
 
   _AutoIdPolicy_NAMES = {
     0: "CURRENT",
@@ -8673,9 +8673,9 @@ class AddActionsResponse(ProtocolBuffer.ProtocolMessage):
 class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
 
   # TransactionMode values
-  UNKNOWN      =    0 
-  READ_ONLY    =    1 
-  READ_WRITE   =    2 
+  UNKNOWN      =    0
+  READ_ONLY    =    1
+  READ_WRITE   =    2
 
   _TransactionMode_NAMES = {
     0: "UNKNOWN",
@@ -9368,22 +9368,22 @@ class GetIndicesRequest(ProtocolBuffer.ProtocolMessage):
 class DatastoreService_3(ProtocolBuffer.ProtocolMessage):
 
   # Method values
-  Get          =    1 
-  Put          =    2 
-  Touch        =    3 
-  Delete       =    4 
-  RunQuery     =    5 
-  AddActions   =    6 
-  Next         =    7 
-  DeleteCursor =    8 
-  BeginTransaction =    9 
-  Commit       =   10 
-  Rollback     =   11 
-  AllocateIds  =   12 
-  CreateIndex  =   13 
-  UpdateIndex  =   14 
-  GetIndices   =   15 
-  DeleteIndex  =   16 
+  Get          =    1
+  Put          =    2
+  Touch        =    3
+  Delete       =    4
+  RunQuery     =    5
+  AddActions   =    6
+  Next         =    7
+  DeleteCursor =    8
+  BeginTransaction =    9
+  Commit       =   10
+  Rollback     =   11
+  AllocateIds  =   12
+  CreateIndex  =   13
+  UpdateIndex  =   14
+  GetIndices   =   15
+  DeleteIndex  =   16
 
   _Method_NAMES = {
     1: "Get",

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2017 Google Inc. All Rights Reserved.
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ _ENDS_IN_ODD_NUMBER_SLASHES_RE = r'(?<!\\)\\(\\\\)*$'
 
 
 class InternalParserError(Exception):
-  """An internal error in gcloudignore parsing."""
+  """An internal error in ignore file parsing."""
 
 
 class BadFileError(InternalParserError):
@@ -369,11 +369,16 @@ def _GetIgnoreFileContents(default_ignore_file,
 
 def GetFileChooserForDir(
     directory, default_ignore_file=DEFAULT_IGNORE_FILE, write_on_disk=True,
-    gcloud_ignore_creation_predicate=_GitFilesExist, include_gitignore=True):
+    gcloud_ignore_creation_predicate=_GitFilesExist, include_gitignore=True,
+    ignore_file=None):
   """Gets the FileChooser object for the given directory.
 
   In order of preference:
-  - Uses .gcloudignore file in the top-level directory.
+  - Check if the users override the .glcoudignore file or not. If
+    ignore_file is not none. use custom ignore_file to skip files. If the
+    specified file does not exist, raise error.
+  - If specified ignore file does not exist, or user does not specify ignore
+    file, use .gcloudignore file in the top-level directory.
   - Evaluates creation predicate to determine whether to generate .gcloudignore.
     include_gitignore determines whether the generated .gcloudignore will
     include the user's .gitignore if one exists. If the directory is not
@@ -394,6 +399,8 @@ def GetFileChooserForDir(
       .gitignore file or .git directory.
     include_gitignore: bool, whether the generated gcloudignore should include
       the user's .gitignore if present.
+    ignore_file: custom ignore_file name.
+              Override .gcloudignore file to customize files to be skipped.
 
   Raises:
     BadIncludedFileError: if a file being included does not exist or is not in
@@ -403,20 +410,24 @@ def GetFileChooserForDir(
     FileChooser: the FileChooser for the directory. If there is no .gcloudignore
     file and it can't be created the returned FileChooser will choose all files.
   """
-  if not properties.VALUES.gcloudignore.enabled.GetBool():
-    log.info('Not using a .gcloudignore file since gcloudignore is globally '
-             'disabled.')
-    return FileChooser([])
-  gcloudignore_path = os.path.join(directory, IGNORE_FILE_NAME)
+
+  if ignore_file:
+    gcloudignore_path = os.path.join(directory, ignore_file)
+  else:
+    if not properties.VALUES.gcloudignore.enabled.GetBool():
+      log.info('Not using a .gcloudignore file since gcloudignore is globally '
+               'disabled.')
+      return FileChooser([])
+    gcloudignore_path = os.path.join(directory, IGNORE_FILE_NAME)
   try:
     chooser = FileChooser.FromFile(gcloudignore_path)
   except BadFileError:
     pass
   else:
-    log.info('Using .gcloudignore file at [{}].'.format(gcloudignore_path))
+    log.info('Using ignore file at [{}].'.format(gcloudignore_path))
     return chooser
   if not gcloud_ignore_creation_predicate(directory):
-    log.info('Not using a .gcloudignore file.')
+    log.info('Not using ignore file.')
     return FileChooser([])
 
   ignore_contents = _GetIgnoreFileContents(default_ignore_file, directory,

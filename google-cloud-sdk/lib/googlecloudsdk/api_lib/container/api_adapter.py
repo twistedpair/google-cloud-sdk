@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -179,16 +179,31 @@ ENABLE_NETWORK_EGRESS_METERING_ERROR_MSG = """\
 Cannot use --[no-]enable-network-egress-metering without --resource-usage-bigquery-dataset.
 """
 
+ENABLE_RESOURCE_CONSUMPTION_METERING_ERROR_MSG = """\
+Cannot use --[no-]enable-resource-consumption-metering without --resource-usage-bigquery-dataset.
+"""
+
+# TODO(b/132353882): move this check to the server side.
 SURGE_AND_AUTOSCALING_ERROR_MSG = """\
 Cannot use cluster autoscaling with alpha surge upgrades.
 """
 
+# TODO(b/132353882): move this check to the server side.
 SURGE_AND_MAX_UNAVAILABLE_BOTH_ZERO_ERROR_MSG = """\
 Cannot set both --max-unavailable-upgrade and --max-surge-upgrade to 0.
 """
 
-SURGE_REQUIRED__TO_CHANGE_MAX_UNAVAILABLE_ERROR_MSG = """\
+# TODO(b/132353882): move this check to the server side.
+SURGE_REQUIRED_TO_CHANGE_MAX_UNAVAILABLE_ERROR_MSG = """\
 At present changing --max-unavailable-upgrade requires setting --max-surge-upgrade to at least 1.
+"""
+
+DISABLE_DEFAULT_SNAT_WITHOUT_IP_ALIAS_ERROR_MSG = """\
+Cannot use --disable-default-snat without --enable-ip-alias.
+"""
+
+DISABLE_DEFAULT_SNAT_WITHOUT_PRIVATE_NODES_ERROR_MSG = """\
+Cannot use --disable-default-snat without --enable-private-nodes.
 """
 
 MAX_NODES_PER_POOL = 1000
@@ -404,11 +419,13 @@ class CreateClusterOptions(object):
                database_encryption=None,
                metadata=None,
                enable_network_egress_metering=None,
+               enable_resource_consumption_metering=None,
                identity_namespace=None,
                enable_shielded_nodes=None,
                linux_sysctls=None,
                autoprovisioning_service_account=None,
-               autoprovisioning_scopes=None):
+               autoprovisioning_scopes=None,
+               disable_default_snat=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -487,11 +504,13 @@ class CreateClusterOptions(object):
     self.database_encryption = database_encryption
     self.metadata = metadata
     self.enable_network_egress_metering = enable_network_egress_metering
+    self.enable_resource_consumption_metering = enable_resource_consumption_metering
     self.identity_namespace = identity_namespace
     self.enable_shielded_nodes = enable_shielded_nodes
     self.linux_sysctls = linux_sysctls
     self.autoprovisioning_service_account = autoprovisioning_service_account
     self.autoprovisioning_scopes = autoprovisioning_scopes
+    self.disable_default_snat = disable_default_snat
 
 
 class UpdateClusterOptions(object):
@@ -529,7 +548,8 @@ class UpdateClusterOptions(object):
                disable_workload_identity=None,
                enable_shielded_nodes=None,
                autoprovisioning_service_account=None,
-               autoprovisioning_scopes=None):
+               autoprovisioning_scopes=None,
+               disable_default_snat=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -562,6 +582,7 @@ class UpdateClusterOptions(object):
     self.enable_shielded_nodes = enable_shielded_nodes
     self.autoprovisioning_service_account = autoprovisioning_service_account
     self.autoprovisioning_scopes = autoprovisioning_scopes
+    self.disable_default_snat = disable_default_snat
 
 
 class SetMasterAuthOptions(object):
@@ -616,7 +637,9 @@ class CreateNodePoolOptions(object):
                max_pods_per_node=None,
                sandbox=None,
                metadata=None,
-               linux_sysctls=None):
+               linux_sysctls=None,
+               max_surge_upgrade=None,
+               max_unavailable_upgrade=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -647,6 +670,8 @@ class CreateNodePoolOptions(object):
     self.sandbox = sandbox
     self.metadata = metadata
     self.linux_sysctls = linux_sysctls
+    self.max_surge_upgrade = max_surge_upgrade
+    self.max_unavailable_upgrade = max_unavailable_upgrade
 
 
 class UpdateNodePoolOptions(object):
@@ -900,6 +925,17 @@ class APIAdapter(object):
       cluster.defaultMaxPodsConstraint = self.messages.MaxPodsConstraint(
           maxPodsPerNode=options.default_max_pods_per_node)
 
+    if options.disable_default_snat:
+      if not options.enable_ip_alias:
+        raise util.Error(DISABLE_DEFAULT_SNAT_WITHOUT_IP_ALIAS_ERROR_MSG)
+      if not options.enable_private_nodes:
+        raise util.Error(DISABLE_DEFAULT_SNAT_WITHOUT_PRIVATE_NODES_ERROR_MSG)
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig(
+            disableDefaultSnat=options.disable_default_snat)
+      else:
+        cluster.networkConfig.disableDefaultSnat = options.disable_default_snat
+
     if options.enable_legacy_authorization is not None:
       cluster.legacyAbac = self.messages.LegacyAbac(
           enabled=bool(options.enable_legacy_authorization))
@@ -953,8 +989,14 @@ class APIAdapter(object):
               bigqueryDestination=bigquery_destination)
       if options.enable_network_egress_metering:
         cluster.resourceUsageExportConfig.enableNetworkEgressMetering = True
+      if options.enable_resource_consumption_metering is not None:
+        cluster.resourceUsageExportConfig.consumptionMeteringConfig = \
+            self.messages.ConsumptionMeteringConfig(
+                enabled=options.enable_resource_consumption_metering)
     elif options.enable_network_egress_metering is not None:
       raise util.Error(ENABLE_NETWORK_EGRESS_METERING_ERROR_MSG)
+    elif options.enable_resource_consumption_metering is not None:
+      raise util.Error(ENABLE_RESOURCE_CONSUMPTION_METERING_ERROR_MSG)
 
     # Only instantiate the masterAuth struct if one or both of `user` or
     # `issue_client_certificate` is configured. Server-side Basic auth default
@@ -1337,10 +1379,16 @@ class APIAdapter(object):
               datasetId=options.resource_usage_bigquery_dataset))
       if options.enable_network_egress_metering:
         export_config.enableNetworkEgressMetering = True
+      if options.enable_resource_consumption_metering is not None:
+        export_config.consumptionMeteringConfig = \
+            self.messages.ConsumptionMeteringConfig(
+                enabled=options.enable_resource_consumption_metering)
       update = self.messages.ClusterUpdate(
           desiredResourceUsageExportConfig=export_config)
     elif options.enable_network_egress_metering is not None:
       raise util.Error(ENABLE_NETWORK_EGRESS_METERING_ERROR_MSG)
+    elif options.enable_resource_consumption_metering is not None:
+      raise util.Error(ENABLE_RESOURCE_CONSUMPTION_METERING_ERROR_MSG)
     elif options.clear_resource_usage_bigquery_dataset is not None:
       export_config = self.messages.ResourceUsageExportConfig()
       update = self.messages.ClusterUpdate(
@@ -1694,6 +1742,26 @@ class APIAdapter(object):
     if options.max_pods_per_node is not None:
       pool.maxPodsConstraint = self.messages.MaxPodsConstraint(
           maxPodsPerNode=options.max_pods_per_node)
+
+    # When both flags are default, don't write UpgradeSettings.
+    # TODO(b/130107095): remove this condition and always create
+    # UppgradeSettings.
+    if ((options.max_surge_upgrade is not None) and
+        (options.max_surge_upgrade != 0)) or (
+            (options.max_unavailable_upgrade is not None) and
+            (options.max_unavailable_upgrade != 1)):
+      # TODO(b/130103224): remove this condition.
+      if options.enable_autoscaling:
+        raise util.Error(SURGE_AND_AUTOSCALING_ERROR_MSG)
+      if (options.max_surge_upgrade == 0
+          and options.max_unavailable_upgrade == 0):
+        raise util.Error(SURGE_AND_MAX_UNAVAILABLE_BOTH_ZERO_ERROR_MSG)
+      # TODO(b/130107094): remove this condition.
+      if options.max_surge_upgrade == 0:
+        raise util.Error(SURGE_REQUIRED_TO_CHANGE_MAX_UNAVAILABLE_ERROR_MSG)
+      pool.upgradeSettings = self.messages.UpgradeSettings()
+      pool.upgradeSettings.maxSurge = options.max_surge_upgrade
+      pool.upgradeSettings.maxUnavailable = options.max_unavailable_upgrade
     return pool
 
   def CreateNodePool(self, node_pool_ref, options):
@@ -2365,6 +2433,12 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           desiredShieldedNodes=self.messages.ShieldedNodes(
               enabled=options.enable_shielded_nodes))
 
+    if options.disable_default_snat is not None:
+      disable_default_snat = self.messages.DefaultSnatStatus(
+          disabled=options.disable_default_snat)
+      update = self.messages.ClusterUpdate(
+          desiredDefaultSnatStatus=disable_default_snat)
+
     if not update:
       # if reached here, it's possible:
       # - someone added update flags but not handled
@@ -2521,7 +2595,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         pool.maxPodsConstraint = self.messages.MaxPodsConstraint(
             maxPodsPerNode=options.max_pods_per_node)
       # When both flags are default, don't write UpgradeSettings.
-      # TODO(b/130107095): remove this condition and always create.
+      # TODO(b/130107095): remove this condition and always create
       # UppgradeSettings.
       if (options.max_surge_upgrade != 0 or
           options.max_unavailable_upgrade != 1):
@@ -2533,7 +2607,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           raise util.Error(SURGE_AND_MAX_UNAVAILABLE_BOTH_ZERO_ERROR_MSG)
         # TODO(b/130107094): remove this condition.
         if options.max_surge_upgrade == 0:
-          raise util.Error(SURGE_REQUIRED__TO_CHANGE_MAX_UNAVAILABLE_ERROR_MSG)
+          raise util.Error(SURGE_REQUIRED_TO_CHANGE_MAX_UNAVAILABLE_ERROR_MSG)
         pool.upgradeSettings = self.messages.UpgradeSettings()
         pool.upgradeSettings.maxSurge = options.max_surge_upgrade
         pool.upgradeSettings.maxUnavailable = options.max_unavailable_upgrade

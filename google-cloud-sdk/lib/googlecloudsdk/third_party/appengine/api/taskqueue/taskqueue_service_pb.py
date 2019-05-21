@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -41,35 +41,35 @@ from googlecloudsdk.third_party.appengine.proto.message_set import MessageSet
 class TaskQueueServiceError(ProtocolBuffer.ProtocolMessage):
 
   # ErrorCode values
-  OK           =    0 
-  UNKNOWN_QUEUE =    1 
-  TRANSIENT_ERROR =    2 
-  INTERNAL_ERROR =    3 
-  TASK_TOO_LARGE =    4 
-  INVALID_TASK_NAME =    5 
-  INVALID_QUEUE_NAME =    6 
-  INVALID_URL  =    7 
-  INVALID_QUEUE_RATE =    8 
-  PERMISSION_DENIED =    9 
-  TASK_ALREADY_EXISTS =   10 
-  TOMBSTONED_TASK =   11 
-  INVALID_ETA  =   12 
-  INVALID_REQUEST =   13 
-  UNKNOWN_TASK =   14 
-  TOMBSTONED_QUEUE =   15 
-  DUPLICATE_TASK_NAME =   16 
-  SKIPPED      =   17 
-  TOO_MANY_TASKS =   18 
-  INVALID_PAYLOAD =   19 
-  INVALID_RETRY_PARAMETERS =   20 
-  INVALID_QUEUE_MODE =   21 
-  ACL_LOOKUP_ERROR =   22 
-  TRANSACTIONAL_REQUEST_TOO_LARGE =   23 
-  INCORRECT_CREATOR_NAME =   24 
-  TASK_LEASE_EXPIRED =   25 
-  QUEUE_PAUSED =   26 
-  INVALID_TAG  =   27 
-  DATASTORE_ERROR = 10000 
+  OK           =    0
+  UNKNOWN_QUEUE =    1
+  TRANSIENT_ERROR =    2
+  INTERNAL_ERROR =    3
+  TASK_TOO_LARGE =    4
+  INVALID_TASK_NAME =    5
+  INVALID_QUEUE_NAME =    6
+  INVALID_URL  =    7
+  INVALID_QUEUE_RATE =    8
+  PERMISSION_DENIED =    9
+  TASK_ALREADY_EXISTS =   10
+  TOMBSTONED_TASK =   11
+  INVALID_ETA  =   12
+  INVALID_REQUEST =   13
+  UNKNOWN_TASK =   14
+  TOMBSTONED_QUEUE =   15
+  DUPLICATE_TASK_NAME =   16
+  SKIPPED      =   17
+  TOO_MANY_TASKS =   18
+  INVALID_PAYLOAD =   19
+  INVALID_RETRY_PARAMETERS =   20
+  INVALID_QUEUE_MODE =   21
+  ACL_LOOKUP_ERROR =   22
+  TRANSACTIONAL_REQUEST_TOO_LARGE =   23
+  INCORRECT_CREATOR_NAME =   24
+  TASK_LEASE_EXPIRED =   25
+  QUEUE_PAUSED =   26
+  INVALID_TAG  =   27
+  DATASTORE_ERROR = 10000
 
   _ErrorCode_NAMES = {
     0: "OK",
@@ -698,8 +698,8 @@ class TaskQueueHttpHeader(ProtocolBuffer.ProtocolMessage):
 class TaskQueueMode(ProtocolBuffer.ProtocolMessage):
 
   # Mode values
-  PUSH         =    0 
-  PULL         =    1 
+  PUSH         =    0
+  PULL         =    1
 
   _Mode_NAMES = {
     0: "PUSH",
@@ -1012,11 +1012,11 @@ class TaskQueueAddRequest_CronTimetable(ProtocolBuffer.ProtocolMessage):
 class TaskQueueAddRequest(ProtocolBuffer.ProtocolMessage):
 
   # RequestMethod values
-  GET          =    1 
-  POST         =    2 
-  HEAD         =    3 
-  PUT          =    4 
-  DELETE       =    5 
+  GET          =    1
+  POST         =    2
+  HEAD         =    3
+  PUT          =    4
+  DELETE       =    5
 
   _RequestMethod_NAMES = {
     1: "GET",
@@ -6311,11 +6311,11 @@ class TaskQueueQueryTasksResponse_TaskRunLog(ProtocolBuffer.ProtocolMessage):
 class TaskQueueQueryTasksResponse_Task(ProtocolBuffer.ProtocolMessage):
 
   # RequestMethod values
-  GET          =    1 
-  POST         =    2 
-  HEAD         =    3 
-  PUT          =    4 
-  DELETE       =    5 
+  GET          =    1
+  POST         =    2
+  HEAD         =    3
+  PUT          =    4
+  DELETE       =    5
 
   _RequestMethod_NAMES = {
     1: "GET",

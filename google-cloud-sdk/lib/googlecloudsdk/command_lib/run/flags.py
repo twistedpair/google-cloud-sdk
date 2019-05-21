@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2018 Google Inc. All Rights Reserved.
+# Copyright 2018 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.command_lib.functions.deploy import env_vars_util
 from googlecloudsdk.command_lib.run import config_changes
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
-from googlecloudsdk.command_lib.run import source_ref as source_ref_util
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.command_lib.util.args import repeated
@@ -100,9 +99,7 @@ def AddServiceFlag(parser):
 
 def AddSourceRefFlags(parser):
   """Add the image and source args."""
-  source_ref_group = parser.add_mutually_exclusive_group()
-  _AddSourceArg(source_ref_group)
-  _AddImageArg(source_ref_group)
+  _AddImageArg(parser)
 
 
 def AddRegionArg(parser):
@@ -305,11 +302,6 @@ def GetConfigurationChanges(args):
   return changes
 
 
-def GetFunction(function_arg):
-  """Returns the function name, or None if not deploying a function."""
-  return function_arg
-
-
 def GetService(args):
   """Get and validate the service resource from the args."""
   service_ref = args.CONCEPTS.service.Parse()
@@ -323,17 +315,6 @@ def GetService(args):
       'Invalid service name [{}]. Service name must use only lowercase '
       'alphanumeric characters and dashes. Cannot begin or end with a dash, '
       'and cannot be longer than 63 characters.'.format(service_ref.servicesId))
-
-
-def GetSourceRef(source_arg, image_arg):
-  """Return a SourceRef representing either image path or source directory."""
-  if image_arg:
-    return source_ref_util.SourceRef.MakeImageRef(image_arg)
-  elif source_arg:
-    return source_ref_util.SourceRef.MakeDirRef(source_arg)
-  else:
-    raise ArgumentError(
-        'You must provide a container image using the --image flag.')
 
 
 def GetRegion(args, prompt=False):
@@ -402,11 +383,12 @@ def VerifyOnePlatformFlags(args):
   if getattr(args, 'connectivity', None):
     raise serverless_exceptions.ConfigurationError(
         'The `--connectivity=[internal|external]` flag '
-        'is not supported on OnePlatform.')
+        'is not supported on the fully managed version of Cloud Run.')
 
   if getattr(args, 'cpu', None):
     raise serverless_exceptions.ConfigurationError(
-        'The `--cpu flag is not supported on OnePlatform.')
+        'The `--cpu flag is not supported on the fully managed version '
+        'of Cloud Run.')
 
 
 def VerifyGKEFlags(args):

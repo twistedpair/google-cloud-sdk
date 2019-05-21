@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2018 Google Inc. All Rights Reserved.
+# Copyright 2018 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Flags and helpers for the compute networks peerings commands."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 
 def AddImportCustomRoutesFlag(parser):
@@ -37,3 +41,30 @@ def AddExportCustomRoutesFlag(parser):
         If set, the network will export custom routes to peer network. Use
         --no-export-custom-routes to disable it.
       """)
+
+
+def AddImportSubnetRoutesWithPublicIpFlag(parser):
+  """Adds importSubnetRoutesWithPublicIp flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--import-subnet-routes-with-public-ip',
+      action='store_true',
+      default=None,
+      help="""\
+        If set, the network will import subnet routes with addresses in the
+        public IP ranges from peer network.
+        Use --no-import-subnet-routes-with-public-ip to disable it.
+      """)
+
+
+def AddExportSubnetRoutesWithPublicIpFlag(parser):
+  """Adds exportSubnetRoutesWithPublicIp flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--export-subnet-routes-with-public-ip',
+      action='store_true',
+      default=None,
+      help="""\
+        If set, the network will export subnet routes with addresses in the
+        public IP ranges to peer network.
+        Use --no-export-subnet-routes-with-public-ip to disable it.
+      """)
+

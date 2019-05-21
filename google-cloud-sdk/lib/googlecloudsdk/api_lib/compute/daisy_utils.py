@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2017 Google Inc. All Rights Reserved.
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -506,7 +506,7 @@ def _RunCloudBuild(args,
   return build
 
 
-def RunOVFImportBuild(args, instance_names, source_uri, no_guest_environment,
+def RunOVFImportBuild(args, instance_name, source_uri, no_guest_environment,
                       can_ip_forward, deletion_protection, description, labels,
                       machine_type, network, network_tier, subnet,
                       private_network_ip, no_restart_on_failure, os, tags, zone,
@@ -516,7 +516,7 @@ def RunOVFImportBuild(args, instance_names, source_uri, no_guest_environment,
   Args:
     args: an argparse namespace. All the arguments that were provided to this
       command invocation.
-    instance_names: A list of instance names to be imported.
+    instance_name: Name of the instance to be imported.
     source_uri: A GCS path to OVA or OVF package.
     no_guest_environment: If set to True, Google Guest Environment won't be
       installed on the boot disk of the VM.
@@ -560,7 +560,7 @@ def RunOVFImportBuild(args, instance_names, source_uri, no_guest_environment,
   ovf_import_timeout = args.timeout - min(two_percent, 300)
 
   ovf_importer_args = []
-  AppendArg(ovf_importer_args, 'instance-names', ','.join(instance_names))
+  AppendArg(ovf_importer_args, 'instance-names', instance_name)
   AppendArg(ovf_importer_args, 'client-id', 'gcloud')
   AppendArg(ovf_importer_args, 'ovf-gcs-path', source_uri)
   AppendBoolArg(ovf_importer_args, 'no-guest-environment',

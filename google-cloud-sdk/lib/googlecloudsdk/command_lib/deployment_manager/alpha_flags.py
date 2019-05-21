@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,10 @@
 """Helper methods for configuring deployment manager command flags."""
 
 
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 LIST_PREVIEWED_RESOURCES_FORMAT = """
     table(
       name,

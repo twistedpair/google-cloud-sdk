@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -1502,10 +1502,10 @@ def AddAddonsFlagsWithOptions(parser, addon_options):
       metavar='ADDON',
       # TODO(b/65264376): Replace the doc link when a better doc is ready.
       help="""\
-Default set of addons includes {0}. Addons
+Addons
 (https://cloud.google.com/kubernetes-engine/reference/rest/v1/projects.zones.clusters#AddonsConfig)
 are additional Kubernetes cluster components. Addons specified by this flag will
-be enabled. The others will be disabled.
+be enabled. The others will be disabled. Default addons: {0}.
 """.format(', '.join(api_adapter.DEFAULT_ADDONS)))
 
 
@@ -1856,13 +1856,13 @@ Disable Workload Identity on the cluster.
 """)
 
 
-def AddResourceUsageExportFlags(parser, add_clear_flag=False, hidden=False):
+def AddResourceUsageExportFlags(parser, is_update=False, hidden=False):
   """Adds flags about exporting cluster resource usage to BigQuery."""
 
   group = parser.add_group(
       "Exports cluster's usage of cloud resources",
       hidden=hidden)
-  if add_clear_flag:
+  if is_update:
     group.is_mutex = True
     group.add_argument(
         '--clear-resource-usage-bigquery-dataset',
@@ -1889,7 +1889,7 @@ Example:
       hidden=hidden,
       help=dataset_help_text)
 
-  network_egress_help_text = """`
+  network_egress_help_text = """\
 Enable network egress metering on this cluster.
 
 When enabled, a DaemonSet is deployed into the cluster. Each DaemonSet pod
@@ -1904,6 +1904,37 @@ Network egress metering is disabled if this flag is omitted, or when
       action='store_true',
       default=None,
       help=network_egress_help_text)
+
+  resource_consumption_help_text = """\
+Enable resource consumption metering on this cluster.
+
+When enabled, a table will be created in the specified BigQuery dataset to store
+resource consumption data. The resulting table can be joined with the resource
+usage table or with BigQuery billing export.
+
+Resource consumption metering is enabled unless `--no-enable-resource-
+consumption-metering` is set.
+"""
+
+  if is_update:
+    resource_consumption_help_text = """\
+Enable resource consumption metering on this cluster.
+
+When enabled, a table will be created in the specified BigQuery dataset to store
+resource consumption data. The resulting table can be joined with the resource
+usage table or with BigQuery billing export.
+
+To disable resource consumption metering, set `--no-enable-resource-consumption-
+metering`. If this flag is omitted, then resource consumption metering will
+remain enabled or disabled depending on what is already configured for this
+cluster.
+"""
+  group.add_argument(
+      '--enable-resource-consumption-metering',
+      action='store_true',
+      default=None,
+      hidden=True,
+      help=resource_consumption_help_text)
 
 
 def AddEnablePrivateIpv6AccessFlag(parser, hidden=False):
@@ -2216,15 +2247,27 @@ more secure Node credential bootstrapping implementation.
       hidden=True)
 
 
-def AddSurgeUpgradeFlag(parser, hidden=False):
+def AddSurgeUpgradeFlag(parser, hidden=False, for_node_pool=False):
   """Adds surge upgrade related flag to the parser.
 
   Args:
     parser: A given parser.
     hidden: Whether or not to hide the help text.
+    for_node_pool: Whether this flag is for a node pool.
   """
 
-  max_surge_help = """\
+  if for_node_pool:
+    max_surge_help = """\
+Number of extra (surge) nodes to be created on each upgrade of the node pool.
+
+Specifies the number of extra (surge) nodes to be created during this node
+pool's upgrades. For example, running the following command will result in
+creating an extra node each time the node pool is upgraded:
+
+  $ {command} node-pool-1 --cluster=example-cluster --max-surge-upgrade 1
+"""
+  else:
+    max_surge_help = """\
 Number of extra (surge) nodes to be created on each upgrade of a node pool.
 
 Specifies the number of extra (surge) nodes to be created during this node
@@ -2241,15 +2284,28 @@ creating an extra node each time the node pool is upgraded:
       hidden=hidden)
 
 
-def AddMaxUnavailableUpgradeFlag(parser, hidden=False):
+def AddMaxUnavailableUpgradeFlag(parser, hidden=False, for_node_pool=False):
   """Adds --max-unavailable-upgrade flag to the parser.
 
   Args:
     parser: A given parser.
     hidden: Whether or not to hide the help text.
+    for_node_pool: Whether this flag is for a node pool.
   """
 
-  max_unavailable_upgrade_help = """\
+  if for_node_pool:
+    max_unavailable_upgrade_help = """\
+Number of nodes that can be unavailable at the same time on each upgrade of the node pool.
+
+Specifies the number of nodes that can be unavailable at the same time during this node
+pool's upgrades. For example, running the following command will result in
+having 3 nodes being upgraded in parallel (1 + 2), but keeping always at least 3 (5 - 2)
+available each time the node pool is upgraded:
+
+  $ {command} node-pool-1 --cluster=example-cluster --num-nodes=5 --max-surge-upgrade 1 --max-unavailable-upgrade=2
+"""
+  else:
+    max_unavailable_upgrade_help = """\
 Number of nodes that can be unavailable at the same time on each upgrade of a
 node pool.
 
@@ -2296,3 +2352,40 @@ Example:
       help=help_text,
       metavar='KEY=VALUE',
       action=arg_parsers.StoreOnceAction)
+
+
+def AddDisableDefaultSnatFlag(parser, for_cluster_create=False):
+  """Adds disable-default-snat flag to the parser.
+
+  Args:
+    parser: A given parser.
+    for_cluster_create: Whether the flag is for cluster creation.
+  """
+
+  if for_cluster_create:
+    help_text = """\
+Disable default source NAT rules applied in cluster nodes.
+
+By default, network traffic sending from Pods to outside of VPC will get
+masqueraded by the node external IP. When this flag is set, no default sNAT
+will be enforced on the cluster. The flag must be set if the cluster uses
+privately used public IPs.
+
+Must be used in conjunction with `--enable-ip-alias` and `--enable-private-nodes`.
+"""
+  else:
+    help_text = """\
+Disable default source NAT rules applied in cluster nodes.
+
+By default, network traffic sending from Pods to outside of VPC will get
+masqueraded by the node external IP. When this flag is set, no default sNAT
+will be enforced on the cluster. The flag must be set if the cluster uses
+privately used public IPs.
+
+Can only be used with private cluster in VPC Native network mode.
+"""
+  parser.add_argument(
+      '--disable-default-snat',
+      default=(False if for_cluster_create else None),
+      action='store_true',
+      help=help_text)

@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,12 +37,12 @@ else:
 class MemcacheServiceError(ProtocolBuffer.ProtocolMessage):
 
   # ErrorCode values
-  OK           =    0 
-  UNSPECIFIED_ERROR =    1 
-  NAMESPACE_NOT_SET =    2 
-  PERMISSION_DENIED =    3 
-  INVALID_VALUE =    6 
-  UNAVAILABLE  =    9 
+  OK           =    0
+  UNSPECIFIED_ERROR =    1
+  NAMESPACE_NOT_SET =    2
+  PERMISSION_DENIED =    3
+  INVALID_VALUE =    6
+  UNAVAILABLE  =    9
 
   _ErrorCode_NAMES = {
     0: "OK",
@@ -661,12 +661,12 @@ class MemcacheGetResponse_Item(ProtocolBuffer.ProtocolMessage):
 class MemcacheGetResponse(ProtocolBuffer.ProtocolMessage):
 
   # GetStatusCode values
-  HIT          =    1 
-  MISS         =    2 
-  TRUNCATED    =    3 
-  DEADLINE_EXCEEDED =    4 
-  UNREACHABLE  =    5 
-  OTHER_ERROR  =    6 
+  HIT          =    1
+  MISS         =    2
+  TRUNCATED    =    3
+  DEADLINE_EXCEEDED =    4
+  UNREACHABLE  =    5
+  OTHER_ERROR  =    6
 
   _GetStatusCode_NAMES = {
     1: "HIT",
@@ -1125,10 +1125,10 @@ class MemcacheSetRequest_Item(ProtocolBuffer.ProtocolMessage):
 class MemcacheSetRequest(ProtocolBuffer.ProtocolMessage):
 
   # SetPolicy values
-  SET          =    1 
-  ADD          =    2 
-  REPLACE      =    3 
-  CAS          =    4 
+  SET          =    1
+  ADD          =    2
+  REPLACE      =    3
+  CAS          =    4
 
   _SetPolicy_NAMES = {
     1: "SET",
@@ -1360,13 +1360,13 @@ class MemcacheSetRequest(ProtocolBuffer.ProtocolMessage):
 class MemcacheSetResponse(ProtocolBuffer.ProtocolMessage):
 
   # SetStatusCode values
-  STORED       =    1 
-  NOT_STORED   =    2 
-  ERROR        =    3 
-  EXISTS       =    4 
-  DEADLINE_EXCEEDED =    5 
-  UNREACHABLE  =    6 
-  OTHER_ERROR  =    7 
+  STORED       =    1
+  NOT_STORED   =    2
+  ERROR        =    3
+  EXISTS       =    4
+  DEADLINE_EXCEEDED =    5
+  UNREACHABLE  =    6
+  OTHER_ERROR  =    7
 
   _SetStatusCode_NAMES = {
     1: "STORED",
@@ -1804,11 +1804,11 @@ class MemcacheDeleteRequest(ProtocolBuffer.ProtocolMessage):
 class MemcacheDeleteResponse(ProtocolBuffer.ProtocolMessage):
 
   # DeleteStatusCode values
-  DELETED      =    1 
-  NOT_FOUND    =    2 
-  DEADLINE_EXCEEDED =    3 
-  UNREACHABLE  =    4 
-  OTHER_ERROR  =    5 
+  DELETED      =    1
+  NOT_FOUND    =    2
+  DEADLINE_EXCEEDED =    3
+  UNREACHABLE  =    4
+  OTHER_ERROR  =    5
 
   _DeleteStatusCode_NAMES = {
     1: "DELETED",
@@ -1929,8 +1929,8 @@ class MemcacheDeleteResponse(ProtocolBuffer.ProtocolMessage):
 class MemcacheIncrementRequest(ProtocolBuffer.ProtocolMessage):
 
   # Direction values
-  INCREMENT    =    1 
-  DECREMENT    =    2 
+  INCREMENT    =    1
+  DECREMENT    =    2
 
   _Direction_NAMES = {
     1: "INCREMENT",
@@ -2264,12 +2264,12 @@ class MemcacheIncrementRequest(ProtocolBuffer.ProtocolMessage):
 class MemcacheIncrementResponse(ProtocolBuffer.ProtocolMessage):
 
   # IncrementStatusCode values
-  OK           =    1 
-  NOT_CHANGED  =    2 
-  ERROR        =    3 
-  DEADLINE_EXCEEDED =    4 
-  UNREACHABLE  =    5 
-  OTHER_ERROR  =    6 
+  OK           =    1
+  NOT_CHANGED  =    2
+  ERROR        =    3
+  DEADLINE_EXCEEDED =    4
+  UNREACHABLE  =    5
+  OTHER_ERROR  =    6
 
   _IncrementStatusCode_NAMES = {
     1: "OK",

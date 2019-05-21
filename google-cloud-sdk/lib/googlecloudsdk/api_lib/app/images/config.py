@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2014 Google Inc. All Rights Reserved.
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,9 +15,12 @@
 
 """Magic constants for images module."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 # The version of the docker API the docker-py client uses.
 # Warning: other versions might have different return values for some functions.
-from __future__ import unicode_literals
 DOCKER_PY_VERSION = 'auto'
 
 # Timeout of HTTP request from docker-py client to docker daemon, in seconds.

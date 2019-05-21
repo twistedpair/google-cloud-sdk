@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2018 Google Inc. All Rights Reserved.
+# Copyright 2018 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ class PromptFallthrough(deps.Fallthrough):
     return self._Prompt(parsed_args)
 
 
-def GenerateServiceName(source_ref):
+def GenerateServiceName(image):
   """Produce a valid default service name.
 
   Converts a file path or image path into a reasonable default service name by
@@ -60,12 +60,12 @@ def GenerateServiceName(source_ref):
   the service name 'myimage'.
 
   Args:
-    source_ref: SourceRef, The app's source directory or container path.
+    image: str, The container path.
 
   Returns:
     A valid Cloud Run service name.
   """
-  base_name = os.path.basename(source_ref.source_path.rstrip(os.sep))
+  base_name = os.path.basename(image.rstrip(os.sep))
   base_name = base_name.split(':')[0]  # Discard image tag if present.
   base_name = base_name.split('@')[0]  # Disacard image hash if present.
   # Remove non-supported special characters.
@@ -80,12 +80,12 @@ class ServicePromptFallthrough(PromptFallthrough):
         'specify the service name from an interactive prompt')
 
   def _Prompt(self, parsed_args):
-    source_ref = None
-    if hasattr(parsed_args, 'source') or hasattr(parsed_args, 'image'):
-      source_ref = flags.GetSourceRef(parsed_args.source, parsed_args.image)
+    image = None
+    if hasattr(parsed_args, 'image'):
+      image = parsed_args.image
     message = 'Service name'
-    if source_ref:
-      default_name = GenerateServiceName(source_ref)
+    if image:
+      default_name = GenerateServiceName(image)
       service_name = console_io.PromptWithDefault(
           message=message, default=default_name)
     else:

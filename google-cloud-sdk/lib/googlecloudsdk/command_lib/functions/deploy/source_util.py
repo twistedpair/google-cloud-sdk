@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2018 Google Inc. All Rights Reserved.
+# Copyright 2018 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -46,17 +46,18 @@ def _GcloudIgnoreCreationPredicate(directory):
       directory, gcloudignore.GIT_FILES + ['node_modules'])
 
 
-def _GetChooser(path):
+def _GetChooser(path, ignore_file):
   default_ignore_file = gcloudignore.DEFAULT_IGNORE_FILE + '\nnode_modules\n'
 
   return gcloudignore.GetFileChooserForDir(
       path, default_ignore_file=default_ignore_file,
-      gcloud_ignore_creation_predicate=_GcloudIgnoreCreationPredicate)
+      gcloud_ignore_creation_predicate=_GcloudIgnoreCreationPredicate,
+      ignore_file=ignore_file)
 
 
-def _ValidateUnpackedSourceSize(path):
+def _ValidateUnpackedSourceSize(path, ignore_file=None):
   """Validate size of unpacked source files."""
-  chooser = _GetChooser(path)
+  chooser = _GetChooser(path, ignore_file)
   predicate = chooser.IsIncluded
   try:
     size_b = file_utils.GetTreeSizeBytes(path, predicate=predicate)
@@ -73,23 +74,28 @@ def _ValidateUnpackedSourceSize(path):
         str(size_b) + 'B', str(size_limit_b) + 'B')
 
 
-def _CreateSourcesZipFile(zip_dir, source_path):
+def _CreateSourcesZipFile(zip_dir, source_path, ignore_file=None):
   """Prepare zip file with source of the function to upload.
 
   Args:
     zip_dir: str, directory in which zip file will be located. Name of the file
              will be `fun.zip`.
     source_path: str, directory containing the sources to be zipped.
+    ignore_file: custom ignore_file name.
+        Override .gcloudignore file to customize files to be skipped.
   Returns:
     Path to the zip file (str).
   Raises:
     FunctionsError
   """
   api_util.ValidateDirectoryExistsOrRaiseFunctionError(source_path)
-  _ValidateUnpackedSourceSize(source_path)
+  if ignore_file and not os.path.exists(os.path.join(source_path, ignore_file)):
+    raise exceptions.FileNotFoundError('File {0} referenced by --ignore-file '
+                                       'does not exist.'.format(ignore_file))
+  _ValidateUnpackedSourceSize(source_path, ignore_file)
   zip_file_name = os.path.join(zip_dir, 'fun.zip')
   try:
-    chooser = _GetChooser(source_path)
+    chooser = _GetChooser(source_path, ignore_file)
     predicate = chooser.IsIncluded
     archive.MakeZipFromDir(zip_file_name, source_path, predicate=predicate)
   except ValueError as e:
@@ -198,7 +204,8 @@ def UploadFile(source, stage_bucket, messages, service, function_ref):
   return _UploadFileToGeneratedUrl(source, messages, service, function_ref)
 
 
-def SetFunctionSourceProps(function, function_ref, source_arg, stage_bucket):
+def SetFunctionSourceProps(function, function_ref, source_arg, stage_bucket,
+                           ignore_file=None):
   """Add sources to function.
 
   Args:
@@ -207,6 +214,8 @@ def SetFunctionSourceProps(function, function_ref, source_arg, stage_bucket):
     source_arg: Location of source code to deploy.
     stage_bucket: The name of the Google Cloud Storage bucket where source code
         will be stored.
+    ignore_file: custom ignore_file name.
+        Override .gcloudignore file to customize files to be skipped.
   Returns:
     A list of fields on the function that have been changed.
   """
@@ -236,7 +245,7 @@ def SetFunctionSourceProps(function, function_ref, source_arg, stage_bucket):
     )
     return ['sourceRepository']
   with file_utils.TemporaryDirectory() as tmp_dir:
-    zip_file = _CreateSourcesZipFile(tmp_dir, source_arg)
+    zip_file = _CreateSourcesZipFile(tmp_dir, source_arg, ignore_file)
     service = api_util.GetApiClientInstance().projects_locations_functions
 
     upload_url = UploadFile(

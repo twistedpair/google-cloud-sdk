@@ -753,6 +753,13 @@
           "type": "integer",
           "format": "int32"
         },
+        "locations": {
+          "description": "The list of Google Compute Engine [zones](\/compute\/docs\/zones#available)\nin which the NodePool's nodes should be located.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -1124,6 +1131,13 @@
         "autoprovisioningNodePoolDefaults": {
           "description": "AutoprovisioningNodePoolDefaults contains defaults for a node pool\ncreated by NAP.",
           "$ref": "AutoprovisioningNodePoolDefaults"
+        },
+        "autoprovisioningLocations": {
+          "description": "The list of Google Compute Engine [zones](\/compute\/docs\/zones#available)\nin which the NodePool's nodes can be created by NAP.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1733,6 +1747,13 @@
         "imageProject": {
           "description": "The project containing the desired image to use for this node pool.\nThis is used to create clusters using a custom image.",
           "type": "string"
+        },
+        "locations": {
+          "description": "The desired list of Google Compute Engine\n[zones](\/compute\/docs\/zones#available) in which the node pool's nodes\nshould be located. Changing the locations for a node pool will result\nin nodes being either created or removed from the node pool, depending\non whether locations are being added or removed.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "workloadMetadataConfig": {
           "description": "The desired image type for the node pool.",

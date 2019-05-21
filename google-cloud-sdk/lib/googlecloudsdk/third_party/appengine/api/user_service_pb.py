@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,12 +37,12 @@ else:
 class UserServiceError(ProtocolBuffer.ProtocolMessage):
 
   # ErrorCode values
-  OK           =    0 
-  REDIRECT_URL_TOO_LONG =    1 
-  NOT_ALLOWED  =    2 
-  OAUTH_INVALID_TOKEN =    3 
-  OAUTH_INVALID_REQUEST =    4 
-  OAUTH_ERROR  =    5 
+  OK           =    0
+  REDIRECT_URL_TOO_LONG =    1
+  NOT_ALLOWED  =    2
+  OAUTH_INVALID_TOKEN =    3
+  OAUTH_INVALID_REQUEST =    4
+  OAUTH_ERROR  =    5
 
   _ErrorCode_NAMES = {
     0: "OK",

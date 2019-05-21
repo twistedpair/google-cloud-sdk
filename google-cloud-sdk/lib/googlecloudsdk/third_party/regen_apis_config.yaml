@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -196,6 +196,8 @@ apis:
     v1beta1:
       discovery_doc: cloudscheduler_v1beta1.json
       default: true
+    v1:
+      discovery_doc: cloudscheduler_v1.json
   composer:
     v1alpha2:
       discovery_doc: composer_v1alpha2.json
@@ -618,3 +620,6 @@ apis:
           enable_uri_parsing: false
         operations:
           path: operations/{+operationId}
+  gameservices:
+    v1alpha:
+      discovery_doc: gameservices_v1alpha.json

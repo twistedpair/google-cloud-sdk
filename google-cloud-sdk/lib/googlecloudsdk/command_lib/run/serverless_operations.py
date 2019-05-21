@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2019 Google Inc. All Rights Reserved.
+# Copyright 2019 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,12 +22,9 @@ from __future__ import unicode_literals
 import contextlib
 import copy
 import functools
-import glob
-import os
 import random
 import string
 from apitools.base.py import exceptions as api_exceptions
-from googlecloudsdk.api_lib.run import build_template
 from googlecloudsdk.api_lib.run import configuration
 from googlecloudsdk.api_lib.run import domain_mapping
 from googlecloudsdk.api_lib.run import global_methods
@@ -41,7 +38,6 @@ from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import exceptions as exceptions_util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.run import config_changes as config_changes_mod
-from googlecloudsdk.command_lib.run import deployable as deployable_pkg
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import resource_name_conversion
 from googlecloudsdk.command_lib.run import stages
@@ -435,84 +431,12 @@ class ServerlessOperations(object):
     self._client = client
     self._registry = resources.REGISTRY.Clone()
     self._registry.RegisterApiByName(api_name, api_version)
-    self._temporary_build_template_registry = {}
     self._op_client = op_client
     self._region = region
 
   @property
   def _messages_module(self):
     return self._client.MESSAGES_MODULE
-
-  def IsSourceBranch(self):
-    # TODO(b/112662240): Remove once the build field is public
-    return hasattr(self._client.MESSAGES_MODULE.ConfigurationSpec, 'build')
-
-  # For internal-only source testing. Codepaths inaccessable except on
-  # build from dev branch.
-  # TODO(b/112662240): productionalize when source is landing
-  def _TemporaryBuildTemplateRegistry(self, namespace_ref):
-    """Return the list of build templates available, mocking the server."""
-    if namespace_ref.RelativeName() in self._temporary_build_template_registry:
-      return self._temporary_build_template_registry[
-          namespace_ref.RelativeName()]
-
-    detect = build_template.BuildTemplate.New(
-        self._client, 'default')
-    detect.name = 'detect'
-    detect.annotations[build_template.IGNORE_GLOB_ANNOTATION] = (
-        '["/*", "!package.json","!Pipfile.lock"]')
-
-    nodejs_8_9_4 = build_template.BuildTemplate.New(
-        self._client, 'default')
-    nodejs_8_9_4.name = 'nodejs_8_9_4'
-    nodejs_8_9_4.annotations[build_template.IGNORE_GLOB_ANNOTATION] = (
-        '["node_modules/"]')
-    nodejs_8_9_4.labels[build_template.LANGUAGE_LABEL] = 'nodejs'
-    nodejs_8_9_4.labels[build_template.VERSION_LABEL] = '8.9.4'
-    nodejs_8_9_4.annotations[build_template.DEV_IMAGE_ANNOTATION] = (
-        'gcr.io/local-run-demo/nodejs_dev:latest')
-
-    go_1_10_1 = build_template.BuildTemplate.New(
-        self._client, 'default')
-    go_1_10_1.name = 'go_1_10_1'
-    go_1_10_1.labels[build_template.LANGUAGE_LABEL] = 'go'
-    go_1_10_1.labels[build_template.VERSION_LABEL] = '1.10.1'
-    lst = [detect, nodejs_8_9_4, go_1_10_1]
-    self._temporary_build_template_registry[namespace_ref.RelativeName()] = lst
-    return lst
-
-  def Detect(self, namespace_ref, source_ref, function_entrypoint=None):
-    """Detects important properties and returns a Deployable.
-
-    Args:
-      namespace_ref: str, the namespace to look for build templates in
-      source_ref: source_ref.SourceRef, refers to some source code
-      function_entrypoint: str, allows you to specify this is a function, and
-                           the function to run.
-
-    Returns:
-      a new Deployable referring to the source
-    """
-    template = self._DetectBuildTemplate(namespace_ref, source_ref)
-
-    if (source_ref.source_type == source_ref.SourceType.IMAGE
-        and not template and not function_entrypoint):
-      return deployable_pkg.ServerlessContainer(source_ref)
-
-    if not self.IsSourceBranch():
-      raise serverless_exceptions.UnknownDeployableError()
-    # TODO(b/112662240): Put at top when source lands.
-    from googlecloudsdk.command_lib.run import source_deployable  # pylint: disable=g-import-not-at-top
-    if (function_entrypoint and
-        template and
-        source_ref.source_type == source_ref.SourceType.DIRECTORY):
-      return source_deployable.ServerlessFunction(source_ref, template,
-                                                  function_entrypoint)
-
-    if (source_ref.source_type == source_ref.SourceType.DIRECTORY and
-        template and
-        not function_entrypoint):
-      return source_deployable.ServerlessApp(source_ref, template)
 
   def GetRevision(self, revision_ref):
     """Get the revision.
@@ -559,24 +483,6 @@ class ServerlessOperations(object):
       return route.Route(route_get_response, messages)
     except api_exceptions.HttpNotFoundError:
       return None
-
-  def _GetBuildTemplateByName(self, namespace_ref, name):
-    """Return the BuildTemplate with the given name, or None."""
-    # Implementation to be replaced once the concept exists on the server.
-    for templ in self._TemporaryBuildTemplateRegistry(namespace_ref):
-      if templ.name == name:
-        return templ
-    return None
-
-  def _GetBuildTemplateByLanguageVersion(self, namespace_ref,
-                                         language, version):
-    """Return the BuildTemplate with the given language & version, or None."""
-    # Implementation to be replaced once the concept exists on the server.
-    del namespace_ref
-    for templ in self._temporary_build_template_registry:
-      if (templ.language, templ.version) == (language, version):
-        return templ
-    return None
 
   def WaitForCondition(self, poller):
     """Wait for a configuration to be ready in latest revision.
@@ -635,23 +541,6 @@ class ServerlessOperations(object):
       raise serverless_exceptions.NoActiveRevisionsError()
 
     return serv_route.active_revisions
-
-  def _DetectBuildTemplate(self, namespace_ref, source_ref):
-    """Determine the appropriate build template from source.
-
-    Args:
-      namespace_ref: Resource, namespace to find build templates in.
-      source_ref: SourceRef, The service's image repo or source directory.
-
-    Returns:
-      The detected build template name.
-    """
-    if source_ref.source_type == source_ref.SourceType.IMAGE:
-      return None
-    elif glob.glob(os.path.join(source_ref.source_path, '*.go')):
-      return self._GetBuildTemplateByName(namespace_ref, 'go_1_10_1')
-    else:
-      return self._GetBuildTemplateByName(namespace_ref, 'nodejs_8_9_4')
 
   def ListServices(self, namespace_ref):
     messages = self._messages_module
@@ -971,10 +860,10 @@ class ServerlessOperations(object):
       tracker = progress_tracker.NoOpStagedProgressTracker(
           stages.ServiceStages(allow_unauthenticated),
           interruptable=True, aborted_message='aborted')
-    with_code = any(
-        isinstance(c, deployable_pkg.Deployable) for c in config_changes)
+    with_image = any(
+        isinstance(c, config_changes_mod.ImageChange) for c in config_changes)
     self._UpdateOrCreateService(
-        service_ref, config_changes, with_code, private_endpoint)
+        service_ref, config_changes, with_image, private_endpoint)
 
     if allow_unauthenticated:
       try:

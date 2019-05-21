@@ -114,6 +114,36 @@ deleted.
         supports_download=False,
     )
 
+    def Export(self, request, global_params=None):
+      r"""Redis will continue serving during this operation.
+
+The returned operation is automatically deleted after a few hours, so
+there is no need to call DeleteOperation.
+
+      Args:
+        request: (RedisProjectsLocationsInstancesExportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Export')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Export.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:export',
+        http_method=u'POST',
+        method_id=u'redis.projects.locations.instances.export',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}:export',
+        request_field=u'exportInstanceRequest',
+        request_type_name=u'RedisProjectsLocationsInstancesExportRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets the details of a specific Redis instance.
 
@@ -138,6 +168,40 @@ deleted.
         request_field='',
         request_type_name=u'RedisProjectsLocationsInstancesGetRequest',
         response_type_name=u'Instance',
+        supports_download=False,
+    )
+
+    def Import(self, request, global_params=None):
+      r"""Import a Redis RDB snapshot file from GCS into a Redis instance.
+
+Redis may stop serving during this operation. Instance state will be
+IMPORTING for entire operation. When complete, the instance will contain
+only data from the imported file.
+
+The returned operation is automatically deleted after a few hours, so
+there is no need to call DeleteOperation.
+
+      Args:
+        request: (RedisProjectsLocationsInstancesImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:import',
+        http_method=u'POST',
+        method_id=u'redis.projects.locations.instances.import',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}:import',
+        request_field=u'importInstanceRequest',
+        request_type_name=u'RedisProjectsLocationsInstancesImportRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 

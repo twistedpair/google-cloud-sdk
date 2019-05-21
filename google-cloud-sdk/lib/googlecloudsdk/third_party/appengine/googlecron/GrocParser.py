@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 import sys
 from antlr3 import *
 from antlr3.compat import set, frozenset
-         
+
 # Copyright 2005-2009 Google, Inc.  All rights reserved.
 # @author arb@google.com (Anthony Baxter)
 # Based on original C++ version by
@@ -104,12 +104,12 @@ DAY=19
 
 # token names
 tokenNames = [
-    "<invalid>", "<EOR>", "<DOWN>", "<UP>", 
-    "OF", "TIME", "EVERY", "DIGIT", "DIGITS", "SYNCHRONIZED", "COMMA", "FIRST", 
-    "SECOND", "THIRD", "FOURTH", "FIFTH", "FOURTH_OR_FIFTH", "HOURS", "MINUTES", 
-    "DAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", 
-    "SUNDAY", "MONTH", "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", 
-    "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER", "QUARTER", 
+    "<invalid>", "<EOR>", "<DOWN>", "<UP>",
+    "OF", "TIME", "EVERY", "DIGIT", "DIGITS", "SYNCHRONIZED", "COMMA", "FIRST",
+    "SECOND", "THIRD", "FOURTH", "FIFTH", "FOURTH_OR_FIFTH", "HOURS", "MINUTES",
+    "DAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY",
+    "SUNDAY", "MONTH", "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
+    "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER", "QUARTER",
     "FROM", "TO", "TWO_DIGIT_HOUR_TIME", "WS", "UNKNOWN_TOKEN"
 ]
 
@@ -142,7 +142,7 @@ class GrocParser(Parser):
 
 
 
-               
+
         self.ordinal_set = set()
         self.weekday_set = set()
         self.month_set = set()
@@ -153,16 +153,16 @@ class GrocParser(Parser):
         self.synchronized = False
         self.start_time_string = ''
         self.end_time_string = ''
-            
 
 
 
-                
 
 
-        
 
-              
+
+
+
+
     valuesDict = {
         SUNDAY: 0,
         FIRST: 1,
@@ -205,7 +205,7 @@ class GrocParser(Parser):
             try:
                 # borg/borgcron/py/Groc.g:93:3: ( ( specifictime | interval ) EOF )
                 # borg/borgcron/py/Groc.g:93:5: ( specifictime | interval ) EOF
-                pass 
+                pass
                 # borg/borgcron/py/Groc.g:93:5: ( specifictime | interval )
                 alt1 = 2
                 LA1_0 = self.input.LA(1)
@@ -231,7 +231,7 @@ class GrocParser(Parser):
 
                 if alt1 == 1:
                     # borg/borgcron/py/Groc.g:93:7: specifictime
-                    pass 
+                    pass
                     self._state.following.append(self.FOLLOW_specifictime_in_timespec44)
                     self.specifictime()
 
@@ -240,7 +240,7 @@ class GrocParser(Parser):
 
                 elif alt1 == 2:
                     # borg/borgcron/py/Groc.g:93:22: interval
-                    pass 
+                    pass
                     self._state.following.append(self.FOLLOW_interval_in_timespec48)
                     self.interval()
 
@@ -260,7 +260,7 @@ class GrocParser(Parser):
 
             pass
 
-        return 
+        return
 
     # $ANTLR end "timespec"
 
@@ -275,19 +275,19 @@ class GrocParser(Parser):
             try:
                 # borg/borgcron/py/Groc.g:97:3: ( ( ( ( ( ( ordinals weekdays ) | monthdays ) OF ( monthspec | quarterspec ) ) | ( ordinals weekdays ) ) TIME ) )
                 # borg/borgcron/py/Groc.g:97:5: ( ( ( ( ( ordinals weekdays ) | monthdays ) OF ( monthspec | quarterspec ) ) | ( ordinals weekdays ) ) TIME )
-                pass 
+                pass
                 # borg/borgcron/py/Groc.g:97:5: ( ( ( ( ( ordinals weekdays ) | monthdays ) OF ( monthspec | quarterspec ) ) | ( ordinals weekdays ) ) TIME )
                 # borg/borgcron/py/Groc.g:97:7: ( ( ( ( ordinals weekdays ) | monthdays ) OF ( monthspec | quarterspec ) ) | ( ordinals weekdays ) ) TIME
-                pass 
+                pass
                 # borg/borgcron/py/Groc.g:97:7: ( ( ( ( ordinals weekdays ) | monthdays ) OF ( monthspec | quarterspec ) ) | ( ordinals weekdays ) )
                 alt4 = 2
                 alt4 = self.dfa4.predict(self.input)
                 if alt4 == 1:
                     # borg/borgcron/py/Groc.g:97:8: ( ( ( ordinals weekdays ) | monthdays ) OF ( monthspec | quarterspec ) )
-                    pass 
+                    pass
                     # borg/borgcron/py/Groc.g:97:8: ( ( ( ordinals weekdays ) | monthdays ) OF ( monthspec | quarterspec ) )
                     # borg/borgcron/py/Groc.g:97:10: ( ( ordinals weekdays ) | monthdays ) OF ( monthspec | quarterspec )
-                    pass 
+                    pass
                     # borg/borgcron/py/Groc.g:97:10: ( ( ordinals weekdays ) | monthdays )
                     alt2 = 2
                     LA2_0 = self.input.LA(1)
@@ -303,10 +303,10 @@ class GrocParser(Parser):
 
                     if alt2 == 1:
                         # borg/borgcron/py/Groc.g:97:11: ( ordinals weekdays )
-                        pass 
+                        pass
                         # borg/borgcron/py/Groc.g:97:11: ( ordinals weekdays )
                         # borg/borgcron/py/Groc.g:97:12: ordinals weekdays
-                        pass 
+                        pass
                         self._state.following.append(self.FOLLOW_ordinals_in_specifictime72)
                         self.ordinals()
 
@@ -322,7 +322,7 @@ class GrocParser(Parser):
 
                     elif alt2 == 2:
                         # borg/borgcron/py/Groc.g:97:31: monthdays
-                        pass 
+                        pass
                         self._state.following.append(self.FOLLOW_monthdays_in_specifictime77)
                         self.monthdays()
 
@@ -346,7 +346,7 @@ class GrocParser(Parser):
 
                     if alt3 == 1:
                         # borg/borgcron/py/Groc.g:97:46: monthspec
-                        pass 
+                        pass
                         self._state.following.append(self.FOLLOW_monthspec_in_specifictime83)
                         self.monthspec()
 
@@ -355,7 +355,7 @@ class GrocParser(Parser):
 
                     elif alt3 == 2:
                         # borg/borgcron/py/Groc.g:97:56: quarterspec
-                        pass 
+                        pass
                         self._state.following.append(self.FOLLOW_quarterspec_in_specifictime85)
                         self.quarterspec()
 
@@ -370,10 +370,10 @@ class GrocParser(Parser):
 
                 elif alt4 == 2:
                     # borg/borgcron/py/Groc.g:98:11: ( ordinals weekdays )
-                    pass 
+                    pass
                     # borg/borgcron/py/Groc.g:98:11: ( ordinals weekdays )
                     # borg/borgcron/py/Groc.g:98:12: ordinals weekdays
-                    pass 
+                    pass
                     self._state.following.append(self.FOLLOW_ordinals_in_specifictime101)
                     self.ordinals()
 
@@ -383,7 +383,7 @@ class GrocParser(Parser):
 
                     self._state.following.pop()
                     #action start
-                    self.month_set = set(range(1,13)) 
+                    self.month_set = set(range(1,13))
                     #action end
 
 
@@ -393,7 +393,7 @@ class GrocParser(Parser):
 
                 TIME1=self.match(self.input, TIME, self.FOLLOW_TIME_in_specifictime117)
                 #action start
-                self.time_string = TIME1.text 
+                self.time_string = TIME1.text
                 #action end
 
 
@@ -409,7 +409,7 @@ class GrocParser(Parser):
 
             pass
 
-        return 
+        return
 
     # $ANTLR end "specifictime"
 
@@ -426,10 +426,10 @@ class GrocParser(Parser):
             try:
                 # borg/borgcron/py/Groc.g:103:3: ( ( EVERY intervalnum= ( DIGIT | DIGITS ) period ( time_range | ( SYNCHRONIZED ) )? ) )
                 # borg/borgcron/py/Groc.g:103:5: ( EVERY intervalnum= ( DIGIT | DIGITS ) period ( time_range | ( SYNCHRONIZED ) )? )
-                pass 
+                pass
                 # borg/borgcron/py/Groc.g:103:5: ( EVERY intervalnum= ( DIGIT | DIGITS ) period ( time_range | ( SYNCHRONIZED ) )? )
                 # borg/borgcron/py/Groc.g:103:7: EVERY intervalnum= ( DIGIT | DIGITS ) period ( time_range | ( SYNCHRONIZED ) )?
-                pass 
+                pass
                 self.match(self.input, EVERY, self.FOLLOW_EVERY_in_interval136)
                 intervalnum = self.input.LT(1)
                 if (DIGIT <= self.input.LA(1) <= DIGITS):
@@ -442,21 +442,21 @@ class GrocParser(Parser):
 
 
                 #action start
-                                                      
+
                 self.interval_mins = int(intervalnum.text)
-                      
+
                 #action end
                 self._state.following.append(self.FOLLOW_period_in_interval164)
                 period2 = self.period()
 
                 self._state.following.pop()
                 #action start
-                              
+
                 if ((period2 is not None) and [self.input.toString(period2.start,period2.stop)] or [None])[0] == "hours":
                   self.period_string = "hours"
                 else:
                   self.period_string = "minutes"
-                      
+
                 #action end
                 # borg/borgcron/py/Groc.g:113:7: ( time_range | ( SYNCHRONIZED ) )?
                 alt5 = 3
@@ -468,7 +468,7 @@ class GrocParser(Parser):
                     alt5 = 2
                 if alt5 == 1:
                     # borg/borgcron/py/Groc.g:113:9: time_range
-                    pass 
+                    pass
                     self._state.following.append(self.FOLLOW_time_range_in_interval176)
                     self.time_range()
 
@@ -477,13 +477,13 @@ class GrocParser(Parser):
 
                 elif alt5 == 2:
                     # borg/borgcron/py/Groc.g:114:9: ( SYNCHRONIZED )
-                    pass 
+                    pass
                     # borg/borgcron/py/Groc.g:114:9: ( SYNCHRONIZED )
                     # borg/borgcron/py/Groc.g:114:10: SYNCHRONIZED
-                    pass 
+                    pass
                     self.match(self.input, SYNCHRONIZED, self.FOLLOW_SYNCHRONIZED_in_interval189)
                     #action start
-                    self.synchronized = True 
+                    self.synchronized = True
                     #action end
 
 
@@ -505,7 +505,7 @@ class GrocParser(Parser):
 
             pass
 
-        return 
+        return
 
     # $ANTLR end "interval"
 
@@ -518,7 +518,7 @@ class GrocParser(Parser):
             try:
                 # borg/borgcron/py/Groc.g:119:3: ( ( EVERY | ( ordinal ( COMMA ordinal )* ) ) )
                 # borg/borgcron/py/Groc.g:119:5: ( EVERY | ( ordinal ( COMMA ordinal )* ) )
-                pass 
+                pass
                 # borg/borgcron/py/Groc.g:119:5: ( EVERY | ( ordinal ( COMMA ordinal )* ) )
                 alt7 = 2
                 LA7_0 = self.input.LA(1)
@@ -534,16 +534,16 @@ class GrocParser(Parser):
 
                 if alt7 == 1:
                     # borg/borgcron/py/Groc.g:119:7: EVERY
-                    pass 
+                    pass
                     self.match(self.input, EVERY, self.FOLLOW_EVERY_in_ordinals218)
 
 
                 elif alt7 == 2:
                     # borg/borgcron/py/Groc.g:120:5: ( ordinal ( COMMA ordinal )* )
-                    pass 
+                    pass
                     # borg/borgcron/py/Groc.g:120:5: ( ordinal ( COMMA ordinal )* )
                     # borg/borgcron/py/Groc.g:120:7: ordinal ( COMMA ordinal )*
-                    pass 
+                    pass
                     self._state.following.append(self.FOLLOW_ordinal_in_ordinals226)
                     self.ordinal()
 
@@ -559,7 +559,7 @@ class GrocParser(Parser):
 
                         if alt6 == 1:
                             # borg/borgcron/py/Groc.g:120:16: COMMA ordinal
-                            pass 
+                            pass
                             self.match(self.input, COMMA, self.FOLLOW_COMMA_in_ordinals229)
                             self._state.following.append(self.FOLLOW_ordinal_in_ordinals231)
                             self.ordinal()
@@ -588,7 +588,7 @@ class GrocParser(Parser):
 
             pass
 
-        return 
+        return
 
     # $ANTLR end "ordinals"
 
@@ -603,7 +603,7 @@ class GrocParser(Parser):
             try:
                 # borg/borgcron/py/Groc.g:124:3: (ord= ( FIRST | SECOND | THIRD | FOURTH | FIFTH | FOURTH_OR_FIFTH ) )
                 # borg/borgcron/py/Groc.g:124:5: ord= ( FIRST | SECOND | THIRD | FOURTH | FIFTH | FOURTH_OR_FIFTH )
-                pass 
+                pass
                 ord = self.input.LT(1)
                 if (FIRST <= self.input.LA(1) <= FOURTH_OR_FIFTH):
                     self.input.consume()
@@ -615,9 +615,9 @@ class GrocParser(Parser):
 
 
                 #action start
-                                                                                       
+
                 self.ordinal_set.add(self.ValueOf(ord.type));
-                  
+
                 #action end
 
 
@@ -630,7 +630,7 @@ class GrocParser(Parser):
 
             pass
 
-        return 
+        return
 
     # $ANTLR end "ordinal"
 
@@ -653,7 +653,7 @@ class GrocParser(Parser):
             try:
                 # borg/borgcron/py/Groc.g:130:3: ( ( HOURS | MINUTES ) )
                 # borg/borgcron/py/Groc.g:130:5: ( HOURS | MINUTES )
-                pass 
+                pass
                 if (HOURS <= self.input.LA(1) <= MINUTES):
                     self.input.consume()
                     self._state.errorRecovery = False
@@ -689,10 +689,10 @@ class GrocParser(Parser):
             try:
                 # borg/borgcron/py/Groc.g:134:3: ( ( monthday ( COMMA monthday )* ) )
                 # borg/borgcron/py/Groc.g:134:5: ( monthday ( COMMA monthday )* )
-                pass 
+                pass
                 # borg/borgcron/py/Groc.g:134:5: ( monthday ( COMMA monthday )* )
                 # borg/borgcron/py/Groc.g:134:7: monthday ( COMMA monthday )*
-                pass 
+                pass
                 self._state.following.append(self.FOLLOW_monthday_in_monthdays314)
                 self.monthday()
 
@@ -708,7 +708,7 @@ class GrocParser(Parser):
 
                     if alt8 == 1:
                         # borg/borgcron/py/Groc.g:134:18: COMMA monthday
-                        pass 
+                        pass
                         self.match(self.input, COMMA, self.FOLLOW_COMMA_in_monthdays318)
                         self._state.following.append(self.FOLLOW_monthday_in_monthdays320)
                         self.monthday()
@@ -734,7 +734,7 @@ class GrocParser(Parser):
 
             pass
 
-        return 
+        return
 
     # $ANTLR end "monthdays"
 
@@ -749,7 +749,7 @@ class GrocParser(Parser):
             try:
                 # borg/borgcron/py/Groc.g:138:3: (day= ( DIGIT | DIGITS ) )
                 # borg/borgcron/py/Groc.g:138:5: day= ( DIGIT | DIGITS )
-                pass 
+                pass
                 day = self.input.LT(1)
                 if (DIGIT <= self.input.LA(1) <= DIGITS):
                     self.input.consume()
@@ -761,8 +761,8 @@ class GrocParser(Parser):
 
 
                 #action start
-                                            
-                self.monthday_set.add(int(day.text)); 
+
+                self.monthday_set.add(int(day.text));
                 #action end
 
 
@@ -775,7 +775,7 @@ class GrocParser(Parser):
 
             pass
 
-        return 
+        return
 
     # $ANTLR end "monthday"
 
@@ -788,7 +788,7 @@ class GrocParser(Parser):
             try:
                 # borg/borgcron/py/Groc.g:143:3: ( ( DAY | ( weekday ( COMMA weekday )* ) ) )
                 # borg/borgcron/py/Groc.g:143:5: ( DAY | ( weekday ( COMMA weekday )* ) )
-                pass 
+                pass
                 # borg/borgcron/py/Groc.g:143:5: ( DAY | ( weekday ( COMMA weekday )* ) )
                 alt10 = 2
                 LA10_0 = self.input.LA(1)
@@ -804,10 +804,10 @@ class GrocParser(Parser):
 
                 if alt10 == 1:
                     # borg/borgcron/py/Groc.g:143:7: DAY
-                    pass 
+                    pass
                     self.match(self.input, DAY, self.FOLLOW_DAY_in_weekdays365)
                     #action start
-                               
+
                     if self.ordinal_set:
                       # <ordinal> day means <ordinal> day of the month,
                       # not every day of the <ordinal> week.
@@ -819,16 +819,16 @@ class GrocParser(Parser):
                               self.ValueOf(TUESDAY), self.ValueOf(WEDNESDAY),
                               self.ValueOf(THURSDAY), self.ValueOf(FRIDAY),
                               self.ValueOf(SATURDAY), self.ValueOf(SUNDAY)])
-                          
+
                     #action end
 
 
                 elif alt10 == 2:
                     # borg/borgcron/py/Groc.g:155:11: ( weekday ( COMMA weekday )* )
-                    pass 
+                    pass
                     # borg/borgcron/py/Groc.g:155:11: ( weekday ( COMMA weekday )* )
                     # borg/borgcron/py/Groc.g:155:13: weekday ( COMMA weekday )*
-                    pass 
+                    pass
                     self._state.following.append(self.FOLLOW_weekday_in_weekdays373)
                     self.weekday()
 
@@ -844,7 +844,7 @@ class GrocParser(Parser):
 
                         if alt9 == 1:
                             # borg/borgcron/py/Groc.g:155:22: COMMA weekday
-                            pass 
+                            pass
                             self.match(self.input, COMMA, self.FOLLOW_COMMA_in_weekdays376)
                             self._state.following.append(self.FOLLOW_weekday_in_weekdays378)
                             self.weekday()
@@ -857,10 +857,10 @@ class GrocParser(Parser):
 
 
                     #action start
-                                                          
+
                     if not self.ordinal_set:
                       self.ordinal_set = self.ordinal_set.union(allOrdinals)
-                          
+
                     #action end
 
 
@@ -879,7 +879,7 @@ class GrocParser(Parser):
 
             pass
 
-        return 
+        return
 
     # $ANTLR end "weekdays"
 
@@ -894,7 +894,7 @@ class GrocParser(Parser):
             try:
                 # borg/borgcron/py/Groc.g:162:3: (dayname= ( MONDAY | TUESDAY | WEDNESDAY | THURSDAY | FRIDAY | SATURDAY | SUNDAY ) )
                 # borg/borgcron/py/Groc.g:162:5: dayname= ( MONDAY | TUESDAY | WEDNESDAY | THURSDAY | FRIDAY | SATURDAY | SUNDAY )
-                pass 
+                pass
                 dayname = self.input.LT(1)
                 if (MONDAY <= self.input.LA(1) <= SUNDAY):
                     self.input.consume()
@@ -906,9 +906,9 @@ class GrocParser(Parser):
 
 
                 #action start
-                                        
+
                 self.weekday_set.add(self.ValueOf(dayname.type))
-                    
+
                 #action end
 
 
@@ -921,7 +921,7 @@ class GrocParser(Parser):
 
             pass
 
-        return 
+        return
 
     # $ANTLR end "weekday"
 
@@ -934,7 +934,7 @@ class GrocParser(Parser):
             try:
                 # borg/borgcron/py/Groc.g:169:3: ( ( MONTH | months ) )
                 # borg/borgcron/py/Groc.g:169:5: ( MONTH | months )
-                pass 
+                pass
                 # borg/borgcron/py/Groc.g:169:5: ( MONTH | months )
                 alt11 = 2
                 LA11_0 = self.input.LA(1)
@@ -950,23 +950,23 @@ class GrocParser(Parser):
 
                 if alt11 == 1:
                     # borg/borgcron/py/Groc.g:169:7: MONTH
-                    pass 
+                    pass
                     self.match(self.input, MONTH, self.FOLLOW_MONTH_in_monthspec459)
                     #action start
-                                 
+
                     self.month_set = self.month_set.union(set([
                         self.ValueOf(JANUARY), self.ValueOf(FEBRUARY), self.ValueOf(MARCH),
                         self.ValueOf(APRIL), self.ValueOf(MAY), self.ValueOf(JUNE),
                         self.ValueOf(JULY), self.ValueOf(AUGUST), self.ValueOf(SEPTEMBER),
                         self.ValueOf(OCTOBER), self.ValueOf(NOVEMBER),
                         self.ValueOf(DECEMBER)]))
-                          
+
                     #action end
 
 
                 elif alt11 == 2:
                     # borg/borgcron/py/Groc.g:177:7: months
-                    pass 
+                    pass
                     self._state.following.append(self.FOLLOW_months_in_monthspec469)
                     self.months()
 
@@ -985,7 +985,7 @@ class GrocParser(Parser):
 
             pass
 
-        return 
+        return
 
     # $ANTLR end "monthspec"
 
@@ -998,10 +998,10 @@ class GrocParser(Parser):
             try:
                 # borg/borgcron/py/Groc.g:181:3: ( ( month ( COMMA month )* ) )
                 # borg/borgcron/py/Groc.g:181:5: ( month ( COMMA month )* )
-                pass 
+                pass
                 # borg/borgcron/py/Groc.g:181:5: ( month ( COMMA month )* )
                 # borg/borgcron/py/Groc.g:181:7: month ( COMMA month )*
-                pass 
+                pass
                 self._state.following.append(self.FOLLOW_month_in_months486)
                 self.month()
 
@@ -1017,7 +1017,7 @@ class GrocParser(Parser):
 
                     if alt12 == 1:
                         # borg/borgcron/py/Groc.g:181:14: COMMA month
-                        pass 
+                        pass
                         self.match(self.input, COMMA, self.FOLLOW_COMMA_in_months489)
                         self._state.following.append(self.FOLLOW_month_in_months491)
                         self.month()
@@ -1043,7 +1043,7 @@ class GrocParser(Parser):
 
             pass
 
-        return 
+        return
 
     # $ANTLR end "months"
 
@@ -1058,7 +1058,7 @@ class GrocParser(Parser):
             try:
                 # borg/borgcron/py/Groc.g:185:3: (monthname= ( JANUARY | FEBRUARY | MARCH | APRIL | MAY | JUNE | JULY | AUGUST | SEPTEMBER | OCTOBER | NOVEMBER | DECEMBER ) )
                 # borg/borgcron/py/Groc.g:185:5: monthname= ( JANUARY | FEBRUARY | MARCH | APRIL | MAY | JUNE | JULY | AUGUST | SEPTEMBER | OCTOBER | NOVEMBER | DECEMBER )
-                pass 
+                pass
                 monthname = self.input.LT(1)
                 if (JANUARY <= self.input.LA(1) <= DECEMBER):
                     self.input.consume()
@@ -1070,7 +1070,7 @@ class GrocParser(Parser):
 
 
                 #action start
-                self.month_set.add(self.ValueOf(monthname.type)); 
+                self.month_set.add(self.ValueOf(monthname.type));
                 #action end
 
 
@@ -1083,7 +1083,7 @@ class GrocParser(Parser):
 
             pass
 
-        return 
+        return
 
     # $ANTLR end "month"
 
@@ -1096,7 +1096,7 @@ class GrocParser(Parser):
             try:
                 # borg/borgcron/py/Groc.g:191:3: ( ( QUARTER | ( quarter_ordinals MONTH OF QUARTER ) ) )
                 # borg/borgcron/py/Groc.g:191:5: ( QUARTER | ( quarter_ordinals MONTH OF QUARTER ) )
-                pass 
+                pass
                 # borg/borgcron/py/Groc.g:191:5: ( QUARTER | ( quarter_ordinals MONTH OF QUARTER ) )
                 alt13 = 2
                 LA13_0 = self.input.LA(1)
@@ -1112,22 +1112,22 @@ class GrocParser(Parser):
 
                 if alt13 == 1:
                     # borg/borgcron/py/Groc.g:191:7: QUARTER
-                    pass 
+                    pass
                     self.match(self.input, QUARTER, self.FOLLOW_QUARTER_in_quarterspec583)
                     #action start
-                                   
+
                     self.month_set = self.month_set.union(set([
                         self.ValueOf(JANUARY), self.ValueOf(APRIL), self.ValueOf(JULY),
-                        self.ValueOf(OCTOBER)])) 
+                        self.ValueOf(OCTOBER)]))
                     #action end
 
 
                 elif alt13 == 2:
                     # borg/borgcron/py/Groc.g:195:7: ( quarter_ordinals MONTH OF QUARTER )
-                    pass 
+                    pass
                     # borg/borgcron/py/Groc.g:195:7: ( quarter_ordinals MONTH OF QUARTER )
                     # borg/borgcron/py/Groc.g:195:9: quarter_ordinals MONTH OF QUARTER
-                    pass 
+                    pass
                     self._state.following.append(self.FOLLOW_quarter_ordinals_in_quarterspec595)
                     self.quarter_ordinals()
 
@@ -1152,7 +1152,7 @@ class GrocParser(Parser):
 
             pass
 
-        return 
+        return
 
     # $ANTLR end "quarterspec"
 
@@ -1165,10 +1165,10 @@ class GrocParser(Parser):
             try:
                 # borg/borgcron/py/Groc.g:199:3: ( ( month_of_quarter_ordinal ( COMMA month_of_quarter_ordinal )* ) )
                 # borg/borgcron/py/Groc.g:199:5: ( month_of_quarter_ordinal ( COMMA month_of_quarter_ordinal )* )
-                pass 
+                pass
                 # borg/borgcron/py/Groc.g:199:5: ( month_of_quarter_ordinal ( COMMA month_of_quarter_ordinal )* )
                 # borg/borgcron/py/Groc.g:199:7: month_of_quarter_ordinal ( COMMA month_of_quarter_ordinal )*
-                pass 
+                pass
                 self._state.following.append(self.FOLLOW_month_of_quarter_ordinal_in_quarter_ordinals620)
                 self.month_of_quarter_ordinal()
 
@@ -1184,7 +1184,7 @@ class GrocParser(Parser):
 
                     if alt14 == 1:
                         # borg/borgcron/py/Groc.g:199:33: COMMA month_of_quarter_ordinal
-                        pass 
+                        pass
                         self.match(self.input, COMMA, self.FOLLOW_COMMA_in_quarter_ordinals623)
                         self._state.following.append(self.FOLLOW_month_of_quarter_ordinal_in_quarter_ordinals625)
                         self.month_of_quarter_ordinal()
@@ -1210,7 +1210,7 @@ class GrocParser(Parser):
 
             pass
 
-        return 
+        return
 
     # $ANTLR end "quarter_ordinals"
 
@@ -1225,7 +1225,7 @@ class GrocParser(Parser):
             try:
                 # borg/borgcron/py/Groc.g:203:3: (offset= ( FIRST | SECOND | THIRD ) )
                 # borg/borgcron/py/Groc.g:203:5: offset= ( FIRST | SECOND | THIRD )
-                pass 
+                pass
                 offset = self.input.LT(1)
                 if (FIRST <= self.input.LA(1) <= THIRD):
                     self.input.consume()
@@ -1237,11 +1237,11 @@ class GrocParser(Parser):
 
 
                 #action start
-                                                       
+
                 jOffset = self.ValueOf(offset.type) - 1
                 self.month_set = self.month_set.union(set([
                     jOffset + self.ValueOf(JANUARY), jOffset + self.ValueOf(APRIL),
-                    jOffset + self.ValueOf(JULY), jOffset + self.ValueOf(OCTOBER)])) 
+                    jOffset + self.ValueOf(JULY), jOffset + self.ValueOf(OCTOBER)]))
                 #action end
 
 
@@ -1254,7 +1254,7 @@ class GrocParser(Parser):
 
             pass
 
-        return 
+        return
 
     # $ANTLR end "month_of_quarter_ordinal"
 
@@ -1270,17 +1270,17 @@ class GrocParser(Parser):
             try:
                 # borg/borgcron/py/Groc.g:211:3: ( ( FROM (start_time= TIME ) TO (end_time= TIME ) ) )
                 # borg/borgcron/py/Groc.g:211:5: ( FROM (start_time= TIME ) TO (end_time= TIME ) )
-                pass 
+                pass
                 # borg/borgcron/py/Groc.g:211:5: ( FROM (start_time= TIME ) TO (end_time= TIME ) )
                 # borg/borgcron/py/Groc.g:211:7: FROM (start_time= TIME ) TO (end_time= TIME )
-                pass 
+                pass
                 self.match(self.input, FROM, self.FOLLOW_FROM_in_time_range673)
                 # borg/borgcron/py/Groc.g:211:12: (start_time= TIME )
                 # borg/borgcron/py/Groc.g:211:13: start_time= TIME
-                pass 
+                pass
                 start_time=self.match(self.input, TIME, self.FOLLOW_TIME_in_time_range680)
                 #action start
-                self.start_time_string = start_time.text 
+                self.start_time_string = start_time.text
                 #action end
 
 
@@ -1288,10 +1288,10 @@ class GrocParser(Parser):
                 self.match(self.input, TO, self.FOLLOW_TO_in_time_range691)
                 # borg/borgcron/py/Groc.g:212:10: (end_time= TIME )
                 # borg/borgcron/py/Groc.g:212:11: end_time= TIME
-                pass 
+                pass
                 end_time=self.match(self.input, TIME, self.FOLLOW_TIME_in_time_range698)
                 #action start
-                self.end_time_string = end_time.text 
+                self.end_time_string = end_time.text
                 #action end
 
 
@@ -1310,7 +1310,7 @@ class GrocParser(Parser):
 
             pass
 
-        return 
+        return
 
     # $ANTLR end "time_range"
 
@@ -1344,7 +1344,7 @@ class GrocParser(Parser):
         u"\13\uffff"
         )
 
-            
+
     DFA4_transition = [
         DFA.unpack(u"\1\1\2\3\2\uffff\6\2"),
         DFA.unpack(u"\1\4\7\5"),
@@ -1362,7 +1362,7 @@ class GrocParser(Parser):
     # class definition for DFA #4
 
     DFA4 = DFA
- 
+
 
     FOLLOW_specifictime_in_timespec44 = frozenset([])
     FOLLOW_interval_in_timespec48 = frozenset([])

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2017 Google Inc. All Rights Reserved.
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
 # limitations under the License.
 """Utilities for generating help docs for GCE compute labels commands."""
 
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
 
 _LIST_LABELS_DETAILED_HELP_TEMPLATE = """

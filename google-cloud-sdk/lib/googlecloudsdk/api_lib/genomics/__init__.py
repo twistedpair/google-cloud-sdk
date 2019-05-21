@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2014 Google Inc. All Rights Reserved.
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,5 +14,8 @@
 # limitations under the License.
 """A helper library for this command group."""
 
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 STORAGE_V1_CLIENT_KEY = 'storage_v1_client'

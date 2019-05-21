@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,23 +40,23 @@ googlecloudsdk_dot_third_party_dot_appengine_dot_datastore_dot_entity__v4__pb = 
 class Error(ProtocolBuffer.ProtocolMessage):
 
   # ErrorCode values
-  BAD_REQUEST  =    1 
-  CONCURRENT_TRANSACTION =    2 
-  INTERNAL_ERROR =    3 
-  NEED_INDEX   =    4 
-  TIMEOUT      =    5 
-  PERMISSION_DENIED =    6 
-  BIGTABLE_ERROR =    7 
-  COMMITTED_BUT_STILL_APPLYING =    8 
-  CAPABILITY_DISABLED =    9 
-  TRY_ALTERNATE_BACKEND =   10 
-  SAFE_TIME_TOO_OLD =   11 
-  RESOURCE_EXHAUSTED =   12 
-  NOT_FOUND    =   13 
-  ALREADY_EXISTS =   14 
-  FAILED_PRECONDITION =   15 
-  UNAUTHENTICATED =   16 
-  ABORTED      =   17 
+  BAD_REQUEST  =    1
+  CONCURRENT_TRANSACTION =    2
+  INTERNAL_ERROR =    3
+  NEED_INDEX   =    4
+  TIMEOUT      =    5
+  PERMISSION_DENIED =    6
+  BIGTABLE_ERROR =    7
+  COMMITTED_BUT_STILL_APPLYING =    8
+  CAPABILITY_DISABLED =    9
+  TRY_ALTERNATE_BACKEND =   10
+  SAFE_TIME_TOO_OLD =   11
+  RESOURCE_EXHAUSTED =   12
+  NOT_FOUND    =   13
+  ALREADY_EXISTS =   14
+  FAILED_PRECONDITION =   15
+  UNAUTHENTICATED =   16
+  ABORTED      =   17
 
   _ErrorCode_NAMES = {
     1: "BAD_REQUEST",
@@ -150,9 +150,9 @@ class Error(ProtocolBuffer.ProtocolMessage):
 class EntityResult(ProtocolBuffer.ProtocolMessage):
 
   # ResultType values
-  FULL         =    1 
-  PROJECTION   =    2 
-  KEY_ONLY     =    3 
+  FULL         =    1
+  PROJECTION   =    2
+  KEY_ONLY     =    3
 
   _ResultType_NAMES = {
     1: "FULL",
@@ -1004,7 +1004,7 @@ class PropertyReference(ProtocolBuffer.ProtocolMessage):
 class PropertyExpression(ProtocolBuffer.ProtocolMessage):
 
   # AggregationFunction values
-  FIRST        =    1 
+  FIRST        =    1
 
   _AggregationFunction_NAMES = {
     1: "FIRST",
@@ -1155,8 +1155,8 @@ class PropertyExpression(ProtocolBuffer.ProtocolMessage):
 class PropertyOrder(ProtocolBuffer.ProtocolMessage):
 
   # Direction values
-  ASCENDING    =    1 
-  DESCENDING   =    2 
+  ASCENDING    =    1
+  DESCENDING   =    2
 
   _Direction_NAMES = {
     1: "ASCENDING",
@@ -1470,7 +1470,7 @@ class Filter(ProtocolBuffer.ProtocolMessage):
 class CompositeFilter(ProtocolBuffer.ProtocolMessage):
 
   # Operator values
-  AND          =    1 
+  AND          =    1
 
   _Operator_NAMES = {
     1: "AND",
@@ -1636,12 +1636,12 @@ class CompositeFilter(ProtocolBuffer.ProtocolMessage):
 class PropertyFilter(ProtocolBuffer.ProtocolMessage):
 
   # Operator values
-  LESS_THAN    =    1 
-  LESS_THAN_OR_EQUAL =    2 
-  GREATER_THAN =    3 
-  GREATER_THAN_OR_EQUAL =    4 
-  EQUAL        =    5 
-  HAS_ANCESTOR =   11 
+  LESS_THAN    =    1
+  LESS_THAN_OR_EQUAL =    2
+  GREATER_THAN =    3
+  GREATER_THAN_OR_EQUAL =    4
+  EQUAL        =    5
+  HAS_ANCESTOR =   11
 
   _Operator_NAMES = {
     1: "LESS_THAN",
@@ -2268,9 +2268,9 @@ class GqlQueryArg(ProtocolBuffer.ProtocolMessage):
 class QueryResultBatch(ProtocolBuffer.ProtocolMessage):
 
   # MoreResultsType values
-  NOT_FINISHED =    1 
-  MORE_RESULTS_AFTER_LIMIT =    2 
-  NO_MORE_RESULTS =    3 
+  NOT_FINISHED =    1
+  MORE_RESULTS_AFTER_LIMIT =    2
+  NO_MORE_RESULTS =    3
 
   _MoreResultsType_NAMES = {
     1: "NOT_FINISHED",
@@ -2613,11 +2613,11 @@ class QueryResultBatch(ProtocolBuffer.ProtocolMessage):
 class Mutation(ProtocolBuffer.ProtocolMessage):
 
   # Operation values
-  UNKNOWN      =    0 
-  INSERT       =    1 
-  UPDATE       =    2 
-  UPSERT       =    3 
-  DELETE       =    4 
+  UNKNOWN      =    0
+  INSERT       =    1
+  UPDATE       =    2
+  UPSERT       =    3
+  DELETE       =    4
 
   _Operation_NAMES = {
     0: "UNKNOWN",
@@ -3707,9 +3707,9 @@ class DeprecatedMutationResult(ProtocolBuffer.ProtocolMessage):
 class ReadOptions(ProtocolBuffer.ProtocolMessage):
 
   # ReadConsistency values
-  DEFAULT      =    0 
-  STRONG       =    1 
-  EVENTUAL     =    2 
+  DEFAULT      =    0
+  STRONG       =    1
+  EVENTUAL     =    2
 
   _ReadConsistency_NAMES = {
     0: "DEFAULT",
@@ -5319,8 +5319,8 @@ class RollbackResponse(ProtocolBuffer.ProtocolMessage):
 class CommitRequest(ProtocolBuffer.ProtocolMessage):
 
   # Mode values
-  TRANSACTIONAL =    1 
-  NON_TRANSACTIONAL =    2 
+  TRANSACTIONAL =    1
+  NON_TRANSACTIONAL =    2
 
   _Mode_NAMES = {
     1: "TRANSACTIONAL",

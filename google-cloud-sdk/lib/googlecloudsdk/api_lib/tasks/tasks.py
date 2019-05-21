@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2017 Google Inc. All Rights Reserved.
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -64,12 +64,14 @@ class Tasks(BaseTasks):
   """API client for Cloud Tasks tasks."""
 
   def Create(self, parent_ref, task_ref=None, schedule_time=None,
-             app_engine_http_request=None):
+             app_engine_http_request=None, http_request=None):
     """Prepares and sends a Create request for creating a task."""
     name = task_ref.RelativeName() if task_ref else None
     task = self.messages.Task(
         name=name, scheduleTime=schedule_time,
         appEngineHttpRequest=app_engine_http_request)
+    if http_request:
+      task.httpRequest = http_request
     request = (
         self.messages.CloudtasksProjectsLocationsQueuesTasksCreateRequest(
             createTaskRequest=self.messages.CreateTaskRequest(task=task),

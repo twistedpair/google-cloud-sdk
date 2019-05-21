@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2018 Google Inc. All Rights Reserved.
+# Copyright 2018 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -54,10 +54,6 @@ class Service(k8s_object.KubernetesObject):
     ret = super(Service, cls).New(client, namespace)
     # We're in oneOf territory, set the other to None for now.
     ret.spec.pinned = None
-    # The build is also a oneOf
-    # TODO(b/112662240): Remove conditional once this field is public
-    if hasattr(ret.configuration.spec, 'build'):
-      ret.configuration.spec.build = None
 
     if private_endpoint:
       ret.labels[ENDPOINT_VISIBILITY] = CLUSTER_LOCAL

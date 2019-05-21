@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ def ExpandScopeAliases(scopes):
   return sorted(expanded_scopes)
 
 
-def GetComputeResources(release_track, cluster_name):
+def GetComputeResources(release_track, cluster_name, cluster_region=None):
   """Returns a resources object with resolved GCE zone and region."""
   holder = compute_base.ComputeApiHolder(release_track)
   region_prop = properties.VALUES.compute.region
@@ -56,7 +56,10 @@ def GetComputeResources(release_track, cluster_name):
   # Prompt for scope if necessary. If Dataproc regional stack is used, omitting
   # the zone allows the server to pick a zone
   zone = properties.VALUES.compute.zone.Get()
-  dataproc_region = properties.VALUES.dataproc.region.GetOrFail()
+  if cluster_region:
+    dataproc_region = cluster_region
+  else:
+    dataproc_region = properties.VALUES.dataproc.region.GetOrFail()
   if not zone and dataproc_region == 'global':
     _, zone = scope_prompter.PromptForScope(
         resource_name='cluster',

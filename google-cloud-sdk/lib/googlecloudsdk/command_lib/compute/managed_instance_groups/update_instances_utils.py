@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import re
 
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util.apis import arg_utils
+
 
 STANDBY_NAME = 'standby'
 
@@ -182,6 +183,37 @@ def ParseVersion(project, flag_name, version_map, resources, messages):
       name=name)
 
 
+def ParseInstanceActionFlag(flag_name, instance_action_str, messages):
+  """Retrieves value of the instance action type.
+
+  Args:
+    flag_name: name of the flag associated with the parsed string.
+    instance_action_str: string containing instance action value.
+    messages: module containing message classes.
+
+  Returns:
+    InstanceAction enum object.
+  """
+  instance_actions_enum_map = {
+      'none':
+          messages.InstanceGroupManagerUpdatePolicy.MinimalActionValueValuesEnum
+          .NONE,
+      'refresh':
+          messages.InstanceGroupManagerUpdatePolicy.MinimalActionValueValuesEnum
+          .REFRESH,
+      'restart':
+          messages.InstanceGroupManagerUpdatePolicy.MinimalActionValueValuesEnum
+          .RESTART,
+      'replace':
+          messages.InstanceGroupManagerUpdatePolicy.MinimalActionValueValuesEnum
+          .REPLACE,
+  }
+  if instance_action_str not in instance_actions_enum_map:
+    raise exceptions.InvalidArgumentException(
+        flag_name, 'unknown instance action: ' + str(instance_action_str))
+  return instance_actions_enum_map[instance_action_str]
+
+
 def ValidateCanaryVersionFlag(flag_name, version_map):
   """Retrieves canary version from input map.
 
@@ -194,3 +226,11 @@ def ValidateCanaryVersionFlag(flag_name, version_map):
         '{} {}={}'.format(flag_name, TARGET_SIZE_NAME,
                           TARGET_SIZE_NAME.upper()),
         'target size must be specified for canary version')
+
+
+def ValidateIgmReference(igm_ref):
+  if igm_ref.Collection() not in [
+      'compute.instanceGroupManagers', 'compute.regionInstanceGroupManagers'
+  ]:
+    raise ValueError('Unknown reference type {0}'.format(
+        igm_ref.Collection()))

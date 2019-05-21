@@ -115,6 +115,7 @@ class Displayer(object):
           symbols=display_info.transforms,
           aliases=display_info.aliases)
       self._format = display_info.format
+      self._flatten = display_info.flatten
       self._filter = display_info.filter
     self._transform_uri = self._defaults.symbols.get(
         'uri', resource_transform.TransformUri)
@@ -273,7 +274,7 @@ class Displayer(object):
       # the flattened keys to the left.
       self._resources = peek_iterable.Tapper(self._resources, tap)
 
-    keys = self._GetFlag('flatten')
+    keys = self._GetFlatten()
     if not keys:
       return
     for key in keys:
@@ -352,6 +353,13 @@ class Displayer(object):
       return self._filter
     else:
       return flag_filter
+
+  def _GetFlatten(self):
+    flag_flatten = self._GetFlag('flatten')
+    if flag_flatten is None:
+      return self._flatten
+    else:
+      return flag_flatten
 
   def GetFormat(self):
     """Determines the display format.

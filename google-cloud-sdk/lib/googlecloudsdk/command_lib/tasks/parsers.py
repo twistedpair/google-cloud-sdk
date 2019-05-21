@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2017 Google Inc. All Rights Reserved.
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -124,6 +124,8 @@ def ParseCreateOrUpdateQueueArgs(args,
         retryConfig=_ParseRetryConfigArgs(args, queue_type, messages,
                                           is_update, is_alpha=False),
         rateLimits=_ParseRateLimitsArgs(args, queue_type, messages, is_update),
+        stackdriverLoggingConfig=_ParseStackdriverLoggingConfigArgs(
+            args, queue_type, messages, is_update),
         appEngineHttpQueue=_ParseAppEngineHttpQueueArgs(args, queue_type,
                                                         messages, is_update))
   else:
@@ -135,14 +137,21 @@ def ParseCreateOrUpdateQueueArgs(args,
             args, queue_type, messages, is_update))
 
 
-def ParseCreateTaskArgs(args, task_type, messages, is_alpha=False):
+def ParseCreateTaskArgs(args, task_type, messages,
+                        release_track=base.ReleaseTrack.GA):
   """Parses task level args."""
-  if is_alpha:
+  if release_track == base.ReleaseTrack.ALPHA:
     return messages.Task(
         scheduleTime=args.schedule_time,
         pullMessage=_ParsePullMessageArgs(args, task_type, messages),
         appEngineHttpRequest=_ParseAlphaAppEngineHttpRequestArgs(
             args, task_type, messages))
+  elif release_track == base.ReleaseTrack.BETA:
+    return messages.Task(
+        scheduleTime=args.schedule_time,
+        appEngineHttpRequest=_ParseAppEngineHttpRequestArgs(args, task_type,
+                                                            messages),
+        httpRequest=_ParseHttpRequestArgs(args, task_type, messages))
   else:
     return messages.Task(
         scheduleTime=args.schedule_time,
@@ -150,19 +159,31 @@ def ParseCreateTaskArgs(args, task_type, messages, is_alpha=False):
                                                             messages))
 
 
-def CheckUpdateArgsSpecified(args, queue_type, is_alpha=False):
+def CheckUpdateArgsSpecified(args, queue_type,
+                             release_track=base.ReleaseTrack.GA):
   """Verifies that args are valid for updating a queue."""
   if queue_type == constants.PULL_QUEUE:
     if not _AnyArgsSpecified(args, ['max_attempts', 'max_retry_duration'],
                              clear_args=True):
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')
   if queue_type == constants.PUSH_QUEUE:
-    if is_alpha:
+    if release_track == base.ReleaseTrack.ALPHA:
       if not _AnyArgsSpecified(
           args, [
               'max_attempts', 'max_retry_duration', 'max_doublings',
               'min_backoff', 'max_backoff', 'max_tasks_dispatched_per_second',
               'max_concurrent_tasks', 'routing_override'
+          ],
+          clear_args=True):
+        raise NoFieldsSpecifiedError(
+            'Must specify at least one field to update.')
+    elif release_track == base.ReleaseTrack.BETA:
+      if not _AnyArgsSpecified(
+          args, [
+              'log_sampling_ratio', 'max_attempts', 'max_retry_duration',
+              'max_doublings', 'min_backoff', 'max_backoff',
+              'max_dispatches_per_second', 'max_concurrent_dispatches',
+              'routing_override'
           ],
           clear_args=True):
         raise NoFieldsSpecifiedError(
@@ -247,6 +268,14 @@ def _ParseRateLimitsArgs(args, queue_type, messages, is_update):
         maxConcurrentDispatches=args.max_concurrent_dispatches)
 
 
+def _ParseStackdriverLoggingConfigArgs(args, queue_type, messages, is_update):
+  """Parses the attributes of 'args' for Queue.stackdriverLoggingConfig."""
+  if (queue_type == constants.PUSH_QUEUE and _AnyArgsSpecified(
+      args, ['log_sampling_ratio'], clear_args=is_update)):
+    return messages.StackdriverLoggingConfig(
+        samplingRatio=args.log_sampling_ratio)
+
+
 def _ParsePullTargetArgs(unused_args, queue_type, messages, is_update):
   """Parses the attributes of 'args' for Queue.pullTarget."""
   if queue_type == constants.PULL_QUEUE and not is_update:
@@ -282,21 +311,22 @@ def _ParseAppEngineRoutingOverrideArgs(args, queue_type, messages, is_update):
 
 
 def _ParsePullMessageArgs(args, task_type, messages):
-  if task_type == constants.PULL_QUEUE:
+  if task_type == constants.PULL_TASK:
     return messages.PullMessage(payload=_ParsePayloadArgs(args), tag=args.tag)
 
 
 def _ParseAlphaAppEngineHttpRequestArgs(args, task_type, messages):
   """Parses the attributes of 'args' for Task.appEngineHttpRequest."""
-  if task_type == constants.PUSH_QUEUE:
+  if task_type == constants.APP_ENGINE_TASK:
     routing = (
         messages.AppEngineRouting(**args.routing) if args.routing else None)
     http_method = (messages.AppEngineHttpRequest.HttpMethodValueValuesEnum(
         args.method.upper()) if args.IsSpecified('method') else None)
     return messages.AppEngineHttpRequest(
-        appEngineRouting=routing, headers=_ParseHeaderArg(args, messages),
-        httpMethod=http_method, payload=_ParsePayloadArgs(args),
-        relativeUrl=args.url)
+        appEngineRouting=routing, httpMethod=http_method,
+        payload=_ParsePayloadArgs(args), relativeUrl=args.url,
+        headers=_ParseHeaderArg(args,
+                                messages.AppEngineHttpRequest.HeadersValue))
 
 
 def _ParsePayloadArgs(args):
@@ -311,15 +341,28 @@ def _ParsePayloadArgs(args):
 
 def _ParseAppEngineHttpRequestArgs(args, task_type, messages):
   """Parses the attributes of 'args' for Task.appEngineHttpRequest."""
-  if task_type == constants.PUSH_QUEUE:
+  if task_type == constants.APP_ENGINE_TASK:
     routing = (
         messages.AppEngineRouting(**args.routing) if args.routing else None)
     http_method = (messages.AppEngineHttpRequest.HttpMethodValueValuesEnum(
         args.method.upper()) if args.IsSpecified('method') else None)
     return messages.AppEngineHttpRequest(
-        appEngineRouting=routing, headers=_ParseHeaderArg(args, messages),
-        httpMethod=http_method, body=_ParseBodyArgs(args),
-        relativeUri=args.relative_uri)
+        appEngineRouting=routing, httpMethod=http_method,
+        body=_ParseBodyArgs(args), relativeUri=args.relative_uri,
+        headers=_ParseHeaderArg(args,
+                                messages.AppEngineHttpRequest.HeadersValue))
+
+
+def _ParseHttpRequestArgs(args, task_type, messages):
+  """Parses the attributes of 'args' for Task.httpRequest."""
+  if task_type == constants.HTTP_TASK:
+    http_method = (messages.HttpRequest.HttpMethodValueValuesEnum(
+        args.method.upper()) if args.IsSpecified('method') else None)
+    return messages.HttpRequest(
+        headers=_ParseHeaderArg(args, messages.HttpRequest.HeadersValue),
+        httpMethod=http_method, body=_ParseBodyArgs(args), url=args.url,
+        oauthToken=_ParseOAuthArgs(args, messages),
+        oidcToken=_ParseOidcArgs(args, messages))
 
 
 def _ParseBodyArgs(args):
@@ -332,11 +375,28 @@ def _ParseBodyArgs(args):
   return http_encoding.Encode(body)
 
 
-def _ParseHeaderArg(args, messages):
+def _ParseOAuthArgs(args, messages):
+  if args.IsSpecified('oauth_service_account_email'):
+    return messages.OAuthToken(
+        serviceAccountEmail=args.oauth_service_account_email,
+        scope=args.oauth_token_scope)
+  else:
+    return None
+
+
+def _ParseOidcArgs(args, messages):
+  if args.IsSpecified('oidc_service_account_email'):
+    return messages.OidcToken(
+        serviceAccountEmail=args.oidc_service_account_email,
+        audience=args.oidc_token_audience)
+  else:
+    return None
+
+
+def _ParseHeaderArg(args, headers_value):
   if args.header:
     headers_dict = {k: v for k, v in map(_SplitHeaderArgValue, args.header)}
-    return encoding.DictToAdditionalPropertyMessage(
-        headers_dict, messages.AppEngineHttpRequest.HeadersValue)
+    return encoding.DictToAdditionalPropertyMessage(headers_dict, headers_value)
 
 
 def _SplitHeaderArgValue(header_arg_value):

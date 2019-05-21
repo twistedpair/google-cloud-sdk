@@ -5,6 +5,60 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 247.0.0 (2019-05-21)
+
+### App Engine
+
+* Added '--ignore-file' flag to 'gcloud app deploy' for overriding default .gcloudignore file.
+
+### Cloud Bigtable
+
+*  Promoted `gcloud bigtable instances tables list` to beta.
+
+### Cloud Build
+
+* Added `--ignore-file` flag to 'gcloud builds submit' for overriding default .gcloudignore file.
+
+### Cloud Dataproc
+
+* Removed the `--max-age`, `--max-idle`, `--expiration-time` flag from the
+  `gcloud beta dataproc workflow-templates set-managed-cluster` command group.
+  The workflow template feature does not support cluster scheduled deletion.
+
+### Cloud Functions
+
+* Added `--ignore-file` flag to`'gcloud functions deploy` for overriding default `.gcloudignore` file.
+
+
+### Cloud Machine Learning Engine
+
+* Fixed incorrect URL for viewing an AI Platform job in the Cloud Console.
+
+### Cloud Scheduler
+
+* Added `gcloud beta scheduler jobs update <app-engine|http|pubsub>` commands.
+
+### Cloud Tasks
+
+* Added `gcloud beta tasks create-http-task` command.
+* Added `--log-sampling-ratio` and `--clear-log-sampling-ratio` to
+  `gcloud beta tasks queues <create|update>` commands.
+
+### Kubernetes Engine
+
+* 
+* Google Kubernetes Engine kubectl is updated to 1.12.8 from 1.11.9.
+* Updated extra Google Kubernetes Engine kubectl versions:
+  * kubectl.1.11 (patch 1.11.10)
+  * kubectl.1.12 (patch 1.12.8)
+  * kubectl.1.13 (patch 1.13.6)
+  * kubectl.1.14 (patch 1.14.1)
+
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 246.0.0 (2019-05-14)
 
 ### Breaking Changes

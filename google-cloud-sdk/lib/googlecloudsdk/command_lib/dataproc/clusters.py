@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -348,7 +348,7 @@ def _AddDiskArgsDeprecated(parser):
       help=boot_disk_size_detailed_help)
 
 
-def BetaArgsForClusterRef(parser):
+def BetaArgsForClusterRef(parser, include_ttl_config=False):
   """Register beta-only flags for creating a Dataproc cluster."""
   flags.AddMinCpuPlatformArgs(parser, base.ReleaseTrack.BETA)
 
@@ -366,33 +366,34 @@ def BetaArgsForClusterRef(parser):
         through the component gateway.
         """)
 
-  parser.add_argument(
-      '--max-idle',
-      type=arg_parsers.Duration(),
-      help="""\
-        The duration before cluster is auto-deleted after last job completes,
-        such as "2h" or "1d".
-        See $ gcloud topic datetimes for information on duration formats.
-        """)
+  if include_ttl_config:
+    parser.add_argument(
+        '--max-idle',
+        type=arg_parsers.Duration(),
+        help="""\
+          The duration before cluster is auto-deleted after last job completes,
+          such as "2h" or "1d".
+          See $ gcloud topic datetimes for information on duration formats.
+          """)
 
-  auto_delete_group = parser.add_mutually_exclusive_group()
-  auto_delete_group.add_argument(
-      '--max-age',
-      type=arg_parsers.Duration(),
-      help="""\
-        The lifespan of the cluster before it is auto-deleted, such as
-        "2h" or "1d".
-        See $ gcloud topic datetimes for information on duration formats.
-        """)
+    auto_delete_group = parser.add_mutually_exclusive_group()
+    auto_delete_group.add_argument(
+        '--max-age',
+        type=arg_parsers.Duration(),
+        help="""\
+          The lifespan of the cluster before it is auto-deleted, such as
+          "2h" or "1d".
+          See $ gcloud topic datetimes for information on duration formats.
+          """)
 
-  auto_delete_group.add_argument(
-      '--expiration-time',
-      type=arg_parsers.Datetime.Parse,
-      help="""\
-        The time when cluster will be auto-deleted, such as
-        "2017-08-29T18:52:51.142Z." See $ gcloud topic datetimes for
-        information on time formats.
-        """)
+    auto_delete_group.add_argument(
+        '--expiration-time',
+        type=arg_parsers.Datetime.Parse,
+        help="""\
+          The time when cluster will be auto-deleted, such as
+          "2017-08-29T18:52:51.142Z." See $ gcloud topic datetimes for
+          information on time formats.
+          """)
 
   for instance_type in ('master', 'worker'):
     help_msg = """\
@@ -431,7 +432,8 @@ def GetClusterConfig(args,
                      project_id,
                      compute_resources,
                      beta=False,
-                     include_deprecated=True):
+                     include_deprecated=True,
+                     include_ttl_config=False):
   """Get dataproc cluster configuration.
 
   Args:
@@ -441,6 +443,7 @@ def GetClusterConfig(args,
     compute_resources: compute resource for cluster
     beta: use BETA only features
     include_deprecated: whether to include deprecated args
+    include_ttl_config: whether to include Scheduled Delete(TTL) args
 
   Returns:
     cluster_config: Dataproc cluster configuration
@@ -609,20 +612,21 @@ def GetClusterConfig(args,
     cluster_config.masterConfig.minCpuPlatform = args.master_min_cpu_platform
     cluster_config.workerConfig.minCpuPlatform = args.worker_min_cpu_platform
 
-    lifecycle_config = dataproc.messages.LifecycleConfig()
-    changed_config = False
-    if args.max_age is not None:
-      lifecycle_config.autoDeleteTtl = str(args.max_age) + 's'
-      changed_config = True
-    if args.expiration_time is not None:
-      lifecycle_config.autoDeleteTime = times.FormatDateTime(
-          args.expiration_time)
-      changed_config = True
-    if args.max_idle is not None:
-      lifecycle_config.idleDeleteTtl = str(args.max_idle) + 's'
-      changed_config = True
-    if changed_config:
-      cluster_config.lifecycleConfig = lifecycle_config
+    if include_ttl_config:
+      lifecycle_config = dataproc.messages.LifecycleConfig()
+      changed_config = False
+      if args.max_age is not None:
+        lifecycle_config.autoDeleteTtl = str(args.max_age) + 's'
+        changed_config = True
+      if args.expiration_time is not None:
+        lifecycle_config.autoDeleteTime = times.FormatDateTime(
+            args.expiration_time)
+        changed_config = True
+      if args.max_idle is not None:
+        lifecycle_config.idleDeleteTtl = str(args.max_idle) + 's'
+        changed_config = True
+      if changed_config:
+        cluster_config.lifecycleConfig = lifecycle_config
 
   if hasattr(args.CONCEPTS, 'kms_key'):
     kms_ref = args.CONCEPTS.kms_key.Parse()

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -118,11 +118,11 @@ INSTANCES_ARG_FOR_CREATE = compute_flags.ResourceArgument(
 
 INSTANCES_ARG_FOR_IMPORT = compute_flags.ResourceArgument(
     resource_name='instance',
-    name='instance_names',
+    name='instance_name',
     completer=compute_completers.InstancesCompleter,
     zonal_collection='compute.instances',
     zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
-    plural=True)
+    plural=False)
 
 SSH_INSTANCE_RESOLVER = compute_flags.ResourceResolver.FromMap(
     'instance', {compute_scope.ScopeEnum.ZONE: 'compute.instances'})

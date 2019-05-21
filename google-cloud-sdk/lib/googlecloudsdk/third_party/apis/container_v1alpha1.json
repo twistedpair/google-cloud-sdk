@@ -808,6 +808,10 @@
         "dnsCacheConfig": {
           "description": "Configuration for NodeLocalDNS, a dns cache running on cluster nodes",
           "$ref": "DnsCacheConfig"
+        },
+        "cloudConnectorConfig": {
+          "description": "Configuration for the CloudConnector add-on, a Kubernetes\nextension to manage hosted GCP services through the Kubernetes API",
+          "$ref": "CloudConnectorConfig"
         }
       }
     },
@@ -911,6 +915,17 @@
       "properties": {
         "enabled": {
           "description": "Whether NodeLocal DNSCache is enabled for this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "CloudConnectorConfig": {
+      "id": "CloudConnectorConfig",
+      "description": "Configuration options for the Cloud Connector add-on.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether Cloud Connector is enabled for this cluster.",
           "type": "boolean"
         }
       }
@@ -1352,6 +1367,13 @@
         "autoprovisioningNodePoolDefaults": {
           "description": "AutoprovisioningNodePoolDefaults contains defaults for a node pool\ncreated by NAP.",
           "$ref": "AutoprovisioningNodePoolDefaults"
+        },
+        "autoprovisioningLocations": {
+          "description": "The list of Google Compute Engine [zones](\/compute\/docs\/zones#available)\nin which the NodePool's nodes can be created by NAP.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1412,7 +1434,7 @@
           "type": "boolean"
         },
         "enableCloudNat": {
-          "description": "Whether GKE Cloud NAT is enabled for this cluster. Requires that the\ncluster has already set IPAllocationPolicy.use_ip_aliases to true.",
+          "description": "Whether GKE Cloud NAT is enabled for this cluster. Requires that the\ncluster has already set IPAllocationPolicy.use_ip_aliases to true.\nDeprecated: use disable_default_snat instead.",
           "type": "boolean"
         },
         "enablePrivateIpv6Access": {
@@ -1421,6 +1443,10 @@
         },
         "enableIntraNodeVisibility": {
           "description": "Whether Intra-node visibility is enabled for this cluster.\nThis enables flow logs for same node pod to pod traffic.",
+          "type": "boolean"
+        },
+        "disableDefaultSnat": {
+          "description": "Whether the cluster disables default in-node sNAT rules. In-node sNAT rules\nwill be disabled when this flag is true. When set to false, default IP\nmasquerade rules will be applied to the nodes to prevent sNAT on cluster\ninternal traffic.",
           "type": "boolean"
         }
       }
@@ -1938,7 +1964,7 @@
           "$ref": "VerticalPodAutoscaling"
         },
         "desiredCloudNatStatus": {
-          "description": "The desired status of Cloud NAT for this cluster.",
+          "description": "The desired status of Cloud NAT for this cluster.\nDeprecated: use desired_default_snat_status instead.",
           "$ref": "CloudNatStatus"
         },
         "desiredPrivateIpv6Access": {
@@ -1952,6 +1978,10 @@
         "desiredIntraNodeVisibilityConfig": {
           "description": "The desired config of Intra-node visibility.",
           "$ref": "IntraNodeVisibilityConfig"
+        },
+        "desiredDefaultSnatStatus": {
+          "description": "The desired status of whether to disable default sNAT for this cluster.",
+          "$ref": "DefaultSnatStatus"
         },
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to.\n\nUsers may specify either explicit versions offered by\nKubernetes Engine or version aliases, which have the following behavior:\n\n- \"latest\": picks the highest valid Kubernetes version\n- \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version\n- \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version\n- \"1.X.Y-gke.N\": picks an explicit Kubernetes version\n- \"-\": picks the default Kubernetes version",
@@ -2008,6 +2038,17 @@
       "properties": {
         "enabled": {
           "description": "Enables intra node visibility for this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "DefaultSnatStatus": {
+      "id": "DefaultSnatStatus",
+      "description": "DefaultSnatStatus contains the desired state of whether default sNAT should\nbe disabled on the cluster.",
+      "type": "object",
+      "properties": {
+        "disabled": {
+          "description": "Disables cluster default sNAT rules.",
           "type": "boolean"
         }
       }

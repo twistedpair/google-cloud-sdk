@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -203,11 +203,11 @@ class CapabilityConfigList(ProtocolBuffer.ProtocolMessage):
 class CapabilityConfig(ProtocolBuffer.ProtocolMessage):
 
   # Status values
-  DEFAULT      =    0 
-  ENABLED      =    1 
-  SCHEDULED    =    2 
-  DISABLED     =    3 
-  UNKNOWN      =    4 
+  DEFAULT      =    0
+  ENABLED      =    1
+  SCHEDULED    =    2
+  DISABLED     =    3
+  UNKNOWN      =    4
 
   _Status_NAMES = {
     0: "DEFAULT",
