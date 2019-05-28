@@ -60,6 +60,9 @@ NONCE_LABEL = 'client.knative.dev/nonce'
 # making it more likely to get a useful error message from the server.
 MAX_WAIT_MS = 660000
 
+ALLOW_UNAUTH_POLICY_BINDING_MEMBERS = ['allUsers']
+ALLOW_UNAUTH_POLICY_BINDING_ROLE = 'roles/run.invoker'
+
 
 class UnknownAPIError(exceptions.Error):
   pass
@@ -837,7 +840,7 @@ class ServerlessOperations(object):
 
   def ReleaseService(self, service_ref, config_changes, tracker=None,
                      asyn=False, private_endpoint=None,
-                     allow_unauthenticated=False):
+                     allow_unauthenticated=None):
     """Change the given service in prod using the given config_changes.
 
     Ensures a new revision is always created, even if the spec of the revision
@@ -854,29 +857,34 @@ class ServerlessOperations(object):
         its existing visibility should remain unchanged.
       allow_unauthenticated: bool, True if creating a hosted Cloud Run
         service which should also have its IAM policy set to allow
-        unauthenticated access.
+        unauthenticated access. False if removing the IAM policy to allow
+        unauthenticated access from a service.
     """
     if tracker is None:
       tracker = progress_tracker.NoOpStagedProgressTracker(
-          stages.ServiceStages(allow_unauthenticated),
+          stages.ServiceStages(allow_unauthenticated is not None),
           interruptable=True, aborted_message='aborted')
     with_image = any(
         isinstance(c, config_changes_mod.ImageChange) for c in config_changes)
     self._UpdateOrCreateService(
         service_ref, config_changes, with_image, private_endpoint)
 
-    if allow_unauthenticated:
+    if allow_unauthenticated is not None:
       try:
         tracker.StartStage(stages.SERVICE_IAM_POLICY_SET)
         tracker.UpdateStage(stages.SERVICE_IAM_POLICY_SET, '')
-        self.AddIamPolicyBinding(service_ref, ['allUsers'], 'roles/run.invoker')
+        self.AddOrRemoveIamPolicyBinding(service_ref, allow_unauthenticated,
+                                         ALLOW_UNAUTH_POLICY_BINDING_MEMBERS,
+                                         ALLOW_UNAUTH_POLICY_BINDING_ROLE)
         tracker.CompleteStage(stages.SERVICE_IAM_POLICY_SET)
       except api_exceptions.HttpError:
         warning_message = (
             'Setting IAM policy failed, try "gcloud beta run services '
-            'add-iam-policy-binding --region=%s --member=allUsers '
-            '--role=roles/run.invoker %s"') % (
-                self._region, service_ref.servicesId)
+            '{}-iam-policy-binding --region={region} --member=allUsers '
+            '--role=roles/run.invoker {service}"'.format(
+                'add' if allow_unauthenticated else 'remove',
+                region=self._region,
+                service=service_ref.servicesId))
         tracker.CompleteStageWithWarning(
             stages.SERVICE_IAM_POLICY_SET, warning_message=warning_message)
 
@@ -1009,8 +1017,9 @@ class ServerlessOperations(object):
     response = self._op_client.projects_locations_services.GetIamPolicy(request)
     return response
 
-  def AddIamPolicyBinding(self, service_ref, members=None, role=None):
-    """Add the given IAM policy binding to the provided service.
+  def AddOrRemoveIamPolicyBinding(self, service_ref, add_binding=True,
+                                  members=None, role=None):
+    """Add or remove the given IAM policy binding to the provided service.
 
     If no members or role are provided, set the IAM policy to the current IAM
     policy. This is useful for checking whether the authenticated user has
@@ -1018,6 +1027,7 @@ class ServerlessOperations(object):
 
     Args:
       service_ref: str, The service to which to add the IAM policy.
+      add_binding: bool, Whether to add to or remove from the IAM policy.
       members: [str], The users for which the binding applies.
       role: str, The role to grant the provided members.
 
@@ -1028,18 +1038,23 @@ class ServerlessOperations(object):
     oneplatform_service = resource_name_conversion.K8sToOnePlatform(
         service_ref, self._region)
     policy = self._GetIamPolicy(oneplatform_service)
+    # Don't modify bindings if not members or roles provided
     if members and role:
-      policy.bindings.append(
-          messages.Binding(members=members, role=role))
+      binding = messages.Binding(members=members, role=role)
+      if add_binding:
+        policy.bindings.append(binding)
+      else:
+        # Remove bindings that exactly match the provided members and role
+        policy.bindings = [b for b in policy.bindings if b != binding]
     request = messages.RunProjectsLocationsServicesSetIamPolicyRequest(
         resource=str(oneplatform_service),
         setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy))
     result = self._op_client.projects_locations_services.SetIamPolicy(request)
     return result
 
-  def CanAddIamPolicyBinding(self, service_ref):
+  def CanSetIamPolicyBinding(self, service_ref):
     try:
-      self.AddIamPolicyBinding(service_ref)
+      self.AddOrRemoveIamPolicyBinding(service_ref)
       return True
     except api_exceptions.HttpError:
       return False

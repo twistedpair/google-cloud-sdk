@@ -188,7 +188,7 @@ class RecognitionAudio(_messages.Message):
 
   Fields:
     content: The audio data bytes encoded as specified in `RecognitionConfig`.
-      Note: as with all bytes fields, protobuffers use a pure binary
+      Note: as with all bytes fields, proto buffers use a pure binary
       representation, whereas JSON representations use base64.
     uri: URI that points to a file that contains audio data bytes as specified
       in `RecognitionConfig`. The file must not be compressed (for example,

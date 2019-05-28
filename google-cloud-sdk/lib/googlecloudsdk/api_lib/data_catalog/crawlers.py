@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.data_catalog import util
 
-
 _CRAWLER_API_VERSION = 'v1alpha3'
 
 
@@ -31,3 +30,8 @@ class CrawlersClient(object):
     self.client = util.GetClientInstance(api_version=_CRAWLER_API_VERSION)
     self.messages = util.GetMessagesModule(api_version=_CRAWLER_API_VERSION)
     self.service = self.client.projects_crawlers
+
+  def Get(self, crawler_ref):
+    request = self.messages.DatacatalogProjectsCrawlersGetRequest(
+        name=crawler_ref.RelativeName())
+    return self.service.Get(request)

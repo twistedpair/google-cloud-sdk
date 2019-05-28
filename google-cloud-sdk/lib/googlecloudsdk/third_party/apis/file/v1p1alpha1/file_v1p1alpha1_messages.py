@@ -333,7 +333,12 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
   "cloud-sql-instance-size": "1G",   },   "provisioned_resources": [     {
   "resource-type": "compute-instance",       "resource-url":
   "https://www.googleapis.com/compute/v1/projects/cloud-sql/zones/us-
-  east1-b/instances/vm-1",     }   ], } ```
+  east1-b/instances/vm-1",     }   ],   "maintenance_schedules": {
+  "csa_rollout": {        "start_time": {           "seconds": 1526406431,
+  },        "end_time": {           "seconds": 1535406431,        },     },
+  "ncsa_rollout": {        "start_time": {           "seconds": 1526406431,
+  },        "end_time": {           "seconds": 1535406431,        },     }   }
+  } ```
 
   Enums:
     StateValueValuesEnum: Output only. Current lifecycle state of the resource
@@ -348,6 +353,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       policy name defined in MaintenancePolicy, and the referenced policy must
       define the same policy type. For complete details of MaintenancePolicy,
       please refer to go/cloud-saas-mw-ug.
+    MaintenanceSchedulesValue: The MaintenanceSchedule contains the scheduling
+      information of published maintenance schedule.
     ProducerMetadataValue: Output only. Custom string attributes used
       primarily to expose producer-specific information in monitoring
       dashboards. See go/get-instance-metadata.
@@ -370,6 +377,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       defined in MaintenancePolicy, and the referenced policy must define the
       same policy type. For complete details of MaintenancePolicy, please
       refer to go/cloud-saas-mw-ug.
+    maintenanceSchedules: The MaintenanceSchedule contains the scheduling
+      information of published maintenance schedule.
     name: Unique name of the resource. It uses the form:
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
     producerMetadata: Output only. Custom string attributes used primarily to
@@ -472,6 +481,35 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class MaintenanceSchedulesValue(_messages.Message):
+    r"""The MaintenanceSchedule contains the scheduling information of
+    published maintenance schedule.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        MaintenanceSchedulesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        MaintenanceSchedulesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MaintenanceSchedulesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A
+          GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class ProducerMetadataValue(_messages.Message):
     r"""Output only. Custom string attributes used primarily to expose
     producer-specific information in monitoring dashboards. See go/get-
@@ -560,15 +598,29 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
   createTime = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
   maintenancePolicyNames = _messages.MessageField('MaintenancePolicyNamesValue', 3)
-  name = _messages.StringField(4)
-  producerMetadata = _messages.MessageField('ProducerMetadataValue', 5)
-  provisionedResources = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource', 6, repeated=True)
-  rolloutMetadata = _messages.MessageField('RolloutMetadataValue', 7)
-  sloMetadata = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata', 8)
-  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  tenantProjectId = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  maintenanceSchedules = _messages.MessageField('MaintenanceSchedulesValue', 4)
+  name = _messages.StringField(5)
+  producerMetadata = _messages.MessageField('ProducerMetadataValue', 6)
+  provisionedResources = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource', 7, repeated=True)
+  rolloutMetadata = _messages.MessageField('RolloutMetadataValue', 8)
+  sloMetadata = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata', 9)
+  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  tenantProjectId = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
+
+
+class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messages.Message):
+  r"""Maintenance schedule which is exposed to customer and potentially end
+  user, indicating published upcoming future maintenance schedule
+
+  Fields:
+    endTime: The scheduled end time for the maintenance.
+    startTime: The scheduled start time for the maintenance.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata(_messages.Message):
@@ -643,7 +695,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1RolloutMetadata(_messages.M
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion(_messages.Message):
-  r"""A temporal SLO exclusion specification.
+  r"""SloExclusion represents an excusion in SLI calculation applies to all
+  SLOs.
 
   Fields:
     exclusionDuration: Exclusion duration. No restrictions on the possible
@@ -659,15 +712,15 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion(_messages.Mess
     reason: Human-readable reason for the exclusion. This should be a static
       string (e.g. "Disruptive update in progress") and should not contain
       dynamically generated data (e.g. instance name). Can be left empty.
-    sloName: Name of an SLI/SLO that this exclusion applies to. Can be left
-      empty, signaling that the instance should be excluded from all SLI/SLOs
-      defined in the service SLO configuration.
+    sliName: Name of an SLI that this exclusion applies to. Can be left empty,
+      signaling that the instance should be excluded from all SLIs defined in
+      the service SLO configuration.
   """
 
   exclusionDuration = _messages.StringField(1)
   exclusionStartTime = _messages.StringField(2)
   reason = _messages.StringField(3)
-  sloName = _messages.StringField(4)
+  sliName = _messages.StringField(4)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Message):

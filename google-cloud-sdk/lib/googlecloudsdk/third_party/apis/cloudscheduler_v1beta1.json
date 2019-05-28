@@ -403,18 +403,18 @@
           "format": "byte"
         },
         "oauthToken": {
-          "description": "If specified, an\n[OAuth token](https:\/\/developers.google.com\/identity\/protocols\/OAuth2)\nwill be generated and attached as an `Authorization` header in the HTTP\nrequest.\n\nThis type of authorization should be used when sending requests to a GCP\nendpoint.",
+          "description": "If specified, an\n[OAuth token](https:\/\/developers.google.com\/identity\/protocols\/OAuth2)\nwill be generated and attached as an `Authorization` header in the HTTP\nrequest.\n\nThis type of authorization should generally only be used when calling\nGoogle APIs hosted on *.googleapis.com.",
           "$ref": "OAuthToken"
         },
         "oidcToken": {
-          "description": "If specified, an\n[OIDC](https:\/\/developers.google.com\/identity\/protocols\/OpenIDConnect)\ntoken will be generated and attached as an `Authorization` header in the\nHTTP request.\n\nThis type of authorization should be used when sending requests to third\nparty endpoints or Cloud Run.",
+          "description": "If specified, an\n[OIDC](https:\/\/developers.google.com\/identity\/protocols\/OpenIDConnect)\ntoken will be generated and attached as an `Authorization` header in the\nHTTP request.\n\nThis type of authorization can be used for many scenarios, including\ncalling Cloud Run, or endpoints where you intend to validate the token\nyourself.",
           "$ref": "OidcToken"
         }
       }
     },
     "OAuthToken": {
       "id": "OAuthToken",
-      "description": "Contains information needed for generating an\n[OAuth token](https:\/\/developers.google.com\/identity\/protocols\/OAuth2).\nThis type of authorization should be used when sending requests to a GCP\nendpoint.",
+      "description": "Contains information needed for generating an\n[OAuth token](https:\/\/developers.google.com\/identity\/protocols\/OAuth2).\nThis type of authorization should generally only be used when calling Google\nAPIs hosted on *.googleapis.com.",
       "type": "object",
       "properties": {
         "serviceAccountEmail": {
@@ -429,7 +429,7 @@
     },
     "OidcToken": {
       "id": "OidcToken",
-      "description": "Contains information needed for generating an\n[OpenID Connect\ntoken](https:\/\/developers.google.com\/identity\/protocols\/OpenIDConnect). This\ntype of authorization should be used when sending requests to third party\nendpoints or Cloud Run.",
+      "description": "Contains information needed for generating an\n[OpenID Connect\ntoken](https:\/\/developers.google.com\/identity\/protocols\/OpenIDConnect).\nThis type of authorization can be used for many scenarios, including\ncalling Cloud Run, or endpoints where you intend to validate the token\nyourself.",
       "type": "object",
       "properties": {
         "serviceAccountEmail": {

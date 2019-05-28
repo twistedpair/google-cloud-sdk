@@ -25,6 +25,7 @@ from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.command_lib.functions.deploy import env_vars_util
 from googlecloudsdk.command_lib.run import config_changes
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
+from googlecloudsdk.command_lib.run import pretty_print
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.command_lib.util.args import repeated
@@ -68,7 +69,7 @@ def AddAllowUnauthenticatedFlag(parser):
   """Add the --allow-unauthenticated flag."""
   parser.add_argument(
       '--allow-unauthenticated',
-      default=False,
+      default=None,
       action='store_true',
       help='True to allow unauthenticated access to the service.')
 
@@ -352,6 +353,47 @@ def GetRegion(args, prompt=False):
         'To make this the default region, run '
         '`gcloud config set run/region {}`.\n'.format(region))
     return region
+
+
+def GetEndpointVisibility(args):
+  """Return bool for explicitly set connectivity or None if not set."""
+  if args.connectivity == 'internal':
+    return True
+  if args.connectivity == 'external':
+    return False
+  return None
+
+
+def GetAllowUnauthenticated(args, client, service_ref, prompt=False):
+  """Return bool for the explicit intent to allow unauth invocations or None.
+
+  If --[no-]allow-unauthenticated is set, return that value. If not set,
+  prompt for value if desired. If prompting not necessary or doable,
+  return None, indicating that no action needs to be taken.
+
+  Args:
+    args: Namespace, The args namespace.
+    client: from googlecloudsdk.command_lib.run import serverless_operations
+      serverless_operations.ServerlessOperations object
+    service_ref: service resource reference (e.g. args.CONCEPTS.service.Parse())
+    prompt: bool, whether to attempt to prompt.
+
+  Returns:
+    bool indicating whether to allow/unallow unauthenticated or None if N/A
+  """
+  if getattr(args, 'allow_unauthenticated', None) is not None:
+    return args.allow_unauthenticated
+
+  if prompt:
+    if client.CanSetIamPolicyBinding(service_ref):
+      return console_io.PromptContinue(
+          prompt_string=('Allow unauthenticated invocations '
+                         'to [{}]'.format(service_ref.servicesId)),
+          default=False)
+    else:
+      pretty_print.Info(
+          'This service will require authentication to be invoked.')
+  return None
 
 
 def ValidateClusterArgs(args):

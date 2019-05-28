@@ -1263,7 +1263,8 @@ class AttachedDisk(_messages.Message):
       Persistent disks must always use SCSI and the request will fail if you
       attempt to attach a persistent disk in any other format than SCSI. Local
       SSDs can use either NVME or SCSI. For performance characteristics of
-      SCSI over NVMe, see Local SSD performance.
+      SCSI over NVMe, see Local SSD performance. TODO(b/131765817): Update
+      documentation when NVME is supported.
     ModeValueValuesEnum: The mode in which to attach this disk, either
       READ_WRITE or READ_ONLY. If not specified, the default is to attach the
       disk in READ_WRITE mode.
@@ -1314,7 +1315,8 @@ class AttachedDisk(_messages.Message):
       always use SCSI and the request will fail if you attempt to attach a
       persistent disk in any other format than SCSI. Local SSDs can use either
       NVME or SCSI. For performance characteristics of SCSI over NVMe, see
-      Local SSD performance.
+      Local SSD performance. TODO(b/131765817): Update documentation when NVME
+      is supported.
     kind: [Output Only] Type of the resource. Always compute#attachedDisk for
       attached disks.
     licenses: [Output Only] Any valid publicly visible licenses.
@@ -1338,6 +1340,7 @@ class AttachedDisk(_messages.Message):
     SCSI and the request will fail if you attempt to attach a persistent disk
     in any other format than SCSI. Local SSDs can use either NVME or SCSI. For
     performance characteristics of SCSI over NVMe, see Local SSD performance.
+    TODO(b/131765817): Update documentation when NVME is supported.
 
     Values:
       NVME: <no description>
@@ -20320,7 +20323,9 @@ class ExternalVpnGatewayList(_messages.Message):
 
 
 class Firewall(_messages.Message):
-  r"""Represents a Firewall resource.
+  r"""Represents a Firewall Rule resource.  Firewall rules allow or deny
+  ingress traffic to, and egress traffic from your instances. For more
+  information, read Firewall rules.
 
   Enums:
     DirectionValueValuesEnum: Direction of traffic to which this firewall
@@ -24760,11 +24765,15 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
     the update, it might perform a more disruptive action.
 
     Values:
+      NONE: <no description>
+      REFRESH: <no description>
       REPLACE: <no description>
       RESTART: <no description>
     """
-    REPLACE = 0
-    RESTART = 1
+    NONE = 0
+    REFRESH = 1
+    REPLACE = 2
+    RESTART = 3
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of update process. You can specify either PROACTIVE so that
@@ -24850,22 +24859,30 @@ class InstanceGroupManagersApplyUpdatesRequest(_messages.Message):
     default NONE.
 
     Values:
+      NONE: <no description>
+      REFRESH: <no description>
       REPLACE: <no description>
       RESTART: <no description>
     """
-    REPLACE = 0
-    RESTART = 1
+    NONE = 0
+    REFRESH = 1
+    REPLACE = 2
+    RESTART = 3
 
   class MostDisruptiveAllowedActionValueValuesEnum(_messages.Enum):
     r"""The most disruptive action that allowed to be performed on the
     instances. By default REPLACE.
 
     Values:
+      NONE: <no description>
+      REFRESH: <no description>
       REPLACE: <no description>
       RESTART: <no description>
     """
-    REPLACE = 0
-    RESTART = 1
+    NONE = 0
+    REFRESH = 1
+    REPLACE = 2
+    RESTART = 3
 
   instances = _messages.StringField(1, repeated=True)
   minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 2)
@@ -26244,10 +26261,10 @@ class Int64RangeMatch(_messages.Message):
 
 
 class Interconnect(_messages.Message):
-  r"""Represents an Interconnects resource. The Interconnects resource is a
-  dedicated connection between Google's network and your on-premises network.
-  For more information, see the  Dedicated overview page. (== resource_for
-  v1.interconnects ==) (== resource_for beta.interconnects ==)
+  r"""Represents an Interconnect resource.  An Interconnect resource is a
+  dedicated connection between the GCP network and your on-premises network.
+  For more information, read the  Dedicated Interconnect Overview. (==
+  resource_for v1.interconnects ==) (== resource_for beta.interconnects ==)
 
   Enums:
     InterconnectTypeValueValuesEnum: Type of interconnect, which can take one
@@ -26486,8 +26503,10 @@ class Interconnect(_messages.Message):
 
 
 class InterconnectAttachment(_messages.Message):
-  r"""Represents an InterconnectAttachment (VLAN attachment) resource. For
-  more information, see  Creating VLAN Attachments. (== resource_for
+  r"""Represents an Interconnect Attachment (VLAN) resource.  You can use
+  Interconnect attachments (VLANS) to connect your Virtual Private Cloud
+  networks to your on-premises networks through an Interconnect. For more
+  information, read  Creating VLAN Attachments. (== resource_for
   beta.interconnectAttachments ==) (== resource_for v1.interconnectAttachments
   ==)
 
@@ -27553,9 +27572,10 @@ class InterconnectList(_messages.Message):
 
 
 class InterconnectLocation(_messages.Message):
-  r"""Represents an InterconnectLocations resource. The InterconnectLocations
-  resource describes the locations where you can connect to Google's networks.
-  For more information, see  Colocation Facilities.
+  r"""Represents an Interconnect Attachment (VLAN) Location resource.  You can
+  use this resource to find location details about an Interconnect attachment
+  (VLAN). For more information about interconnect attachments, read  Creating
+  VLAN Attachments.
 
   Enums:
     ContinentValueValuesEnum: [Output Only] Continent for this location, which
@@ -29037,9 +29057,10 @@ class NamedPort(_messages.Message):
 
 
 class Network(_messages.Message):
-  r"""Represents a Network resource. Read Virtual Private Cloud (VPC) Network
-  Overview for more information. (== resource_for v1.networks ==) (==
-  resource_for beta.networks ==)
+  r"""Represents a VPC Network resource.  Networks connect resources to each
+  other and to the internet. For more information, read Virtual Private Cloud
+  (VPC) Network. (== resource_for v1.networks ==) (== resource_for
+  beta.networks ==)
 
   Fields:
     IPv4Range: Deprecated in favor of subnet mode networks. The range of
@@ -30106,7 +30127,7 @@ class NodeGroup(_messages.Message):
   separated from instances in other projects, or to group your instances
   together on the same host hardware. For more information, read Sole-tenant
   nodes. (== resource_for beta.nodeGroups ==) (== resource_for v1.nodeGroups
-  ==)
+  ==) NextID: 15
 
   Enums:
     StatusValueValuesEnum:
@@ -30751,7 +30772,7 @@ class NodeTemplate(_messages.Message):
   r"""Represent a sole-tenant Node Template resource.  You can use a template
   to define properties for nodes in a node group. For more information, read
   Creating node groups and instances. (== resource_for beta.nodeTemplates ==)
-  (== resource_for v1.nodeTemplates ==)
+  (== resource_for v1.nodeTemplates ==) NextID: 16
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the node template. One
@@ -31745,9 +31766,7 @@ class Operation(_messages.Message):
       operation will be complete. This number should monotonically increase as
       the operation progresses.
     region: [Output Only] The URL of the region where the operation resides.
-      Only available when performing regional operations. You must specify
-      this field as part of the HTTP request URL. It is not settable as a
-      field in the request body.
+      Only applicable when performing regional operations.
     selfLink: [Output Only] Server-defined URL for the resource.
     startTime: [Output Only] The time that this operation was started by the
       server. This value is in RFC3339 text format.
@@ -31765,9 +31784,7 @@ class Operation(_messages.Message):
     warnings: [Output Only] If warning messages are generated during
       processing of the operation, this field will be populated.
     zone: [Output Only] The URL of the zone where the operation resides. Only
-      available when performing per-zone operations. You must specify this
-      field as part of the HTTP request URL. It is not settable as a field in
-      the request body.
+      applicable when performing per-zone operations.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -33509,22 +33526,30 @@ class RegionInstanceGroupManagersApplyUpdatesRequest(_messages.Message):
     default NONE.
 
     Values:
+      NONE: <no description>
+      REFRESH: <no description>
       REPLACE: <no description>
       RESTART: <no description>
     """
-    REPLACE = 0
-    RESTART = 1
+    NONE = 0
+    REFRESH = 1
+    REPLACE = 2
+    RESTART = 3
 
   class MostDisruptiveAllowedActionValueValuesEnum(_messages.Enum):
     r"""The most disruptive action that allowed to be performed on the
     instances. By default REPLACE.
 
     Values:
+      NONE: <no description>
+      REFRESH: <no description>
       REPLACE: <no description>
       RESTART: <no description>
     """
-    REPLACE = 0
-    RESTART = 1
+    NONE = 0
+    REFRESH = 1
+    REPLACE = 2
+    RESTART = 3
 
   instances = _messages.StringField(1, repeated=True)
   minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 2)
@@ -34003,7 +34028,10 @@ class RequestMirrorPolicy(_messages.Message):
 
 
 class Reservation(_messages.Message):
-  r"""Reservation resource
+  r"""Reservation resource NextID: 13
+
+  Enums:
+    StatusValueValuesEnum: [Output Only] The status of the reservation.
 
   Fields:
     commitment: [OutputOnly] Full or partial url for parent commitment for
@@ -34031,9 +34059,26 @@ class Reservation(_messages.Message):
       consumed by VMs with "any reservation" defined. If the field is set,
       then only VMs that target the reservation by name using --reservation-
       affinity can consume this reservation.
+    status: [Output Only] The status of the reservation.
     zone: Zone in which the reservation resides, must be provided if
       reservation is created with commitment creation.
   """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The status of the reservation.
+
+    Values:
+      CREATING: <no description>
+      DELETING: <no description>
+      INVALID: <no description>
+      READY: <no description>
+      UPDATING: <no description>
+    """
+    CREATING = 0
+    DELETING = 1
+    INVALID = 2
+    READY = 3
+    UPDATING = 4
 
   commitment = _messages.StringField(1)
   creationTimestamp = _messages.StringField(2)
@@ -34044,7 +34089,8 @@ class Reservation(_messages.Message):
   selfLink = _messages.StringField(7)
   specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 8)
   specificReservationRequired = _messages.BooleanField(9)
-  zone = _messages.StringField(10)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  zone = _messages.StringField(11)
 
 
 class ReservationAffinity(_messages.Message):
@@ -35183,20 +35229,10 @@ class ResourcePolicyWeeklyCycleDayOfWeek(_messages.Message):
 
 
 class Route(_messages.Message):
-  r"""Represents a Route resource. A route specifies how certain packets
-  should be handled by the network. Routes are associated with instances by
-  tags and the set of routes for a particular instance is called its routing
-  table.  For each packet leaving an instance, the system searches that
-  instance's routing table for a single best matching route. Routes match
-  packets by destination IP address, preferring smaller or more specific
-  ranges over larger ones. If there is a tie, the system selects the route
-  with the smallest priority value. If there is still a tie, it uses the layer
-  three and four packet headers to select just one of the remaining matching
-  routes. The packet is then forwarded as specified by the nextHop field of
-  the winning route - either to another instance destination, an instance
-  gateway, or a Google Compute Engine-operated gateway.  Packets that do not
-  match any route in the sending instance's routing table are dropped. (==
-  resource_for beta.routes ==) (== resource_for v1.routes ==)
+  r"""Represents a Route resource.  A route defines a path from VM instances
+  in the VPC network to a specific destination. This destination can be inside
+  or outside the VPC network. For more information, read the Routes overview.
+  (== resource_for beta.routes ==) (== resource_for v1.routes ==)
 
   Messages:
     WarningsValueListEntry: A WarningsValueListEntry object.
@@ -35501,7 +35537,8 @@ class RouteList(_messages.Message):
 
 
 class Router(_messages.Message):
-  r"""Router resource.
+  r"""Represents a Cloud Router resource.  For more information about Cloud
+  Router, read the the Cloud Router overview.
 
   Fields:
     bgp: BGP information specific to this router.
@@ -36580,7 +36617,7 @@ class SSLHealthCheck(_messages.Message):
 
 
 class Scheduling(_messages.Message):
-  r"""Sets the scheduling options for an Instance.
+  r"""Sets the scheduling options for an Instance. NextID: 9
 
   Enums:
     OnHostMaintenanceValueValuesEnum: Defines the maintenance behavior for
@@ -38417,8 +38454,11 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Subnetwork(_messages.Message):
-  r"""A Subnetwork resource. (== resource_for beta.subnetworks ==) (==
-  resource_for v1.subnetworks ==)
+  r"""Represents a Subnetwork resource.  A subnetwork (also known as a subnet)
+  is a logical partition of a Virtual Private Cloud network with one primary
+  IP range and zero or more secondary IP ranges. For more information, read
+  Virtual Private Cloud (VPC) Network. (== resource_for beta.subnetworks ==)
+  (== resource_for v1.subnetworks ==)
 
   Enums:
     PurposeValueValuesEnum: The purpose of the resource. This field can be
@@ -40133,9 +40173,12 @@ class TargetHttpsProxyList(_messages.Message):
 
 
 class TargetInstance(_messages.Message):
-  r"""A TargetInstance resource. This resource defines an endpoint instance
-  that terminates traffic of certain protocols. (== resource_for
-  beta.targetInstances ==) (== resource_for v1.targetInstances ==)
+  r"""Represents a Target Instance resource.  You can use a target instance to
+  handle traffic for one or more forwarding rules, which is ideal for
+  forwarding protocol traffic that is managed by a single source. For example,
+  ESP, AH, TCP, or UDP. For more information, read Target instances. (==
+  resource_for beta.targetInstances ==) (== resource_for v1.targetInstances
+  ==)
 
   Enums:
     NatPolicyValueValuesEnum: NAT option controlling how IPs are NAT'ed to the
@@ -41603,8 +41646,10 @@ class TargetTcpProxyList(_messages.Message):
 
 
 class TargetVpnGateway(_messages.Message):
-  r"""Represents a Target VPN gateway resource. (== resource_for
-  beta.targetVpnGateways ==) (== resource_for v1.targetVpnGateways ==)
+  r"""Represents a Target VPN Gateway resource.  The target VPN gateway
+  resource represents a Classic Cloud VPN gateway. For more information, read
+  the the Cloud VPN Overview. (== resource_for beta.targetVpnGateways ==) (==
+  resource_for v1.targetVpnGateways ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the VPN gateway, which
@@ -43628,7 +43673,8 @@ class VpnGatewaysScopedList(_messages.Message):
 
 
 class VpnTunnel(_messages.Message):
-  r"""VPN tunnel resource. (== resource_for beta.vpnTunnels ==) (==
+  r"""Represents a Cloud VPN Tunnel resource.  For more information about VPN,
+  read the the Cloud VPN Overview. (== resource_for beta.vpnTunnels ==) (==
   resource_for v1.vpnTunnels ==)
 
   Enums:

@@ -668,13 +668,13 @@ class DataprocV1beta2(base_api.BaseApiClient):
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
         flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies/{autoscalingPoliciesId}:getIamPolicy',
-        http_method=u'POST',
+        http_method=u'GET',
         method_id=u'dataproc.projects.regions.autoscalingPolicies.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
         query_params=[],
         relative_path=u'v1beta2/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
+        request_field='',
         request_type_name=u'DataprocProjectsRegionsAutoscalingPoliciesGetIamPolicyRequest',
         response_type_name=u'Policy',
         supports_download=False,

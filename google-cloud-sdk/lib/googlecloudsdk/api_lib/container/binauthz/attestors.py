@@ -36,7 +36,7 @@ class Client(object):
   def Get(self, attestor_ref):
     """Get the specified attestor."""
     return self.client.projects_attestors.Get(
-        self.messages.BinaryauthorizationProjectsAttestorsGetRequest(  # pylint: disable=line-too-long
+        self.messages.BinaryauthorizationProjectsAttestorsGetRequest(
             name=attestor_ref.RelativeName(),
         ))
 
@@ -248,7 +248,7 @@ class Client(object):
 
   def Delete(self, attestor_ref):
     """Delete the specified attestor."""
-    req = self.messages.BinaryauthorizationProjectsAttestorsDeleteRequest(  # pylint: disable=line-too-long
+    req = self.messages.BinaryauthorizationProjectsAttestorsDeleteRequest(
         name=attestor_ref.RelativeName(),
     )
 

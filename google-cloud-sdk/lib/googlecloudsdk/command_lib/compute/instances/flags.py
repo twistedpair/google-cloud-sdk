@@ -23,6 +23,7 @@ import functools
 
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import containers_utils
+from googlecloudsdk.api_lib.compute import csek_utils
 from googlecloudsdk.api_lib.compute import image_utils
 from googlecloudsdk.api_lib.compute import kms_utils
 from googlecloudsdk.api_lib.compute import utils
@@ -228,6 +229,16 @@ def AddMachineImageArg():
       global_collection='compute.machineImages',
       short_help=('The name of the machine image that the instance will '
                   'be created from.'))
+
+
+def AddSourceMachineImageEncryptionKey(parser):
+  parser.add_argument(
+      '--source-machine-image-csek-key-file',
+      metavar='FILE',
+      help="""\
+      Path to a Customer-Supplied Encryption Key (CSEK) key file, mapping resources to user managed keys which were used to encrypt the source machine-image.
+      See {csek_help} for more details.
+      """.format(csek_help=csek_utils.CSEK_HELP_URL))
 
 
 def AddImageArgs(parser, enable_snapshots=False):
@@ -654,6 +665,15 @@ def AddCustomMachineTypeArgs(parser):
       '--custom-extensions',
       action='store_true',
       help='Use the extended custom machine type.')
+  custom_group.add_argument(
+      '--custom-vm-gen',
+      help="""
+      Specifies VM generation. n1 - VMs with CPU platforms Skylake and older,
+      n2 - VMs with CPU platform Cascade Lake. n2 offers flexible sizing from
+      2 to 80 vCPUs, and 1 to 640GBs of memory.
+      It also features a number of performance enhancements including exposing
+      a more accurate NUMA topology to the guest OS. The default is `n1`.
+      """)
 
 
 def _GetAddress(compute_client, address_ref):

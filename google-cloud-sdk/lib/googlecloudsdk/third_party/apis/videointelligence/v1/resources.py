@@ -34,6 +34,56 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  OPERATIONS_PROJECTS = (
+      'operations.projects',
+      'operations/projects/{projectsId}',
+      {},
+      [u'projectsId'],
+      True
+  )
+  OPERATIONS_PROJECTS_LOCATIONS = (
+      'operations.projects.locations',
+      'operations/projects/{projectsId}/locations/{locationsId}',
+      {},
+      [u'projectsId', u'locationsId'],
+      True
+  )
+  OPERATIONS_PROJECTS_LOCATIONS_OPERATIONS = (
+      'operations.projects.locations.operations',
+      'operations/{+name}',
+      {
+          '':
+              'operations/projects/{projectsId}/locations/{locationsId}/'
+              'operations/{operationsId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS = (
+      'projects',
+      'projects/{projectsId}',
+      {},
+      [u'projectsId'],
+      True
+  )
+  PROJECTS_LOCATIONS = (
+      'projects.locations',
+      'projects/{projectsId}/locations/{locationsId}',
+      {},
+      [u'projectsId', u'locationsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_OPERATIONS = (
+      'projects.locations.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/operations/'
+              '{operationsId}',
+      },
+      [u'name'],
+      True
+  )
   VIDEOS = (
       'videos',
       'videos',

@@ -677,34 +677,6 @@ for 90 days.
         supports_download=False,
     )
 
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for an instance resource. Returns an empty.
-policy if an table exists but does not have a policy set.
-
-      Args:
-        request: (BigtableadminProjectsInstancesTablesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.tables.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v2/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'BigtableadminProjectsInstancesTablesGetIamPolicyRequest',
-        response_type_name=u'Policy',
-        supports_download=False,
-    )
-
     def List(self, request, global_params=None):
       r"""Lists all tables served from a specified instance.
 
@@ -759,61 +731,6 @@ where only some modifications have taken effect.
         request_field=u'modifyColumnFamiliesRequest',
         request_type_name=u'BigtableadminProjectsInstancesTablesModifyColumnFamiliesRequest',
         response_type_name=u'Table',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on a table resource. Replaces any existing.
-policy.
-
-      Args:
-        request: (BigtableadminProjectsInstancesTablesSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.tables.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v2/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'BigtableadminProjectsInstancesTablesSetIamPolicyRequest',
-        response_type_name=u'Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that the caller has on the specified table resource.
-
-      Args:
-        request: (BigtableadminProjectsInstancesTablesTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.tables.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v2/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'BigtableadminProjectsInstancesTablesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
         supports_download=False,
     )
 

@@ -416,7 +416,7 @@
           "type": "string"
         },
         "multiClusterRoutingUseAny": {
-          "description": "Use a multi-cluster routing policy that may pick any cluster.",
+          "description": "Use a multi-cluster routing policy.",
           "$ref": "MultiClusterRoutingUseAny"
         },
         "singleClusterRouting": {
@@ -427,14 +427,14 @@
     },
     "MultiClusterRoutingUseAny": {
       "id": "MultiClusterRoutingUseAny",
-      "description": "Read\/write requests may be routed to any cluster in the instance, and will\nfail over to another cluster in the event of transient errors or delays.\nChoosing this option sacrifices read-your-writes consistency to improve\navailability.",
+      "description": "Read\/write requests are routed to the nearest cluster in the instance, and\nwill fail over to the nearest cluster that is available in the event of\ntransient errors or delays. Clusters in a region are considered\nequidistant. Choosing this option sacrifices read-your-writes consistency\nto improve availability.",
       "type": "object",
       "properties": {
       }
     },
     "SingleClusterRouting": {
       "id": "SingleClusterRouting",
-      "description": "Unconditionally routes all read\/write requests to a specific cluster.\nThis option preserves read-your-writes consistency, but does not improve\navailability.",
+      "description": "Unconditionally routes all read\/write requests to a specific cluster.\nThis option preserves read-your-writes consistency but does not improve\navailability.",
       "type": "object",
       "properties": {
         "clusterId": {
@@ -2255,102 +2255,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Checks replication consistency based on a consistency token, that is, if\nreplication has caught up based on the conditions specified in the token\nand the check request."
-                },
-                "getIamPolicy": {
-                  "id": "bigtableadmin.projects.instances.tables.getIamPolicy",
-                  "path": "v2/{+resource}:getIamPolicy",
-                  "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:getIamPolicy",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "request": {
-                    "$ref": "GetIamPolicyRequest"
-                  },
-                  "response": {
-                    "$ref": "Policy"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/bigtable.admin",
-                    "https://www.googleapis.com/auth/bigtable.admin.table",
-                    "https://www.googleapis.com/auth/cloud-bigtable.admin",
-                    "https://www.googleapis.com/auth/cloud-bigtable.admin.table",
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets the access control policy for an instance resource. Returns an empty\npolicy if an table exists but does not have a policy set."
-                },
-                "setIamPolicy": {
-                  "id": "bigtableadmin.projects.instances.tables.setIamPolicy",
-                  "path": "v2/{+resource}:setIamPolicy",
-                  "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:setIamPolicy",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "request": {
-                    "$ref": "SetIamPolicyRequest"
-                  },
-                  "response": {
-                    "$ref": "Policy"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/bigtable.admin",
-                    "https://www.googleapis.com/auth/bigtable.admin.table",
-                    "https://www.googleapis.com/auth/cloud-bigtable.admin",
-                    "https://www.googleapis.com/auth/cloud-bigtable.admin.table",
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Sets the access control policy on a table resource. Replaces any existing\npolicy."
-                },
-                "testIamPermissions": {
-                  "id": "bigtableadmin.projects.instances.tables.testIamPermissions",
-                  "path": "v2/{+resource}:testIamPermissions",
-                  "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:testIamPermissions",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "request": {
-                    "$ref": "TestIamPermissionsRequest"
-                  },
-                  "response": {
-                    "$ref": "TestIamPermissionsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/bigtable.admin",
-                    "https://www.googleapis.com/auth/bigtable.admin.table",
-                    "https://www.googleapis.com/auth/cloud-bigtable.admin",
-                    "https://www.googleapis.com/auth/cloud-bigtable.admin.table",
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Returns permissions that the caller has on the specified table resource."
                 }
               }
             }

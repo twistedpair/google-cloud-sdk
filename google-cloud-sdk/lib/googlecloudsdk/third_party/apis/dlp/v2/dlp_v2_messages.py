@@ -461,13 +461,17 @@ class DlpProjectsDlpJobsListRequest(_messages.Message):
       `<field> <operator> <value>`. * Supported fields/values for inspect
       jobs:     - `state` - PENDING|RUNNING|CANCELED|FINISHED|FAILED     -
       `inspected_storage` - DATASTORE|CLOUD_STORAGE|BIGQUERY     -
-      `trigger_name` - The resource name of the trigger that created job. *
-      Supported fields for risk analysis jobs:     - `state` -
-      RUNNING|CANCELED|FINISHED|FAILED * The operator must be `=` or `!=`.
-      Examples:  * inspected_storage = cloud_storage AND state = done *
+      `trigger_name` - The resource name of the trigger that created job.
+      - 'end_time` - Corresponds to time the job finished.     - 'start_time`
+      - Corresponds to time the job finished. * Supported fields for risk
+      analysis jobs:     - `state` - RUNNING|CANCELED|FINISHED|FAILED     -
+      'end_time` - Corresponds to time the job finished.     - 'start_time` -
+      Corresponds to time the job finished. * The operator must be `=` or
+      `!=`.  Examples:  * inspected_storage = cloud_storage AND state = done *
       inspected_storage = cloud_storage OR inspected_storage = bigquery *
       inspected_storage = cloud_storage AND (state = done OR state = canceled)
-      The length of this field should be no more than 500 characters.
+      * end_time > \"2017-12-12T00:00:00+00:00\"  The length of this field
+      should be no more than 500 characters.
     orderBy: Optional comma separated list of fields to order by, followed by
       `asc` or `desc` postfix. This list is case-insensitive, default sorting
       order is ascending, redundant space characters are insignificant.
@@ -2063,6 +2067,7 @@ class GooglePrivacyDlpV2DlpJob(_messages.Message):
       DONE: The job is no longer running.
       CANCELED: The job was canceled before it could complete.
       FAILED: The job had an error and did not complete.
+      WAITING_FOR_TP_CREATION: Job waiting on Tenant Project creation.
     """
     JOB_STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -2070,6 +2075,7 @@ class GooglePrivacyDlpV2DlpJob(_messages.Message):
     DONE = 3
     CANCELED = 4
     FAILED = 5
+    WAITING_FOR_TP_CREATION = 6
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of job.
@@ -3460,8 +3466,11 @@ class GooglePrivacyDlpV2PublishSummaryToCscc(_messages.Message):
 
 
 class GooglePrivacyDlpV2PublishToPubSub(_messages.Message):
-  r"""Publish the results of a DlpJob to a pub sub channel. Compatible with:
-  Inspect, Risk
+  r"""Publish a message into given Pub/Sub topic when DlpJob has completed.
+  The message contains a single field, `DlpJobName`, which is equal to the
+  finished job's
+  [`DlpJob.name`](/dlp/docs/reference/rest/v2/projects.dlpJobs#DlpJob).
+  Compatible with: Inspect, Risk
 
   Fields:
     topic: Cloud Pub/Sub topic to send notifications to. The topic must have

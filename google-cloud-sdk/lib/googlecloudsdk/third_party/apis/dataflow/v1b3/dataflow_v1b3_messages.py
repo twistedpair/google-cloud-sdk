@@ -1191,6 +1191,20 @@ class DataflowProjectsLocationsJobsSnapshotRequest(_messages.Message):
   snapshotJobRequest = _messages.MessageField('SnapshotJobRequest', 4)
 
 
+class DataflowProjectsLocationsJobsSnapshotsListRequest(_messages.Message):
+  r"""A DataflowProjectsLocationsJobsSnapshotsListRequest object.
+
+  Fields:
+    jobId: If specified, list snapshots created from this job.
+    location: The location to list snapshots in.
+    projectId: The project ID to list snapshots for.
+  """
+
+  jobId = _messages.StringField(1, required=True)
+  location = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+
+
 class DataflowProjectsLocationsJobsUpdateRequest(_messages.Message):
   r"""A DataflowProjectsLocationsJobsUpdateRequest object.
 
@@ -1281,12 +1295,14 @@ class DataflowProjectsLocationsSnapshotsListRequest(_messages.Message):
   r"""A DataflowProjectsLocationsSnapshotsListRequest object.
 
   Fields:
+    jobId: If specified, list snapshots created from this job.
     location: The location to list snapshots in.
     projectId: The project ID to list snapshots for.
   """
 
-  location = _messages.StringField(1, required=True)
-  projectId = _messages.StringField(2, required=True)
+  jobId = _messages.StringField(1)
+  location = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
 
 
 class DataflowProjectsLocationsSqlValidateRequest(_messages.Message):
@@ -1421,12 +1437,14 @@ class DataflowProjectsSnapshotsListRequest(_messages.Message):
   r"""A DataflowProjectsSnapshotsListRequest object.
 
   Fields:
+    jobId: If specified, list snapshots created from this job.
     location: The location to list snapshots in.
     projectId: The project ID to list snapshots for.
   """
 
-  location = _messages.StringField(1)
-  projectId = _messages.StringField(2, required=True)
+  jobId = _messages.StringField(1)
+  location = _messages.StringField(2)
+  projectId = _messages.StringField(3, required=True)
 
 
 class DataflowProjectsTemplatesCreateRequest(_messages.Message):

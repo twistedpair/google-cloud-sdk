@@ -418,13 +418,14 @@ class HttpTarget(_messages.Message):
     oauthToken: If specified, an [OAuth
       token](https://developers.google.com/identity/protocols/OAuth2) will be
       generated and attached as an `Authorization` header in the HTTP request.
-      This type of authorization should be used when sending requests to a GCP
-      endpoint.
+      This type of authorization should generally only be used when calling
+      Google APIs hosted on *.googleapis.com.
     oidcToken: If specified, an
       [OIDC](https://developers.google.com/identity/protocols/OpenIDConnect)
       token will be generated and attached as an `Authorization` header in the
-      HTTP request.  This type of authorization should be used when sending
-      requests to third party endpoints or Cloud Run.
+      HTTP request.  This type of authorization can be used for many
+      scenarios, including calling Cloud Run, or endpoints where you intend to
+      validate the token yourself.
     uri: Required.  The full URI path that the request will be sent to. This
       string must begin with either "http://" or "https://". Some examples of
       valid values for uri are: `http://acme.com` and
@@ -712,7 +713,8 @@ class Location(_messages.Message):
 class OAuthToken(_messages.Message):
   r"""Contains information needed for generating an [OAuth
   token](https://developers.google.com/identity/protocols/OAuth2). This type
-  of authorization should be used when sending requests to a GCP endpoint.
+  of authorization should generally only be used when calling Google APIs
+  hosted on *.googleapis.com.
 
   Fields:
     scope: OAuth scope to be used for generating OAuth access token. If not
@@ -732,8 +734,8 @@ class OAuthToken(_messages.Message):
 class OidcToken(_messages.Message):
   r"""Contains information needed for generating an [OpenID Connect
   token](https://developers.google.com/identity/protocols/OpenIDConnect). This
-  type of authorization should be used when sending requests to third party
-  endpoints or Cloud Run.
+  type of authorization can be used for many scenarios, including calling
+  Cloud Run, or endpoints where you intend to validate the token yourself.
 
   Fields:
     audience: Audience to be used when generating OIDC token. If not

@@ -148,10 +148,9 @@ def AddAndroidTestArgs(parser):
       metavar='KEY=VALUE',
       help="""\
       A comma-separated, key=value map of environment variables and their
-      desired values. This flag is repeatable. The environment variables are
-      mirrored as extra options to the `am instrument -e KEY1 VALUE1 ...`
-      command and passed to your test runner (typically AndroidJUnitRunner).
-      Examples:
+      desired values. The environment variables are mirrored as extra options to
+      the `am instrument -e KEY1 VALUE1 ...` command and passed to your test
+      runner (typically AndroidJUnitRunner). Examples:
 
       Break test cases into four shards and run only the first shard:
 
@@ -396,6 +395,31 @@ def AddIosTestArgs(parser):
       'together in the Firebase console in a time-ordered test history list.')
 
 
+def AddBetaArgs(parser):
+  """Register args which are only available in the beta run commands.
+
+  Args:
+    parser: An argparse parser used to add args that follow a command.
+  """
+  parser.add_argument(
+      '--client-details',
+      type=arg_parsers.ArgDict(),
+      metavar='KEY=VALUE',
+      help="""\
+      Comma-separated, KEY=VALUE map of additional details to attach to the test
+      matrix. Arbitrary KEY=VALUE pairs may be attached to a test matrix to
+      provide additional context about the tests being run. When consuming the
+      test results, such as in Cloud Functions or a CI system, these details can
+      add additional context such as a link to the corresponding pull request.
+
+      Example:
+
+      ```
+      --client-details=buildNumber=1234,pullRequest=https://example.com/link/to/pull-request
+      ```
+      """)
+
+
 def AddGaArgs(parser):
   """Register args which are only available in the GA run command.
 
@@ -406,7 +430,7 @@ def AddGaArgs(parser):
 
 
 def AddAndroidBetaArgs(parser):
-  """Register args which are only available in the beta run command.
+  """Register args which are only available in the Android beta run command.
 
   Args:
     parser: An argparse parser used to add args that follow a command.

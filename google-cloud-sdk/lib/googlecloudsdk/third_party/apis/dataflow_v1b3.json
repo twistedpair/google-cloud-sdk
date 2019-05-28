@@ -4302,6 +4302,11 @@
                   "required": true,
                   "type": "string"
                 },
+                "jobId": {
+                  "description": "If specified, list snapshots created from this job.",
+                  "location": "query",
+                  "type": "string"
+                },
                 "location": {
                   "description": "The location to list snapshots in.",
                   "location": "query",
@@ -5198,6 +5203,11 @@
                       "location": "path",
                       "required": true,
                       "type": "string"
+                    },
+                    "jobId": {
+                      "description": "If specified, list snapshots created from this job.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -5618,6 +5628,51 @@
                         "https://www.googleapis.com/auth/userinfo.email"
                       ],
                       "description": "Send encoded debug capture data for component."
+                    }
+                  }
+                },
+                "snapshots": {
+                  "methods": {
+                    "list": {
+                      "id": "dataflow.projects.locations.jobs.snapshots.list",
+                      "path": "v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/snapshots",
+                      "flatPath": "v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/snapshots",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "projectId": {
+                          "description": "The project ID to list snapshots for.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "location": {
+                          "description": "The location to list snapshots in.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "jobId": {
+                          "description": "If specified, list snapshots created from this job.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "projectId",
+                        "location",
+                        "jobId"
+                      ],
+                      "response": {
+                        "$ref": "ListSnapshotsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/compute",
+                        "https://www.googleapis.com/auth/compute.readonly",
+                        "https://www.googleapis.com/auth/userinfo.email"
+                      ],
+                      "description": "Lists snapshots."
                     }
                   }
                 },

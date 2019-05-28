@@ -368,7 +368,8 @@ and memory limits to be specified.""",
       help="""\
 Path of the JSON/YAML file which contains information about the
 cluster's node autoprovisioning configuration. Currently it contains
-a list of resource limits and identity defaults for autoprovisioning.
+a list of resource limits, identity defaults for autoprovisioning and node locations
+for autoprovisioning.
 
 Resource limits are specified in the field 'resourceLimits'.
 Each resource limits definition contains three fields:
@@ -387,6 +388,11 @@ scopes: A list of scopes be used by node instances in autoprovisioined node pool
 Multiple scopes can be specified, separated by commas. For information on defaults,
 look at:
 https://cloud.google.com/sdk/gcloud/reference/container/clusters/create#--scopes
+
+Autoprovisioning locations is a set of zones where new node pools can be created by
+Autoprovisioning. Autoprovisioning locations are specified in the field
+'autoprovisioningLocations'. All zones must be in the same region as the cluster's
+master(s).
 """)
 
   from_flags_group = limits_group.add_argument_group(
@@ -487,6 +493,15 @@ Multiple scopes can be specified, separated by commas. For information
 on defaults, look at:
 https://cloud.google.com/sdk/gcloud/reference/container/clusters/create#--scopes
 """)
+  from_flags_group.add_argument(
+      '--autoprovisioning-locations',
+      hidden=True,
+      help="""\
+Set of zones where new node pools can be created by autoprovisioning.
+All zones must be in the same region as the cluster's master(s).
+Multiple locations can be specified, separated by commas.""",
+      metavar='ZONE',
+      type=arg_parsers.ArgList(min_length=1))
 
 
 def AddEnableBinAuthzFlag(parser, hidden=False):
@@ -2389,3 +2404,49 @@ Can only be used with private cluster in VPC Native network mode.
       default=(False if for_cluster_create else None),
       action='store_true',
       help=help_text)
+
+
+def AddNodePoolLocationsFlag(parser, for_create=False):
+  """Adds a --node-locations flag for node pool to parser."""
+  if for_create:
+    help_text = """
+The set of zones in which the NodePool's nodes should be located.
+
+Multiple locations can be specified, separated by commas. For example:
+
+  $ {command} node-pool-1 --node-locations=us-central1-a,us-central1-b"""
+  else:
+    help_text = """\
+Set of zones in which the NodePool's nodes should be located.
+Changing the locations for a node pool will result in nodes being either created or removed
+from the node pool, depending on whether locations are being added or removed.
+
+Multiple locations can be specified, separated by commas. For example:
+
+  $ {command} node-pool-1 --node-locations=us-central1-a,us-central1-b"""
+  parser.add_argument(
+      '--node-locations',
+      type=arg_parsers.ArgList(min_length=1),
+      metavar='ZONE',
+      hidden=True,
+      help=help_text)
+
+
+def AddShieldedInstanceFlags(parser):
+  """Adds Shielded Instance flags to the given parser."""
+  secure_boot_help = """\
+      The instance will boot with secure boot enabled.
+      """
+  parser.add_argument(
+      '--shielded-secure-boot', action='store_true', help=secure_boot_help)
+
+  integrity_monitoring_help = """\
+      Enables monitoring and attestation of the boot integrity of the
+      instance. The attestation is performed against the integrity policy
+      baseline. This baseline is initially derived from the implicitly
+      trusted boot image when the instance is created.
+      """
+  parser.add_argument(
+      '--shielded-integrity-monitoring',
+      action='store_true',
+      help=integrity_monitoring_help)

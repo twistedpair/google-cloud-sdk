@@ -41,6 +41,7 @@ class DataflowV1b3(base_api.BaseApiClient):
     self.projects_jobs = self.ProjectsJobsService(self)
     self.projects_locations_jobs_debug = self.ProjectsLocationsJobsDebugService(self)
     self.projects_locations_jobs_messages = self.ProjectsLocationsJobsMessagesService(self)
+    self.projects_locations_jobs_snapshots = self.ProjectsLocationsJobsSnapshotsService(self)
     self.projects_locations_jobs_workItems = self.ProjectsLocationsJobsWorkItemsService(self)
     self.projects_locations_jobs = self.ProjectsLocationsJobsService(self)
     self.projects_locations_snapshots = self.ProjectsLocationsSnapshotsService(self)
@@ -544,6 +545,42 @@ the status of jobs that are running in `us-central1`.
         supports_download=False,
     )
 
+  class ProjectsLocationsJobsSnapshotsService(base_api.BaseApiService):
+    """Service class for the projects_locations_jobs_snapshots resource."""
+
+    _NAME = u'projects_locations_jobs_snapshots'
+
+    def __init__(self, client):
+      super(DataflowV1b3.ProjectsLocationsJobsSnapshotsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists snapshots.
+
+      Args:
+        request: (DataflowProjectsLocationsJobsSnapshotsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSnapshotsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'dataflow.projects.locations.jobs.snapshots.list',
+        ordered_params=[u'projectId', u'location', u'jobId'],
+        path_params=[u'jobId', u'location', u'projectId'],
+        query_params=[],
+        relative_path=u'v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/snapshots',
+        request_field='',
+        request_type_name=u'DataflowProjectsLocationsJobsSnapshotsListRequest',
+        response_type_name=u'ListSnapshotsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsJobsWorkItemsService(base_api.BaseApiService):
     """Service class for the projects_locations_jobs_workItems resource."""
 
@@ -883,7 +920,7 @@ of jobs that are running in `us-central1`.
         method_id=u'dataflow.projects.locations.snapshots.list',
         ordered_params=[u'projectId', u'location'],
         path_params=[u'location', u'projectId'],
-        query_params=[],
+        query_params=[u'jobId'],
         relative_path=u'v1b3/projects/{projectId}/locations/{location}/snapshots',
         request_field='',
         request_type_name=u'DataflowProjectsLocationsSnapshotsListRequest',
@@ -1108,7 +1145,7 @@ analyzes properly as well.
         method_id=u'dataflow.projects.snapshots.list',
         ordered_params=[u'projectId'],
         path_params=[u'projectId'],
-        query_params=[u'location'],
+        query_params=[u'jobId', u'location'],
         relative_path=u'v1b3/projects/{projectId}/snapshots',
         request_field='',
         request_type_name=u'DataflowProjectsSnapshotsListRequest',

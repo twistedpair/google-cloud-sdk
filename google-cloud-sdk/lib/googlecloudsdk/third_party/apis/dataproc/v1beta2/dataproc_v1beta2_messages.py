@@ -845,15 +845,12 @@ class DataprocProjectsRegionsAutoscalingPoliciesGetIamPolicyRequest(_messages.Me
   r"""A DataprocProjectsRegionsAutoscalingPoliciesGetIamPolicyRequest object.
 
   Fields:
-    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
-      request body.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
   """
 
-  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
+  resource = _messages.StringField(1, required=True)
 
 
 class DataprocProjectsRegionsAutoscalingPoliciesGetRequest(_messages.Message):
@@ -2671,7 +2668,7 @@ class Operation(_messages.Message):
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
-      the name should have the format of operations/some/unique/name.
+      the name should be a resource name ending with operations/{unique_id}.
     response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as Delete, the response
       is google.protobuf.Empty. If the original method is standard

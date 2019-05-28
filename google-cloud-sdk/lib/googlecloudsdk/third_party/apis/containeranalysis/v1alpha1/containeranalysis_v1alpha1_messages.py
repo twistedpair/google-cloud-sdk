@@ -992,9 +992,8 @@ class Detail(_messages.Message):
     fixedLocation: The fix for this specific package version.
     isObsolete: Whether this Detail is obsolete. Occurrences are expected not
       to point to obsolete details.
-    maxAffectedVersion: The max version of the package in which the
-      vulnerability exists. This field can be used as a filter in list
-      requests.
+    maxAffectedVersion: Deprecated, do not use. Use fixed_location instead.
+      The max version of the package in which the vulnerability exists.
     minAffectedVersion: The min version of the package in which the
       vulnerability exists.
     package: The name of the package where the vulnerability was found. This
@@ -1440,16 +1439,20 @@ class Layer(_messages.Message):
 
   Enums:
     DirectiveValueValuesEnum: The recovered Dockerfile directive used to
-      construct this layer.
+      construct this layer. TODO(b/132434884) Use only `directive_string` when
+      all `directive` values are backfilled.
 
   Fields:
     arguments: The recovered arguments to the Dockerfile directive.
     directive: The recovered Dockerfile directive used to construct this
-      layer.
+      layer. TODO(b/132434884) Use only `directive_string` when all
+      `directive` values are backfilled.
   """
 
   class DirectiveValueValuesEnum(_messages.Enum):
     r"""The recovered Dockerfile directive used to construct this layer.
+    TODO(b/132434884) Use only `directive_string` when all `directive` values
+    are backfilled.
 
     Values:
       DIRECTIVE_UNSPECIFIED: Default value for unsupported/missing directive
@@ -1666,7 +1669,7 @@ class Occurrence(_messages.Message):
       filter in list requests.
     remediation: A description of actions that can be taken to remedy the
       `Note`
-    resource: The resource for which the `Occurrence` applies.
+    resource:  The resource for which the `Occurrence` applies.
     resourceUrl: The unique URL of the image or the container for which the
       `Occurrence` applies. For example,
       https://gcr.io/project/image@sha256:foo This field can be used as a
@@ -1992,7 +1995,7 @@ class RepoSource(_messages.Message):
 
 
 class Resource(_messages.Message):
-  r"""Resource is an entity that can have metadata. E.g., a Docker image.
+  r""" Resource is an entity that can have metadata. E.g., a Docker image.
 
   Fields:
     contentHash: The hash of the resource content. E.g., the Docker digest.

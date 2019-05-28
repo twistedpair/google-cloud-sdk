@@ -31,12 +31,12 @@ class AddonsConfig(_messages.Message):
   cluster, enabling additional functionality.
 
   Fields:
-    cloudConnectorConfig: Configuration for the CloudConnector add-on, a
-      Kubernetes extension to manage hosted GCP services through the
-      Kubernetes API
     cloudRunConfig: Configuration for the Cloud Run addon. The `IstioConfig`
       addon must be enabled in order to enable Cloud Run. This option can only
       be enabled at cluster creation time.
+    configConnectorConfig: Configuration for the ConfigConnector add-on, a
+      Kubernetes extension to manage hosted GCP services through the
+      Kubernetes API
     dnsCacheConfig: Configuration for NodeLocalDNS, a dns cache running on
       cluster nodes
     horizontalPodAutoscaling: Configuration for the horizontal pod autoscaling
@@ -48,15 +48,19 @@ class AddonsConfig(_messages.Message):
       services in a cluster.
     istioConfig: Configuration for Istio, an open platform to connect, manage,
       and secure microservices.
-    kubernetesDashboard: Configuration for the Kubernetes Dashboard.
+    kubernetesDashboard: Configuration for the Kubernetes Dashboard. This
+      addon is deprecated, and will be disabled in 1.15. It is recommended to
+      use the Cloud Console to manage and monitor your Kubernetes clusters,
+      workloads and applications. For more information, see:
+      https://cloud.google.com/kubernetes-engine/docs/concepts/dashboards
     networkPolicyConfig: Configuration for NetworkPolicy. This only tracks
       whether the addon is enabled or not on the Master, it does not track
       whether network policy is enabled for the nodes.
     serverlessConfig: Deprecated: use CloudRunConfig instead (same behavior).
   """
 
-  cloudConnectorConfig = _messages.MessageField('CloudConnectorConfig', 1)
-  cloudRunConfig = _messages.MessageField('CloudRunConfig', 2)
+  cloudRunConfig = _messages.MessageField('CloudRunConfig', 1)
+  configConnectorConfig = _messages.MessageField('ConfigConnectorConfig', 2)
   dnsCacheConfig = _messages.MessageField('DnsCacheConfig', 3)
   horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 4)
   httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 5)
@@ -176,16 +180,6 @@ class ClientCertificateConfig(_messages.Message):
   """
 
   issueClientCertificate = _messages.BooleanField(1)
-
-
-class CloudConnectorConfig(_messages.Message):
-  r"""Configuration options for the Cloud Connector add-on.
-
-  Fields:
-    enabled: Whether Cloud Connector is enabled for this cluster.
-  """
-
-  enabled = _messages.BooleanField(1)
 
 
 class CloudNatStatus(_messages.Message):
@@ -695,6 +689,16 @@ class CompleteIPRotationRequest(_messages.Message):
   name = _messages.StringField(2)
   projectId = _messages.StringField(3)
   zone = _messages.StringField(4)
+
+
+class ConfigConnectorConfig(_messages.Message):
+  r"""Configuration options for the Config Connector add-on.
+
+  Fields:
+    enabled: Whether Cloud Connector is enabled for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class ConsumptionMeteringConfig(_messages.Message):
@@ -2115,11 +2119,13 @@ class NodeConfig(_messages.Message):
       reserved keys:  "cluster-location"  "cluster-name"  "cluster-uid"
       "configure-sh"  "containerd-configure-sh"  "enable-os-login"  "gci-
       update-strategy"  "gci-ensure-gke-docker"  "instance-template"  "kube-
-      env"  "startup-script"  "user-data"  Values are free-form strings, and
-      only have meaning as interpreted by the image running in the instance.
-      The only restriction placed on them is that each value's size must be
-      less than or equal to 32 KB.  The total size of all keys and values must
-      be less than 512 KB.
+      env"  "startup-script"  "user-data"  "disable-address-manager"
+      "windows-startup-script-ps1"  "common-psm1"  "k8s-node-setup-psm1"
+      "install-ssh-psm1"  "user-profile-psm1"  Values are free-form strings,
+      and only have meaning as interpreted by the image running in the
+      instance. The only restriction placed on them is that each value's size
+      must be less than or equal to 32 KB.  The total size of all keys and
+      values must be less than 512 KB.
 
   Fields:
     accelerators: A list of hardware accelerators to be attached to each node.
@@ -2159,11 +2165,13 @@ class NodeConfig(_messages.Message):
       reserved keys:  "cluster-location"  "cluster-name"  "cluster-uid"
       "configure-sh"  "containerd-configure-sh"  "enable-os-login"  "gci-
       update-strategy"  "gci-ensure-gke-docker"  "instance-template"  "kube-
-      env"  "startup-script"  "user-data"  Values are free-form strings, and
-      only have meaning as interpreted by the image running in the instance.
-      The only restriction placed on them is that each value's size must be
-      less than or equal to 32 KB.  The total size of all keys and values must
-      be less than 512 KB.
+      env"  "startup-script"  "user-data"  "disable-address-manager"
+      "windows-startup-script-ps1"  "common-psm1"  "k8s-node-setup-psm1"
+      "install-ssh-psm1"  "user-profile-psm1"  Values are free-form strings,
+      and only have meaning as interpreted by the image running in the
+      instance. The only restriction placed on them is that each value's size
+      must be less than or equal to 32 KB.  The total size of all keys and
+      values must be less than 512 KB.
     minCpuPlatform: Minimum CPU platform to be used by this instance. The
       instance may be scheduled on the specified or newer CPU platform.
       Applicable values are the friendly names of CPU platforms, such as
@@ -2251,10 +2259,12 @@ class NodeConfig(_messages.Message):
     location"  "cluster-name"  "cluster-uid"  "configure-sh"  "containerd-
     configure-sh"  "enable-os-login"  "gci-update-strategy"  "gci-ensure-gke-
     docker"  "instance-template"  "kube-env"  "startup-script"  "user-data"
-    Values are free-form strings, and only have meaning as interpreted by the
-    image running in the instance. The only restriction placed on them is that
-    each value's size must be less than or equal to 32 KB.  The total size of
-    all keys and values must be less than 512 KB.
+    "disable-address-manager"  "windows-startup-script-ps1"  "common-psm1"
+    "k8s-node-setup-psm1"  "install-ssh-psm1"  "user-profile-psm1"  Values are
+    free-form strings, and only have meaning as interpreted by the image
+    running in the instance. The only restriction placed on them is that each
+    value's size must be less than or equal to 32 KB.  The total size of all
+    keys and values must be less than 512 KB.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.

@@ -36,19 +36,17 @@ API_VERSION = 'v1'
 LOCATIONS_COLLECTION = API + '.projects.locations'
 
 SEVERITIES = ['DEBUG', 'INFO', 'ERROR']
-EGRESS_SETTINGS = ['UNSPECIFIED', 'PRIVATE', 'ALL']
-INGRESS_SETTINGS = ['UNSPECIFIED', 'ALL', 'INTERNAL-ONLY', 'INTERNAL-AND-GCLB']
+EGRESS_SETTINGS = ['PRIVATE-RANGES-ONLY', 'ALL']
+INGRESS_SETTINGS = ['ALL', 'INTERNAL-ONLY', 'INTERNAL-AND-GCLB']
 INGRESS_SETTINGS_MAPPING = {
     'ALLOW_ALL': 'all',
     'ALLOW_INTERNAL_ONLY': 'internal-only',
     'ALLOW_INTERNAL_AND_GCLB': 'internal-and-gclb',
-    'INGRESS_SETTINGS_UNSPECIFIED': 'unspecified',
 }
 
 EGRESS_SETTINGS_MAPPING = {
-    'PRIVATE_RANGES_ONLY': 'private',
+    'PRIVATE_RANGES_ONLY': 'private-ranges-only',
     'ALL_TRAFFIC': 'all',
-    'VPC_CONNECTOR_EGRESS_SETTINGS_UNSPECIFIED': 'unspecified',
 }
 
 
@@ -66,7 +64,7 @@ def AddIngressSettingsFlag(parser):
       '--ingress-settings',
       choices=[x.lower() for x in INGRESS_SETTINGS],
       help_str='Ingress settings controls what traffic can reach the function.'
-  )
+      'By default `all` will be used.')
   ingress_settings_arg.AddToParser(parser)
 
 
@@ -75,9 +73,8 @@ def AddEgressSettingsFlag(parser):
       '--egress-settings',
       choices=[x.lower() for x in EGRESS_SETTINGS],
       help_str='Egress settings controls what traffic is diverted through the '
-               'VPC Access Connector resource. '
-               'By default private_ranges_only will be used.'
-  )
+      'VPC Access Connector resource. '
+      'By default `private-ranges-only` will be used.')
   egress_settings_arg.AddToParser(parser)
 
 

@@ -54,7 +54,7 @@ class DatacatalogV1beta1(base_api.BaseApiClient):
     def Lookup(self, request, global_params=None):
       r"""Get an entry by target resource name. This method allows clients to use.
 the resource name from the source Google Cloud Platform service to get the
-Cloud Data Catalog Entry.
+Data Catalog Entry.
 
       Args:
         request: (DatacatalogEntriesLookupRequest) input message

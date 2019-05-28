@@ -56,16 +56,14 @@ class Client(object):
     Yields:
       Occurrences bound to `note_ref` with matching `artifact_url` (if passed).
     """
-    ListNoteOccurrencesRequest = (  # pylint: disable=invalid-name
-        self.messages.ContaineranalysisProjectsNotesOccurrencesListRequest)
     occurrence_iter = list_pager.YieldFromList(
         self.client.projects_notes_occurrences,
-        request=ListNoteOccurrencesRequest(
-            name=note_ref.RelativeName(),
-            filter=(
-                'resourceUrl="{}"'.format(artifact_url)
-                if artifact_url is not None else ''),
-        ),
+        request=(
+            self.messages.ContaineranalysisProjectsNotesOccurrencesListRequest(
+                name=note_ref.RelativeName(),
+                filter=('resourceUrl="{}"'.format(artifact_url)
+                        if artifact_url is not None else ''),
+            )),
         field='occurrences',
         batch_size=100,
         batch_size_attribute='pageSize',

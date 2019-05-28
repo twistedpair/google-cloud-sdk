@@ -24,10 +24,10 @@ import uuid
 
 from apitools.base.py import exceptions as apitools_exceptions
 
+from googlecloudsdk.api_lib.firebase.test import matrix_creator_common
 from googlecloudsdk.api_lib.firebase.test import matrix_ops
 from googlecloudsdk.api_lib.firebase.test import util
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 import six
 
@@ -248,17 +248,14 @@ class MatrixCreator(object):
     results = self._messages.ResultStorage(googleCloudStorage=gcs,
                                            toolResultsHistory=hist)
 
+    client_info = matrix_creator_common.BuildClientInfo(
+        self._messages,
+        getattr(self._args, 'client_details', {}) or {}, self._release_track)
+
     return self._messages.TestMatrix(
         testSpecification=spec,
         environmentMatrix=environment_matrix,
-        clientInfo=self._messages.ClientInfo(
-            name='gcloud',
-            clientInfoDetails=[
-                self._messages.ClientInfoDetail(
-                    key='Cloud SDK Version', value=config.CLOUD_SDK_VERSION),
-                self._messages.ClientInfoDetail(
-                    key='Release Track', value=self._release_track)
-            ]),
+        clientInfo=client_info,
         resultStorage=results,
         flakyTestAttempts=self._args.num_flaky_test_attempts or 0)
 

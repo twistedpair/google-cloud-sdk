@@ -222,6 +222,7 @@ NODELOCALDNS = 'NodeLocalDNS'
 RESOURCE_LIMITS = 'resourceLimits'
 SERVICE_ACCOUNT = 'serviceAccount'
 SCOPES = 'scopes'
+AUTOPROVISIONING_LOCATIONS = 'autoprovisioningLocations'
 DEFAULT_ADDONS = [INGRESS, HPA]
 ADDONS_OPTIONS = DEFAULT_ADDONS + [DASHBOARD, ISTIO, NETWORK_POLICY]
 BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [CLOUDRUN]
@@ -425,7 +426,10 @@ class CreateClusterOptions(object):
                linux_sysctls=None,
                autoprovisioning_service_account=None,
                autoprovisioning_scopes=None,
-               disable_default_snat=None):
+               disable_default_snat=None,
+               autoprovisioning_locations=None,
+               shielded_secure_boot=None,
+               shielded_integrity_monitoring=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -511,6 +515,9 @@ class CreateClusterOptions(object):
     self.autoprovisioning_service_account = autoprovisioning_service_account
     self.autoprovisioning_scopes = autoprovisioning_scopes
     self.disable_default_snat = disable_default_snat
+    self.autoprovisioning_locations = autoprovisioning_locations
+    self.shielded_secure_boot = shielded_secure_boot
+    self.shielded_integrity_monitoring = shielded_integrity_monitoring
 
 
 class UpdateClusterOptions(object):
@@ -523,6 +530,7 @@ class UpdateClusterOptions(object):
                node_pool=None,
                monitoring_service=None,
                logging_service=None,
+               enable_stackdriver_kubernetes=None,
                disable_addons=None,
                istio_config=None,
                enable_autoscaling=None,
@@ -549,13 +557,15 @@ class UpdateClusterOptions(object):
                enable_shielded_nodes=None,
                autoprovisioning_service_account=None,
                autoprovisioning_scopes=None,
-               disable_default_snat=None):
+               disable_default_snat=None,
+               autoprovisioning_locations=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
     self.node_pool = node_pool
     self.monitoring_service = monitoring_service
     self.logging_service = logging_service
+    self.enable_stackdriver_kubernetes = enable_stackdriver_kubernetes
     self.disable_addons = disable_addons
     self.istio_config = istio_config
     self.enable_autoscaling = enable_autoscaling
@@ -583,6 +593,7 @@ class UpdateClusterOptions(object):
     self.autoprovisioning_service_account = autoprovisioning_service_account
     self.autoprovisioning_scopes = autoprovisioning_scopes
     self.disable_default_snat = disable_default_snat
+    self.autoprovisioning_locations = autoprovisioning_locations
 
 
 class SetMasterAuthOptions(object):
@@ -639,7 +650,10 @@ class CreateNodePoolOptions(object):
                metadata=None,
                linux_sysctls=None,
                max_surge_upgrade=None,
-               max_unavailable_upgrade=None):
+               max_unavailable_upgrade=None,
+               node_locations=None,
+               shielded_secure_boot=None,
+               shielded_integrity_monitoring=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -672,6 +686,9 @@ class CreateNodePoolOptions(object):
     self.linux_sysctls = linux_sysctls
     self.max_surge_upgrade = max_surge_upgrade
     self.max_unavailable_upgrade = max_unavailable_upgrade
+    self.node_locations = node_locations
+    self.shielded_secure_boot = shielded_secure_boot
+    self.shielded_integrity_monitoring = shielded_integrity_monitoring
 
 
 class UpdateNodePoolOptions(object):
@@ -684,7 +701,8 @@ class UpdateNodePoolOptions(object):
                max_nodes=None,
                min_nodes=None,
                enable_autoprovisioning=None,
-               workload_metadata_from_node=None):
+               workload_metadata_from_node=None,
+               node_locations=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.enable_autoscaling = enable_autoscaling
@@ -692,6 +710,7 @@ class UpdateNodePoolOptions(object):
     self.min_nodes = min_nodes
     self.enable_autoprovisioning = enable_autoprovisioning
     self.workload_metadata_from_node = workload_metadata_from_node
+    self.node_locations = node_locations
 
   def IsAutoscalingUpdate(self):
     return (self.enable_autoscaling is not None or
@@ -704,7 +723,8 @@ class UpdateNodePoolOptions(object):
             self.enable_autoupgrade is not None)
 
   def IsUpdateNodePoolRequest(self):
-    return self.workload_metadata_from_node is not None
+    return (self.workload_metadata_from_node is not None or
+            self.node_locations is not None)
 
 
 class APIAdapter(object):
@@ -1062,6 +1082,7 @@ class APIAdapter(object):
 
     _AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
     _AddLinuxNodeConfigToNodeConfig(node_config, options, self.messages)
+    _AddShieldedInstanceConfigToNodeConfig(node_config, options, self.messages)
 
     return node_config
 
@@ -1721,6 +1742,7 @@ class APIAdapter(object):
 
     _AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
     _AddLinuxNodeConfigToNodeConfig(node_config, options, self.messages)
+    _AddShieldedInstanceConfigToNodeConfig(node_config, options, self.messages)
 
     if options.sandbox is not None:
       node_config.sandboxConfig = self.messages.SandboxConfig(
@@ -1762,6 +1784,9 @@ class APIAdapter(object):
       pool.upgradeSettings = self.messages.UpgradeSettings()
       pool.upgradeSettings.maxSurge = options.max_surge_upgrade
       pool.upgradeSettings.maxUnavailable = options.max_unavailable_upgrade
+
+    if options.node_locations is not None:
+      pool.locations = sorted(options.node_locations)
     return pool
 
   def CreateNodePool(self, node_pool_ref, options):
@@ -2135,6 +2160,11 @@ class V1Beta1Adapter(V1Adapter):
           desiredShieldedNodes=self.messages.ShieldedNodes(
               enabled=options.enable_shielded_nodes))
 
+    if options.enable_stackdriver_kubernetes:
+      update = self.messages.ClusterUpdate()
+      update.desiredLoggingService = 'logging.googleapis.com/kubernetes'
+      update.desiredMonitoringService = 'monitoring.googleapis.com/kubernetes'
+
     if not update:
       # if reached here, it's possible:
       # - someone added update flags but not handled
@@ -2187,10 +2217,13 @@ class V1Beta1Adapter(V1Adapter):
       resource_limits = autoprovisioning_options.get(RESOURCE_LIMITS)
       service_account = autoprovisioning_options.get(SERVICE_ACCOUNT)
       scopes = autoprovisioning_options.get(SCOPES)
+      autoprovisioning_locations = \
+          autoprovisioning_options.get(AUTOPROVISIONING_LOCATIONS)
     else:
       resource_limits = self.ResourceLimitsFromFlags(options)
       service_account = options.autoprovisioning_service_account
       scopes = options.autoprovisioning_scopes
+      autoprovisioning_locations = options.autoprovisioning_locations
 
     if options.enable_autoprovisioning is not None:
       autoscaling.enableNodeAutoprovisioning = options.enable_autoprovisioning
@@ -2202,6 +2235,9 @@ class V1Beta1Adapter(V1Adapter):
       autoscaling.autoprovisioningNodePoolDefaults = self.messages \
         .AutoprovisioningNodePoolDefaults(serviceAccount=service_account,
                                           oauthScopes=scopes)
+      if autoprovisioning_locations:
+        autoscaling.autoprovisioningLocations = \
+            sorted(autoprovisioning_locations)
 
     self.ValidateClusterAutoscaling(autoscaling)
     return autoscaling
@@ -2290,6 +2326,8 @@ class V1Beta1Adapter(V1Adapter):
 
     if options.workload_metadata_from_node is not None:
       _AddWorkloadMetadataToNodeConfig(update_request, options, self.messages)
+    elif options.node_locations is not None:
+      update_request.locations = sorted(options.node_locations)
 
     return update_request
 
@@ -2439,6 +2477,11 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       update = self.messages.ClusterUpdate(
           desiredDefaultSnatStatus=disable_default_snat)
 
+    if options.enable_stackdriver_kubernetes:
+      update = self.messages.ClusterUpdate()
+      update.desiredLoggingService = 'logging.googleapis.com/kubernetes'
+      update.desiredMonitoringService = 'monitoring.googleapis.com/kubernetes'
+
     if not update:
       # if reached here, it's possible:
       # - someone added update flags but not handled
@@ -2514,10 +2557,13 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       resource_limits = autoprovisioning_options.get(RESOURCE_LIMITS)
       service_account = autoprovisioning_options.get(SERVICE_ACCOUNT)
       scopes = autoprovisioning_options.get(SCOPES)
+      autoprovisioning_locations = \
+          autoprovisioning_options.get(AUTOPROVISIONING_LOCATIONS)
     else:
       resource_limits = self.ResourceLimitsFromFlags(options)
       service_account = options.autoprovisioning_service_account
       scopes = options.autoprovisioning_scopes
+      autoprovisioning_locations = options.autoprovisioning_locations
 
     if options.enable_autoprovisioning is not None:
       autoscaling.enableNodeAutoprovisioning = options.enable_autoprovisioning
@@ -2530,6 +2576,9 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         .AutoprovisioningNodePoolDefaults(
             serviceAccount=service_account,
             oauthScopes=scopes)
+      if autoprovisioning_locations:
+        autoscaling.autoprovisioningLocations = \
+            sorted(autoprovisioning_locations)
 
     if options.autoscaling_profile is not None:
       autoscaling.autoscalingProfile = \
@@ -2692,6 +2741,19 @@ def _AddLinuxNodeConfigToNodeConfig(node_config, options, messages):
     linux_sysctls.additionalProperties = props
 
     node_config.linuxNodeConfig.sysctls = linux_sysctls
+
+
+def _AddShieldedInstanceConfigToNodeConfig(node_config, options, messages):
+  """Adds ShieldedInstanceConfig to NodeConfig."""
+  if (options.shielded_secure_boot is not None or
+      options.shielded_integrity_monitoring is not None):
+    node_config.shieldedInstanceConfig = messages.ShieldedInstanceConfig()
+    if options.shielded_secure_boot is not None:
+      node_config.shieldedInstanceConfig.enableSecureBoot = (
+          options.shielded_secure_boot)
+    if options.shielded_integrity_monitoring is not None:
+      node_config.shieldedInstanceConfig.enableIntegrityMonitoring = (
+          options.shielded_integrity_monitoring)
 
 
 def ProjectLocation(project, location):

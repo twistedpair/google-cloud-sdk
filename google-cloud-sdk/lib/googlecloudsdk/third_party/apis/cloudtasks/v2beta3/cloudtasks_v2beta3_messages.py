@@ -33,8 +33,7 @@ class AppEngineHttpQueue(_messages.Message):
 
 class AppEngineHttpRequest(_messages.Message):
   r"""App Engine HTTP request.  The message defines the HTTP request that is
-  sent to an App Engine app when the task is dispatched.  This proto can only
-  be used for tasks in a queue which has app_engine_http_queue set.  Using
+  sent to an App Engine app when the task is dispatched.  Using
   AppEngineHttpRequest requires
   [`appengine.applications.get`](https://cloud.google.com/appengine/docs
   /admin-api/access-control) Google IAM permission for the project and the
@@ -60,10 +59,14 @@ class AppEngineHttpRequest(_messages.Message):
   ud.google.com/appengine/docs/standard/python/config/appref) Task dispatches
   also do not follow redirects.  The task attempt has succeeded if the app's
   request handler returns an HTTP response code in the range [`200` - `299`].
-  `503` is considered an App Engine system error instead of an application
-  error. Requests returning error `503` will be retried regardless of retry
-  configuration and not counted against retry counts. Any other response code
-  or a failure to receive a response before the deadline is a failed attempt.
+  The task attempt has failed if the app's handler returns a non-2xx response
+  code or Cloud Tasks does not receive response before the deadline. Failed
+  tasks will be retried according to the retry configuration. `503` (Service
+  Unavailable) is considered an App Engine system error instead of an
+  application error and will cause Cloud Tasks' traffic congestion control to
+  temporarily throttle the queue's dispatches. Unlike other types of task
+  targets, a `429` (Too Many Requests) response from an app handler does not
+  cause traffic congestion control to throttle the queue.
 
   Enums:
     HttpMethodValueValuesEnum: The HTTP method to use for the request. The
@@ -808,29 +811,25 @@ class GetIamPolicyRequest(_messages.Message):
 
 
 class HttpRequest(_messages.Message):
-  r"""HTTP request.  Warning: This is an
-  [alpha](https://cloud.google.com/terms/launch-stages) feature. If you
-  haven't already joined, you can [use this form to sign
-  up](https://docs.google.com/forms/d/e
-  /1FAIpQLSfc4uEy9CBHKYUSdnY1hdhKDCX7julVZHy3imOiR-XrU7bUNQ/viewform).  The
-  task will be pushed to the worker as an HTTP request. If the worker or the
-  redirected worker acknowledges the task by returning a successful HTTP
-  response code ([`200` - `299`]), the task will removed from the queue. If
-  any other HTTP response code is returned or no response is received, the
-  task will be retried according to the following:  * User-specified
-  throttling: retry configuration,   rate limits, and the queue's state.  *
-  System throttling: To prevent the worker from overloading, Cloud Tasks may
-  temporarily reduce the queue's effective rate. User-specified settings
-  will not be changed.   System throttling happens because:    * Cloud Tasks
-  backoffs on all errors. Normally the backoff specified in     rate limits
-  will be used. But if the worker returns     `429` (Too Many Requests), `503`
-  (Service Unavailable), or the rate of     errors is high, Cloud Tasks will
-  use a higher backoff rate. The retry     specified in the `Retry-After` HTTP
-  response header is considered.    * To prevent traffic spikes and to smooth
-  sudden large traffic spikes,     dispatches ramp up slowly when the queue is
-  newly created or idle and     if large numbers of tasks suddenly become
-  available to dispatch (due to     spikes in create task rates, the queue
-  being unpaused, or many tasks     that are scheduled at the same time).
+  r"""HTTP request.  The task will be pushed to the worker as an HTTP request.
+  If the worker or the redirected worker acknowledges the task by returning a
+  successful HTTP response code ([`200` - `299`]), the task will removed from
+  the queue. If any other HTTP response code is returned or no response is
+  received, the task will be retried according to the following:  * User-
+  specified throttling: retry configuration,   rate limits, and the queue's
+  state.  * System throttling: To prevent the worker from overloading, Cloud
+  Tasks may   temporarily reduce the queue's effective rate. User-specified
+  settings   will not be changed.   System throttling happens because:    *
+  Cloud Tasks backoffs on all errors. Normally the backoff specified in
+  rate limits will be used. But if the worker returns     `429` (Too Many
+  Requests), `503` (Service Unavailable), or the rate of     errors is high,
+  Cloud Tasks will use a higher backoff rate. The retry     specified in the
+  `Retry-After` HTTP response header is considered.    * To prevent traffic
+  spikes and to smooth sudden large traffic spikes,     dispatches ramp up
+  slowly when the queue is newly created or idle and     if large numbers of
+  tasks suddenly become available to dispatch (due to     spikes in create
+  task rates, the queue being unpaused, or many tasks     that are scheduled
+  at the same time).
 
   Enums:
     HttpMethodValueValuesEnum: The HTTP method to use for the request. The
@@ -874,13 +873,14 @@ class HttpRequest(_messages.Message):
     oauthToken: If specified, an [OAuth
       token](https://developers.google.com/identity/protocols/OAuth2) will be
       generated and attached as an `Authorization` header in the HTTP request.
-      This type of authorization should be used when sending requests to a GCP
-      endpoint.
+      This type of authorization should generally only be used when calling
+      Google APIs hosted on *.googleapis.com.
     oidcToken: If specified, an
       [OIDC](https://developers.google.com/identity/protocols/OpenIDConnect)
       token will be generated and attached as an `Authorization` header in the
-      HTTP request.  This type of authorization should be used when sending
-      requests to third party endpoints or Cloud Run. .
+      HTTP request.  This type of authorization can be used for many
+      scenarios, including calling Cloud Run, or endpoints where you intend to
+      validate the token yourself.
     url: Required. The full url path that the request will be sent to.  This
       string must begin with either "http://" or "https://". Some examples
       are: `http://acme.com` and `https://acme.com/sales:8080`. Cloud Tasks
@@ -1082,7 +1082,8 @@ class Location(_messages.Message):
 class OAuthToken(_messages.Message):
   r"""Contains information needed for generating an [OAuth
   token](https://developers.google.com/identity/protocols/OAuth2). This type
-  of authorization should be used when sending requests to a GCP endpoint.
+  of authorization should generally only be used when calling Google APIs
+  hosted on *.googleapis.com.
 
   Fields:
     scope: OAuth scope to be used for generating OAuth access token. If not
@@ -1102,8 +1103,8 @@ class OAuthToken(_messages.Message):
 class OidcToken(_messages.Message):
   r"""Contains information needed for generating an [OpenID Connect
   token](https://developers.google.com/identity/protocols/OpenIDConnect). This
-  type of authorization should be used when sending requests to third party
-  endpoints or Cloud Run. .
+  type of authorization can be used for many scenarios, including calling
+  Cloud Run, or endpoints where you intend to validate the token yourself.
 
   Fields:
     audience: Audience to be used when generating OIDC token. If not
@@ -1180,7 +1181,7 @@ class Queue(_messages.Message):
 
   Fields:
     appEngineHttpQueue: AppEngineHttpQueue settings apply only to App Engine
-      tasks in this queue.
+      tasks in this queue. Http tasks are not affected by this proto.
     name: Caller-specified and required in CreateQueue, after which it becomes
       output only.  The queue name.  The queue name must have the following
       format: `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`  *
@@ -1621,9 +1622,11 @@ class Task(_messages.Message):
       request is cancelled, Cloud Tasks will stop listing for the response,
       but whether the worker stops processing depends on the worker. For
       example, if the worker is stuck, it may not react to cancelled requests.
-      The default and maximum values depend on the type of request:   * For
-      App Engine tasks, 0 indicates that the   request has the default
-      deadline. The default deadline depends on the   [scaling
+      The default and maximum values depend on the type of request:  * For
+      HTTP tasks, the default is 10 minutes. The deadline   must be in the
+      interval [15 seconds, 30 minutes].  * For App Engine tasks, 0 indicates
+      that the   request has the default deadline. The default deadline
+      depends on the   [scaling
       type](https://cloud.google.com/appengine/docs/standard/go/how-instances-
       are-managed#instance_scaling)   of the service: 10 minutes for standard
       apps with automatic scaling, 24   hours for standard apps with manual
@@ -1639,12 +1642,8 @@ class Task(_messages.Message):
     firstAttempt: Output only. The status of the task's first attempt.  Only
       dispatch_time will be set. The other Attempt information is not retained
       by Cloud Tasks.
-    httpRequest: HTTP request that is sent to the task's target.  Warning:
-      This is an [alpha](https://cloud.google.com/terms/launch-stages)
-      feature. If you haven't already joined, you can [use this form to sign
-      up](https://docs.google.com/forms/d/e
-      /1FAIpQLSfc4uEy9CBHKYUSdnY1hdhKDCX7julVZHy3imOiR-XrU7bUNQ/viewform).  An
-      HTTP task is a task that has HttpRequest set.
+    httpRequest: HTTP request that is sent to the task's target.  An HTTP task
+      is a task that has HttpRequest set.
     lastAttempt: Output only. The status of the task's last attempt.
     name: Optionally caller-specified in CreateTask.  The task name.  The task
       name must have the following format: `projects/PROJECT_ID/locations/LOCA

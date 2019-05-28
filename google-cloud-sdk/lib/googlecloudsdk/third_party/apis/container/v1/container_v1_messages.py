@@ -38,7 +38,11 @@ class AddonsConfig(_messages.Message):
     httpLoadBalancing: Configuration for the HTTP (L7) load balancing
       controller addon, which makes it easy to set up HTTP load balancers for
       services in a cluster.
-    kubernetesDashboard: Configuration for the Kubernetes Dashboard.
+    kubernetesDashboard: Configuration for the Kubernetes Dashboard. This
+      addon is deprecated, and will be disabled in 1.15. It is recommended to
+      use the Cloud Console to manage and monitor your Kubernetes clusters,
+      workloads and applications. For more information, see:
+      https://cloud.google.com/kubernetes-engine/docs/concepts/dashboards
     networkPolicyConfig: Configuration for NetworkPolicy. This only tracks
       whether the addon is enabled or not on the Master, it does not track
       whether network policy is enabled for the nodes.
@@ -1391,11 +1395,13 @@ class NodeConfig(_messages.Message):
       reserved keys:  "cluster-location"  "cluster-name"  "cluster-uid"
       "configure-sh"  "containerd-configure-sh"  "enable-os-login"  "gci-
       update-strategy"  "gci-ensure-gke-docker"  "instance-template"  "kube-
-      env"  "startup-script"  "user-data"  Values are free-form strings, and
-      only have meaning as interpreted by the image running in the instance.
-      The only restriction placed on them is that each value's size must be
-      less than or equal to 32 KB.  The total size of all keys and values must
-      be less than 512 KB.
+      env"  "startup-script"  "user-data"  "disable-address-manager"
+      "windows-startup-script-ps1"  "common-psm1"  "k8s-node-setup-psm1"
+      "install-ssh-psm1"  "user-profile-psm1"  Values are free-form strings,
+      and only have meaning as interpreted by the image running in the
+      instance. The only restriction placed on them is that each value's size
+      must be less than or equal to 32 KB.  The total size of all keys and
+      values must be less than 512 KB.
 
   Fields:
     accelerators: A list of hardware accelerators to be attached to each node.
@@ -1432,11 +1438,13 @@ class NodeConfig(_messages.Message):
       reserved keys:  "cluster-location"  "cluster-name"  "cluster-uid"
       "configure-sh"  "containerd-configure-sh"  "enable-os-login"  "gci-
       update-strategy"  "gci-ensure-gke-docker"  "instance-template"  "kube-
-      env"  "startup-script"  "user-data"  Values are free-form strings, and
-      only have meaning as interpreted by the image running in the instance.
-      The only restriction placed on them is that each value's size must be
-      less than or equal to 32 KB.  The total size of all keys and values must
-      be less than 512 KB.
+      env"  "startup-script"  "user-data"  "disable-address-manager"
+      "windows-startup-script-ps1"  "common-psm1"  "k8s-node-setup-psm1"
+      "install-ssh-psm1"  "user-profile-psm1"  Values are free-form strings,
+      and only have meaning as interpreted by the image running in the
+      instance. The only restriction placed on them is that each value's size
+      must be less than or equal to 32 KB.  The total size of all keys and
+      values must be less than 512 KB.
     minCpuPlatform: Minimum CPU platform to be used by this instance. The
       instance may be scheduled on the specified or newer CPU platform.
       Applicable values are the friendly names of CPU platforms, such as
@@ -1513,10 +1521,12 @@ class NodeConfig(_messages.Message):
     location"  "cluster-name"  "cluster-uid"  "configure-sh"  "containerd-
     configure-sh"  "enable-os-login"  "gci-update-strategy"  "gci-ensure-gke-
     docker"  "instance-template"  "kube-env"  "startup-script"  "user-data"
-    Values are free-form strings, and only have meaning as interpreted by the
-    image running in the instance. The only restriction placed on them is that
-    each value's size must be less than or equal to 32 KB.  The total size of
-    all keys and values must be less than 512 KB.
+    "disable-address-manager"  "windows-startup-script-ps1"  "common-psm1"
+    "k8s-node-setup-psm1"  "install-ssh-psm1"  "user-profile-psm1"  Values are
+    free-form strings, and only have meaning as interpreted by the image
+    running in the instance. The only restriction placed on them is that each
+    value's size must be less than or equal to 32 KB.  The total size of all
+    keys and values must be less than 512 KB.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.

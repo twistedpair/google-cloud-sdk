@@ -59,10 +59,10 @@ client [kubectl]. To install, run
   $ gcloud components install kubectl
 """
 
+# Subcommand list can still be executed, but will be marked/handled as
+# deprecated until removed.
 SUBCOMMAND_DEPRECATION = [
-    'initdb',
-    'resetdb',
-    'upgradedb',
+    # No subcommands currently in a deprecated state.
 ]
 
 SUBCOMMAND_WHITELIST = [

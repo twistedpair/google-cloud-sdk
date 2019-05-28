@@ -42,11 +42,11 @@ def _GetPubsubMessages():
 
 
 def _GetSchedulerClient():
-  return apis.GetClientInstance('cloudscheduler', 'v1beta1')
+  return apis.GetClientInstance('cloudscheduler', 'v1')
 
 
 def _GetSchedulerMessages():
-  return apis.GetMessagesModule('cloudscheduler', 'v1beta1')
+  return apis.GetMessagesModule('cloudscheduler', 'v1')
 
 
 def ClearFlag(arg):

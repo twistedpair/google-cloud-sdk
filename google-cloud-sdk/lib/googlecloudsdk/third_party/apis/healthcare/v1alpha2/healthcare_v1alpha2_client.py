@@ -459,7 +459,7 @@ There is no permission required to make this API call.
       r"""RetrieveRenderedFrames returns instances associated with the given study,.
 series, SOP Instance UID and frame numbers in an acceptable Rendered Media
 Type. See
-http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.5.8.
+http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_10.4.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesFramesRenderedRequest) input message
@@ -488,7 +488,7 @@ http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.5.8.
     def RetrieveFrames(self, request, global_params=None):
       r"""RetrieveFrames returns instances associated with the given study, series,.
 SOP Instance UID and frame numbers. See
-http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.5.4.
+http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_10.4.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesFramesRetrieveFramesRequest) input message
@@ -557,7 +557,7 @@ specified in the WADO-RS standard.
       r"""RetrieveInstanceMetadata returns instance associated with the given study,.
 series, and SOP Instance UID presented as metadata with the bulk data
 removed. See
-http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.5.6.
+http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_10.4.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesMetadataRequest) input message
@@ -586,7 +586,7 @@ http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.5.6.
     def Rendered(self, request, global_params=None):
       r"""RetrieveRenderedInstance returns instance associated with the given study,.
 series, and SOP Instance UID in an acceptable Rendered Media Type. See
-http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.5.8.
+http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_10.4.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesRenderedRequest) input message
@@ -615,7 +615,7 @@ http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.5.8.
     def RetrieveInstance(self, request, global_params=None):
       r"""RetrieveInstance returns instance associated with the given study, series,.
 and SOP Instance UID. See
-http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.5.3.
+http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_10.4.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesRetrieveInstanceRequest) input message
@@ -683,7 +683,7 @@ standard.
     def Metadata(self, request, global_params=None):
       r"""RetrieveSeriesMetadata returns instance associated with the given study and.
 series, presented as metadata with the bulk data removed. See
-http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.5.6.
+http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_10.4.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesMetadataRequest) input message
@@ -711,7 +711,7 @@ http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.5.6.
 
     def RetrieveSeries(self, request, global_params=None):
       r"""RetrieveSeries returns all instances within the given study and series. See.
-http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.5.2.
+http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_10.4.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesRetrieveSeriesRequest) input message
@@ -739,7 +739,7 @@ http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.5.2.
 
     def SearchForInstances(self, request, global_params=None):
       r"""SearchForInstances returns a list of matching instances. See.
-http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.7
+http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_10.6.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesSearchForInstancesRequest) input message
@@ -806,7 +806,7 @@ are equivalent to the GET requests specified in the WADO-RS standard.
     def Metadata(self, request, global_params=None):
       r"""RetrieveStudyMetadata returns instance associated with the given study.
 presented as metadata with the bulk data removed. See
-http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.5.6.
+http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_10.4.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesMetadataRequest) input message
@@ -834,7 +834,7 @@ http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.5.6.
 
     def RetrieveStudy(self, request, global_params=None):
       r"""RetrieveStudy returns all instances within the given study. See.
-http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.5.1.
+http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_10.4.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesRetrieveStudyRequest) input message
@@ -862,7 +862,7 @@ http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.5.1.
 
     def SearchForInstances(self, request, global_params=None):
       r"""SearchForInstances returns a list of matching instances. See.
-http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.7
+http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_10.6.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSearchForInstancesRequest) input message
@@ -890,7 +890,7 @@ http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.7
 
     def SearchForSeries(self, request, global_params=None):
       r"""SearchForSeries returns a list of matching series. See.
-http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.7
+http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_10.6.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSearchForSeriesRequest) input message
@@ -919,7 +919,7 @@ http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.7
     def StoreInstances(self, request, global_params=None):
       r"""StoreInstances stores DICOM instances associated with study instance unique.
 identifiers (SUID). See
-http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.6.1.
+http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_10.5.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesStoreInstancesRequest) input message
@@ -957,7 +957,7 @@ http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.6.1.
 
     def SearchForInstances(self, request, global_params=None):
       r"""SearchForInstances returns a list of matching instances. See.
-http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.7
+http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_10.6.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebSearchForInstancesRequest) input message
@@ -985,7 +985,7 @@ http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.7
 
     def SearchForSeries(self, request, global_params=None):
       r"""SearchForSeries returns a list of matching series. See.
-http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.7
+http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_10.6.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebSearchForSeriesRequest) input message
@@ -1013,7 +1013,7 @@ http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.7
 
     def SearchForStudies(self, request, global_params=None):
       r"""SearchForStudies returns a list of matching studies. See.
-http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.7
+http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_10.6.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebSearchForStudiesRequest) input message
@@ -1042,7 +1042,7 @@ http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.7
     def StoreInstances(self, request, global_params=None):
       r"""StoreInstances stores DICOM instances associated with study instance unique.
 identifiers (SUID). See
-http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.6.1.
+http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_10.5.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStoreInstancesRequest) input message

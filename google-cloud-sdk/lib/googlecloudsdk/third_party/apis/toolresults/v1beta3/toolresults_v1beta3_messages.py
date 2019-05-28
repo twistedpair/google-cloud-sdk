@@ -408,7 +408,7 @@ class Execution(_messages.Message):
 
 
 class FailureDetail(_messages.Message):
-  r"""A FailureDetail object.
+  r"""Details for an outcome with a FAILURE outcome summary.
 
   Fields:
     crashed: If the failure was severe because the system (app) under test
@@ -537,7 +537,7 @@ class Image(_messages.Message):
 
 
 class InconclusiveDetail(_messages.Message):
-  r"""A InconclusiveDetail object.
+  r"""Details for an outcome with an INCONCLUSIVE outcome summary.
 
   Fields:
     abortedByUser: If the end user aborted the test execution before a pass or
@@ -973,7 +973,7 @@ class ScreenshotCluster(_messages.Message):
 
 
 class SkippedDetail(_messages.Message):
-  r"""A SkippedDetail object.
+  r"""Details for an outcome with a SKIPPED outcome summary.
 
   Fields:
     incompatibleAppVersion: If the App doesn't support the specific API level.
@@ -1275,7 +1275,7 @@ class StepLabelsEntry(_messages.Message):
 
 
 class SuccessDetail(_messages.Message):
-  r"""A SuccessDetail object.
+  r"""Details for an outcome with a SUCCESS outcome summary.
 
   Fields:
     otherNativeCrash: If a native process other than the app crashed.

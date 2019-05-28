@@ -463,6 +463,19 @@
           "description": "Deprecated and not currently populated by Cloud Run. See\nmetadata.generation instead, which is the sequence number containing the\nlatest generation of the desired state.\n\nRead-only.",
           "type": "integer",
           "format": "int32"
+        },
+        "containers": {
+          "description": "Containers holds the single container that defines the unit of execution\nfor this Revision. In the context of a Revision, we disallow a number of\nfields on this Container, including: name and lifecycle.",
+          "type": "array",
+          "items": {
+            "$ref": "Container"
+          }
+        },
+        "volumes": {
+          "type": "array",
+          "items": {
+            "$ref": "Volume"
+          }
         }
       }
     },
@@ -1017,6 +1030,97 @@
         }
       }
     },
+    "Volume": {
+      "id": "Volume",
+      "description": "Volume represents a named volume in a container.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Volume's name.",
+          "type": "string"
+        },
+        "secret": {
+          "$ref": "SecretVolumeSource"
+        },
+        "configMap": {
+          "$ref": "ConfigMapVolumeSource"
+        }
+      }
+    },
+    "SecretVolumeSource": {
+      "id": "SecretVolumeSource",
+      "description": "The contents of the target Secret's Data field will be presented in a volume\nas files using the keys in the Data field as the file names.",
+      "type": "object",
+      "properties": {
+        "secretName": {
+          "description": "Name of the secret in the container's namespace to use.",
+          "type": "string"
+        },
+        "items": {
+          "description": "If unspecified, each key-value pair in the Data field of the referenced\nSecret will be projected into the volume as a file whose name is the\nkey and content is the value. If specified, the listed keys will be\nprojected into the specified paths, and unlisted keys will not be\npresent. If a key is specified which is not present in the Secret,\nthe volume setup will error unless it is marked optional.",
+          "type": "array",
+          "items": {
+            "$ref": "KeyToPath"
+          }
+        },
+        "defaultMode": {
+          "description": "Mode bits to use on created files by default. Must be a value between 0 and\n0777. Defaults to 0644. Directories within the path are not affected by\nthis setting. This might be in conflict with other options that affect the\nfile mode, like fsGroup, and the result can be other mode bits set.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "optional": {
+          "description": "Specify whether the Secret or its keys must be defined.",
+          "type": "boolean"
+        }
+      }
+    },
+    "KeyToPath": {
+      "id": "KeyToPath",
+      "description": "Maps a string key to a path within a volume.",
+      "type": "object",
+      "properties": {
+        "key": {
+          "description": "The key to project.",
+          "type": "string"
+        },
+        "path": {
+          "description": "The relative path of the file to map the key to.\nMay not be an absolute path.\nMay not contain the path element '..'.\nMay not start with the string '..'.",
+          "type": "string"
+        },
+        "mode": {
+          "description": "Mode bits to use on this file, must be a value between 0 and 0777. If not\nspecified, the volume defaultMode will be used. This might be in conflict\nwith other options that affect the file mode, like fsGroup, and the result\ncan be other mode bits set. +optional",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ConfigMapVolumeSource": {
+      "id": "ConfigMapVolumeSource",
+      "description": "Adapts a ConfigMap into a volume.\nThe contents of the target ConfigMap's Data field will be presented in a\nvolume as files using the keys in the Data field as the file names, unless\nthe items element is populated with specific mappings of keys to paths.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the config.",
+          "type": "string"
+        },
+        "items": {
+          "description": "If unspecified, each key-value pair in the Data field of the referenced\nSecret will be projected into the volume as a file whose name is the\nkey and content is the value. If specified, the listed keys will be\nprojected into the specified paths, and unlisted keys will not be\npresent. If a key is specified which is not present in the Secret,\nthe volume setup will error unless it is marked optional.",
+          "type": "array",
+          "items": {
+            "$ref": "KeyToPath"
+          }
+        },
+        "defaultMode": {
+          "description": "Mode bits to use on created files by default. Must be a value between 0 and\n0777. Defaults to 0644. Directories within the path are not affected by\nthis setting. This might be in conflict with other options that affect the\nfile mode, like fsGroup, and the result can be other mode bits set.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "optional": {
+          "description": "Specify whether the Secret or its keys must be defined.",
+          "type": "boolean"
+        }
+      }
+    },
     "RevisionStatus": {
       "id": "RevisionStatus",
       "description": "RevisionStatus communicates the observed state of the Revision (from the\ncontroller).",
@@ -1073,6 +1177,10 @@
           "description": "Last time the condition transitioned from one status to another.\n+optional",
           "type": "string",
           "format": "google-datetime"
+        },
+        "severity": {
+          "description": "How to interpret failures of this condition, one of Error, Warning, Info\n+optional",
+          "type": "string"
         }
       }
     },
@@ -1158,7 +1266,7 @@
           "format": "int32"
         },
         "template": {
-          "description": "Template holds the latest specification for the Revision to be stamped out.",
+          "description": "Template holds the latest specification for the Revision to be stamped out.\nNot currently supported by Cloud Run.",
           "$ref": "RevisionTemplate"
         }
       }
@@ -1230,6 +1338,10 @@
           "description": "Last time the condition transitioned from one status to another.\n+optional",
           "type": "string",
           "format": "google-datetime"
+        },
+        "severity": {
+          "description": "How to interpret failures of this condition, one of Error, Warning, Info\n+optional",
+          "type": "string"
         }
       }
     },
@@ -1339,6 +1451,15 @@
         "message": {
           "description": "Human readable message indicating details about the current status.\n+optional",
           "type": "string"
+        },
+        "lastTransitionTime": {
+          "description": "Last time the condition transitioned from one status to another.\n+optional",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "severity": {
+          "description": "How to interpret failures of this condition, one of Error, Warning, Info\n+optional",
+          "type": "string"
         }
       }
     },
@@ -1395,6 +1516,87 @@
           "type": "array",
           "items": {
             "$ref": "DomainMapping"
+          }
+        }
+      }
+    },
+    "EventType": {
+      "id": "EventType",
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "description": "The API version for this call such as \"v1alpha1\".",
+          "type": "string"
+        },
+        "kind": {
+          "description": "The kind of resource, in this case \"EventType\".",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Metadata associated with this EventType.",
+          "$ref": "ObjectMeta"
+        },
+        "spec": {
+          "description": "Spec defines the desired state of the EventType.",
+          "$ref": "EventTypeSpec"
+        }
+      }
+    },
+    "EventTypeSpec": {
+      "id": "EventTypeSpec",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Type is authoritative. This refers to the CloudEvent type as it enters\ninto the eventing mesh.",
+          "type": "string"
+        },
+        "source": {
+          "description": "Source is a valid URI. Refers to the CloudEvent source as it enters into\nthe eventing mesh.",
+          "type": "string"
+        },
+        "schema": {
+          "description": "Schema is a URI with the EventType schema. It may be a JSON schema, a\nprotobuf schema, etc.\n+optional",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description is a string describing what the EventType is about.\n+optional",
+          "type": "string"
+        },
+        "broker": {
+          "description": "Refers to the Broker that can provide the EventType.",
+          "type": "string"
+        }
+      }
+    },
+    "ListEventTypesResponse": {
+      "id": "ListEventTypesResponse",
+      "description": "ListEventTypesResponse is a list of EventType resources.",
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "description": "The API version for this call such as \"v1alpha1\".",
+          "type": "string"
+        },
+        "kind": {
+          "description": "The kind of this resource, in this case \"EventTypeList\".",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Metadata associated with this EventType list.",
+          "$ref": "ListMeta"
+        },
+        "items": {
+          "description": "List of EventTypes.",
+          "type": "array",
+          "items": {
+            "$ref": "EventType"
+          }
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
@@ -1499,6 +1701,18 @@
           "description": "Percent specifies percent of the traffic to this Revision or Configuration.\nThis defaults to zero if unspecified.\n\nCloud Run currently requires 100 percent for a single ConfigurationName\nTrafficTarget entry.",
           "type": "integer",
           "format": "int32"
+        },
+        "tag": {
+          "description": "Tag is optionally used to expose a dedicated url for referencing\nthis target exclusively.\n\nNot currently supported in Cloud Run.\n+optional",
+          "type": "string"
+        },
+        "latestRevision": {
+          "description": "LatestRevision may be optionally provided to indicate that the latest\nready Revision of the Configuration should be used for this traffic\ntarget. When provided LatestRevision must be true if RevisionName is\nempty; it must be false when RevisionName is non-empty.\n\nNot currently supported in Cloud Run.\n+optional",
+          "type": "boolean"
+        },
+        "url": {
+          "description": "Output only. URL displays the URL for accessing named traffic targets. URL\nis displayed in status, and is disallowed on spec. URL must contain a\nscheme (e.g. http:\/\/) and a hostname, but may not contain anything else\n(e.g. basic auth, url path, etc.\n\nNot currently supported in Cloud Run.",
+          "type": "string"
         }
       }
     },
@@ -1565,6 +1779,10 @@
           "description": "Last time the condition transitioned from one status to another.\n+optional",
           "type": "string",
           "format": "google-datetime"
+        },
+        "severity": {
+          "description": "How to interpret failures of this condition, one of Error, Warning, Info\n+optional",
+          "type": "string"
         }
       }
     },
@@ -1670,6 +1888,10 @@
           "items": {
             "$ref": "TrafficTarget"
           }
+        },
+        "template": {
+          "description": "Template holds the latest specification for the Revision to\nbe stamped out.\n\nNot currently supported by Cloud Run.",
+          "$ref": "RevisionTemplate"
         }
       }
     },
@@ -1796,6 +2018,10 @@
           "description": "Last time the condition transitioned from one status to another.\n+optional",
           "type": "string",
           "format": "google-datetime"
+        },
+        "severity": {
+          "description": "How to interpret failures of this condition, one of Error, Warning, Info\n+optional",
+          "type": "string"
         }
       }
     },
@@ -2131,6 +2357,10 @@
           "description": "Last time the condition transitioned from one status to another.\n+optional",
           "type": "string",
           "format": "google-datetime"
+        },
+        "severity": {
+          "description": "How to interpret failures of this condition, one of Error, Warning, Info\n+optional",
+          "type": "string"
         }
       }
     },
@@ -2642,6 +2872,96 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Rpc to delete a domain mapping."
+                }
+              }
+            },
+            "eventtypes": {
+              "methods": {
+                "get": {
+                  "id": "run.projects.locations.eventtypes.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/eventtypes/{eventtypesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the trigger being retrieved. If needed, replace\n{namespace_id} with the project ID.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/eventtypes\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "EventType"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Rpc to get information about an EventType."
+                },
+                "list": {
+                  "id": "run.projects.locations.eventtypes.list",
+                  "path": "v1alpha1/{+parent}/eventtypes",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/eventtypes",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "The project ID or project number from which the EventTypes should be\nlisted.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "limit": {
+                      "description": "The maximum number of records that should be returned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "includeUninitialized": {
+                      "description": "Not currently used by Cloud Run.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "fieldSelector": {
+                      "description": "Allows to filter resources based on a specific value for a field name.\nSend this in a query string format. i.e. 'metadata.name%3Dlorem'.\nNot currently used by Cloud Run.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "labelSelector": {
+                      "description": "Allows to filter resources based on a label. Supported operations are\n=, !=, exists, in, and notIn.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "resourceVersion": {
+                      "description": "The baseline resource version from which the list or watch operation should\nstart. Not currently used by Cloud Run.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "watch": {
+                      "description": "Flag that indicates that the client expects to watch this resource as well.\nNot currently used by Cloud Run.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "continue": {
+                      "description": "Optional encoded string to continue paging.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListEventTypesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Rpc to list EventTypes."
                 }
               }
             },
@@ -3624,6 +3944,96 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Rpc to delete a domain mapping."
+            }
+          }
+        },
+        "eventtypes": {
+          "methods": {
+            "get": {
+              "id": "run.namespaces.eventtypes.get",
+              "path": "apis/eventing.knative.dev/v1alpha1/{+name}",
+              "flatPath": "apis/eventing.knative.dev/v1alpha1/namespaces/{namespacesId}/eventtypes/{eventtypesId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The name of the trigger being retrieved. If needed, replace\n{namespace_id} with the project ID.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^namespaces\/[^\/]+\/eventtypes\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "EventType"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Rpc to get information about an EventType."
+            },
+            "list": {
+              "id": "run.namespaces.eventtypes.list",
+              "path": "apis/eventing.knative.dev/v1alpha1/{+parent}/eventtypes",
+              "flatPath": "apis/eventing.knative.dev/v1alpha1/namespaces/{namespacesId}/eventtypes",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "The project ID or project number from which the EventTypes should be\nlisted.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^namespaces\/[^\/]+$",
+                  "type": "string"
+                },
+                "limit": {
+                  "description": "The maximum number of records that should be returned.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "includeUninitialized": {
+                  "description": "Not currently used by Cloud Run.",
+                  "location": "query",
+                  "type": "boolean"
+                },
+                "fieldSelector": {
+                  "description": "Allows to filter resources based on a specific value for a field name.\nSend this in a query string format. i.e. 'metadata.name%3Dlorem'.\nNot currently used by Cloud Run.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "labelSelector": {
+                  "description": "Allows to filter resources based on a label. Supported operations are\n=, !=, exists, in, and notIn.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "resourceVersion": {
+                  "description": "The baseline resource version from which the list or watch operation should\nstart. Not currently used by Cloud Run.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "watch": {
+                  "description": "Flag that indicates that the client expects to watch this resource as well.\nNot currently used by Cloud Run.",
+                  "location": "query",
+                  "type": "boolean"
+                },
+                "continue": {
+                  "description": "Optional encoded string to continue paging.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListEventTypesResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Rpc to list EventTypes."
             }
           }
         },

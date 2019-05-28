@@ -1932,6 +1932,18 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
+class ProjectServiceAccount(_messages.Message):
+  r"""Response object of GetProjectServiceAccountRequest
+
+  Fields:
+    email: The service account email address.
+    project: The name of the project associated with the service account.
+  """
+
+  email = _messages.StringField(1)
+  project = _messages.StringField(2)
+
+
 class QueryPlan(_messages.Message):
   r"""Contains an ordered list of nodes appearing in the query plan.
 
@@ -2066,15 +2078,15 @@ class ReplicaInfo(_messages.Message):
     Values:
       TYPE_UNSPECIFIED: Not specified.
       READ_WRITE: Read-write replicas support both reads and writes. These
-        replicas: * Maintain a full copy of your data. * Serve reads. * Can
+        replicas:  * Maintain a full copy of your data. * Serve reads. * Can
         vote whether to commit a write. * Participate in leadership election.
         * Are eligible to become a leader.
       READ_ONLY: Read-only replicas only support reads (not writes). Read-only
-        replicas: * Maintain a full copy of your data. * Serve reads. * Do not
-        participate in voting to commit writes. * Are not eligible to become a
-        leader.
+        replicas:  * Maintain a full copy of your data. * Serve reads. * Do
+        not participate in voting to commit writes. * Are not eligible to
+        become a leader.
       WITNESS: Witness replicas don't support reads but do participate in
-        voting to commit writes. Witness replicas: * Do not maintain a full
+        voting to commit writes. Witness replicas:  * Do not maintain a full
         copy of data. * Do not serve reads. * Vote whether to commit writes. *
         Participate in leader election but are not eligible to become leader.
     """
@@ -2476,6 +2488,17 @@ class ShortRepresentation(_messages.Message):
 
   description = _messages.StringField(1)
   subqueries = _messages.MessageField('SubqueriesValue', 2)
+
+
+class SpannerProjectsGetServiceAccountRequest(_messages.Message):
+  r"""A SpannerProjectsGetServiceAccountRequest object.
+
+  Fields:
+    name: Required. The name of the project for which service account is
+      requested. Values are of the form `projects/<project>`.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class SpannerProjectsInstanceConfigsGetRequest(_messages.Message):

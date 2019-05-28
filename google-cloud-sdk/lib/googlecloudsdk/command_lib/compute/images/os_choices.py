@@ -82,4 +82,10 @@ OS_CHOICES_INSTANCE_IMPORT_ALPHA = [
     'windows-2012',
     'windows-2012r2',
     'windows-2016',
+    'windows-2008r2-byol',
+    'windows-2012-byol',
+    'windows-2012r2-byol',
+    'windows-2016-byol',
+    'windows-7-byol',
+    'windows-10-byol',
 ]

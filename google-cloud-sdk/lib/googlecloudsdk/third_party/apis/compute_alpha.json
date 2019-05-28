@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20190507",
+ "revision": "20190520",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1145,7 +1145,7 @@
     },
     "interface": {
      "type": "string",
-     "description": "Specifies the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI. Persistent disks must always use SCSI and the request will fail if you attempt to attach a persistent disk in any other format than SCSI. Local SSDs can use either NVME or SCSI. For performance characteristics of SCSI over NVMe, see Local SSD performance.",
+     "description": "Specifies the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI. Persistent disks must always use SCSI and the request will fail if you attempt to attach a persistent disk in any other format than SCSI. Local SSDs can use either NVME or SCSI. For performance characteristics of SCSI over NVMe, see Local SSD performance. TODO(b/131765817): Update documentation when NVME is supported.",
      "enum": [
       "NVDIMM",
       "NVME",
@@ -1747,6 +1747,8 @@
       "MIN_EQUALS_MAX",
       "MISSING_CUSTOM_METRIC_DATA_POINTS",
       "MISSING_LOAD_BALANCING_DATA_POINTS",
+      "MODE_OFF",
+      "MODE_ONLY_UP",
       "MORE_THAN_ONE_BACKEND_SERVICE",
       "NOT_ENOUGH_QUOTA_AVAILABLE",
       "REGION_RESOURCE_STOCKOUT",
@@ -1756,6 +1758,8 @@
       "ZONE_RESOURCE_STOCKOUT"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       "",
       "",
@@ -1923,6 +1927,9 @@
     "queueBasedScaling": {
      "$ref": "AutoscalingPolicyQueueBasedScaling",
      "description": "Configuration parameters of autoscaling based on queuing system."
+    },
+    "scaleDownControl": {
+     "$ref": "AutoscalingPolicyScaleDownControl"
     }
    }
   },
@@ -2022,6 +2029,22 @@
     "topic": {
      "type": "string",
      "description": "Cloud Pub/Sub topic used for scaling. Provide the partial URL or partial URL (starting with projects/) or just the topic name. The topic must belong to the same project as the Autoscaler resource."
+    }
+   }
+  },
+  "AutoscalingPolicyScaleDownControl": {
+   "id": "AutoscalingPolicyScaleDownControl",
+   "type": "object",
+   "description": "Configuration that allows for slower scale down so that even if Autoscaler recommends an abrupt scale down of a MIG, it will be throttled as specified by the parameters below.",
+   "properties": {
+    "maxScaledDownReplicas": {
+     "$ref": "FixedOrPercent",
+     "description": "Maximum allowed number (or %) of VMs that can be deducted from the peak recommendation during the window autoscaler looks at when computing recommendations. Possibly all these VMs can be deleted at once so user service needs to be prepared to lose that many VMs in one step."
+    },
+    "timeWindowSec": {
+     "type": "integer",
+     "description": "How long back autoscaling should look when computing recommendations to include directives regarding slower scale down, as described above.",
+     "format": "int32"
     }
    }
   },
@@ -2289,10 +2312,6 @@
      "description": "Lifetime of cookies in seconds if session_affinity is GENERATED_COOKIE. If set to 0, the cookie is non-persistent and lasts only until the end of the browser session (or equivalent). The maximum allowed value for TTL is one day.\n\nWhen the load balancing scheme is INTERNAL, this field is not used.",
      "format": "int32"
     },
-    "appEngineBackend": {
-     "$ref": "BackendServiceAppEngineBackend",
-     "description": "Directs request to an App Engine app. cloudFunctionBackend and backends[] must be empty if this is set."
-    },
     "backends": {
      "type": "array",
      "description": "The list of backends that serve this BackendService.",
@@ -2307,10 +2326,6 @@
     "circuitBreakers": {
      "$ref": "CircuitBreakers",
      "description": "Settings controlling the volume of connections to a backend service.\n\nThis field is applicable to either:  \n- A regional backend service with the service_protocol set to HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED. \n- A global backend service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED."
-    },
-    "cloudFunctionBackend": {
-     "$ref": "BackendServiceCloudFunctionBackend",
-     "description": "Directs request to a cloud function. appEngineBackend and backends[] must be empty if this is set."
     },
     "connectionDraining": {
      "$ref": "ConnectionDraining"
@@ -2614,25 +2629,6 @@
     }
    }
   },
-  "BackendServiceAppEngineBackend": {
-   "id": "BackendServiceAppEngineBackend",
-   "type": "object",
-   "description": "Configuration of a App Engine backend.",
-   "properties": {
-    "appEngineService": {
-     "type": "string",
-     "description": "Optional. App Engine app service name."
-    },
-    "targetProject": {
-     "type": "string",
-     "description": "Required. Project ID of the project hosting the app. This is the project ID of this project. Reference to another project is not allowed."
-    },
-    "version": {
-     "type": "string",
-     "description": "Optional. Version of App Engine app service. When empty, App Engine will do its normal traffic split."
-    }
-   }
-  },
   "BackendServiceCdnPolicy": {
    "id": "BackendServiceCdnPolicy",
    "type": "object",
@@ -2653,21 +2649,6 @@
      "items": {
       "type": "string"
      }
-    }
-   }
-  },
-  "BackendServiceCloudFunctionBackend": {
-   "id": "BackendServiceCloudFunctionBackend",
-   "type": "object",
-   "description": "Configuration of a Cloud Function backend.",
-   "properties": {
-    "functionName": {
-     "type": "string",
-     "description": "Required. A cloud function name. Special value ?*? represents all cloud functions in the project."
-    },
-    "targetProject": {
-     "type": "string",
-     "description": "Required. Project ID of the project hosting the cloud function."
     }
    }
   },
@@ -5338,7 +5319,7 @@
   "Firewall": {
    "id": "Firewall",
    "type": "object",
-   "description": "Represents a Firewall resource.",
+   "description": "Represents a Firewall Rule resource.\n\nFirewall rules allow or deny ingress traffic to, and egress traffic from your instances. For more information, read Firewall rules.",
    "properties": {
     "allowed": {
      "type": "array",
@@ -5723,6 +5704,10 @@
       "",
       ""
      ]
+    },
+    "isMirroringCollector": {
+     "type": "boolean",
+     "description": "Indicates whether or not this load balancer can be used as a collector for packet mirroring. To prevent mirroring loops, instances behind this load balancer will not have their traffic mirrored even if a PacketMirroring rule applies to them. This can only be set to true for load balancers that have their loadBalancingScheme set to INTERNAL."
     },
     "kind": {
      "type": "string",
@@ -9609,6 +9594,23 @@
     }
    }
   },
+  "InstanceGroupManagersListErrorsResponse": {
+   "id": "InstanceGroupManagersListErrorsResponse",
+   "type": "object",
+   "properties": {
+    "items": {
+     "type": "array",
+     "description": "[Output Only] The list of errors of the managed instance group.",
+     "items": {
+      "$ref": "InstanceManagedByIgmError"
+     }
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
+    }
+   }
+  },
   "InstanceGroupManagersListManagedInstancesResponse": {
    "id": "InstanceGroupManagersListManagedInstancesResponse",
    "type": "object",
@@ -10405,6 +10407,78 @@
     }
    }
   },
+  "InstanceManagedByIgmError": {
+   "id": "InstanceManagedByIgmError",
+   "type": "object",
+   "properties": {
+    "error": {
+     "$ref": "InstanceManagedByIgmErrorManagedInstanceError",
+     "description": "[Output Only] Contents of the error."
+    },
+    "instanceActionDetails": {
+     "$ref": "InstanceManagedByIgmErrorInstanceActionDetails",
+     "description": "[Output Only] Details of the instance action that triggered this error. May be null, if the error was not caused by an action on an instance. This field is optional."
+    },
+    "timestamp": {
+     "type": "string",
+     "description": "[Output Only] The time that this error occurred. This value is in RFC3339 text format."
+    }
+   }
+  },
+  "InstanceManagedByIgmErrorInstanceActionDetails": {
+   "id": "InstanceManagedByIgmErrorInstanceActionDetails",
+   "type": "object",
+   "properties": {
+    "action": {
+     "type": "string",
+     "description": "[Output Only] Action that managed instance group was executing on the instance when the error occurred. Possible values:",
+     "enum": [
+      "ABANDONING",
+      "CREATING",
+      "CREATING_WITHOUT_RETRIES",
+      "DELETING",
+      "NONE",
+      "RECREATING",
+      "REFRESHING",
+      "RESTARTING",
+      "VERIFYING"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "instance": {
+     "type": "string",
+     "description": "[Output Only] The URL of the instance. The URL can be set even if the instance has not yet been created."
+    },
+    "version": {
+     "$ref": "ManagedInstanceVersion",
+     "description": "[Output Only] Version this instance was created from, or was being created from, but the creation failed. Corresponds to one of the versions that were set on the Instance Group Manager resource at the time this instance was being created."
+    }
+   }
+  },
+  "InstanceManagedByIgmErrorManagedInstanceError": {
+   "id": "InstanceManagedByIgmErrorManagedInstanceError",
+   "type": "object",
+   "properties": {
+    "code": {
+     "type": "string",
+     "description": "[Output Only] Error code."
+    },
+    "message": {
+     "type": "string",
+     "description": "[Output Only] Error message."
+    }
+   }
+  },
   "InstanceMoveRequest": {
    "id": "InstanceMoveRequest",
    "type": "object",
@@ -10955,6 +11029,20 @@
     }
    }
   },
+  "InstancesSetNameRequest": {
+   "id": "InstancesSetNameRequest",
+   "type": "object",
+   "properties": {
+    "currentName": {
+     "type": "string",
+     "description": "The current name of this resource, used to prevent conflicts. Provide the latest name when making a request to change name."
+    },
+    "name": {
+     "type": "string",
+     "description": "The name to be applied to the instance. Needs to be RFC 1035 compliant."
+    }
+   }
+  },
   "InstancesSetServiceAccountRequest": {
    "id": "InstancesSetServiceAccountRequest",
    "type": "object",
@@ -11009,7 +11097,7 @@
   "Interconnect": {
    "id": "Interconnect",
    "type": "object",
-   "description": "Represents an Interconnects resource. The Interconnects resource is a dedicated connection between Google's network and your on-premises network. For more information, see the  Dedicated overview page. (== resource_for v1.interconnects ==) (== resource_for beta.interconnects ==)",
+   "description": "Represents an Interconnect resource.\n\nAn Interconnect resource is a dedicated connection between the GCP network and your on-premises network. For more information, read the  Dedicated Interconnect Overview. (== resource_for v1.interconnects ==) (== resource_for beta.interconnects ==)",
    "properties": {
     "adminEnabled": {
      "type": "boolean",
@@ -11173,7 +11261,7 @@
   "InterconnectAttachment": {
    "id": "InterconnectAttachment",
    "type": "object",
-   "description": "Represents an InterconnectAttachment (VLAN attachment) resource. For more information, see  Creating VLAN Attachments. (== resource_for beta.interconnectAttachments ==) (== resource_for v1.interconnectAttachments ==)",
+   "description": "Represents an Interconnect Attachment (VLAN) resource.\n\nYou can use Interconnect attachments (VLANS) to connect your Virtual Private Cloud networks to your on-premises networks through an Interconnect. For more information, read  Creating VLAN Attachments. (== resource_for beta.interconnectAttachments ==) (== resource_for v1.interconnectAttachments ==)",
    "properties": {
     "adminEnabled": {
      "type": "boolean",
@@ -11981,7 +12069,7 @@
   "InterconnectLocation": {
    "id": "InterconnectLocation",
    "type": "object",
-   "description": "Represents an InterconnectLocations resource. The InterconnectLocations resource describes the locations where you can connect to Google's networks. For more information, see  Colocation Facilities.",
+   "description": "Represents an Interconnect Attachment (VLAN) Location resource.\n\nYou can use this resource to find location details about an Interconnect attachment (VLAN). For more information about interconnect attachments, read  Creating VLAN Attachments.",
    "properties": {
     "address": {
      "type": "string",
@@ -14024,7 +14112,7 @@
   "Network": {
    "id": "Network",
    "type": "object",
-   "description": "Represents a Network resource. Read Virtual Private Cloud (VPC) Network Overview for more information. (== resource_for v1.networks ==) (== resource_for beta.networks ==)",
+   "description": "Represents a VPC Network resource.\n\nNetworks connect resources to each other and to the internet. For more information, read Virtual Private Cloud (VPC) Network. (== resource_for v1.networks ==) (== resource_for beta.networks ==)",
    "properties": {
     "IPv4Range": {
      "type": "string",
@@ -15131,7 +15219,7 @@
   "NodeGroup": {
    "id": "NodeGroup",
    "type": "object",
-   "description": "Represent a sole-tenant Node Group resource.\n\nA sole-tenant node is a physical server that is dedicated to hosting VM instances only for your specific project. Use sole-tenant nodes to keep your instances physically separated from instances in other projects, or to group your instances together on the same host hardware. For more information, read Sole-tenant nodes. (== resource_for beta.nodeGroups ==) (== resource_for v1.nodeGroups ==)",
+   "description": "Represent a sole-tenant Node Group resource.\n\nA sole-tenant node is a physical server that is dedicated to hosting VM instances only for your specific project. Use sole-tenant nodes to keep your instances physically separated from instances in other projects, or to group your instances together on the same host hardware. For more information, read Sole-tenant nodes. (== resource_for beta.nodeGroups ==) (== resource_for v1.nodeGroups ==) NextID: 15",
    "properties": {
     "autoscalingPolicy": {
      "$ref": "NodeGroupAutoscalingPolicy"
@@ -15746,7 +15834,7 @@
   "NodeTemplate": {
    "id": "NodeTemplate",
    "type": "object",
-   "description": "Represent a sole-tenant Node Template resource.\n\nYou can use a template to define properties for nodes in a node group. For more information, read Creating node groups and instances. (== resource_for beta.nodeTemplates ==) (== resource_for v1.nodeTemplates ==)",
+   "description": "Represent a sole-tenant Node Template resource.\n\nYou can use a template to define properties for nodes in a node group. For more information, read Creating node groups and instances. (== resource_for beta.nodeTemplates ==) (== resource_for v1.nodeTemplates ==) NextID: 16",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -16808,7 +16896,7 @@
     },
     "region": {
      "type": "string",
-     "description": "[Output Only] The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body."
+     "description": "[Output Only] The URL of the region where the operation resides. Only applicable when performing regional operations."
     },
     "selfLink": {
      "type": "string",
@@ -16939,7 +17027,7 @@
     },
     "zone": {
      "type": "string",
-     "description": "[Output Only] The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body."
+     "description": "[Output Only] The URL of the zone where the operation resides. Only applicable when performing per-zone operations."
     }
    }
   },
@@ -18848,6 +18936,23 @@
     }
    }
   },
+  "RegionInstanceGroupManagersListErrorsResponse": {
+   "id": "RegionInstanceGroupManagersListErrorsResponse",
+   "type": "object",
+   "properties": {
+    "items": {
+     "type": "array",
+     "description": "[Output Only] The list of errors of the managed instance group.",
+     "items": {
+      "$ref": "InstanceManagedByIgmError"
+     }
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
+    }
+   }
+  },
   "RegionInstanceGroupManagersListInstanceConfigsResp": {
    "id": "RegionInstanceGroupManagersListInstanceConfigsResp",
    "type": "object",
@@ -19357,7 +19462,7 @@
   "Reservation": {
    "id": "Reservation",
    "type": "object",
-   "description": "Reservation resource",
+   "description": "Reservation resource NextID: 13",
    "properties": {
     "commitment": {
      "type": "string",
@@ -19406,6 +19511,24 @@
     "specificReservationRequired": {
      "type": "boolean",
      "description": "Indicates whether the reservation can be consumed by VMs with \"any reservation\" defined. If the field is set, then only VMs that target the reservation by name using --reservation-affinity can consume this reservation."
+    },
+    "status": {
+     "type": "string",
+     "description": "[Output Only] The status of the reservation.",
+     "enum": [
+      "CREATING",
+      "DELETING",
+      "INVALID",
+      "READY",
+      "UPDATING"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
     },
     "zone": {
      "type": "string",
@@ -20471,7 +20594,7 @@
   "Route": {
    "id": "Route",
    "type": "object",
-   "description": "Represents a Route resource. A route specifies how certain packets should be handled by the network. Routes are associated with instances by tags and the set of routes for a particular instance is called its routing table.\n\nFor each packet leaving an instance, the system searches that instance's routing table for a single best matching route. Routes match packets by destination IP address, preferring smaller or more specific ranges over larger ones. If there is a tie, the system selects the route with the smallest priority value. If there is still a tie, it uses the layer three and four packet headers to select just one of the remaining matching routes. The packet is then forwarded as specified by the nextHop field of the winning route - either to another instance destination, an instance gateway, or a Google Compute Engine-operated gateway.\n\nPackets that do not match any route in the sending instance's routing table are dropped. (== resource_for beta.routes ==) (== resource_for v1.routes ==)",
+   "description": "Represents a Route resource.\n\nA route defines a path from VM instances in the VPC network to a specific destination. This destination can be inside or outside the VPC network. For more information, read the Routes overview. (== resource_for beta.routes ==) (== resource_for v1.routes ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -20782,7 +20905,7 @@
   "Router": {
    "id": "Router",
    "type": "object",
-   "description": "Router resource.",
+   "description": "Represents a Cloud Router resource.\n\nFor more information about Cloud Router, read the the Cloud Router overview.",
    "properties": {
     "bgp": {
      "$ref": "RouterBgp",
@@ -21997,7 +22120,7 @@
   "Scheduling": {
    "id": "Scheduling",
    "type": "object",
-   "description": "Sets the scheduling options for an Instance.",
+   "description": "Sets the scheduling options for an Instance. NextID: 9",
    "properties": {
     "automaticRestart": {
      "type": "boolean",
@@ -24002,7 +24125,7 @@
   "Subnetwork": {
    "id": "Subnetwork",
    "type": "object",
-   "description": "A Subnetwork resource. (== resource_for beta.subnetworks ==) (== resource_for v1.subnetworks ==)",
+   "description": "Represents a Subnetwork resource.\n\nA subnetwork (also known as a subnet) is a logical partition of a Virtual Private Cloud network with one primary IP range and zero or more secondary IP ranges. For more information, read  Virtual Private Cloud (VPC) Network. (== resource_for beta.subnetworks ==) (== resource_for v1.subnetworks ==)",
    "properties": {
     "aggregationInterval": {
      "type": "string",
@@ -24111,13 +24234,22 @@
      "enum": [
       "DISABLE_GOOGLE_ACCESS",
       "ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE",
-      "ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE"
+      "ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE",
+      "ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE_FOR_SERVICE_ACCOUNTS"
      ],
      "enumDescriptions": [
       "",
       "",
+      "",
       ""
      ]
+    },
+    "privateIpv6GoogleAccessServiceAccounts": {
+     "type": "array",
+     "description": "The service accounts can be used to selectively turn on Private IPv6 Google Access only on the VMs primary service account matching the value. This value only takes effect when PrivateIpv6GoogleAccess is ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE_FOR_SERVICE_ACCOUNTS or ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE_FOR_SERVICE_ACCOUNTS.",
+     "items": {
+      "type": "string"
+     }
     },
     "purpose": {
      "type": "string",
@@ -25479,7 +25611,7 @@
   "TargetInstance": {
    "id": "TargetInstance",
    "type": "object",
-   "description": "A TargetInstance resource. This resource defines an endpoint instance that terminates traffic of certain protocols. (== resource_for beta.targetInstances ==) (== resource_for v1.targetInstances ==)",
+   "description": "Represents a Target Instance resource.\n\nYou can use a target instance to handle traffic for one or more forwarding rules, which is ideal for forwarding protocol traffic that is managed by a single source. For example, ESP, AH, TCP, or UDP. For more information, read Target instances. (== resource_for beta.targetInstances ==) (== resource_for v1.targetInstances ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -26740,7 +26872,7 @@
   "TargetVpnGateway": {
    "id": "TargetVpnGateway",
    "type": "object",
-   "description": "Represents a Target VPN gateway resource. (== resource_for beta.targetVpnGateways ==) (== resource_for v1.targetVpnGateways ==)",
+   "description": "Represents a Target VPN Gateway resource.\n\nThe target VPN gateway resource represents a Classic Cloud VPN gateway. For more information, read the the Cloud VPN Overview. (== resource_for beta.targetVpnGateways ==) (== resource_for v1.targetVpnGateways ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -28645,7 +28777,7 @@
   "VpnTunnel": {
    "id": "VpnTunnel",
    "type": "object",
-   "description": "VPN tunnel resource. (== resource_for beta.vpnTunnels ==) (== resource_for v1.vpnTunnels ==)",
+   "description": "Represents a Cloud VPN Tunnel resource.\n\nFor more information about VPN, read the the Cloud VPN Overview. (== resource_for beta.vpnTunnels ==) (== resource_for v1.vpnTunnels ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -35902,6 +36034,69 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "listErrors": {
+     "id": "compute.instanceGroupManagers.listErrors",
+     "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/listErrors",
+     "httpMethod": "GET",
+     "description": "Lists all errors thrown by actions on instances for a given managed instance group.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, \u003e, or \u003c.\n\nFor example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance.\n\nYou can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true).",
+       "location": "query"
+      },
+      "instanceGroupManager": {
+       "type": "string",
+       "description": "The name of the managed instance group. It must be a string that meets the requirements in RFC1035, or an unsigned long integer: must match regexp pattern: (?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?)|[1-9][0-9]{0,19}.",
+       "required": true,
+       "location": "path"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone where the managed instance group is located. It should conform to RFC1035.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instanceGroupManager"
+     ],
+     "response": {
+      "$ref": "InstanceGroupManagersListErrorsResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
     "listManagedInstances": {
      "id": "compute.instanceGroupManagers.listManagedInstances",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/listManagedInstances",
@@ -38705,6 +38900,55 @@
      ],
      "request": {
       "$ref": "InstancesSetMinCpuPlatformRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "setName": {
+     "id": "compute.instances.setName",
+     "path": "{project}/zones/{zone}/instances/{instance}/setName",
+     "httpMethod": "POST",
+     "description": "Sets name of an instance.",
+     "parameters": {
+      "instance": {
+       "type": "string",
+       "description": "The instance name for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instance"
+     ],
+     "request": {
+      "$ref": "InstancesSetNameRequest"
      },
      "response": {
       "$ref": "Operation"
@@ -47184,6 +47428,69 @@
      ],
      "response": {
       "$ref": "RegionInstanceGroupManagerList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "listErrors": {
+     "id": "compute.regionInstanceGroupManagers.listErrors",
+     "path": "{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/listErrors",
+     "httpMethod": "GET",
+     "description": "Lists all errors thrown by actions on instances for a given regional managed instance group.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, \u003e, or \u003c.\n\nFor example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance.\n\nYou can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true).",
+       "location": "query"
+      },
+      "instanceGroupManager": {
+       "type": "string",
+       "description": "The name of the managed instance group. It must be a string that meets the requirements in RFC1035, or an unsigned long integer: must match regexp pattern: (?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?)|[1-9][0-9]{0,19}.",
+       "required": true,
+       "location": "path"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region scoping this request. This should conform to RFC1035.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "instanceGroupManager"
+     ],
+     "response": {
+      "$ref": "RegionInstanceGroupManagersListErrorsResponse"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",

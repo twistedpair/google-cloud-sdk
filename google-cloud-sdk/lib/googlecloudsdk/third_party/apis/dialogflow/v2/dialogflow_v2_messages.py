@@ -1289,8 +1289,8 @@ class GoogleCloudDialogflowV2Intent(_messages.Message):
     action: Optional. The name of the action associated with the intent. Note:
       The action name must not contain whitespaces.
     defaultResponsePlatforms: Optional. The list of platforms for which the
-      first response will be taken from among the messages assigned to the
-      DEFAULT_PLATFORM.
+      first responses will be copied from the messages in PLATFORM_UNSPECIFIED
+      (i.e. default platform).
     displayName: Required. The name of this intent.
     events: Optional. The collection of event names that trigger the intent.
       If the collection of input contexts is not empty, all of the contexts
@@ -2156,7 +2156,7 @@ class GoogleCloudDialogflowV2QueryResult(_messages.Message):
 
   Fields:
     action: The action name from the matched intent.
-    allRequiredParamsPresent: This field is set to: - `false` if the matched
+    allRequiredParamsPresent: This field is set to:  - `false` if the matched
       intent has required parameters and not all of    the required parameter
       values have been collected. - `true` if all required parameter values
       have been collected, or if the    matched intent doesn't contain any
@@ -2185,12 +2185,13 @@ class GoogleCloudDialogflowV2QueryResult(_messages.Message):
       name>.original` containing the original parameter values before the
       query.
     parameters: The collection of extracted parameters.
-    queryText: The original conversational query text: - If natural language
+    queryText: The original conversational query text:  - If natural language
       text was provided as input, `query_text` contains   a copy of the input.
       - If natural language speech audio was provided as input, `query_text`
       contains the speech recognition result. If speech recognizer produced
-      multiple alternatives, a particular one is picked. - If an event was
-      provided as input, `query_text` is not set.
+      multiple alternatives, a particular one is picked. - If automatic spell
+      correction is enabled, `query_text` will contain the   corrected user
+      input.
     sentimentAnalysisResult: The sentiment analysis result, which depends on
       the `sentiment_analysis_request_config` specified in the request.
     speechRecognitionConfidence: The Speech recognition confidence between 0.0
@@ -2872,8 +2873,8 @@ class GoogleCloudDialogflowV2beta1Intent(_messages.Message):
     action: Optional. The name of the action associated with the intent. Note:
       The action name must not contain whitespaces.
     defaultResponsePlatforms: Optional. The list of platforms for which the
-      first response will be taken from among the messages assigned to the
-      DEFAULT_PLATFORM.
+      first responses will be copied from the messages in PLATFORM_UNSPECIFIED
+      (i.e. default platform).
     displayName: Required. The name of this intent.
     endInteraction: Optional. Indicates that this intent ends an interaction.
       Some integrations (e.g., Actions on Google or Dialogflow phone gateway)
@@ -3720,7 +3721,7 @@ class GoogleCloudDialogflowV2beta1QueryResult(_messages.Message):
 
   Fields:
     action: The action name from the matched intent.
-    allRequiredParamsPresent: This field is set to: - `false` if the matched
+    allRequiredParamsPresent: This field is set to:  - `false` if the matched
       intent has required parameters and not all of    the required parameter
       values have been collected. - `true` if all required parameter values
       have been collected, or if the    matched intent doesn't contain any
@@ -3751,12 +3752,13 @@ class GoogleCloudDialogflowV2beta1QueryResult(_messages.Message):
       name>.original` containing the original parameter values before the
       query.
     parameters: The collection of extracted parameters.
-    queryText: The original conversational query text: - If natural language
+    queryText: The original conversational query text:  - If natural language
       text was provided as input, `query_text` contains   a copy of the input.
       - If natural language speech audio was provided as input, `query_text`
       contains the speech recognition result. If speech recognizer produced
-      multiple alternatives, a particular one is picked. - If an event was
-      provided as input, `query_text` is not set.
+      multiple alternatives, a particular one is picked. - If automatic spell
+      correction is enabled, `query_text` will contain the   corrected user
+      input.
     sentimentAnalysisResult: The sentiment analysis result, which depends on
       the `sentiment_analysis_request_config` specified in the request.
     speechRecognitionConfidence: The Speech recognition confidence between 0.0

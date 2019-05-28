@@ -5,6 +5,64 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 248.0.0 (2019-05-28)
+
+### Breaking Changes
+
+*   **(Cloud Composer)** Removed support for the deprecated `initdb`, `resetdb`, and `upgradedb`
+    subcommands within `gcloud composer environments run`. Execution of these
+    subcommands could be detrimental to the Airflow metadata of existing
+    Composer environments.
+
+
+### Cloud Build
+
+* Added `--ignore-file` flag to `gcloud builds submit` for overriding default `.gcloudignore` file.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore Emulator version 1.4.6.
+  * Fixed bug where some FieldTransforms were not sending the correct responses.
+  * Added support for read-only transactions.
+
+### Cloud Resource Manager
+
+* Added `gcloud projects get-ancestors` command to display project ancestors.
+
+### Cloud Run
+
+* Added `--connectivity` and `--allow-unauthenticated` flags to `gcloud beta run services update`.
+
+### Cloud Scheduler
+
+* Promoted `gcloud scheduler` command group to GA.
+
+### Compute Engine
+
+* Added `--custom-vm-gen` flag to the following commands to allow specifying the VM generation (either n1 or n2) of custom machine types:
+    * `gcloud compute instances create`
+    * `gcloud compute instances create-with-container`
+    * `gcloud compute instances import`
+    * `gcloud compute instances set-machine-type`
+    * `gcloud compute instance-template create`
+    * `gcloud compute instance-template create-with-container`
+* Promoted `gcloud compute instances os-inventory` to beta.
+
+### Firebase Test Lab
+
+*   Added `--client-details` flag to `gcloud beta firebase test android run` and
+    `gcloud beta firebase test ios run`. This flag allows you to add additional
+    contextual details to the test run.
+
+### Kubernetes Engine
+
+* Added `--enable-stackdriver-kubernetes` flag to `gcloud beta container clusters update`.
+
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 247.0.0 (2019-05-21)
 
 ### App Engine

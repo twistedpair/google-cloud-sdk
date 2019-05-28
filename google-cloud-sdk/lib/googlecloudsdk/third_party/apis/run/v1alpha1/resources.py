@@ -51,6 +51,16 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  NAMESPACES_EVENTTYPES = (
+      'namespaces.eventtypes',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/eventtypes/{eventtypesId}',
+      },
+      [u'name'],
+      True
+  )
   NAMESPACES_REVISIONS = (
       'namespaces.revisions',
       '{+name}',
@@ -123,6 +133,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/domainmappings/'
               '{domainmappingsId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_EVENTTYPES = (
+      'projects.locations.eventtypes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/eventtypes/'
+              '{eventtypesId}',
       },
       [u'name'],
       True

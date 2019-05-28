@@ -5,7 +5,7 @@
  "name": "toolresults",
  "canonicalName": "Tool Results",
  "version": "v1beta3",
- "revision": "20190506",
+ "revision": "20190517",
  "title": "Cloud Tool Results API",
  "description": "Reads and publishes results from Firebase Test Lab.",
  "ownerDomain": "google.com",
@@ -408,6 +408,7 @@
   "FailureDetail": {
    "id": "FailureDetail",
    "type": "object",
+   "description": "Details for an outcome with a FAILURE outcome summary.",
    "externalTypeName": "google.devtools.toolresults.v1.FailureDetail",
    "properties": {
     "crashed": {
@@ -578,6 +579,7 @@
   "InconclusiveDetail": {
    "id": "InconclusiveDetail",
    "type": "object",
+   "description": "Details for an outcome with an INCONCLUSIVE outcome summary.",
    "externalTypeName": "google.devtools.toolresults.v1.InconclusiveDetail",
    "properties": {
     "abortedByUser": {
@@ -1088,6 +1090,7 @@
   "SkippedDetail": {
    "id": "SkippedDetail",
    "type": "object",
+   "description": "Details for an outcome with a SKIPPED outcome summary.",
    "externalTypeName": "google.devtools.toolresults.v1.SkippedDetail",
    "properties": {
     "incompatibleAppVersion": {
@@ -1267,6 +1270,7 @@
   "SuccessDetail": {
    "id": "SuccessDetail",
    "type": "object",
+   "description": "Details for an outcome with a SUCCESS outcome summary.",
    "externalTypeName": "google.devtools.toolresults.v1.SuccessDetail",
    "properties": {
     "otherNativeCrash": {

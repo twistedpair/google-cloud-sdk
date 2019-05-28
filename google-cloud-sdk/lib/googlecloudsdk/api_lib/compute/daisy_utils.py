@@ -31,6 +31,7 @@ from googlecloudsdk.api_lib.services import services_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.cloudbuild import execution
+from googlecloudsdk.command_lib.compute.sole_tenancy import util as sole_tenancy_util
 from googlecloudsdk.command_lib.projects import util as projects_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
@@ -506,16 +507,17 @@ def _RunCloudBuild(args,
   return build
 
 
-def RunOVFImportBuild(args, instance_name, source_uri, no_guest_environment,
-                      can_ip_forward, deletion_protection, description, labels,
-                      machine_type, network, network_tier, subnet,
-                      private_network_ip, no_restart_on_failure, os, tags, zone,
-                      project, output_filter):
+def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
+                      no_guest_environment, can_ip_forward, deletion_protection,
+                      description, labels, machine_type, network, network_tier,
+                      subnet, private_network_ip, no_restart_on_failure, os,
+                      tags, zone, project, output_filter):
   """Run a OVF import build on Google Cloud Builder.
 
   Args:
     args: an argparse namespace. All the arguments that were provided to this
       command invocation.
+    compute_client: Google Compute Engine client.
     instance_name: Name of the instance to be imported.
     source_uri: A GCS path to OVA or OVF package.
     no_guest_environment: If set to True, Google Guest Environment won't be
@@ -584,12 +586,28 @@ def RunOVFImportBuild(args, instance_name, source_uri, no_guest_environment,
   AppendArg(ovf_importer_args, 'zone', zone)
   AppendArg(ovf_importer_args, 'timeout', ovf_import_timeout, '-{0}={1}s')
   AppendArg(ovf_importer_args, 'project', project)
+  _AppendNodeAffinityLabelArgs(ovf_importer_args, args, compute_client.messages)
 
   build_tags = ['gce-ovf-import']
 
-  # print('OVF args: ' + str(list(ovf_importer_args)))
   return _RunCloudBuild(args, _OVF_IMPORT_BUILDER, ovf_importer_args,
                         build_tags, output_filter)
+
+
+def _AppendNodeAffinityLabelArgs(
+    ovf_importer_args, args, compute_client_messages):
+  node_affinities = sole_tenancy_util.GetSchedulingNodeAffinityListFromArgs(
+      args, compute_client_messages)
+  for node_affinity in node_affinities:
+    AppendArg(ovf_importer_args, 'node-affinity-label',
+              _BuildOvfImporterNodeAffinityFlagValue(node_affinity))
+
+
+def _BuildOvfImporterNodeAffinityFlagValue(node_affinity):
+  node_affinity_flag = node_affinity.key + ',' + str(node_affinity.operator)
+  for value in node_affinity.values:
+    node_affinity_flag += ',' + value
+  return node_affinity_flag
 
 
 def AppendArg(args, name, arg, format_pattern='-{0}={1}'):

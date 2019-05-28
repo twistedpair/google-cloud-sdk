@@ -25,6 +25,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
+
 from apitools.base.protorpclite import messages as apitools_messages
 from apitools.base.py import encoding
 from apitools.base.py.exceptions import HttpBadRequestError
@@ -43,6 +45,8 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.resource import resource_transform
+
+import six
 
 
 class Translator(command_loading.YamlCommandTranslator):
@@ -1046,7 +1050,7 @@ class AsyncOperationPoller(waiter.OperationPoller):
         error = 'The operation failed.'
       # If we succeeded but there is an error, or if an error was detected.
       if error:
-        raise waiter.OperationError(error)
+        raise waiter.OperationError(SerializeError(error))
       return True
 
     return False
@@ -1094,6 +1098,21 @@ class AsyncOperationPoller(waiter.OperationPoller):
     return registry.GetMethod(
         self.spec.request.collection, self.spec.async.resource_get_method,
         api_version=self.spec.request.api_version)
+
+
+def SerializeError(error):
+  """Serializes the error message for better format."""
+  if isinstance(error, six.string_types):
+    return error
+  try:
+    return json.dumps(
+        encoding.MessageToDict(error),
+        indent=2,
+        sort_keys=True,
+        separators=(',', ': '))
+  except Exception:  # pylint: disable=broad-except
+    # try the best, fall back to return error
+    return error
 
 
 def _GetAttribute(obj, attr_path):

@@ -34,6 +34,21 @@ class AcceleratorConfig(_messages.Message):
   acceleratorTypeUri = _messages.StringField(2)
 
 
+class AutoscalingConfig(_messages.Message):
+  r"""Autoscaling Policy config associated with the cluster.
+
+  Fields:
+    policyUri: Optional. The autoscaling policy used by the cluster.Only
+      resource names including projectid and location (region) are valid.
+      Examples: https://www.googleapis.com/compute/v1/projects/[project_id]/lo
+      cations/[dataproc_region]/autoscalingPolicies/[policy_id] projects/[proj
+      ect_id]/locations/[dataproc_region]/autoscalingPolicies/[policy_id]Note
+      that the policy must be in the same project and Cloud Dataproc region.
+  """
+
+  policyUri = _messages.StringField(1)
+
+
 class Binding(_messages.Message):
   r"""Associates members with a role.
 
@@ -145,6 +160,8 @@ class ClusterConfig(_messages.Message):
   r"""The cluster config.
 
   Fields:
+    autoscalingConfig: Optional. Autoscaling config for the policy associated
+      with the cluster. Cluster does not autoscale if this field is unset.
     configBucket: Optional. A Google Cloud Storage bucket used to stage job
       dependencies, config files, and job driver console output. If you do not
       specify a staging bucket, Cloud Dataproc will determine a Cloud Storage
@@ -175,16 +192,17 @@ class ClusterConfig(_messages.Message):
       instances in a cluster.
   """
 
-  configBucket = _messages.StringField(1)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 2)
-  gceClusterConfig = _messages.MessageField('GceClusterConfig', 3)
-  initializationActions = _messages.MessageField('NodeInitializationAction', 4, repeated=True)
-  lifecycleConfig = _messages.MessageField('LifecycleConfig', 5)
-  masterConfig = _messages.MessageField('InstanceGroupConfig', 6)
-  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 7)
-  securityConfig = _messages.MessageField('SecurityConfig', 8)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 9)
-  workerConfig = _messages.MessageField('InstanceGroupConfig', 10)
+  autoscalingConfig = _messages.MessageField('AutoscalingConfig', 1)
+  configBucket = _messages.StringField(2)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 3)
+  gceClusterConfig = _messages.MessageField('GceClusterConfig', 4)
+  initializationActions = _messages.MessageField('NodeInitializationAction', 5, repeated=True)
+  lifecycleConfig = _messages.MessageField('LifecycleConfig', 6)
+  masterConfig = _messages.MessageField('InstanceGroupConfig', 7)
+  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 8)
+  securityConfig = _messages.MessageField('SecurityConfig', 9)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 10)
+  workerConfig = _messages.MessageField('InstanceGroupConfig', 11)
 
 
 class ClusterMetrics(_messages.Message):
@@ -459,6 +477,54 @@ class ClusterStatus(_messages.Message):
   substate = _messages.EnumField('SubstateValueValuesEnum', 4)
 
 
+class DataprocProjectsLocationsAutoscalingPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsAutoscalingPoliciesGetIamPolicyRequest
+  object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataprocProjectsLocationsAutoscalingPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsAutoscalingPoliciesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DataprocProjectsLocationsAutoscalingPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsAutoscalingPoliciesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class DataprocProjectsLocationsWorkflowTemplatesCreateRequest(_messages.Message):
   r"""A DataprocProjectsLocationsWorkflowTemplatesCreateRequest object.
 
@@ -595,6 +661,52 @@ class DataprocProjectsLocationsWorkflowTemplatesSetIamPolicyRequest(_messages.Me
 
 class DataprocProjectsLocationsWorkflowTemplatesTestIamPermissionsRequest(_messages.Message):
   r"""A DataprocProjectsLocationsWorkflowTemplatesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class DataprocProjectsRegionsAutoscalingPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsAutoscalingPoliciesGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataprocProjectsRegionsAutoscalingPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsAutoscalingPoliciesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DataprocProjectsRegionsAutoscalingPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsAutoscalingPoliciesTestIamPermissionsRequest
   object.
 
   Fields:
@@ -2259,7 +2371,7 @@ class Operation(_messages.Message):
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
-      the name should have the format of operations/some/unique/name.
+      the name should be a resource name ending with operations/{unique_id}.
     response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as Delete, the response
       is google.protobuf.Empty. If the original method is standard

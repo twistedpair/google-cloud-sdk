@@ -1619,7 +1619,7 @@ class GoogleCloudMlV1Version(_messages.Message):
       The module containing this class should be included in a package
       provided to the [`packageUris` field](#Version.FIELDS.package_uris).
       Specify this field if and only if you are deploying a [custom prediction
-      routine (beta)](/ml-engine/docs/tensorflow/custom-prediction-routine).
+      routine (beta)](/ml-engine/docs/tensorflow/custom-prediction-routines).
       If you specify this field, you must set
       [`runtimeVersion`](#Version.FIELDS.runtime_version) to 1.4 or greater.
       The following code sample provides the Predictor interface:  ```py class

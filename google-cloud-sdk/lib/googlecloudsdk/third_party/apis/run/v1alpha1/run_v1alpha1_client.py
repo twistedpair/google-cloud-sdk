@@ -38,6 +38,7 @@ class RunV1alpha1(base_api.BaseApiClient):
     self.namespaces_authorizeddomains = self.NamespacesAuthorizeddomainsService(self)
     self.namespaces_configurations = self.NamespacesConfigurationsService(self)
     self.namespaces_domainmappings = self.NamespacesDomainmappingsService(self)
+    self.namespaces_eventtypes = self.NamespacesEventtypesService(self)
     self.namespaces_revisions = self.NamespacesRevisionsService(self)
     self.namespaces_routes = self.NamespacesRoutesService(self)
     self.namespaces_services = self.NamespacesServicesService(self)
@@ -46,6 +47,7 @@ class RunV1alpha1(base_api.BaseApiClient):
     self.projects_locations_authorizeddomains = self.ProjectsLocationsAuthorizeddomainsService(self)
     self.projects_locations_configurations = self.ProjectsLocationsConfigurationsService(self)
     self.projects_locations_domainmappings = self.ProjectsLocationsDomainmappingsService(self)
+    self.projects_locations_eventtypes = self.ProjectsLocationsEventtypesService(self)
     self.projects_locations_revisions = self.ProjectsLocationsRevisionsService(self)
     self.projects_locations_routes = self.ProjectsLocationsRoutesService(self)
     self.projects_locations_services = self.ProjectsLocationsServicesService(self)
@@ -269,6 +271,70 @@ class RunV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name=u'RunNamespacesDomainmappingsListRequest',
         response_type_name=u'ListDomainMappingsResponse',
+        supports_download=False,
+    )
+
+  class NamespacesEventtypesService(base_api.BaseApiService):
+    """Service class for the namespaces_eventtypes resource."""
+
+    _NAME = u'namespaces_eventtypes'
+
+    def __init__(self, client):
+      super(RunV1alpha1.NamespacesEventtypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about an EventType.
+
+      Args:
+        request: (RunNamespacesEventtypesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EventType) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/eventing.knative.dev/v1alpha1/namespaces/{namespacesId}/eventtypes/{eventtypesId}',
+        http_method=u'GET',
+        method_id=u'run.namespaces.eventtypes.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'apis/eventing.knative.dev/v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'RunNamespacesEventtypesGetRequest',
+        response_type_name=u'EventType',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list EventTypes.
+
+      Args:
+        request: (RunNamespacesEventtypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListEventTypesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/eventing.knative.dev/v1alpha1/namespaces/{namespacesId}/eventtypes',
+        http_method=u'GET',
+        method_id=u'run.namespaces.eventtypes.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
+        relative_path=u'apis/eventing.knative.dev/v1alpha1/{+parent}/eventtypes',
+        request_field='',
+        request_type_name=u'RunNamespacesEventtypesListRequest',
+        response_type_name=u'ListEventTypesResponse',
         supports_download=False,
     )
 
@@ -959,6 +1025,70 @@ optimistic concurrency control.
         request_field='',
         request_type_name=u'RunProjectsLocationsDomainmappingsListRequest',
         response_type_name=u'ListDomainMappingsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsEventtypesService(base_api.BaseApiService):
+    """Service class for the projects_locations_eventtypes resource."""
+
+    _NAME = u'projects_locations_eventtypes'
+
+    def __init__(self, client):
+      super(RunV1alpha1.ProjectsLocationsEventtypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about an EventType.
+
+      Args:
+        request: (RunProjectsLocationsEventtypesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EventType) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/eventtypes/{eventtypesId}',
+        http_method=u'GET',
+        method_id=u'run.projects.locations.eventtypes.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'RunProjectsLocationsEventtypesGetRequest',
+        response_type_name=u'EventType',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list EventTypes.
+
+      Args:
+        request: (RunProjectsLocationsEventtypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListEventTypesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/eventtypes',
+        http_method=u'GET',
+        method_id=u'run.projects.locations.eventtypes.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
+        relative_path=u'v1alpha1/{+parent}/eventtypes',
+        request_field='',
+        request_type_name=u'RunProjectsLocationsEventtypesListRequest',
+        response_type_name=u'ListEventTypesResponse',
         supports_download=False,
     )
 

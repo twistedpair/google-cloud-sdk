@@ -572,25 +572,14 @@ class GameServerClusterConnectionInfo(_messages.Message):
   r"""Game server cluster connection information.
 
   Fields:
-    certificateAuthorityData: The pulbic certificate of the Kubernetes API
-      server endpoint for the game server cluster.
-    cloudKmsKeyName: The resource name for Cloud KMS key that is used to
-      encrypt the certificate and token, using the format:  "projects/{project
-      _id}/locations/{location}/keyRings/{keyring}/cryptoKeys/*". For example:
-      "projects/my-project/locations/{location}/keyRings/my-keyring/cryptoKeys
-      /my-key".
-    encryptedServiceAccountToken: The encrypted game server cluster service
-      account token.
-    kubernetesApiServerEndpoint: The Kubernetes API server endpoint for the
-      game server cluster.
+    gkeName: This is the gkeName where the game server cluster is installed.
+      It must the format "projects/*/locations/*/clusters/*". For example,
+      "projects/my-project/locations/us-central1/clusters/test".
     namespace: Namespace for Kubernetes API server endpoint.
   """
 
-  certificateAuthorityData = _messages.StringField(1)
-  cloudKmsKeyName = _messages.StringField(2)
-  encryptedServiceAccountToken = _messages.StringField(3)
-  kubernetesApiServerEndpoint = _messages.StringField(4)
-  namespace = _messages.StringField(5)
+  gkeName = _messages.StringField(1)
+  namespace = _messages.StringField(2)
 
 
 class GameServerDeployment(_messages.Message):
@@ -1719,8 +1708,6 @@ class Realm(_messages.Message):
     createTime: Output only. The creation time.
     labels: The labels associated with this realm. Each label is a key-value
       pair.
-    managementRegion: Cloud Region from which management of clusters is
-      handled.
     name: The resource name of the realm, using the form:
       `projects/{project_id}/locations/{location}/realms/{realm_id}`. For
       example, `projects/my-project/locations/{location}/realms/my-realm`.
@@ -1757,10 +1744,9 @@ class Realm(_messages.Message):
 
   createTime = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
-  managementRegion = _messages.StringField(3)
-  name = _messages.StringField(4)
-  timeZone = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  name = _messages.StringField(3)
+  timeZone = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class RevertRolloutRequest(_messages.Message):

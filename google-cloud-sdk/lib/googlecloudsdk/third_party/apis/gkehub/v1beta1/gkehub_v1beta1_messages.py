@@ -11,6 +11,104 @@ from apitools.base.py import extra_types
 package = 'gkehub'
 
 
+class AuditConfig(_messages.Message):
+  r"""Specifies the audit configuration for a service. The configuration
+  determines which permission types are logged, and what identities, if any,
+  are exempted from logging. An AuditConfig must have one or more
+  AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
+  specific service, the union of the two AuditConfigs is used for that
+  service: the log_types specified in each AuditConfig are enabled, and the
+  exempted_members in each AuditLogConfig are exempted.  Example Policy with
+  multiple AuditConfigs:      {       "audit_configs": [         {
+  "service": "allServices"           "audit_log_configs": [             {
+  "log_type": "DATA_READ",               "exempted_members": [
+  "user:foo@gmail.com"               ]             },             {
+  "log_type": "DATA_WRITE",             },             {
+  "log_type": "ADMIN_READ",             }           ]         },         {
+  "service": "fooservice.googleapis.com"           "audit_log_configs": [
+  {               "log_type": "DATA_READ",             },             {
+  "log_type": "DATA_WRITE",               "exempted_members": [
+  "user:bar@gmail.com"               ]             }           ]         }
+  ]     }  For fooservice, this policy enables DATA_READ, DATA_WRITE and
+  ADMIN_READ logging. It also exempts foo@gmail.com from DATA_READ logging,
+  and bar@gmail.com from DATA_WRITE logging.
+
+  Fields:
+    auditLogConfigs: The configuration for logging of each type of permission.
+    service: Specifies a service that will be enabled for audit logging. For
+      example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
+      `allServices` is a special value that covers all services.
+  """
+
+  auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
+  service = _messages.StringField(2)
+
+
+class AuditLogConfig(_messages.Message):
+  r"""Provides the configuration for logging a type of permissions. Example:
+  {       "audit_log_configs": [         {           "log_type": "DATA_READ",
+  "exempted_members": [             "user:foo@gmail.com"           ]
+  },         {           "log_type": "DATA_WRITE",         }       ]     }
+  This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
+  foo@gmail.com from DATA_READ logging.
+
+  Enums:
+    LogTypeValueValuesEnum: The log type that this config enables.
+
+  Fields:
+    exemptedMembers: Specifies the identities that do not cause logging for
+      this type of permission. Follows the same format of Binding.members.
+    logType: The log type that this config enables.
+  """
+
+  class LogTypeValueValuesEnum(_messages.Enum):
+    r"""The log type that this config enables.
+
+    Values:
+      LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
+      ADMIN_READ: Admin reads. Example: CloudIAM getIamPolicy
+      DATA_WRITE: Data writes. Example: CloudSQL Users create
+      DATA_READ: Data reads. Example: CloudSQL Users list
+    """
+    LOG_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    DATA_WRITE = 2
+    DATA_READ = 3
+
+  exemptedMembers = _messages.StringField(1, repeated=True)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+
+
+class Binding(_messages.Message):
+  r"""Associates `members` with a `role`.
+
+  Fields:
+    condition: The condition that is associated with this binding. NOTE: An
+      unsatisfied condition will not allow user access via current binding.
+      Different bindings, including their conditions, are examined
+      independently.
+    members: Specifies the identities requesting access for a Cloud Platform
+      resource. `members` can have the following values:  * `allUsers`: A
+      special identifier that represents anyone who is    on the internet;
+      with or without a Google account.  * `allAuthenticatedUsers`: A special
+      identifier that represents anyone    who is authenticated with a Google
+      account or a service account.  * `user:{emailid}`: An email address that
+      represents a specific Google    account. For example, `alice@gmail.com`
+      .   * `serviceAccount:{emailid}`: An email address that represents a
+      service    account. For example, `my-other-
+      app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
+      that represents a Google group.    For example, `admins@example.com`.
+      * `domain:{domain}`: The G Suite domain (primary) that represents all
+      the    users of that domain. For example, `google.com` or `example.com`.
+    role: Role that is assigned to `members`. For example, `roles/viewer`,
+      `roles/editor`, or `roles/owner`.
+  """
+
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -23,6 +121,43 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class Expr(_messages.Message):
+  r"""Represents an expression text. Example:      title: "User account
+  presence"     description: "Determines whether the request has a user
+  account"     expression: "size(request.user) > 0"
+
+  Fields:
+    description: An optional description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.  The application context of the containing message
+      determines which well-known feature set of CEL is supported.
+    location: An optional string indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: An optional title for the expression, i.e. a short string
+      describing its purpose. This can be used e.g. in UIs which allow to
+      enter the expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
+
+
+class GkeCluster(_messages.Message):
+  r"""GkeCluster represents a k8s cluster on GKE.
+
+  Fields:
+    createTime: Output only. Time when the cluster was created on GCP.
+    resourceLink: Self-link of the GCP resource for the GKE cluster. Ex:
+      projects/x/zones/us-west1-a/clusters/c0
+  """
+
+  createTime = _messages.StringField(1)
+  resourceLink = _messages.StringField(2)
 
 
 class GkehubProjectsLocationsGetRequest(_messages.Message):
@@ -140,6 +275,48 @@ class GkehubProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class GkehubProjectsLocationsMembershipsGetIamPolicyRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsGetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  resource = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsMembershipsSetIamPolicyRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class GkehubProjectsLocationsMembershipsTestIamPermissionsRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class GkehubProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -460,12 +637,11 @@ class MembershipEndpoint(_messages.Message):
       that backs this Membership:
       https://container.googleapis.com/v1/projects/x/zones/us-
       west1-a/clusters/c0 It can be at the most 1000 characters in length.
-    oidcConfig: OIDC configuration to use to authenticate users against with
-      this member.
+    gkeCluster: A GkeCluster attribute.
   """
 
   gcpResourceLink = _messages.StringField(1)
-  oidcConfig = _messages.MessageField('OidcConfig', 2)
+  gkeCluster = _messages.MessageField('GkeCluster', 2)
 
 
 class MembershipState(_messages.Message):
@@ -500,90 +676,6 @@ class MembershipState(_messages.Message):
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   description = _messages.StringField(2)
   updateTime = _messages.StringField(3)
-
-
-class OidcConfig(_messages.Message):
-  r"""OidcConfig holds the configuration for the OIDC provider that's used to
-  authenticate users against a member.
-
-  Enums:
-    TokenEndpointRoutabilityValueValuesEnum: Connection method to be used when
-      accessing the token endpoint.
-
-  Messages:
-    ExtraParametersValue: Additional parameters required by the Identity
-      Provider
-
-  Fields:
-    aud: Audience claims to request when fetching the id_token - should
-      include the --oidc-client-id configured for the cluster.
-    authorizationEndpoint: Endpoint to be used for authentication of end user,
-      ex. https://accounts.google.com/o/oauth2/v2/auth. See
-      https://openid.net/specs/openid-connect-core-
-      1_0.html#AuthorizationEndpoint
-    clientId: Client Id for the OAuth client to be used when communicating
-      with Identity Provider.
-    clientSecret: Client Secret for the OAuth client to be used when
-      communicating with Identity Provider.
-    extraParameters: Additional parameters required by the Identity Provider
-    issuer: Identity Provider that needs to issue tokens accepted by this
-      cluster, ex. https://accounts.google.com. Should match the --oidc-
-      issuer-url configured for the cluster.
-    scopes: Scopes to be requested from Identity Provider
-    tokenEndpoint: Endpoint to be used to obtain the id_token, ex.
-      https://oauth2.googleapis.com/token. See https://openid.net/specs
-      /openid-connect-core-1_0.html#TokenEndpoint
-    tokenEndpointRoutability: Connection method to be used when accessing the
-      token endpoint.
-  """
-
-  class TokenEndpointRoutabilityValueValuesEnum(_messages.Enum):
-    r"""Connection method to be used when accessing the token endpoint.
-
-    Values:
-      ENDPOINT_ROUTABILITY_UNSPECIFIED: Not set.
-      PUBLIC: Identity Provider is available over internet
-      GKE_CONNECT: Identity Provider is available On-Prem, use On-Prem proxy
-        over GKE Connect.
-    """
-    ENDPOINT_ROUTABILITY_UNSPECIFIED = 0
-    PUBLIC = 1
-    GKE_CONNECT = 2
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ExtraParametersValue(_messages.Message):
-    r"""Additional parameters required by the Identity Provider
-
-    Messages:
-      AdditionalProperty: An additional property for a ExtraParametersValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type ExtraParametersValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ExtraParametersValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  aud = _messages.StringField(1, repeated=True)
-  authorizationEndpoint = _messages.StringField(2)
-  clientId = _messages.StringField(3)
-  clientSecret = _messages.BytesField(4)
-  extraParameters = _messages.MessageField('ExtraParametersValue', 5)
-  issuer = _messages.StringField(6)
-  scopes = _messages.StringField(7, repeated=True)
-  tokenEndpoint = _messages.StringField(8)
-  tokenEndpointRoutability = _messages.EnumField('TokenEndpointRoutabilityValueValuesEnum', 9)
 
 
 class Operation(_messages.Message):
@@ -694,6 +786,66 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class Policy(_messages.Message):
+  r"""Defines an Identity and Access Management (IAM) policy. It is used to
+  specify access control policies for Cloud Platform resources.   A `Policy`
+  consists of a list of `bindings`. A `binding` binds a list of `members` to a
+  `role`, where the members can be user accounts, Google groups, Google
+  domains, and service accounts. A `role` is a named list of permissions
+  defined by IAM.  **JSON Example**      {       "bindings": [         {
+  "role": "roles/owner",           "members": [
+  "user:mike@example.com",             "group:admins@example.com",
+  "domain:google.com",             "serviceAccount:my-other-
+  app@appspot.gserviceaccount.com"           ]         },         {
+  "role": "roles/viewer",           "members": ["user:sean@example.com"]
+  }       ]     }  **YAML Example**      bindings:     - members:       -
+  user:mike@example.com       - group:admins@example.com       -
+  domain:google.com       - serviceAccount:my-other-
+  app@appspot.gserviceaccount.com       role: roles/owner     - members:
+  - user:sean@example.com       role: roles/viewer   For a description of IAM
+  and its features, see the [IAM developer's
+  guide](https://cloud.google.com/iam/docs).
+
+  Fields:
+    auditConfigs: Specifies cloud audit logging configuration for this policy.
+    bindings: Associates a list of `members` to a `role`. `bindings` with no
+      members will result in an error.
+    etag: `etag` is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a policy from overwriting each other. It
+      is strongly suggested that systems make use of the `etag` in the read-
+      modify-write cycle to perform policy updates in order to avoid race
+      conditions: An `etag` is returned in the response to `getIamPolicy`, and
+      systems are expected to put that etag in the request to `setIamPolicy`
+      to ensure that their change will be applied to the same version of the
+      policy.  If no `etag` is provided in the call to `setIamPolicy`, then
+      the existing policy is overwritten blindly.
+    version: Deprecated.
+  """
+
+  auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
+  bindings = _messages.MessageField('Binding', 2, repeated=True)
+  etag = _messages.BytesField(3)
+  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class SetIamPolicyRequest(_messages.Message):
+  r"""Request message for `SetIamPolicy` method.
+
+  Fields:
+    policy: REQUIRED: The complete policy to be applied to the `resource`. The
+      size of the policy is limited to a few 10s of KB. An empty policy is a
+      valid policy but certain Cloud Platform services (such as Projects)
+      might reject them.
+    updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
+      modify. Only the fields in the mask will be modified. If no mask is
+      provided, the following default mask is used: paths: "bindings, etag"
+      This field is only used by Cloud IAM.
+  """
+
+  policy = _messages.MessageField('Policy', 1)
+  updateMask = _messages.StringField(2)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -755,6 +907,30 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class TestIamPermissionsRequest(_messages.Message):
+  r"""Request message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
+class TestIamPermissionsResponse(_messages.Message):
+  r"""Response message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: A subset of `TestPermissionsRequest.permissions` that the
+      caller is allowed.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

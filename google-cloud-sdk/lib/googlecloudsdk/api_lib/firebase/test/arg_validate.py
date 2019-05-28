@@ -263,6 +263,7 @@ _FILE_ARG_VALIDATORS = {
     'additional_apks': _ValidateAdditionalApksList,
     'async': _ValidateBool,
     'auto_google_login': _ValidateBool,
+    'client_details': _ValidateKeyValueStringPairs,
     'device': _ValidateListOfStringToStringDicts,
     'device_ids': ValidateStringList,
     'directories_to_pull': ValidateStringList,

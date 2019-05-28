@@ -68,6 +68,8 @@ class ImpersonationCredentials(client.OAuth2Credentials):
         access_token, None, None, None, token_expiry, None, None, scopes=scopes)
 
   def _refresh(self, http):
-    response = GenerateAccessToken(self._service_account_id, self.scopes)
+    # client.Oauth2Credentials converts scopes into a set, so we need to convert
+    # back to a list before making the API request.
+    response = GenerateAccessToken(self._service_account_id, list(self.scopes))
     self.access_token = response.accessToken
     self.token_expiry = response.expireTime

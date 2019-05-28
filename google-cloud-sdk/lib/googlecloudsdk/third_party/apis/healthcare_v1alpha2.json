@@ -998,7 +998,7 @@
           "$ref": "GoogleCloudHealthcareV1alpha2DicomGcsDestination"
         },
         "bigqueryDestination": {
-          "description": "The BigQuery output destination.\n\nFor now, only exporting to a dataset in the current project is supported\n\nThe BigQuery location requires two IAM roles:\n`roles\/bigquery.dataEditor` and `roles\/bigquery.jobUser`.",
+          "description": "The BigQuery output destination.\n\nYou can only export to a BigQuery dataset that's in the same project as\nthe DICOM store you're exporting from.\n\nThe BigQuery location requires two IAM roles:\n`roles\/bigquery.dataEditor` and `roles\/bigquery.jobUser`.",
           "$ref": "GoogleCloudHealthcareV1alpha2DicomBigQueryDestination"
         }
       }
@@ -1383,7 +1383,7 @@
     },
     "SchemaConfig": {
       "id": "SchemaConfig",
-      "description": "Configuration for the FHIR BigQuery schema. Determines how the server\ngenerates the schema.",
+      "description": "Configuration for the FHIR BigQuery and GCS schema. Determines how the server\ngenerates the schema.",
       "type": "object",
       "properties": {
         "schemaType": {
@@ -2315,7 +2315,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "SearchForStudies returns a list of matching studies. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_6.7"
+                          "description": "SearchForStudies returns a list of matching studies. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.6."
                         },
                         "searchForSeries": {
                           "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.searchForSeries",
@@ -2348,7 +2348,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "SearchForSeries returns a list of matching series. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_6.7"
+                          "description": "SearchForSeries returns a list of matching series. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.6."
                         },
                         "searchForInstances": {
                           "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.searchForInstances",
@@ -2381,7 +2381,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "SearchForInstances returns a list of matching instances. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_6.7"
+                          "description": "SearchForInstances returns a list of matching instances. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.6."
                         },
                         "storeInstances": {
                           "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.storeInstances",
@@ -2417,7 +2417,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "StoreInstances stores DICOM instances associated with study instance unique\nidentifiers (SUID). See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_6.6.1."
+                          "description": "StoreInstances stores DICOM instances associated with study instance unique\nidentifiers (SUID). See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.5."
                         }
                       }
                       ,
@@ -2455,7 +2455,7 @@
                               "scopes": [
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
-                              "description": "RetrieveStudy returns all instances within the given study. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_6.5.1."
+                              "description": "RetrieveStudy returns all instances within the given study. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4."
                             },
                             "metadata": {
                               "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.metadata",
@@ -2488,7 +2488,7 @@
                               "scopes": [
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
-                              "description": "RetrieveStudyMetadata returns instance associated with the given study\npresented as metadata with the bulk data removed. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_6.5.6."
+                              "description": "RetrieveStudyMetadata returns instance associated with the given study\npresented as metadata with the bulk data removed. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4."
                             },
                             "searchForSeries": {
                               "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.searchForSeries",
@@ -2521,7 +2521,7 @@
                               "scopes": [
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
-                              "description": "SearchForSeries returns a list of matching series. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_6.7"
+                              "description": "SearchForSeries returns a list of matching series. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.6."
                             },
                             "searchForInstances": {
                               "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.searchForInstances",
@@ -2554,7 +2554,7 @@
                               "scopes": [
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
-                              "description": "SearchForInstances returns a list of matching instances. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_6.7"
+                              "description": "SearchForInstances returns a list of matching instances. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.6."
                             },
                             "delete": {
                               "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.delete",
@@ -2623,7 +2623,7 @@
                               "scopes": [
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
-                              "description": "StoreInstances stores DICOM instances associated with study instance unique\nidentifiers (SUID). See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_6.6.1."
+                              "description": "StoreInstances stores DICOM instances associated with study instance unique\nidentifiers (SUID). See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.5."
                             }
                           }
                           ,
@@ -2661,7 +2661,7 @@
                                   "scopes": [
                                     "https://www.googleapis.com/auth/cloud-platform"
                                   ],
-                                  "description": "RetrieveSeries returns all instances within the given study and series. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_6.5.2."
+                                  "description": "RetrieveSeries returns all instances within the given study and series. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4."
                                 },
                                 "metadata": {
                                   "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.series.metadata",
@@ -2694,7 +2694,7 @@
                                   "scopes": [
                                     "https://www.googleapis.com/auth/cloud-platform"
                                   ],
-                                  "description": "RetrieveSeriesMetadata returns instance associated with the given study and\nseries, presented as metadata with the bulk data removed. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_6.5.6."
+                                  "description": "RetrieveSeriesMetadata returns instance associated with the given study and\nseries, presented as metadata with the bulk data removed. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4."
                                 },
                                 "searchForInstances": {
                                   "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.series.searchForInstances",
@@ -2727,7 +2727,7 @@
                                   "scopes": [
                                     "https://www.googleapis.com/auth/cloud-platform"
                                   ],
-                                  "description": "SearchForInstances returns a list of matching instances. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_6.7"
+                                  "description": "SearchForInstances returns a list of matching instances. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.6."
                                 },
                                 "delete": {
                                   "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.series.delete",
@@ -2781,7 +2781,7 @@
                                           "type": "string"
                                         },
                                         "dicomWebPath": {
-                                          "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instance\/{instance_id}`).",
+                                          "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instances\/{instance_id}`).",
                                           "location": "path",
                                           "required": true,
                                           "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances\/[^\/]+$",
@@ -2798,7 +2798,7 @@
                                       "scopes": [
                                         "https://www.googleapis.com/auth/cloud-platform"
                                       ],
-                                      "description": "RetrieveInstance returns instance associated with the given study, series,\nand SOP Instance UID. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_6.5.3."
+                                      "description": "RetrieveInstance returns instance associated with the given study, series,\nand SOP Instance UID. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4."
                                     },
                                     "rendered": {
                                       "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.series.instances.rendered",
@@ -2814,7 +2814,7 @@
                                           "type": "string"
                                         },
                                         "dicomWebPath": {
-                                          "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instance\/{instance_id}\/rendered`).",
+                                          "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instances\/{instance_id}\/rendered`).",
                                           "location": "path",
                                           "required": true,
                                           "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances\/[^\/]+\/rendered$",
@@ -2831,7 +2831,7 @@
                                       "scopes": [
                                         "https://www.googleapis.com/auth/cloud-platform"
                                       ],
-                                      "description": "RetrieveRenderedInstance returns instance associated with the given study,\nseries, and SOP Instance UID in an acceptable Rendered Media Type. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_6.5.8."
+                                      "description": "RetrieveRenderedInstance returns instance associated with the given study,\nseries, and SOP Instance UID in an acceptable Rendered Media Type. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4."
                                     },
                                     "metadata": {
                                       "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.series.instances.metadata",
@@ -2864,7 +2864,7 @@
                                       "scopes": [
                                         "https://www.googleapis.com/auth/cloud-platform"
                                       ],
-                                      "description": "RetrieveInstanceMetadata returns instance associated with the given study,\nseries, and SOP Instance UID presented as metadata with the bulk data\nremoved. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_6.5.6."
+                                      "description": "RetrieveInstanceMetadata returns instance associated with the given study,\nseries, and SOP Instance UID presented as metadata with the bulk data\nremoved. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4."
                                     },
                                     "delete": {
                                       "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.series.instances.delete",
@@ -2918,7 +2918,7 @@
                                               "type": "string"
                                             },
                                             "dicomWebPath": {
-                                              "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instance\/{instance_id}\/frames\/{frame_list}`).",
+                                              "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instances\/{instance_id}\/frames\/{frame_list}`).",
                                               "location": "path",
                                               "required": true,
                                               "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances\/[^\/]+\/frames\/[^\/]+$",
@@ -2935,7 +2935,7 @@
                                           "scopes": [
                                             "https://www.googleapis.com/auth/cloud-platform"
                                           ],
-                                          "description": "RetrieveFrames returns instances associated with the given study, series,\nSOP Instance UID and frame numbers. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_6.5.4."
+                                          "description": "RetrieveFrames returns instances associated with the given study, series,\nSOP Instance UID and frame numbers. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4."
                                         },
                                         "rendered": {
                                           "id": "healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.series.instances.frames.rendered",
@@ -2951,7 +2951,7 @@
                                               "type": "string"
                                             },
                                             "dicomWebPath": {
-                                              "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instance\/{instance_id}\/frames\/{frame_list}\/rendered`).",
+                                              "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instances\/{instance_id}\/frames\/{frame_list}\/rendered`).",
                                               "location": "path",
                                               "required": true,
                                               "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances\/[^\/]+\/frames\/[^\/]+\/rendered$",
@@ -2968,7 +2968,7 @@
                                           "scopes": [
                                             "https://www.googleapis.com/auth/cloud-platform"
                                           ],
-                                          "description": "RetrieveRenderedFrames returns instances associated with the given study,\nseries, SOP Instance UID and frame numbers in an acceptable Rendered Media\nType. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_6.5.8."
+                                          "description": "RetrieveRenderedFrames returns instances associated with the given study,\nseries, SOP Instance UID and frame numbers in an acceptable Rendered Media\nType. See\nhttp:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4."
                                         }
                                       }
                                     }

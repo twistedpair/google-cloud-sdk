@@ -163,6 +163,34 @@ class ConfigMapEnvSource(_messages.Message):
   optional = _messages.BooleanField(2)
 
 
+class ConfigMapVolumeSource(_messages.Message):
+  r"""Adapts a ConfigMap into a volume. The contents of the target ConfigMap's
+  Data field will be presented in a volume as files using the keys in the Data
+  field as the file names, unless the items element is populated with specific
+  mappings of keys to paths.
+
+  Fields:
+    defaultMode: Mode bits to use on created files by default. Must be a value
+      between 0 and 0777. Defaults to 0644. Directories within the path are
+      not affected by this setting. This might be in conflict with other
+      options that affect the file mode, like fsGroup, and the result can be
+      other mode bits set.
+    items: If unspecified, each key-value pair in the Data field of the
+      referenced Secret will be projected into the volume as a file whose name
+      is the key and content is the value. If specified, the listed keys will
+      be projected into the specified paths, and unlisted keys will not be
+      present. If a key is specified which is not present in the Secret, the
+      volume setup will error unless it is marked optional.
+    name: Name of the config.
+    optional: Specify whether the Secret or its keys must be defined.
+  """
+
+  defaultMode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  items = _messages.MessageField('KeyToPath', 2, repeated=True)
+  name = _messages.StringField(3)
+  optional = _messages.BooleanField(4)
+
+
 class Configuration(_messages.Message):
   r"""Configuration represents the "floating HEAD" of a linear history of
   Revisions, and optionally how the containers those revisions reference are
@@ -199,6 +227,8 @@ class ConfigurationCondition(_messages.Message):
       +optional
     reason: One-word CamelCase reason for the condition's last transition.
       +optional
+    severity: How to interpret failures of this condition, one of Error,
+      Warning, Info +optional
     status: Status of the condition, one of True, False, Unknown.
     type: ConfigurationConditionType is used to communicate the status of the
       reconciliation process. See also:
@@ -209,8 +239,9 @@ class ConfigurationCondition(_messages.Message):
   lastTransitionTime = _messages.StringField(1)
   message = _messages.StringField(2)
   reason = _messages.StringField(3)
-  status = _messages.StringField(4)
-  type = _messages.StringField(5)
+  severity = _messages.StringField(4)
+  status = _messages.StringField(5)
+  type = _messages.StringField(6)
 
 
 class ConfigurationSpec(_messages.Message):
@@ -232,7 +263,7 @@ class ConfigurationSpec(_messages.Message):
       not currently support referencing a build that is responsible for
       materializing the container image from source.
     template: Template holds the latest specification for the Revision to be
-      stamped out.
+      stamped out. Not currently supported by Cloud Run.
   """
 
   generation = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -440,18 +471,24 @@ class DomainMappingCondition(_messages.Message):
   r"""DomainMappingCondition contains state information for a DomainMapping.
 
   Fields:
+    lastTransitionTime: Last time the condition transitioned from one status
+      to another. +optional
     message: Human readable message indicating details about the current
       status. +optional
     reason: One-word CamelCase reason for the condition's current status.
       +optional
+    severity: How to interpret failures of this condition, one of Error,
+      Warning, Info +optional
     status: Status of the condition, one of True, False, Unknown.
     type: Type of domain mapping condition.
   """
 
-  message = _messages.StringField(1)
-  reason = _messages.StringField(2)
-  status = _messages.StringField(3)
-  type = _messages.StringField(4)
+  lastTransitionTime = _messages.StringField(1)
+  message = _messages.StringField(2)
+  reason = _messages.StringField(3)
+  severity = _messages.StringField(4)
+  status = _messages.StringField(5)
+  type = _messages.StringField(6)
 
 
 class DomainMappingSpec(_messages.Message):
@@ -553,6 +590,44 @@ class EnvVar(_messages.Message):
 
   name = _messages.StringField(1)
   value = _messages.StringField(2)
+
+
+class EventType(_messages.Message):
+  r"""A EventType object.
+
+  Fields:
+    apiVersion: The API version for this call such as "v1alpha1".
+    kind: The kind of resource, in this case "EventType".
+    metadata: Metadata associated with this EventType.
+    spec: Spec defines the desired state of the EventType.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  metadata = _messages.MessageField('ObjectMeta', 3)
+  spec = _messages.MessageField('EventTypeSpec', 4)
+
+
+class EventTypeSpec(_messages.Message):
+  r"""A EventTypeSpec object.
+
+  Fields:
+    broker: Refers to the Broker that can provide the EventType.
+    description: Description is a string describing what the EventType is
+      about. +optional
+    schema: Schema is a URI with the EventType schema. It may be a JSON
+      schema, a protobuf schema, etc. +optional
+    source: Source is a valid URI. Refers to the CloudEvent source as it
+      enters into the eventing mesh.
+    type: Type is authoritative. This refers to the CloudEvent type as it
+      enters into the eventing mesh.
+  """
+
+  broker = _messages.StringField(1)
+  description = _messages.StringField(2)
+  schema = _messages.StringField(3)
+  source = _messages.StringField(4)
+  type = _messages.StringField(5)
 
 
 class ExecAction(_messages.Message):
@@ -687,6 +762,25 @@ class IntOrString(_messages.Message):
   type = _messages.IntegerField(3)
 
 
+class KeyToPath(_messages.Message):
+  r"""Maps a string key to a path within a volume.
+
+  Fields:
+    key: The key to project.
+    mode: Mode bits to use on this file, must be a value between 0 and 0777.
+      If not specified, the volume defaultMode will be used. This might be in
+      conflict with other options that affect the file mode, like fsGroup, and
+      the result can be other mode bits set. +optional
+    path: The relative path of the file to map the key to. May not be an
+      absolute path. May not contain the path element '..'. May not start with
+      the string '..'.
+  """
+
+  key = _messages.StringField(1)
+  mode = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  path = _messages.StringField(3)
+
+
 class Lifecycle(_messages.Message):
   r"""Lifecycle describes actions that the management system should take in
   response to container lifecycle events. For the PostStart and PreStop
@@ -758,6 +852,24 @@ class ListDomainMappingsResponse(_messages.Message):
   items = _messages.MessageField('DomainMapping', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
+
+
+class ListEventTypesResponse(_messages.Message):
+  r"""ListEventTypesResponse is a list of EventType resources.
+
+  Fields:
+    apiVersion: The API version for this call such as "v1alpha1".
+    items: List of EventTypes.
+    kind: The kind of this resource, in this case "EventTypeList".
+    metadata: Metadata associated with this EventType list.
+    unreachable: Locations that could not be reached.
+  """
+
+  apiVersion = _messages.StringField(1)
+  items = _messages.MessageField('EventType', 2, repeated=True)
+  kind = _messages.StringField(3)
+  metadata = _messages.MessageField('ListMeta', 4)
+  unreachable = _messages.StringField(5, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -1559,6 +1671,8 @@ class RevisionCondition(_messages.Message):
       status. +optional
     reason: One-word CamelCase reason for the condition's last transition.
       +optional
+    severity: How to interpret failures of this condition, one of Error,
+      Warning, Info +optional
     status: Status of the condition, one of True, False, Unknown.
     type: RevisionConditionType is used to communicate the status of the
       reconciliation process. See also:
@@ -1573,8 +1687,9 @@ class RevisionCondition(_messages.Message):
   lastTransitionTime = _messages.StringField(1)
   message = _messages.StringField(2)
   reason = _messages.StringField(3)
-  status = _messages.StringField(4)
-  type = _messages.StringField(5)
+  severity = _messages.StringField(4)
+  status = _messages.StringField(5)
+  type = _messages.StringField(6)
 
 
 class RevisionSpec(_messages.Message):
@@ -1601,6 +1716,9 @@ class RevisionSpec(_messages.Message):
       are: - `0` thread-safe, the system should manage the max concurrency.
       This is    the default value. - `1` not-thread-safe. Single concurrency
       - `2-N` thread-safe, max concurrency of N
+    containers: Containers holds the single container that defines the unit of
+      execution for this Revision. In the context of a Revision, we disallow a
+      number of fields on this Container, including: name and lifecycle.
     generation: Deprecated and not currently populated by Cloud Run. See
       metadata.generation instead, which is the sequence number containing the
       latest generation of the desired state.  Read-only.
@@ -1611,6 +1729,7 @@ class RevisionSpec(_messages.Message):
       based on routability and load.  Populated by the system. Read-only.
     timeoutSeconds: TimeoutSeconds holds the max duration the instance is
       allowed for responding to a request. Not currently used by Cloud Run.
+    volumes: A Volume attribute.
   """
 
   class ServingStateValueValuesEnum(_messages.Enum):
@@ -1637,10 +1756,12 @@ class RevisionSpec(_messages.Message):
   concurrencyModel = _messages.StringField(1)
   container = _messages.MessageField('Container', 2)
   containerConcurrency = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  generation = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  serviceAccountName = _messages.StringField(5)
-  servingState = _messages.EnumField('ServingStateValueValuesEnum', 6)
-  timeoutSeconds = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  containers = _messages.MessageField('Container', 4, repeated=True)
+  generation = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  serviceAccountName = _messages.StringField(6)
+  servingState = _messages.EnumField('ServingStateValueValuesEnum', 7)
+  timeoutSeconds = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  volumes = _messages.MessageField('Volume', 9, repeated=True)
 
 
 class RevisionStatus(_messages.Message):
@@ -1729,6 +1850,8 @@ class RouteCondition(_messages.Message):
       +optional
     reason: One-word CamelCase reason for the condition's last transition.
       +optional
+    severity: How to interpret failures of this condition, one of Error,
+      Warning, Info +optional
     status: Status of the condition, one of "True", "False", "Unknown".
     type: RouteConditionType is used to communicate the status of the
       reconciliation process. See also:
@@ -1739,8 +1862,9 @@ class RouteCondition(_messages.Message):
   lastTransitionTime = _messages.StringField(1)
   message = _messages.StringField(2)
   reason = _messages.StringField(3)
-  status = _messages.StringField(4)
-  type = _messages.StringField(5)
+  severity = _messages.StringField(4)
+  status = _messages.StringField(5)
+  type = _messages.StringField(6)
 
 
 class RouteSpec(_messages.Message):
@@ -1914,6 +2038,47 @@ class RunNamespacesDomainmappingsListRequest(_messages.Message):
     limit: The maximum number of records that should be returned.
     parent: The project ID or project number from which the domain mappings
       should be listed.
+    resourceVersion: The baseline resource version from which the list or
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
+  """
+
+  continue_ = _messages.StringField(1)
+  fieldSelector = _messages.StringField(2)
+  includeUninitialized = _messages.BooleanField(3)
+  labelSelector = _messages.StringField(4)
+  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(6, required=True)
+  resourceVersion = _messages.StringField(7)
+  watch = _messages.BooleanField(8)
+
+
+class RunNamespacesEventtypesGetRequest(_messages.Message):
+  r"""A RunNamespacesEventtypesGetRequest object.
+
+  Fields:
+    name: The name of the trigger being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RunNamespacesEventtypesListRequest(_messages.Message):
+  r"""A RunNamespacesEventtypesListRequest object.
+
+  Fields:
+    continue_: Optional encoded string to continue paging.
+    fieldSelector: Allows to filter resources based on a specific value for a
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
+    labelSelector: Allows to filter resources based on a label. Supported
+      operations are =, !=, exists, in, and notIn.
+    limit: The maximum number of records that should be returned.
+    parent: The project ID or project number from which the EventTypes should
+      be listed.
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
@@ -2350,6 +2515,47 @@ class RunProjectsLocationsDomainmappingsListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
+class RunProjectsLocationsEventtypesGetRequest(_messages.Message):
+  r"""A RunProjectsLocationsEventtypesGetRequest object.
+
+  Fields:
+    name: The name of the trigger being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RunProjectsLocationsEventtypesListRequest(_messages.Message):
+  r"""A RunProjectsLocationsEventtypesListRequest object.
+
+  Fields:
+    continue_: Optional encoded string to continue paging.
+    fieldSelector: Allows to filter resources based on a specific value for a
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
+    labelSelector: Allows to filter resources based on a label. Supported
+      operations are =, !=, exists, in, and notIn.
+    limit: The maximum number of records that should be returned.
+    parent: The project ID or project number from which the EventTypes should
+      be listed.
+    resourceVersion: The baseline resource version from which the list or
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
+  """
+
+  continue_ = _messages.StringField(1)
+  fieldSelector = _messages.StringField(2)
+  includeUninitialized = _messages.BooleanField(3)
+  labelSelector = _messages.StringField(4)
+  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(6, required=True)
+  resourceVersion = _messages.StringField(7)
+  watch = _messages.BooleanField(8)
+
+
 class RunProjectsLocationsListRequest(_messages.Message):
   r"""A RunProjectsLocationsListRequest object.
 
@@ -2728,6 +2934,32 @@ class SecretEnvSource(_messages.Message):
   optional = _messages.BooleanField(2)
 
 
+class SecretVolumeSource(_messages.Message):
+  r"""The contents of the target Secret's Data field will be presented in a
+  volume as files using the keys in the Data field as the file names.
+
+  Fields:
+    defaultMode: Mode bits to use on created files by default. Must be a value
+      between 0 and 0777. Defaults to 0644. Directories within the path are
+      not affected by this setting. This might be in conflict with other
+      options that affect the file mode, like fsGroup, and the result can be
+      other mode bits set.
+    items: If unspecified, each key-value pair in the Data field of the
+      referenced Secret will be projected into the volume as a file whose name
+      is the key and content is the value. If specified, the listed keys will
+      be projected into the specified paths, and unlisted keys will not be
+      present. If a key is specified which is not present in the Secret, the
+      volume setup will error unless it is marked optional.
+    optional: Specify whether the Secret or its keys must be defined.
+    secretName: Name of the secret in the container's namespace to use.
+  """
+
+  defaultMode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  items = _messages.MessageField('KeyToPath', 2, repeated=True)
+  optional = _messages.BooleanField(3)
+  secretName = _messages.StringField(4)
+
+
 class SecurityContext(_messages.Message):
   r"""SecurityContext holds security configuration that will be applied to a
   container. Some fields are present in both SecurityContext and
@@ -2820,6 +3052,8 @@ class ServiceCondition(_messages.Message):
       +optional
     reason: One-word CamelCase reason for the condition's last transition.
       +optional
+    severity: How to interpret failures of this condition, one of Error,
+      Warning, Info +optional
     status: Status of the condition, one of True, False, Unknown.
     type: ServiceConditionType is used to communicate the status of the
       reconciliation process. See also:
@@ -2832,8 +3066,9 @@ class ServiceCondition(_messages.Message):
   lastTransitionTime = _messages.StringField(1)
   message = _messages.StringField(2)
   reason = _messages.StringField(3)
-  status = _messages.StringField(4)
-  type = _messages.StringField(5)
+  severity = _messages.StringField(4)
+  status = _messages.StringField(5)
+  type = _messages.StringField(6)
 
 
 class ServiceSpec(_messages.Message):
@@ -2855,6 +3090,8 @@ class ServiceSpec(_messages.Message):
     runLatest: RunLatest defines a simple Service. It will automatically
       configure a route that keeps the latest ready revision from the supplied
       configuration running. +optional
+    template: Template holds the latest specification for the Revision to be
+      stamped out.  Not currently supported by Cloud Run.
     traffic: Traffic specifies how to distribute traffic over a collection of
       Knative Revisions and Configurations. This will replace existing service
       specs (ServiceSpecRunLatest, ServiceSpecPinnedType,
@@ -2867,7 +3104,8 @@ class ServiceSpec(_messages.Message):
   pinned = _messages.MessageField('ServiceSpecPinnedType', 3)
   release = _messages.MessageField('ServiceSpecReleaseType', 4)
   runLatest = _messages.MessageField('ServiceSpecRunLatest', 5)
-  traffic = _messages.MessageField('TrafficTarget', 6, repeated=True)
+  template = _messages.MessageField('RevisionTemplate', 6)
+  traffic = _messages.MessageField('TrafficTarget', 7, repeated=True)
 
 
 class ServiceSpecManualType(_messages.Message):
@@ -3109,6 +3347,11 @@ class TrafficTarget(_messages.Message):
       ready" revision to the new one. This field is never set in Route's
       status, only its spec. This is mutually exclusive with RevisionName.
       Cloud Run currently supports a single ConfigurationName.
+    latestRevision: LatestRevision may be optionally provided to indicate that
+      the latest ready Revision of the Configuration should be used for this
+      traffic target. When provided LatestRevision must be true if
+      RevisionName is empty; it must be false when RevisionName is non-empty.
+      Not currently supported in Cloud Run. +optional
     name: Name is optionally used to expose a dedicated hostname for
       referencing this target exclusively.  Not currently supported by Cloud
       Run. +optional
@@ -3119,12 +3362,22 @@ class TrafficTarget(_messages.Message):
     revisionName: RevisionName of a specific revision to which to send this
       portion of traffic. This is mutually exclusive with ConfigurationName.
       Providing RevisionName in spec is not currently supported by Cloud Run.
+    tag: Tag is optionally used to expose a dedicated url for referencing this
+      target exclusively.  Not currently supported in Cloud Run. +optional
+    url: Output only. URL displays the URL for accessing named traffic
+      targets. URL is displayed in status, and is disallowed on spec. URL must
+      contain a scheme (e.g. http://) and a hostname, but may not contain
+      anything else (e.g. basic auth, url path, etc.  Not currently supported
+      in Cloud Run.
   """
 
   configurationName = _messages.StringField(1)
-  name = _messages.StringField(2)
-  percent = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  revisionName = _messages.StringField(4)
+  latestRevision = _messages.BooleanField(2)
+  name = _messages.StringField(3)
+  percent = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  revisionName = _messages.StringField(5)
+  tag = _messages.StringField(6)
+  url = _messages.StringField(7)
 
 
 class Trigger(_messages.Message):
@@ -3156,6 +3409,8 @@ class TriggerCondition(_messages.Message):
       status. +optional
     reason: One-word CamelCase reason for the condition's current status.
       +optional
+    severity: How to interpret failures of this condition, one of Error,
+      Warning, Info +optional
     status: Status of the condition, one of True, False, Unknown.
     type: Type of Trigger condition.
   """
@@ -3163,8 +3418,9 @@ class TriggerCondition(_messages.Message):
   lastTransitionTime = _messages.StringField(1)
   message = _messages.StringField(2)
   reason = _messages.StringField(3)
-  status = _messages.StringField(4)
-  type = _messages.StringField(5)
+  severity = _messages.StringField(4)
+  status = _messages.StringField(5)
+  type = _messages.StringField(6)
 
 
 class TriggerFilter(_messages.Message):
@@ -3228,6 +3484,20 @@ class TriggerStatus(_messages.Message):
   conditions = _messages.MessageField('TriggerCondition', 1, repeated=True)
   observedGeneration = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   subscriberUri = _messages.StringField(3)
+
+
+class Volume(_messages.Message):
+  r"""Volume represents a named volume in a container.
+
+  Fields:
+    configMap: A ConfigMapVolumeSource attribute.
+    name: Volume's name.
+    secret: A SecretVolumeSource attribute.
+  """
+
+  configMap = _messages.MessageField('ConfigMapVolumeSource', 1)
+  name = _messages.StringField(2)
+  secret = _messages.MessageField('SecretVolumeSource', 3)
 
 
 class VolumeDevice(_messages.Message):

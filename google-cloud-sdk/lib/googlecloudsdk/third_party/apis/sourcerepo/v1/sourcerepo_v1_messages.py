@@ -773,6 +773,24 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class SyncRepoMetadata(_messages.Message):
+  r"""Metadata of SyncRepo.  This message is in the metadata field of
+  Operation.
+
+  Fields:
+    name: The name of the repo being synchronized. Values are of the form
+      `projects/<project>/repos/<repo>`.
+    startTime: The time this operation is started.
+    statusMessage: The latest status message on syncing the repository.
+    updateTime: The time this operation's status message is updated.
+  """
+
+  name = _messages.StringField(1)
+  startTime = _messages.StringField(2)
+  statusMessage = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+
+
 class SyncRepoRequest(_messages.Message):
   r"""Request for SyncRepo."""
 

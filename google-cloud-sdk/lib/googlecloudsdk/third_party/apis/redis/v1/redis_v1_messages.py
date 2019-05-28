@@ -22,6 +22,16 @@ class Empty(_messages.Message):
 
 
 
+class ExportInstanceRequest(_messages.Message):
+  r"""Request for Export.
+
+  Fields:
+    outputConfig: Required. Specify data to be exported.
+  """
+
+  outputConfig = _messages.MessageField('OutputConfig', 1)
+
+
 class FailoverInstanceRequest(_messages.Message):
   r"""Request for Failover.
 
@@ -56,6 +66,27 @@ class FailoverInstanceRequest(_messages.Message):
     FORCE_DATA_LOSS = 2
 
   dataProtectionMode = _messages.EnumField('DataProtectionModeValueValuesEnum', 1)
+
+
+class GcsDestination(_messages.Message):
+  r"""The GCS location for the output content
+
+  Fields:
+    uri: Required. Data destination URI (e.g. 'gs://my_bucket/my_object').
+      Existing files will be overwritten.
+  """
+
+  uri = _messages.StringField(1)
+
+
+class GcsSource(_messages.Message):
+  r"""The GCS location for the input content
+
+  Fields:
+    uri: Required. Source data URI. (e.g. 'gs://my_bucket/my_object').
+  """
+
+  uri = _messages.StringField(1)
 
 
 class GoogleCloudRedisV1LocationMetadata(_messages.Message):
@@ -138,6 +169,26 @@ class GoogleCloudRedisV1ZoneMetadata(_messages.Message):
 
 
 
+class ImportInstanceRequest(_messages.Message):
+  r"""Request for Import.
+
+  Fields:
+    inputConfig: Required. Specify data to be imported.
+  """
+
+  inputConfig = _messages.MessageField('InputConfig', 1)
+
+
+class InputConfig(_messages.Message):
+  r"""The input content
+
+  Fields:
+    gcsSource: Google Cloud Storage location where input content is located.
+  """
+
+  gcsSource = _messages.MessageField('GcsSource', 1)
+
+
 class Instance(_messages.Message):
   r"""A Google Cloud Redis instance.
 
@@ -185,6 +236,11 @@ class Instance(_messages.Message):
       specific zone (or collection of zones for cross-zone instances) an
       instance should be provisioned in. Refer to [location_id] and
       [alternative_location_id] fields for more details.
+    persistenceIamIdentity: Output only. Cloud IAM identity used by import /
+      export operations to transfer data to/from Cloud Storage. Format is
+      "serviceAccount:<service_account_email>". The value may change over time
+      for a given instance so should be checked before each import/export
+      operation.
     port: Output only. The port number of the exposed Redis endpoint.
     redisConfigs: Optional. Redis configuration parameters, according to
       http://redis.io/topics/config. Currently, the only supported parameters
@@ -217,6 +273,8 @@ class Instance(_messages.Message):
       DELETING: Redis instance is being deleted.
       REPAIRING: Redis instance is being repaired and may be unusable.
       MAINTENANCE: Maintenance is being performed on this Redis instance.
+      IMPORTING: Redis instance is importing data (availability may be
+        affected).
       FAILING_OVER: Redis instance is failing over (availability may be
         affected).
     """
@@ -227,7 +285,8 @@ class Instance(_messages.Message):
     DELETING = 4
     REPAIRING = 5
     MAINTENANCE = 6
-    FAILING_OVER = 7
+    IMPORTING = 7
+    FAILING_OVER = 8
 
   class TierValueValuesEnum(_messages.Enum):
     r"""Required. The service tier of the instance.
@@ -303,13 +362,14 @@ class Instance(_messages.Message):
   locationId = _messages.StringField(8)
   memorySizeGb = _messages.IntegerField(9, variant=_messages.Variant.INT32)
   name = _messages.StringField(10)
-  port = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 12)
-  redisVersion = _messages.StringField(13)
-  reservedIpRange = _messages.StringField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  statusMessage = _messages.StringField(16)
-  tier = _messages.EnumField('TierValueValuesEnum', 17)
+  persistenceIamIdentity = _messages.StringField(11)
+  port = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 13)
+  redisVersion = _messages.StringField(14)
+  reservedIpRange = _messages.StringField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  statusMessage = _messages.StringField(17)
+  tier = _messages.EnumField('TierValueValuesEnum', 18)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -567,6 +627,16 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class OutputConfig(_messages.Message):
+  r"""The output content
+
+  Fields:
+    gcsDestination: Google Cloud Storage destination for output content.
+  """
+
+  gcsDestination = _messages.MessageField('GcsDestination', 1)
+
+
 class RedisProjectsLocationsGetRequest(_messages.Message):
   r"""A RedisProjectsLocationsGetRequest object.
 
@@ -609,6 +679,21 @@ class RedisProjectsLocationsInstancesDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class RedisProjectsLocationsInstancesExportRequest(_messages.Message):
+  r"""A RedisProjectsLocationsInstancesExportRequest object.
+
+  Fields:
+    exportInstanceRequest: A ExportInstanceRequest resource to be passed as
+      the request body.
+    name: Required. Redis instance resource name using the form:
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
+      where `location_id` refers to a GCP region.
+  """
+
+  exportInstanceRequest = _messages.MessageField('ExportInstanceRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class RedisProjectsLocationsInstancesFailoverRequest(_messages.Message):
   r"""A RedisProjectsLocationsInstancesFailoverRequest object.
 
@@ -634,6 +719,21 @@ class RedisProjectsLocationsInstancesGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class RedisProjectsLocationsInstancesImportRequest(_messages.Message):
+  r"""A RedisProjectsLocationsInstancesImportRequest object.
+
+  Fields:
+    importInstanceRequest: A ImportInstanceRequest resource to be passed as
+      the request body.
+    name: Required. Redis instance resource name using the form:
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
+      where `location_id` refers to a GCP region.
+  """
+
+  importInstanceRequest = _messages.MessageField('ImportInstanceRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class RedisProjectsLocationsInstancesListRequest(_messages.Message):

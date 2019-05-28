@@ -54,10 +54,14 @@ class AppEngineHttpRequest(_messages.Message):
   ud.google.com/appengine/docs/standard/python/config/appref) Task dispatches
   also do not follow redirects.  The task attempt has succeeded if the app's
   request handler returns an HTTP response code in the range [`200` - `299`].
-  `503` is considered an App Engine system error instead of an application
-  error. Requests returning error `503` will be retried regardless of retry
-  configuration and not counted against retry counts. Any other response code
-  or a failure to receive a response before the deadline is a failed attempt.
+  The task attempt has failed if the app's handler returns a non-2xx response
+  code or Cloud Tasks does not receive response before the deadline. Failed
+  tasks will be retried according to the retry configuration. `503` (Service
+  Unavailable) is considered an App Engine system error instead of an
+  application error and will cause Cloud Tasks' traffic congestion control to
+  temporarily throttle the queue's dispatches. Unlike other types of task
+  targets, a `429` (Too Many Requests) response from an app handler does not
+  cause traffic congestion control to throttle the queue.
 
   Enums:
     HttpMethodValueValuesEnum: The HTTP method to use for the request. The

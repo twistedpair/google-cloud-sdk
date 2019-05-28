@@ -512,6 +512,31 @@
           }
         }
       }
+    },
+    "SyncRepoMetadata": {
+      "id": "SyncRepoMetadata",
+      "description": "Metadata of SyncRepo.\n\nThis message is in the metadata field of Operation.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the repo being synchronized. Values are of the form\n`projects\/<project>\/repos\/<repo>`.",
+          "type": "string"
+        },
+        "statusMessage": {
+          "description": "The latest status message on syncing the repository.",
+          "type": "string"
+        },
+        "startTime": {
+          "description": "The time this operation is started.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "The time this operation's status message is updated.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
     }
   },
   "resources": {

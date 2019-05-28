@@ -509,10 +509,10 @@ class ExportDicomDataRequest(_messages.Message):
   deleted.
 
   Fields:
-    bigqueryDestination: The BigQuery output destination.  For now, only
-      exporting to a dataset in the current project is supported  The BigQuery
-      location requires two IAM roles: `roles/bigquery.dataEditor` and
-      `roles/bigquery.jobUser`.
+    bigqueryDestination: The BigQuery output destination.  You can only export
+      to a BigQuery dataset that's in the same project as the DICOM store
+      you're exporting from.  The BigQuery location requires two IAM roles:
+      `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`.
     gcsDestination: The Cloud Storage output destination.  The Cloud Storage
       location requires the `roles/storage.objectAdmin` Cloud IAM role.
   """
@@ -1386,7 +1386,7 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstanc
   Fields:
     dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
       RS, WADO-RS, or QIDO-RS standard (e.g., `studies/{study_id}/series/{seri
-      es_id}/instance/{instance_id}/frames/{frame_list}/rendered`).
+      es_id}/instances/{instance_id}/frames/{frame_list}/rendered`).
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
       /{dicom_store_id}`).
@@ -1403,7 +1403,7 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstanc
   Fields:
     dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
       RS, WADO-RS, or QIDO-RS standard (e.g., `studies/{study_id}/series/{seri
-      es_id}/instance/{instance_id}/frames/{frame_list}`).
+      es_id}/instances/{instance_id}/frames/{frame_list}`).
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
       /{dicom_store_id}`).
@@ -1437,7 +1437,7 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstanc
   Fields:
     dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
       RS, WADO-RS, or QIDO-RS standard (e.g., `studies/{study_id}/series/{seri
-      es_id}/instance/{instance_id}/rendered`).
+      es_id}/instances/{instance_id}/rendered`).
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
       /{dicom_store_id}`).
@@ -1454,7 +1454,7 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstanc
   Fields:
     dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
       RS, WADO-RS, or QIDO-RS standard (e.g.,
-      `studies/{study_id}/series/{series_id}/instance/{instance_id}`).
+      `studies/{study_id}/series/{series_id}/instances/{instance_id}`).
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
       /{dicom_store_id}`).
@@ -3319,8 +3319,8 @@ class ResourceAnnotation(_messages.Message):
 
 
 class SchemaConfig(_messages.Message):
-  r"""Configuration for the FHIR BigQuery schema. Determines how the server
-  generates the schema.
+  r"""Configuration for the FHIR BigQuery and GCS schema. Determines how the
+  server generates the schema.
 
   Enums:
     SchemaTypeValueValuesEnum: Specifies the output schema type. If

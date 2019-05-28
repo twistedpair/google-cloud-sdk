@@ -352,32 +352,6 @@ class StorageV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def ListChannels(self, request, global_params=None):
-      r"""List active object change notification channels for this bucket.
-
-      Args:
-        request: (StorageBucketsListChannelsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Channels) The response message.
-      """
-      config = self.GetMethodConfig('ListChannels')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ListChannels.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'storage.buckets.listChannels',
-        ordered_params=[u'bucket'],
-        path_params=[u'bucket'],
-        query_params=[u'provisionalUserProject', u'userProject'],
-        relative_path=u'b/{bucket}/channels',
-        request_field='',
-        request_type_name=u'StorageBucketsListChannelsRequest',
-        response_type_name=u'Channels',
-        supports_download=False,
-    )
-
     def LockRetentionPolicy(self, request, global_params=None):
       r"""Locks retention policy on a bucket.
 

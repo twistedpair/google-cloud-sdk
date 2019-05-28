@@ -74,6 +74,7 @@ def SharedArgRules():
           'app_package',
           'async',
           'auto_google_login',
+          'client_details',
           'device',
           'device_ids',
           'directories_to_pull',

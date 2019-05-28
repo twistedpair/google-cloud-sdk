@@ -1531,8 +1531,8 @@ class GoogleCloudVisionV1p1beta1InputConfig(_messages.Message):
       BatchAnnotateFiles requests. It does not work for
       AsyncBatchAnnotateFiles requests.
     gcsSource: The Google Cloud Storage location to read the input from.
-    mimeType: The type of the file. Currently only "application/pdf" and
-      "image/tiff" are supported. Wildcards are not supported.
+    mimeType: The type of the file. Currently only "application/pdf",
+      "image/tiff" and "image/gif" are supported. Wildcards are not supported.
   """
 
   content = _messages.BytesField(1)
@@ -1708,8 +1708,10 @@ class GoogleCloudVisionV1p1beta1Product(_messages.Message):
       `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.  This field
       is ignored when creating a product.
     productCategory: The category for the product identified by the reference
-      image. This should be either "homegoods", "apparel", or "toys".  This
-      field is immutable.
+      image. This should be either "homegoods-v2", "apparel-v2", or "toys-v2".
+      The legacy categories "homegoods", "apparel", and "toys" are still
+      supported, but these should not be used for new products.  This field is
+      immutable.
     productLabels: Key-value pairs that can be attached to a product. At query
       time, constraints can be specified based on the product_labels.  Note
       that integer values can be provided as strings, e.g. "1199". Only
@@ -2807,8 +2809,8 @@ class GoogleCloudVisionV1p2beta1InputConfig(_messages.Message):
       BatchAnnotateFiles requests. It does not work for
       AsyncBatchAnnotateFiles requests.
     gcsSource: The Google Cloud Storage location to read the input from.
-    mimeType: The type of the file. Currently only "application/pdf" and
-      "image/tiff" are supported. Wildcards are not supported.
+    mimeType: The type of the file. Currently only "application/pdf",
+      "image/tiff" and "image/gif" are supported. Wildcards are not supported.
   """
 
   content = _messages.BytesField(1)
@@ -2984,8 +2986,10 @@ class GoogleCloudVisionV1p2beta1Product(_messages.Message):
       `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.  This field
       is ignored when creating a product.
     productCategory: The category for the product identified by the reference
-      image. This should be either "homegoods", "apparel", or "toys".  This
-      field is immutable.
+      image. This should be either "homegoods-v2", "apparel-v2", or "toys-v2".
+      The legacy categories "homegoods", "apparel", and "toys" are still
+      supported, but these should not be used for new products.  This field is
+      immutable.
     productLabels: Key-value pairs that can be attached to a product. At query
       time, constraints can be specified based on the product_labels.  Note
       that integer values can be provided as strings, e.g. "1199". Only
@@ -4141,8 +4145,8 @@ class GoogleCloudVisionV1p3beta1InputConfig(_messages.Message):
       BatchAnnotateFiles requests. It does not work for
       AsyncBatchAnnotateFiles requests.
     gcsSource: The Google Cloud Storage location to read the input from.
-    mimeType: The type of the file. Currently only "application/pdf" and
-      "image/tiff" are supported. Wildcards are not supported.
+    mimeType: The type of the file. Currently only "application/pdf",
+      "image/tiff" and "image/gif" are supported. Wildcards are not supported.
   """
 
   content = _messages.BytesField(1)
@@ -4318,8 +4322,10 @@ class GoogleCloudVisionV1p3beta1Product(_messages.Message):
       `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.  This field
       is ignored when creating a product.
     productCategory: The category for the product identified by the reference
-      image. This should be either "homegoods", "apparel", or "toys".  This
-      field is immutable.
+      image. This should be either "homegoods-v2", "apparel-v2", or "toys-v2".
+      The legacy categories "homegoods", "apparel", and "toys" are still
+      supported, but these should not be used for new products.  This field is
+      immutable.
     productLabels: Key-value pairs that can be attached to a product. At query
       time, constraints can be specified based on the product_labels.  Note
       that integer values can be provided as strings, e.g. "1199". Only
@@ -5521,8 +5527,8 @@ class GoogleCloudVisionV1p4beta1InputConfig(_messages.Message):
       BatchAnnotateFiles requests. It does not work for
       AsyncBatchAnnotateFiles requests.
     gcsSource: The Google Cloud Storage location to read the input from.
-    mimeType: The type of the file. Currently only "application/pdf" and
-      "image/tiff" are supported. Wildcards are not supported.
+    mimeType: The type of the file. Currently only "application/pdf",
+      "image/tiff" and "image/gif" are supported. Wildcards are not supported.
   """
 
   content = _messages.BytesField(1)
@@ -5698,8 +5704,10 @@ class GoogleCloudVisionV1p4beta1Product(_messages.Message):
       `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.  This field
       is ignored when creating a product.
     productCategory: The category for the product identified by the reference
-      image. This should be either "homegoods", "apparel", or "toys".  This
-      field is immutable.
+      image. This should be either "homegoods-v2", "apparel-v2", or "toys-v2".
+      The legacy categories "homegoods", "apparel", and "toys" are still
+      supported, but these should not be used for new products.  This field is
+      immutable.
     productLabels: Key-value pairs that can be attached to a product. At query
       time, constraints can be specified based on the product_labels.  Note
       that integer values can be provided as strings, e.g. "1199". Only
@@ -6915,8 +6923,8 @@ class GoogleCloudVisionV1p5beta1InputConfig(_messages.Message):
       BatchAnnotateFiles requests. It does not work for
       AsyncBatchAnnotateFiles requests.
     gcsSource: The Google Cloud Storage location to read the input from.
-    mimeType: The type of the file. Currently only "application/pdf" and
-      "image/tiff" are supported. Wildcards are not supported.
+    mimeType: The type of the file. Currently only "application/pdf",
+      "image/tiff" and "image/gif" are supported. Wildcards are not supported.
   """
 
   content = _messages.BytesField(1)
@@ -7127,8 +7135,10 @@ class GoogleCloudVisionV1p5beta1Product(_messages.Message):
       `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.  This field
       is ignored when creating a product.
     productCategory: The category for the product identified by the reference
-      image. This should be either "homegoods", "apparel", or "toys".  This
-      field is immutable.
+      image. This should be either "homegoods-v2", "apparel-v2", or "toys-v2".
+      The legacy categories "homegoods", "apparel", and "toys" are still
+      supported, but these should not be used for new products.  This field is
+      immutable.
     productLabels: Key-value pairs that can be attached to a product. At query
       time, constraints can be specified based on the product_labels.  Note
       that integer values can be provided as strings, e.g. "1199". Only
@@ -7871,8 +7881,8 @@ class InputConfig(_messages.Message):
       BatchAnnotateFiles requests. It does not work for
       AsyncBatchAnnotateFiles requests.
     gcsSource: The Google Cloud Storage location to read the input from.
-    mimeType: The type of the file. Currently only "application/pdf" and
-      "image/tiff" are supported. Wildcards are not supported.
+    mimeType: The type of the file. Currently only "application/pdf",
+      "image/tiff" and "image/gif" are supported. Wildcards are not supported.
   """
 
   content = _messages.BytesField(1)
@@ -8357,8 +8367,10 @@ class Product(_messages.Message):
       `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.  This field
       is ignored when creating a product.
     productCategory: The category for the product identified by the reference
-      image. This should be either "homegoods", "apparel", or "toys".  This
-      field is immutable.
+      image. This should be either "homegoods-v2", "apparel-v2", or "toys-v2".
+      The legacy categories "homegoods", "apparel", and "toys" are still
+      supported, but these should not be used for new products.  This field is
+      immutable.
     productLabels: Key-value pairs that can be attached to a product. At query
       time, constraints can be specified based on the product_labels.  Note
       that integer values can be provided as strings, e.g. "1199". Only
@@ -8389,8 +8401,10 @@ class ProductSearchParams(_messages.Message):
       acceptable, but "(color = red OR brand = Google)" is not acceptable.
       "color: red" is not acceptable because it uses a ':' instead of an '='.
     productCategories: The list of product categories to search in. Currently,
-      we only consider the first category, and either "homegoods", "apparel",
-      or "toys" should be specified.
+      we only consider the first category, and either "homegoods-v2",
+      "apparel-v2", or "toys-v2" should be specified. The legacy categories
+      "homegoods", "apparel", and "toys" are still supported, but these should
+      not be used for new products.
     productSet: The resource name of a ProductSet to be searched for similar
       images.  Format is:
       `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`.

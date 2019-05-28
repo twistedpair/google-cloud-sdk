@@ -55,8 +55,7 @@ class CloudtasksV2beta3(base_api.BaseApiClient):
 
 Tasks cannot be updated after creation; there is no UpdateTask command.
 
-* For App Engine queues, the maximum task size is
-  100KB.
+* The maximum task size is 100KB.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesTasksCreateRequest) input message

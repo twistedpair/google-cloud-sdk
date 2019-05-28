@@ -381,10 +381,11 @@ class DomainAvailability(_messages.Message):
     available: A AvailableValueValuesEnum attribute.
     domainName: A string attribute.
     notices: A NoticesValueListEntryValuesEnum attribute.
-    registrationPrice: A Money attribute.
-    renewalPrice: A Money attribute.
+    registrationPrice: Deprecated, use yearly_price.
+    renewalPrice: Deprecated, use yearly_price.
     supportedWhoisPrivacy: A SupportedWhoisPrivacyValueListEntryValuesEnum
       attribute.
+    yearlyPrice: A Money attribute.
   """
 
   class AvailableValueValuesEnum(_messages.Enum):
@@ -435,6 +436,7 @@ class DomainAvailability(_messages.Message):
   registrationPrice = _messages.MessageField('Money', 4)
   renewalPrice = _messages.MessageField('Money', 5)
   supportedWhoisPrivacy = _messages.EnumField('SupportedWhoisPrivacyValueListEntryValuesEnum', 6, repeated=True)
+  yearlyPrice = _messages.MessageField('Money', 7)
 
 
 class DomainsProjectsLocationsGetRequest(_messages.Message):
@@ -1112,14 +1114,18 @@ class Registration(_messages.Message):
     registrationPrice: [Create only] Registration price. Required for
       confirmation of the price when creating new registration. Price that
       should be put here can be obtained from CheckAvailability or
-      SearchAvailability calls.
+      SearchAvailability calls. Deprecated, use yearly_price.
     renewalPrice: [Create only] Renewal price. Required for confirmation of
       the price when creating new registration. Renewal price that should be
       put here can be obtained from CheckAvailability or SearchAvailability
-      calls.
+      calls. Deprecated, use yearly_price.
     state: A StateValueValuesEnum attribute.
     updateTime: A string attribute.
     whoisConfig: A WhoisConfig attribute.
+    yearlyPrice: [Create only] Yearly price to register or renew the domain.
+      Required for confirmation of the price when creating new registration.
+      Yearly price that should be put here can be obtained from
+      CheckAvailability or SearchAvailability calls.
   """
 
   class NoticesValueListEntryValuesEnum(_messages.Enum):
@@ -1194,6 +1200,7 @@ class Registration(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 11)
   updateTime = _messages.StringField(12)
   whoisConfig = _messages.MessageField('WhoisConfig', 13)
+  yearlyPrice = _messages.MessageField('Money', 14)
 
 
 class Rule(_messages.Message):

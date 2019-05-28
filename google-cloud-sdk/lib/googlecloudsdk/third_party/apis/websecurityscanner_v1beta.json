@@ -111,7 +111,7 @@
   "schemas": {
     "ScanConfig": {
       "id": "ScanConfig",
-      "description": "A ScanConfig resource contains the configurations to launch a scan.\nnext id: 12",
+      "description": "A ScanConfig resource contains the configurations to launch a scan.",
       "type": "object",
       "properties": {
         "name": {
@@ -199,6 +199,20 @@
         "latestRun": {
           "description": "Latest ScanRun if available.",
           "$ref": "ScanRun"
+        },
+        "riskLevel": {
+          "description": "The risk level selected for the scan",
+          "enumDescriptions": [
+            "Use default, which is NORMAL.",
+            "Normal scanning (Recommended)",
+            "Lower impact scanning"
+          ],
+          "type": "string",
+          "enum": [
+            "RISK_LEVEL_UNSPECIFIED",
+            "NORMAL",
+            "LOW"
+          ]
         }
       }
     },

@@ -436,10 +436,6 @@
           "description": "Output only. The source information for this configuration if available.",
           "$ref": "SourceInfo"
         },
-        "experimental": {
-          "description": "Experimental configuration.",
-          "$ref": "Experimental"
-        },
         "systemTypes": {
           "description": "A list of all proto message types included in this API service.\nIt serves similar purpose as [google.api.Service.types], except that\nthese types are not needed by user-defined APIs. Therefore, they will not\nshow up in the generated discovery doc. This field should only be used\nto define system APIs in ESF.",
           "type": "array",
@@ -1527,6 +1523,26 @@
         "metadata": {
           "description": "Optional. Metadata which can be used to guide usage of the metric.",
           "$ref": "MetricDescriptorMetadata"
+        },
+        "launchStage": {
+          "description": "Optional. The launch stage of the metric definition.",
+          "enumDescriptions": [
+            "Do not use this default value.",
+            "Early Access features are limited to a closed group of testers. To use\nthese features, you must sign up in advance and sign a Trusted Tester\nagreement (which includes confidentiality provisions). These features may\nbe unstable, changed in backward-incompatible ways, and are not\nguaranteed to be released.",
+            "Alpha is a limited availability test for releases before they are cleared\nfor widespread use. By Alpha, all significant design issues are resolved\nand we are in the process of verifying functionality. Alpha customers\nneed to apply for access, agree to applicable terms, and have their\nprojects whitelisted. Alpha releases don\u2019t have to be feature complete,\nno SLAs are provided, and there are no technical support obligations, but\nthey will be far enough along that customers can actually use them in\ntest environments or for limited-use tests -- just like they would in\nnormal production cases.",
+            "Beta is the point at which we are ready to open a release for any\ncustomer to use. There are no SLA or technical support obligations in a\nBeta release. Products will be complete from a feature perspective, but\nmay have some open outstanding issues. Beta releases are suitable for\nlimited production use cases.",
+            "GA features are open to all developers and are considered stable and\nfully qualified for production use.",
+            "Deprecated features are scheduled to be shut down and removed. For more\ninformation, see the \u201CDeprecation Policy\u201D section of our [Terms of\nService](https:\/\/cloud.google.com\/terms\/)\nand the [Google Cloud Platform Subject to the Deprecation\nPolicy](https:\/\/cloud.google.com\/terms\/deprecation) documentation."
+          ],
+          "type": "string",
+          "enum": [
+            "LAUNCH_STAGE_UNSPECIFIED",
+            "EARLY_ACCESS",
+            "ALPHA",
+            "BETA",
+            "GA",
+            "DEPRECATED"
+          ]
         }
       }
     },
@@ -1536,7 +1552,7 @@
       "type": "object",
       "properties": {
         "launchStage": {
-          "description": "The launch stage of the metric definition.",
+          "description": "Deprecated. Please use the MetricDescriptor.launch_stage instead.\nThe launch stage of the metric definition.",
           "enumDescriptions": [
             "Do not use this default value.",
             "Early Access features are limited to a closed group of testers. To use\nthese features, you must sign up in advance and sign a Trusted Tester\nagreement (which includes confidentiality provisions). These features may\nbe unstable, changed in backward-incompatible ways, and are not\nguaranteed to be released.",
@@ -1793,28 +1809,6 @@
               "description": "Properties of the object. Contains field @type with type URL."
             }
           }
-        }
-      }
-    },
-    "Experimental": {
-      "id": "Experimental",
-      "description": "Experimental service configuration. These configuration options can\nonly be used by whitelisted users.",
-      "type": "object",
-      "properties": {
-        "authorization": {
-          "description": "Authorization configuration.",
-          "$ref": "AuthorizationConfig"
-        }
-      }
-    },
-    "AuthorizationConfig": {
-      "id": "AuthorizationConfig",
-      "description": "Configuration of authorization.\n\nThis section determines the authorization provider, if unspecified, then no\nauthorization check will be done.\n\nExample:\n\n    experimental:\n      authorization:\n        provider: firebaserules.googleapis.com",
-      "type": "object",
-      "properties": {
-        "provider": {
-          "description": "The name of the authorization provider, such as\nfirebaserules.googleapis.com.",
-          "type": "string"
         }
       }
     },

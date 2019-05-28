@@ -111,7 +111,7 @@
   "schemas": {
     "TestMatrix": {
       "id": "TestMatrix",
-      "description": "A group of one or more TestExecutions, built by taking a\nproduct of values over a pre-defined set of axes.",
+      "description": "TestMatrix captures all details about a test. It contains the environment\nconfiguration, test specification, test executions and overall state and\noutcome.",
       "type": "object",
       "properties": {
         "testMatrixId": {
@@ -131,7 +131,7 @@
           "$ref": "TestSpecification"
         },
         "environmentMatrix": {
-          "description": "Required. How the host machine(s) are configured.",
+          "description": "Required. The devices the tests are being executed on.",
           "$ref": "EnvironmentMatrix"
         },
         "testExecutions": {
@@ -146,7 +146,7 @@
           "$ref": "ResultStorage"
         },
         "state": {
-          "description": "Output only. Indicates the current progress of the test matrix\n(e.g., FINISHED).",
+          "description": "Output only. Indicates the current progress of the test matrix.",
           "enumDescriptions": [
             "Do not use.  For proto versioning only.",
             "The execution or matrix is being validated.",
@@ -200,7 +200,7 @@
             "There is a conflict in the provided robo_directives.",
             "There is at least one invalid resource name in the provided\nrobo directives",
             "Invalid definition of action in the robo directives\n(e.g. a click or ignore action includes an input text field)",
-            "There there is no test loop intent filter, or the one that is given is\nnot formatted correctly.",
+            "There is no test loop intent filter, or the one that is given is\nnot formatted correctly.",
             "The request contains a scenario label that was not declared in the\nmanifest.",
             "There was an error when parsing a label's value.",
             "The request contains a scenario number that was not declared in the\nmanifest.",
@@ -260,9 +260,9 @@
           "format": "int32"
         },
         "outcomeSummary": {
-          "description": "The overall outcome of the test matrix run.\nOnly set when the test matrix state is FINISHED.\n@OutputOnly",
+          "description": "Output Only. The overall outcome of the test.\nOnly set when the test matrix state is FINISHED.",
           "enumDescriptions": [
-            "",
+            "Do not use. For proto versioning only.",
             "The test matrix run was successful, for instance:\n- All the test cases passed.\n- Robo did not detect a crash of the application under test.",
             "A run failed, for instance:\n- One or more test case failed.\n- A test timed out.\n- The application under test crashed.",
             "Something unexpected happened. The run should still be considered\nunsuccessful but this is likely a transient problem and re-running the\ntest might be successful.",
@@ -347,11 +347,11 @@
           "$ref": "IosXcTest"
         },
         "disableVideoRecording": {
-          "description": "Disables video recording; may reduce test latency.",
+          "description": "Disables video recording. May reduce test latency.",
           "type": "boolean"
         },
         "disablePerformanceMetrics": {
-          "description": "Disables performance metrics recording; may reduce test latency.",
+          "description": "Disables performance metrics recording. May reduce test latency.",
           "type": "boolean"
         }
       }
@@ -405,11 +405,11 @@
       "type": "object",
       "properties": {
         "obbFile": {
-          "description": "A reference to an opaque binary blob file",
+          "description": "A reference to an opaque binary blob file.",
           "$ref": "ObbFile"
         },
         "regularFile": {
-          "description": "A reference to a regular file",
+          "description": "A reference to a regular file.",
           "$ref": "RegularFile"
         }
       }
@@ -483,7 +483,7 @@
     },
     "GoogleAuto": {
       "id": "GoogleAuto",
-      "description": "Enables automatic Google account login.\nIf set, the service will automatically generate a Google test account and add\nit to the device, before executing the test. Note that test accounts might be\nreused.\nMany applications show their full set of functionalities when an account is\npresent on the device. Logging into the device with these generated accounts\nallows testing more functionalities.",
+      "description": "Enables automatic Google account login.\nIf set, the service automatically generates a Google test account and adds\nit to the device, before executing the test. Note that test accounts might be\nreused.\nMany applications show their full set of functionalities when an account is\npresent on the device. Logging into the device with these generated accounts\nallows testing more functionalities.",
       "type": "object",
       "properties": {
       }
@@ -505,7 +505,7 @@
     },
     "IosTestSetup": {
       "id": "IosTestSetup",
-      "description": "A description of how to set up an iOS device prior to a test.",
+      "description": "A description of how to set up an iOS device prior to running the test.",
       "type": "object",
       "properties": {
         "networkProfile": {
@@ -665,9 +665,11 @@
       "type": "object",
       "properties": {
         "launcherActivity": {
+          "description": "An intent that starts the main launcher activity.",
           "$ref": "LauncherActivityIntent"
         },
         "startActivity": {
+          "description": "An intent that starts an activity with specific details.",
           "$ref": "StartActivityIntent"
         },
         "timeout": {
@@ -893,11 +895,11 @@
     },
     "TestExecution": {
       "id": "TestExecution",
-      "description": "Specifies a single test to be executed in a single environment.",
+      "description": "A single test executed in a single environment.",
       "type": "object",
       "properties": {
         "id": {
-          "description": "Output only. Unique id set by the backend.",
+          "description": "Output only. Unique id set by the service.",
           "type": "string"
         },
         "matrixId": {

@@ -337,6 +337,7 @@
             "Redis instance is being deleted.",
             "Redis instance is being repaired and may be unusable.",
             "Maintenance is being performed on this Redis instance.",
+            "Redis instance is importing data (availability may be affected).",
             "Redis instance is failing over (availability may be affected)."
           ],
           "type": "string",
@@ -348,6 +349,7 @@
             "DELETING",
             "REPAIRING",
             "MAINTENANCE",
+            "IMPORTING",
             "FAILING_OVER"
           ]
         },
@@ -383,6 +385,76 @@
         },
         "authorizedNetwork": {
           "description": "Optional. The full name of the Google Compute Engine\n[network](\/compute\/docs\/networks-and-firewalls#networks) to which the\ninstance is connected. If left unspecified, the `default` network\nwill be used.",
+          "type": "string"
+        },
+        "persistenceIamIdentity": {
+          "description": "Output only. Cloud IAM identity used by import \/ export operations to\ntransfer data to\/from Cloud Storage. Format is\n\"serviceAccount:<service_account_email>\". The value may change over time\nfor a given instance so should be checked before each import\/export\noperation.",
+          "type": "string"
+        }
+      }
+    },
+    "ImportInstanceRequest": {
+      "id": "ImportInstanceRequest",
+      "description": "Request for Import.",
+      "type": "object",
+      "properties": {
+        "inputConfig": {
+          "description": "Required. Specify data to be imported.",
+          "$ref": "InputConfig"
+        }
+      }
+    },
+    "InputConfig": {
+      "id": "InputConfig",
+      "description": "The input content",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "Google Cloud Storage location where input content is located.",
+          "$ref": "GcsSource"
+        }
+      }
+    },
+    "GcsSource": {
+      "id": "GcsSource",
+      "description": "The GCS location for the input content",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Required. Source data URI. (e.g. 'gs:\/\/my_bucket\/my_object').",
+          "type": "string"
+        }
+      }
+    },
+    "ExportInstanceRequest": {
+      "id": "ExportInstanceRequest",
+      "description": "Request for Export.",
+      "type": "object",
+      "properties": {
+        "outputConfig": {
+          "description": "Required. Specify data to be exported.",
+          "$ref": "OutputConfig"
+        }
+      }
+    },
+    "OutputConfig": {
+      "id": "OutputConfig",
+      "description": "The output content",
+      "type": "object",
+      "properties": {
+        "gcsDestination": {
+          "description": "Google Cloud Storage destination for output content.",
+          "$ref": "GcsDestination"
+        }
+      }
+    },
+    "GcsDestination": {
+      "id": "GcsDestination",
+      "description": "The GCS location for the output content",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Required. Data destination URI (e.g.\n'gs:\/\/my_bucket\/my_object'). Existing files will be overwritten.",
           "type": "string"
         }
       }
@@ -790,6 +862,62 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Updates the metadata and configuration of a specific Redis instance.\n\nCompleted longrunning.Operation will contain the new instance object\nin the response field. The returned operation is automatically deleted\nafter a few hours, so there is no need to call DeleteOperation."
+                },
+                "import": {
+                  "id": "redis.projects.locations.instances.import",
+                  "path": "v1/{+name}:import",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:import",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Redis instance resource name using the form:\n    `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}`\nwhere `location_id` refers to a GCP region.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "ImportInstanceRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Import a Redis RDB snapshot file from GCS into a Redis instance.\n\nRedis may stop serving during this operation. Instance state will be\nIMPORTING for entire operation. When complete, the instance will contain\nonly data from the imported file.\n\nThe returned operation is automatically deleted after a few hours, so\nthere is no need to call DeleteOperation."
+                },
+                "export": {
+                  "id": "redis.projects.locations.instances.export",
+                  "path": "v1/{+name}:export",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:export",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Redis instance resource name using the form:\n    `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}`\nwhere `location_id` refers to a GCP region.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "ExportInstanceRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Export Redis instance data into a Redis RDB format file in GCS.\n\nRedis will continue serving during this operation.\n\nThe returned operation is automatically deleted after a few hours, so\nthere is no need to call DeleteOperation."
                 },
                 "failover": {
                   "id": "redis.projects.locations.instances.failover",

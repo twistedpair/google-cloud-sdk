@@ -968,9 +968,9 @@
           "description": "The type of replica.",
           "enumDescriptions": [
             "Not specified.",
-            "Read-write replicas support both reads and writes. These replicas:\n* Maintain a full copy of your data.\n* Serve reads.\n* Can vote whether to commit a write.\n* Participate in leadership election.\n* Are eligible to become a leader.",
-            "Read-only replicas only support reads (not writes). Read-only replicas:\n* Maintain a full copy of your data.\n* Serve reads.\n* Do not participate in voting to commit writes.\n* Are not eligible to become a leader.",
-            "Witness replicas don\u2019t support reads but do participate in voting to\ncommit writes. Witness replicas:\n* Do not maintain a full copy of data.\n* Do not serve reads.\n* Vote whether to commit writes.\n* Participate in leader election but are not eligible to become leader."
+            "Read-write replicas support both reads and writes. These replicas:\n\n* Maintain a full copy of your data.\n* Serve reads.\n* Can vote whether to commit a write.\n* Participate in leadership election.\n* Are eligible to become a leader.",
+            "Read-only replicas only support reads (not writes). Read-only replicas:\n\n* Maintain a full copy of your data.\n* Serve reads.\n* Do not participate in voting to commit writes.\n* Are not eligible to become a leader.",
+            "Witness replicas don't support reads but do participate in voting to\ncommit writes. Witness replicas:\n\n* Do not maintain a full copy of data.\n* Do not serve reads.\n* Vote whether to commit writes.\n* Participate in leader election but are not eligible to become leader."
           ],
           "type": "string",
           "enum": [
@@ -1077,6 +1077,21 @@
           "description": "Required. A mask specifying which fields in [][google.spanner.admin.instance.v1.UpdateInstanceRequest.instance] should be updated.\nThe field mask must always be specified; this prevents any future fields in\n[][google.spanner.admin.instance.v1.Instance] from being erased accidentally by clients that do not know\nabout them.",
           "type": "string",
           "format": "google-fieldmask"
+        }
+      }
+    },
+    "ProjectServiceAccount": {
+      "id": "ProjectServiceAccount",
+      "description": "Response object of GetProjectServiceAccountRequest",
+      "type": "object",
+      "properties": {
+        "project": {
+          "description": "The name of the project associated with the service account.",
+          "type": "string"
+        },
+        "email": {
+          "description": "The service account email address.",
+          "type": "string"
         }
       }
     },
@@ -2220,6 +2235,35 @@
   },
   "resources": {
     "projects": {
+      "methods": {
+        "getServiceAccount": {
+          "id": "spanner.projects.getServiceAccount",
+          "path": "v1/{+name}",
+          "flatPath": "v1/projects/{projectsId}/serviceAccount",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the project for which service account is requested.\nValues are of the form `projects\/<project>`.",
+              "location": "path",
+              "required": true,
+              "pattern": "^projects\/[^\/]+\/serviceAccount$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "ProjectServiceAccount"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/spanner.admin"
+          ],
+          "description": "Returns the service account associated with this Cloud Spanner project,\nwhich acts on behalf of this project when dealing with other Google\nservices (such as when sending messages to Cloud KMS).\nRequires IAM `resourcemanager.projects.get` permission on the project."
+        }
+      }
+      ,
       "resources": {
         "instanceConfigs": {
           "methods": {

@@ -58,6 +58,7 @@ def SharedArgRules():
       'required': ['type', 'test'],
       'optional': [
           'async',
+          'client_details',
           'device',
           'network_profile',
           'num_flaky_test_attempts',

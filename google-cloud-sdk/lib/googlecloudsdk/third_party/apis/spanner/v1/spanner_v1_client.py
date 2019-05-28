@@ -1860,3 +1860,33 @@ empty set of permissions.
       super(SpannerV1.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def GetServiceAccount(self, request, global_params=None):
+      r"""Returns the service account associated with this Cloud Spanner project,.
+which acts on behalf of this project when dealing with other Google
+services (such as when sending messages to Cloud KMS).
+Requires IAM `resourcemanager.projects.get` permission on the project.
+
+      Args:
+        request: (SpannerProjectsGetServiceAccountRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ProjectServiceAccount) The response message.
+      """
+      config = self.GetMethodConfig('GetServiceAccount')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetServiceAccount.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/serviceAccount',
+        http_method=u'GET',
+        method_id=u'spanner.projects.getServiceAccount',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'SpannerProjectsGetServiceAccountRequest',
+        response_type_name=u'ProjectServiceAccount',
+        supports_download=False,
+    )

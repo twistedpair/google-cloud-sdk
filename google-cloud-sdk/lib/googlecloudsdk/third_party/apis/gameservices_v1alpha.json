@@ -365,24 +365,12 @@
       "description": "Game server cluster connection information.",
       "type": "object",
       "properties": {
-        "kubernetesApiServerEndpoint": {
-          "description": "The Kubernetes API server endpoint for the game server cluster.",
-          "type": "string"
-        },
-        "certificateAuthorityData": {
-          "description": "The pulbic certificate of the Kubernetes API server endpoint for the game\nserver cluster.",
-          "type": "string"
-        },
-        "encryptedServiceAccountToken": {
-          "description": "The encrypted game server cluster service account token.",
-          "type": "string"
-        },
-        "cloudKmsKeyName": {
-          "description": "The resource name for Cloud KMS key that is used to encrypt the\ncertificate and token, using the format:\n\n\"projects\/{project_id}\/locations\/{location}\/keyRings\/{keyring}\/cryptoKeys\/*\".\nFor example:\n\n\"projects\/my-project\/locations\/{location}\/keyRings\/my-keyring\/cryptoKeys\/my-key\".",
-          "type": "string"
-        },
         "namespace": {
           "description": "Namespace for Kubernetes API server endpoint.",
+          "type": "string"
+        },
+        "gkeName": {
+          "description": "This is the gkeName where the game server cluster is installed.\nIt must the format \"projects\/*\/locations\/*\/clusters\/*\". For example,\n\"projects\/my-project\/locations\/us-central1\/clusters\/test\".",
           "type": "string"
         }
       }
@@ -610,10 +598,6 @@
           "additionalProperties": {
             "type": "string"
           }
-        },
-        "managementRegion": {
-          "description": "Cloud Region from which management of clusters is handled.",
-          "type": "string"
         },
         "timeZone": {
           "description": "Time zone where all realm-specific policies are evaluated. The value of\nthis field must be from the IANA time zone database:\nhttps:\/\/www.iana.org\/time-zones. If not specified, UTC is assumed by\ndefault.",

@@ -713,6 +713,73 @@ class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
   numWarnings = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
 
 
+class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
+  r"""The internal status of the command result.
+
+  Enums:
+    CodeValueValuesEnum: The status code.
+
+  Fields:
+    code: The status code.
+    message: The error message.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""The status code.
+
+    Values:
+      OK: The command succeeded.
+      INVALID_ARGUMENT: The command input was invalid.
+      DEADLINE_EXCEEDED: The command had passed its expiry time while it was
+        still running.
+      NOT_FOUND: The resources requested by the command were not found.
+      PERMISSION_DENIED: The command failed due to permission errors.
+      INTERNAL: The command failed because of some invariants expected by the
+        underlying system have been broken. This usually indicates a bug wit
+        the system.
+      ABORTED: The command was aborted.
+      CLEANUP_ERROR: The bot failed to do the cleanup, e.g. unable to delete
+        the command working directory or the command process.
+      DOWNLOAD_INPUTS_ERROR: The bot failed to download the inputs.
+      UNKNOWN: Unknown error.
+      UPLOAD_OUTPUTS_ERROR: The bot failed to upload the outputs.
+      DOCKER_LOGIN_ERROR: The bot failed to login to docker.
+      DOCKER_IMAGE_PULL_ERROR: The bot failed to pull docker image.
+      DOCKER_IMAGE_EXIST_ERROR: The bot failed to check docker images.
+      DUPLICATE_INPUTS: The inputs contain duplicate files.
+      DOCKER_IMAGE_PERMISSION_DENIED: The bot doesn't have the permissions to
+        pull docker images.
+      DOCKER_IMAGE_NOT_FOUND: The docker image cannot be found.
+      WORKING_DIR_NOT_FOUND: Working directory is not found.
+      WORKING_DIR_NOT_IN_BASE_DIR: Working directory is not under the base
+        directory
+      DOCKER_UNAVAILABLE: There are issues with docker service/runtime.
+    """
+    OK = 0
+    INVALID_ARGUMENT = 1
+    DEADLINE_EXCEEDED = 2
+    NOT_FOUND = 3
+    PERMISSION_DENIED = 4
+    INTERNAL = 5
+    ABORTED = 6
+    CLEANUP_ERROR = 7
+    DOWNLOAD_INPUTS_ERROR = 8
+    UNKNOWN = 9
+    UPLOAD_OUTPUTS_ERROR = 10
+    DOCKER_LOGIN_ERROR = 11
+    DOCKER_IMAGE_PULL_ERROR = 12
+    DOCKER_IMAGE_EXIST_ERROR = 13
+    DUPLICATE_INPUTS = 14
+    DOCKER_IMAGE_PERMISSION_DENIED = 15
+    DOCKER_IMAGE_NOT_FOUND = 16
+    WORKING_DIR_NOT_FOUND = 17
+    WORKING_DIR_NOT_IN_BASE_DIR = 18
+    DOCKER_UNAVAILABLE = 19
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  message = _messages.StringField(2)
+
+
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateInstanceRequest(_messages.Message):
   r"""The request used for `CreateInstance`.
 

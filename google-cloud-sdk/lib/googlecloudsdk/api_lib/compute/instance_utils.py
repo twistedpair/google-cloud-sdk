@@ -71,7 +71,7 @@ def GetCpuRamFromCustomName(name):
   return None, None
 
 
-def GetNameForCustom(custom_cpu, custom_memory_mib, ext=False):
+def GetNameForCustom(custom_cpu, custom_memory_mib, ext=False, vm_gen=False):
   """Creates a custom machine type name from the desired CPU and memory specs.
 
   Args:
@@ -79,17 +79,22 @@ def GetNameForCustom(custom_cpu, custom_memory_mib, ext=False):
     custom_memory_mib: the amount of ram desired in MiB for the custom machine
       type instance
     ext: extended custom machine type should be used if true
-
+    vm_gen: VM instance generation
   Returns:
     The custom machine type name for the 'instance create' call
   """
-  machine_type = 'custom-{0}-{1}'.format(custom_cpu, custom_memory_mib)
+  if vm_gen:
+    machine_type = '{0}-custom-{1}-{2}'.format(vm_gen, custom_cpu,
+                                               custom_memory_mib)
+  else:
+    machine_type = 'custom-{0}-{1}'.format(custom_cpu, custom_memory_mib)
   if ext:
     machine_type += '-ext'
   return machine_type
 
 
-def InterpretMachineType(machine_type, custom_cpu, custom_memory, ext=True):
+def InterpretMachineType(machine_type, custom_cpu, custom_memory, ext=True,
+                         vm_gen=False):
   """Interprets the machine type for the instance.
 
   Args:
@@ -97,6 +102,7 @@ def InterpretMachineType(machine_type, custom_cpu, custom_memory, ext=True):
     custom_cpu: number of CPU cores for custom machine type,
     custom_memory: amount of RAM memory in bytes for custom machine type,
     ext: extended custom machine type should be used if true,
+    vm_gen:  VM instance generation
 
   Returns:
     A string representing the URL naming a machine-type.
@@ -130,7 +136,8 @@ def InterpretMachineType(machine_type, custom_cpu, custom_memory, ext=True):
         custom_cpu,
         # converting from B to MiB.
         custom_memory // (2**20),
-        ext)
+        ext,
+        vm_gen)
 
     # Updating the machine type that is set for the URIs
     machine_type_name = custom_type_string
@@ -276,7 +283,7 @@ def CreateShieldedInstanceIntegrityPolicyMessage(messages,
 
 def CreateMachineTypeUris(
     resources, compute_client,
-    machine_type, custom_cpu, custom_memory, ext, instance_refs):
+    machine_type, custom_cpu, custom_memory, vm_gen, ext, instance_refs):
   """Create machine type URIs for given args and instance references."""
   # The element at index i is the machine type URI for instance
   # i. We build this list here because we want to delay work that
@@ -288,7 +295,7 @@ def CreateMachineTypeUris(
 
   # Setting the machine type
   machine_type_name = InterpretMachineType(
-      machine_type, custom_cpu, custom_memory, ext)
+      machine_type, custom_cpu, custom_memory, ext, vm_gen)
 
   for instance_ref in instance_refs:
     # Check to see if the custom machine type ratio is supported
@@ -976,6 +983,15 @@ def GetInstanceRefs(args, client, holder):
   return instance_refs
 
 
+def GetSourceMachineImageKey(args, source_image, compute_client, holder):
+  machine_image_ref = source_image.ResolveAsResource(args, holder.resources)
+  csek_keys = csek_utils.CsekKeyStore.FromFile(
+      args.source_machine_image_csek_key_file, allow_rsa_encrypted=False)
+  disk_key_or_none = csek_utils.MaybeLookupKeyMessage(
+      csek_keys, machine_image_ref, compute_client.apitools_client)
+  return disk_key_or_none
+
+
 def GetNetworkInterfaces(
     args, client, holder, instance_refs, skip_defaults):
   """Get network interfaces."""
@@ -1052,6 +1068,7 @@ def GetMachineTypeUris(
       machine_type=args.machine_type,
       custom_cpu=args.custom_cpu,
       custom_memory=args.custom_memory,
+      vm_gen=getattr(args, 'custom_vm_gen', None),
       ext=getattr(args, 'custom_extensions', None),
       instance_refs=instance_refs)
 

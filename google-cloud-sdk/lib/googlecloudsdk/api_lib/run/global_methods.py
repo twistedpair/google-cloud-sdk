@@ -25,6 +25,7 @@ from googlecloudsdk.api_lib.util import apis
 
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 
 
 CONTAINER_API_VERSION = 'v1beta1'
@@ -107,3 +108,30 @@ def ListClusters(location=None):
       c for c in clusters if (c.addonsConfig.cloudRunConfig and
                               not c.addonsConfig.cloudRunConfig.disabled)
   ]
+
+
+def ListVerifiedDomains(client):
+  """Get all verified domains.
+
+  Args:
+    client: (base_api.BaseApiClient), instance of a client to use for the list
+      request.
+
+  Returns:
+    List of client.MESSAGES_MODULE.AuthorizedDomain objects
+  """
+
+  # TODO(b/129705144) Hard-coding the region is temporary, the control
+  # plane is working on the fix to not require a region at all.
+  region = 'us-central1'
+  project = properties.VALUES.core.project.Get(required=True)
+  location = resources.REGISTRY.Parse(
+      region,
+      params={'projectsId': project},
+      collection='run.projects.locations')
+  msgs = client.MESSAGES_MODULE
+  req = msgs.RunProjectsLocationsAuthorizeddomainsListRequest(
+      parent=location.RelativeName())
+
+  response = client.projects_locations_authorizeddomains.List(req)
+  return response.domains

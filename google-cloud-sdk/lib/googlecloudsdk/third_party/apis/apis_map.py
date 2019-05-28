@@ -284,7 +284,7 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.cloudscheduler.v1',
             client_classpath='cloudscheduler_v1_client.CloudschedulerV1',
             messages_modulepath='cloudscheduler_v1_messages',
-            default_version=False
+            default_version=True
         ),
         'v1alpha1': APIDef(
             class_path='googlecloudsdk.third_party.apis.cloudscheduler.v1alpha1',
@@ -296,7 +296,7 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.cloudscheduler.v1beta1',
             client_classpath='cloudscheduler_v1beta1_client.CloudschedulerV1beta1',
             messages_modulepath='cloudscheduler_v1beta1_messages',
-            default_version=True
+            default_version=False
         ),
     },
     'cloudshell': {

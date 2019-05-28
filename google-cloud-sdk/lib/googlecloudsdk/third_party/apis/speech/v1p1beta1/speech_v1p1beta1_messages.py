@@ -469,7 +469,7 @@ class RecognitionAudio(_messages.Message):
 
   Fields:
     content: The audio data bytes encoded as specified in `RecognitionConfig`.
-      Note: as with all bytes fields, protobuffers use a pure binary
+      Note: as with all bytes fields, proto buffers use a pure binary
       representation, whereas JSON representations use base64.
     uri: URI that points to a file that contains audio data bytes as specified
       in `RecognitionConfig`. The file must not be compressed (for example,
@@ -896,6 +896,11 @@ class SpeechContext(_messages.Message):
   phrases in the results.
 
   Fields:
+    boost: Hint Boost will increase the probability that a specific phrase
+      will be recognized over other similar sounding phrases. The higher the
+      boost, the higher the chance of false positive recognition as well. The
+      range of possible values is 0 to 20. We recommend using a binary search
+      approach to finding the optimal value for your use case.
     phrases: *Optional* A list of strings containing words and phrases "hints"
       so that the speech recognition is more likely to recognize them. This
       can be used to improve the accuracy for specific words and phrases, for
@@ -904,7 +909,8 @@ class SpeechContext(_messages.Message):
       recognizer. See [usage limits](/speech-to-text/quotas#content).
   """
 
-  phrases = _messages.StringField(1, repeated=True)
+  boost = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  phrases = _messages.StringField(2, repeated=True)
 
 
 class SpeechOperationMetadata(_messages.Message):

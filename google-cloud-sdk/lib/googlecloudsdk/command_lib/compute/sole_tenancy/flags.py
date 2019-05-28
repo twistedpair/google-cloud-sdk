@@ -23,7 +23,7 @@ from googlecloudsdk.calliope import arg_parsers
 
 def AddNodeAffinityFlagToParser(parser):
   """Adds a node affinity flag used for scheduling instances."""
-  sole_tenancy_group = parser.add_group('Sole Tenancy', mutex=True)
+  sole_tenancy_group = parser.add_group('Sole Tenancy.', mutex=True)
   sole_tenancy_group.add_argument(
       '--node-affinity-file',
       type=arg_parsers.BufferedFileInput(),

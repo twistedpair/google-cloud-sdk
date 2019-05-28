@@ -221,9 +221,14 @@
           ]
         },
         "registrationPrice": {
+          "description": "Deprecated, use yearly_price.",
           "$ref": "Money"
         },
         "renewalPrice": {
+          "description": "Deprecated, use yearly_price.",
+          "$ref": "Money"
+        },
+        "yearlyPrice": {
           "$ref": "Money"
         },
         "supportedWhoisPrivacy": {
@@ -379,11 +384,15 @@
           }
         },
         "registrationPrice": {
-          "description": "[Create only] Registration price. Required for confirmation of the price\nwhen creating new registration.\nPrice that should be put here can be obtained from CheckAvailability or\nSearchAvailability calls.",
+          "description": "[Create only] Registration price. Required for confirmation of the price\nwhen creating new registration.\nPrice that should be put here can be obtained from CheckAvailability or\nSearchAvailability calls.\nDeprecated, use yearly_price.",
           "$ref": "Money"
         },
         "renewalPrice": {
-          "description": "[Create only] Renewal price. Required for confirmation of the price\nwhen creating new registration.\nRenewal price that should be put here can be obtained from\nCheckAvailability or SearchAvailability calls.",
+          "description": "[Create only] Renewal price. Required for confirmation of the price\nwhen creating new registration.\nRenewal price that should be put here can be obtained from\nCheckAvailability or SearchAvailability calls.\nDeprecated, use yearly_price.",
+          "$ref": "Money"
+        },
+        "yearlyPrice": {
+          "description": "[Create only] Yearly price to register or renew the domain.\nRequired for confirmation of the price when creating new registration.\nYearly price that should be put here can be obtained from\nCheckAvailability or SearchAvailability calls.",
           "$ref": "Money"
         }
       }
@@ -1220,7 +1229,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Searches availabile domains similar to the given query.\nReturned domain availability allows some staleness."
+                  "description": "Searches available domains similar to the given query.\nReturned domain availability allows some staleness."
                 },
                 "list": {
                   "id": "domains.projects.locations.registrations.list",

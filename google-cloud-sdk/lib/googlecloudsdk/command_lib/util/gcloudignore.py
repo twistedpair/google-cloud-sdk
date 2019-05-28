@@ -374,11 +374,9 @@ def GetFileChooserForDir(
   """Gets the FileChooser object for the given directory.
 
   In order of preference:
-  - Check if the users override the .glcoudignore file or not. If
-    ignore_file is not none. use custom ignore_file to skip files. If the
-    specified file does not exist, raise error.
-  - If specified ignore file does not exist, or user does not specify ignore
-    file, use .gcloudignore file in the top-level directory.
+  - If ignore_file is not none, use it to skip files.
+    If the specified file does not exist, raise error.
+  - Use .gcloudignore file in the top-level directory.
   - Evaluates creation predicate to determine whether to generate .gcloudignore.
     include_gitignore determines whether the generated .gcloudignore will
     include the user's .gitignore if one exists. If the directory is not

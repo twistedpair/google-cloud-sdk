@@ -50,6 +50,7 @@ class BackupConfiguration(_messages.Message):
       is disabled, binary log must be disabled as well.
     enabled: Whether this configuration is enabled.
     kind: This is always sql#backupConfiguration.
+    location: The location of the backup.
     replicationLogArchivingEnabled: Reserved for future use.
     startTime: Start time for the daily backup configuration in UTC timezone
       in the 24 hour format - HH:MM.
@@ -58,8 +59,9 @@ class BackupConfiguration(_messages.Message):
   binaryLogEnabled = _messages.BooleanField(1)
   enabled = _messages.BooleanField(2)
   kind = _messages.StringField(3, default=u'sql#backupConfiguration')
-  replicationLogArchivingEnabled = _messages.BooleanField(4)
-  startTime = _messages.StringField(5)
+  location = _messages.StringField(4)
+  replicationLogArchivingEnabled = _messages.BooleanField(5)
+  startTime = _messages.StringField(6)
 
 
 class BackupRun(_messages.Message):
@@ -78,6 +80,7 @@ class BackupRun(_messages.Message):
       SQL instance.
     instance: Name of the database instance.
     kind: This is always sql#backupRun.
+    location: The location of the backup.
     selfLink: The URI of this resource.
     startTime: The time the backup operation actually started in UTC timezone
       in RFC 3339 format, for example 2012-11-15T16:19:00.094Z.
@@ -95,11 +98,12 @@ class BackupRun(_messages.Message):
   id = _messages.IntegerField(5)
   instance = _messages.StringField(6)
   kind = _messages.StringField(7, default=u'sql#backupRun')
-  selfLink = _messages.StringField(8)
-  startTime = _message_types.DateTimeField(9)
-  status = _messages.StringField(10)
-  type = _messages.StringField(11)
-  windowStartTime = _message_types.DateTimeField(12)
+  location = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  startTime = _message_types.DateTimeField(10)
+  status = _messages.StringField(11)
+  type = _messages.StringField(12)
+  windowStartTime = _message_types.DateTimeField(13)
 
 
 class BackupRunsListResponse(_messages.Message):
@@ -745,9 +749,11 @@ class IpMapping(_messages.Message):
     timeToRetire: The due time for this IP to be retired in RFC 3339 format,
       for example 2012-11-15T16:19:00.094Z. This field is only available when
       the IP is scheduled to be retired.
-    type: The type of this IP address. A PRIMARY address is an address that
-      can accept incoming connections. An OUTGOING address is the source
-      address of connections originating from the instance, if supported.
+    type: The type of this IP address. A PRIMARY address is a public address
+      that can accept incoming connections. A PRIVATE address is a private
+      address that can accept incoming connections. An OUTGOING address is the
+      source address of connections originating from the instance, if
+      supported.
   """
 
   ipAddress = _messages.StringField(1)

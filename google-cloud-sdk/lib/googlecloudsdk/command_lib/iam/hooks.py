@@ -99,6 +99,10 @@ def ValidateUpdateFieldMask(ref, unused_args, request):
   return request
 
 
+def CreateFullServiceAccountNameFromId(account_id):
+  return 'projects/-/serviceAccounts/' + account_id
+
+
 def GeneratePublicKeyDataFromFile(path):
   """Generate public key data from a path.
 

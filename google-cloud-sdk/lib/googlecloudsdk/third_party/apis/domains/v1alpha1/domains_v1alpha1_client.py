@@ -346,7 +346,7 @@ set.
     )
 
     def SearchAvailability(self, request, global_params=None):
-      r"""Searches availabile domains similar to the given query.
+      r"""Searches available domains similar to the given query.
 Returned domain availability allows some staleness.
 
       Args:

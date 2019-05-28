@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20190507",
+ "revision": "20190520",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1116,7 +1116,7 @@
     },
     "interface": {
      "type": "string",
-     "description": "Specifies the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI. Persistent disks must always use SCSI and the request will fail if you attempt to attach a persistent disk in any other format than SCSI. Local SSDs can use either NVME or SCSI. For performance characteristics of SCSI over NVMe, see Local SSD performance.",
+     "description": "Specifies the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI. Persistent disks must always use SCSI and the request will fail if you attempt to attach a persistent disk in any other format than SCSI. Local SSDs can use either NVME or SCSI. For performance characteristics of SCSI over NVMe, see Local SSD performance. TODO(b/131765817): Update documentation when NVME is supported.",
      "enum": [
       "NVME",
       "SCSI"
@@ -4908,7 +4908,7 @@
   "Firewall": {
    "id": "Firewall",
    "type": "object",
-   "description": "Represents a Firewall resource.",
+   "description": "Represents a Firewall Rule resource.\n\nFirewall rules allow or deny ingress traffic to, and egress traffic from your instances. For more information, read Firewall rules.",
    "properties": {
     "allowed": {
      "type": "array",
@@ -8615,10 +8615,14 @@
      "type": "string",
      "description": "Minimal action to be taken on an instance. You can specify either RESTART to restart existing instances or REPLACE to delete and create new instances from the target template. If you specify a RESTART, the Updater will attempt to perform that action only. However, if the Updater determines that the minimal action you specify is not enough to perform the update, it might perform a more disruptive action.",
      "enum": [
+      "NONE",
+      "REFRESH",
       "REPLACE",
       "RESTART"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       ""
      ]
@@ -8684,10 +8688,14 @@
      "type": "string",
      "description": "The minimal action that should be perfomed on the instances. By default NONE.",
      "enum": [
+      "NONE",
+      "REFRESH",
       "REPLACE",
       "RESTART"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       ""
      ]
@@ -8696,10 +8704,14 @@
      "type": "string",
      "description": "The most disruptive action that allowed to be performed on the instances. By default REPLACE.",
      "enum": [
+      "NONE",
+      "REFRESH",
       "REPLACE",
       "RESTART"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       ""
      ]
@@ -9920,7 +9932,7 @@
   "Interconnect": {
    "id": "Interconnect",
    "type": "object",
-   "description": "Represents an Interconnects resource. The Interconnects resource is a dedicated connection between Google's network and your on-premises network. For more information, see the  Dedicated overview page. (== resource_for v1.interconnects ==) (== resource_for beta.interconnects ==)",
+   "description": "Represents an Interconnect resource.\n\nAn Interconnect resource is a dedicated connection between the GCP network and your on-premises network. For more information, read the  Dedicated Interconnect Overview. (== resource_for v1.interconnects ==) (== resource_for beta.interconnects ==)",
    "properties": {
     "adminEnabled": {
      "type": "boolean",
@@ -10080,7 +10092,7 @@
   "InterconnectAttachment": {
    "id": "InterconnectAttachment",
    "type": "object",
-   "description": "Represents an InterconnectAttachment (VLAN attachment) resource. For more information, see  Creating VLAN Attachments. (== resource_for beta.interconnectAttachments ==) (== resource_for v1.interconnectAttachments ==)",
+   "description": "Represents an Interconnect Attachment (VLAN) resource.\n\nYou can use Interconnect attachments (VLANS) to connect your Virtual Private Cloud networks to your on-premises networks through an Interconnect. For more information, read  Creating VLAN Attachments. (== resource_for beta.interconnectAttachments ==) (== resource_for v1.interconnectAttachments ==)",
    "properties": {
     "adminEnabled": {
      "type": "boolean",
@@ -10880,7 +10892,7 @@
   "InterconnectLocation": {
    "id": "InterconnectLocation",
    "type": "object",
-   "description": "Represents an InterconnectLocations resource. The InterconnectLocations resource describes the locations where you can connect to Google's networks. For more information, see  Colocation Facilities.",
+   "description": "Represents an Interconnect Attachment (VLAN) Location resource.\n\nYou can use this resource to find location details about an Interconnect attachment (VLAN). For more information about interconnect attachments, read  Creating VLAN Attachments.",
    "properties": {
     "address": {
      "type": "string",
@@ -12163,7 +12175,7 @@
   "Network": {
    "id": "Network",
    "type": "object",
-   "description": "Represents a Network resource. Read Virtual Private Cloud (VPC) Network Overview for more information. (== resource_for v1.networks ==) (== resource_for beta.networks ==)",
+   "description": "Represents a VPC Network resource.\n\nNetworks connect resources to each other and to the internet. For more information, read Virtual Private Cloud (VPC) Network. (== resource_for v1.networks ==) (== resource_for beta.networks ==)",
    "properties": {
     "IPv4Range": {
      "type": "string",
@@ -13103,7 +13115,7 @@
   "NodeGroup": {
    "id": "NodeGroup",
    "type": "object",
-   "description": "Represent a sole-tenant Node Group resource.\n\nA sole-tenant node is a physical server that is dedicated to hosting VM instances only for your specific project. Use sole-tenant nodes to keep your instances physically separated from instances in other projects, or to group your instances together on the same host hardware. For more information, read Sole-tenant nodes. (== resource_for beta.nodeGroups ==) (== resource_for v1.nodeGroups ==)",
+   "description": "Represent a sole-tenant Node Group resource.\n\nA sole-tenant node is a physical server that is dedicated to hosting VM instances only for your specific project. Use sole-tenant nodes to keep your instances physically separated from instances in other projects, or to group your instances together on the same host hardware. For more information, read Sole-tenant nodes. (== resource_for beta.nodeGroups ==) (== resource_for v1.nodeGroups ==) NextID: 15",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -13668,7 +13680,7 @@
   "NodeTemplate": {
    "id": "NodeTemplate",
    "type": "object",
-   "description": "Represent a sole-tenant Node Template resource.\n\nYou can use a template to define properties for nodes in a node group. For more information, read Creating node groups and instances. (== resource_for beta.nodeTemplates ==) (== resource_for v1.nodeTemplates ==)",
+   "description": "Represent a sole-tenant Node Template resource.\n\nYou can use a template to define properties for nodes in a node group. For more information, read Creating node groups and instances. (== resource_for beta.nodeTemplates ==) (== resource_for v1.nodeTemplates ==) NextID: 16",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -14539,7 +14551,7 @@
     },
     "region": {
      "type": "string",
-     "description": "[Output Only] The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body."
+     "description": "[Output Only] The URL of the region where the operation resides. Only applicable when performing regional operations."
     },
     "selfLink": {
      "type": "string",
@@ -14666,7 +14678,7 @@
     },
     "zone": {
      "type": "string",
-     "description": "[Output Only] The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body."
+     "description": "[Output Only] The URL of the zone where the operation resides. Only applicable when performing per-zone operations."
     }
    }
   },
@@ -16105,10 +16117,14 @@
      "type": "string",
      "description": "The minimal action that should be perfomed on the instances. By default NONE.",
      "enum": [
+      "NONE",
+      "REFRESH",
       "REPLACE",
       "RESTART"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       ""
      ]
@@ -16117,10 +16133,14 @@
      "type": "string",
      "description": "The most disruptive action that allowed to be performed on the instances. By default REPLACE.",
      "enum": [
+      "NONE",
+      "REFRESH",
       "REPLACE",
       "RESTART"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       ""
      ]
@@ -16551,7 +16571,7 @@
   "Reservation": {
    "id": "Reservation",
    "type": "object",
-   "description": "Reservation resource",
+   "description": "Reservation resource NextID: 13",
    "properties": {
     "commitment": {
      "type": "string",
@@ -16596,6 +16616,24 @@
     "specificReservationRequired": {
      "type": "boolean",
      "description": "Indicates whether the reservation can be consumed by VMs with \"any reservation\" defined. If the field is set, then only VMs that target the reservation by name using --reservation-affinity can consume this reservation."
+    },
+    "status": {
+     "type": "string",
+     "description": "[Output Only] The status of the reservation.",
+     "enum": [
+      "CREATING",
+      "DELETING",
+      "INVALID",
+      "READY",
+      "UPDATING"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
     },
     "zone": {
      "type": "string",
@@ -17575,7 +17613,7 @@
   "Route": {
    "id": "Route",
    "type": "object",
-   "description": "Represents a Route resource. A route specifies how certain packets should be handled by the network. Routes are associated with instances by tags and the set of routes for a particular instance is called its routing table.\n\nFor each packet leaving an instance, the system searches that instance's routing table for a single best matching route. Routes match packets by destination IP address, preferring smaller or more specific ranges over larger ones. If there is a tie, the system selects the route with the smallest priority value. If there is still a tie, it uses the layer three and four packet headers to select just one of the remaining matching routes. The packet is then forwarded as specified by the nextHop field of the winning route - either to another instance destination, an instance gateway, or a Google Compute Engine-operated gateway.\n\nPackets that do not match any route in the sending instance's routing table are dropped. (== resource_for beta.routes ==) (== resource_for v1.routes ==)",
+   "description": "Represents a Route resource.\n\nA route defines a path from VM instances in the VPC network to a specific destination. This destination can be inside or outside the VPC network. For more information, read the Routes overview. (== resource_for beta.routes ==) (== resource_for v1.routes ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -17882,7 +17920,7 @@
   "Router": {
    "id": "Router",
    "type": "object",
-   "description": "Router resource.",
+   "description": "Represents a Cloud Router resource.\n\nFor more information about Cloud Router, read the the Cloud Router overview.",
    "properties": {
     "bgp": {
      "$ref": "RouterBgp",
@@ -18866,7 +18904,7 @@
   "Scheduling": {
    "id": "Scheduling",
    "type": "object",
-   "description": "Sets the scheduling options for an Instance.",
+   "description": "Sets the scheduling options for an Instance. NextID: 9",
    "properties": {
     "automaticRestart": {
      "type": "boolean",
@@ -20433,7 +20471,7 @@
   "Subnetwork": {
    "id": "Subnetwork",
    "type": "object",
-   "description": "A Subnetwork resource. (== resource_for beta.subnetworks ==) (== resource_for v1.subnetworks ==)",
+   "description": "Represents a Subnetwork resource.\n\nA subnetwork (also known as a subnet) is a logical partition of a Virtual Private Cloud network with one primary IP range and zero or more secondary IP ranges. For more information, read  Virtual Private Cloud (VPC) Network. (== resource_for beta.subnetworks ==) (== resource_for v1.subnetworks ==)",
    "properties": {
     "allowSubnetCidrRoutesOverlap": {
      "type": "boolean",
@@ -21795,7 +21833,7 @@
   "TargetInstance": {
    "id": "TargetInstance",
    "type": "object",
-   "description": "A TargetInstance resource. This resource defines an endpoint instance that terminates traffic of certain protocols. (== resource_for beta.targetInstances ==) (== resource_for v1.targetInstances ==)",
+   "description": "Represents a Target Instance resource.\n\nYou can use a target instance to handle traffic for one or more forwarding rules, which is ideal for forwarding protocol traffic that is managed by a single source. For example, ESP, AH, TCP, or UDP. For more information, read Target instances. (== resource_for beta.targetInstances ==) (== resource_for v1.targetInstances ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -23048,7 +23086,7 @@
   "TargetVpnGateway": {
    "id": "TargetVpnGateway",
    "type": "object",
-   "description": "Represents a Target VPN gateway resource. (== resource_for beta.targetVpnGateways ==) (== resource_for v1.targetVpnGateways ==)",
+   "description": "Represents a Target VPN Gateway resource.\n\nThe target VPN gateway resource represents a Classic Cloud VPN gateway. For more information, read the the Cloud VPN Overview. (== resource_for beta.targetVpnGateways ==) (== resource_for v1.targetVpnGateways ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -24821,7 +24859,7 @@
   "VpnTunnel": {
    "id": "VpnTunnel",
    "type": "object",
-   "description": "VPN tunnel resource. (== resource_for beta.vpnTunnels ==) (== resource_for v1.vpnTunnels ==)",
+   "description": "Represents a Cloud VPN Tunnel resource.\n\nFor more information about VPN, read the the Cloud VPN Overview. (== resource_for beta.vpnTunnels ==) (== resource_for v1.vpnTunnels ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",

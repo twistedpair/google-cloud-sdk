@@ -77,13 +77,15 @@ class UploadManager(object):
       project_id = properties.VALUES.core.project.Get(required=True)
     self._project_id = project_id
 
-  def Upload(self, branch, root_path):
+  def Upload(self, branch, root_path, ignore_file=None):
     """Uploads files to a branch in Cloud Source Repositories.
 
     Args:
       branch: (string) The name of the branch to upload to. If empty, a
         name will be generated.
       root_path: (string) The path of a directory tree to upload.
+      ignore_file: (string) The file overrides the `.gcloudignore` file and
+        uses the specified file instead.
 
     Returns:
       A dictionary containing various status information:
@@ -103,7 +105,7 @@ class UploadManager(object):
           REPO_NOT_FOUND_ERROR.format(UPLOAD_REPO_NAME, self._project_id))
 
     file_chooser = gcloudignore.GetFileChooserForDir(
-        root_path, write_on_disk=False)
+        root_path, write_on_disk=False, ignore_file=ignore_file)
     branch = branch or (_GetNow().strftime(TIME_FORMAT) + '.' + _GetUuid().hex)
     all_paths = [
         os.path.join(root_path, f)
