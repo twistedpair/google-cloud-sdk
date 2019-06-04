@@ -69,7 +69,8 @@ def UpdateCheck(command_path, **unused_kwargs):
 def SurveyPromptCheck(command_path, **unused_kwargs):
   del command_path
   try:
-    survey_check.SurveyPrompter().PromptForSurvey()
+    if not properties.VALUES.survey.disable_prompts.GetBool():
+      survey_check.SurveyPrompter().PromptForSurvey()
   # pylint:disable=broad-except, We never want this to escape, ever. Only
   # messages printed should reach the user.
   except Exception:

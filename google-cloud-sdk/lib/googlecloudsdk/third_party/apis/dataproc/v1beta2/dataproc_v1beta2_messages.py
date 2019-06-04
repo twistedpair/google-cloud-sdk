@@ -619,7 +619,7 @@ class DataprocProjectsLocationsAutoscalingPoliciesListRequest(_messages.Message)
 
   Fields:
     pageSize: Optional. The maximum number of results to return in each
-      response.
+      response. Must be less than or equal to 1000. Defaults to 100.
     pageToken: Optional. The page token, returned by a previous call, to
       request the next page of results.
     parent: Required. The "resource name" of the region, as described in
@@ -871,7 +871,7 @@ class DataprocProjectsRegionsAutoscalingPoliciesListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return in each
-      response.
+      response. Must be less than or equal to 1000. Defaults to 100.
     pageToken: Optional. The page token, returned by a previous call, to
       request the next page of results.
     parent: Required. The "resource name" of the region, as described in

@@ -46,6 +46,5 @@ def ServiceStages(include_iam_policy_set=False):
 def ServiceDependencies():
   """Dependencies for the Service resource, for passing to ConditionPoller."""
   return {
-      SERVICE_ROUTES_READY: {SERVICE_CONFIGURATIONS_READY},
-      SERVICE_CONFIGURATIONS_READY: set()
+      SERVICE_ROUTES_READY: {SERVICE_CONFIGURATIONS_READY}
   }

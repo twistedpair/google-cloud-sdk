@@ -28,7 +28,6 @@ from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.run import configuration
 from googlecloudsdk.api_lib.run import domain_mapping
 from googlecloudsdk.api_lib.run import global_methods
-from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import metric_names
 from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import route
@@ -170,13 +169,13 @@ class ConditionPoller(waiter.OperationPoller):
     """
     # _dependencies is a map of condition -> {preceding conditions}
     # It is meant to be checked off as we finish things.
-    self._dependencies = (
-        copy.deepcopy(dependencies) if dependencies is not None
-        else {k: set() for k in tracker})
-    for k in self._dependencies:
-      if k not in tracker:
-        raise ValueError(
-            'Condition {} is not in the dependency tracker.'.format(k))
+    self._dependencies = {k: set() for k in tracker}
+    if dependencies is not None:
+      for k in dependencies:
+        if k not in tracker:
+          raise ValueError(
+              'Condition {} is not in the dependency tracker.'.format(k))
+        self._dependencies[k] = copy.copy(dependencies[k])
     self._resource_getter = resource_getter
     self._tracker = tracker
     self._resource_fail_type = exceptions.Error
@@ -198,6 +197,26 @@ class ConditionPoller(waiter.OperationPoller):
       return False
     return conditions.IsTerminal()
 
+  def _PollTerminalSubconditions(self, conditions, ready_message):
+    for condition in conditions.TerminalSubconditions():
+      if condition not in self._dependencies:
+        continue
+      message = conditions[condition]['message']
+      status = conditions[condition]['status']
+      self._PossiblyUpdateMessage(condition, message, ready_message)
+      if status is None:
+        continue
+      elif status:
+        if self._PossiblyCompleteStage(
+            condition, message, conditions.IsReady()):
+          # Check all terminal subconditions again to ensure any stages that
+          # were unblocked by this stage completing are re-checked before we
+          # check the ready condition
+          self._PollTerminalSubconditions(conditions, ready_message)
+          break
+      else:
+        self._PossiblyFailStage(condition, message)
+
   def Poll(self, unused_ref):
     """Overrides.
 
@@ -217,18 +236,7 @@ class ConditionPoller(waiter.OperationPoller):
     if ready_message:
       self._tracker.UpdateHeaderMessage(ready_message)
 
-    for condition in conditions.TerminalSubconditions():
-      if condition not in self._dependencies:
-        continue
-      message = conditions[condition]['message']
-      status = conditions[condition]['status']
-      self._PossiblyUpdateMessage(condition, message, ready_message)
-      if status is None:
-        continue
-      elif status:
-        self._PossiblyCompleteStage(condition, message, conditions.IsReady())
-      else:
-        self._PossiblyFailStage(condition, message)
+    self._PollTerminalSubconditions(conditions, ready_message)
 
     if conditions.IsReady():
       self._tracker.UpdateHeaderMessage('Done.')
@@ -275,19 +283,23 @@ class ConditionPoller(waiter.OperationPoller):
       condition: str, The name of the condition whose stage should be completed.
       message: str, The detailed message for the condition.
       ready: boolean, True if the Ready condition is true.
+
+    Returns:
+      bool: True if stage was completed, False if no action taken
     """
     if self._tracker.IsComplete(condition):
-      return
+      return False
     # A blocked condition is likely to remain True (indicating the previous
     # operation concerning it was successful) until the blocking condition(s)
     # finish and it's time to switch to Unknown (the current operation
     # concerning it is in progress). Don't mark those done before they switch to
     # Unknown.
     if not self._tracker.IsRunning(condition):
-      return
+      return False
     self._RecordConditionComplete(condition)
     self._StartUnblocked()
     self._tracker.CompleteStage(condition, message)
+    return True
 
   def _StartUnblocked(self):
 
@@ -367,9 +379,8 @@ class _NewRevisionForcingChange(config_changes_mod.ConfigChanger):
   def __init__(self, nonce):
     self._nonce = nonce
 
-  def AdjustConfiguration(self, config, metadata):
-    del metadata
-    config.revision_labels[NONCE_LABEL] = self._nonce
+  def Adjust(self, resource):
+    resource.template.labels[NONCE_LABEL] = self._nonce
 
 
 def _IsDigest(url):
@@ -402,17 +413,16 @@ class _SwitchToDigestChange(config_changes_mod.ConfigChanger):
   def __init__(self, base_revision):
     self._base_revision = base_revision
 
-  def AdjustConfiguration(self, config, metadata):
+  def Adjust(self, resource):
     if _IsDigest(self._base_revision.image):
       return
     if not self._base_revision.image_digest:
       return
 
-    annotations = k8s_object.AnnotationsFromMetadata(
-        config.MessagesModule(), metadata)
     # Mutates through to metadata: Save the by-tag user intent.
-    annotations[configuration.USER_IMAGE_ANNOTATION] = self._base_revision.image
-    config.image = self._base_revision.image_digest
+    resource.annotations[configuration.USER_IMAGE_ANNOTATION] = (
+        self._base_revision.image)
+    resource.template.image = self._base_revision.image_digest
 
 
 class ServerlessOperations(object):
@@ -683,7 +693,7 @@ class ServerlessOperations(object):
     response = self._client.namespaces_revisions.List(request)
     return [revision.Revision(item, messages) for item in response.items]
 
-  def _GetBaseRevision(self, config, metadata, status):
+  def _GetBaseRevision(self, template, metadata, status):
     """Return a Revision for use as the "base revision" for a change.
 
     When making a change that should not affect the code running, the
@@ -696,7 +706,7 @@ class ServerlessOperations(object):
         the latestCreatedRevision in status.
 
     Arguments:
-      config: Configuration, the configuration to get the base revision of.
+      template: Revision, the revision template to get the base revision of.
         May have been derived from a Service.
       metadata: ObjectMeta, the metadata from the top-level object
       status: Union[ConfigurationStatus, ServiceStatus], the status of the top-
@@ -707,7 +717,7 @@ class ServerlessOperations(object):
     """
     # Or returns None if not available by nonce & the control plane has not
     # implemented latestCreatedRevisionName on the Service object yet.
-    base_revision_nonce = config.revision_labels.get(NONCE_LABEL, None)
+    base_revision_nonce = template.labels.get(NONCE_LABEL, None)
     base_revision = None
     if base_revision_nonce:
       try:
@@ -737,7 +747,7 @@ class ServerlessOperations(object):
     """Make config_changes include switch by-digest image if not so already."""
     if not _IsDigest(serv.configuration.image):
       base_revision = self._GetBaseRevision(
-          serv.configuration, serv.metadata, serv.status)
+          serv.template, serv.metadata, serv.status)
       if base_revision:
         config_changes.append(_SwitchToDigestChange(base_revision))
 
@@ -779,7 +789,7 @@ class ServerlessOperations(object):
 
         # PUT the changed Service
         for config_change in config_changes:
-          config_change.AdjustConfiguration(serv.configuration, serv.metadata)
+          config_change.Adjust(serv)
         serv_name = service_ref.RelativeName()
         serv_update_req = (
             messages.RunNamespacesServicesReplaceServiceRequest(
@@ -800,8 +810,7 @@ class ServerlessOperations(object):
         new_serv.name = service_ref.servicesId
         parent = service_ref.Parent().RelativeName()
         for config_change in config_changes:
-          config_change.AdjustConfiguration(new_serv.configuration,
-                                            new_serv.metadata)
+          config_change.Adjust(new_serv)
         serv_create_req = (
             messages.RunNamespacesServicesCreateRequest(
                 service=new_serv.Message(),
@@ -848,7 +857,7 @@ class ServerlessOperations(object):
 
     Arguments:
       service_ref: Resource, the service to release
-      config_changes: list, objects that implement AdjustConfiguration().
+      config_changes: list, objects that implement Adjust().
       tracker: StagedProgressTracker, to report on the progress of releasing.
       asyn: bool, if True, release asyncronously
       private_endpoint: bool, True if creating a new Service for

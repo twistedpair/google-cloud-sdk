@@ -61,13 +61,17 @@ def SubnetworkResolver():
       'subnetwork', {compute_scope.ScopeEnum.REGION: 'compute.subnetworks'})
 
 
-def AddUpdateArgs(parser, include_beta=False, include_alpha=False):
+def AddUpdateArgs(parser, include_alpha_logging, include_beta_logging,
+                  include_l7_internal_load_balancing,
+                  include_private_ipv6_access):
   """Add args to the parser for subnet update.
 
   Args:
     parser: The argparse parser.
-    include_beta: Include beta functionality.
-    include_alpha: Include alpha functionality.
+    include_alpha_logging: Include alpha-specific logging args.
+    include_beta_logging: Include beta-specific logging args.
+    include_l7_internal_load_balancing: Include Internal HTTP(S) LB args.
+    include_private_ipv6_access: Include Private Ipv6 Access args.
   """
   updated_field = parser.add_mutually_exclusive_group()
 
@@ -111,12 +115,25 @@ def AddUpdateArgs(parser, include_beta=False, include_alpha=False):
             'for VPC flow logs can be found at '
             'https://cloud.google.com/vpc/docs/using-flow-logs.'))
 
-  if include_beta:
+  if include_alpha_logging:
+    messages = apis.GetMessagesModule('compute',
+                                      compute_api.COMPUTE_ALPHA_API_VERSION)
+    AddLoggingAggregationIntervalAlpha(parser, messages)
+    parser.add_argument(
+        '--flow-sampling',
+        type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
+        help="""\
+        Can only be specified if VPC flow logging for this subnetwork is
+        enabled. The value of the field must be in [0, 1]. Set the sampling rate
+        of VPC flow logs within the subnetwork where 1.0 means all collected
+        logs are reported and 0.0 means no logs are reported. Default is 0.5
+        which means half of all collected logs are reported.
+        """)
+    AddLoggingMetadataAlpha(parser, messages)
+  elif include_beta_logging:
     messages = apis.GetMessagesModule('compute',
                                       compute_api.COMPUTE_BETA_API_VERSION)
-
     AddLoggingAggregationInterval(parser, messages)
-
     parser.add_argument(
         '--logging-flow-sampling',
         type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
@@ -127,12 +144,9 @@ def AddUpdateArgs(parser, include_beta=False, include_alpha=False):
         logs are reported and 0.0 means no logs are reported. Default is 0.5
         which means half of all collected logs are reported.
         """)
-
     AddLoggingMetadata(parser, messages)
 
-  if include_alpha:
-    messages = apis.GetMessagesModule('compute',
-                                      compute_api.COMPUTE_ALPHA_API_VERSION)
+  if include_l7_internal_load_balancing:
     updated_field.add_argument(
         '--role',
         choices={'ACTIVE': 'The ACTIVE subnet that is currently used.'},
@@ -144,7 +158,6 @@ def AddUpdateArgs(parser, include_beta=False, include_alpha=False):
               '\n\nThis field is only valid when updating a reserved IP '
               'address range used\nfor the purpose of Internal HTTP(S) Load '
               'Balancer.'))
-
     parser.add_argument(
         '--drain-timeout',
         type=arg_parsers.Duration(lower_bound='0s'),
@@ -159,26 +172,11 @@ def AddUpdateArgs(parser, include_beta=False, include_alpha=False):
         only applicable when the [--role=ACTIVE] flag is being used.
         """)
 
-    AddLoggingAggregationIntervalAlpha(parser, messages)
-
-    parser.add_argument(
-        '--flow-sampling',
-        type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
-        help="""\
-        Can only be specified if VPC flow logging for this subnetwork is
-        enabled. The value of the field must be in [0, 1]. Set the sampling rate
-        of VPC flow logs within the subnetwork where 1.0 means all collected
-        logs are reported and 0.0 means no logs are reported. Default is 0.5
-        which means half of all collected logs are reported.
-        """)
-
-    AddLoggingMetadataAlpha(parser, messages)
-
+  if include_private_ipv6_access:
     updated_field.add_argument(
         '--enable-private-ipv6-access',
         action=arg_parsers.StoreTrueFalseAction,
         help=('Enable/disable private IPv6 access for the subnet.'))
-
     GetPrivateIpv6GoogleAccessTypeFlagMapper(messages).choice_arg.AddToParser(
         updated_field)
 

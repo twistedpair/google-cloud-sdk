@@ -278,3 +278,13 @@ def AddCandidateSubnets(parser):
       one of the candidate subnets. The request will fail if all /29s within the
       candidate subnets are in use at Google's edge.""",
       default=[])
+
+
+def AddDryRun(parser):
+  """Adds dry-run flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--dry-run',
+      default=None,
+      action='store_true',
+      help='If supplied, validates the attachment without creating it.'
+  )

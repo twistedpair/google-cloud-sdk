@@ -646,7 +646,7 @@ class RecognitionConfig(_messages.Message):
         with a single byte containing the block length. Only Speex wideband is
         supported. `sample_rate_hertz` must be 16000.
       MP3: MP3 audio. Support all standard MP3 bitrates (which range from
-        32-320 kbps) If using this encoding, then 'sample_rate_hertz' can be
+        32-320 kbps). When using this encoding, `sample_rate_hertz` can be
         optionally unset if not known.
     """
     ENCODING_UNSPECIFIED = 0
@@ -896,11 +896,15 @@ class SpeechContext(_messages.Message):
   phrases in the results.
 
   Fields:
-    boost: Hint Boost will increase the probability that a specific phrase
-      will be recognized over other similar sounding phrases. The higher the
-      boost, the higher the chance of false positive recognition as well. The
-      range of possible values is 0 to 20. We recommend using a binary search
-      approach to finding the optimal value for your use case.
+    boost: Hint Boost. Positive value will increase the probability that a
+      specific phrase will be recognized over other similar sounding phrases.
+      The higher the boost, the higher the chance of false positive
+      recognition as well. Negative boost values would correspond to anti-
+      biasing. Anti-biasing is not enabled, so negative boost will simply be
+      ignored. Though `boost` can accept a wide range of positive values, most
+      use cases are best served with values between 0 and 20. We recommend
+      using a binary search approach to finding the optimal value for your use
+      case.
     phrases: *Optional* A list of strings containing words and phrases "hints"
       so that the speech recognition is more likely to recognize them. This
       can be used to improve the accuracy for specific words and phrases, for

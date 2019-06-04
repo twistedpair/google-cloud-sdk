@@ -5,6 +5,24 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 249.0.0 (2019-06-04)
+
+### Cloud SDK
+
+* Added `gcloud auth print-identity-token` command.
+* Added property `survey/disable_prompts` to opt out of being prompted to take a survey periodically.
+
+### Compute Engine
+
+* Promoted the following commands to beta:
+  * `gcloud compute backend-services <import|export>`.
+  * `gcloud compute url-maps <import|export>`.
+  * `gcloud compute forwarding-rules <import|export>`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 248.0.0 (2019-05-28)
 
 ### Breaking Changes
@@ -17,7 +35,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Build
 
-* Added `--ignore-file` flag to `gcloud builds submit` for overriding default `.gcloudignore` file.
+* Added `--ignore-file` flag to `gcloud builds submit` for overriding default .gcloudignore file.
 
 ### Cloud Firestore Emulator
 
@@ -67,7 +85,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### App Engine
 
-* Added '--ignore-file' flag to 'gcloud app deploy' for overriding default .gcloudignore file.
+* Added `--ignore-file` to `gcloud app deploy` for overriding default .gcloudignore file.
 
 ### Cloud Bigtable
 
@@ -75,18 +93,17 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Build
 
-* Added `--ignore-file` flag to 'gcloud builds submit' for overriding default .gcloudignore file.
+* Added `--ignore-file` flag to `gcloud builds submit` for overriding default .gcloudignore file.
 
 ### Cloud Dataproc
 
-* Removed the `--max-age`, `--max-idle`, `--expiration-time` flag from the
+* Removed the `--max-age`, `--max-idle`, `--expiration-time` flags from the
   `gcloud beta dataproc workflow-templates set-managed-cluster` command group.
   The workflow template feature does not support cluster scheduled deletion.
 
 ### Cloud Functions
 
-* Added `--ignore-file` flag to`'gcloud functions deploy` for overriding default `.gcloudignore` file.
-
+* Added `--ignore-file` flag to `gcloud functions deploy` for overriding default .gcloudignore file.
 
 ### Cloud Machine Learning Engine
 
@@ -104,8 +121,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Kubernetes Engine
 
-* 
-* Google Kubernetes Engine kubectl is updated to 1.12.8 from 1.11.9.
+* Updated Google Kubernetes Engine `kubectl` to 1.12.8 (from 1.11.9).
 * Updated extra Google Kubernetes Engine kubectl versions:
   * kubectl.1.11 (patch 1.11.10)
   * kubectl.1.12 (patch 1.12.8)
@@ -134,7 +150,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 * Added `--allow-unauthenticated` flag to `gcloud beta functions deploy`.
 
 
-### Cloud PubSub
+### Cloud Pub/Sub
 
 *   Promoted `--expiration-period` in `gcloud pubsub subscriptions
     <create|update>` to GA.

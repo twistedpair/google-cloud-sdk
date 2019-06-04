@@ -80,7 +80,25 @@ class AuthenticationException(Error):
             message=message)))
 
 
-class NoCredentialsForAccountException(AuthenticationException):
+class PrintTokenAuthenticationException(Error):
+  """Exceptions that tell the users to run auth login."""
+
+  def __init__(self, message):
+    super(PrintTokenAuthenticationException, self).__init__(textwrap.dedent("""\
+        {message}
+        Please run:
+
+          $ gcloud auth login
+
+        to obtain new credentials.
+
+        For service account, please activate it first:
+
+          $ gcloud auth activate-service-account ACCOUNT""".format(
+              message=message)))
+
+
+class NoCredentialsForAccountException(PrintTokenAuthenticationException):
   """Exception for when no credentials are found for an account."""
 
   def __init__(self, account):

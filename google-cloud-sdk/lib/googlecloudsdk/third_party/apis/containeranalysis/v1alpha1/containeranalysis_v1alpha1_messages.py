@@ -1439,20 +1439,16 @@ class Layer(_messages.Message):
 
   Enums:
     DirectiveValueValuesEnum: The recovered Dockerfile directive used to
-      construct this layer. TODO(b/132434884) Use only `directive_string` when
-      all `directive` values are backfilled.
+      construct this layer.
 
   Fields:
     arguments: The recovered arguments to the Dockerfile directive.
     directive: The recovered Dockerfile directive used to construct this
-      layer. TODO(b/132434884) Use only `directive_string` when all
-      `directive` values are backfilled.
+      layer.
   """
 
   class DirectiveValueValuesEnum(_messages.Enum):
     r"""The recovered Dockerfile directive used to construct this layer.
-    TODO(b/132434884) Use only `directive_string` when all `directive` values
-    are backfilled.
 
     Values:
       DIRECTIVE_UNSPECIFIED: Default value for unsupported/missing directive

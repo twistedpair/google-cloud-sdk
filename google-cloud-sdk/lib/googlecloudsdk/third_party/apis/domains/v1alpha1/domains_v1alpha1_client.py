@@ -262,6 +262,33 @@ in the past.
         supports_download=False,
     )
 
+    def GetAuthorizationCode(self, request, global_params=None):
+      r"""Gets Authorization Code of a Registration.
+
+      Args:
+        request: (DomainsProjectsLocationsRegistrationsGetAuthorizationCodeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AuthorizationCode) The response message.
+      """
+      config = self.GetMethodConfig('GetAuthorizationCode')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetAuthorizationCode.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}:getAuthorizationCode',
+        http_method=u'GET',
+        method_id=u'domains.projects.locations.registrations.getAuthorizationCode',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}:getAuthorizationCode',
+        request_field='',
+        request_type_name=u'DomainsProjectsLocationsRegistrationsGetAuthorizationCodeRequest',
+        response_type_name=u'AuthorizationCode',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource.
 Returns an empty policy if the resource exists and does not have a policy

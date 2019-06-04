@@ -25,7 +25,8 @@ import six
 
 def MakeSubnetworkUpdateRequest(client,
                                 subnet_ref,
-                                release_track='GA',
+                                include_alpha_logging,
+                                include_beta_logging,
                                 enable_private_ip_google_access=None,
                                 add_secondary_ranges=None,
                                 remove_secondary_ranges=None,
@@ -42,7 +43,8 @@ def MakeSubnetworkUpdateRequest(client,
   Args:
     client: GCE API client
     subnet_ref: Reference to a subnetwork
-    release_track: The release track (ALPHA, BETA, GA)
+    include_alpha_logging: Include alpha-specific logging args.
+    include_beta_logging: Include beta-specific logging args.
     enable_private_ip_google_access: Enable/disable access to Google Cloud APIs
       from this subnet for instances without a public ip address.
     add_secondary_ranges: List of secondary IP ranges to add to the subnetwork
@@ -125,21 +127,7 @@ def MakeSubnetworkUpdateRequest(client,
     ])[0]
     subnetwork.fingerprint = original_subnetwork.fingerprint
 
-    if release_track == 'GA':
-      subnetwork.enableFlowLogs = enable_flow_logs
-    elif release_track == 'BETA':
-      log_config = client.messages.SubnetworkLogConfig(enable=enable_flow_logs)
-      if aggregation_interval is not None:
-        log_config.aggregationInterval = flags.GetLoggingAggregationIntervalArg(
-            client.messages).GetEnumForChoice(aggregation_interval)
-      if flow_sampling is not None:
-        log_config.flowSampling = flow_sampling
-      if metadata is not None:
-        log_config.metadata = flags.GetLoggingMetadataArg(
-            client.messages).GetEnumForChoice(metadata)
-
-      subnetwork.logConfig = log_config
-    else:
+    if include_alpha_logging:
       log_config = client.messages.SubnetworkLogConfig(enable=enable_flow_logs)
       if aggregation_interval is not None:
         log_config.aggregationInterval = (
@@ -150,8 +138,20 @@ def MakeSubnetworkUpdateRequest(client,
       if metadata is not None:
         log_config.metadata = flags.GetLoggingMetadataArgAlpha(
             client.messages).GetEnumForChoice(metadata)
-
       subnetwork.logConfig = log_config
+    elif include_beta_logging:
+      log_config = client.messages.SubnetworkLogConfig(enable=enable_flow_logs)
+      if aggregation_interval is not None:
+        log_config.aggregationInterval = flags.GetLoggingAggregationIntervalArg(
+            client.messages).GetEnumForChoice(aggregation_interval)
+      if flow_sampling is not None:
+        log_config.flowSampling = flow_sampling
+      if metadata is not None:
+        log_config.metadata = flags.GetLoggingMetadataArg(
+            client.messages).GetEnumForChoice(metadata)
+      subnetwork.logConfig = log_config
+    else:
+      subnetwork.enableFlowLogs = enable_flow_logs
 
     return client.MakeRequests(
         [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])

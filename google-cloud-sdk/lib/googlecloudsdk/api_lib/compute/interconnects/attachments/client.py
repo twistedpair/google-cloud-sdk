@@ -82,31 +82,40 @@ class InterconnectAttachment(object):
                                    attachment_type, edge_availability_domain,
                                    admin_enabled, bandwidth, pairing_key,
                                    vlan_tag_802_1q, candidate_subnets,
-                                   partner_metadata, partner_asn):
+                                   partner_metadata, partner_asn,
+                                   validate_only):
     interconnect_self_link = None
     if interconnect:
       interconnect_self_link = interconnect.SelfLink()
     router_self_link = None
     if router:
       router_self_link = router.SelfLink()
+    attachment = self._messages.InterconnectAttachment(
+        name=self.ref.Name(),
+        description=description,
+        interconnect=interconnect_self_link,
+        router=router_self_link,
+        type=attachment_type,
+        edgeAvailabilityDomain=edge_availability_domain,
+        adminEnabled=admin_enabled,
+        bandwidth=bandwidth,
+        pairingKey=pairing_key,
+        vlanTag8021q=vlan_tag_802_1q,
+        candidateSubnets=candidate_subnets,
+        partnerMetadata=partner_metadata,
+        partnerAsn=partner_asn)
+    if validate_only is not None:
+      return (self._client.interconnectAttachments, 'Insert',
+              self._messages.ComputeInterconnectAttachmentsInsertRequest(
+                  project=self.ref.project,
+                  region=self.ref.region,
+                  validateOnly=validate_only,
+                  interconnectAttachment=attachment))
     return (self._client.interconnectAttachments, 'Insert',
             self._messages.ComputeInterconnectAttachmentsInsertRequest(
                 project=self.ref.project,
                 region=self.ref.region,
-                interconnectAttachment=self._messages.InterconnectAttachment(
-                    name=self.ref.Name(),
-                    description=description,
-                    interconnect=interconnect_self_link,
-                    router=router_self_link,
-                    type=attachment_type,
-                    edgeAvailabilityDomain=edge_availability_domain,
-                    adminEnabled=admin_enabled,
-                    bandwidth=bandwidth,
-                    pairingKey=pairing_key,
-                    vlanTag8021q=vlan_tag_802_1q,
-                    candidateSubnets=candidate_subnets,
-                    partnerMetadata=partner_metadata,
-                    partnerAsn=partner_asn)))
+                interconnectAttachment=attachment))
 
   def _MakePatchRequestTupleAlpha(self, description, admin_enabled, bandwidth,
                                   partner_metadata, labels, label_fingerprint):
@@ -181,7 +190,8 @@ class InterconnectAttachment(object):
                   partner_interconnect=None,
                   partner_portal_url=None,
                   partner_asn=None,
-                  only_generate_request=False):
+                  only_generate_request=False,
+                  validate_only=None):
     """Create an interconnectAttachment."""
     if edge_availability_domain:
       edge_availability_domain = (
@@ -208,12 +218,11 @@ class InterconnectAttachment(object):
     if candidate_subnets is None:
       candidate_subnets = []
     requests = [
-        self._MakeCreateRequestTupleAlpha(description, interconnect, router,
-                                          attachment_type,
-                                          edge_availability_domain,
-                                          admin_enabled, bandwidth, pairing_key,
-                                          vlan_tag_802_1q, candidate_subnets,
-                                          partner_metadata, partner_asn)
+        self._MakeCreateRequestTupleAlpha(
+            description, interconnect, router, attachment_type,
+            edge_availability_domain, admin_enabled, bandwidth, pairing_key,
+            vlan_tag_802_1q, candidate_subnets, partner_metadata, partner_asn,
+            validate_only)
     ]
     if not only_generate_request:
       resources = self._compute_client.MakeRequests(requests)

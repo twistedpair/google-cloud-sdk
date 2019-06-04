@@ -429,6 +429,14 @@ MAP = {
             default_version=True
         ),
     },
+    'datafusion': {
+        'v1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.datafusion.v1beta1',
+            client_classpath='datafusion_v1beta1_client.DatafusionV1beta1',
+            messages_modulepath='datafusion_v1beta1_messages',
+            default_version=True
+        ),
+    },
     'dataproc': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.dataproc.v1',
@@ -698,6 +706,12 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.osconfig.v1alpha1',
             client_classpath='osconfig_v1alpha1_client.OsconfigV1alpha1',
             messages_modulepath='osconfig_v1alpha1_messages',
+            default_version=False
+        ),
+        'v1alpha2': APIDef(
+            class_path='googlecloudsdk.third_party.apis.osconfig.v1alpha2',
+            client_classpath='osconfig_v1alpha2_client.OsconfigV1alpha2',
+            messages_modulepath='osconfig_v1alpha2_messages',
             default_version=True
         ),
     },

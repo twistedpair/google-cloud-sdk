@@ -253,6 +253,8 @@ class _Sections(object):
     core: Section, The section containing core properties for the Cloud SDK.
     dataproc: Section, The section containing dataproc properties for the Cloud
       SDK.
+    datafusion: Section, The section containing datafusion properties for the
+      Cloud SDK.
     default_section: Section, The main section of the properties file (core).
     deployment_manager: Section, The section containing deployment_manager
       properties for the Cloud SDK.
@@ -268,6 +270,8 @@ class _Sections(object):
       Cloud SDK.
     functions: Section, The section containing functions properties for the
       Cloud SDK.
+    game_services: Section, The section containing gameservices properties for
+      the Cloud SDK.
     gcloudignore: Section, The section containing gcloudignore properties for
       the Cloud SDK.
     healthcare: Section, The section containing healthcare properties for the
@@ -285,6 +289,8 @@ class _Sections(object):
     spanner: Section, The section containing spanner properties for the Cloud
       SDK.
     storage: Section, The section containing storage properties for the Cloud
+      SDK.
+    survey: Section, The section containing survey properties for the Cloud
       SDK.
     test: Section, The section containing test properties for the Cloud SDK.
   """
@@ -310,6 +316,7 @@ class _Sections(object):
     self.container = _SectionContainer()
     self.core = _SectionCore()
     self.dataproc = _SectionDataproc()
+    self.datafusion = _SectionDatafusion()
     self.deployment_manager = _SectionDeploymentManager()
     self.devshell = _SectionDevshell()
     self.diagnostics = _SectionDiagnostics()
@@ -317,6 +324,7 @@ class _Sections(object):
     self.experimental = _SectionExperimental()
     self.filestore = _SectionFilestore()
     self.functions = _SectionFunctions()
+    self.game_services = _SectionGameServices()
     self.gcloudignore = _SectionGcloudignore()
     self.healthcare = _SectionHealthcare()
     self.interactive = _SectionInteractive()
@@ -328,6 +336,7 @@ class _Sections(object):
     self.run = _SectionRun()
     self.spanner = _SectionSpanner()
     self.storage = _SectionStorage()
+    self.survey = _SectionSurvey()
     self.test = _SectionTest()
 
     sections = [
@@ -345,6 +354,7 @@ class _Sections(object):
         self.container,
         self.core,
         self.dataproc,
+        self.datafusion,
         self.deployment_manager,
         self.devshell,
         self.diagnostics,
@@ -352,6 +362,7 @@ class _Sections(object):
         self.experimental,
         self.filestore,
         self.functions,
+        self.game_services,
         self.gcloudignore,
         self.healthcare,
         self.interactive,
@@ -361,6 +372,7 @@ class _Sections(object):
         self.redis,
         self.run,
         self.spanner,
+        self.survey,
         self.test,
     ]
     self.__sections = {section.name: section for section in sections}
@@ -790,6 +802,20 @@ class _SectionHealthcare(_Section):
         'command will fall back to this value, if set.')
 
 
+class _SectionGameServices(_Section):
+  """Contains the properties for the 'game_services' section."""
+
+  def __init__(self):
+    super(_SectionGameServices, self).__init__(
+        'game_services')
+    self.location = self._Add(
+        'location',
+        default='us-central1',
+        help_text='Default location to use when working with Cloud Game '
+        'Services resources. When a `--location` flag is required but not '
+        'provided, the command will fall back to this value.')
+
+
 class _SectionAccessibility(_Section):
   """Contains the properties for the 'accessibility' section."""
 
@@ -982,7 +1008,7 @@ class _SectionCore(_Section):
     self.disable_usage_reporting = self._AddBool(
         'disable_usage_reporting',
         help_text='If True, anonymous statistics on SDK usage will not be '
-        'collected.  This value is set by default based on your choices during '
+        'collected. This value is set by default based on your choices during '
         'installation, but can be changed at any time.  For more information, '
         'see: https://cloud.google.com/sdk/usage-statistics')
     self.enable_gri = self._AddBool(
@@ -1368,6 +1394,22 @@ class _SectionComposer(_Section):
             'referenced.'))
 
 
+class _SectionDatafusion(_Section):
+  """Contains the properties for the 'datafusion' section."""
+
+  def __init__(self):
+    super(_SectionDatafusion, self).__init__('datafusion')
+    self.location = self._Add(
+        'location',
+        help_text=(
+            'Datafusion location to use. Each Datafusion location '
+            'constitutes an independent resource namespace constrained to '
+            'deploying environments into Compute Engine regions inside this '
+            'location. This parameter corresponds to the '
+            '/locations/<location> segment of the Datafusion resource URIs being '
+            'referenced.'))
+
+
 class _SectionDataproc(_Section):
   """Contains the properties for the 'ml_engine' section."""
 
@@ -1569,6 +1611,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.containeranalysis = self._Add('containeranalysis')
     self.datacatalog = self._Add('datacatalog')
     self.dataflow = self._Add('dataflow')
+    self.datafusion = self._Add('datafusion')
     self.datapol = self._Add('datapol')
     self.dataproc = self._Add('dataproc')
     self.datastore = self._Add('datastore')
@@ -1578,6 +1621,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.domains = self._Add('domains')
     self.file = self._Add('file')
     self.firestore = self._Add('firestore')
+    self.gameservices = self._Add('gameservices')
     self.genomics = self._Add('genomics')
     self.gkehub = self._Add('gkehub')
     self.healthcare = self._Add('healthcare')
@@ -1702,6 +1746,18 @@ class _SectionStorage(_Section):
         hidden=True,
         help_text='If True, use the deprecated upload implementation which '
         'uses gsutil.')
+
+
+class _SectionSurvey(_Section):
+  """Contains the properties for the 'survey' section."""
+
+  def __init__(self):
+    super(_SectionSurvey, self).__init__('survey')
+    self.disable_prompts = self._AddBool(
+        'disable_prompts',
+        default=False,
+        help_text='If True, gcloud will not prompt you to take periodic usage '
+        'experience surveys.')
 
 
 class _Property(object):

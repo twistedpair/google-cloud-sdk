@@ -2991,7 +2991,8 @@ class Message(_messages.Message):
       with a given store.
 
   Fields:
-    createTime: The datetime when the message was created. Set by the server.
+    createTime: Output only. The datetime when the message was created. Set by
+      the server.
     data: Raw message bytes.
     labels: User-supplied key-value pairs used to organize HL7v2 stores.
       Label keys must be between 1 and 63 characters long, have a UTF-8
@@ -3005,7 +3006,7 @@ class Message(_messages.Message):
     name: Resource name of the Message, of the form `projects/{project_id}/dat
       asets/{dataset_id}/hl7V2Stores/{hl7_v2_store_id}/messages/{message_id}`.
       Assigned by the server.
-    parsedData: The parsed version of the raw message data.
+    parsedData: Output only. The parsed version of the raw message data.
     patientIds: All patient IDs listed in the PID-2, PID-3, and PID-4 segments
       of this message.
     sendFacility: The hospital that this message came from. MSH-4.
@@ -3218,7 +3219,8 @@ class ParserConfig(_messages.Message):
   Fields:
     allowNullHeader: Determines whether messages with no header are allowed.
     segmentTerminator: Byte(s) to be used as the segment terminator. If this
-      is unset, '\r' will be used as segment terminator.
+      is unset, '\r' will be used as the segment terminator, matching the HL7
+      version 2 specification.
   """
 
   allowNullHeader = _messages.BooleanField(1)
@@ -3319,8 +3321,8 @@ class ResourceAnnotation(_messages.Message):
 
 
 class SchemaConfig(_messages.Message):
-  r"""Configuration for the FHIR BigQuery and GCS schema. Determines how the
-  server generates the schema.
+  r"""Configuration for the FHIR BigQuery and Cloud Storage schema. Determines
+  how the server generates the schema.
 
   Enums:
     SchemaTypeValueValuesEnum: Specifies the output schema type. If

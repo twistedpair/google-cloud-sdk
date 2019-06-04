@@ -70,7 +70,96 @@ class Revision(k8s_object.KubernetesObject):
 
   @property
   def image(self):
-    return self._m.spec.container.image
+    """URL to container."""
+    return self.container.image
+
+  @image.setter
+  def image(self, value):
+    self.container.image = value
+
+  def _EnsureResources(self):
+    limits_cls = self._messages.ResourceRequirements.LimitsValue
+    if self.container.resources is not None:
+      if self.container.resources.limits is None:
+        self.container.resources.limits = k8s_object.InitializedInstance(
+            limits_cls)
+    else:
+      self.container.resources = k8s_object.InitializedInstance(
+          self._messages.ResourceRequirements)
+    # These fields are in the schema due to an error in interperetation of the
+    # Knative spec. We're removing them, so never send any contents for them.
+    self.container.resources.limitsInMap = None
+    self.container.resources.requestsInMap = None
+
+  def _EnsureMeta(self):
+    if self.metadata is None:
+      self.metadata = self._messages.ObjectMeta()
+    return self.metadata
+
+  @property
+  def container(self):
+    """The container in the revisionTemplate."""
+    return self.spec.container
+
+  @property
+  def resource_limits(self):
+    """The resource limits as a dictionary { resource name: limit}."""
+    self._EnsureResources()
+    return k8s_object.ListAsDictionaryWrapper(
+        self.container.resources.limits.additionalProperties,
+        self._messages.ResourceRequirements.LimitsValue.AdditionalProperty,
+        key_field='key',
+        value_field='value',
+    )
+
+  @property
+  def deprecated_string_concurrency(self):
+    """The string-enum concurrency model in the revisionTemplate.
+
+    This is deprecated in favor of the numeric field containerConcurrency
+    """
+    return self.spec.concurrencyModel
+
+  @deprecated_string_concurrency.setter
+  def deprecated_string_concurrency(self, value):
+    self.spec.concurrencyModel = value
+
+  @property
+  def concurrency(self):
+    """The concurrency number in the revisionTemplate.
+
+    0: Multiple concurrency, max unspecified.
+    1: Single concurrency
+    n>1: Allow n simultaneous requests per instance.
+    """
+    return self.spec.containerConcurrency
+
+  @concurrency.setter
+  def concurrency(self, value):
+    self.spec.containerConcurrency = value
+
+  @property
+  def timeout(self):
+    """The timeout number in the revisionTemplate.
+
+    The lib can accept either a duration format like '1m20s' or integer like
+    '80' to set the timeout. The returned object is an integer value, which
+    assumes second the unit, e.g., 80.
+    """
+    return self.spec.timeoutSeconds
+
+  @timeout.setter
+  def timeout(self, value):
+    self.spec.timeoutSeconds = value
+
+  @property
+  def service_account(self):
+    """The service account in the revisionTemplate."""
+    return self.spec.serviceAccountName
+
+  @service_account.setter
+  def service_account(self, value):
+    self.spec.serviceAccountName = value
 
   @property
   def image_digest(self):

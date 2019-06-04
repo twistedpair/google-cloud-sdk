@@ -93,7 +93,14 @@ class KubernetesObject(object):
       a new k8s_object with only the given spec.
     """
     msg_cls = getattr(messages_mod, cls.KIND)
-    return cls(msg_cls(spec=spec), messages_mod, spec_only=True)
+    return cls(msg_cls(spec=spec), messages_mod)
+
+  @classmethod
+  def Template(cls, template, messages_mod):
+    """Wrap a template object: spec and metadata only, no status."""
+    msg_cls = getattr(messages_mod, cls.KIND)
+    return cls(msg_cls(spec=template.spec, metadata=template.metadata),
+               messages_mod)
 
   @classmethod
   def New(cls, client, namespace):
@@ -123,19 +130,18 @@ class KubernetesObject(object):
     ret.metadata.namespace = namespace
     return cls(ret, messages_mod)
 
-  def __init__(self, to_wrap, messages_mod, spec_only=False):
+  def __init__(self, to_wrap, messages_mod):
     if not isinstance(to_wrap, getattr(messages_mod, self.KIND)):
       raise ValueError('Oops, trying to wrap wrong kind of message')
     self._m = to_wrap
     self._messages = messages_mod
-    self._spec_only = spec_only
 
   def MessagesModule(self):
     """Return the messages module."""
     return self._messages
 
   def AssertFullObject(self):
-    if self._spec_only:
+    if not self._m.metadata:
       raise ValueError('This instance is spec-only.')
 
   # Access the "raw" k8s message parts. When subclasses want to allow mutability

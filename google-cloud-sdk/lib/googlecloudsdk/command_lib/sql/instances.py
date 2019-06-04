@@ -31,6 +31,7 @@ from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_io
 
 DEFAULT_RELEASE_TRACK = base.ReleaseTrack.GA
 
@@ -68,6 +69,23 @@ def ConnectToInstance(cmd_args, sql_user):
   except OSError:
     log.error('Failed to execute command "{0}"'.format(' '.join(cmd_args)))
     log.Print(info_holder.InfoHolder())
+
+
+def _GetAndValidateCmekKeyName(args):
+  """Parses the CMEK resource arg, makes sure the key format was correct."""
+  kms_ref = args.CONCEPTS.kms_key.Parse()
+  if kms_ref:
+    _ShowCmekPrompt()
+    return kms_ref.RelativeName()
+  else:
+    # Check for partially specified disk-encryption-key.
+    for keyword in [
+        'disk-encryption-key', 'disk-encryption-key-keyring',
+        'disk-encryption-key-location', 'disk-encryption-key-project'
+    ]:
+      if getattr(args, keyword.replace('-', '_'), None):
+        raise exceptions.InvalidArgumentException('--disk-encryption-key',
+                                                  'not fully specified.')
 
 
 def _GetZone(args):
@@ -113,6 +131,24 @@ def ShowZoneDeprecationWarnings(args):
   if not (region_specified or zone_specified):
     log.warning('Starting with release 233.0.0, you will need to specify '
                 'either a region or a zone to create an instance.')
+
+
+def ShowCmekWarning(resource_type_label, instance_type_label):
+  log.warning(
+      'Your {} will be encrypted with {}\'s customer-managed encryption key. '
+      'If anyone destroys this key, all data encrypted with it will be '
+      'permanently lost.'.format(resource_type_label, instance_type_label))
+
+
+def _ShowCmekPrompt():
+  log.warning(
+      'You are creating a Cloud SQL instance encrypted with a customer-managed '
+      'key. If anyone destroys a customer-managed key, all data encrypted with '
+      'it will be permanently lost.\n\n'
+      'Make sure you have the following permission, which is needed for this '
+      'instance\'s service account to encrypt/decrypt with the selected key: '
+      'resourcemanager.projects.setIamPolicy\n')
+  console_io.PromptContinue(cancel_on_no=True)
 
 
 class _BaseInstances(object):
@@ -412,6 +448,13 @@ class _BaseInstances(object):
           sql_messages, args.master_username, args.master_password,
           args.master_dump_file_path, args.master_ca_certificate_path,
           args.client_certificate_path, args.client_key_path)
+
+    # ALPHA args.
+    if _IsAlpha(release_track):
+      key_name = _GetAndValidateCmekKeyName(args)
+      if key_name:
+        config = sql_messages.DiskEncryptionConfiguration(kmsKeyName=key_name)
+        instance_resource.diskEncryptionConfiguration = config
 
     return instance_resource
 

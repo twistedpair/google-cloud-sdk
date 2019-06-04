@@ -1730,11 +1730,11 @@ class NodeConfig(_messages.Message):
       ensure-gke-docker"  "gci-update-strategy"  "instance-template"  "kube-
       env"  "startup-script"  "user-data"  "disable-address-manager"
       "windows-startup-script-ps1"  "common-psm1"  "k8s-node-setup-psm1"
-      "install-ssh-psm1"  "user-profile-psm1"  Values are free-form strings,
-      and only have meaning as interpreted by the image running in the
-      instance. The only restriction placed on them is that each value's size
-      must be less than or equal to 32 KB.  The total size of all keys and
-      values must be less than 512 KB.
+      "install-ssh-psm1"  "user-profile-psm1"  "serial-port-logging-enable"
+      Values are free-form strings, and only have meaning as interpreted by
+      the image running in the instance. The only restriction placed on them
+      is that each value's size must be less than or equal to 32 KB.  The
+      total size of all keys and values must be less than 512 KB.
 
   Fields:
     accelerators: A list of hardware accelerators to be attached to each node.
@@ -1773,11 +1773,11 @@ class NodeConfig(_messages.Message):
       ensure-gke-docker"  "gci-update-strategy"  "instance-template"  "kube-
       env"  "startup-script"  "user-data"  "disable-address-manager"
       "windows-startup-script-ps1"  "common-psm1"  "k8s-node-setup-psm1"
-      "install-ssh-psm1"  "user-profile-psm1"  Values are free-form strings,
-      and only have meaning as interpreted by the image running in the
-      instance. The only restriction placed on them is that each value's size
-      must be less than or equal to 32 KB.  The total size of all keys and
-      values must be less than 512 KB.
+      "install-ssh-psm1"  "user-profile-psm1"  "serial-port-logging-enable"
+      Values are free-form strings, and only have meaning as interpreted by
+      the image running in the instance. The only restriction placed on them
+      is that each value's size must be less than or equal to 32 KB.  The
+      total size of all keys and values must be less than 512 KB.
     minCpuPlatform: Minimum CPU platform to be used by this instance. The
       instance may be scheduled on the specified or newer CPU platform.
       Applicable values are the friendly names of CPU platforms, such as
@@ -1806,6 +1806,7 @@ class NodeConfig(_messages.Message):
     serviceAccount: The Google Cloud Platform Service Account to be used by
       the node VMs. If no Service Account is specified, the "default" service
       account is used.
+    shieldedInstanceConfig: Shielded Instance options.
     tags: The list of instance tags applied to all nodes. Tags are used to
       identify valid sources or targets for network firewalls and are
       specified by the client during cluster or node pool creation. Each tag
@@ -1857,11 +1858,11 @@ class NodeConfig(_messages.Message):
     configure-sh"  "enable-oslogin"  "gci-ensure-gke-docker"  "gci-update-
     strategy"  "instance-template"  "kube-env"  "startup-script"  "user-data"
     "disable-address-manager"  "windows-startup-script-ps1"  "common-psm1"
-    "k8s-node-setup-psm1"  "install-ssh-psm1"  "user-profile-psm1"  Values are
-    free-form strings, and only have meaning as interpreted by the image
-    running in the instance. The only restriction placed on them is that each
-    value's size must be less than or equal to 32 KB.  The total size of all
-    keys and values must be less than 512 KB.
+    "k8s-node-setup-psm1"  "install-ssh-psm1"  "user-profile-psm1"  "serial-
+    port-logging-enable" Values are free-form strings, and only have meaning
+    as interpreted by the image running in the instance. The only restriction
+    placed on them is that each value's size must be less than or equal to 32
+    KB.  The total size of all keys and values must be less than 512 KB.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -1897,9 +1898,10 @@ class NodeConfig(_messages.Message):
   preemptible = _messages.BooleanField(12)
   sandboxConfig = _messages.MessageField('SandboxConfig', 13)
   serviceAccount = _messages.StringField(14)
-  tags = _messages.StringField(15, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 16, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 17)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 15)
+  tags = _messages.StringField(16, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 17, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 18)
 
 
 class NodeManagement(_messages.Message):
@@ -2739,6 +2741,25 @@ class SetNodePoolSizeRequest(_messages.Message):
   nodePoolId = _messages.StringField(4)
   projectId = _messages.StringField(5)
   zone = _messages.StringField(6)
+
+
+class ShieldedInstanceConfig(_messages.Message):
+  r"""A set of Shielded Instance options.
+
+  Fields:
+    enableIntegrityMonitoring: Defines whether the instance has integrity
+      monitoring enabled.  Enables monitoring and attestation of the boot
+      integrity of the instance. The attestation is performed against the
+      integrity policy baseline. This baseline is initially derived from the
+      implicitly trusted boot image when the instance is created.
+    enableSecureBoot: Defines whether the instance has Secure Boot enabled.
+      Secure Boot helps ensure that the system only runs authentic software by
+      verifying the digital signature of all boot components, and halting the
+      boot process if signature verification fails.
+  """
+
+  enableIntegrityMonitoring = _messages.BooleanField(1)
+  enableSecureBoot = _messages.BooleanField(2)
 
 
 class ShieldedNodes(_messages.Message):

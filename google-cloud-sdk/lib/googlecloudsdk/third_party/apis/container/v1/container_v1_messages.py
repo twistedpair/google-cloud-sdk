@@ -70,6 +70,17 @@ class AutoUpgradeOptions(_messages.Message):
   description = _messages.StringField(2)
 
 
+class BigQueryDestination(_messages.Message):
+  r"""Parameters for using BigQuery as the destination of resource usage
+  export.
+
+  Fields:
+    datasetId: The ID of a BigQuery Dataset.
+  """
+
+  datasetId = _messages.StringField(1)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""CancelOperationRequest cancels a single operation.
 
@@ -194,10 +205,11 @@ class Cluster(_messages.Message):
       [zones](/compute/docs/zones#available) in which the cluster's nodes
       should be located.
     loggingService: The logging service the cluster should use to write logs.
-      Currently available options:  * `logging.googleapis.com` - the Google
-      Cloud Logging service. * `none` - no logs will be exported from the
-      cluster. * if left as an empty string,`logging.googleapis.com` will be
-      used.
+      Currently available options:  * "logging.googleapis.com/kubernetes" -
+      the Google Cloud Logging service with Kubernetes-native resource model
+      in Stackdriver * `logging.googleapis.com` - the Google Cloud Logging
+      service. * `none` - no logs will be exported from the cluster. * if left
+      as an empty string,`logging.googleapis.com` will be used.
     maintenancePolicy: Configure the maintenance policy for this cluster.
     masterAuth: The authentication information for accessing the master
       endpoint. If unspecified, the defaults are used: For clusters before
@@ -238,6 +250,8 @@ class Cluster(_messages.Message):
     privateClusterConfig: Configuration for private cluster.
     resourceLabels: The resource labels for the cluster to use to annotate any
       related Google Compute Engine resources.
+    resourceUsageExportConfig: Configuration for exporting resource usages.
+      Resource usage export is disabled when this config is unspecified.
     selfLink: [Output only] Server-defined URL for the resource.
     servicesIpv4Cidr: [Output only] The IP address range of the Kubernetes
       services in this cluster, in [CIDR](http://en.wikipedia.org/wiki
@@ -345,13 +359,14 @@ class Cluster(_messages.Message):
   nodePools = _messages.MessageField('NodePool', 33, repeated=True)
   privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 34)
   resourceLabels = _messages.MessageField('ResourceLabelsValue', 35)
-  selfLink = _messages.StringField(36)
-  servicesIpv4Cidr = _messages.StringField(37)
-  status = _messages.EnumField('StatusValueValuesEnum', 38)
-  statusMessage = _messages.StringField(39)
-  subnetwork = _messages.StringField(40)
-  tpuIpv4CidrBlock = _messages.StringField(41)
-  zone = _messages.StringField(42)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 36)
+  selfLink = _messages.StringField(37)
+  servicesIpv4Cidr = _messages.StringField(38)
+  status = _messages.EnumField('StatusValueValuesEnum', 39)
+  statusMessage = _messages.StringField(40)
+  subnetwork = _messages.StringField(41)
+  tpuIpv4CidrBlock = _messages.StringField(42)
+  zone = _messages.StringField(43)
 
 
 class ClusterUpdate(_messages.Message):
@@ -376,6 +391,12 @@ class ClusterUpdate(_messages.Message):
       nodes being either created or removed from the cluster, depending on
       whether locations are being added or removed.  This list must always
       include the cluster's primary zone.
+    desiredLoggingService: The logging service the cluster should use to write
+      logs. Currently available options:  *
+      "logging.googleapis.com/kubernetes" - the Google Cloud Logging service
+      with Kubernetes-native resource model in Stackdriver *
+      "logging.googleapis.com" - the Google Cloud Logging service * "none" -
+      no logs will be exported from the cluster
     desiredMasterAuthorizedNetworksConfig: The desired configuration options
       for master authorized networks feature.
     desiredMasterVersion: The Kubernetes version to change the master to.
@@ -387,6 +408,8 @@ class ClusterUpdate(_messages.Message):
       explicit Kubernetes version - "-": picks the default Kubernetes version
     desiredMonitoringService: The monitoring service the cluster should use to
       write metrics. Currently available options:  *
+      "monitoring.googleapis.com/kubernetes" - the Google Cloud Monitoring
+      service with Kubernetes-native resource model in Stackdriver *
       "monitoring.googleapis.com" - the Google Cloud Monitoring service *
       "none" - no metrics will be exported from the cluster
     desiredNodePoolAutoscaling: Autoscaler configuration for the node pool
@@ -405,6 +428,8 @@ class ClusterUpdate(_messages.Message):
       version - "1.X.Y": picks the highest valid gke.N patch in the 1.X.Y
       version - "1.X.Y-gke.N": picks an explicit Kubernetes version - "-":
       picks the Kubernetes master version
+    desiredResourceUsageExportConfig: The desired configuration for exporting
+      resource usage.
   """
 
   desiredAddonsConfig = _messages.MessageField('AddonsConfig', 1)
@@ -412,12 +437,14 @@ class ClusterUpdate(_messages.Message):
   desiredImageProject = _messages.StringField(3)
   desiredImageType = _messages.StringField(4)
   desiredLocations = _messages.StringField(5, repeated=True)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 6)
-  desiredMasterVersion = _messages.StringField(7)
-  desiredMonitoringService = _messages.StringField(8)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 9)
-  desiredNodePoolId = _messages.StringField(10)
-  desiredNodeVersion = _messages.StringField(11)
+  desiredLoggingService = _messages.StringField(6)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 7)
+  desiredMasterVersion = _messages.StringField(8)
+  desiredMonitoringService = _messages.StringField(9)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 10)
+  desiredNodePoolId = _messages.StringField(11)
+  desiredNodeVersion = _messages.StringField(12)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 13)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -443,6 +470,18 @@ class CompleteIPRotationRequest(_messages.Message):
   name = _messages.StringField(2)
   projectId = _messages.StringField(3)
   zone = _messages.StringField(4)
+
+
+class ConsumptionMeteringConfig(_messages.Message):
+  r"""Parameters for controlling consumption metering.
+
+  Fields:
+    enabled: Whether to enable consumption metering for this cluster. If
+      enabled, a second BigQuery table will be created to hold resource
+      consumption records.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class ContainerProjectsAggregatedUsableSubnetworksListRequest(_messages.Message):
@@ -1397,11 +1436,11 @@ class NodeConfig(_messages.Message):
       update-strategy"  "gci-ensure-gke-docker"  "instance-template"  "kube-
       env"  "startup-script"  "user-data"  "disable-address-manager"
       "windows-startup-script-ps1"  "common-psm1"  "k8s-node-setup-psm1"
-      "install-ssh-psm1"  "user-profile-psm1"  Values are free-form strings,
-      and only have meaning as interpreted by the image running in the
-      instance. The only restriction placed on them is that each value's size
-      must be less than or equal to 32 KB.  The total size of all keys and
-      values must be less than 512 KB.
+      "install-ssh-psm1"  "user-profile-psm1"  "serial-port-logging-enable"
+      Values are free-form strings, and only have meaning as interpreted by
+      the image running in the instance. The only restriction placed on them
+      is that each value's size must be less than or equal to 32 KB.  The
+      total size of all keys and values must be less than 512 KB.
 
   Fields:
     accelerators: A list of hardware accelerators to be attached to each node.
@@ -1440,11 +1479,11 @@ class NodeConfig(_messages.Message):
       update-strategy"  "gci-ensure-gke-docker"  "instance-template"  "kube-
       env"  "startup-script"  "user-data"  "disable-address-manager"
       "windows-startup-script-ps1"  "common-psm1"  "k8s-node-setup-psm1"
-      "install-ssh-psm1"  "user-profile-psm1"  Values are free-form strings,
-      and only have meaning as interpreted by the image running in the
-      instance. The only restriction placed on them is that each value's size
-      must be less than or equal to 32 KB.  The total size of all keys and
-      values must be less than 512 KB.
+      "install-ssh-psm1"  "user-profile-psm1"  "serial-port-logging-enable"
+      Values are free-form strings, and only have meaning as interpreted by
+      the image running in the instance. The only restriction placed on them
+      is that each value's size must be less than or equal to 32 KB.  The
+      total size of all keys and values must be less than 512 KB.
     minCpuPlatform: Minimum CPU platform to be used by this instance. The
       instance may be scheduled on the specified or newer CPU platform.
       Applicable values are the friendly names of CPU platforms, such as
@@ -1522,11 +1561,11 @@ class NodeConfig(_messages.Message):
     configure-sh"  "enable-os-login"  "gci-update-strategy"  "gci-ensure-gke-
     docker"  "instance-template"  "kube-env"  "startup-script"  "user-data"
     "disable-address-manager"  "windows-startup-script-ps1"  "common-psm1"
-    "k8s-node-setup-psm1"  "install-ssh-psm1"  "user-profile-psm1"  Values are
-    free-form strings, and only have meaning as interpreted by the image
-    running in the instance. The only restriction placed on them is that each
-    value's size must be less than or equal to 32 KB.  The total size of all
-    keys and values must be less than 512 KB.
+    "k8s-node-setup-psm1"  "install-ssh-psm1"  "user-profile-psm1"  "serial-
+    port-logging-enable"  Values are free-form strings, and only have meaning
+    as interpreted by the image running in the instance. The only restriction
+    placed on them is that each value's size must be less than or equal to 32
+    KB.  The total size of all keys and values must be less than 512 KB.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -1846,6 +1885,24 @@ class PrivateClusterConfig(_messages.Message):
   publicEndpoint = _messages.StringField(5)
 
 
+class ResourceUsageExportConfig(_messages.Message):
+  r"""Configuration for exporting cluster resource usages.
+
+  Fields:
+    bigqueryDestination: Configuration to use BigQuery as usage export
+      destination.
+    consumptionMeteringConfig: Configuration to enable resource consumption
+      metering.
+    enableNetworkEgressMetering: Whether to enable network egress metering for
+      this cluster. If enabled, a daemonset will be created in the cluster to
+      meter network egress traffic.
+  """
+
+  bigqueryDestination = _messages.MessageField('BigQueryDestination', 1)
+  consumptionMeteringConfig = _messages.MessageField('ConsumptionMeteringConfig', 2)
+  enableNetworkEgressMetering = _messages.BooleanField(3)
+
+
 class RollbackNodePoolUpgradeRequest(_messages.Message):
   r"""RollbackNodePoolUpgradeRequest rollbacks the previously Aborted or
   Failed NodePool upgrade. This will be an no-op if the last upgrade
@@ -2139,9 +2196,11 @@ class SetMonitoringServiceRequest(_messages.Message):
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
       been deprecated and replaced by the name field.
     monitoringService: The monitoring service the cluster should use to write
-      metrics. Currently available options:  * "monitoring.googleapis.com" -
-      the Google Cloud Monitoring service * "none" - no metrics will be
-      exported from the cluster
+      metrics. Currently available options:  *
+      "monitoring.googleapis.com/kubernetes" - the Google Cloud Monitoring
+      service with Kubernetes-native resource model in Stackdriver *
+      "monitoring.googleapis.com" - the Google Cloud Monitoring service *
+      "none" - no metrics will be exported from the cluster
     name: The name (project, location, cluster) of the cluster to set
       monitoring. Specified in the format 'projects/*/locations/*/clusters/*'.
     projectId: Deprecated. The Google Developers Console [project ID or

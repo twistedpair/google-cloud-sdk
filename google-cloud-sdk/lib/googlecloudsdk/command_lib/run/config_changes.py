@@ -34,12 +34,11 @@ class ConfigChanger(six.with_metaclass(abc.ABCMeta, object)):
   """An abstract class representing configuration changes."""
 
   @abc.abstractmethod
-  def AdjustConfiguration(self, config, metadata):
+  def Adjust(self, resource):
     """Adjust the given Service configuration.
 
     Args:
-      config: Configuration, The service's Configuration object to adjust.
-      metadata: ObjectMeta, the config's metadata message object.
+      resource: the k8s_object to adjust.
     """
     pass
 
@@ -50,14 +49,15 @@ class LabelChanges(ConfigChanger):
   def __init__(self, diff):
     self._diff = diff
 
-  def AdjustConfiguration(self, config, metadata):
+  def Adjust(self, resource):
     # Currently assumes all "system"-owned labels are applied by the control
     # plane and it's ok for us to clear them on the client.
     update_result = self._diff.Apply(
-        config.MessagesModule().ObjectMeta.LabelsValue, metadata.labels)
+        resource.MessagesModule().ObjectMeta.LabelsValue,
+        resource.metadata.labels)
     maybe_new_labels = update_result.GetOrNone()
     if maybe_new_labels:
-      metadata.labels = maybe_new_labels
+      resource.metadata.labels = maybe_new_labels
 
 
 class ImageChange(ConfigChanger):
@@ -68,12 +68,12 @@ class ImageChange(ConfigChanger):
   def __init__(self, image):
     self.image = image
 
-  def AdjustConfiguration(self, conf, metadata):
+  def Adjust(self, resource):
     annotations = k8s_object.AnnotationsFromMetadata(
-        conf.MessagesModule(), metadata)
+        resource.MessagesModule(), resource.metadata)
     annotations[configuration.USER_IMAGE_ANNOTATION] = (
         self.image)
-    conf.image = self.image
+    resource.template.image = self.image
 
 
 class EnvVarChanges(ConfigChanger):
@@ -96,17 +96,16 @@ class EnvVarChanges(ConfigChanger):
     if env_vars_to_remove:
       self._to_remove = [k.lstrip() for k in env_vars_to_remove]
 
-  def AdjustConfiguration(self, config, metadata):
+  def Adjust(self, resource):
     """Mutates the given config's env vars to match the desired changes."""
-    del metadata  # Unused, but requred by ConfigChanger's signature.
-
     if self._clear_others:
-      config.env_vars.clear()
+      resource.template.env_vars.clear()
     elif self._to_remove:
       for env_var in self._to_remove:
-        if env_var in config.env_vars: del config.env_vars[env_var]
+        if env_var in resource.template.env_vars:
+          del resource.template.env_vars[env_var]
 
-    if self._to_update: config.env_vars.update(self._to_update)
+    if self._to_update: resource.template.env_vars.update(self._to_update)
 
 
 class ResourceChanges(ConfigChanger):
@@ -116,13 +115,12 @@ class ResourceChanges(ConfigChanger):
     self._memory = memory
     self._cpu = cpu
 
-  def AdjustConfiguration(self, config, metadata):
+  def Adjust(self, resource):
     """Mutates the given config's resource limits to match what's desired."""
-    del metadata  # Unused, but requred by ConfigChanger's signature.
     if self._memory is not None:
-      config.resource_limits['memory'] = self._memory
+      resource.template.resource_limits['memory'] = self._memory
     if self._cpu is not None:
-      config.resource_limits['cpu'] = self._cpu
+      resource.template.resource_limits['cpu'] = self._cpu
 
 _CLOUDSQL_ANNOTATION = 'run.googleapis.com/cloudsql-instances'
 
@@ -167,9 +165,9 @@ class CloudSQLChanges(ConfigChanger):
       return None
     return [self._Augment(i) for i in val]
 
-  def AdjustConfiguration(self, config, metadata):
+  def Adjust(self, resource):
     def GetCurrentInstances():
-      annotation_val = config.revision_annotations.get(_CLOUDSQL_ANNOTATION)
+      annotation_val = resource.template.annotations.get(_CLOUDSQL_ANNOTATION)
       if annotation_val:
         return annotation_val.split(',')
       return []
@@ -177,7 +175,7 @@ class CloudSQLChanges(ConfigChanger):
     instances = repeated.ParsePrimitiveArgs(
         self, 'cloudsql-instances', GetCurrentInstances)
     if instances is not None:
-      config.revision_annotations[_CLOUDSQL_ANNOTATION] = ','.join(instances)
+      resource.template.annotations[_CLOUDSQL_ANNOTATION] = ','.join(instances)
 
   def _Augment(self, instance_str):
     instance = instance_str.split(':')
@@ -206,18 +204,17 @@ class ConcurrencyChanges(ConfigChanger):
   def __init__(self, concurrency):
     self._concurrency = None if concurrency == 'default' else concurrency
 
-  def AdjustConfiguration(self, config, metadata):
+  def Adjust(self, resource):
     """Mutates the given config's resource limits to match what's desired."""
-    del metadata  # Unused, but requred by ConfigChanger's signature.
     if self._concurrency is None:
-      config.deprecated_string_concurrency = None
-      config.concurrency = None
+      resource.template.deprecated_string_concurrency = None
+      resource.template.concurrency = None
     elif isinstance(self._concurrency, int):
-      config.concurrency = self._concurrency
-      config.deprecated_string_concurrency = None
+      resource.template.concurrency = self._concurrency
+      resource.template.deprecated_string_concurrency = None
     else:
-      config.deprecated_string_concurrency = self._concurrency
-      config.concurrency = None
+      resource.template.deprecated_string_concurrency = self._concurrency
+      resource.template.concurrency = None
 
 
 class TimeoutChanges(ConfigChanger):
@@ -226,10 +223,9 @@ class TimeoutChanges(ConfigChanger):
   def __init__(self, timeout):
     self._timeout = timeout
 
-  def AdjustConfiguration(self, config, metadata):
+  def Adjust(self, resource):
     """Mutates the given config's timeout to match what's desired."""
-    del metadata  # Unused, but required by ConfigChanger's signature.
-    config.timeout = self._timeout
+    resource.template.timeout = self._timeout
 
 
 class ServiceAccountChanges(ConfigChanger):
@@ -238,7 +234,6 @@ class ServiceAccountChanges(ConfigChanger):
   def __init__(self, service_account):
     self._service_account = service_account
 
-  def AdjustConfiguration(self, config, metadata):
+  def Adjust(self, resource):
     """Mutates the given config's service account to match what's desired."""
-    del metadata  # Unused, but required by ConfigChanger's signature.
-    config.service_account = self._service_account
+    resource.template.service_account = self._service_account

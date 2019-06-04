@@ -1750,15 +1750,7 @@ class Realm(_messages.Message):
 
 
 class RevertRolloutRequest(_messages.Message):
-  r"""Request message for GameServerDeploymentsService.RevertRollout.
-
-  Fields:
-    clusterPercentageSelector: The percentage of game servers that should run
-      the new game server template in the specified clusters. The specified
-      percentage cannot be higher than its current value. Default is 0.
-  """
-
-  clusterPercentageSelector = _messages.MessageField('ClusterPercentageSelector', 1, repeated=True)
+  r"""Request message for GameServerDeploymentsService.RevertRollout."""
 
 
 class Rule(_messages.Message):
@@ -1927,8 +1919,7 @@ class SetRolloutTargetRequest(_messages.Message):
 
   Fields:
     clusterPercentageSelector: The percentage of game servers that should run
-      the new game server template in the specified clusters. The specified
-      percentage cannot be lower than its current value. Default is 100.
+      the new game server template in the specified clusters. Default is 0.
   """
 
   clusterPercentageSelector = _messages.MessageField('ClusterPercentageSelector', 1, repeated=True)

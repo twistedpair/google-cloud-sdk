@@ -3735,6 +3735,33 @@
           "items": {
             "$ref": "GooglePrivacyDlpV2Error"
           }
+        },
+        "stats": {
+          "description": "Statistics about this storedInfoType version.",
+          "$ref": "GooglePrivacyDlpV2StoredInfoTypeStats"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2StoredInfoTypeStats": {
+      "id": "GooglePrivacyDlpV2StoredInfoTypeStats",
+      "description": "Statistics for a StoredInfoType.",
+      "type": "object",
+      "properties": {
+        "largeCustomDictionary": {
+          "description": "StoredInfoType where findings are defined by a dictionary of phrases.",
+          "$ref": "GooglePrivacyDlpV2LargeCustomDictionaryStats"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2LargeCustomDictionaryStats": {
+      "id": "GooglePrivacyDlpV2LargeCustomDictionaryStats",
+      "description": "Summary statistics of a custom dictionary.",
+      "type": "object",
+      "properties": {
+        "approxNumPhrases": {
+          "description": "Approximate number of distinct phrases in the dictionary.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },

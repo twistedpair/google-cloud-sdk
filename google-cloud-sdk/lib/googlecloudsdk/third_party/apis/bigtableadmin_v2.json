@@ -653,7 +653,7 @@
       "type": "object",
       "properties": {
         "tableId": {
-          "description": "The name by which the new table should be referred to within the parent\ninstance, e.g., `foobar` rather than `<parent>\/tables\/foobar`.",
+          "description": "The name by which the new table should be referred to within the parent\ninstance, e.g., `foobar` rather than `<parent>\/tables\/foobar`.\nMaximum 50 characters.",
           "type": "string"
         },
         "table": {
@@ -1862,7 +1862,7 @@
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "Maximum number of results per page.\nCURRENTLY UNIMPLEMENTED AND IGNORED.",
+                      "description": "Maximum number of results per page.\n\nA page_size of zero lets the server choose the number of items to return.\nA page_size which is strictly positive will return at most that many items.\nA negative page_size will cause an error.\n\nFollowing the first request, subsequent paginated calls are not required\nto pass a page_size. If a page_size is set in subsequent calls, it must\nmatch the page_size given in the first request.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"

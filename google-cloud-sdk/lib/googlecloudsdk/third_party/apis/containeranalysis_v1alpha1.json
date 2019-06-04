@@ -820,7 +820,7 @@
       "type": "object",
       "properties": {
         "directive": {
-          "description": "The recovered Dockerfile directive used to construct this layer.\nTODO(b\/132434884) Use only `directive_string` when all `directive` values\nare backfilled.",
+          "description": "The recovered Dockerfile directive used to construct this layer.",
           "enumDescriptions": [
             "Default value for unsupported\/missing directive",
             "https:\/\/docs.docker.com\/engine\/reference\/builder\/",

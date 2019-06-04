@@ -422,9 +422,9 @@ set.
     )
 
     def RevertRollout(self, request, global_params=None):
-      r"""Starts rollback of the current rollout in the specified clusters and based.
-on the given rollout percentage. The specified percentage cannot be higher
-than its current value. Default is 0.
+      r"""Rolls back the ongoing game server deployment rollout by setting the.
+rollout percentage to 0 in all clusters whose labels match labels in the
+game server template.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsRevertRolloutRequest) input message
@@ -480,8 +480,7 @@ existing policy.
 
     def SetRolloutTarget(self, request, global_params=None):
       r"""Sets rollout target for the ongoing game server deployment rollout in the.
-specified clusters and based on the given rollout percentage. The specified
-percentage cannot be lower than its current value. Default is 100.
+specified clusters and based on the given rollout percentage. Default is 0.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsSetRolloutTargetRequest) input message

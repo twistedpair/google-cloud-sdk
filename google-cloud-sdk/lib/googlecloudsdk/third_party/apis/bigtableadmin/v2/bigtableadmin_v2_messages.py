@@ -204,8 +204,13 @@ class BigtableadminProjectsInstancesAppProfilesListRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesAppProfilesListRequest object.
 
   Fields:
-    pageSize: Maximum number of results per page. CURRENTLY UNIMPLEMENTED AND
-      IGNORED.
+    pageSize: Maximum number of results per page.  A page_size of zero lets
+      the server choose the number of items to return. A page_size which is
+      strictly positive will return at most that many items. A negative
+      page_size will cause an error.  Following the first request, subsequent
+      paginated calls are not required to pass a page_size. If a page_size is
+      set in subsequent calls, it must match the page_size given in the first
+      request.
     pageToken: The value of `next_page_token` returned by a previous call.
     parent: The unique name of the instance for which a list of app profiles
       is requested. Values are of the form
@@ -934,6 +939,7 @@ class CreateTableRequest(_messages.Message):
     table: The Table to create.
     tableId: The name by which the new table should be referred to within the
       parent instance, e.g., `foobar` rather than `<parent>/tables/foobar`.
+      Maximum 50 characters.
   """
 
   initialSplits = _messages.MessageField('Split', 1, repeated=True)

@@ -488,7 +488,7 @@
       "type": "object",
       "properties": {
         "clusterPercentageSelector": {
-          "description": "The percentage of game servers that should run the new game server template\nin the specified clusters. The specified percentage cannot be lower than\nits current value. Default is 100.",
+          "description": "The percentage of game servers that should run the new game server template\nin the specified clusters. Default is 0.",
           "type": "array",
           "items": {
             "$ref": "ClusterPercentageSelector"
@@ -508,13 +508,6 @@
       "description": "Request message for GameServerDeploymentsService.RevertRollout.",
       "type": "object",
       "properties": {
-        "clusterPercentageSelector": {
-          "description": "The percentage of game servers that should run the new game server template\nin the specified clusters. The specified percentage cannot be higher than\nits current value. Default is 0.",
-          "type": "array",
-          "items": {
-            "$ref": "ClusterPercentageSelector"
-          }
-        }
       }
     },
     "DeploymentTarget": {
@@ -1809,7 +1802,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets rollout target for the ongoing game server deployment rollout in the\nspecified clusters and based on the given rollout percentage. The specified\npercentage cannot be lower than its current value. Default is 100."
+                  "description": "Sets rollout target for the ongoing game server deployment rollout in the\nspecified clusters and based on the given rollout percentage. Default is 0."
                 },
                 "commitRollout": {
                   "id": "gameservices.projects.locations.gameServerDeployments.commitRollout",
@@ -1865,7 +1858,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Starts rollback of the current rollout in the specified clusters and based\non the given rollout percentage. The specified percentage cannot be higher\nthan its current value. Default is 0."
+                  "description": "Rolls back the ongoing game server deployment rollout by setting the\nrollout percentage to 0 in all clusters whose labels match labels in the\ngame server template."
                 },
                 "getDeploymentTarget": {
                   "id": "gameservices.projects.locations.gameServerDeployments.getDeploymentTarget",

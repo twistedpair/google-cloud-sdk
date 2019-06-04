@@ -82,6 +82,16 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class AuthorizationCode(_messages.Message):
+  r"""A AuthorizationCode object.
+
+  Fields:
+    code: A string attribute.
+  """
+
+  code = _messages.StringField(1)
+
+
 class AuthorizationLoggingOptions(_messages.Message):
   r"""Authorization-related information used by Cloud Audit Logging.
 
@@ -540,6 +550,17 @@ class DomainsProjectsLocationsRegistrationsDetachRequest(_messages.Message):
 
   detachRegistrationRequest = _messages.MessageField('DetachRegistrationRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class DomainsProjectsLocationsRegistrationsGetAuthorizationCodeRequest(_messages.Message):
+  r"""A DomainsProjectsLocationsRegistrationsGetAuthorizationCodeRequest
+  object.
+
+  Fields:
+    name: A string attribute.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class DomainsProjectsLocationsRegistrationsGetIamPolicyRequest(_messages.Message):

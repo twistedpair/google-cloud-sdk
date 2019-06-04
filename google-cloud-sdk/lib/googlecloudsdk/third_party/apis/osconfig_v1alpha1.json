@@ -1078,6 +1078,11 @@
           "description": "Number of instances that have acked and will start shortly.",
           "type": "string",
           "format": "int64"
+        },
+        "instancesTimedOut": {
+          "description": "Number of instances that exceeded the time out while applying the patch.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -1133,7 +1138,8 @@
             "The instance has completed applying patches.",
             "The instance has completed applying patches but a reboot is required.",
             "The instance has failed to apply the patch.",
-            "The instance acked the notification and will start shortly."
+            "The instance acked the notification and will start shortly.",
+            "The instance exceeded the time out while applying the patch."
           ],
           "type": "string",
           "enum": [
@@ -1148,7 +1154,8 @@
             "SUCCEEDED",
             "SUCCEEDED_REBOOT_REQUIRED",
             "FAILED",
-            "ACKED"
+            "ACKED",
+            "TIMED_OUT"
           ]
         },
         "failureReason": {
@@ -1244,7 +1251,8 @@
             "The instance has completed applying patches.",
             "The instance has completed applying patches but a reboot is required.",
             "The instance has failed to apply the patch.",
-            "The instance acked the notification and will start shortly."
+            "The instance acked the notification and will start shortly.",
+            "The instance exceeded the time out while applying the patch."
           ],
           "type": "string",
           "enum": [
@@ -1259,7 +1267,8 @@
             "SUCCEEDED",
             "SUCCEEDED_REBOOT_REQUIRED",
             "FAILED",
-            "ACKED"
+            "ACKED",
+            "TIMED_OUT"
           ]
         },
         "failureReason": {

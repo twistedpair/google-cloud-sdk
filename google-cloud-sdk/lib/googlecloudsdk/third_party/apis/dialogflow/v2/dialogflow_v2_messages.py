@@ -1184,10 +1184,10 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
       supported language codes. Note that queries in the same session do not
       necessarily need to specify the same language.
     modelVariant: Optional. Which variant of the Speech model to use.
-    phraseHints: Optional. The collection of phrase hints which are used to
-      boost accuracy of speech recognition. Refer to [Cloud Speech API
-      documentation](https://cloud.google.com/speech-to-text/docs/basics
-      #phrase-hints) for more details.
+    phraseHints: Optional. A list of strings containing words and phrases that
+      the speech recognizer should recognize with higher likelihood.  See [the
+      Cloud Speech documentation](https://cloud.google.com/speech-to-
+      text/docs/basics#phrase-hints) for more details.
     sampleRateHertz: Required. Sample rate (in Hertz) of the audio content
       sent in the query. Refer to [Cloud Speech API
       documentation](https://cloud.google.com/speech-to-text/docs/basics) for

@@ -1096,7 +1096,7 @@
           "type": "boolean"
         },
         "segmentTerminator": {
-          "description": "Byte(s) to be used as the segment terminator. If this is unset, '\\r' will\nbe used as segment terminator.",
+          "description": "Byte(s) to be used as the segment terminator. If this is unset, '\\r' will\nbe used as the segment terminator, matching the HL7 version 2\nspecification.",
           "type": "string",
           "format": "byte"
         }
@@ -1146,7 +1146,7 @@
           "format": "byte"
         },
         "createTime": {
-          "description": "The datetime when the message was created. Set by the server.",
+          "description": "Output only. The datetime when the message was created. Set by the server.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -1178,7 +1178,7 @@
           }
         },
         "parsedData": {
-          "description": "The parsed version of the raw message data.",
+          "description": "Output only. The parsed version of the raw message data.",
           "$ref": "ParsedData"
         }
       }
@@ -1383,7 +1383,7 @@
     },
     "SchemaConfig": {
       "id": "SchemaConfig",
-      "description": "Configuration for the FHIR BigQuery and GCS schema. Determines how the server\ngenerates the schema.",
+      "description": "Configuration for the FHIR BigQuery and Cloud Storage schema. Determines\nhow the server generates the schema.",
       "type": "object",
       "properties": {
         "schemaType": {

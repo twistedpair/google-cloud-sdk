@@ -457,7 +457,10 @@ class LogEntry(_messages.Message):
       provides additional information about the log entry.
     ProtoPayloadValue: The log entry payload, represented as a protocol
       buffer. Some Google Cloud Platform services use this field for their log
-      entry payloads.
+      entry payloads.The following protocol buffer types are supported; user-
+      defined types are not
+      supported:"type.googleapis.com/google.cloud.audit.AuditLog"
+      "type.googleapis.com/google.appengine.logging.v1.RequestLog"
 
   Fields:
     httpRequest: Optional. Information about the HTTP request associated with
@@ -501,7 +504,10 @@ class LogEntry(_messages.Message):
       log entry, if applicable.
     protoPayload: The log entry payload, represented as a protocol buffer.
       Some Google Cloud Platform services use this field for their log entry
-      payloads.
+      payloads.The following protocol buffer types are supported; user-defined
+      types are not
+      supported:"type.googleapis.com/google.cloud.audit.AuditLog"
+      "type.googleapis.com/google.appengine.logging.v1.RequestLog"
     receiveTimestamp: Output only. The time the log entry was received by
       Logging.
     resource: Required. The primary monitored resource associated with this
@@ -620,7 +626,10 @@ class LogEntry(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ProtoPayloadValue(_messages.Message):
     r"""The log entry payload, represented as a protocol buffer. Some Google
-    Cloud Platform services use this field for their log entry payloads.
+    Cloud Platform services use this field for their log entry payloads.The
+    following protocol buffer types are supported; user-defined types are not
+    supported:"type.googleapis.com/google.cloud.audit.AuditLog"
+    "type.googleapis.com/google.appengine.logging.v1.RequestLog"
 
     Messages:
       AdditionalProperty: An additional property for a ProtoPayloadValue

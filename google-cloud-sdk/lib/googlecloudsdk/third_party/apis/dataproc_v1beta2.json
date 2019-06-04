@@ -3328,7 +3328,7 @@
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "Optional. The maximum number of results to return in each response.",
+                      "description": "Optional. The maximum number of results to return in each response. Must be less than or equal to 1000. Defaults to 100.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -3920,7 +3920,7 @@
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "Optional. The maximum number of results to return in each response.",
+                      "description": "Optional. The maximum number of results to return in each response. Must be less than or equal to 1000. Defaults to 100.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"

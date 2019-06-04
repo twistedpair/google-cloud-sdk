@@ -374,6 +374,8 @@ class InstanceDetailsSummary(_messages.Message):
     instancesStarted: Number of instances that have started.
     instancesSucceeded: Number of instances that have completed successfully.
     instancesSucceededRebootRequired: Number of instances that require reboot.
+    instancesTimedOut: Number of instances that exceeded the time out while
+      applying the patch.
   """
 
   instancesAcked = _messages.IntegerField(1)
@@ -387,6 +389,7 @@ class InstanceDetailsSummary(_messages.Message):
   instancesStarted = _messages.IntegerField(9)
   instancesSucceeded = _messages.IntegerField(10)
   instancesSucceededRebootRequired = _messages.IntegerField(11)
+  instancesTimedOut = _messages.IntegerField(12)
 
 
 class ListAssignmentsResponse(_messages.Message):
@@ -1338,6 +1341,7 @@ class PatchJobInstanceDetails(_messages.Message):
         but a reboot is required.
       FAILED: The instance has failed to apply the patch.
       ACKED: The instance acked the notification and will start shortly.
+      TIMED_OUT: The instance exceeded the time out while applying the patch.
     """
     PATCH_STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -1351,6 +1355,7 @@ class PatchJobInstanceDetails(_messages.Message):
     SUCCEEDED_REBOOT_REQUIRED = 9
     FAILED = 10
     ACKED = 11
+    TIMED_OUT = 12
 
   attemptCount = _messages.IntegerField(1)
   failureReason = _messages.StringField(2)
@@ -1441,6 +1446,7 @@ class ReportPatchJobInstanceDetailsRequest(_messages.Message):
         but a reboot is required.
       FAILED: The instance has failed to apply the patch.
       ACKED: The instance acked the notification and will start shortly.
+      TIMED_OUT: The instance exceeded the time out while applying the patch.
     """
     PATCH_STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -1454,6 +1460,7 @@ class ReportPatchJobInstanceDetailsRequest(_messages.Message):
     SUCCEEDED_REBOOT_REQUIRED = 9
     FAILED = 10
     ACKED = 11
+    TIMED_OUT = 12
 
   attemptCount = _messages.IntegerField(1)
   failureReason = _messages.StringField(2)

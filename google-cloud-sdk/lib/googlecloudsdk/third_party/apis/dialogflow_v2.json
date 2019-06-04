@@ -1485,7 +1485,7 @@
           "type": "string"
         },
         "phraseHints": {
-          "description": "Optional. The collection of phrase hints which are used to boost accuracy\nof speech recognition.\nRefer to\n[Cloud Speech API\ndocumentation](https:\/\/cloud.google.com\/speech-to-text\/docs\/basics#phrase-hints)\nfor more details.",
+          "description": "Optional. A list of strings containing words and phrases that the speech\nrecognizer should recognize with higher likelihood.\n\nSee [the Cloud Speech\ndocumentation](https:\/\/cloud.google.com\/speech-to-text\/docs\/basics#phrase-hints)\nfor more details.",
           "type": "array",
           "items": {
             "type": "string"

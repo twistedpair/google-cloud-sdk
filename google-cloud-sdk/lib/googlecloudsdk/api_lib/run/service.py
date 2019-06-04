@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.run import configuration
 from googlecloudsdk.api_lib.run import k8s_object
+from googlecloudsdk.api_lib.run import revision
 
 
 ENDPOINT_VISIBILITY = 'serving.knative.dev/visibility'
@@ -66,12 +67,36 @@ class Service(k8s_object.KubernetesObject):
     ret.configuration.container.securityContext = None
     return ret
 
+  def _EnsureRevisionMeta(self):
+    revision_meta = self.spec.revisionTemplate.metadata
+    if revision_meta is None:
+      revision_meta = self._messages.ObjectMeta()
+      self.spec.revisionTemplate.metadata = revision_meta
+    return revision_meta
+
   @property
   def configuration(self):
     """Configuration (configuration.Configuration) of the service, if any."""
     options = (self._m.spec.pinned, self._m.spec.runLatest)
     ret = next((o.configuration for o in options if o is not None), None)
-    return configuration.Configuration.SpecOnly(ret, self._messages)
+    if ret:
+      return configuration.Configuration.SpecOnly(ret, self._messages)
+    return None
+
+  @property
+  def template(self):
+    if self.configuration:
+      return self.configuration.template
+    else:
+      ret = revision.Revision.Template(
+          self.spec.template, self.MessagesModule())
+      if not ret.metadata:
+        ret.metadata = self.MessagesModule().ObjectMeta()
+      return ret
+
+  @property
+  def revision_labels(self):
+    return self.template.labels
 
   @property
   def latest_created_revision(self):

@@ -75,6 +75,10 @@ class Question(six.with_metaclass(abc.ABCMeta, object)):
   def question(self):
     return self._question
 
+  @question.setter
+  def question(self, question):
+    self._question = question
+
   @property
   def instruction(self):
     return self._instruction

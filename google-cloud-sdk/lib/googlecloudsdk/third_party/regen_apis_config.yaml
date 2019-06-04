@@ -266,6 +266,9 @@ apis:
   dataflow:
     v1b3:
       discovery_doc: dataflow_v1b3.json
+  datafusion:
+    v1beta1:
+      discovery_doc: datafusion_v1beta1.json
   dataproc:
     v1:
       discovery_doc: dataproc_v1.json
@@ -388,6 +391,8 @@ apis:
   osconfig:
     v1alpha1:
       discovery_doc: osconfig_v1alpha1.json
+    v1alpha2:
+      discovery_doc: osconfig_v1alpha2.json
       default: true
   iam:
     v1:

@@ -189,6 +189,15 @@
         }
       }
     },
+    "AuthorizationCode": {
+      "id": "AuthorizationCode",
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        }
+      }
+    },
     "CheckDomainAvailabilityResponse": {
       "id": "CheckDomainAvailabilityResponse",
       "type": "object",
@@ -1175,6 +1184,30 @@
             },
             "registrations": {
               "methods": {
+                "getAuthorizationCode": {
+                  "id": "domains.projects.locations.registrations.getAuthorizationCode",
+                  "path": "v1alpha1/{+name}:getAuthorizationCode",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}:getAuthorizationCode",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "AuthorizationCode"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets Authorization Code of a Registration."
+                },
                 "checkAvailability": {
                   "id": "domains.projects.locations.registrations.checkAvailability",
                   "path": "v1alpha1/{+parent}/registrations:checkAvailability",

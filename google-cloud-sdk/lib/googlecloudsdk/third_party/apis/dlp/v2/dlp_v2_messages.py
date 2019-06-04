@@ -3110,6 +3110,17 @@ class GooglePrivacyDlpV2LargeCustomDictionaryConfig(_messages.Message):
   outputPath = _messages.MessageField('GooglePrivacyDlpV2CloudStoragePath', 3)
 
 
+class GooglePrivacyDlpV2LargeCustomDictionaryStats(_messages.Message):
+  r"""Summary statistics of a custom dictionary.
+
+  Fields:
+    approxNumPhrases: Approximate number of distinct phrases in the
+      dictionary.
+  """
+
+  approxNumPhrases = _messages.IntegerField(1)
+
+
 class GooglePrivacyDlpV2LikelihoodAdjustment(_messages.Message):
   r"""Message for specifying an adjustment to the likelihood of a finding as
   part of a detection rule.
@@ -3891,6 +3902,17 @@ class GooglePrivacyDlpV2StoredInfoTypeConfig(_messages.Message):
   largeCustomDictionary = _messages.MessageField('GooglePrivacyDlpV2LargeCustomDictionaryConfig', 3)
 
 
+class GooglePrivacyDlpV2StoredInfoTypeStats(_messages.Message):
+  r"""Statistics for a StoredInfoType.
+
+  Fields:
+    largeCustomDictionary: StoredInfoType where findings are defined by a
+      dictionary of phrases.
+  """
+
+  largeCustomDictionary = _messages.MessageField('GooglePrivacyDlpV2LargeCustomDictionaryStats', 1)
+
+
 class GooglePrivacyDlpV2StoredInfoTypeVersion(_messages.Message):
   r"""Version of a StoredInfoType, including the configuration used to build
   it, create timestamp, and current state.
@@ -3915,6 +3937,7 @@ class GooglePrivacyDlpV2StoredInfoTypeVersion(_messages.Message):
       it, reusing the same `config` if it was not the source of the error.
     state: Stored info type version state. Read-only, updated by the system
       during dictionary creation.
+    stats: Statistics about this storedInfoType version.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -3942,6 +3965,7 @@ class GooglePrivacyDlpV2StoredInfoTypeVersion(_messages.Message):
   createTime = _messages.StringField(2)
   errors = _messages.MessageField('GooglePrivacyDlpV2Error', 3, repeated=True)
   state = _messages.EnumField('StateValueValuesEnum', 4)
+  stats = _messages.MessageField('GooglePrivacyDlpV2StoredInfoTypeStats', 5)
 
 
 class GooglePrivacyDlpV2StoredType(_messages.Message):
