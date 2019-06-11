@@ -264,7 +264,7 @@ def AddPublishMessageFlags(parser, add_deprecated=False):
   parser.add_argument(
       '--attribute', type=arg_parsers.ArgDict(max_length=MAX_ATTRIBUTES),
       help='Comma-separated list of attributes. Each ATTRIBUTE has the form '
-           'name=value". You can specify up to {0} attributes.'.format(
+           'name="value". You can specify up to {0} attributes.'.format(
                MAX_ATTRIBUTES))
 
 

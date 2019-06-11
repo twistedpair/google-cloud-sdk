@@ -63,3 +63,8 @@ class List(base.ListCommand):
   @classmethod
   def SetPartialApiEndpoint(cls, partial_api_endpoint):
     cls.partial_api_endpoint = partial_api_endpoint
+
+
+def SortByName(list_response):
+  """Return the list_response sorted by name."""
+  return sorted(list_response, key=lambda x: x.name)

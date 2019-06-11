@@ -353,6 +353,14 @@ MAP = {
             default_version=False
         ),
     },
+    'composerflex': {
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.composerflex.v1alpha1',
+            client_classpath='composerflex_v1alpha1_client.ComposerflexV1alpha1',
+            messages_modulepath='composerflex_v1alpha1_messages',
+            default_version=True
+        ),
+    },
     'compute': {
         'alpha': APIDef(
             class_path='googlecloudsdk.third_party.apis.compute.alpha',
@@ -636,6 +644,12 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.healthcare.v1alpha2',
             client_classpath='healthcare_v1alpha2_client.HealthcareV1alpha2',
             messages_modulepath='healthcare_v1alpha2_messages',
+            default_version=False
+        ),
+        'v1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.healthcare.v1beta1',
+            client_classpath='healthcare_v1beta1_client.HealthcareV1beta1',
+            messages_modulepath='healthcare_v1beta1_messages',
             default_version=True
         ),
     },
@@ -807,6 +821,14 @@ MAP = {
             client_classpath='securitycenter_v1beta1_client.SecuritycenterV1beta1',
             messages_modulepath='securitycenter_v1beta1_messages',
             default_version=False
+        ),
+    },
+    'serviceconsumermanagement': {
+        'v1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.serviceconsumermanagement.v1beta1',
+            client_classpath='serviceconsumermanagement_v1beta1_client.ServiceconsumermanagementV1beta1',
+            messages_modulepath='serviceconsumermanagement_v1beta1_messages',
+            default_version=True
         ),
     },
     'servicemanagement': {

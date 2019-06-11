@@ -665,7 +665,7 @@ class _LogManager(object):
                                       DAY_DIR_FORMAT)
 
   def AddLogsDir(self, logs_dir):
-    """Adds a new logging directory to the logging config.
+    """Adds a new logging directory and configures file logging.
 
     Args:
       logs_dir: str, Path to a directory to store log files under.  This method
@@ -674,13 +674,19 @@ class _LogManager(object):
     """
     if not logs_dir or logs_dir in self._logs_dirs:
       return
-    self._logs_dirs.append(logs_dir)
 
+    self._logs_dirs.append(logs_dir)
     # If logs cleanup has been enabled, try to delete old log files
     # in the given directory. Continue normally if we try to delete log files
     # that do not exist. This can happen when two gcloud instances are cleaning
     # up logs in parallel.
     self._CleanUpLogs(logs_dir)
+
+    # If the user has disabled file logging, return early here to avoid setting
+    # up the file handler. Note that this should happen after cleaning up the
+    # logs directory so that log retention settings are still respected.
+    if properties.VALUES.core.disable_file_logging.GetBool():
+      return
 
     # A handler to write DEBUG and above to log files in the given directory
     try:

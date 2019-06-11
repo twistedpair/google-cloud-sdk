@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 import re
 
 from googlecloudsdk.api_lib.run import global_methods
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.functions.deploy import env_vars_util
 from googlecloudsdk.command_lib.run import config_changes
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
@@ -69,9 +70,8 @@ def AddAllowUnauthenticatedFlag(parser):
   """Add the --allow-unauthenticated flag."""
   parser.add_argument(
       '--allow-unauthenticated',
-      default=None,
-      action='store_true',
-      help='True to allow unauthenticated access to the service.')
+      action=arg_parsers.StoreTrueFalseAction,
+      help='Whether to enable allowing unauthenticated access to the service.')
 
 
 def AddAsyncFlag(parser):

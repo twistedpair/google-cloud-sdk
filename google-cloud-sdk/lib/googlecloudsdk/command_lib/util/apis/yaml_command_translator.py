@@ -40,6 +40,7 @@ from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import registry
 from googlecloudsdk.command_lib.util.apis import update
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema
+from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
@@ -285,6 +286,8 @@ class CommandBuilder(object):
         self._CommonArgs(parser)
         if self.spec.async:
           base.ASYNC_FLAG.AddToParser(parser)
+        if self.spec.arguments.labels:
+          labels_util.AddCreateLabelsFlags(parser)
 
       def Run(self_, args):
         ref, response = self._CommonRun(args)
@@ -632,6 +635,8 @@ class CommandBuilder(object):
         self._CommonArgs(parser)
         if self.spec.async:
           base.ASYNC_FLAG.AddToParser(parser)
+        if self.spec.arguments.labels:
+          labels_util.AddUpdateLabelsFlags(parser)
 
       def Run(self_, args):
         # Check if mask is required for an update request, if required, return
@@ -728,6 +733,8 @@ class CommandBuilder(object):
           args,
           self.spec.request.static_fields,
           self.spec.request.resource_method_params,
+          self.spec.arguments.labels,
+          self.spec.command_type,
           use_relative_name=self.spec.request.use_relative_name,
           parse_resource_into_request=parse_resource,
           existing_message=existing_message,

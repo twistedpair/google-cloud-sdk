@@ -152,7 +152,6 @@ class LinterRenderer(text_renderer.TextRenderer):
     warnings = self.check_for_personal_pronouns(section)
     if not warnings:
       self.json_object["# NAME_PRONOUN_CHECK SUCCESS"] = ""
-      # successful_linters.append("# NAME_PRONOUN_CHECK SUCCESS")
     self.command_name = section.strip().split(" -")[0]
     if len(section.strip().split(" - ")) == 1:
       self.name_section = ""

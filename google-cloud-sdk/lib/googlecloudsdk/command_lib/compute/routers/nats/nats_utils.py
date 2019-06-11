@@ -43,7 +43,7 @@ def FindNatOrRaise(router, nat_name):
   raise NatNotFoundError(nat_name)
 
 
-def CreateNatMessage(args, compute_holder, with_logging=False):
+def CreateNatMessage(args, compute_holder):
   """Creates a NAT message from the specified arguments."""
   params = {'name': args.name}
 
@@ -59,15 +59,14 @@ def CreateNatMessage(args, compute_holder, with_logging=False):
   params['tcpEstablishedIdleTimeoutSec'] = args.tcp_established_idle_timeout
   params['tcpTransitoryIdleTimeoutSec'] = args.tcp_transitory_idle_timeout
   params['minPortsPerVm'] = args.min_ports_per_vm
-  if with_logging:
-    if args.enable_logging is not None or args.log_filter is not None:
-      log_config = compute_holder.client.messages.RouterNatLogConfig()
+  if args.enable_logging is not None or args.log_filter is not None:
+    log_config = compute_holder.client.messages.RouterNatLogConfig()
 
-      log_config.enable = args.enable_logging
-      if args.log_filter is not None:
-        log_config.filter = _TranslateLogFilter(args.log_filter, compute_holder)
+    log_config.enable = args.enable_logging
+    if args.log_filter is not None:
+      log_config.filter = _TranslateLogFilter(args.log_filter, compute_holder)
 
-      params['logConfig'] = log_config
+    params['logConfig'] = log_config
 
   return compute_holder.client.messages.RouterNat(**params)
 
@@ -75,7 +74,6 @@ def CreateNatMessage(args, compute_holder, with_logging=False):
 def UpdateNatMessage(nat,
                      args,
                      compute_holder,
-                     with_logging=False,
                      with_drain_ips=False):
   """Updates a NAT message with the specified arguments."""
   if (args.subnet_option in [
@@ -130,15 +128,13 @@ def UpdateNatMessage(nat,
   elif args.clear_min_ports_per_vm:
     nat.minPortsPerVm = None
 
-  if with_logging:
-    if args.enable_logging is not None or args.log_filter is not None:
-      nat.logConfig = (
-          nat.logConfig or compute_holder.client.messages.RouterNatLogConfig())
-    if args.enable_logging is not None:
-      nat.logConfig.enable = args.enable_logging
-    if args.log_filter is not None:
-      nat.logConfig.filter = _TranslateLogFilter(args.log_filter,
-                                                 compute_holder)
+  if args.enable_logging is not None or args.log_filter is not None:
+    nat.logConfig = (
+        nat.logConfig or compute_holder.client.messages.RouterNatLogConfig())
+  if args.enable_logging is not None:
+    nat.logConfig.enable = args.enable_logging
+  if args.log_filter is not None:
+    nat.logConfig.filter = _TranslateLogFilter(args.log_filter, compute_holder)
 
   return nat
 

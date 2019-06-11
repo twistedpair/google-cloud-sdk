@@ -47,7 +47,7 @@ INSTANCE_DETAILS_KEY_MAP = {
 }
 
 _API_CLIENT_NAME = 'osconfig'
-_API_CLIENT_VERSION_MAP = {base.ReleaseTrack.ALPHA: 'v1alpha1'}
+_API_CLIENT_VERSION_MAP = {base.ReleaseTrack.ALPHA: 'v1alpha2'}
 
 
 def GetProjectUriPath(project):
@@ -65,19 +65,22 @@ def GetPatchJobName(patch_job_uri):
   return patch_job_uri.split('/')[3]
 
 
-def GetClientClass(release_track):
-  return apis.GetClientClass(_API_CLIENT_NAME,
-                             _API_CLIENT_VERSION_MAP[release_track])
+def GetClientClass(release_track, api_version_override=None):
+  return apis.GetClientClass(
+      _API_CLIENT_NAME, api_version_override or
+      _API_CLIENT_VERSION_MAP[release_track])
 
 
-def GetClientInstance(release_track):
-  return apis.GetClientInstance(_API_CLIENT_NAME,
-                                _API_CLIENT_VERSION_MAP[release_track])
+def GetClientInstance(release_track, api_version_override=None):
+  return apis.GetClientInstance(
+      _API_CLIENT_NAME, api_version_override or
+      _API_CLIENT_VERSION_MAP[release_track])
 
 
-def GetClientMessages(release_track):
-  return apis.GetMessagesModule(_API_CLIENT_NAME,
-                                _API_CLIENT_VERSION_MAP[release_track])
+def GetClientMessages(release_track, api_version_override=None):
+  return apis.GetMessagesModule(
+      _API_CLIENT_NAME, api_version_override or
+      _API_CLIENT_VERSION_MAP[release_track])
 
 
 class Poller(waiter.OperationPoller):

@@ -28,6 +28,7 @@ from __future__ import unicode_literals
 import datetime
 import getpass
 import io
+import locale
 import os
 import platform as system_platform
 import re
@@ -170,12 +171,14 @@ class BasicInfo(object):
         sys.executable and encoding.Decode(sys.executable))
     self.python_version = sys.version
     self.site_packages = 'site' in sys.modules
+    self.locale = locale.getdefaultlocale()
 
   def __str__(self):
     return textwrap.dedent("""\
         Google Cloud SDK [{version}]
 
         Platform: [{os}, {arch}] {uname}
+        Locale: {locale}
         Python Version: [{python_version}]
         Python Location: [{python_location}]
         Site Packages: [{site_packages}]
@@ -185,6 +188,7 @@ class BasicInfo(object):
                 if self.operating_system else 'unknown'),
             arch=self.architecture.name if self.architecture else 'unknown',
             uname=system_platform.uname(),
+            locale=self.locale,
             python_location=self.python_location,
             python_version=self.python_version.replace('\n', ' '),
             site_packages='Enabled' if self.site_packages else 'Disabled'))

@@ -5,6 +5,88 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 250.0.0 (2019-06-11)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Modified `gcloud compute networks update --switch-to-custom-subnet-mode` to poll and wait for operation to finish instead of returning immediately. Please use `--async` flag to reproduce the previous behavior of returning immediately.
+
+
+### Cloud SDK
+
+* Added `core/disable_file_logging` property to prevent the gcloud command-line
+  tool from storing logs to a file. This may be useful if disk space is limited.
+  To set this property, run `gcloud config set core/disable_file_logging
+  True`.
+
+### App Engine
+
+* Updated the Python SDK to version 1.9.86. For more details, see
+  <https://cloud.google.com/appengine/docs/python/release-notes>.
+* Updated the Java SDK to version 1.9.75. For more details, see
+  <https://cloud.google.com/appengine/docs/java/release-notes>.
+
+### Cloud Functions
+
+* Added `--clear-vpc-connector` flag to `gcloud beta functions deploy`.
+
+### Cloud Key Management Service
+
+* Promoted the following commands to GA.
+  * `gcloud kms asymmetric-decrypt`.
+  * `gcloud kms asymmetric-sign`.
+  * `gcloud kms keys versions get-public-key`.
+* Promoted the following flags in `gcloud kms keys` command group to GA.
+  * `--attestation-file`.
+  * `--default-algorithm`.
+  * `--purpose`.
+  * `--protection-level`.
+
+### Cloud Memorystore
+
+* Added `gcloud beta redis instances <import|export>` to import data to or
+  export data from a Memorystore Redis instance from or to Google Cloud Storage.
+* Added `gcloud beta redis operations cancel` to cancel a Memorystore Redis
+  import or export operation.
+
+### Cloud PubSub
+
+* Added the following optional flags to `gcloud beta pubsub topics create` to support Cloud KMS integration:
+  * `--topic-encryption-key`
+  * `--topic-encryption-key-keyring`
+  * `--topic-encryption-key-location`
+  * `--topic-encryption-key-project`
+
+### Cloud Run
+
+* Promoted `--service-account` flag of `gcloud run deploy` and `gcloud run services update` to beta.
+
+### Compute Engine
+
+* Promoted `gcloud compute instances create --source-snapshot` flag to beta.
+* Promote INTERNAL_SELF_MANAGED value of `--load-balancing-scheme` in
+  `gcloud compute backend-services create` and
+  `gcloud compute forwarding-rules create` to GA.
+* Modified `gcloud compute backend-services create` and
+  `gcloud compute backend-services update` to allow toggling logging for backend
+  services with HTTP2 protocol.
+* Promoted `--server-binding` flag of `gcloud compute sole-tenancy
+  node-templates create` to GA.
+* Promoted `--enable-logging` and `--log-filter` flags of
+  `gcloud compute routers nats` to GA.
+
+### Kubernetes Engine
+
+*   Promoted Stackdriver Kubernetes Engine Monitoring to GA. Use
+    `--enable-stackdriver-kubernetes` with `gcloud container clusters create` or
+    `gcloud container clusters update` to enable this feature.
+*   Updated several flag names in `gcloud beta container binauthz` that assumed
+    PGP as the only supported key type.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 249.0.0 (2019-06-04)
 
 ### Cloud SDK

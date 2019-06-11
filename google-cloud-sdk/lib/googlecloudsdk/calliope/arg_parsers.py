@@ -1402,18 +1402,14 @@ def HandleNoArgAction(none_arg, deprecation_message):
   return HandleNoArgActionInit
 
 
-class BufferedFileInput(object):
-  """Creates an argparse type that reads and buffers file or stdin contents.
+class FileContents(object):
+  """Creates an argparse type that reads the contents of a file or stdin.
 
   This is similar to argparse.FileType, but unlike FileType it does not leave
   a dangling file handle open. The argument stored in the argparse Namespace
   is the file's contents.
 
   Args:
-    max_bytes: int, The maximum file size in bytes, or None to specify no
-        maximum.
-    chunk_size: int, When max_bytes is not None, the buffer size to use when
-        reading chunks from the input file.
     binary: bool, If True, the contents of the file will be returned as bytes.
 
   Returns:
@@ -1428,8 +1424,6 @@ class BufferedFileInput(object):
     """Return the contents of the file with the specified name.
 
     If name is "-", stdin is read until EOF. Otherwise, the named file is read.
-    If max_bytes is provided when calling BufferedFileInput, this function will
-    raise an ArgumentTypeError if the specified file is too large.
 
     Args:
       name: str, The file name, or '-' to indicate stdin.

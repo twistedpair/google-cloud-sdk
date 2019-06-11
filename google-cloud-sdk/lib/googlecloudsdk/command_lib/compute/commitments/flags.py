@@ -188,7 +188,7 @@ def AddReservationArgGroup(parser):
 
   reservations_manage_group.add_argument(
       '--reservations-from-file',
-      type=arg_parsers.BufferedFileInput(),
+      type=arg_parsers.FileContents(),
       help='Path to a YAML file of multiple reservations\' configuration.')
 
   single_reservation_group = reservations_manage_group.add_argument_group(

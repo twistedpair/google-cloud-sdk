@@ -257,16 +257,25 @@ def AddRuntimeFlag(parser):
           """)
 
 
-def AddVPCConnectorFlag(parser):
+def AddVPCConnectorMutexGroup(parser):
   """Add flag for specyfying VPC connector to the parser."""
-  parser.add_argument(
+  mutex_group = parser.add_group(mutex=True)
+  mutex_group.add_argument(
       '--vpc-connector',
       help="""\
-        The VPC Access connector that the function can connect to. It
-        should be the fully-qualified URI of the VPC Access connector
-        resource whose format is:
+        The VPC Access connector that the function can connect to. It can be
+        either the fully-qualified URI, or the short name of the VPC Access
+        connector resource. If the short name is used, the connector must
+        belong to the same project. The format of this field is either
         `projects/${PROJECT}/locations/${LOCATION}/connectors/${CONNECTOR}`
-        or an empty string to clear the field.
+        or `${CONNECTOR}`, where `${CONNECTOR}` is the short name of the VPC
+        Access connector.
+      """)
+  mutex_group.add_argument(
+      '--clear-vpc-connector',
+      action='store_true',
+      help="""\
+        Clears the VPC connector field.
       """)
 
 

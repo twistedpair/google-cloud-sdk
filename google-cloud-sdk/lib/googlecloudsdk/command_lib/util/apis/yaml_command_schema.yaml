@@ -635,6 +635,13 @@ properties:
       params:
         type: array
         items: {$ref: "#/definitions/argument"}
+      labels:
+        type: object
+        additionalProperties: false
+        description: Handles resource labels for resource create/update (go/api-label)
+        required: [api_field]
+        properties:
+          api_field: {type: string}
 
   # Information about how to collect input from the user.
   input:

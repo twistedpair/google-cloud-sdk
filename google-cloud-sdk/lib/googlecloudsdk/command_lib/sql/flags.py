@@ -498,11 +498,12 @@ def AddStorageSize(parser):
       '--storage-size',
       type=arg_parsers.BinarySize(
           lower_bound='10GB',
-          upper_bound='10230GB',
+          upper_bound='30710GB',
           suggested_binary_size_scales=['GB']),
       help=('Amount of storage allocated to the instance. Must be an integer '
-            'number of GB between 10GB and 10230GB inclusive. The default is '
-            '10GB.'))
+            'number of GB. The default is 10GB. Information on storage '
+            'limits can be found here: '
+            'https://cloud.google.com/sql/docs/quotas#storage_limits'))
 
 
 def AddTier(parser, is_patch=False):

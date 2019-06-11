@@ -197,6 +197,14 @@ class Arguments(object):
         data, 'additional_arguments_hook')
     self.params = [
         Argument.FromData(param_data) for param_data in data.get('params', [])]
+    self.labels = Labels(data.get('labels')) if data.get('labels') else None
+
+
+class Labels(object):
+  """Everything about labels of GCP resources."""
+
+  def __init__(self, data):
+    self.api_field = data['api_field']
 
 
 class Argument(object):

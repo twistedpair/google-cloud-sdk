@@ -79,7 +79,7 @@ def AddCycleFrequencyArgs(parser, flag_suffix, start_time_help,
     freq_file_group.add_argument(
         '--weekly-{}-from-file'.format(flag_suffix),
         dest='weekly_cycle_from_file',
-        type=arg_parsers.BufferedFileInput(),
+        type=arg_parsers.FileContents(),
         help="""\
         A JSON/YAML file which specifies a weekly schedule. It should be a
         list of objects with the following fields:

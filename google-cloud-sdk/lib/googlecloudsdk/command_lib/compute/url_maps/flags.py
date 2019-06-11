@@ -65,30 +65,36 @@ class UrlMapsCompleterAlpha(completers.MultiResourceCompleter):
         completers=[GlobalUrlMapsCompleter, RegionalUrlMapsCompleter], **kwargs)
 
 
-def UrlMapArgument(required=True, plural=False, include_alpha=False):
+def UrlMapArgument(required=True,
+                   plural=False,
+                   include_l7_internal_load_balancing=False):
   return compute_flags.ResourceArgument(
-      name='url_map_name',
+      name='url_map',
       resource_name='URL map',
-      completer=UrlMapsCompleterAlpha if include_alpha else UrlMapsCompleter,
+      completer=UrlMapsCompleterAlpha
+      if include_l7_internal_load_balancing else UrlMapsCompleter,
       plural=plural,
       required=required,
       global_collection='compute.urlMaps',
-      regional_collection='compute.regionUrlMaps' if include_alpha else None,
+      regional_collection='compute.regionUrlMaps'
+      if include_l7_internal_load_balancing else None,
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
-      if include_alpha else None)
+      if include_l7_internal_load_balancing else None)
 
 
 def UrlMapArgumentForTargetProxy(required=True,
                                  proxy_type='HTTP',
-                                 include_alpha=False):
+                                 include_l7_internal_load_balancing=False):
   return compute_flags.ResourceArgument(
       name='--url-map',
       resource_name='url map',
-      completer=UrlMapsCompleterAlpha if include_alpha else UrlMapsCompleter,
+      completer=UrlMapsCompleterAlpha
+      if include_l7_internal_load_balancing else UrlMapsCompleter,
       plural=False,
       required=required,
       global_collection='compute.urlMaps',
-      regional_collection='compute.regionUrlMaps' if include_alpha else None,
+      regional_collection='compute.regionUrlMaps'
+      if include_l7_internal_load_balancing else None,
       short_help=(
           'A reference to a URL map resource that defines the mapping of '
           'URLs to backend services.'),

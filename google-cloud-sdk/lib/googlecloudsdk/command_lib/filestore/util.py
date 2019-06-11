@@ -25,10 +25,10 @@ PARENT_TEMPLATE = 'projects/{}/locations/{}'
 LOCATION_WILDCARD = '-'
 
 
-def AddDefaultRegionToListRequest(ref, args, req):
+def AddDefaultLocationToListRequest(ref, args, req):
   """Python hook for yaml commands to wildcard the region in list requests."""
   del ref
   project = properties.VALUES.core.project.Get(required=True)
-  location = args.region or LOCATION_WILDCARD
+  location = args.region or args.zone or LOCATION_WILDCARD
   req.parent = PARENT_TEMPLATE.format(project, location)
   return req

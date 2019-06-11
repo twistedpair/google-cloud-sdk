@@ -69,16 +69,18 @@ class TargetHttpProxiesCompleterAlpha(completers.MultiResourceCompleter):
         **kwargs)
 
 
-def TargetHttpProxyArgument(required=True, plural=False, include_alpha=False):
+def TargetHttpProxyArgument(required=True,
+                            plural=False,
+                            include_l7_internal_load_balancing=False):
   return compute_flags.ResourceArgument(
       resource_name='target HTTP proxy',
       completer=TargetHttpProxiesCompleterAlpha
-      if include_alpha else TargetHttpProxiesCompleter,
+      if include_l7_internal_load_balancing else TargetHttpProxiesCompleter,
       plural=plural,
       custom_plural='target HTTP proxies',
       required=required,
       global_collection='compute.targetHttpProxies',
       regional_collection='compute.regionTargetHttpProxies'
-      if include_alpha else None,
+      if include_l7_internal_load_balancing else None,
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
-      if include_alpha else None)
+      if include_l7_internal_load_balancing else None)

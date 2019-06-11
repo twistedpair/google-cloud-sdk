@@ -704,7 +704,7 @@ class _BaseStagedProgressTracker(collections.Mapping):
 
   def HasWarning(self):
     """Returns True if this tracker has encountered at least one warning."""
-    return bool(self._completed_with_warnings_stages)
+    return bool(self._exit_output_warnings)
 
   def IsWaiting(self, stage):
     """Returns True if the stage is not yet started."""
@@ -912,6 +912,17 @@ class _BaseStagedProgressTracker(collections.Mapping):
       self._PrintExitOutput(failed=True)
       self._exception_is_uncaught = False
       raise failure_exception  # pylint: disable=raising-bad-type
+
+  def AddWarning(self, warning_message):
+    """Add a warning message independent of any particular stage.
+
+    This warning message will be printed on __exit__.
+
+    Args:
+      warning_message: str, user visible warning message.
+    """
+    with self._lock:
+      self._exit_output_warnings.append(warning_message)
 
 
 class _NormalStagedProgressTracker(_BaseStagedProgressTracker):

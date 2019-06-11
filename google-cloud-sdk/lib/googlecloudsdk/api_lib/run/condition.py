@@ -21,6 +21,35 @@ from __future__ import unicode_literals
 import collections
 
 
+_SEVERITY_ERROR = 'Error'
+_SEVERITY_WARNING = 'Warning'
+
+
+def GetNonTerminalMessages(conditions):
+  """Get messages for non-terminal subconditions.
+
+  Only show a message for some non-terminal subconditions:
+  - if severity == warning
+  - if message is provided
+  Non-terminal subconditions that aren't warnings are effectively neutral,
+  so messages for these aren't included unless provided.
+
+  Args:
+    conditions: Conditions
+
+  Returns:
+    list(str) messages of non-terminal subconditions
+  """
+  messages = []
+  for c in conditions.NonTerminalSubconditions():
+    if conditions[c]['severity'] == _SEVERITY_WARNING:
+      messages.append('{}: {}'.format(
+          c, conditions[c]['message'] or 'Unknown Warning.'))
+    elif conditions[c]['message']:
+      messages.append('{}: {}'.format(c, conditions[c]['message']))
+  return messages
+
+
 class Conditions(collections.Mapping):
   """Represents the status Conditions of a resource in a dict-like way.
 
@@ -64,9 +93,11 @@ class Conditions(collections.Mapping):
       elif cond.status.lower() == 'false':
         status = False
       self._conditions[cond.type] = {
+          'severity': cond.severity,
           'reason': cond.reason,
           'message': cond.message,
-          'status': status}
+          'status': status
+      }
     self._ready_condition = ready_condition
     self._fresh = (observed_generation is None or
                    (observed_generation == generation))
@@ -90,9 +121,16 @@ class Conditions(collections.Mapping):
 
   def TerminalSubconditions(self):
     """Yields keys of the conditions which if all True, Ready should be true."""
-    # TODO(b/120678118): When some conditions are non-terminal, support that.
     for k in self:
-      if k != self._ready_condition:
+      if (k != self._ready_condition and
+          (not self[k]['severity'] or self[k]['severity'] == _SEVERITY_ERROR)):
+        yield k
+
+  def NonTerminalSubconditions(self):
+    """Yields keys of the conditions which do not directly affect Ready."""
+    for k in self:
+      if (k != self._ready_condition and self[k]['severity'] and
+          self[k]['severity'] != _SEVERITY_ERROR):
         yield k
 
   def DescriptiveMessage(self):

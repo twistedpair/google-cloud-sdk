@@ -179,11 +179,14 @@ def BuildCondition(messages, condition=None, display_name=None,
         count=trigger_count, percent=trigger_percent)
 
   kwargs = {
-      'aggregations': aggregations if aggregations else None,
       'trigger': trigger,
       'duration': duration,
       'filter': condition_filter,
   }
+
+  # This should be unset, not None, if empty
+  if aggregations:
+    kwargs['aggregations'] = aggregations
 
   if if_value is not None:
     comparator, threshold_value = if_value  # pylint: disable=unpacking-non-sequence

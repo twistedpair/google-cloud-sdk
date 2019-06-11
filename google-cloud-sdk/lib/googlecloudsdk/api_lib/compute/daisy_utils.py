@@ -28,6 +28,7 @@ from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.services import enable_api as services_api
 from googlecloudsdk.api_lib.services import services_util
+from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.cloudbuild import execution
@@ -622,3 +623,23 @@ def AppendBoolArg(args, name, arg=True):
 def MakeGcsUri(uri):
   obj_ref = resources.REGISTRY.Parse(uri)
   return 'gs://{0}/{1}'.format(obj_ref.bucket, obj_ref.object)
+
+
+def MakeGcsObjectOrPathUri(uri):
+  """Creates Google Cloud Storage URI for an object or a path.
+
+  Raises storage_util.InvalidObjectNameError if a path contains only bucket
+  name.
+
+  Args:
+    uri: a string to a Google Cloud Storage object or a path. Can be a gs:// or
+         an https:// variant.
+
+  Returns:
+    Google Cloud Storage URI for an object or a path.
+  """
+  obj_ref = resources.REGISTRY.Parse(uri)
+  if hasattr(obj_ref, 'object'):
+    return 'gs://{0}/{1}'.format(obj_ref.bucket, obj_ref.object)
+  else:
+    raise storage_util.InvalidObjectNameError(uri, 'Missing object name')

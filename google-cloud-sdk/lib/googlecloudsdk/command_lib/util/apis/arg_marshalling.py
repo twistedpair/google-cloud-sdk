@@ -24,7 +24,9 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import multitype
 from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.command_lib.util.apis import update
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema
+from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import resources
@@ -35,6 +37,51 @@ import six
 class Error(Exception):
   """Base class for this module's exceptions."""
   pass
+
+
+def _GetLabelsClass(message, api_field):
+  return arg_utils.GetFieldFromMessage(message, api_field).type
+
+
+def _ParseLabelsIntoCreateMessage(message, args, api_field):
+  labels_cls = _GetLabelsClass(message, api_field)
+  labels_field = labels_util.ParseCreateArgs(args, labels_cls)
+  arg_utils.SetFieldInMessage(message, api_field, labels_field)
+
+
+def _AddLabelsToUpdateMask(static_field, update_mask_path):
+  if (update_mask_path not in static_field) or (
+      not static_field[update_mask_path]):
+    static_field[update_mask_path] = 'labels'
+    return
+
+  if 'labels' in static_field[update_mask_path].split(','):
+    return
+
+  static_field[
+      update_mask_path] = static_field[update_mask_path] + ',' + 'labels'
+
+
+def _RetrieveFieldValueFromMessage(message, api_field):
+  path = api_field.split('.')
+  for field_name in path:
+    try:
+      message = getattr(message, field_name)
+    except AttributeError:
+      raise AttributeError(
+          'The message does not have field specified in {}.'.format(api_field))
+  return message
+
+
+def _ParseLabelsIntoUpdateMessage(message, args, api_field):
+  existing_labels = _RetrieveFieldValueFromMessage(message, api_field)
+  diff = labels_util.Diff.FromUpdateArgs(args)
+  label_cls = _GetLabelsClass(message, api_field)
+  update_result = diff.Apply(label_cls, existing_labels)
+  if not update_result.needs_update:
+    return False
+  arg_utils.SetFieldInMessage(message, api_field, update_result.labels)
+  return True
 
 
 class DeclarativeArgumentGenerator(object):
@@ -76,6 +123,8 @@ class DeclarativeArgumentGenerator(object):
                     namespace,
                     static_fields=None,
                     resource_method_params=None,
+                    labels=None,
+                    command_type=None,
                     use_relative_name=True,
                     override_method=None,
                     parse_resource_into_request=True,
@@ -91,6 +140,8 @@ class DeclarativeArgumentGenerator(object):
       resource_method_params: {str: str}, A mapping of API method parameter name
         to resource ref attribute name when the API method uses non-standard
         names.
+      labels: The labels section of the command spec.
+      command_type: Type of the command, i.e. CREATE, UPDATE.
       use_relative_name: Use ref.RelativeName() if True otherwise ref.Name().
       override_method: APIMethod, The method other than self.method, this is
         used when the command has more than one API call.
@@ -111,6 +162,17 @@ class DeclarativeArgumentGenerator(object):
     if existing_message:
       message = arg_utils.ParseExistingMessageIntoMessage(
           message, existing_message, self.method)
+
+    # Add labels into message
+    if labels:
+      if command_type == yaml_command_schema.CommandType.CREATE:
+        _ParseLabelsIntoCreateMessage(message, namespace, labels.api_field)
+      elif command_type == yaml_command_schema.CommandType.UPDATE:
+        need_update = _ParseLabelsIntoUpdateMessage(message, namespace,
+                                                    labels.api_field)
+        if need_update:
+          update_mask_path = update.GetMaskFieldPath(override_method)
+          _AddLabelsToUpdateMask(static_fields, update_mask_path)
 
     # Insert static fields into message.
     arg_utils.ParseStaticFieldsIntoMessage(message, static_fields=static_fields)

@@ -128,7 +128,8 @@ GLOBAL_REGIONAL_MULTI_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     global_collection='compute.backendServices')
 
 
-def BackendServiceArgumentForUrlMap(required=True, include_alpha=False):
+def BackendServiceArgumentForUrlMap(required=True,
+                                    include_l7_internal_load_balancing=False):
   return compute_flags.ResourceArgument(
       resource_name='backend service',
       name='--default-service',
@@ -136,7 +137,7 @@ def BackendServiceArgumentForUrlMap(required=True, include_alpha=False):
       completer=BackendServicesCompleter,
       global_collection='compute.backendServices',
       regional_collection='compute.regionBackendServices'
-      if include_alpha else None,
+      if include_l7_internal_load_balancing else None,
       short_help=(
           'A backend service that will be used for requests for which this '
           'URL map has no mappings.'),
@@ -184,14 +185,11 @@ def BackendServiceArgumentForTargetTcpProxy(required=True):
         """)
 
 
-def AddLoadBalancingScheme(parser,
-                           include_l7_ilb=False,
-                           include_traffic_director=False):
+def AddLoadBalancingScheme(parser, include_l7_ilb=False):
   parser.add_argument(
       '--load-balancing-scheme',
-      choices=['INTERNAL', 'EXTERNAL'] +
-      (['INTERNAL_MANAGED'] if include_l7_ilb else []) +
-      (['INTERNAL_SELF_MANAGED'] if include_traffic_director else []),
+      choices=['INTERNAL', 'EXTERNAL', 'INTERNAL_SELF_MANAGED'] +
+      (['INTERNAL_MANAGED'] if include_l7_ilb else []),
       type=lambda x: x.replace('-', '_').upper(),
       default='EXTERNAL',
       help='Specifies if this is internal or external load balancer.')
@@ -331,7 +329,7 @@ def AddCacheKeyQueryStringList(parser):
       """)
 
 
-def HealthCheckArgument(required=False, include_alpha=False):
+def HealthCheckArgument(required=False, support_regional_health_check=False):
   return compute_flags.ResourceArgument(
       resource_name='health check',
       name='--health-checks',
@@ -340,7 +338,7 @@ def HealthCheckArgument(required=False, include_alpha=False):
       required=required,
       global_collection='compute.healthChecks',
       regional_collection='compute.regionHealthChecks'
-      if include_alpha else None,
+      if support_regional_health_check else None,
       short_help="""\
       Specifies a list of health check objects for checking the health of
       the backend service. Currently at most one health check can be specified.
@@ -348,7 +346,7 @@ def HealthCheckArgument(required=False, include_alpha=False):
       service.
       """,
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
-      if include_alpha else None)
+      if support_regional_health_check else None)
 
 
 def HttpHealthCheckArgument(required=False):

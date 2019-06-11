@@ -273,6 +273,7 @@ def ParseUpdateOptionsBase(args, locations):
   return api_adapter.UpdateClusterOptions(
       monitoring_service=args.monitoring_service,
       logging_service=args.logging_service,
+      enable_stackdriver_kubernetes=args.enable_stackdriver_kubernetes,
       disable_addons=args.disable_addons,
       enable_autoscaling=args.enable_autoscaling,
       min_nodes=args.min_nodes,

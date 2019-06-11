@@ -44,7 +44,7 @@ def AddMessageFlags(parser, resource, flag=None):
           resource))
   message_group.add_argument(
       '--{}-from-file'.format(flag or resource),
-      type=arg_parsers.BufferedFileInput(),
+      type=arg_parsers.FileContents(),
       help='The path to a JSON or YAML file containing the {}.'.format(
           resource))
 
@@ -107,7 +107,7 @@ def AddPolicySettingsFlags(parser, update=False):
       help='The documentation to be included with the policy.')
   documentation_string_group.add_argument(
       '--documentation-from-file',
-      type=arg_parsers.BufferedFileInput(),
+      type=arg_parsers.FileContents(),
       help='The path to a file containing the documentation to be included '
            'with the policy.')
   if update:
@@ -144,15 +144,21 @@ def ValidateAlertPolicyUpdateArgs(args):
 
 
 def ComparisonValidator(if_value):
+  """Validates and returns the comparator and value."""
   if if_value.lower() == 'absent':
     return (None, None)
-
-  if_value = if_value.split()
-  if len(if_value) != 2:
+  if len(if_value) < 2:
     raise exceptions.BadArgumentException('--if', 'Invalid value for flag.')
+  comparator_part = if_value[0]
+  threshold_part = if_value[1:]
   try:
-    comparator = COMPARISON_TO_ENUM[if_value[0]]
-    threshold_value = float(if_value[1])
+    comparator = COMPARISON_TO_ENUM[comparator_part]
+    threshold_value = float(threshold_part)
+
+    # currently only < and > are supported
+    if comparator not in ['COMPARISON_LT', 'COMPARISON_GT']:
+      raise exceptions.BadArgumentException('--if',
+                                            'Comparator must be < or >.')
     return comparator, threshold_value
   except KeyError:
     raise exceptions.BadArgumentException('--if',

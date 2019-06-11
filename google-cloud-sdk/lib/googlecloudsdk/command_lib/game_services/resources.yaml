@@ -68,13 +68,13 @@ game_server_cluster:
 
 deployment:
   name: deployment
-  collection: gameservices.projects.locations.deployments
+  collection: gameservices.projects.locations.gameServerDeployments
   request_id_field: deploymentId
   attributes:
   - *project
   - *location
   - &deployment
-    parameter_name: deploymentsId
+    parameter_name: gameServerDeploymentsId
     attribute_name: deployment
     help: Cloud Game Services Deployment.
 

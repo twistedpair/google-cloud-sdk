@@ -6,7 +6,7 @@ overwrite:
 permissions_file:
   api_field: dataset.access
   arg_name: permissions-file
-  type: "googlecloudsdk.calliope.arg_parsers:BufferedFileInput:"
+  type: "googlecloudsdk.calliope.arg_parsers:FileContents:"
   processor: googlecloudsdk.command_lib.bq.hooks:PermissionsFileProcessor
   help_text: |
     A local yaml or JSON file containing the access permissions specifying who is allowed to access

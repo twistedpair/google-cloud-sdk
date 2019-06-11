@@ -1168,6 +1168,12 @@ class _SectionCore(_Section):
         ' files. If unset, the default is 30 days.',
         default='30')
 
+    self.disable_file_logging = self._AddBool(
+        'disable_file_logging',
+        default=False,
+        help_text='If True, `gcloud` will not store logs to a file. This may '
+        'be useful if disk space is limited.')
+
     def ExistingAbsoluteFilepathValidator(file_path):
       """Checks to see if the file path exists and is an absolute path."""
       if file_path is None:

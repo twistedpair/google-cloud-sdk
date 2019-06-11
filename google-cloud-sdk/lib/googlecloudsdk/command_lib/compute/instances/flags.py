@@ -495,7 +495,8 @@ def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False,
 
 
 def AddCreateDiskArgs(parser, enable_kms=False, enable_snapshots=False,
-                      container_mount_enabled=False, resource_policy=False):
+                      container_mount_enabled=False, resource_policy=False,
+                      csek_key_file=False):
   """Adds create-disk argument for instances and instance-templates."""
 
   disk_device_name_help = _GetDiskDeviceNameHelp(
@@ -638,6 +639,17 @@ def AddCreateDiskArgs(parser, enable_kms=False, enable_snapshots=False,
       action='append',
       metavar='PROPERTY=VALUE',
       help=disk_help)
+  if csek_key_file:
+    disk_help += """
+      *image-csek-key-file::: Path to a Customer-Supplied Encryption Key (CSEK)
+      key file for the image. Specified iff image is specified and the
+      image is CSEK protected.
+
+       *source-snapshot-csek-key-file::: Path to a Customer-Supplied Encryption
+       Key (CSEK) key file for the source snapshot. Specified iff
+       source-snapshot is provided and the snapshot is CSEK protected.
+    """
+    spec['csek-key-file'] = str
 
 
 def AddCustomMachineTypeArgs(parser):

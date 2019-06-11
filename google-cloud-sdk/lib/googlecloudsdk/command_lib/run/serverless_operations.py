@@ -25,6 +25,7 @@ import functools
 import random
 import string
 from apitools.base.py import exceptions as api_exceptions
+from googlecloudsdk.api_lib.run import condition as run_condition
 from googlecloudsdk.api_lib.run import configuration
 from googlecloudsdk.api_lib.run import domain_mapping
 from googlecloudsdk.api_lib.run import global_methods
@@ -745,7 +746,7 @@ class ServerlessOperations(object):
 
   def _EnsureImageDigest(self, serv, config_changes):
     """Make config_changes include switch by-digest image if not so already."""
-    if not _IsDigest(serv.configuration.image):
+    if not _IsDigest(serv.template.image):
       base_revision = self._GetBaseRevision(
           serv.template, serv.metadata, serv.status)
       if base_revision:
@@ -784,7 +785,7 @@ class ServerlessOperations(object):
           pass
         elif private_endpoint:
           serv.labels[service.ENDPOINT_VISIBILITY] = service.CLUSTER_LOCAL
-        else:
+        elif service.ENDPOINT_VISIBILITY in serv.labels:
           del serv.labels[service.ENDPOINT_VISIBILITY]
 
         # PUT the changed Service
@@ -899,7 +900,10 @@ class ServerlessOperations(object):
 
     if not asyn:
       getter = functools.partial(self.GetService, service_ref)
-      self.WaitForCondition(ServiceConditionPoller(getter, tracker))
+      poller = ServiceConditionPoller(getter, tracker)
+      self.WaitForCondition(poller)
+      for msg in run_condition.GetNonTerminalMessages(poller.GetConditions()):
+        tracker.AddWarning(msg)
 
   def ListRevisions(self, namespace_ref, service_name):
     """List all revisions for the given service.

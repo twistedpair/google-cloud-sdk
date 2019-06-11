@@ -58,7 +58,7 @@ def _ConditionFileFormatException(filename):
 def ParseConditionFromFile(condition_from_file):
   """Read condition from YAML or JSON file."""
 
-  condition = arg_parsers.BufferedFileInput()(condition_from_file)
+  condition = arg_parsers.FileContents()(condition_from_file)
   condition_dict = iam_util.ParseYamlOrJsonCondition(
       condition, _ConditionFileFormatException(condition_from_file))
   return condition_dict
@@ -116,7 +116,7 @@ def GeneratePublicKeyDataFromFile(path):
     A public key encoded using the UTF-8 charset.
   """
   try:
-    public_key_data = arg_parsers.BufferedFileInput()(path).strip()
+    public_key_data = arg_parsers.FileContents()(path).strip()
   except arg_parsers.ArgumentTypeError as e:
     raise gcloud_exceptions.InvalidArgumentException(
         'public_key_file',

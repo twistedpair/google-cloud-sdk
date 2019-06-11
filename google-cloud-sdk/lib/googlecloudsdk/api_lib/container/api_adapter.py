@@ -151,10 +151,6 @@ CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG = """\
 The CloudRun-on-GKE addon (--addons=CloudRun) requires HTTP Load Balancing to be enabled via the --addons=HttpLoadBalancing flag.
 """
 
-CLOUDRUN_HPA_KUBERNETES_DISABLED_ERROR_MSG = """\
-The CloudRun-on-GKE addon (--addons=CloudRun) requires Horizontal Pod Autoscaling to be enabled via the --addons=HorizontalPodAutoscaling flag.
-"""
-
 DEFAULT_MAX_PODS_PER_NODE_WITHOUT_IP_ALIAS_ERROR_MSG = """\
 Cannot use --default-max-pods-per-node without --enable-ip-alias.
 """
@@ -357,6 +353,7 @@ class CreateClusterOptions(object):
                cluster_ipv4_cidr=None,
                enable_cloud_logging=None,
                enable_cloud_monitoring=None,
+               enable_stackdriver_kubernetes=None,
                subnetwork=None,
                addons=None,
                istio_config=None,
@@ -445,6 +442,7 @@ class CreateClusterOptions(object):
     self.cluster_ipv4_cidr = cluster_ipv4_cidr
     self.enable_cloud_logging = enable_cloud_logging
     self.enable_cloud_monitoring = enable_cloud_monitoring
+    self.enable_stackdriver_kubernetes = enable_stackdriver_kubernetes
     self.subnetwork = subnetwork
     self.addons = addons
     self.istio_config = istio_config
@@ -558,7 +556,10 @@ class UpdateClusterOptions(object):
                autoprovisioning_service_account=None,
                autoprovisioning_scopes=None,
                disable_default_snat=None,
-               autoprovisioning_locations=None):
+               autoprovisioning_locations=None,
+               resource_usage_bigquery_dataset=None,
+               enable_network_egress_metering=None,
+               enable_resource_consumption_metering=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -594,6 +595,10 @@ class UpdateClusterOptions(object):
     self.autoprovisioning_scopes = autoprovisioning_scopes
     self.disable_default_snat = disable_default_snat
     self.autoprovisioning_locations = autoprovisioning_locations
+    self.resource_usage_bigquery_dataset = resource_usage_bigquery_dataset
+    self.enable_network_egress_metering = enable_network_egress_metering
+    self.enable_resource_consumption_metering = (
+        enable_resource_consumption_metering)
 
 
 class SetMasterAuthOptions(object):
@@ -917,6 +922,12 @@ class APIAdapter(object):
       cluster.network = options.network
     if options.cluster_ipv4_cidr:
       cluster.clusterIpv4Cidr = options.cluster_ipv4_cidr
+    if options.enable_stackdriver_kubernetes:
+      if options.enable_cloud_logging and options.enable_cloud_monitoring:
+        cluster.loggingService = 'logging.googleapis.com/kubernetes'
+        cluster.monitoringService = 'monitoring.googleapis.com/kubernetes'
+      else:
+        raise util.Error(CLOUD_LOGGING_OR_MONITORING_DISABLED_ERROR_MSG)
     if not options.enable_cloud_logging:
       cluster.loggingService = 'none'
     if not options.enable_cloud_monitoring:
@@ -1339,6 +1350,10 @@ class APIAdapter(object):
       if options.security_profile is not None:
         update.securityProfile = self.messages.SecurityProfile(
             name=options.security_profile)
+    elif options.enable_stackdriver_kubernetes:
+      update = self.messages.ClusterUpdate()
+      update.desiredLoggingService = 'logging.googleapis.com/kubernetes'
+      update.desiredMonitoringService = 'monitoring.googleapis.com/kubernetes'
     elif options.monitoring_service or options.logging_service:
       update = self.messages.ClusterUpdate()
       if options.monitoring_service:
@@ -2105,8 +2120,6 @@ class V1Beta1Adapter(V1Adapter):
           raise util.Error(CLOUDRUN_ISTIO_KUBERNETES_DISABLED_ERROR_MSG)
         if INGRESS not in options.addons:
           raise util.Error(CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG)
-        if HPA not in options.addons:
-          raise util.Error(CLOUDRUN_HPA_KUBERNETES_DISABLED_ERROR_MSG)
         cluster.addonsConfig.cloudRunConfig = self.messages.CloudRunConfig(
             disabled=False)
       # Istio is disabled by default
@@ -2124,12 +2137,6 @@ class V1Beta1Adapter(V1Adapter):
     if options.enable_autoprovisioning is not None:
       cluster.autoscaling = self.CreateClusterAutoscalingCommon(cluster_ref,
                                                                 options)
-    if options.enable_stackdriver_kubernetes:
-      if options.enable_cloud_logging and options.enable_cloud_monitoring:
-        cluster.loggingService = 'logging.googleapis.com/kubernetes'
-        cluster.monitoringService = 'monitoring.googleapis.com/kubernetes'
-      else:
-        raise util.Error(CLOUD_LOGGING_OR_MONITORING_DISABLED_ERROR_MSG)
     if options.database_encryption:
       cluster.databaseEncryption = self.messages.DatabaseEncryption(
           keyName=options.database_encryption,
@@ -2159,11 +2166,6 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(
           desiredShieldedNodes=self.messages.ShieldedNodes(
               enabled=options.enable_shielded_nodes))
-
-    if options.enable_stackdriver_kubernetes:
-      update = self.messages.ClusterUpdate()
-      update.desiredLoggingService = 'logging.googleapis.com/kubernetes'
-      update.desiredMonitoringService = 'monitoring.googleapis.com/kubernetes'
 
     if not update:
       # if reached here, it's possible:
@@ -2376,12 +2378,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if options.local_ssd_volume_configs:
       for pool in cluster.nodePools:
         self._AddLocalSSDVolumeConfigsToNodeConfig(pool.config, options)
-    if options.enable_stackdriver_kubernetes:
-      if options.enable_cloud_logging and options.enable_cloud_monitoring:
-        cluster.loggingService = 'logging.googleapis.com/kubernetes'
-        cluster.monitoringService = 'monitoring.googleapis.com/kubernetes'
-      else:
-        raise util.Error(CLOUD_LOGGING_OR_MONITORING_DISABLED_ERROR_MSG)
     if options.addons:
       # CloudRun is disabled by default.
       if CLOUDRUN in options.addons:
@@ -2391,8 +2387,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           raise util.Error(CLOUDRUN_ISTIO_KUBERNETES_DISABLED_ERROR_MSG)
         if INGRESS not in options.addons:
           raise util.Error(CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG)
-        if HPA not in options.addons:
-          raise util.Error(CLOUDRUN_HPA_KUBERNETES_DISABLED_ERROR_MSG)
         cluster.addonsConfig.cloudRunConfig = self.messages.CloudRunConfig(
             disabled=False)
       # Istio is disabled by default
@@ -2476,11 +2470,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           disabled=options.disable_default_snat)
       update = self.messages.ClusterUpdate(
           desiredDefaultSnatStatus=disable_default_snat)
-
-    if options.enable_stackdriver_kubernetes:
-      update = self.messages.ClusterUpdate()
-      update.desiredLoggingService = 'logging.googleapis.com/kubernetes'
-      update.desiredMonitoringService = 'monitoring.googleapis.com/kubernetes'
 
     if not update:
       # if reached here, it's possible:

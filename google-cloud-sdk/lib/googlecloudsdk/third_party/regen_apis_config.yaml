@@ -206,6 +206,9 @@ apis:
     v1:
       discovery_doc: composer_v1.json
       default: true
+  composerflex:
+    v1alpha1:
+      discovery_doc: composerflex_v1alpha1.json
   compute:
     alpha:
       discovery_doc: compute_alpha.json
@@ -370,6 +373,8 @@ apis:
   healthcare:
     v1alpha2:
       discovery_doc: healthcare_v1alpha2.json
+    v1beta1:
+      discovery_doc: healthcare_v1beta1.json
       default: true
   oslogin:
     v1alpha:
@@ -481,6 +486,10 @@ apis:
           path: organizations/{organizationsId}/sources/{sourcesId}/findings/{findingId}
         organizations.assets:
           path: organizations/{organizationsId}/assets/{assetsId}
+      default: true
+  serviceconsumermanagement:
+    v1beta1:
+      discovery_doc: serviceconsumermanagement_v1beta1.json
       default: true
   servicemanagement:
     v1:

@@ -26,7 +26,7 @@ def AddNodeAffinityFlagToParser(parser):
   sole_tenancy_group = parser.add_group('Sole Tenancy.', mutex=True)
   sole_tenancy_group.add_argument(
       '--node-affinity-file',
-      type=arg_parsers.BufferedFileInput(),
+      type=arg_parsers.FileContents(),
       help="""\
           The JSON/YAML file containing the configuration of desired nodes onto
           which this instance could be scheduled. These rules filter the nodes

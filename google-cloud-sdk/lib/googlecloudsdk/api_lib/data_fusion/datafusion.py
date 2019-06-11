@@ -20,6 +20,8 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
 
+OPERATION_TIMEOUT = 60 * 20 * 1000
+
 
 class Datafusion(object):
   """Stateful utility for calling Datafusion APIs.

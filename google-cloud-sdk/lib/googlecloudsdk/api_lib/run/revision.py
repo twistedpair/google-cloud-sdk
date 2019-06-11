@@ -44,9 +44,9 @@ class Revision(k8s_object.KubernetesObject):
     the returned object (i.e. setting and deleting keys) modify the underlying
     nested env vars fields.
     """
-    if self._m.spec and self._m.spec.container:
+    if self.container:
       return k8s_object.ListAsDictionaryWrapper(
-          self._m.spec.container.env, self._messages.EnvVar)
+          self.container.env, self._messages.EnvVar)
 
   @property
   def author(self):
@@ -99,7 +99,17 @@ class Revision(k8s_object.KubernetesObject):
   @property
   def container(self):
     """The container in the revisionTemplate."""
-    return self.spec.container
+    if self.spec.container and self.spec.containers:
+      raise ValueError(
+          'Revision can have only one of `container` or `containers` set')
+    elif self.spec.container:
+      return self.spec.container
+    elif self.spec.containers:
+      if self.spec.containers[0] is None or len(self.spec.containers) != 1:
+        raise ValueError('List of containers must contain exactly one element')
+      return self.spec.containers[0]
+    else:
+      raise ValueError('Either `container` or `containers` must be set')
 
   @property
   def resource_limits(self):

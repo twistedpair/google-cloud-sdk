@@ -352,7 +352,7 @@ def ApplyCdnPolicyArgs(client,
         **cdn_policy_args)
 
 
-def ApplyFailoverPolicyArgs(messages, args, backend_service):
+def ApplyFailoverPolicyArgs(messages, args, backend_service, support_failover):
   """Applies the FailoverPolicy arguments to the specified backend service.
 
   If there are no arguments related to FailoverPolicy, the backend service
@@ -362,24 +362,26 @@ def ApplyFailoverPolicyArgs(messages, args, backend_service):
     messages: The avalible API proto messages.
     args: The arguments passed to the gcloud command.
     backend_service: The backend service proto message object.
+    support_failover: Failover functionality is supported.
   """
-  if ((args.connection_drain_on_failover is not None or
-       args.drop_traffic_if_unhealthy is not None) and
+  if ((support_failover and (args.IsSpecified('connection_drain_on_failover') or
+                             args.IsSpecified('drop_traffic_if_unhealthy'))) and
       backend_service.loadBalancingScheme ==
       messages.BackendService.LoadBalancingSchemeValueValuesEnum.EXTERNAL):
     raise exceptions.InvalidArgumentException(
         '--load-balancing-scheme',
         'can only specify --connection-drain-on-failover or '
         '--drop-traffic-if-unhealthy if the load balancing scheme is INTERNAL.')
-  if (args.connection_drain_on_failover is not None and
-      backend_service.protocol !=
+  if ((support_failover and args.IsSpecified('connection_drain_on_failover'))
+      and backend_service.protocol !=
       messages.BackendService.ProtocolValueValuesEnum.TCP):
     raise exceptions.InvalidArgumentException(
         '--protocol', 'can only specify --connection-drain-on-failover '
         'if the protocol is TCP.')
 
-  if (args.connection_drain_on_failover is not None or
-      args.drop_traffic_if_unhealthy is not None or args.failover_ratio):
+  if (support_failover and (args.IsSpecified('connection_drain_on_failover') or
+                            args.IsSpecified('drop_traffic_if_unhealthy') or
+                            args.IsSpecified('failover_ratio'))):
     failover_policy = (backend_service.failoverPolicy
                        if backend_service.failoverPolicy else
                        messages.BackendServiceFailoverPolicy())
@@ -393,36 +395,40 @@ def ApplyFailoverPolicyArgs(messages, args, backend_service):
     backend_service.failoverPolicy = failover_policy
 
 
-def ApplyLogConfigArgs(messages, args, backend_service):
+def ApplyLogConfigArgs(messages, args, backend_service, support_logging):
   """Applies the LogConfig arguments to the specified backend service.
 
   If there are no arguments related to LogConfig, the backend service
   remains unmodified.
 
   Args:
-    messages: The avalible API proto messages.
+    messages: The available API proto messages.
     args: The arguments passed to the gcloud command.
     backend_service: The backend service proto message object.
+    support_logging: Support logging functionality.
   """
-  if ((args.enable_logging is not None or args.logging_sample_rate is not None)
-      and backend_service.loadBalancingScheme is not None and
+  logging_specified = (
+      support_logging and (args.IsSpecified('enable_logging') or
+                           args.IsSpecified('logging_sample_rate')))
+  if (logging_specified and backend_service.loadBalancingScheme is not None and
       backend_service.loadBalancingScheme !=
       messages.BackendService.LoadBalancingSchemeValueValuesEnum.EXTERNAL):
     raise exceptions.InvalidArgumentException(
         '--load-balancing-scheme',
         'can only specify --enable-logging or --logging-sample-rate if the '
         'load balancing scheme is EXTERNAL.')
-  if ((args.enable_logging is not None or
-       args.logging_sample_rate is not None) and backend_service.protocol !=
+  if (logging_specified and backend_service.protocol !=
       messages.BackendService.ProtocolValueValuesEnum.HTTP and
       backend_service.protocol !=
-      messages.BackendService.ProtocolValueValuesEnum.HTTPS):
+      messages.BackendService.ProtocolValueValuesEnum.HTTPS and
+      backend_service.protocol !=
+      messages.BackendService.ProtocolValueValuesEnum.HTTP2):
     raise exceptions.InvalidArgumentException(
         '--protocol',
         'can only specify --enable-logging or --logging-sample-rate if the '
-        'protocol is HTTP/HTTPS.')
+        'protocol is HTTP/HTTPS/HTTP2.')
 
-  if args.enable_logging is not None or args.logging_sample_rate is not None:
+  if logging_specified:
     if backend_service.logConfig:
       log_config = backend_service.logConfig
     else:

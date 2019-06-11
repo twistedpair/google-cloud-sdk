@@ -363,7 +363,7 @@ and memory limits to be specified.""",
   limits_group = group.add_mutually_exclusive_group()
   limits_group.add_argument(
       '--autoprovisioning-config-file',
-      type=arg_parsers.BufferedFileInput(),
+      type=arg_parsers.FileContents(),
       hidden=hidden,
       help="""\
 Path of the JSON/YAML file which contains information about the
@@ -1391,21 +1391,13 @@ Multiple locations can be specified, separated by commas. For example:
 """)
 
 
-def AddLoggingServiceFlag(parser, enable_kubernetes):
+def AddLoggingServiceFlag(parser):
   """Adds a --logging-service flag to the parser.
 
   Args:
     parser: A given parser.
-    enable_kubernetes: Mention Kubernetes-native resource model in help string
   """
   help_str = """\
-Logging service to use for the cluster. Options are:
-"logging.googleapis.com" (the Google Cloud Logging service),
-"none" (logs will not be exported from the cluster)
-"""
-
-  if enable_kubernetes:
-    help_str = """\
 Logging service to use for the cluster. Options are:
 "logging.googleapis.com/kubernetes" (the Google Cloud Logging
 service with Kubernetes-native resource model enabled),
@@ -1416,22 +1408,14 @@ service with Kubernetes-native resource model enabled),
   parser.add_argument('--logging-service', help=help_str)
 
 
-def AddMonitoringServiceFlag(parser, enable_kubernetes):
+def AddMonitoringServiceFlag(parser):
   """Adds a --monitoring-service flag to the parser.
 
   Args:
     parser: A given parser.
-    enable_kubernetes: Mention Kubernetes-native resource model in help string
   """
 
   help_str = """\
-Monitoring service to use for the cluster. Options are:
-"monitoring.googleapis.com" (the Google Cloud Monitoring service),
-"none" (no metrics will be exported from the cluster)
-"""
-
-  if enable_kubernetes:
-    help_str = """\
 Monitoring service to use for the cluster. Options are:
 "monitoring.googleapis.com/kubernetes" (the Google Cloud
 Monitoring service with Kubernetes-native resource model enabled),
@@ -1918,6 +1902,7 @@ Network egress metering is disabled if this flag is omitted, or when
       '--enable-network-egress-metering',
       action='store_true',
       default=None,
+      hidden=hidden,
       help=network_egress_help_text)
 
   resource_consumption_help_text = """\
@@ -1948,7 +1933,7 @@ cluster.
       '--enable-resource-consumption-metering',
       action='store_true',
       default=None,
-      hidden=True,
+      hidden=hidden,
       help=resource_consumption_help_text)
 
 

@@ -165,7 +165,7 @@ To see available fields, see the help for `--condition`."""
 
   condition_group.add_argument(
       '--condition-from-file',
-      type=arg_parsers.BufferedFileInput(),
+      type=arg_parsers.FileContents(),
       help=help_str_condition_from_file)
 
 
@@ -194,7 +194,7 @@ conditions."""
 
   condition_group.add_argument(
       '--condition-from-file',
-      type=arg_parsers.BufferedFileInput(),
+      type=arg_parsers.FileContents(),
       help=help_str_condition_from_file)
 
   condition_group.add_argument(

@@ -15,7 +15,7 @@ schema:
 schema_from_file:
   arg_name: schema-from-file
   api_field: googleCloudDatacatalogV1beta1Entry.schema
-  type: "googlecloudsdk.calliope.arg_parsers:BufferedFileInput:"
+  type: "googlecloudsdk.calliope.arg_parsers:FileContents:"
   processor: googlecloudsdk.command_lib.data_catalog.entries.util:ProcessSchemaFromFile
   help_text: |-
     Path to a JSON or YAML file containing the schema for the entry. This can be used to specify

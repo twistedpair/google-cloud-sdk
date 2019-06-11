@@ -28,8 +28,7 @@ def _ParseNodeAffinityLabels(affinity_labels, messages):
       affinity_labels, affinity_labels_class, sort_items=True)
 
 
-def CreateNodeTemplate(node_template_ref, args, messages,
-                       enable_server_binding, enable_disk=False):
+def CreateNodeTemplate(node_template_ref, args, messages, enable_disk=False):
   """Creates a Node Template message from args."""
   node_affinity_labels = None
   if args.node_affinity_labels:
@@ -61,10 +60,9 @@ def CreateNodeTemplate(node_template_ref, args, messages,
           diskType=args.disk.get('type'))
       node_template.disks = [local_disk]
 
-  if enable_server_binding:
-    server_binding_flag = flags.GetServerBindingMapperFlag(messages)
-    server_binding = messages.ServerBinding(
-        type=server_binding_flag.GetEnumForChoice(args.server_binding))
-    node_template.serverBinding = server_binding
+  server_binding_flag = flags.GetServerBindingMapperFlag(messages)
+  server_binding = messages.ServerBinding(
+      type=server_binding_flag.GetEnumForChoice(args.server_binding))
+  node_template.serverBinding = server_binding
 
   return node_template

@@ -26,13 +26,9 @@ from googlecloudsdk.command_lib.compute.instance_groups.managed.instance_configs
 import six
 
 
-def GetMode(messages, mode, preserved_state_mode=False):
+def GetMode(messages, mode):
   """Returns mode message based on short user friendly string."""
-  if preserved_state_mode:
-    enum_class = messages.PreservedStatePreservedDisk.ModeValueValuesEnum
-  else:
-    enum_class =\
-        messages.ManagedInstanceOverrideDiskOverride.ModeValueValuesEnum
+  enum_class = messages.PreservedStatePreservedDisk.ModeValueValuesEnum
   if isinstance(mode, six.string_types):
     return {
         'ro': enum_class.READ_ONLY,
@@ -41,31 +37,6 @@ def GetMode(messages, mode, preserved_state_mode=False):
   else:
     # handle converting from AttachedDisk.ModeValueValuesEnum
     return enum_class(mode.name)
-
-
-def GetDiskOverride(messages, stateful_disk, disk_getter):
-  """Prepares disk override message, combining with params from the instance."""
-  if stateful_disk.get('source'):
-    source = stateful_disk.get('source')
-    mode = stateful_disk.get('mode', 'rw')
-  else:
-    disk = disk_getter.get_disk(device_name=stateful_disk.get('device-name'))
-    if disk is None:
-      if disk_getter.instance_exists:
-        error_message = ('[source] must be given while defining stateful disks'
-                         ' in instance configs for non existing disks in given'
-                         ' instance')
-      else:
-        error_message = ('[source] must be given while defining stateful disks'
-                         ' in instance configs for non existing instances')
-      raise exceptions.BadArgumentException('source', error_message)
-    source = disk.source
-    mode = disk.mode
-  return messages.ManagedInstanceOverrideDiskOverride(
-      deviceName=stateful_disk.get('device-name'),
-      source=source,
-      mode=GetMode(messages, mode),
-  )
 
 
 def MakePreservedStateDiskEntry(messages, stateful_disk_data, disk_getter):
@@ -94,7 +65,7 @@ def MakePreservedStateDiskEntry(messages, stateful_disk_data, disk_getter):
                           messages.PreservedStatePreservedDisk
                           .AutoDeleteValueValuesEnum),
           source=source,
-          mode=GetMode(messages, mode, preserved_state_mode=True))
+          mode=GetMode(messages, mode))
   return messages.PreservedState.DisksValue.AdditionalProperty(
       key=stateful_disk_data.get('device-name'), value=preserved_disk)
 
@@ -104,77 +75,6 @@ def MakePreservedStateMetadataEntry(messages, key, value):
       key=key,
       value=value
   )
-
-
-def MakeOverridesFromPreservedState(messages, preserved_state):
-  """Make ManagedInstanceOverrides from PreservedState."""
-  disk_mode_map = {
-      messages.PreservedStatePreservedDisk.ModeValueValuesEnum.READ_ONLY
-      : messages.ManagedInstanceOverrideDiskOverride
-        .ModeValueValuesEnum.READ_ONLY,
-      messages.PreservedStatePreservedDisk.ModeValueValuesEnum.READ_WRITE
-      : messages.ManagedInstanceOverrideDiskOverride\
-        .ModeValueValuesEnum.READ_WRITE,
-  }
-  overrides = messages.ManagedInstanceOverride()
-  override_disks = []
-  for preserved_state_disk in \
-      (preserved_state.disks.additionalProperties or []):
-    override_disks.append(
-        messages.ManagedInstanceOverrideDiskOverride(
-            deviceName=preserved_state_disk.key,
-            source=preserved_state_disk.value.source,
-            mode=disk_mode_map[preserved_state_disk.value.mode],
-        )
-    )
-  overrides.disks = override_disks
-  overrides.metadata = [
-      messages.ManagedInstanceOverride.MetadataValueListEntry(
-          key=metadata.key, value=metadata.value)
-      for metadata in (preserved_state.metadata.additionalProperties or [])
-  ]
-  return overrides
-
-
-def MakePreservedStateFromOverrides(messages, disk_overrides,
-                                    metadata_overrides):
-  """Make PreservedState from ManagedInstanceOverrides."""
-  disk_mode_map = {
-      messages.ManagedInstanceOverrideDiskOverride.ModeValueValuesEnum.READ_ONLY
-      : messages.PreservedStatePreservedDisk.ModeValueValuesEnum.READ_ONLY,
-      messages.ManagedInstanceOverrideDiskOverride \
-        .ModeValueValuesEnum.READ_WRITE
-      : messages.PreservedStatePreservedDisk.ModeValueValuesEnum.READ_WRITE,
-  }
-  preserved_state = messages.PreservedState()
-
-  # Add disks from disk_overrides
-  disks_map = messages.PreservedState.DisksValue()
-  disks_map.additionalProperties = []
-  for override_disk in disk_overrides:
-    preserved_disk = \
-        messages.PreservedStatePreservedDisk(
-            autoDelete=messages.PreservedStatePreservedDisk \
-                       .AutoDeleteValueValuesEnum.NEVER,
-            source=override_disk.source,
-            mode=disk_mode_map[override_disk.mode])
-    disks_map.additionalProperties.append(
-        messages.PreservedState.DisksValue.AdditionalProperty(
-            key=override_disk.deviceName, value=preserved_disk))
-  preserved_state.disks = disks_map
-
-  # Add metadata from metadata_overrides
-  metadata_additional_properties = []
-  for metadata_override in metadata_overrides:
-    metadata_additional_properties.append(
-        messages.PreservedState.MetadataValue.AdditionalProperty(
-            key=metadata_override.key,
-            value=metadata_override.value
-        )
-    )
-  preserved_state.metadata = messages.PreservedState.MetadataValue(
-      additionalProperties=metadata_additional_properties)
-  return preserved_state
 
 
 def CreatePerInstanceConfigMessage(holder,
@@ -187,31 +87,18 @@ def CreatePerInstanceConfigMessage(holder,
     disk_getter = instance_disk_getter.InstanceDiskGetter(
         instance_ref=instance_ref, holder=holder)
   messages = holder.client.messages
-  disk_overrides = []
   preserved_state_disks = []
   for stateful_disk in stateful_disks or []:
-    disk_overrides.append(
-        GetDiskOverride(
-            messages=messages,
-            stateful_disk=stateful_disk,
-            disk_getter=disk_getter))
     preserved_state_disks.append(
         MakePreservedStateDiskEntry(messages, stateful_disk, disk_getter))
-  metadata_overrides = []
   preserved_state_metadata = []
   # Keeping the metadata sorted to maintain consistency across commands
   for metadata_key, metadata_value in sorted(six.iteritems(stateful_metadata)):
-    metadata_overrides.append(
-        messages.ManagedInstanceOverride.MetadataValueListEntry(
-            key=metadata_key, value=metadata_value))
     preserved_state_metadata.append(
         MakePreservedStateMetadataEntry(
             messages, key=metadata_key, value=metadata_value))
   return messages.PerInstanceConfig(
-      instance=str(instance_ref),
       name=path_simplifier.Name(str(instance_ref)),
-      override=messages.ManagedInstanceOverride(
-          disks=disk_overrides, metadata=metadata_overrides),
       preservedState=messages.PreservedState(
           disks=messages.PreservedState.DisksValue(
               additionalProperties=preserved_state_disks),
