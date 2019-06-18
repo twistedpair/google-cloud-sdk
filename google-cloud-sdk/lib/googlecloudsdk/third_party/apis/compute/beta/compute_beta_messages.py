@@ -3451,6 +3451,9 @@ class Commitment(_messages.Message):
     StatusValueValuesEnum: [Output Only] Status of the commitment with regards
       to eventual expiration (each commitment has an end date defined). One of
       the following values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.
+    TypeValueValuesEnum: The type of commitment, which affects the discount
+      rate and the eligible resources. Type MEMORY_OPTIMIZED specifies a
+      commitment that will only apply to memory optimized machines.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -3484,6 +3487,9 @@ class Commitment(_messages.Message):
       following values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.
     statusMessage: [Output Only] An optional, human-readable explanation of
       the status.
+    type: The type of commitment, which affects the discount rate and the
+      eligible resources. Type MEMORY_OPTIMIZED specifies a commitment that
+      will only apply to memory optimized machines.
   """
 
   class PlanValueValuesEnum(_messages.Enum):
@@ -3516,6 +3522,24 @@ class Commitment(_messages.Message):
     EXPIRED = 2
     NOT_YET_ACTIVE = 3
 
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of commitment, which affects the discount rate and the
+    eligible resources. Type MEMORY_OPTIMIZED specifies a commitment that will
+    only apply to memory optimized machines.
+
+    Values:
+      COMPUTE_OPTIMIZED: <no description>
+      GENERAL_PURPOSE: <no description>
+      GENERAL_PURPOSE_N2: <no description>
+      MEMORY_OPTIMIZED: <no description>
+      TYPE_UNSPECIFIED: <no description>
+    """
+    COMPUTE_OPTIMIZED = 0
+    GENERAL_PURPOSE = 1
+    GENERAL_PURPOSE_N2 = 2
+    MEMORY_OPTIMIZED = 3
+    TYPE_UNSPECIFIED = 4
+
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   endTimestamp = _messages.StringField(3)
@@ -3530,6 +3554,7 @@ class Commitment(_messages.Message):
   startTimestamp = _messages.StringField(12)
   status = _messages.EnumField('StatusValueValuesEnum', 13)
   statusMessage = _messages.StringField(14)
+  type = _messages.EnumField('TypeValueValuesEnum', 15)
 
 
 class CommitmentAggregatedList(_messages.Message):
@@ -14376,6 +14401,20 @@ class ComputeResourcePoliciesDeleteRequest(_messages.Message):
   resourcePolicy = _messages.StringField(4, required=True)
 
 
+class ComputeResourcePoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeResourcePoliciesGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
 class ComputeResourcePoliciesGetRequest(_messages.Message):
   r"""A ComputeResourcePoliciesGetRequest object.
 
@@ -14462,6 +14501,23 @@ class ComputeResourcePoliciesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+
+
+class ComputeResourcePoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeResourcePoliciesSetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    regionSetPolicyRequest: A RegionSetPolicyRequest resource to be passed as
+      the request body.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetPolicyRequest = _messages.MessageField('RegionSetPolicyRequest', 3)
+  resource = _messages.StringField(4, required=True)
 
 
 class ComputeResourcePoliciesTestIamPermissionsRequest(_messages.Message):
@@ -19900,7 +19956,10 @@ class ExchangedPeeringRoute(_messages.Message):
 
   Fields:
     destRange: The destination range of the route.
-    imported: If the peering route is imported if there is no confliction.
+    imported: True if the peering route has been imported from a peer. The
+      actual import happens if the field networkPeering.importCustomRoutes is
+      true for this network, and networkPeering.exportCustomRoutes is true for
+      the peer network, and the import does not result in a route conflict.
     nextHopRegion: The region of peering route next hop, only applies to
       dynamic routes.
     priority: The priority of the peering route.
@@ -21532,6 +21591,7 @@ class GuestOsFeature(_messages.Message):
 
     Values:
       FEATURE_TYPE_UNSPECIFIED: <no description>
+      GVNIC: <no description>
       MULTI_IP_SUBNET: <no description>
       SECURE_BOOT: <no description>
       UEFI_COMPATIBLE: <no description>
@@ -21539,11 +21599,12 @@ class GuestOsFeature(_messages.Message):
       WINDOWS: <no description>
     """
     FEATURE_TYPE_UNSPECIFIED = 0
-    MULTI_IP_SUBNET = 1
-    SECURE_BOOT = 2
-    UEFI_COMPATIBLE = 3
-    VIRTIO_SCSI_MULTIQUEUE = 4
-    WINDOWS = 5
+    GVNIC = 1
+    MULTI_IP_SUBNET = 2
+    SECURE_BOOT = 3
+    UEFI_COMPATIBLE = 4
+    VIRTIO_SCSI_MULTIQUEUE = 5
+    WINDOWS = 6
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
@@ -24839,24 +24900,50 @@ class InstanceGroupManagersApplyUpdatesRequest(_messages.Message):
   r"""InstanceGroupManagers.applyUpdatesToInstances
 
   Enums:
-    MinimalActionValueValuesEnum: The minimal action that should be perfomed
-      on the instances. By default NONE.
+    MinimalActionValueValuesEnum: The minimal action that you want to perform
+      on each instance during the update:   - REPLACE: At minimum, delete the
+      instance and create it again.  - RESTART: Stop the instance and start it
+      again.  - REFRESH: Do not stop the instance.  - NONE: Do not disrupt the
+      instance at all.  By default, the minimum action is NONE. If your update
+      requires a more disruptive action than you set with this flag, the
+      necessary action is performed to execute the update.
     MostDisruptiveAllowedActionValueValuesEnum: The most disruptive action
-      that allowed to be performed on the instances. By default REPLACE.
+      that you want to perform on each instance during the update:   -
+      REPLACE: Delete the instance and create it again.  - RESTART: Stop the
+      instance and start it again.  - REFRESH: Do not stop the instance.  -
+      NONE: Do not disrupt the instance at all.  By default, the most
+      disruptive allowed action is REPLACE. If your update requires a more
+      disruptive action than you set with this flag, the update request will
+      fail.
 
   Fields:
-    instances: The list of URLs of one or more instances for which we want to
-      apply updates on this managed instance group. This can be a full URL or
-      a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
-    minimalAction: The minimal action that should be perfomed on the
-      instances. By default NONE.
-    mostDisruptiveAllowedAction: The most disruptive action that allowed to be
-      performed on the instances. By default REPLACE.
+    instances: The list of URLs of one or more instances for which you want to
+      apply updates. Each URL can be a full URL or a partial URL, such as
+      zones/[ZONE]/instances/[INSTANCE_NAME].
+    minimalAction: The minimal action that you want to perform on each
+      instance during the update:   - REPLACE: At minimum, delete the instance
+      and create it again.  - RESTART: Stop the instance and start it again.
+      - REFRESH: Do not stop the instance.  - NONE: Do not disrupt the
+      instance at all.  By default, the minimum action is NONE. If your update
+      requires a more disruptive action than you set with this flag, the
+      necessary action is performed to execute the update.
+    mostDisruptiveAllowedAction: The most disruptive action that you want to
+      perform on each instance during the update:   - REPLACE: Delete the
+      instance and create it again.  - RESTART: Stop the instance and start it
+      again.  - REFRESH: Do not stop the instance.  - NONE: Do not disrupt the
+      instance at all.  By default, the most disruptive allowed action is
+      REPLACE. If your update requires a more disruptive action than you set
+      with this flag, the update request will fail.
   """
 
   class MinimalActionValueValuesEnum(_messages.Enum):
-    r"""The minimal action that should be perfomed on the instances. By
-    default NONE.
+    r"""The minimal action that you want to perform on each instance during
+    the update:   - REPLACE: At minimum, delete the instance and create it
+    again.  - RESTART: Stop the instance and start it again.  - REFRESH: Do
+    not stop the instance.  - NONE: Do not disrupt the instance at all.  By
+    default, the minimum action is NONE. If your update requires a more
+    disruptive action than you set with this flag, the necessary action is
+    performed to execute the update.
 
     Values:
       NONE: <no description>
@@ -24870,8 +24957,13 @@ class InstanceGroupManagersApplyUpdatesRequest(_messages.Message):
     RESTART = 3
 
   class MostDisruptiveAllowedActionValueValuesEnum(_messages.Enum):
-    r"""The most disruptive action that allowed to be performed on the
-    instances. By default REPLACE.
+    r"""The most disruptive action that you want to perform on each instance
+    during the update:   - REPLACE: Delete the instance and create it again.
+    - RESTART: Stop the instance and start it again.  - REFRESH: Do not stop
+    the instance.  - NONE: Do not disrupt the instance at all.  By default,
+    the most disruptive allowed action is REPLACE. If your update requires a
+    more disruptive action than you set with this flag, the update request
+    will fail.
 
     Values:
       NONE: <no description>
@@ -26601,7 +26693,7 @@ class InterconnectAttachment(_messages.Message):
       AVAILABILITY_DOMAIN_ANY.
     googleReferenceId: [Output Only] Google reference ID, to be used when
       raising support tickets with Google or otherwise to debug backend
-      connectivity issues.
+      connectivity issues. [Deprecated] This field is not used.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     interconnect: URL of the underlying Interconnect object that this
@@ -30772,7 +30864,7 @@ class NodeTemplate(_messages.Message):
   r"""Represent a sole-tenant Node Template resource.  You can use a template
   to define properties for nodes in a node group. For more information, read
   Creating node groups and instances. (== resource_for beta.nodeTemplates ==)
-  (== resource_for v1.nodeTemplates ==) NextID: 16
+  (== resource_for v1.nodeTemplates ==) (== NextID: 16 ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the node template. One
@@ -30809,7 +30901,11 @@ class NodeTemplate(_messages.Message):
     region: [Output Only] The name of the region where the node template
       resides, such as us-central1.
     selfLink: [Output Only] Server-defined URL for the resource.
-    serverBinding: Binding properties for the physical server.
+    serverBinding: Sets the binding properties for the physical server. Valid
+      values include:   - [Default] RESTART_NODE_ON_ANY_SERVER: Restarts VMs
+      on any available physical server  - RESTART_NODE_ON_MINIMAL_SERVER:
+      Restarts VMs on the same physical server whenever possible    See Sole-
+      tenant node options for more information.
     status: [Output Only] The status of the node template. One of the
       following values: CREATING, READY, and DELETING.
     statusMessage: [Output Only] An optional, human-readable explanation of
@@ -32742,7 +32838,15 @@ class Quota(_messages.Message):
       AUTOSCALERS: <no description>
       BACKEND_BUCKETS: <no description>
       BACKEND_SERVICES: <no description>
+      C2_CPUS: <no description>
       COMMITMENTS: <no description>
+      COMMITTED_CPUS: <no description>
+      COMMITTED_LOCAL_SSD_TOTAL_GB: <no description>
+      COMMITTED_NVIDIA_K80_GPUS: <no description>
+      COMMITTED_NVIDIA_P100_GPUS: <no description>
+      COMMITTED_NVIDIA_P4_GPUS: <no description>
+      COMMITTED_NVIDIA_T4_GPUS: <no description>
+      COMMITTED_NVIDIA_V100_GPUS: <no description>
       CPUS: <no description>
       CPUS_ALL_REGIONS: <no description>
       DISKS_TOTAL_GB: <no description>
@@ -32765,6 +32869,7 @@ class Quota(_messages.Message):
       IN_USE_BACKUP_SCHEDULES: <no description>
       IN_USE_SNAPSHOT_SCHEDULES: <no description>
       LOCAL_SSD_TOTAL_GB: <no description>
+      N2_CPUS: <no description>
       NETWORKS: <no description>
       NETWORK_ENDPOINT_GROUPS: <no description>
       NVIDIA_K80_GPUS: <no description>
@@ -32787,6 +32892,7 @@ class Quota(_messages.Message):
       PREEMPTIBLE_NVIDIA_V100_GPUS: <no description>
       REGIONAL_AUTOSCALERS: <no description>
       REGIONAL_INSTANCE_GROUP_MANAGERS: <no description>
+      RESERVATIONS: <no description>
       RESOURCE_POLICIES: <no description>
       ROUTERS: <no description>
       ROUTES: <no description>
@@ -32811,71 +32917,81 @@ class Quota(_messages.Message):
     AUTOSCALERS = 0
     BACKEND_BUCKETS = 1
     BACKEND_SERVICES = 2
-    COMMITMENTS = 3
-    CPUS = 4
-    CPUS_ALL_REGIONS = 5
-    DISKS_TOTAL_GB = 6
-    EXTERNAL_VPN_GATEWAYS = 7
-    FIREWALLS = 8
-    FORWARDING_RULES = 9
-    GLOBAL_INTERNAL_ADDRESSES = 10
-    GPUS_ALL_REGIONS = 11
-    HEALTH_CHECKS = 12
-    IMAGES = 13
-    INSTANCES = 14
-    INSTANCE_GROUPS = 15
-    INSTANCE_GROUP_MANAGERS = 16
-    INSTANCE_TEMPLATES = 17
-    INTERCONNECTS = 18
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 19
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 20
-    INTERNAL_ADDRESSES = 21
-    IN_USE_ADDRESSES = 22
-    IN_USE_BACKUP_SCHEDULES = 23
-    IN_USE_SNAPSHOT_SCHEDULES = 24
-    LOCAL_SSD_TOTAL_GB = 25
-    NETWORKS = 26
-    NETWORK_ENDPOINT_GROUPS = 27
-    NVIDIA_K80_GPUS = 28
-    NVIDIA_P100_GPUS = 29
-    NVIDIA_P100_VWS_GPUS = 30
-    NVIDIA_P4_GPUS = 31
-    NVIDIA_P4_VWS_GPUS = 32
-    NVIDIA_T4_GPUS = 33
-    NVIDIA_T4_VWS_GPUS = 34
-    NVIDIA_V100_GPUS = 35
-    PREEMPTIBLE_CPUS = 36
-    PREEMPTIBLE_LOCAL_SSD_GB = 37
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 38
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 39
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 40
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 41
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 42
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 43
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 44
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 45
-    REGIONAL_AUTOSCALERS = 46
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 47
-    RESOURCE_POLICIES = 48
-    ROUTERS = 49
-    ROUTES = 50
-    SECURITY_POLICIES = 51
-    SECURITY_POLICY_RULES = 52
-    SNAPSHOTS = 53
-    SSD_TOTAL_GB = 54
-    SSL_CERTIFICATES = 55
-    STATIC_ADDRESSES = 56
-    SUBNETWORKS = 57
-    TARGET_HTTPS_PROXIES = 58
-    TARGET_HTTP_PROXIES = 59
-    TARGET_INSTANCES = 60
-    TARGET_POOLS = 61
-    TARGET_SSL_PROXIES = 62
-    TARGET_TCP_PROXIES = 63
-    TARGET_VPN_GATEWAYS = 64
-    URL_MAPS = 65
-    VPN_GATEWAYS = 66
-    VPN_TUNNELS = 67
+    C2_CPUS = 3
+    COMMITMENTS = 4
+    COMMITTED_CPUS = 5
+    COMMITTED_LOCAL_SSD_TOTAL_GB = 6
+    COMMITTED_NVIDIA_K80_GPUS = 7
+    COMMITTED_NVIDIA_P100_GPUS = 8
+    COMMITTED_NVIDIA_P4_GPUS = 9
+    COMMITTED_NVIDIA_T4_GPUS = 10
+    COMMITTED_NVIDIA_V100_GPUS = 11
+    CPUS = 12
+    CPUS_ALL_REGIONS = 13
+    DISKS_TOTAL_GB = 14
+    EXTERNAL_VPN_GATEWAYS = 15
+    FIREWALLS = 16
+    FORWARDING_RULES = 17
+    GLOBAL_INTERNAL_ADDRESSES = 18
+    GPUS_ALL_REGIONS = 19
+    HEALTH_CHECKS = 20
+    IMAGES = 21
+    INSTANCES = 22
+    INSTANCE_GROUPS = 23
+    INSTANCE_GROUP_MANAGERS = 24
+    INSTANCE_TEMPLATES = 25
+    INTERCONNECTS = 26
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 27
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 28
+    INTERNAL_ADDRESSES = 29
+    IN_USE_ADDRESSES = 30
+    IN_USE_BACKUP_SCHEDULES = 31
+    IN_USE_SNAPSHOT_SCHEDULES = 32
+    LOCAL_SSD_TOTAL_GB = 33
+    N2_CPUS = 34
+    NETWORKS = 35
+    NETWORK_ENDPOINT_GROUPS = 36
+    NVIDIA_K80_GPUS = 37
+    NVIDIA_P100_GPUS = 38
+    NVIDIA_P100_VWS_GPUS = 39
+    NVIDIA_P4_GPUS = 40
+    NVIDIA_P4_VWS_GPUS = 41
+    NVIDIA_T4_GPUS = 42
+    NVIDIA_T4_VWS_GPUS = 43
+    NVIDIA_V100_GPUS = 44
+    PREEMPTIBLE_CPUS = 45
+    PREEMPTIBLE_LOCAL_SSD_GB = 46
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 47
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 48
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 49
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 50
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 51
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 52
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 53
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 54
+    REGIONAL_AUTOSCALERS = 55
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 56
+    RESERVATIONS = 57
+    RESOURCE_POLICIES = 58
+    ROUTERS = 59
+    ROUTES = 60
+    SECURITY_POLICIES = 61
+    SECURITY_POLICY_RULES = 62
+    SNAPSHOTS = 63
+    SSD_TOTAL_GB = 64
+    SSL_CERTIFICATES = 65
+    STATIC_ADDRESSES = 66
+    SUBNETWORKS = 67
+    TARGET_HTTPS_PROXIES = 68
+    TARGET_HTTP_PROXIES = 69
+    TARGET_INSTANCES = 70
+    TARGET_POOLS = 71
+    TARGET_SSL_PROXIES = 72
+    TARGET_TCP_PROXIES = 73
+    TARGET_VPN_GATEWAYS = 74
+    URL_MAPS = 75
+    VPN_GATEWAYS = 76
+    VPN_TUNNELS = 77
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -33507,23 +33623,50 @@ class RegionInstanceGroupManagersApplyUpdatesRequest(_messages.Message):
   r"""InstanceGroupManagers.applyUpdatesToInstances
 
   Enums:
-    MinimalActionValueValuesEnum: The minimal action that should be perfomed
-      on the instances. By default NONE.
+    MinimalActionValueValuesEnum: The minimal action that you want to perform
+      on each instance during the update:   - REPLACE: At minimum, delete the
+      instance and create it again.  - RESTART: Stop the instance and start it
+      again.  - REFRESH: Do not stop the instance.  - NONE: Do not disrupt the
+      instance at all.  By default, the minimum action is NONE. If your update
+      requires a more disruptive action than you set with this flag, the
+      necessary action is performed to execute the update.
     MostDisruptiveAllowedActionValueValuesEnum: The most disruptive action
-      that allowed to be performed on the instances. By default REPLACE.
+      that you want to perform on each instance during the update:   -
+      REPLACE: Delete the instance and create it again.  - RESTART: Stop the
+      instance and start it again.  - REFRESH: Do not stop the instance.  -
+      NONE: Do not disrupt the instance at all.  By default, the most
+      disruptive allowed action is REPLACE. If your update requires a more
+      disruptive action than you set with this flag, the update request will
+      fail.
 
   Fields:
-    instances: The list of instances for which we want to apply changes on
-      this managed instance group.
-    minimalAction: The minimal action that should be perfomed on the
-      instances. By default NONE.
-    mostDisruptiveAllowedAction: The most disruptive action that allowed to be
-      performed on the instances. By default REPLACE.
+    instances: The list of URLs of one or more instances for which you want to
+      apply updates. Each URL can be a full URL or a partial URL, such as
+      zones/[ZONE]/instances/[INSTANCE_NAME].
+    minimalAction: The minimal action that you want to perform on each
+      instance during the update:   - REPLACE: At minimum, delete the instance
+      and create it again.  - RESTART: Stop the instance and start it again.
+      - REFRESH: Do not stop the instance.  - NONE: Do not disrupt the
+      instance at all.  By default, the minimum action is NONE. If your update
+      requires a more disruptive action than you set with this flag, the
+      necessary action is performed to execute the update.
+    mostDisruptiveAllowedAction: The most disruptive action that you want to
+      perform on each instance during the update:   - REPLACE: Delete the
+      instance and create it again.  - RESTART: Stop the instance and start it
+      again.  - REFRESH: Do not stop the instance.  - NONE: Do not disrupt the
+      instance at all.  By default, the most disruptive allowed action is
+      REPLACE. If your update requires a more disruptive action than you set
+      with this flag, the update request will fail.
   """
 
   class MinimalActionValueValuesEnum(_messages.Enum):
-    r"""The minimal action that should be perfomed on the instances. By
-    default NONE.
+    r"""The minimal action that you want to perform on each instance during
+    the update:   - REPLACE: At minimum, delete the instance and create it
+    again.  - RESTART: Stop the instance and start it again.  - REFRESH: Do
+    not stop the instance.  - NONE: Do not disrupt the instance at all.  By
+    default, the minimum action is NONE. If your update requires a more
+    disruptive action than you set with this flag, the necessary action is
+    performed to execute the update.
 
     Values:
       NONE: <no description>
@@ -33537,8 +33680,13 @@ class RegionInstanceGroupManagersApplyUpdatesRequest(_messages.Message):
     RESTART = 3
 
   class MostDisruptiveAllowedActionValueValuesEnum(_messages.Enum):
-    r"""The most disruptive action that allowed to be performed on the
-    instances. By default REPLACE.
+    r"""The most disruptive action that you want to perform on each instance
+    during the update:   - REPLACE: Delete the instance and create it again.
+    - RESTART: Stop the instance and start it again.  - REFRESH: Do not stop
+    the instance.  - NONE: Do not disrupt the instance at all.  By default,
+    the most disruptive allowed action is REPLACE. If your update requires a
+    more disruptive action than you set with this flag, the update request
+    will fail.
 
     Values:
       NONE: <no description>
@@ -34094,8 +34242,8 @@ class Reservation(_messages.Message):
 
 
 class ReservationAffinity(_messages.Message):
-  r"""AllocationAffinity is the configuration of desired allocation which this
-  instance could take capacity from.
+  r"""ReservationAffinity is the configuration of desired reservation which
+  this instance could take capacity from.
 
   Enums:
     ConsumeReservationTypeValueValuesEnum: Specifies the type of reservation
@@ -38912,9 +39060,10 @@ class SubnetworkLogConfig(_messages.Message):
       for collecting flow logs. Increasing the interval time will reduce the
       amount of generated flow logs for long lasting connections. Default is
       an interval of 5 seconds per connection.
-    MetadataValueValuesEnum: Can only be specified if VPC flow logging for
-      this subnetwork is enabled. Configures whether metadata fields should be
-      added to the reported VPC flow logs. Default is INCLUDE_ALL_METADATA.
+    MetadataValueValuesEnum: Can only be specified if VPC flow logs for this
+      subnetwork is enabled. Configures whether all, none or a subset of
+      metadata fields should be added to the reported VPC flow logs. Default
+      is INCLUDE_ALL_METADATA.
 
   Fields:
     aggregationInterval: Can only be specified if VPC flow logging for this
@@ -38930,9 +39079,10 @@ class SubnetworkLogConfig(_messages.Message):
       sampling rate of VPC flow logs within the subnetwork where 1.0 means all
       collected logs are reported and 0.0 means no logs are reported. Default
       is 0.5, which means half of all collected logs are reported.
-    metadata: Can only be specified if VPC flow logging for this subnetwork is
-      enabled. Configures whether metadata fields should be added to the
-      reported VPC flow logs. Default is INCLUDE_ALL_METADATA.
+    metadata: Can only be specified if VPC flow logs for this subnetwork is
+      enabled. Configures whether all, none or a subset of metadata fields
+      should be added to the reported VPC flow logs. Default is
+      INCLUDE_ALL_METADATA.
   """
 
   class AggregationIntervalValueValuesEnum(_messages.Enum):
@@ -38958,9 +39108,9 @@ class SubnetworkLogConfig(_messages.Message):
     INTERVAL_5_SEC = 5
 
   class MetadataValueValuesEnum(_messages.Enum):
-    r"""Can only be specified if VPC flow logging for this subnetwork is
-    enabled. Configures whether metadata fields should be added to the
-    reported VPC flow logs. Default is INCLUDE_ALL_METADATA.
+    r"""Can only be specified if VPC flow logs for this subnetwork is enabled.
+    Configures whether all, none or a subset of metadata fields should be
+    added to the reported VPC flow logs. Default is INCLUDE_ALL_METADATA.
 
     Values:
       EXCLUDE_ALL_METADATA: <no description>

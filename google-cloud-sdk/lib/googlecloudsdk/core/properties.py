@@ -709,6 +709,11 @@ class _SectionRun(_Section):
         'cluster_location',
         help_text='Zone or region of the GKE cluster to use.')
 
+    self.platform = self._Add(
+        'platform',
+        choices=['gke', 'managed', 'kubernetes'],
+        help_text='Target platform for running commands.')
+
 
 class _SectionSpanner(_Section):
   """Contains the properties for the 'spanner' section."""

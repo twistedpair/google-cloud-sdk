@@ -31,7 +31,8 @@ class BuildBazelRemoteExecutionV2Action(_messages.Message):
   Fields:
     commandDigest: The digest of the Command to run, which MUST be present in
       the ContentAddressableStorage.
-    doNotCache: If true, then the `Action`'s result cannot be cached.
+    doNotCache: If true, then the `Action`'s result cannot be cached, and in-
+      flight requests for the same `Action` may not be merged.
     inputRootDigest: The digest of the root Directory for the input files. The
       files in the directory tree are available in the correct location on the
       build machine before the command is executed. The root directory, as
@@ -86,20 +87,22 @@ class BuildBazelRemoteExecutionV2ActionResult(_messages.Message):
       proto with hash "4cf2eda940..." and size 43)     files: [       {
       name: "baz",         digest: {           hash: "b2c941073e...",
       size: 1294,         },         is_executable: true       }     ]   } }
-      ```
+      ``` If an output of the same name was found, but was not a directory,
+      the server will return a FAILED_PRECONDITION.
     outputDirectorySymlinks: The output directories of the action that are
       symbolic links to other directories. Those may be links to other output
       directories, or input directories, or even absolute paths outside of the
       working directory, if the server supports
       SymlinkAbsolutePathStrategy.ALLOWED. For each output directory requested
-      in the `output_directories` field of the Action, if the directory file
+      in the `output_directories` field of the Action, if the directory
       existed after the action completed, a single entry will be present
       either in this field, or in the `output_directories` field, if the
-      directory was not a symbolic link.  If the action does not produce the
-      requested output, or produces a file where a directory is expected or
-      vice versa, then that output will be omitted from the list. The server
-      is free to arrange the output list as desired; clients MUST NOT assume
-      that the output list is sorted.
+      directory was not a symbolic link.  If an output of the same name was
+      found, but was a symbolic link to a file instead of a directory, the
+      server will return a FAILED_PRECONDITION. If the action does not produce
+      the requested output, then that output will be omitted from the list.
+      The server is free to arrange the output list as desired; clients MUST
+      NOT assume that the output list is sorted.
     outputFileSymlinks: The output files of the action that are symbolic links
       to other files. Those may be links to other output files, or input
       files, or even absolute paths outside of the working directory, if the
@@ -107,38 +110,36 @@ class BuildBazelRemoteExecutionV2ActionResult(_messages.Message):
       file requested in the `output_files` field of the Action, if the
       corresponding file existed after the action completed, a single entry
       will be present either in this field, or in the `output_files` field, if
-      the file was not a symbolic link.  If the action does not produce the
-      requested output, or produces a directory where a regular file is
-      expected or vice versa, then that output will be omitted from the list.
+      the file was not a symbolic link.  If an output symbolic link of the
+      same name was found, but its target type was not a regular file, the
+      server will return a FAILED_PRECONDITION. If the action does not produce
+      the requested output, then that output will be omitted from the list.
       The server is free to arrange the output list as desired; clients MUST
       NOT assume that the output list is sorted.
     outputFiles: The output files of the action. For each output file
       requested in the `output_files` field of the Action, if the
       corresponding file existed after the action completed, a single entry
-      will be present either in this field, or in the output_file_symlinks
-      field, if the file was a symbolic link to another file.  If the action
-      does not produce the requested output, or produces a directory where a
-      regular file is expected or vice versa, then that output will be omitted
-      from the list. The server is free to arrange the output list as desired;
-      clients MUST NOT assume that the output list is sorted.
+      will be present either in this field, or the `output_file_symlinks`
+      field if the file was a symbolic link to another file.  If an output of
+      the same name was found, but was a directory rather than a regular file,
+      the server will return a FAILED_PRECONDITION. If the action does not
+      produce the requested output, then that output will be omitted from the
+      list. The server is free to arrange the output list as desired; clients
+      MUST NOT assume that the output list is sorted.
     stderrDigest: The digest for a blob containing the standard error of the
-      action, which can be retrieved from the ContentAddressableStorage. See
-      `stderr_raw` for when this will be set.
-    stderrRaw: The standard error buffer of the action. The server will
-      determine, based on the size of the buffer, whether to return it in raw
-      form or to return a digest in `stderr_digest` that points to the buffer.
-      If neither is set, then the buffer is empty. The client SHOULD NOT
-      assume it will get one of the raw buffer or a digest on any given
-      request and should be prepared to handle either.
+      action, which can be retrieved from the ContentAddressableStorage.
+    stderrRaw: The standard error buffer of the action. The server SHOULD NOT
+      inline stderr unless requested by the client in the
+      GetActionResultRequest message. The server MAY omit inlining, even if
+      requested, and MUST do so if inlining would cause the response to exceed
+      message size limits.
     stdoutDigest: The digest for a blob containing the standard output of the
-      action, which can be retrieved from the ContentAddressableStorage. See
-      `stdout_raw` for when this will be set.
-    stdoutRaw: The standard output buffer of the action. The server will
-      determine, based on the size of the buffer, whether to return it in raw
-      form or to return a digest in `stdout_digest` that points to the buffer.
-      If neither is set, then the buffer is empty. The client SHOULD NOT
-      assume it will get one of the raw buffer or a digest on any given
-      request and should be prepared to handle either.
+      action, which can be retrieved from the ContentAddressableStorage.
+    stdoutRaw: The standard output buffer of the action. The server SHOULD NOT
+      inline stdout unless requested by the client in the
+      GetActionResultRequest message. The server MAY omit inlining, even if
+      requested, and MUST do so if inlining would cause the response to exceed
+      message size limits.
   """
 
   executionMetadata = _messages.MessageField('BuildBazelRemoteExecutionV2ExecutedActionMetadata', 1)
@@ -187,10 +188,11 @@ class BuildBazelRemoteExecutionV2Command(_messages.Message):
       inputs.  In order to ensure consistent hashing of the same Action, the
       output paths MUST be sorted lexicographically by code point (or,
       equivalently, by UTF-8 bytes).  An output directory cannot be duplicated
-      or have the same path as any of the listed output files.  Directories
-      leading up to the output directories (but not the output directories
-      themselves) are created by the worker prior to execution, even if they
-      are not explicitly part of the input root.
+      or have the same path as any of the listed output files. An output
+      directory is allowed to be a parent of another output directory.
+      Directories leading up to the output directories (but not the output
+      directories themselves) are created by the worker prior to execution,
+      even if they are not explicitly part of the input root.
     outputFiles: A list of the output files that the client expects to
       retrieve from the action. Only the listed files, as well as directories
       listed in `output_directories`, will be returned to the client as
@@ -210,7 +212,8 @@ class BuildBazelRemoteExecutionV2Command(_messages.Message):
     platform: The platform requirements for the execution environment. The
       server MAY choose to execute the action on any worker satisfying the
       requirements, so the client SHOULD ensure that running the action on any
-      such worker will have the same result.
+      such worker will have the same result. A detailed lexicon for this can
+      be found in the accompanying platform.md.
     workingDirectory: The working directory, relative to the input root, for
       the command to run in. It must be a directory which exists in the input
       tree. If it is left empty, then the action is run in the input root.
@@ -284,7 +287,11 @@ class BuildBazelRemoteExecutionV2Directory(_messages.Message):
   restrictions MUST be obeyed when constructing a a `Directory`:  * Every
   child in the directory must have a path of exactly one segment.   Multiple
   levels of directory hierarchy may not be collapsed. * Each child in the
-  directory must have a unique path segment (file name). * The files,
+  directory must have a unique path segment (file name).   Note that while the
+  API itself is case-sensitive, the environment where   the Action is executed
+  may or may not be case-sensitive. That is, it is   legal to call the API
+  with a Directory that has both "Foo" and "foo" as   children, but the Action
+  may be rejected by the remote system upon   execution. * The files,
   directories and symlinks in the directory must each be sorted   in
   lexicographical order by path. The path strings must be sorted by code
   point, equivalently, by UTF-8 bytes.  A `Directory` that obeys the
@@ -521,9 +528,13 @@ class BuildBazelRemoteExecutionV2OutputDirectory(_messages.Message):
 class BuildBazelRemoteExecutionV2OutputFile(_messages.Message):
   r"""An `OutputFile` is similar to a FileNode, but it is used as an output in
   an `ActionResult`. It allows a full file path rather than only a name.
-  `OutputFile` is binary-compatible with `FileNode`.
 
   Fields:
+    contents: The contents of the file if inlining was requested. The server
+      SHOULD NOT inline file contents unless requested by the client in the
+      GetActionResultRequest message. The server MAY omit inlining, even if
+      requested, and MUST do so if inlining would cause the response to exceed
+      message size limits.
     digest: The digest of the file's content.
     isExecutable: True if file is executable, false otherwise.
     path: The full path of the file relative to the working directory,
@@ -531,9 +542,10 @@ class BuildBazelRemoteExecutionV2OutputFile(_messages.Message):
       this is a relative path, it MUST NOT begin with a leading forward slash.
   """
 
-  digest = _messages.MessageField('BuildBazelRemoteExecutionV2Digest', 1)
-  isExecutable = _messages.BooleanField(2)
-  path = _messages.StringField(3)
+  contents = _messages.BytesField(1)
+  digest = _messages.MessageField('BuildBazelRemoteExecutionV2Digest', 2)
+  isExecutable = _messages.BooleanField(3)
+  path = _messages.StringField(4)
 
 
 class BuildBazelRemoteExecutionV2OutputSymlink(_messages.Message):
@@ -603,7 +615,12 @@ class BuildBazelRemoteExecutionV2RequestMetadata(_messages.Message):
   logging or other purposes. To use it, the client attaches the header to the
   call using the canonical proto serialization:  * name:
   `build.bazel.remote.execution.v2.requestmetadata-bin` * contents: the base64
-  encoded binary `RequestMetadata` message.
+  encoded binary `RequestMetadata` message. Note: the gRPC library serializes
+  binary headers encoded in base 64 by default
+  (https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md#requests).
+  Therefore, if the gRPC library is used to pass/retrieve this metadata, the
+  user may ignore the base64 encoding and assume it is simply serialized as a
+  binary message.
 
   Fields:
     actionId: An identifier that ties multiple requests to the same action.
@@ -935,11 +952,25 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListWorkerPoolsRequest(_mess
   object.
 
   Fields:
+    filter: Optional. A filter to constrain the pools returned. Filters have
+      the form:  <field> <operator> <value> [[AND|OR] <field> <operator>
+      <value>]...  <field> is the path for a field or map key in the Pool
+      proto message. e.g. "configuration.disk_size_gb" or
+      "configuration.labels.key". <operator> can be one of "<", "<=", ">=",
+      ">", "=", "!=", ":". ":" is a HAS operation for strings and repeated
+      primitive fields. <value> is the value to test, case-insensitive for
+      strings. "*" stands for any value and can be used to test for key
+      presence. Parenthesis determine AND/OR precedence. In space separated
+      restrictions, AND is implicit, e.g. "a = b x = y" is equivalent to "a =
+      b AND x = y".  Example filter: configuration.labels.key1 = * AND (state
+      = RUNNING OR state = UPDATING)  This field is currently ignored in all
+      requests.
     parent: Resource name of the instance. Format:
       `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
   """
 
-  parent = _messages.StringField(1)
+  filter = _messages.StringField(1)
+  parent = _messages.StringField(2)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListWorkerPoolsResponse(_messages.Message):
@@ -975,12 +1006,24 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
   r"""Defines the configuration to be used for a creating workers in the
   worker pool.
 
+  Messages:
+    LabelsValue: Labels associated with the workers. Label keys and values can
+      be no longer than 63 characters, can only contain lowercase letters,
+      numeric characters, underscores and dashes. International letters are
+      permitted. Keys must start with a letter but values are optional. This
+      field is currently ignored in all requests.
+
   Fields:
     diskSizeGb: Required. Size of the disk attached to the worker, in GB. See
       https://cloud.google.com/compute/docs/disks/
     diskType: Required. Disk Type to use for the worker. See [Storage
       options](https://cloud.google.com/compute/docs/disks/#introduction).
       Currently only `pd-standard` is supported.
+    labels: Labels associated with the workers. Label keys and values can be
+      no longer than 63 characters, can only contain lowercase letters,
+      numeric characters, underscores and dashes. International letters are
+      permitted. Keys must start with a letter but values are optional. This
+      field is currently ignored in all requests.
     machineType: Required. Machine type of the worker, such as
       `n1-standard-2`. See https://cloud.google.com/compute/docs/machine-types
       for a list of supported machine types. Note that `f1-micro` and
@@ -993,11 +1036,40 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
       details.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels associated with the workers. Label keys and values can be no
+    longer than 63 characters, can only contain lowercase letters, numeric
+    characters, underscores and dashes. International letters are permitted.
+    Keys must start with a letter but values are optional. This field is
+    currently ignored in all requests.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   diskSizeGb = _messages.IntegerField(1)
   diskType = _messages.StringField(2)
-  machineType = _messages.StringField(3)
-  minCpuPlatform = _messages.StringField(4)
-  reserved = _messages.BooleanField(5)
+  labels = _messages.MessageField('LabelsValue', 3)
+  machineType = _messages.StringField(4)
+  minCpuPlatform = _messages.StringField(5)
+  reserved = _messages.BooleanField(6)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool(_messages.Message):
@@ -1929,37 +2001,10 @@ class GoogleLongrunningOperation(_messages.Message):
 class GoogleRpcStatus(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
-  used by [gRPC](https://github.com/grpc). The error model is designed to be:
-  - Simple to use and understand for most users - Flexible enough to meet
-  unexpected needs  # Overview  The `Status` message contains three pieces of
-  data: error code, error message, and error details. The error code should be
-  an enum value of google.rpc.Code, but it may accept additional error codes
-  if needed.  The error message should be a developer-facing English message
-  that helps developers *understand* and *resolve* the error. If a localized
-  user-facing error message is needed, put the localized message in the error
-  details or localize it in the client. The optional error details may contain
-  arbitrary information about the error. There is a predefined set of error
-  detail types in the package `google.rpc` that can be used for common error
-  conditions.  # Language mapping  The `Status` message is the logical
-  representation of the error model, but it is not necessarily the actual wire
-  format. When the `Status` message is exposed in different client libraries
-  and different wire protocols, it can be mapped differently. For example, it
-  will likely be mapped to some exceptions in Java, but more likely mapped to
-  some error codes in C.  # Other uses  The error model and the `Status`
-  message can be used in a variety of environments, either with or without
-  APIs, to provide a consistent developer experience across different
-  environments.  Example uses of this error model include:  - Partial errors.
-  If a service needs to return partial errors to the client,     it may embed
-  the `Status` in the normal response to indicate the partial     errors.  -
-  Workflow errors. A typical workflow has multiple steps. Each step may
-  have a `Status` message for error reporting.  - Batch operations. If a
-  client uses batch request and batch response, the     `Status` message
-  should be used directly inside batch response, one for     each error sub-
-  response.  - Asynchronous operations. If an API call embeds asynchronous
-  operation     results in its response, the status of those operations should
-  be     represented directly using the `Status` message.  - Logging. If some
-  API errors are stored in logs, the message `Status` could     be used
-  directly after any stripping needed for security/privacy reasons.
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details.  You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
 
   Messages:
     DetailsValueListEntry: A DetailsValueListEntry object.
@@ -2062,11 +2107,25 @@ class RemotebuildexecutionProjectsInstancesWorkerpoolsListRequest(_messages.Mess
   r"""A RemotebuildexecutionProjectsInstancesWorkerpoolsListRequest object.
 
   Fields:
+    filter: Optional. A filter to constrain the pools returned. Filters have
+      the form:  <field> <operator> <value> [[AND|OR] <field> <operator>
+      <value>]...  <field> is the path for a field or map key in the Pool
+      proto message. e.g. "configuration.disk_size_gb" or
+      "configuration.labels.key". <operator> can be one of "<", "<=", ">=",
+      ">", "=", "!=", ":". ":" is a HAS operation for strings and repeated
+      primitive fields. <value> is the value to test, case-insensitive for
+      strings. "*" stands for any value and can be used to test for key
+      presence. Parenthesis determine AND/OR precedence. In space separated
+      restrictions, AND is implicit, e.g. "a = b x = y" is equivalent to "a =
+      b AND x = y".  Example filter: configuration.labels.key1 = * AND (state
+      = RUNNING OR state = UPDATING)  This field is currently ignored in all
+      requests.
     parent: Resource name of the instance. Format:
       `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
   """
 
-  parent = _messages.StringField(1, required=True)
+  filter = _messages.StringField(1)
+  parent = _messages.StringField(2, required=True)
 
 
 class RemotebuildexecutionProjectsInstancesWorkerpoolsPatchRequest(_messages.Message):

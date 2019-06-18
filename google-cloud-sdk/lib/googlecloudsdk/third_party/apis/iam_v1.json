@@ -308,6 +308,20 @@
           "description": "The key can be used before this timestamp.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "keyOrigin": {
+          "description": "The key origin.",
+          "enumDescriptions": [
+            "Unspecified key origin.",
+            "Key is provided by user.",
+            "Key is provided by Google."
+          ],
+          "type": "string",
+          "enum": [
+            "ORIGIN_UNSPECIFIED",
+            "USER_PROVIDED",
+            "GOOGLE_PROVIDED"
+          ]
         }
       }
     },

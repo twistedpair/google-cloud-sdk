@@ -56,8 +56,6 @@ OS_CHOICES_IMAGE_IMPORT_GA = [
     'windows-2012',
     'windows-2012r2',
     'windows-2016',
-]
-OS_CHOICES_IMAGE_IMPORT_BETA = OS_CHOICES_IMAGE_IMPORT_GA + [
     'windows-2008r2-byol',
     'windows-2012-byol',
     'windows-2012r2-byol',
@@ -65,6 +63,7 @@ OS_CHOICES_IMAGE_IMPORT_BETA = OS_CHOICES_IMAGE_IMPORT_GA + [
     'windows-7-byol',
     'windows-10-byol',
 ]
+OS_CHOICES_IMAGE_IMPORT_BETA = OS_CHOICES_IMAGE_IMPORT_GA + []
 OS_CHOICES_IMAGE_IMPORT_ALPHA = OS_CHOICES_IMAGE_IMPORT_BETA + []
 
 OS_CHOICES_INSTANCE_IMPORT_ALPHA = [

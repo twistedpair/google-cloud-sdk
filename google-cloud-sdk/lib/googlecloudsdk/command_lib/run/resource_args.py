@@ -108,10 +108,7 @@ class DefaultFallthrough(deps.Fallthrough):
         'Otherwise, defaults to project ID.')
 
   def _Call(self, parsed_args):
-    if (getattr(parsed_args, 'cluster', None) or
-        properties.VALUES.run.cluster.Get()) or (
-            getattr(parsed_args, 'cluster_location', None) or
-            properties.VALUES.run.cluster_location.Get()):
+    if flags.IsGKE(parsed_args):
       return 'default'
     elif not (getattr(parsed_args, 'project', None) or
               properties.VALUES.core.project.Get()):
@@ -183,7 +180,8 @@ class ClusterPromptFallthrough(PromptFallthrough):
   def _Prompt(self, parsed_args):
     """Fallthrough to reading the cluster name from an interactive prompt.
 
-    Only prompt for cluster name if cluster location is already defined.
+    Only prompt for cluster name if cluster location is already defined or we
+    know the intended platform is GKE.
 
     Args:
       parsed_args: Namespace, the args namespace.
@@ -194,23 +192,47 @@ class ClusterPromptFallthrough(PromptFallthrough):
     cluster_location = (
         getattr(parsed_args, 'cluster_location', None) or
         properties.VALUES.run.cluster_location.Get())
+    if flags.IsGKE(parsed_args) or cluster_location:
+      cluster_location_msg = ' in [{}]'.format(
+          cluster_location) if cluster_location else ''
 
-    if cluster_location:
       clusters = global_methods.ListClusters(cluster_location)
       if not clusters:
         raise exceptions.ConfigurationError(
-            'No clusters found for cluster location [{}]. '
-            'Ensure your clusters have Cloud Run on GKE enabled.'
-            .format(cluster_location))
-      cluster_names = [c.name for c in clusters]
+            'No compatible clusters found{}. '
+            'Ensure your cluster has Cloud Run on GKE enabled.'.format(
+                cluster_location_msg))
+
+      def _GetClusterDescription(cluster):
+        """Description of cluster for prompt."""
+        if cluster_location:
+          return cluster.name
+        return '{} in {}'.format(cluster.name, cluster.zone)
+
+      cluster_descs = [_GetClusterDescription(c) for c in clusters]
+
       idx = console_io.PromptChoice(
-          cluster_names,
-          message='GKE cluster name:',
+          cluster_descs,
+          message='GKE cluster{}:'.format(cluster_location_msg),
           cancel_option=True)
-      name = cluster_names[idx]
-      log.status.Print('To make this the default cluster, run '
-                       '`gcloud config set run/cluster {}`.\n'.format(name))
-      return name
+      cluster = clusters[idx]
+
+      if cluster_location:
+        cluster_result = cluster.name
+        location_help_text = ''
+      else:
+        cluster_ref = flags.GetClusterRef(cluster)
+        cluster_result = cluster_ref.SelfLink()
+        location_help_text = (
+            ' && gcloud config set run/cluster_location {}'.format(
+                cluster.zone))
+      log.status.Print(
+          'To make this the default cluster, run '
+          '`gcloud config set run/cluster {cluster}'
+          '{location}`.\n'.format(
+              cluster=cluster.name,
+              location=location_help_text))
+      return cluster_result
 
 
 def ClusterAttributeConfig():
@@ -235,7 +257,8 @@ class ClusterLocationPromptFallthrough(PromptFallthrough):
   def _Prompt(self, parsed_args):
     """Fallthrough to reading the cluster location from an interactive prompt.
 
-    Only prompt for cluster location name if cluster name is already defined.
+    Only prompt for cluster location name if cluster name is already defined or
+    we know the intended platform is GKE.
 
     Args:
       parsed_args: Namespace, the args namespace.
@@ -246,7 +269,7 @@ class ClusterLocationPromptFallthrough(PromptFallthrough):
     cluster_name = (
         getattr(parsed_args, 'cluster', None) or
         properties.VALUES.run.cluster.Get())
-    if cluster_name:
+    if flags.IsGKE(parsed_args) or cluster_name:
       clusters = [
           c for c in global_methods.ListClusters() if c.name == cluster_name
       ]

@@ -121,6 +121,12 @@ class FilestoreClient(object):
         name=instance_ref.RelativeName())
     return self.client.projects_locations_instances.Get(request)
 
+  def GetSnapshot(self, snapshot_ref):
+    """Get Cloud Filestore snapshot information."""
+    request = self.messages.FileProjectsLocationsSnapshotsGetRequest(
+        name=snapshot_ref.RelativeName())
+    return self.client.projects_locations_snapshots.Get(request)
+
   def DeleteInstance(self, instance_ref, async_):
     """Delete an existing Cloud Filestore instance."""
     request = self.messages.FileProjectsLocationsInstancesDeleteRequest(

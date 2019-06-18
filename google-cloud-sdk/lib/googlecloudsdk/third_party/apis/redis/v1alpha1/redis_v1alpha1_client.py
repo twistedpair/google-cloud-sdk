@@ -172,7 +172,7 @@ there is no need to call DeleteOperation.
     )
 
     def Import(self, request, global_params=None):
-      r"""Import a Redis RDB snapshot file from GCS into a Redis instance.
+      r"""Import a Redis RDB snapshot file from Cloud Storage into a Redis instance.
 
 Redis may stop serving during this operation. Instance state will be
 IMPORTING for entire operation. When complete, the instance will contain

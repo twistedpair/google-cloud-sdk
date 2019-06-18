@@ -610,6 +610,10 @@ def AddLocalSSDAndLocalSSDVolumeConfigsFlag(parser, for_node_pool=False,
 
 def AddLocalSSDVolumeConfigsFlag(parser, for_node_pool=False, help_text=''):
   """Adds a --local-ssd-volumes flag to the given parser."""
+  format_str = 'example_cluster'
+  if for_node_pool:
+    format_str = 'node-pool-1 --cluster=example-cluster'
+
   help_text += """\
 Adds the requested local SSDs on all nodes in default node-pool(s) in new cluster. Example:
 
@@ -625,8 +629,7 @@ Local SSDs have a fixed 375 GB capacity per device. The number of disks that
 can be attached to an instance is limited by the maximum number of disks
 available on a machine, which differs by compute zone. See
 https://cloud.google.com/compute/docs/disks/local-ssd for more information.
-""".format('node-pool-1 --cluster=example-cluster' if for_node_pool else
-           'example_cluster')
+""".format(format_str)
   count_validator = arg_parsers.RegexpValidator(
       r'^[1-8]$', 'Count must be a number between 1 and 8')
   type_validator = arg_parsers.RegexpValidator(
@@ -1136,7 +1139,7 @@ def AddIPAliasFlags(parser):
   parser.add_argument(
       '--enable-ip-alias',
       action='store_true',
-      default=None,
+      default=True,
       help="""\
 Enable use of alias IPs (https://cloud.google.com/compute/docs/alias-ip/)
 for pod IPs. This will create two secondary ranges, one for the pod IPs
@@ -1714,17 +1717,6 @@ your cluster size.'
       '--concurrent-node-count',
       type=arg_parsers.BoundedInt(1, api_adapter.MAX_CONCURRENT_NODE_COUNT),
       help=help_text)
-
-
-# TODO(b/110368338): Drop this warning when changing the default value of the
-# flag.
-def WarnForUnspecifiedIpAllocationPolicy(args):
-  if not args.IsSpecified('enable_ip_alias'):
-    log.warning(
-        'Currently VPC-native is not the default mode during cluster creation. '
-        'In the future, this will become the default mode and can be disabled '
-        'using `--no-enable-ip-alias` flag. Use `--[no-]enable-ip-alias` flag '
-        'to suppress this warning.')
 
 
 def WarnForNodeModification(args, enable_autorepair):

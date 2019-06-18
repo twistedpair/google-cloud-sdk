@@ -322,6 +322,20 @@ class Collections(enum.Enum):
       [u'project', u'region'],
       True
   )
+  RESERVATIONS = (
+      'reservations',
+      'projects/{project}/zones/{zone}/reservations/{reservation}',
+      {},
+      [u'project', u'zone', u'reservation'],
+      True
+  )
+  RESOURCEPOLICIES = (
+      'resourcePolicies',
+      'projects/{project}/regions/{region}/resourcePolicies/{resourcePolicy}',
+      {},
+      [u'project', u'region', u'resourcePolicy'],
+      True
+  )
   ROUTERS = (
       'routers',
       'projects/{project}/regions/{region}/routers/{router}',

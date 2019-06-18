@@ -766,7 +766,8 @@ def CheckForOsloginAndGetUser(instance, project, requested_user, public_key,
   return oslogin_user, use_oslogin
 
 
-def ParseAndSubstituteSSHFlags(args, remote, ip_address):
+def ParseAndSubstituteSSHFlags(args, remote, instance_address,
+                               internal_address):
   """Obtain extra flags from the command arguments."""
   extra_flags = []
   if args.ssh_flag:
@@ -774,7 +775,8 @@ def ParseAndSubstituteSSHFlags(args, remote, ip_address):
       for flag_part in flag.split():  # We want grouping here
         dereferenced_flag = (
             flag_part.replace('%USER%', remote.user)
-            .replace('%INSTANCE%', ip_address))
+            .replace('%INSTANCE%', instance_address)
+            .replace('%INTERNAL%', internal_address))
         extra_flags.append(dereferenced_flag)
   return extra_flags
 

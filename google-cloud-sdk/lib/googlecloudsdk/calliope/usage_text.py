@@ -291,34 +291,6 @@ def GetArgDetails(arg, depth=0):
       if prop.default and arg.nargs in (0, '?'):
         extra_help.append('Use *{}* to disable.'.format(
             _GetInvertedFlagName(arg)))
-  elif choices:
-    metavar = arg.metavar or arg.dest.upper()
-    choices = getattr(arg, 'choices_help', choices)
-    if len(choices) > 1:
-      one_of = 'one of'
-    else:
-      # TBD I guess?
-      one_of = '(currently only one value is supported)'
-    if isinstance(choices, dict):
-      choices_iteritems = six.iteritems(choices)
-      if not isinstance(choices, collections.OrderedDict):
-        choices_iteritems = sorted(choices_iteritems)
-      choices = [
-          '*{name}*{depth} {desc}'.format(
-              name=name, desc=desc, depth=':' * (depth + _CHOICE_OFFSET))
-          for name, desc in choices_iteritems]
-      # Append marker to indicate end of list.
-      choices.append(':' * (depth + _CHOICE_OFFSET))
-      extra_help.append(
-          '_{metavar}_ must be {one_of}:\n\n{choices}\n\n'.format(
-              metavar=metavar,
-              one_of=one_of,
-              choices='\n'.join(choices)))
-    else:
-      extra_help.append('_{metavar}_ must be {one_of}: {choices}.'.format(
-          metavar=metavar,
-          one_of=one_of,
-          choices=', '.join(['*{0}*'.format(x) for x in choices])))
   elif arg.is_group or arg.is_positional or arg.nargs:
     # Not a Boolean flag.
     pass
@@ -331,6 +303,35 @@ def GetArgDetails(arg, depth=0):
     extra_help.append(
         'Use *{0}* to enable and *{1}* to disable.'.format(
             arg.option_strings[0], _GetInvertedFlagName(arg)))
+  if choices:
+    metavar = arg.metavar or arg.dest.upper()
+    if metavar != ' ':
+      choices = getattr(arg, 'choices_help', choices)
+      if len(choices) > 1:
+        one_of = 'one of'
+      else:
+        # TBD I guess?
+        one_of = '(currently only one value is supported)'
+      if isinstance(choices, dict):
+        choices_iteritems = six.iteritems(choices)
+        if not isinstance(choices, collections.OrderedDict):
+          choices_iteritems = sorted(choices_iteritems)
+        choices = [
+            '*{name}*{depth} {desc}'.format(
+                name=name, desc=desc, depth=':' * (depth + _CHOICE_OFFSET))
+            for name, desc in choices_iteritems]
+        # Append marker to indicate end of list.
+        choices.append(':' * (depth + _CHOICE_OFFSET))
+        extra_help.append(
+            '_{metavar}_ must be {one_of}:\n\n{choices}\n\n'.format(
+                metavar=metavar,
+                one_of=one_of,
+                choices='\n'.join(choices)))
+      else:
+        extra_help.append('_{metavar}_ must be {one_of}: {choices}.'.format(
+            metavar=metavar,
+            one_of=one_of,
+            choices=', '.join(['*{0}*'.format(x) for x in choices])))
 
   if extra_help:
     help_message = help_message.rstrip()

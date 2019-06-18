@@ -1704,6 +1704,7 @@ class ServiceAccountKey(_messages.Message):
   Enums:
     KeyAlgorithmValueValuesEnum: Specifies the algorithm (and possibly key
       size) for the key.
+    KeyOriginValueValuesEnum: The key origin.
     PrivateKeyTypeValueValuesEnum: The output format for the private key. Only
       provided in `CreateServiceAccountKey` responses, not in
       `GetServiceAccountKey` or `ListServiceAccountKey` responses.  Google
@@ -1712,6 +1713,7 @@ class ServiceAccountKey(_messages.Message):
 
   Fields:
     keyAlgorithm: Specifies the algorithm (and possibly key size) for the key.
+    keyOrigin: The key origin.
     name: The resource name of the service account key in the following format
       `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}`.
     privateKeyData: The private key data. Only provided in
@@ -1743,6 +1745,18 @@ class ServiceAccountKey(_messages.Message):
     KEY_ALG_RSA_1024 = 1
     KEY_ALG_RSA_2048 = 2
 
+  class KeyOriginValueValuesEnum(_messages.Enum):
+    r"""The key origin.
+
+    Values:
+      ORIGIN_UNSPECIFIED: Unspecified key origin.
+      USER_PROVIDED: Key is provided by user.
+      GOOGLE_PROVIDED: Key is provided by Google.
+    """
+    ORIGIN_UNSPECIFIED = 0
+    USER_PROVIDED = 1
+    GOOGLE_PROVIDED = 2
+
   class PrivateKeyTypeValueValuesEnum(_messages.Enum):
     r"""The output format for the private key. Only provided in
     `CreateServiceAccountKey` responses, not in `GetServiceAccountKey` or
@@ -1762,12 +1776,13 @@ class ServiceAccountKey(_messages.Message):
     TYPE_GOOGLE_CREDENTIALS_FILE = 2
 
   keyAlgorithm = _messages.EnumField('KeyAlgorithmValueValuesEnum', 1)
-  name = _messages.StringField(2)
-  privateKeyData = _messages.BytesField(3)
-  privateKeyType = _messages.EnumField('PrivateKeyTypeValueValuesEnum', 4)
-  publicKeyData = _messages.BytesField(5)
-  validAfterTime = _messages.StringField(6)
-  validBeforeTime = _messages.StringField(7)
+  keyOrigin = _messages.EnumField('KeyOriginValueValuesEnum', 2)
+  name = _messages.StringField(3)
+  privateKeyData = _messages.BytesField(4)
+  privateKeyType = _messages.EnumField('PrivateKeyTypeValueValuesEnum', 5)
+  publicKeyData = _messages.BytesField(6)
+  validAfterTime = _messages.StringField(7)
+  validBeforeTime = _messages.StringField(8)
 
 
 class SetIamPolicyRequest(_messages.Message):

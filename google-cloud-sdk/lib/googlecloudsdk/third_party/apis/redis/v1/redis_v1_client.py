@@ -117,7 +117,7 @@ deleted.
     )
 
     def Export(self, request, global_params=None):
-      r"""Export Redis instance data into a Redis RDB format file in GCS.
+      r"""Export Redis instance data into a Redis RDB format file in Cloud Storage.
 
 Redis will continue serving during this operation.
 
@@ -204,7 +204,7 @@ specific STANDARD tier Cloud Memorystore for Redis instance.
     )
 
     def Import(self, request, global_params=None):
-      r"""Import a Redis RDB snapshot file from GCS into a Redis instance.
+      r"""Import a Redis RDB snapshot file from Cloud Storage into a Redis instance.
 
 Redis may stop serving during this operation. Instance state will be
 IMPORTING for entire operation. When complete, the instance will contain

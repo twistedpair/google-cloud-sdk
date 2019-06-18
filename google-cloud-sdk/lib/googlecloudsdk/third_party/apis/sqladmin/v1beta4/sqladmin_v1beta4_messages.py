@@ -974,11 +974,13 @@ class RestoreBackupContext(_messages.Message):
     backupRunId: The ID of the backup run to restore from.
     instanceId: The ID of the instance that the backup was taken from.
     kind: This is always sql#restoreBackupContext.
+    project: The full project ID of the source instance.
   """
 
   backupRunId = _messages.IntegerField(1)
   instanceId = _messages.StringField(2)
   kind = _messages.StringField(3, default=u'sql#restoreBackupContext')
+  project = _messages.StringField(4)
 
 
 class RotateServerCaContext(_messages.Message):

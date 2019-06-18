@@ -600,9 +600,7 @@ class CLILoader(object):
         choices=log.OrderedVerbosityNames(),
         default=log.DEFAULT_VERBOSITY_STRING,
         category=calliope_base.COMMONLY_USED_FLAGS,
-        help=('Override the default verbosity for this command with any of the '
-              'supported standard verbosity levels: {}.'.format(', '.join(
-                  ['`' + name + '`' for name in log.OrderedVerbosityNames()]))),
+        help='Override the default verbosity for this command.',
         action=actions.StoreProperty(properties.VALUES.core.verbosity))
 
     # This should be a pure Boolean flag, but the alternate true/false explicit

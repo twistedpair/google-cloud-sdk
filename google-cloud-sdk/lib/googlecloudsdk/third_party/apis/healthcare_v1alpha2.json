@@ -384,7 +384,7 @@
     },
     "Status": {
       "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error\nmessage, and error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains\nthree pieces of data: error code, error message, and error details.\n\nYou can find out more about this error model and how to work with it in the\n[API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
       "type": "object",
       "properties": {
         "code": {
@@ -1295,21 +1295,25 @@
       "type": "object",
       "properties": {
         "contentStructure": {
-          "description": "The content structure in the source location. The default is\nBUNDLE.",
+          "description": "The content structure in the source location. If not specified, the server\ntreats the input source files as BUNDLE.",
           "enumDescriptions": [
             "",
-            "Each line is a bundle, which contains one or more resources. Set the\nbundle type to `history` to import resource versions.",
-            "Each line is a single resource."
+            "The source file contains one or more lines of newline-delimited JSON\n(ndjson). Each line is a bundle, which contains one or more resources.\nSet the bundle type to `history` to import resource versions.",
+            "The source file contains one or more lines of newline-delimited JSON\n(ndjson). Each line is a single resource.",
+            "The entire file is one JSON bundle. The JSON can span multiple lines.",
+            "The entire file is one JSON resource. The JSON can span multiple lines."
           ],
           "type": "string",
           "enum": [
             "CONTENT_STRUCTURE_UNSPECIFIED",
             "BUNDLE",
-            "RESOURCE"
+            "RESOURCE",
+            "BUNDLE_PRETTY",
+            "RESOURCE_PRETTY"
           ]
         },
         "gcsSource": {
-          "description": "Cloud Storage source data location and import configuration.\n\nThe Cloud Storage location requires the `roles\/storage.objectViewer`\nCloud IAM role.\n\nEach Cloud Storage object should be a text file that contains newline\ndelimited JSON structures conforming to FHIR standard.\n\nTo improve performance, use multiple Cloud Storage objects where each\nobject contains a subset of all of the newline-delimited JSON structures.\nYou can select all of the objects using the uri as the\nprefix. The maximum number of objects is 1,000.",
+          "description": "Cloud Storage source data location and import configuration.\n\nThe Cloud Storage location requires the `roles\/storage.objectViewer`\nCloud IAM role.\n\nEach Cloud Storage object should be a text file that contains the format\nspecified in ContentStructu.",
           "$ref": "GoogleCloudHealthcareV1alpha2FhirRestGcsSource"
         },
         "gcsErrorDestination": {
@@ -1439,9 +1443,34 @@
             "type": "string"
           }
         },
+        "streamConfigs": {
+          "description": "A list of streaming configs that configure the destinations of streaming\nexport for every resource mutation in this FHIR store. Each store is\nallowed to have up to 10 streaming configs.\nAfter a new config is added, the next resource mutation will be streamed to\nthe new location in addition to the existing ones.\nWhen a location is removed from the list, the server will simply stop\nstreaming to that location. Before adding a new config, you must add the\nrequired\n[`bigquery.dataEditor`](https:\/\/cloud.google.com\/bigquery\/docs\/access-control#bigquery.dataEditor)\nrole to your project's **Cloud Healthcare Service Agent**\n[service account](https:\/\/cloud.google.com\/iam\/docs\/service-accounts).\nSome lag (typically on the order of dozens of seconds) is expected before\nthe results show up in the streaming destination.",
+          "type": "array",
+          "items": {
+            "$ref": "StreamConfig"
+          }
+        },
         "enableHistoryImport": {
           "description": "Whether to allow the bulk import API to accept history bundles and directly\ninsert historical resource versions into the FHIR store. Importing resource\nhistories creates resource interactions that appear to have occurred in the\npast, which clients may not want to allow. If set to false, history bundles\nwithin an import will fail with an error.",
           "type": "boolean"
+        }
+      }
+    },
+    "StreamConfig": {
+      "id": "StreamConfig",
+      "description": "This structure contains configuration for streaming FHIR export.",
+      "type": "object",
+      "properties": {
+        "resourceTypes": {
+          "description": "Supply a FHIR resource type (such as \"Patient\" or \"Observation\").\nSee https:\/\/www.hl7.org\/fhir\/valueset-resource-types.html for a list of\nall FHIR resource types.\nThe server will treat an empty list as an intent to stream all the\nsupported resource types in this FHIR store.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "bigqueryDestination": {
+          "description": "The destination BigQuery structure that contains both the dataset\nlocation and corresponding schema config.\nThe output will be organized in one table per resource type.\nThe server will inspect and potentially create new tables (if they\ndon't exist) in the given BigQuery dataset.\nResults will be appended to the corresponding BigQuery tables.\nThe views of the latest snapshot will also be automatically created in\nthe dataset.",
+          "$ref": "GoogleCloudHealthcareV1alpha2FhirBigQueryDestination"
         }
       }
     },
@@ -1829,7 +1858,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new health dataset. Results are returned through the\nOperation interface which returns either an\n`Operation.response` which contains a Dataset or\n`Operation.error`. The metadata\nfield type is OperationMetadata."
+                  "description": "Creates a new health dataset. Results are returned through the\nOperation interface which returns either an\n`Operation.response` which contains a Dataset or\n`Operation.error`. The metadata\nfield type is OperationMetadata.\nA Google Cloud Platform project can contain up to 500 datasets across all\nregions."
                 },
                 "list": {
                   "id": "healthcare.projects.locations.datasets.list",
@@ -2298,7 +2327,7 @@
                               "type": "string"
                             },
                             "dicomWebPath": {
-                              "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g.,\n`studies`).",
+                              "description": "The path of the SearchForStudies DICOMweb request (e.g., `studies`).",
                               "location": "path",
                               "required": true,
                               "pattern": "^studies$",
@@ -2331,7 +2360,7 @@
                               "type": "string"
                             },
                             "dicomWebPath": {
-                              "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g.,\n`series`).",
+                              "description": "The path of the SearchForSeries DICOMweb request(e.g., `series` or\n`studies\/{study_uid}\/series`).",
                               "location": "path",
                               "required": true,
                               "pattern": "^series$",
@@ -2364,7 +2393,7 @@
                               "type": "string"
                             },
                             "dicomWebPath": {
-                              "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g.,\n`instances`).",
+                              "description": "The path of the SearchForInstancesRequest DICOMweb request (e.g.,\n`instances` or `series\/{series_uid}\/instances` or\n`studies\/{study_uid}\/instances`).",
                               "location": "path",
                               "required": true,
                               "pattern": "^instances$",
@@ -2397,7 +2426,7 @@
                               "type": "string"
                             },
                             "dicomWebPath": {
-                              "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g., `studies\/{study_id}`).",
+                              "description": "The path of the StoreInstances DICOMweb request (e.g.,\n`studies\/[{study_id}]`). Note that the `study_uid` is optional.",
                               "location": "path",
                               "required": true,
                               "pattern": "^studies$",
@@ -2438,7 +2467,7 @@
                                   "type": "string"
                                 },
                                 "dicomWebPath": {
-                                  "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g., `studies\/{study_id}`).",
+                                  "description": "The path of the RetrieveStudy DICOMweb request (e.g.,\n`studies\/{study_id}`).",
                                   "location": "path",
                                   "required": true,
                                   "pattern": "^studies\/[^\/]+$",
@@ -2471,7 +2500,7 @@
                                   "type": "string"
                                 },
                                 "dicomWebPath": {
-                                  "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g., `studies\/{study_id}\/metadata`.",
+                                  "description": "The path of the RetrieveStudyMetadata DICOMweb request (e.g.,\n`studies\/{study_id}\/metadata`).",
                                   "location": "path",
                                   "required": true,
                                   "pattern": "^studies\/[^\/]+\/metadata$",
@@ -2504,7 +2533,7 @@
                                   "type": "string"
                                 },
                                 "dicomWebPath": {
-                                  "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g.,\n`series`).",
+                                  "description": "The path of the SearchForSeries DICOMweb request(e.g., `series` or\n`studies\/{study_uid}\/series`).",
                                   "location": "path",
                                   "required": true,
                                   "pattern": "^studies\/[^\/]+\/series$",
@@ -2537,7 +2566,7 @@
                                   "type": "string"
                                 },
                                 "dicomWebPath": {
-                                  "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g.,\n`instances`).",
+                                  "description": "The path of the SearchForInstancesRequest DICOMweb request (e.g.,\n`instances` or `series\/{series_uid}\/instances` or\n`studies\/{study_uid}\/instances`).",
                                   "location": "path",
                                   "required": true,
                                   "pattern": "^studies\/[^\/]+\/instances$",
@@ -2570,7 +2599,7 @@
                                   "type": "string"
                                 },
                                 "dicomWebPath": {
-                                  "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g., `studies\/{study_id}`).",
+                                  "description": "The path of the DeleteStudy request (e.g., `studies\/{study_id}`).",
                                   "location": "path",
                                   "required": true,
                                   "pattern": "^studies\/[^\/]+$",
@@ -2603,7 +2632,7 @@
                                   "type": "string"
                                 },
                                 "dicomWebPath": {
-                                  "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g., `studies\/{study_id}`).",
+                                  "description": "The path of the StoreInstances DICOMweb request (e.g.,\n`studies\/[{study_id}]`). Note that the `study_uid` is optional.",
                                   "location": "path",
                                   "required": true,
                                   "pattern": "^studies\/[^\/]+$",
@@ -2644,7 +2673,7 @@
                                       "type": "string"
                                     },
                                     "dicomWebPath": {
-                                      "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g., `studies\/{study_id}\/series\/{series_id}`).",
+                                      "description": "The path of the RetrieveSeries DICOMweb request (e.g.,\n`studies\/{study_id}\/series\/{series_id}`).",
                                       "location": "path",
                                       "required": true,
                                       "pattern": "^studies\/[^\/]+\/series\/[^\/]+$",
@@ -2677,7 +2706,7 @@
                                       "type": "string"
                                     },
                                     "dicomWebPath": {
-                                      "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g., `studies\/{study_id}\/series\/{series_id}\/metadata`.",
+                                      "description": "The path of the RetrieveSeriesMetadata DICOMweb request (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/metadata`).",
                                       "location": "path",
                                       "required": true,
                                       "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/metadata$",
@@ -2710,7 +2739,7 @@
                                       "type": "string"
                                     },
                                     "dicomWebPath": {
-                                      "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g.,\n`instances`).",
+                                      "description": "The path of the SearchForInstancesRequest DICOMweb request (e.g.,\n`instances` or `series\/{series_uid}\/instances` or\n`studies\/{study_uid}\/instances`).",
                                       "location": "path",
                                       "required": true,
                                       "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances$",
@@ -2743,7 +2772,7 @@
                                       "type": "string"
                                     },
                                     "dicomWebPath": {
-                                      "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g., `studies\/{study_id}\/series\/{series_id}`).",
+                                      "description": "The path of the DeleteSeries request (e.g.,\n`studies\/{study_id}\/series\/{series_id}`).",
                                       "location": "path",
                                       "required": true,
                                       "pattern": "^studies\/[^\/]+\/series\/[^\/]+$",
@@ -2781,7 +2810,7 @@
                                           "type": "string"
                                         },
                                         "dicomWebPath": {
-                                          "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instances\/{instance_id}`).",
+                                          "description": "The path of the RetrieveInstance DICOMweb request (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instances\/{instance_id}`).",
                                           "location": "path",
                                           "required": true,
                                           "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances\/[^\/]+$",
@@ -2814,7 +2843,7 @@
                                           "type": "string"
                                         },
                                         "dicomWebPath": {
-                                          "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instances\/{instance_id}\/rendered`).",
+                                          "description": "The path of the RetrieveRenderedInstance DICOMweb request (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instances\/{instance_id}\/rendered`).",
                                           "location": "path",
                                           "required": true,
                                           "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances\/[^\/]+\/rendered$",
@@ -2847,7 +2876,7 @@
                                           "type": "string"
                                         },
                                         "dicomWebPath": {
-                                          "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instances\/{instance_id}\/metadata`).",
+                                          "description": "The path of the RetrieveInstanceMetadata DICOMweb request (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instances\/{instance_id}\/metadata`).",
                                           "location": "path",
                                           "required": true,
                                           "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances\/[^\/]+\/metadata$",
@@ -2880,7 +2909,7 @@
                                           "type": "string"
                                         },
                                         "dicomWebPath": {
-                                          "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instances\/{instance_id}`).",
+                                          "description": "The path of the DeleteInstance request (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instances\/{instance_id}`).",
                                           "location": "path",
                                           "required": true,
                                           "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances\/[^\/]+$",
@@ -2918,7 +2947,7 @@
                                               "type": "string"
                                             },
                                             "dicomWebPath": {
-                                              "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instances\/{instance_id}\/frames\/{frame_list}`).",
+                                              "description": "The path of the RetrieveFrames DICOMweb request (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instances\/{instance_id}\/frames\/{frame_list}`).",
                                               "location": "path",
                                               "required": true,
                                               "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances\/[^\/]+\/frames\/[^\/]+$",
@@ -2951,7 +2980,7 @@
                                               "type": "string"
                                             },
                                             "dicomWebPath": {
-                                              "description": "The path of the DICOMweb request, as specified in the STOW-RS, WADO-RS, or\nQIDO-RS standard (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instances\/{instance_id}\/frames\/{frame_list}\/rendered`).",
+                                              "description": "The path of the RetrieveRenderedFrames DICOMweb request (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instances\/{instance_id}\/frames\/{frame_list}\/rendered`).",
                                               "location": "path",
                                               "required": true,
                                               "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances\/[^\/]+\/frames\/[^\/]+\/rendered$",
@@ -4535,7 +4564,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Searches for resources in the given FHIR store according to criteria\nspecified as query parameters.\n\nImplements the FHIR standard [search\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#search)\nusing the search semantics described in the [FHIR Search\nspecification](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/search.html).\n\nSupports three methods of search defined by the specification:\n\n*  `GET [base]?[parameters]` to search across all resources.\n*  `GET [base]\/[type]?[parameters]` to search resources of a specified\ntype.\n*  `POST [base]\/[type]\/_search?[parameters]` as an alternate form having\nthe same semantics as the `GET` method.\n\nThe `GET` methods do not support compartment searches. The `POST` method\ndoes not support `application\/x-www-form-urlencoded` search parameters.\n\nOn success, the response body will contain a JSON-encoded representation\nof a `Bundle` resource of type `searchset`, containing the results of the\nsearch.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead.\n\n# Search Parameters\n\nThe server's capability statement, retrieved through\ncapabilities, indicates what search parameters\nare supported on each FHIR resource. A list of all search parameters\ndefined by the specification can be found in the [FHIR Search Parameter\nRegistry](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/searchparameter-registry.html).\n\n# Search Modifiers\n\nModifier   | Supported\n----------- | ---------\n`:missing`  | Yes\n`:exact`    | Yes\n`:contains` | Yes\n`:text`     | Yes\n`:in`       | Yes\n`:not-in`   | Yes\n`:above`    | Yes\n`:below`    | Yes\n`:[type]`   | Yes\n`:not`      | Yes\n`:recurse`  | No"
+                          "description": "Searches for resources in the given FHIR store according to criteria\nspecified as query parameters.\n\nImplements the FHIR standard [search\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#search)\nusing the search semantics described in the [FHIR Search\nspecification](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/search.html).\n\nSupports three methods of search defined by the specification:\n\n*  `GET [base]?[parameters]` to search across all resources.\n*  `GET [base]\/[type]?[parameters]` to search resources of a specified\ntype.\n*  `POST [base]\/[type]\/_search?[parameters]` as an alternate form having\nthe same semantics as the `GET` method.\n\nThe `GET` methods do not support compartment searches. The `POST` method\ndoes not support `application\/x-www-form-urlencoded` search parameters.\n\nOn success, the response body will contain a JSON-encoded representation\nof a `Bundle` resource of type `searchset`, containing the results of the\nsearch.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead.\n\nThe server's capability statement, retrieved through\ncapabilities, indicates what search parameters\nare supported on each FHIR resource. A list of all search parameters\ndefined by the specification can be found in the [FHIR Search Parameter\nRegistry](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/searchparameter-registry.html).\n\nSupported search modifiers: `:missing`, `:exact`, `:contains`, `:text`,\n`:in`, `:not-in`, `:above`, `:below`, `:[type]`, `:not`, and `:recurse`."
                         },
                         "search": {
                           "id": "healthcare.projects.locations.datasets.fhirStores.fhir.search",
@@ -4570,7 +4599,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Searches for resources in the given FHIR store according to criteria\nspecified as query parameters.\n\nImplements the FHIR standard [search\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#search)\nusing the search semantics described in the [FHIR Search\nspecification](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/search.html).\n\nSupports three methods of search defined by the specification:\n\n*  `GET [base]?[parameters]` to search across all resources.\n*  `GET [base]\/[type]?[parameters]` to search resources of a specified\ntype.\n*  `POST [base]\/[type]\/_search?[parameters]` as an alternate form having\nthe same semantics as the `GET` method.\n\nThe `GET` methods do not support compartment searches. The `POST` method\ndoes not support `application\/x-www-form-urlencoded` search parameters.\n\nOn success, the response body will contain a JSON-encoded representation\nof a `Bundle` resource of type `searchset`, containing the results of the\nsearch.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead.\n\n# Search Parameters\n\nThe server's capability statement, retrieved through\ncapabilities, indicates what search parameters\nare supported on each FHIR resource. A list of all search parameters\ndefined by the specification can be found in the [FHIR Search Parameter\nRegistry](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/searchparameter-registry.html).\n\n# Search Modifiers\n\nModifier   | Supported\n----------- | ---------\n`:missing`  | Yes\n`:exact`    | Yes\n`:contains` | Yes\n`:text`     | Yes\n`:in`       | Yes\n`:not-in`   | Yes\n`:above`    | Yes\n`:below`    | Yes\n`:[type]`   | Yes\n`:not`      | Yes\n`:recurse`  | No"
+                          "description": "Searches for resources in the given FHIR store according to criteria\nspecified as query parameters.\n\nImplements the FHIR standard [search\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#search)\nusing the search semantics described in the [FHIR Search\nspecification](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/search.html).\n\nSupports three methods of search defined by the specification:\n\n*  `GET [base]?[parameters]` to search across all resources.\n*  `GET [base]\/[type]?[parameters]` to search resources of a specified\ntype.\n*  `POST [base]\/[type]\/_search?[parameters]` as an alternate form having\nthe same semantics as the `GET` method.\n\nThe `GET` methods do not support compartment searches. The `POST` method\ndoes not support `application\/x-www-form-urlencoded` search parameters.\n\nOn success, the response body will contain a JSON-encoded representation\nof a `Bundle` resource of type `searchset`, containing the results of the\nsearch.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead.\n\nThe server's capability statement, retrieved through\ncapabilities, indicates what search parameters\nare supported on each FHIR resource. A list of all search parameters\ndefined by the specification can be found in the [FHIR Search Parameter\nRegistry](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/searchparameter-registry.html).\n\nSupported search modifiers: `:missing`, `:exact`, `:contains`, `:text`,\n`:in`, `:not-in`, `:above`, `:below`, `:[type]`, `:not`, and `:recurse`."
                         },
                         "search": {
                           "id": "healthcare.projects.locations.datasets.fhirStores.fhir.search",
@@ -4598,7 +4627,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Searches for resources in the given FHIR store according to criteria\nspecified as query parameters.\n\nImplements the FHIR standard [search\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#search)\nusing the search semantics described in the [FHIR Search\nspecification](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/search.html).\n\nSupports three methods of search defined by the specification:\n\n*  `GET [base]?[parameters]` to search across all resources.\n*  `GET [base]\/[type]?[parameters]` to search resources of a specified\ntype.\n*  `POST [base]\/[type]\/_search?[parameters]` as an alternate form having\nthe same semantics as the `GET` method.\n\nThe `GET` methods do not support compartment searches. The `POST` method\ndoes not support `application\/x-www-form-urlencoded` search parameters.\n\nOn success, the response body will contain a JSON-encoded representation\nof a `Bundle` resource of type `searchset`, containing the results of the\nsearch.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead.\n\n# Search Parameters\n\nThe server's capability statement, retrieved through\ncapabilities, indicates what search parameters\nare supported on each FHIR resource. A list of all search parameters\ndefined by the specification can be found in the [FHIR Search Parameter\nRegistry](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/searchparameter-registry.html).\n\n# Search Modifiers\n\nModifier   | Supported\n----------- | ---------\n`:missing`  | Yes\n`:exact`    | Yes\n`:contains` | Yes\n`:text`     | Yes\n`:in`       | Yes\n`:not-in`   | Yes\n`:above`    | Yes\n`:below`    | Yes\n`:[type]`   | Yes\n`:not`      | Yes\n`:recurse`  | No"
+                          "description": "Searches for resources in the given FHIR store according to criteria\nspecified as query parameters.\n\nImplements the FHIR standard [search\ninteraction](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#search)\nusing the search semantics described in the [FHIR Search\nspecification](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/search.html).\n\nSupports three methods of search defined by the specification:\n\n*  `GET [base]?[parameters]` to search across all resources.\n*  `GET [base]\/[type]?[parameters]` to search resources of a specified\ntype.\n*  `POST [base]\/[type]\/_search?[parameters]` as an alternate form having\nthe same semantics as the `GET` method.\n\nThe `GET` methods do not support compartment searches. The `POST` method\ndoes not support `application\/x-www-form-urlencoded` search parameters.\n\nOn success, the response body will contain a JSON-encoded representation\nof a `Bundle` resource of type `searchset`, containing the results of the\nsearch.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead.\n\nThe server's capability statement, retrieved through\ncapabilities, indicates what search parameters\nare supported on each FHIR resource. A list of all search parameters\ndefined by the specification can be found in the [FHIR Search Parameter\nRegistry](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/searchparameter-registry.html).\n\nSupported search modifiers: `:missing`, `:exact`, `:contains`, `:text`,\n`:in`, `:not-in`, `:above`, `:below`, `:[type]`, `:not`, and `:recurse`."
                         },
                         "Patient-everything": {
                           "id": "healthcare.projects.locations.datasets.fhirStores.fhir.Patient-everything",

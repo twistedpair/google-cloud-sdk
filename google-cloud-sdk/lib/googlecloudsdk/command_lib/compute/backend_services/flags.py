@@ -444,19 +444,33 @@ def AddSessionAffinity(parser, target_pools=False, hidden=False):
   if not target_pools:
     choices.update({
         'GENERATED_COOKIE': (
-            '(Applicable if load-balancing scheme is external) Route requests '
-            'to instances based on the contents of the "GCLB" '
-            'cookie set by the load balancer.'),
+            '(Applicable if `--load-balancing-scheme` is '
+            '`INTERNAL_SELF_MANAGED` or `EXTERNAL`) '
+            'If the `--load-balancing-scheme` is `EXTERNAL`, routes '
+            'requests to backend VMs or endpoints in a NEG, based on the '
+            'contents of the "GCLB" cookie set by the load balancer. Only '
+            'applicable when --protocol is HTTP, HTTPS, or HTTP2. '
+            'If the `--load-balancing-scheme` is `INTERNAL_SELF_MANAGED`, '
+            'routes requests to backend VMs or endpoints in a NEG, '
+            'based on the contents of the a cookie set by Traffic Director.'),
         'CLIENT_IP_PROTO': (
-            '(Applicable if load-balancing scheme is internal) '
+            '(Applicable if `--load-balancing-scheme` is `INTERNAL`) '
             'Connections from the same client IP with the same IP '
-            'protocol will go to the same VM in the pool while that VM remains'
+            'protocol will go to the same backend VM while that VM remains'
             ' healthy.'),
         'CLIENT_IP_PORT_PROTO': (
-            '(Applicable if load-balancing scheme is internal) Connections from'
-            ' the same client IP with the same IP protocol and '
-            'port will go to the same VM in the backend while that VM remains '
+            '(Applicable if `--load-balancing-scheme` is `INTERNAL`) '
+            'Connections from the same client IP with the same IP protocol and '
+            'port will go to the same backend VM while that VM remains '
             'healthy.'),
+        'HTTP_COOKIE': (
+            '(Applicable if `--load-balancing-scheme` is '
+            '`INTERNAL_SELF_MANAGED`) Route requests to backend VMs or '
+            'endpoints in a NEG based on an HTTP cookie set by the client.'),
+        'HEADER_FIELD': (
+            '(Applicable if `--load-balancing-scheme` is '
+            '`INTERNAL_SELF_MANAGED`) Route requests to backend VMs or'
+            ' endpoints in a NEG based on an HTTP header.'),
     })
   help_str = 'The type of TCP session affinity to use. Not supported for UDP.'
   parser.add_argument(

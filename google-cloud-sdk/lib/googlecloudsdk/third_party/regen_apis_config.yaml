@@ -99,6 +99,11 @@ apis:
       discovery_doc: cloudasset_v1beta1.json
     v1:
       discovery_doc: cloudasset_v1.json
+    v1p1alpha1:
+      discovery_doc: cloudasset_v1p1alpha1.json
+      resources:
+        iamPolicies:
+          path: iamPolicies
   cloudbilling:
     v1:
       discovery_doc: cloudbilling_v1.json

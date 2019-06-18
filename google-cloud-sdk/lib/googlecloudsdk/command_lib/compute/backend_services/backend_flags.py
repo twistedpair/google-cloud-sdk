@@ -75,34 +75,47 @@ def _GetBalancingModes():
   utilization_extra_help = (
       'This is incompatible with --network-endpoint-group.')
   balancing_modes = {
-      'RATE': """\
-          Spreads load based on how many HTTP requests per second (RPS) the
-          backend can handle. This balancing mode is only available to backend
-          services that use HTTP, HTTPS, or HTTP/2 protocols.
-          You must specify exactly one of these additional parameters:
-          `--max-rate`, `--max-rate-per-instance`, or`--max-rate-per-endpoint`.
-          """.format(per_rate_flags),
-      'UTILIZATION': """\
-          Spreads load based on the CPU utilization of instances in a backend
-          instance group. This balancing mode is only available to backend
-          services with --load-balancing-scheme EXTERNAL and
-          instance group backends. There is no restriction on the
-          backend service protocol.
-          The following additional parameters may be specified:
-          `--max-utilization`, `--max-rate`, `--max-rate-per-instance`,
-          `--max-connections`, `--max-connections-per-instance`.
-          For valid combinations, see `--max-utilization` below.
-          """.format(utilization_extra_help),
       'CONNECTION': """\
+          Available if the backend service's load balancing scheme is either
+          `INTERNAL` or `EXTERNAL`.
+          Available if the backend service's protocol is one of `SSL`, `TCP`,
+          or `UDP`.
+
           Spreads load based on how many concurrent connections the backend
-          can handle. This balancing mode is only available to backend
-          services that use SSL, TCP, or UDP protocols.
+          can handle.
+
           For backend services with --load-balancing-scheme EXTERNAL, you
           must specify exactly one of these additional parameters:
           `--max-connections`, `--max-connections-per-instance`, or
           `--max-connections-per-endpoint`.
-          For backend services with --load-balancing-scheme INTERNAL, you
-          must omit all of these parameters.
+
+          For backend services where `--load-balancing-scheme` is `INTERNAL`,
+          you must omit all of these parameters.
+          """.format(per_rate_flags),
+      'RATE': """\
+          Available if the backend service's load balancing scheme is
+          `INTERNAL_SELF_MANAGED` or `EXTERNAL`.
+          Available if the backend service's protocol is one of `HTTP`, `HTTPS`,
+          or `HTTP/2`.
+
+          Spreads load based on how many HTTP requests per second (RPS) the
+          backend can handle.
+
+          You must specify exactly one of these additional parameters:
+          `--max-rate`, `--max-rate-per-instance`, or`--max-rate-per-endpoint`.
+          """.format(utilization_extra_help),
+      'UTILIZATION': """\
+          Available if the backend service's load balancing scheme is
+          `INTERNAL_SELF_MANAGED` or `EXTERNAL`.
+          Available only for instance group backends.
+
+          Spreads load based on the CPU utilization of instances in a backend
+          instance group.
+
+          The following additional parameters may be specified:
+          `--max-utilization`, `--max-rate`, `--max-rate-per-instance`,
+          `--max-connections`, `--max-connections-per-instance`.
+          For valid combinations, see `--max-utilization`.
           """.format(per_connection_flags),
   }
   return balancing_modes

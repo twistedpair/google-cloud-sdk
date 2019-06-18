@@ -115,7 +115,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The Data Catalog resource name of the entry in URL format. For example,\n\"projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id}\".",
+          "description": "Required when used in\nUpdateEntryRequest.\nThe Data Catalog resource name of the entry in URL format. For example,\n\"projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id}\".",
           "type": "string"
         },
         "linkedResource": {
@@ -123,7 +123,7 @@
           "type": "string"
         },
         "type": {
-          "description": "Type of entry.",
+          "description": "Required. Type of entry.",
           "enumDescriptions": [
             "Default unknown type",
             "The type of entry that has a GoogleSQL schema, including logical views.",
@@ -141,15 +141,15 @@
           "$ref": "GoogleCloudDatacatalogV1beta1BigQueryTableSpec"
         },
         "displayName": {
-          "description": "Display information such as title and description.\nA short name to identify the entry, for example,\n\"Analytics Data - Jan 2011\".",
+          "description": "Optional. Display information such as title and description. A short name\nto identify the entry, for example, \"Analytics Data - Jan 2011\". Default\nvalue is an empty string.",
           "type": "string"
         },
         "description": {
-          "description": "Entry description, which can consist of several sentences or paragraphs\nthat describe entry contents.",
+          "description": "Optional. Entry description, which can consist of several sentences or\nparagraphs that describe entry contents. Default value is an empty string.",
           "type": "string"
         },
         "schema": {
-          "description": "Schema of the entry.",
+          "description": "Optional. Schema of the entry. An entry might not have any schema attached\nto it.",
           "$ref": "GoogleCloudDatacatalogV1beta1Schema"
         },
         "sourceSystemTimestamps": {
@@ -164,7 +164,7 @@
       "type": "object",
       "properties": {
         "tableSourceType": {
-          "description": "The table source type.",
+          "description": "Output only. The table source type.",
           "enumDescriptions": [
             "Default unknown type.",
             "Table view.",
@@ -189,7 +189,7 @@
       "type": "object",
       "properties": {
         "viewQuery": {
-          "description": "The query that defines the table view.",
+          "description": "Output only. The query that defines the table view.",
           "type": "string"
         }
       }
@@ -200,7 +200,7 @@
       "type": "object",
       "properties": {
         "columns": {
-          "description": "Schema of columns. A maximum of 10,000 columns and sub-columns can be\nspecified.",
+          "description": "Required. Schema of columns. A maximum of 10,000 columns and sub-columns\ncan be specified.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDatacatalogV1beta1ColumnSchema"
@@ -222,15 +222,15 @@
           "type": "string"
         },
         "description": {
-          "description": "Description of the column.",
+          "description": "Optional. Description of the column. Default value is an empty string.",
           "type": "string"
         },
         "mode": {
-          "description": "A column's mode indicates whether the values in this column are\nrequired, nullable, etc. Only 'NULLABLE', 'REQUIRED' and 'REPEATED' are\nsupported, default mode is 'NULLABLE'.",
+          "description": "Optional. A column's mode indicates whether the values in this column are\nrequired, nullable, etc. Only 'NULLABLE', 'REQUIRED' and 'REPEATED' are\nsupported. Default mode is 'NULLABLE'.",
           "type": "string"
         },
         "subcolumns": {
-          "description": "Schema of sub-columns.",
+          "description": "Optional. Schema of sub-columns. A column can have zero or more\nsub-columns.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDatacatalogV1beta1ColumnSchema"
@@ -277,14 +277,14 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "The Data Catalog resource name of the entry in URL format. For example,\n\"projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id}\".",
+                          "description": "Required when used in\nUpdateEntryRequest.\nThe Data Catalog resource name of the entry in URL format. For example,\n\"projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id}\".",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "The fields to update on the entry.  If absent or empty, all modifiable\nfields are updated.\n\nModifiable fields in synced entries:\n\n1. schema (Pub\/Sub topics only)\n\nModifiable fields in native entries:\n\n1. display_name\n2. description\n3. schema",
+                          "description": "Optional. The fields to update on the entry.  If absent or empty, all\nmodifiable fields are updated.\n\nModifiable fields in synced entries:\n\n1. schema (Pub\/Sub topics only)\n\nModifiable fields in native entries:\n\n1. display_name\n2. description\n3. schema",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"

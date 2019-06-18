@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20190520",
+ "revision": "20190611",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -645,9 +645,11 @@
       "DNS_RESOLVER",
       "GCE_ENDPOINT",
       "NAT_AUTO",
+      "SHARED_LOADBALANCER_VIP",
       "VPC_PEERING"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -2969,6 +2971,270 @@
     }
    }
   },
+  "BfdPacket": {
+   "id": "BfdPacket",
+   "type": "object",
+   "description": "",
+   "properties": {
+    "authenticationPresent": {
+     "type": "boolean",
+     "description": "The Authentication Present bit of the BFD packet. This is specified in section 4.1 of RFC5880"
+    },
+    "controlPlaneIndependent": {
+     "type": "boolean",
+     "description": "The Control Plane Independent bit of the BFD packet. This is specified in section 4.1 of RFC5880"
+    },
+    "demand": {
+     "type": "boolean",
+     "description": "The demand bit of the BFD packet. This is specified in section 4.1 of RFC5880"
+    },
+    "diagnostic": {
+     "type": "string",
+     "description": "The diagnostic code specifies the local system's reason for the last change in session state. This allows remote systems to determine the reason that the previous session failed, for example. These diagnostic codes are specified in section 4.1 of RFC5880",
+     "enum": [
+      "ADMINISTRATIVELY_DOWN",
+      "CONCATENATED_PATH_DOWN",
+      "CONTROL_DETECTION_TIME_EXPIRED",
+      "DIAGNOSTIC_UNSPECIFIED",
+      "ECHO_FUNCTION_FAILED",
+      "FORWARDING_PLANE_RESET",
+      "NEIGHBOR_SIGNALED_SESSION_DOWN",
+      "NO_DIAGNOSTIC",
+      "PATH_DOWN",
+      "REVERSE_CONCATENATED_PATH_DOWN"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "final": {
+     "type": "boolean",
+     "description": "The Final bit of the BFD packet. This is specified in section 4.1 of RFC5880"
+    },
+    "length": {
+     "type": "integer",
+     "description": "The length of the BFD Control packet in bytes. This is specified in section 4.1 of RFC5880",
+     "format": "uint32"
+    },
+    "minEchoRxIntervalMs": {
+     "type": "integer",
+     "description": "The Required Min Echo RX Interval value in the BFD packet. This is specified in section 4.1 of RFC5880",
+     "format": "uint32"
+    },
+    "minRxIntervalMs": {
+     "type": "integer",
+     "description": "The Required Min RX Interval value in the BFD packet. This is specified in section 4.1 of RFC5880",
+     "format": "uint32"
+    },
+    "minTxIntervalMs": {
+     "type": "integer",
+     "description": "The Desired Min TX Interval value in the BFD packet. This is specified in section 4.1 of RFC5880",
+     "format": "uint32"
+    },
+    "multiplier": {
+     "type": "integer",
+     "description": "The detection time multiplier of the BFD packet. This is specified in section 4.1 of RFC5880",
+     "format": "uint32"
+    },
+    "multipoint": {
+     "type": "boolean",
+     "description": "The multipoint bit of the BFD packet. This is specified in section 4.1 of RFC5880"
+    },
+    "myDiscriminator": {
+     "type": "integer",
+     "description": "The My Discriminator value in the BFD packet. This is specified in section 4.1 of RFC5880",
+     "format": "uint32"
+    },
+    "poll": {
+     "type": "boolean",
+     "description": "The Poll bit of the BFD packet. This is specified in section 4.1 of RFC5880"
+    },
+    "state": {
+     "type": "string",
+     "description": "The current BFD session state as seen by the transmitting system. These states are specified in section 4.1 of RFC5880",
+     "enum": [
+      "ADMIN_DOWN",
+      "DOWN",
+      "INIT",
+      "STATE_UNSPECIFIED",
+      "UP"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "version": {
+     "type": "integer",
+     "description": "The version number of the BFD protocol, as specified in section 4.1 of RFC5880.",
+     "format": "uint32"
+    },
+    "yourDiscriminator": {
+     "type": "integer",
+     "description": "The Your Discriminator value in the BFD packet. This is specified in section 4.1 of RFC5880",
+     "format": "uint32"
+    }
+   }
+  },
+  "BfdStatus": {
+   "id": "BfdStatus",
+   "type": "object",
+   "description": "Next free: 15",
+   "properties": {
+    "bfdSessionInitializationMode": {
+     "type": "string",
+     "description": "The BFD session initialization mode for this BGP peer. If set to ACTIVE, the Cloud Router will initiate the BFD session for this BGP peer. If set to PASSIVE, the Cloud Router will wait for the peer router to initiate the BFD session for this BGP peer. If set to DISABLED, BFD is disabled for this BGP peer.",
+     "enum": [
+      "ACTIVE",
+      "DISABLED",
+      "PASSIVE"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    },
+    "configUpdateTimestampMicros": {
+     "type": "string",
+     "description": "Unix timestamp of the most recent config update.",
+     "format": "int64"
+    },
+    "controlPacketCounts": {
+     "$ref": "BfdStatusPacketCounts",
+     "description": "Control packet counts for the current BFD session."
+    },
+    "controlPacketIntervals": {
+     "type": "array",
+     "description": "Inter-packet time interval statistics for control packets.",
+     "items": {
+      "$ref": "PacketIntervals"
+     }
+    },
+    "echoPacketCounts": {
+     "$ref": "BfdStatusPacketCounts",
+     "description": "Echo packet counts for the current BFD session."
+    },
+    "echoPacketIntervals": {
+     "type": "array",
+     "description": "Inter-packet time interval statistics for echo packets.",
+     "items": {
+      "$ref": "PacketIntervals"
+     }
+    },
+    "localDiagnostic": {
+     "type": "string",
+     "description": "The diagnostic code specifies the local system's reason for the last change in session state. This allows remote systems to determine the reason that the previous session failed, for example. These diagnostic codes are specified in section 4.1 of RFC5880",
+     "enum": [
+      "ADMINISTRATIVELY_DOWN",
+      "CONCATENATED_PATH_DOWN",
+      "CONTROL_DETECTION_TIME_EXPIRED",
+      "DIAGNOSTIC_UNSPECIFIED",
+      "ECHO_FUNCTION_FAILED",
+      "FORWARDING_PLANE_RESET",
+      "NEIGHBOR_SIGNALED_SESSION_DOWN",
+      "NO_DIAGNOSTIC",
+      "PATH_DOWN",
+      "REVERSE_CONCATENATED_PATH_DOWN"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "localState": {
+     "type": "string",
+     "description": "The current BFD session state as seen by the transmitting system. These states are specified in section 4.1 of RFC5880",
+     "enum": [
+      "ADMIN_DOWN",
+      "DOWN",
+      "INIT",
+      "STATE_UNSPECIFIED",
+      "UP"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "negotiatedLocalControlTxIntervalMs": {
+     "type": "integer",
+     "description": "Negotiated transmit interval for control packets. When echo mode is enabled this will reflect the negotiated slow timer interval.",
+     "format": "uint32"
+    },
+    "negotiatedLocalEchoTxIntervalMs": {
+     "type": "integer",
+     "description": "Negotiated transmit interval for echo packets.",
+     "format": "uint32"
+    },
+    "rxPacket": {
+     "$ref": "BfdPacket",
+     "description": "The most recent Rx control packet for this BFD session."
+    },
+    "txPacket": {
+     "$ref": "BfdPacket",
+     "description": "The most recent Tx control packet for this BFD session."
+    },
+    "uptimeMs": {
+     "type": "string",
+     "description": "Session uptime in milliseconds. Value will be 0 if session is not up.",
+     "format": "int64"
+    },
+    "usingEchoMode": {
+     "type": "boolean",
+     "description": "Indicates if echo mode is currently being used."
+    }
+   }
+  },
+  "BfdStatusPacketCounts": {
+   "id": "BfdStatusPacketCounts",
+   "type": "object",
+   "properties": {
+    "numRx": {
+     "type": "integer",
+     "description": "Number of packets received since the beginning of the current BFD session.",
+     "format": "uint32"
+    },
+    "numRxRejected": {
+     "type": "integer",
+     "description": "Number of packets received that were rejected because of errors since the beginning of the current BFD session.",
+     "format": "uint32"
+    },
+    "numRxSuccessful": {
+     "type": "integer",
+     "description": "Number of packets received that were successfully processed since the beginning of the current BFD session.",
+     "format": "uint32"
+    },
+    "numTx": {
+     "type": "integer",
+     "description": "Number of packets transmitted since the beginning of the current BFD session.",
+     "format": "uint32"
+    }
+   }
+  },
   "Binding": {
    "id": "Binding",
    "type": "object",
@@ -3042,23 +3308,15 @@
    "type": "object",
    "description": "gRPC call credentials to access the SDS server.",
    "properties": {
-    "accessToken": {
-     "type": "string",
-     "description": "The access token that is used as call credential for the SDS server. This field is used only if callCredentialType is ACCESS_TOKEN."
-    },
     "callCredentialType": {
      "type": "string",
      "description": "The type of call credentials to use for GRPC requests to the SDS server. This field can be set to one of the following: ACCESS_TOKEN: An access token is used as call credentials for the SDS server. GCE_VM: The local GCE VM service account credentials are used to access the SDS server. JWT_SERVICE_TOKEN: The user provisioned service account credentials are used to access the SDS server. FROM_PLUGIN: Custom authenticator credentials are used to access the SDS server.",
      "enum": [
-      "ACCESS_TOKEN",
       "FROM_PLUGIN",
       "GCE_VM",
-      "INVALID",
-      "JWT_SERVICE_ACCOUNT"
+      "INVALID"
      ],
      "enumDescriptions": [
-      "",
-      "",
       "",
       "",
       ""
@@ -3067,10 +3325,6 @@
     "fromPlugin": {
      "$ref": "MetadataCredentialsFromPlugin",
      "description": "Custom authenticator credentials."
-    },
-    "jwtServiceAccount": {
-     "$ref": "ServiceAccountJwtAccessCredentials",
-     "description": "This service account credentials are used as call credentials for the SDS server. This field is used only if callCredentialType is JWT_SERVICE_ACCOUNT."
     }
    }
   },
@@ -3275,10 +3529,12 @@
      "enum": [
       "COMPUTE_OPTIMIZED",
       "GENERAL_PURPOSE",
+      "GENERAL_PURPOSE_N2",
       "MEMORY_OPTIMIZED",
       "TYPE_UNSPECIFIED"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -4928,7 +5184,7 @@
     },
     "imported": {
      "type": "boolean",
-     "description": "If the peering route is imported if there is no confliction."
+     "description": "True if the peering route has been imported from a peer. The actual import happens if the field networkPeering.importCustomRoutes is true for this network, and networkPeering.exportCustomRoutes is true for the peer network, and the import does not result in a route conflict."
     },
     "nextHopRegion": {
      "type": "string",
@@ -6522,6 +6778,10 @@
      "description": "Type of the resource.",
      "default": "compute#healthCheck"
     },
+    "logConfig": {
+     "$ref": "HealthCheckLogConfig",
+     "description": "Configure logging on this health check."
+    },
     "name": {
      "type": "string",
      "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
@@ -6694,6 +6954,27 @@
     }
    }
   },
+  "HealthCheckLogConfig": {
+   "id": "HealthCheckLogConfig",
+   "type": "object",
+   "description": "Configuration of logging on a health check. If logging is enabled, logs will be exported to Stackdriver.",
+   "properties": {
+    "enable": {
+     "type": "boolean",
+     "description": "Indicates whether or not to export logs. This is false by default, which means no health check logging will be done."
+    },
+    "filter": {
+     "type": "string",
+     "description": "Specifies the desired filtering of logs on this health check. If this is unspecified and enable is true, logs are exported with LOG_TRANSITION filter.",
+     "enum": [
+      "LOG_TRANSITION"
+     ],
+     "enumDescriptions": [
+      ""
+     ]
+    }
+   }
+  },
   "HealthCheckReference": {
    "id": "HealthCheckReference",
    "type": "object",
@@ -6776,6 +7057,16 @@
     "selfLinkWithId": {
      "type": "string",
      "description": "[Output Only] Server-defined URL with id for the resource."
+    }
+   }
+  },
+  "HealthCheckServiceReference": {
+   "id": "HealthCheckServiceReference",
+   "type": "object",
+   "description": "A full or valid partial URL to a health check service. For example, the following are valid URLs:  \n- https://www.googleapis.com/compute/beta/projects/project-id/regions/us-west1/healthCheckServices/health-check-service \n- projects/project-id/regions/us-west1/healthCheckServices/health-check-service \n- regions/us-west1/healthCheckServices/health-check-service",
+   "properties": {
+    "healthCheckService": {
+     "type": "string"
     }
    }
   },
@@ -7149,6 +7440,10 @@
     "healthCheck": {
      "$ref": "HealthCheckReference",
      "description": "URL of the health check associated with the health state of the network endpoint."
+    },
+    "healthCheckService": {
+     "$ref": "HealthCheckServiceReference",
+     "description": "URL of the health check service associated with the health state of the network endpoint."
     },
     "healthState": {
      "type": "string",
@@ -9491,7 +9786,7 @@
    "properties": {
     "instances": {
      "type": "array",
-     "description": "The list of URLs of one or more instances for which we want to apply updates on this managed instance group. This can be a full URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].",
+     "description": "The list of URLs of one or more instances for which you want to apply updates. Each URL can be a full URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].",
      "items": {
       "type": "string"
      }
@@ -9514,7 +9809,7 @@
     },
     "minimalAction": {
      "type": "string",
-     "description": "The minimal action that should be perfomed on the instances. By default NONE.",
+     "description": "The minimal action that you want to perform on each instance during the update:  \n- REPLACE: At minimum, delete the instance and create it again. \n- RESTART: Stop the instance and start it again. \n- REFRESH: Do not stop the instance. \n- NONE: Do not disrupt the instance at all.  By default, the minimum action is NONE. If your update requires a more disruptive action than you set with this flag, the necessary action is performed to execute the update.",
      "enum": [
       "NONE",
       "REFRESH",
@@ -9530,7 +9825,7 @@
     },
     "mostDisruptiveAllowedAction": {
      "type": "string",
-     "description": "The most disruptive action that allowed to be performed on the instances. By default REPLACE.",
+     "description": "The most disruptive action that you want to perform on each instance during the update:  \n- REPLACE: Delete the instance and create it again. \n- RESTART: Stop the instance and start it again. \n- REFRESH: Do not stop the instance. \n- NONE: Do not disrupt the instance at all.  By default, the most disruptive allowed action is REPLACE. If your update requires a more disruptive action than you set with this flag, the update request will fail.",
      "enum": [
       "NONE",
       "REFRESH",
@@ -11338,7 +11633,7 @@
     },
     "googleReferenceId": {
      "type": "string",
-     "description": "[Output Only] Google reference ID, to be used when raising support tickets with Google or otherwise to debug backend connectivity issues."
+     "description": "[Output Only] Google reference ID, to be used when raising support tickets with Google or otherwise to debug backend connectivity issues. [Deprecated] This field is not used."
     },
     "id": {
      "type": "string",
@@ -13776,10 +14071,6 @@
      "$ref": "ManagedInstanceLastAttempt",
      "description": "[Output Only] Information about the last attempt to create or delete the instance."
     },
-    "override": {
-     "$ref": "ManagedInstanceOverride",
-     "description": "[Output Only] Override defined for this instance."
-    },
     "preservedStateFromConfig": {
      "$ref": "PreservedState",
      "description": "[Output Only] Preserved state applied from per-instance config for this instance."
@@ -13868,88 +14159,6 @@
        }
       }
      }
-    }
-   }
-  },
-  "ManagedInstanceOverride": {
-   "id": "ManagedInstanceOverride",
-   "type": "object",
-   "description": "Overrides of stateful properties for a given instance",
-   "properties": {
-    "disks": {
-     "type": "array",
-     "description": "Disk overrides defined for this instance. According to documentation the maximum number of disks attached to an instance is 128: https://cloud.google.com/compute/docs/disks/ However, compute API defines the limit at 140, so this is what we check.",
-     "items": {
-      "$ref": "ManagedInstanceOverrideDiskOverride"
-     }
-    },
-    "metadata": {
-     "type": "array",
-     "description": "Metadata overrides defined for this instance. TODO(b/69785416) validate the total length is \u003c9 KB",
-     "items": {
-      "type": "object",
-      "properties": {
-       "key": {
-        "type": "string",
-        "description": "Key for the metadata entry. Keys must conform to the following regexp: [a-zA-Z0-9-_]+, and be less than 128 bytes in length. This is reflected as part of a URL in the metadata server. Additionally, to avoid ambiguity, keys must not conflict with any other metadata keys for the project.",
-        "pattern": "[a-zA-Z0-9-_]{1,128}",
-        "annotations": {
-         "required": [
-          "compute.instances.insert",
-          "compute.projects.setCommonInstanceMetadata"
-         ]
-        }
-       },
-       "value": {
-        "type": "string",
-        "description": "Value for the metadata entry. These are free-form strings, and only have meaning as interpreted by the image running in the instance. The only restriction placed on values is that their size must be less than or equal to 262144 bytes (256 KiB).",
-        "annotations": {
-         "required": [
-          "compute.instances.insert",
-          "compute.projects.setCommonInstanceMetadata"
-         ]
-        }
-       }
-      }
-     }
-    },
-    "origin": {
-     "type": "string",
-     "description": "[Output Only] Indicates where does the override come from.",
-     "enum": [
-      "AUTO_GENERATED",
-      "USER_PROVIDED"
-     ],
-     "enumDescriptions": [
-      "",
-      ""
-     ]
-    }
-   }
-  },
-  "ManagedInstanceOverrideDiskOverride": {
-   "id": "ManagedInstanceOverrideDiskOverride",
-   "type": "object",
-   "properties": {
-    "deviceName": {
-     "type": "string",
-     "description": "The name of the device on the VM"
-    },
-    "mode": {
-     "type": "string",
-     "description": "The mode in which to attach this disk, either READ_WRITE or READ_ONLY. If not specified, the default is to attach the disk in READ_WRITE mode.",
-     "enum": [
-      "READ_ONLY",
-      "READ_WRITE"
-     ],
-     "enumDescriptions": [
-      "",
-      ""
-     ]
-    },
-    "source": {
-     "type": "string",
-     "description": "The disk that is/will be mounted"
     }
    }
   },
@@ -15242,14 +15451,16 @@
      "description": "[Output Only] The type of the resource. Always compute#nodeGroup for node group.",
      "default": "compute#nodeGroup"
     },
-    "managedHoldback": {
+    "maintenancePolicy": {
      "type": "string",
      "enum": [
-      "MANAGED_HOLDBACK_UNSPECIFIED",
-      "OFF",
-      "ON"
+      "DEFAULT",
+      "MAINTENANCE_POLICY_UNSPECIFIED",
+      "MIGRATE_WITHIN_NODE_GROUP",
+      "RESTART_IN_PLACE"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       ""
@@ -15834,7 +16045,7 @@
   "NodeTemplate": {
    "id": "NodeTemplate",
    "type": "object",
-   "description": "Represent a sole-tenant Node Template resource.\n\nYou can use a template to define properties for nodes in a node group. For more information, read Creating node groups and instances. (== resource_for beta.nodeTemplates ==) (== resource_for v1.nodeTemplates ==) NextID: 16",
+   "description": "Represent a sole-tenant Node Template resource.\n\nYou can use a template to define properties for nodes in a node group. For more information, read Creating node groups and instances. (== resource_for beta.nodeTemplates ==) (== resource_for v1.nodeTemplates ==) (== NextID: 16 ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -15893,7 +16104,7 @@
     },
     "serverBinding": {
      "$ref": "ServerBinding",
-     "description": "Binding properties for the physical server."
+     "description": "Sets the binding properties for the physical server. Valid values include:  \n- [Default] RESTART_NODE_ON_ANY_SERVER: Restarts VMs on any available physical server \n- RESTART_NODE_ON_MINIMAL_SERVER: Restarts VMs on the same physical server whenever possible  \n\nSee Sole-tenant node options for more information."
     },
     "status": {
      "type": "string",
@@ -17437,6 +17648,618 @@
     }
    }
   },
+  "PacketIntervals": {
+   "id": "PacketIntervals",
+   "type": "object",
+   "description": "Next free: 7",
+   "properties": {
+    "avgMs": {
+     "type": "string",
+     "description": "Average observed inter-packet interval in milliseconds.",
+     "format": "int64"
+    },
+    "duration": {
+     "type": "string",
+     "description": "From how long ago in the past these intervals were observed.",
+     "enum": [
+      "DURATION_UNSPECIFIED",
+      "HOUR",
+      "MAX",
+      "MINUTE"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "maxMs": {
+     "type": "string",
+     "description": "Maximum observed inter-packet interval in milliseconds.",
+     "format": "int64"
+    },
+    "minMs": {
+     "type": "string",
+     "description": "Minimum observed inter-packet interval in milliseconds.",
+     "format": "int64"
+    },
+    "numIntervals": {
+     "type": "string",
+     "description": "Number of inter-packet intervals from which these statistics were derived.",
+     "format": "int64"
+    },
+    "type": {
+     "type": "string",
+     "description": "The type of packets for which inter-packet intervals were computed.",
+     "enum": [
+      "LOOPBACK",
+      "RECEIVE",
+      "TRANSMIT",
+      "TYPE_UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "PacketMirroring": {
+   "id": "PacketMirroring",
+   "type": "object",
+   "description": "Represents a PacketMirroring resource.",
+   "properties": {
+    "collectorIlb": {
+     "$ref": "PacketMirroringForwardingRuleInfo",
+     "description": "The Forwarding Rule resource of type loadBalancingScheme=INTERNAL that will be used as collector for mirrored traffic. The specified forwarding rule must have isMirroringCollector set to true."
+    },
+    "collectors": {
+     "$ref": "PacketMirroringCollectorInfo",
+     "description": "PacketMirroring collectorInfos. Each collectorInfo specifies a set of collector VM instances, preferably in the same zone as the mirrored VM(s)"
+    },
+    "creationTimestamp": {
+     "type": "string",
+     "description": "[Output Only] Creation timestamp in RFC3339 text format."
+    },
+    "description": {
+     "type": "string",
+     "description": "An optional description of this resource. Provide this property when you create the resource."
+    },
+    "enable": {
+     "type": "string",
+     "description": "Indicates whether or not this packet mirroring takes effect. If set to FALSE, this packet mirroring policy will not be enforced on the network.\n\nThe default is TRUE.",
+     "enum": [
+      "FALSE",
+      "TRUE"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "filter": {
+     "$ref": "PacketMirroringFilter",
+     "description": "Filter for mirrored traffic. If unspecified, all traffic is mirrored."
+    },
+    "id": {
+     "type": "string",
+     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
+     "format": "uint64"
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of the resource. Always compute#packetMirroring for packet mirrorings.",
+     "default": "compute#packetMirroring"
+    },
+    "mirroredResources": {
+     "$ref": "PacketMirroringMirroredResourceInfo",
+     "description": "PacketMirroring mirroredResourceInfos. Each mirroredResourceInfo specifies a set of mirrored VM instances and/or a set of subnetworks for which traffic from/to all VM instances will be mirrored."
+    },
+    "name": {
+     "type": "string",
+     "description": "Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
+     "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+     "annotations": {
+      "required": [
+       "compute.packetMirrorings.insert"
+      ]
+     }
+    },
+    "network": {
+     "$ref": "PacketMirroringNetworkInfo",
+     "description": "Specifies the mirrored VPC network. Only packets in this network will be mirrored. All mirrored VMs should have a NIC in the given network. All mirrored subnetworks should belong to the given network.",
+     "annotations": {
+      "required": [
+       "compute.packetMirrorings.insert"
+      ]
+     }
+    },
+    "packetMatchers": {
+     "type": "array",
+     "description": "PacketMirroring packetMatchers. Each packetMatcher specifies a CIRD filter that will apply to the source or destination IP in the IP header for the mirrored VM traffic.",
+     "items": {
+      "$ref": "PacketMirroringPacketMatcher"
+     }
+    },
+    "priority": {
+     "type": "integer",
+     "description": "The priority of applying this configuration. Priority is used to break ties in cases where there is more than one matching rule. In the case of two rules that apply for a given Instance, the one with the lowest-numbered priority value wins.\n\nDefault value is 1000. Valid range is 0 through 65535.",
+     "format": "uint32"
+    },
+    "region": {
+     "type": "string",
+     "description": "[Output Only] URI of the region where the packetMirroring resides."
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for the resource."
+    },
+    "selfLinkWithId": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for this resource with the resource id."
+    }
+   }
+  },
+  "PacketMirroringAggregatedList": {
+   "id": "PacketMirroringAggregatedList",
+   "type": "object",
+   "description": "Contains a list of packetMirrorings.",
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "[Output Only] Unique identifier for the resource; defined by the server."
+    },
+    "items": {
+     "type": "object",
+     "description": "A list of PacketMirroring resources.",
+     "additionalProperties": {
+      "$ref": "PacketMirroringsScopedList",
+      "description": "Name of the scope containing this set of packetMirrorings."
+     }
+    },
+    "kind": {
+     "type": "string",
+     "description": "Type of resource.",
+     "default": "compute#packetMirroringAggregatedList"
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for this resource."
+    },
+    "warning": {
+     "type": "object",
+     "description": "[Output Only] Informational warning message.",
+     "properties": {
+      "code": {
+       "type": "string",
+       "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
+       "enum": [
+        "CLEANUP_FAILED",
+        "DEPRECATED_RESOURCE_USED",
+        "DEPRECATED_TYPE_USED",
+        "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "EXPERIMENTAL_TYPE_USED",
+        "EXTERNAL_API_WARNING",
+        "FIELD_VALUE_OVERRIDEN",
+        "INJECTED_KERNELS_DEPRECATED",
+        "MISSING_TYPE_DEPENDENCY",
+        "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+        "NEXT_HOP_CANNOT_IP_FORWARD",
+        "NEXT_HOP_INSTANCE_NOT_FOUND",
+        "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+        "NEXT_HOP_NOT_RUNNING",
+        "NOT_CRITICAL_ERROR",
+        "NO_RESULTS_ON_PAGE",
+        "REQUIRED_TOS_AGREEMENT",
+        "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+        "RESOURCE_NOT_DELETED",
+        "SCHEMA_VALIDATION_IGNORED",
+        "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+        "UNDECLARED_PROPERTIES",
+        "UNREACHABLE"
+       ],
+       "enumDescriptions": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+       ]
+      },
+      "data": {
+       "type": "array",
+       "description": "[Output Only] Metadata about this warning in key: value format. For example:\n\"data\": [ { \"key\": \"scope\", \"value\": \"zones/us-east1-d\" }",
+       "items": {
+        "type": "object",
+        "properties": {
+         "key": {
+          "type": "string",
+          "description": "[Output Only] A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings (for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding)."
+         },
+         "value": {
+          "type": "string",
+          "description": "[Output Only] A warning data value corresponding to the key."
+         }
+        }
+       }
+      },
+      "message": {
+       "type": "string",
+       "description": "[Output Only] A human-readable description of the warning code."
+      }
+     }
+    }
+   }
+  },
+  "PacketMirroringCollectorInfo": {
+   "id": "PacketMirroringCollectorInfo",
+   "type": "object",
+   "description": "",
+   "properties": {
+    "instances": {
+     "type": "array",
+     "description": "A set of virtual machines configured as destination of the mirrored traffic. They must live in zones contained in the same region as this packetMirroring.",
+     "items": {
+      "$ref": "PacketMirroringCollectorInfoInstanceInfo"
+     }
+    }
+   }
+  },
+  "PacketMirroringCollectorInfoInstanceInfo": {
+   "id": "PacketMirroringCollectorInfoInstanceInfo",
+   "type": "object",
+   "properties": {
+    "url": {
+     "type": "string",
+     "description": "Resource URL to the virtual machine instance configured as destination of the mirrored traffic."
+    }
+   }
+  },
+  "PacketMirroringFilter": {
+   "id": "PacketMirroringFilter",
+   "type": "object",
+   "properties": {
+    "IPProtocols": {
+     "type": "array",
+     "description": "Protocols that apply as filter on mirrored traffic. If no protocols are specified, all traffic that matches the specified CIDR ranges is mirrored. If neither cidrRanges nor IPProtocols is specified, all traffic is mirrored.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "cidrRanges": {
+     "type": "array",
+     "description": "IP CIDR ranges that apply as filter on the source (ingress) or destination (egress) IP in the IP header. Only IPv4 is supported. If no ranges are specified, all traffic that matches the specified IPProtocols is mirrored. If neither cidrRanges nor IPProtocols is specified, all traffic is mirrored.",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "PacketMirroringForwardingRuleInfo": {
+   "id": "PacketMirroringForwardingRuleInfo",
+   "type": "object",
+   "properties": {
+    "canonicalUrl": {
+     "type": "string",
+     "description": "[Output Only] Unique identifier for the forwarding rule; defined by the server."
+    },
+    "url": {
+     "type": "string",
+     "description": "Resource URL to the forwarding rule representing the ILB configured as destination of the mirrored traffic."
+    }
+   }
+  },
+  "PacketMirroringList": {
+   "id": "PacketMirroringList",
+   "type": "object",
+   "description": "Contains a list of PacketMirroring resources.",
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "[Output Only] Unique identifier for the resource; defined by the server."
+    },
+    "items": {
+     "type": "array",
+     "description": "A list of PacketMirroring resources.",
+     "items": {
+      "$ref": "PacketMirroring"
+     }
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of resource. Always compute#packetMirroring for packetMirrorings.",
+     "default": "compute#packetMirroringList"
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for this resource."
+    },
+    "warning": {
+     "type": "object",
+     "description": "[Output Only] Informational warning message.",
+     "properties": {
+      "code": {
+       "type": "string",
+       "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
+       "enum": [
+        "CLEANUP_FAILED",
+        "DEPRECATED_RESOURCE_USED",
+        "DEPRECATED_TYPE_USED",
+        "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "EXPERIMENTAL_TYPE_USED",
+        "EXTERNAL_API_WARNING",
+        "FIELD_VALUE_OVERRIDEN",
+        "INJECTED_KERNELS_DEPRECATED",
+        "MISSING_TYPE_DEPENDENCY",
+        "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+        "NEXT_HOP_CANNOT_IP_FORWARD",
+        "NEXT_HOP_INSTANCE_NOT_FOUND",
+        "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+        "NEXT_HOP_NOT_RUNNING",
+        "NOT_CRITICAL_ERROR",
+        "NO_RESULTS_ON_PAGE",
+        "REQUIRED_TOS_AGREEMENT",
+        "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+        "RESOURCE_NOT_DELETED",
+        "SCHEMA_VALIDATION_IGNORED",
+        "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+        "UNDECLARED_PROPERTIES",
+        "UNREACHABLE"
+       ],
+       "enumDescriptions": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+       ]
+      },
+      "data": {
+       "type": "array",
+       "description": "[Output Only] Metadata about this warning in key: value format. For example:\n\"data\": [ { \"key\": \"scope\", \"value\": \"zones/us-east1-d\" }",
+       "items": {
+        "type": "object",
+        "properties": {
+         "key": {
+          "type": "string",
+          "description": "[Output Only] A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings (for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding)."
+         },
+         "value": {
+          "type": "string",
+          "description": "[Output Only] A warning data value corresponding to the key."
+         }
+        }
+       }
+      },
+      "message": {
+       "type": "string",
+       "description": "[Output Only] A human-readable description of the warning code."
+      }
+     }
+    }
+   }
+  },
+  "PacketMirroringMirroredResourceInfo": {
+   "id": "PacketMirroringMirroredResourceInfo",
+   "type": "object",
+   "properties": {
+    "instances": {
+     "type": "array",
+     "description": "A set of virtual machine instances that are being mirrored. They must live in zones contained in the same region as this packetMirroring.\n\nNote that this config will apply only to those network interfaces of the Instances that belong to the network specified in this packetMirroring.\n\nYou may specify a maximum of 50 Instances.",
+     "items": {
+      "$ref": "PacketMirroringMirroredResourceInfoInstanceInfo"
+     }
+    },
+    "subnetworks": {
+     "type": "array",
+     "description": "A set of subnetworks for which traffic from/to all VM instances will be mirrored. They must live in zones contained in the same region as this packetMirroring.\n\nYou may specify a maximum of 5 subnetworks.",
+     "items": {
+      "$ref": "PacketMirroringMirroredResourceInfoSubnetInfo"
+     }
+    },
+    "tags": {
+     "type": "array",
+     "description": "A set of mirrored tags. Traffic from/to all VM instances that have one or more of these tags will be mirrored.",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "PacketMirroringMirroredResourceInfoInstanceInfo": {
+   "id": "PacketMirroringMirroredResourceInfoInstanceInfo",
+   "type": "object",
+   "properties": {
+    "canonicalUrl": {
+     "type": "string",
+     "description": "[Output Only] Unique identifier for the instance; defined by the server."
+    },
+    "url": {
+     "type": "string",
+     "description": "Resource URL to the virtual machine instance which is being mirrored."
+    }
+   }
+  },
+  "PacketMirroringMirroredResourceInfoSubnetInfo": {
+   "id": "PacketMirroringMirroredResourceInfoSubnetInfo",
+   "type": "object",
+   "properties": {
+    "canonicalUrl": {
+     "type": "string",
+     "description": "[Output Only] Unique identifier for the subnetwork; defined by the server."
+    },
+    "url": {
+     "type": "string",
+     "description": "Resource URL to the subnetwork for which traffic from/to all VM instances will be mirrored."
+    }
+   }
+  },
+  "PacketMirroringNetworkInfo": {
+   "id": "PacketMirroringNetworkInfo",
+   "type": "object",
+   "properties": {
+    "canonicalUrl": {
+     "type": "string",
+     "description": "[Output Only] Unique identifier for the network; defined by the server."
+    },
+    "url": {
+     "type": "string",
+     "description": "URL of the network resource."
+    }
+   }
+  },
+  "PacketMirroringPacketMatcher": {
+   "id": "PacketMirroringPacketMatcher",
+   "type": "object",
+   "description": "",
+   "properties": {
+    "cidrRange": {
+     "type": "string",
+     "description": "IP CIDR range that applies as filter on the source or destination IP in the IP header. Only IPv4 is supported."
+    }
+   }
+  },
+  "PacketMirroringsScopedList": {
+   "id": "PacketMirroringsScopedList",
+   "type": "object",
+   "properties": {
+    "packetMirrorings": {
+     "type": "array",
+     "description": "A list of packetMirrorings contained in this scope.",
+     "items": {
+      "$ref": "PacketMirroring"
+     }
+    },
+    "warning": {
+     "type": "object",
+     "description": "Informational warning which replaces the list of packetMirrorings when the list is empty.",
+     "properties": {
+      "code": {
+       "type": "string",
+       "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
+       "enum": [
+        "CLEANUP_FAILED",
+        "DEPRECATED_RESOURCE_USED",
+        "DEPRECATED_TYPE_USED",
+        "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "EXPERIMENTAL_TYPE_USED",
+        "EXTERNAL_API_WARNING",
+        "FIELD_VALUE_OVERRIDEN",
+        "INJECTED_KERNELS_DEPRECATED",
+        "MISSING_TYPE_DEPENDENCY",
+        "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+        "NEXT_HOP_CANNOT_IP_FORWARD",
+        "NEXT_HOP_INSTANCE_NOT_FOUND",
+        "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+        "NEXT_HOP_NOT_RUNNING",
+        "NOT_CRITICAL_ERROR",
+        "NO_RESULTS_ON_PAGE",
+        "REQUIRED_TOS_AGREEMENT",
+        "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+        "RESOURCE_NOT_DELETED",
+        "SCHEMA_VALIDATION_IGNORED",
+        "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+        "UNDECLARED_PROPERTIES",
+        "UNREACHABLE"
+       ],
+       "enumDescriptions": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+       ]
+      },
+      "data": {
+       "type": "array",
+       "description": "[Output Only] Metadata about this warning in key: value format. For example:\n\"data\": [ { \"key\": \"scope\", \"value\": \"zones/us-east1-d\" }",
+       "items": {
+        "type": "object",
+        "properties": {
+         "key": {
+          "type": "string",
+          "description": "[Output Only] A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings (for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding)."
+         },
+         "value": {
+          "type": "string",
+          "description": "[Output Only] A warning data value corresponding to the key."
+         }
+        }
+       }
+      },
+      "message": {
+       "type": "string",
+       "description": "[Output Only] A human-readable description of the warning code."
+      }
+     }
+    }
+   }
+  },
   "PathMatcher": {
    "id": "PathMatcher",
    "type": "object",
@@ -17528,16 +18351,9 @@
      "description": "Fingerprint of this per-instance config. This field may be used in optimistic locking. It will be ignored when inserting a per-instance config. An up-to-date fingerprint must be provided in order to update an existing per-instance config or the field needs to be unset.",
      "format": "byte"
     },
-    "instance": {
-     "type": "string",
-     "description": "The URL of the instance. Serves as a merge key during UpdatePerInstanceConfigs operation, i.e. if per-instance config with the same instance URL exists then it will be updated, otherwise a new one will be created."
-    },
     "name": {
      "type": "string",
      "description": "The name of the per-instance config and the corresponding instance. Serves as a merge key during UpdatePerInstanceConfigs operation, i.e. if per-instance config with the same name exists then it will be updated, otherwise a new one will be created for the VM instance with the same name. An attempt to create a per-instance config for a VM instance that either doesn't exist or is not part of the group will result in a failure."
-    },
-    "override": {
-     "$ref": "ManagedInstanceOverride"
     },
     "preservedState": {
      "$ref": "PreservedState",
@@ -18005,7 +18821,15 @@
       "AUTOSCALERS",
       "BACKEND_BUCKETS",
       "BACKEND_SERVICES",
+      "C2_CPUS",
       "COMMITMENTS",
+      "COMMITTED_CPUS",
+      "COMMITTED_LOCAL_SSD_TOTAL_GB",
+      "COMMITTED_NVIDIA_K80_GPUS",
+      "COMMITTED_NVIDIA_P100_GPUS",
+      "COMMITTED_NVIDIA_P4_GPUS",
+      "COMMITTED_NVIDIA_T4_GPUS",
+      "COMMITTED_NVIDIA_V100_GPUS",
       "CPUS",
       "CPUS_ALL_REGIONS",
       "DISKS_TOTAL_GB",
@@ -18035,6 +18859,7 @@
       "IN_USE_SNAPSHOT_SCHEDULES",
       "LOCAL_SSD_TOTAL_GB",
       "MACHINE_IMAGES",
+      "N2_CPUS",
       "NETWORKS",
       "NETWORK_ENDPOINT_GROUPS",
       "NVIDIA_K80_GPUS",
@@ -18058,6 +18883,7 @@
       "PRIVATE_V6_ACCESS_SUBNETWORKS",
       "REGIONAL_AUTOSCALERS",
       "REGIONAL_INSTANCE_GROUP_MANAGERS",
+      "RESERVATIONS",
       "RESOURCE_POLICIES",
       "ROUTERS",
       "ROUTES",
@@ -18081,6 +18907,16 @@
       "XPN_SERVICE_PROJECTS"
      ],
      "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
       "",
       "",
       "",
@@ -18854,7 +19690,7 @@
    "properties": {
     "instances": {
      "type": "array",
-     "description": "The list of instances for which we want to apply changes on this managed instance group.",
+     "description": "The list of URLs of one or more instances for which you want to apply updates. Each URL can be a full URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].",
      "items": {
       "type": "string"
      }
@@ -18877,7 +19713,7 @@
     },
     "minimalAction": {
      "type": "string",
-     "description": "The minimal action that should be perfomed on the instances. By default NONE.",
+     "description": "The minimal action that you want to perform on each instance during the update:  \n- REPLACE: At minimum, delete the instance and create it again. \n- RESTART: Stop the instance and start it again. \n- REFRESH: Do not stop the instance. \n- NONE: Do not disrupt the instance at all.  By default, the minimum action is NONE. If your update requires a more disruptive action than you set with this flag, the necessary action is performed to execute the update.",
      "enum": [
       "NONE",
       "REFRESH",
@@ -18893,7 +19729,7 @@
     },
     "mostDisruptiveAllowedAction": {
      "type": "string",
-     "description": "The most disruptive action that allowed to be performed on the instances. By default REPLACE.",
+     "description": "The most disruptive action that you want to perform on each instance during the update:  \n- REPLACE: Delete the instance and create it again. \n- RESTART: Stop the instance and start it again. \n- REFRESH: Do not stop the instance. \n- NONE: Do not disrupt the instance at all.  By default, the most disruptive allowed action is REPLACE. If your update requires a more disruptive action than you set with this flag, the update request will fail.",
      "enum": [
       "NONE",
       "REFRESH",
@@ -19539,7 +20375,7 @@
   "ReservationAffinity": {
    "id": "ReservationAffinity",
    "type": "object",
-   "description": "AllocationAffinity is the configuration of desired allocation which this instance could take capacity from.",
+   "description": "ReservationAffinity is the configuration of desired reservation which this instance could take capacity from.",
    "properties": {
     "consumeReservationType": {
      "type": "string",
@@ -20523,9 +21359,23 @@
    "id": "ResourcePolicyVmMaintenancePolicy",
    "type": "object",
    "properties": {
+    "concurrencyControlGroup": {
+     "$ref": "ResourcePolicyVmMaintenancePolicyConcurrencyControl"
+    },
     "maintenanceWindow": {
      "$ref": "ResourcePolicyVmMaintenancePolicyMaintenanceWindow",
      "description": "Maintenance windows that are applied to VMs covered by this policy."
+    }
+   }
+  },
+  "ResourcePolicyVmMaintenancePolicyConcurrencyControl": {
+   "id": "ResourcePolicyVmMaintenancePolicyConcurrencyControl",
+   "type": "object",
+   "description": "A concurrency control configuration. Defines a group config that, when attached to an instance, recognizes that instance as part of a group of instances where only up the concurrency_limit of instances in that group can undergo simultaneous maintenance. For more information: go/concurrency-control-design-doc",
+   "properties": {
+    "concurrencyLimit": {
+     "type": "integer",
+     "format": "int32"
     }
    }
   },
@@ -21266,12 +22116,12 @@
    "properties": {
     "minReceiveInterval": {
      "type": "integer",
-     "description": "The minimum interval, in milliseconds, between BFD packets received from the peer router. The actual value is negotiated between the two routers and is equal to the greater of this value and the transmit interval of the other router. If BFD echo mode is enabled on this router and the peer router, this value is used to negotiate the interval between BFD echo packets transmitted by the peer router. Otherwise, it will be used to determine the interval between BFD control packets. If set, this value must be between 33 and 30000. The default is 300.",
+     "description": "The minimum interval, in milliseconds, between BFD packets received from the peer router. The actual value is negotiated between the two routers and is equal to the greater of this value and the transmit interval of the other router. If BFD echo mode is enabled on this router and the peer router, this value is used to negotiate the interval between BFD echo packets transmitted by the peer router. Otherwise, it will be used to determine the interval between BFD control packets. If set, this value must be between 100 and 30000. The default is 300.",
      "format": "uint32"
     },
     "minTransmitInterval": {
      "type": "integer",
-     "description": "The minimum interval, in milliseconds, between BFD packets transmitted to the peer router. The actual value is negotiated between the two routers and is equal to the greater of this value and the corresponding receive interval of the other router. If BFD echo mode is enabled on this router and the peer router, this value is used to negotiate the interval between BFD echo packets transmitted by this router. Otherwise, it will be used to determine the interval between BFD control packets. If set, this value must be between 33 and 30000. The default is 300.",
+     "description": "The minimum interval, in milliseconds, between BFD packets transmitted to the peer router. The actual value is negotiated between the two routers and is equal to the greater of this value and the corresponding receive interval of the other router. If BFD echo mode is enabled on this router and the peer router, this value is used to negotiate the interval between BFD echo packets transmitted by this router. Otherwise, it will be used to determine the interval between BFD control packets. If set, this value must be between 100 and 30000. The default is 300.",
      "format": "uint32"
     },
     "mode": {
@@ -21667,6 +22517,9 @@
      "items": {
       "$ref": "Route"
      }
+    },
+    "bfdStatus": {
+     "$ref": "BfdStatus"
     },
     "ipAddress": {
      "type": "string",
@@ -22233,6 +23086,9 @@
       "$ref": "SecurityPolicyAssociation"
      }
     },
+    "cloudArmorConfig": {
+     "$ref": "SecurityPolicyCloudArmorConfig"
+    },
     "creationTimestamp": {
      "type": "string",
      "description": "[Output Only] Creation timestamp in RFC3339 text format."
@@ -22322,6 +23178,17 @@
     "securityPolicyId": {
      "type": "string",
      "description": "[Output Only] The security policy ID of the association."
+    }
+   }
+  },
+  "SecurityPolicyCloudArmorConfig": {
+   "id": "SecurityPolicyCloudArmorConfig",
+   "type": "object",
+   "description": "Configuration options for Cloud Armor.",
+   "properties": {
+    "enableMl": {
+     "type": "boolean",
+     "description": "If set to true, enables Cloud Armor Machine Learning."
     }
    }
   },
@@ -22629,10 +23496,6 @@
     "clientTlsSettings": {
      "$ref": "ClientTlsSettings",
      "description": "TLS Settings for the backend service."
-    },
-    "serverSettingsSelector": {
-     "$ref": "ServerSecuritySettingsSelector",
-     "description": "The listener config of the XDS client is generated if the selector matches the client."
     }
    }
   },
@@ -22685,25 +23548,6 @@
     }
    }
   },
-  "ServerSecuritySettingsSelector": {
-   "id": "ServerSecuritySettingsSelector",
-   "type": "object",
-   "description": "A selector associated with the SecuritySettings. If the labels and port in this selector match the Envoy's label and port, the server side authentication and authorization settings are applied to the Envoy.",
-   "properties": {
-    "labelMatches": {
-     "type": "array",
-     "description": "The labels associated with the XDS client.",
-     "items": {
-      "$ref": "MetadataFilterLabelMatch"
-     }
-    },
-    "port": {
-     "type": "integer",
-     "description": "The listener port of the XDS client.",
-     "format": "int32"
-    }
-   }
-  },
   "ServerTlsSettings": {
    "id": "ServerTlsSettings",
    "type": "object",
@@ -22751,22 +23595,6 @@
      "items": {
       "type": "string"
      }
-    }
-   }
-  },
-  "ServiceAccountJwtAccessCredentials": {
-   "id": "ServiceAccountJwtAccessCredentials",
-   "type": "object",
-   "description": "JWT credentials for a service account.",
-   "properties": {
-    "jsonKey": {
-     "type": "string",
-     "description": "Service account key."
-    },
-    "tokenLifetimeSeconds": {
-     "type": "string",
-     "description": "The token lifetime seconds.",
-     "format": "int64"
     }
    }
   },
@@ -24056,35 +24884,8 @@
    "id": "StatefulPolicy",
    "type": "object",
    "properties": {
-    "preservedResources": {
-     "$ref": "StatefulPolicyPreservedResources"
-    },
     "preservedState": {
      "$ref": "StatefulPolicyPreservedState"
-    }
-   }
-  },
-  "StatefulPolicyPreservedDisk": {
-   "id": "StatefulPolicyPreservedDisk",
-   "type": "object",
-   "properties": {
-    "deviceName": {
-     "type": "string",
-     "description": "Device name of the disk to be preserved"
-    }
-   }
-  },
-  "StatefulPolicyPreservedResources": {
-   "id": "StatefulPolicyPreservedResources",
-   "type": "object",
-   "description": "Configuration of all preserved resources.",
-   "properties": {
-    "disks": {
-     "type": "array",
-     "description": "Disks created on the instances that will be preserved on instance delete, resize down, etc.",
-     "items": {
-      "$ref": "StatefulPolicyPreservedDisk"
-     }
     }
    }
   },
@@ -24255,11 +25056,13 @@
      "type": "string",
      "description": "The purpose of the resource. This field can be either PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork with purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork that is reserved for Internal HTTP(S) Load Balancing. If unspecified, the purpose defaults to PRIVATE_RFC_1918.",
      "enum": [
+      "AGGREGATE",
       "INTERNAL_HTTPS_LOAD_BALANCER",
       "PRIVATE",
       "PRIVATE_RFC_1918"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       ""
@@ -24582,7 +25385,7 @@
     },
     "metadata": {
      "type": "string",
-     "description": "Can only be specified if VPC flow logging for this subnetwork is enabled. Configures whether metadata fields should be added to the reported VPC flow logs. Default is INCLUDE_ALL_METADATA.",
+     "description": "Can only be specified if VPC flow logs for this subnetwork is enabled. Configures whether all, none or a subset of metadata fields should be added to the reported VPC flow logs. Default is INCLUDE_ALL_METADATA.",
      "enum": [
       "EXCLUDE_ALL_METADATA",
       "INCLUDE_ALL_METADATA"
@@ -44310,6 +45113,339 @@
     }
    }
   },
+  "packetMirrorings": {
+   "methods": {
+    "aggregatedList": {
+     "id": "compute.packetMirrorings.aggregatedList",
+     "path": "{project}/aggregated/packetMirrorings",
+     "httpMethod": "GET",
+     "description": "Retrieves an aggregated list of packetMirrorings.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, \u003e, or \u003c.\n\nFor example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance.\n\nYou can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true).",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "response": {
+      "$ref": "PacketMirroringAggregatedList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "delete": {
+     "id": "compute.packetMirrorings.delete",
+     "path": "{project}/regions/{region}/packetMirrorings/{packetMirroring}",
+     "httpMethod": "DELETE",
+     "description": "Deletes the specified PacketMirroring resource.",
+     "parameters": {
+      "packetMirroring": {
+       "type": "string",
+       "description": "Name of the PacketMirroring resource to delete.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "packetMirroring"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "get": {
+     "id": "compute.packetMirrorings.get",
+     "path": "{project}/regions/{region}/packetMirrorings/{packetMirroring}",
+     "httpMethod": "GET",
+     "description": "Returns the specified PacketMirroring resource.",
+     "parameters": {
+      "packetMirroring": {
+       "type": "string",
+       "description": "Name of the PacketMirroring resource to return.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "packetMirroring"
+     ],
+     "response": {
+      "$ref": "PacketMirroring"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "insert": {
+     "id": "compute.packetMirrorings.insert",
+     "path": "{project}/regions/{region}/packetMirrorings",
+     "httpMethod": "POST",
+     "description": "Creates a PacketMirroring resource in the specified project and region using the data included in the request.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region"
+     ],
+     "request": {
+      "$ref": "PacketMirroring"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "list": {
+     "id": "compute.packetMirrorings.list",
+     "path": "{project}/regions/{region}/packetMirrorings",
+     "httpMethod": "GET",
+     "description": "Retrieves a list of PacketMirroring resources available to the specified project and region.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, \u003e, or \u003c.\n\nFor example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance.\n\nYou can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true).",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region"
+     ],
+     "response": {
+      "$ref": "PacketMirroringList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "patch": {
+     "id": "compute.packetMirrorings.patch",
+     "path": "{project}/regions/{region}/packetMirrorings/{packetMirroring}",
+     "httpMethod": "PATCH",
+     "description": "Patches the specified PacketMirroring resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.",
+     "parameters": {
+      "packetMirroring": {
+       "type": "string",
+       "description": "Name of the PacketMirroring resource to patch.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "packetMirroring"
+     ],
+     "request": {
+      "$ref": "PacketMirroring"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "testIamPermissions": {
+     "id": "compute.packetMirrorings.testIamPermissions",
+     "path": "{project}/regions/{region}/packetMirrorings/{resource}/testIamPermissions",
+     "httpMethod": "POST",
+     "description": "Returns permissions that a caller has on the specified resource.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "resource"
+     ],
+     "request": {
+      "$ref": "TestPermissionsRequest"
+     },
+     "response": {
+      "$ref": "TestPermissionsResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    }
+   }
+  },
   "projects": {
    "methods": {
     "disableXpnHost": {
@@ -51422,7 +52558,7 @@
      "id": "compute.routers.update",
      "path": "{project}/regions/{region}/routers/{router}",
      "httpMethod": "PUT",
-     "description": "Updates the specified Router resource with the data included in the request.",
+     "description": "Updates the specified Router resource with the data included in the request. This method conforms to PUT semantics, which requests that the state of the target resource be created or replaced with the state defined by the representation enclosed in the request message payload.",
      "parameters": {
       "project": {
        "type": "string",

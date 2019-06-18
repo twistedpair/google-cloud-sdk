@@ -22,7 +22,6 @@ import os
 import subprocess
 import tempfile
 import textwrap
-import uuid
 
 from containerregistry.client import docker_name
 from containerregistry.client.v2_2 import docker_image
@@ -42,7 +41,11 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
 
-AGENT_POD_LABEL = 'gke_connect_agent'
+# The name of the Deployment for the runtime Connect agent.
+RUNTIME_CONNECT_AGENT_DEPLOYMENT_NAME = 'gke-connect-agent'
+
+# The app label applied to Pods for the install agent workload.
+AGENT_INSTALL_APP_LABEL = 'gke-connect-agent-installer'
 
 # The name of the secret that will store the Docker private registry
 # credentials, if they are provided.
@@ -58,37 +61,21 @@ deploy the manifest.
 **This file contains sensitive data; please treat it with the same discretion \
 as your service account key file.**"""
 
-# The components of the install manifest that will be removed by gcloud if the
-# pod completes successfully. This does not include all of the components
-# related to the pod, since some of these are removed by the pod itself.
-INSTALL_POD_MANIFEST_TEMPLATE = """\
+# The manifest used to deploy the Connect agent install workload and its
+# supporting components.
+#
+# Note that the deployment must be last: kubectl apply deploys resources in
+# manifest order, and the deployment depends on other resources; and the
+# imagePullSecrets template below is appended to this template if image
+# pull secrets are required.
+INSTALL_MANIFEST_TEMPLATE = """\
 apiVersion: v1
-kind: Pod
+kind: Namespace
 metadata:
-  name: {agent_pod_name}
-  namespace: {namespace}
+  name: {namespace}
   labels:
-    app: {agent_app_label}
-spec:
-  restartPolicy: Never
-  containers:
-  - name: connect-agent
-    image: {image}
-    command:
-    - gkeconnect_bin/bin/gkeconnect_agent
-    - --install
-    - --config
-    - user-config
-    imagePullPolicy: Always
-    env:
-    - name: MY_POD_NAMESPACE
-      valueFrom:
-        fieldRef:
-          fieldPath: metadata.namespace"""
-
-# The components of the install manifest that are created by gcloud and are
-# either not deleted or deleted by the pod itself.
-MANIFEST_TEMPLATE_FOR_NON_DELETED_RESOURCES = """
+    {connect_resource_label}: {project_id}
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -116,9 +103,42 @@ subjects:
 roleRef:
   kind: ClusterRole
   name: cluster-admin
-  apiGroup: rbac.authorization.k8s.io"""
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {agent_install_deployment_name}
+  namespace: {namespace}
+  labels:
+    app: {agent_install_app_label}
+spec:
+  selector:
+    matchLabels:
+      app: {agent_install_app_label}
+  template:
+    metadata:
+      labels:
+        app: {agent_install_app_label}
+    spec:
+      containers:
+      - name: connect-agent-installer
+        image: {image}
+        command:
+          - gkeconnect_bin/bin/gkeconnect_agent
+          - --install
+          - --sleep-after-install
+          - --config
+          - user-config
+        imagePullPolicy: Always
+        env:
+        - name: MY_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace"""
 
 # The secret that will be installed if a Docker registry credential is provided.
+# This is appended to the end of INSTALL_MANIFEST_TEMPLATE.
 IMAGE_PULL_SECRET_TEMPLATE = """\
 apiVersion: v1
 kind: Secret
@@ -131,20 +151,10 @@ data:
   .dockerconfigjson: {image_pull_secret}
 type: kubernetes.io/dockerconfigjson"""
 
-# The namespace that will be created, and in which the Connect agent pod will
-# be run.
-NAMESPACE_MANIFEST_TEMPLATE = """\
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: {namespace}
-  labels:
-    {connect_resource_label}: {project_id}"""
-
-AGENT_POD_INITIAL_WAIT_MS = 1000 * 2
-AGENT_POD_TIMEOUT_MS = 1000 * 45
-AGENT_POD_MAX_POLL_INTERVAL_MS = 1000 * 3
-AGENT_POD_INITIAL_POLL_INTERVAL_MS = 1000 * 1
+AGENT_INSTALL_INITIAL_WAIT_MS = 1000 * 2
+AGENT_INSTALL_TIMEOUT_MS = 1000 * 45
+AGENT_INSTALL_MAX_POLL_INTERVAL_MS = 1000 * 3
+AGENT_INSTALL_INITIAL_POLL_INTERVAL_MS = 1000 * 1
 
 NAMESPACE_DELETION_INITIAL_WAIT_MS = 0
 NAMESPACE_DELETION_TIMEOUT_MS = 1000 * 60 * 2
@@ -316,8 +326,8 @@ def GenerateInstallManifest(project_id, namespace, image, sa_key_data,
   Args:
     project_id: The GCP project identifier.
     namespace: The namespace into which to deploy the Connect agent.
-    image: The container image to use in the Connect agent pod (and, later,
-      deployment).
+    image: The container image to use in the Connect agent install deployment
+      (and, later, runtime deployment).
     sa_key_data: The contents of a GCP SA keyfile, base64-encoded.
     image_pull_secret_data: The contents of a secret that will be used as an
       image pull secret for the provided Docker image.
@@ -329,55 +339,41 @@ def GenerateInstallManifest(project_id, namespace, image, sa_key_data,
   Returns:
     A tuple, containing (
       a string, a YAML manifest that can be used to install the agent,
-      a string, the subset of the manifest that relates to the agent install
-        pod, and can be reverted,
-      the name of the connect agent install pod
+      the name of the Connect agent install Deployment
     )
   """
   project_number = p_util.GetProjectNumber(project_id)
-  agent_pod_name = 'gke-connect-agent-{}'.format(uuid.uuid4().hex)
+  agent_install_deployment_name = 'gke-connect-agent-installer'
 
-  namespace_manifest = NAMESPACE_MANIFEST_TEMPLATE.format(
+  install_manifest = INSTALL_MANIFEST_TEMPLATE.format(
+      namespace=namespace,
       connect_resource_label=CONNECT_RESOURCE_LABEL,
-      namespace=namespace,
-      project_id=project_id)
-
-  pod_manifest = INSTALL_POD_MANIFEST_TEMPLATE.format(
-      namespace=namespace,
-      agent_pod_name=agent_pod_name,
-      agent_app_label=AGENT_POD_LABEL,
-      project_id=project_id,
-      image=image)
-
-  non_deleted_resources_manifest = MANIFEST_TEMPLATE_FOR_NON_DELETED_RESOURCES.format(
-      connect_resource_label=CONNECT_RESOURCE_LABEL,
-      namespace=namespace,
       project_id=project_id,
       project_number=project_number,
       membership_name=membership_name or '',
       proxy=proxy or '',
       image=image,
-      gcp_sa_key=sa_key_data)
+      gcp_sa_key=sa_key_data,
+      agent_install_deployment_name=agent_install_deployment_name,
+      agent_install_app_label=AGENT_INSTALL_APP_LABEL)
 
   if image_pull_secret_data:
     # The indentation of this string literal is important: it must be
-    # appendable to the bottom of the pod_manifest.
+    # appendable to the bottom of the deployment_manifest.
     image_pull_secret_section = """\
-  imagePullSecrets:
-    - name: {}""".format(IMAGE_PULL_SECRET_NAME)
+      imagePullSecrets:
+        - name: {}""".format(IMAGE_PULL_SECRET_NAME)
 
-    pod_manifest = '{}\n{}\n---\n{}'.format(
-        pod_manifest, image_pull_secret_section,
+    install_manifest = '{}\n{}\n---\n{}'.format(
+        install_manifest, image_pull_secret_section,
         IMAGE_PULL_SECRET_TEMPLATE.format(
             name=IMAGE_PULL_SECRET_NAME,
-            connect_resource_label=CONNECT_RESOURCE_LABEL,
             namespace=namespace,
+            connect_resource_label=CONNECT_RESOURCE_LABEL,
             project_id=project_id,
             image_pull_secret=image_pull_secret_data))
 
-  return '{}\n---\n{}\n---\n{}'.format(
-      namespace_manifest, pod_manifest,
-      non_deleted_resources_manifest), pod_manifest, agent_pod_name
+  return install_manifest, agent_install_deployment_name
 
 
 def Base64EncodedFileContents(filename):
@@ -433,7 +429,7 @@ def DeployConnectAgent(args,
   project_id = properties.VALUES.core.project.GetOrFail()
   namespace = _GKEConnectNamespace(kube_client, project_id)
 
-  full_manifest, pod_manifest, agent_pod_name = GenerateInstallManifest(
+  full_manifest, agent_install_deployment_name = GenerateInstallManifest(
       project_id, namespace, image, service_account_key_data,
       docker_credential_data, args.CLUSTER_NAME, args.proxy)
 
@@ -450,7 +446,7 @@ def DeployConnectAgent(args,
     log.status.Print(MANIFEST_SAVED_MESSAGE.format(args.manifest_output_file))
     return
 
-  log.status.Print('Deploying GKE Connect agent pod to cluster...')
+  log.status.Print('Deploying GKE Connect agent to cluster...')
 
   # During an upgrade, the namespace should not be deleted.
   if not upgrade:
@@ -471,7 +467,7 @@ def DeployConnectAgent(args,
           cancel_on_no=True)
       try:
         succeeded, error = waiter.WaitFor(
-            KubernetesPodPoller(),
+            KubernetesPoller(),
             NamespaceDeleteOperation(namespace, kube_client),
             'Deleting namespace [{}] in the cluster'.format(namespace),
             pre_start_sleep_ms=NAMESPACE_DELETION_INITIAL_WAIT_MS,
@@ -489,7 +485,7 @@ def DeployConnectAgent(args,
             'Could not delete namespace [{}] from cluster. Error: {}'.format(
                 namespace, error))
 
-  # Create the agent install pod and related resources.
+  # Create or update the agent install deployment and related resources.
   err = kube_client.Apply(full_manifest)
   if err:
     raise exceptions.Error(
@@ -498,13 +494,16 @@ def DeployConnectAgent(args,
   kubectl_log_cmd = (
       'kubectl --kubeconfig={} --context={} logs -n {} -l app={}'.format(
           kube_client.kubeconfig, kube_client.context, namespace,
-          AGENT_POD_LABEL))
+          AGENT_INSTALL_APP_LABEL))
 
   def _WriteAgentLogs():
-    """Writes logs from the GKE Connect agent pod to a temporary file."""
-    logs, err = kube_client.Logs(namespace, agent_pod_name)
+    """Writes logs from the agent install deployment to a temporary file."""
+    logs, err = kube_client.Logs(
+        namespace, 'deployment/{}'.format(agent_install_deployment_name))
     if err:
-      log.warning('Could not fetch agent pod logs: {}'.format(err))
+      log.warning(
+          'Could not fetch Connect agent installation deployment logs: {}'
+          .format(err))
       return
 
     _, tmp_file = tempfile.mkstemp(
@@ -512,39 +511,38 @@ def DeployConnectAgent(args,
         prefix='gke_connect_',
     )
     files.WriteFileContents(tmp_file, logs, private=True)
-    log.status.Print('GKE Connect pod logs saved to [{}]'.format(tmp_file))
+    log.status.Print(
+        'Connect agent installation deployment logs saved to [{}]'.format(
+            tmp_file))
 
   try:
     succeeded, error = waiter.WaitFor(
-        KubernetesPodPoller(),
-        ConnectAgentPodOperation(namespace, agent_pod_name, kube_client),
-        'Waiting for GKE Connect agent pod to complete',
-        pre_start_sleep_ms=AGENT_POD_INITIAL_WAIT_MS,
-        max_wait_ms=AGENT_POD_TIMEOUT_MS,
-        wait_ceiling_ms=AGENT_POD_MAX_POLL_INTERVAL_MS,
-        sleep_ms=AGENT_POD_INITIAL_POLL_INTERVAL_MS)
+        KubernetesPoller(),
+        DeploymentPodsAvailableOperation(namespace,
+                                         RUNTIME_CONNECT_AGENT_DEPLOYMENT_NAME,
+                                         image, kube_client),
+        'Waiting for Connect agent to be installed',
+        pre_start_sleep_ms=AGENT_INSTALL_INITIAL_WAIT_MS,
+        max_wait_ms=AGENT_INSTALL_TIMEOUT_MS,
+        wait_ceiling_ms=AGENT_INSTALL_MAX_POLL_INTERVAL_MS,
+        sleep_ms=AGENT_INSTALL_INITIAL_POLL_INTERVAL_MS)
   except waiter.TimeoutError:
     # waiter.TimeoutError assumes that the operation is a Google API operation,
     # and prints a debugging string to that effect.
     _WriteAgentLogs()
     raise exceptions.Error(
-        'GKE Connect pod timed out. Leaving pod in cluster for further '
-        'debugging.\nTo view logs from the cluster:\n\n  {}\n'.format(
-            kubectl_log_cmd))
+        'Connect agent installation timed out. Leaving deployment in cluster '
+        'for further debugging.\nTo view logs from the cluster:\n\n'
+        '{}\n'.format(kubectl_log_cmd))
 
   _WriteAgentLogs()
 
   if not succeeded:
     raise exceptions.Error(
-        'GKE Connect pod did not succeed. Leaving pod in cluster for further '
-        'debugging.\nTo view logs from the cluster: {}\nKubectl error log: {}'
-        .format(kubectl_log_cmd, error))
+        'Connect agent installation did not succeed. To view logs from the '
+        'cluster: {}\nKubectl error log: {}'.format(kubectl_log_cmd, error))
 
-  log.status.Print(
-      'GKE Connect pod succeeded. Removing leftover resources from cluster.')
-  err = kube_client.Delete(pod_manifest)
-  if err:
-    raise exceptions.Error('Failed to delete pod from cluster: {}'.format(err))
+  log.status.Print('Connect agent installation succeeded.')
 
 
 class NamespaceDeleteOperation(object):
@@ -577,59 +575,91 @@ class NamespaceDeleteOperation(object):
       self.error = err
 
 
-class ConnectAgentPodOperation(object):
-  """An operation that tracks the GKE Connect agent pod in the cluster."""
+class DeploymentPodsAvailableOperation(object):
+  """An operation that tracks whether a Deployment's Pods are all available."""
 
-  def __init__(self, namespace, agent_pod_name, kube_client):
+  def __init__(self, namespace, deployment_name, image, kube_client):
     self.namespace = namespace
-    self.agent_pod_name = agent_pod_name
+    self.deployment_name = deployment_name
+    self.image = image
     self.kube_client = kube_client
     self.done = False
     self.succeeded = False
     self.error = None
 
   def __str__(self):
-    return '<GKE Connect agent installer in namespace {}>'.format(
-        self.namespace)
+    return '<Pod availability for {}/{}>'.format(self.namespace,
+                                                 self.deployment_name)
 
   def Update(self):
-    """Updates this operation with the latest state of the agent pod."""
-    out, err = self.kube_client.GetPodField(self.namespace, self.agent_pod_name,
-                                            '.status.phase')
-    if err:
+    """Updates this operation with the latest Deployment availability status."""
+    deployment_resource = 'deployment/{}'.format(self.deployment_name)
+
+    def _HandleErr(err):
+      """Updates the operation for the provided error."""
+      # If the deployment hasn't been created yet, then wait for it to be.
+      if 'NotFound' in err:
+        return
+
+      # Otherwise, fail the operation.
       self.done = True
       self.succeeded = False
       self.error = err
+
+    # Ensure that the Deployment has the correct image, so that this operation
+    # is tracking the status of a new rollout, not the pre-rollout steady state.
+    # TODO(b/135121228): Check the generation vs observedGeneration as well.
+    deployment_image, err = self.kube_client.GetResourceField(
+        self.namespace, deployment_resource,
+        '.spec.template.spec.containers[0].image')
+    if err:
+      _HandleErr(err)
+      return
+    if deployment_image != self.image:
       return
 
-    # The .status.phase field contains one of five values. They map to the
-    # staus of this operation as follows:
-    #   - "Pending": operation is ongoing
-    #   - "Running": operation is ongoing
-    #   - "Succeeded": operation is complete, successfully
-    #   - "Failed": operation is complete, unsuccessfully
-    #   - "Unknown": operation is complete, unsuccessfully
-    # The JSONPath expression above prints the value of the .status.phase field
-    # (i.e., one of these five strings) to stdout
-    if out == 'Pending' or out == 'Running':
+    spec_replicas, err = self.kube_client.GetResourceField(
+        self.namespace, deployment_resource, '.spec.replicas')
+    if err:
+      _HandleErr(err)
       return
 
-    self.done = True
-    if out == 'Failed':
-      self.succeeded = False
-      # TODO(b/130295119): Is there a way to get a failure message?
-      self.error = exceptions.Error('Connect agent pod failed.')
+    status_replicas, err = self.kube_client.GetResourceField(
+        self.namespace, deployment_resource, '.status.replicas')
+    if err:
+      _HandleErr(err)
       return
-    if out == 'Unknown':
-      self.succeeded = False
-      self.error = exceptions.Error('Connect agent pod in an unknown state.')
+
+    available_replicas, err = self.kube_client.GetResourceField(
+        self.namespace, deployment_resource, '.status.availableReplicas')
+    if err:
+      _HandleErr(err)
+      return
+
+    updated_replicas, err = self.kube_client.GetResourceField(
+        self.namespace, deployment_resource, '.status.updatedReplicas')
+    if err:
+      _HandleErr(err)
+      return
+
+    # This mirrors the replica-count logic used by kubectl rollout status:
+    # https://github.com/kubernetes/kubernetes/blob/master/pkg/kubectl/rollout_status.go
+    # Not enough replicas are up-to-date.
+    if updated_replicas < spec_replicas:
+      return
+    # Replicas of an older version have not been turned down.
+    if status_replicas > updated_replicas:
+      return
+    # Not enough replicas are up and healthy.
+    if available_replicas < updated_replicas:
       return
 
     self.succeeded = True
+    self.done = True
 
 
-class KubernetesPodPoller(waiter.OperationPoller):
-  """An OperationPoller that polls ConnectAgentPodOperations."""
+class KubernetesPoller(waiter.OperationPoller):
+  """An OperationPoller that polls operations targeting Kubernetes clusters."""
 
   def IsDone(self, operation):
     return operation.done
@@ -675,7 +705,7 @@ class KubernetesClient(object):
     return out.replace("'", '')
 
   def NamespacesWithLabelSelector(self, label):
-    cmd = ['get', 'namespace', '-l', label, '-o', 'jsonpath={..metadata.name}']
+    cmd = ['get', 'namespace', '-l', label, '-o', 'jsonpath={.metadata.name}']
     out, err = self._RunKubectl(cmd, None)
     if err:
       raise exceptions.Error(
@@ -690,9 +720,21 @@ class KubernetesClient(object):
     _, err = self._RunKubectl(['delete', 'namespace', namespace])
     return err
 
-  def GetPodField(self, namespace, pod, json_path):
+  def GetResourceField(self, namespace, resource, json_path):
+    """Returns the value of a field on a Kubernetes object.
+
+    Args:
+      namespace: the namespace of the resource
+      resource: the resource, in the format <resourceType>/<name>; e.g.,
+        'configmap/foo'
+      json_path: the JSONPath expression to filter with
+
+    Returns:
+      The field value (which could be empty if there is no such field), or
+      the error printed by the command if there is an error.
+    """
     cmd = [
-        'get', 'pods', '-n', namespace, pod, '-o',
+        'get', '-n', namespace, resource, '-o',
         'jsonpath={{{}}}'.format(json_path)
     ]
     return self._RunKubectl(cmd)
@@ -701,12 +743,18 @@ class KubernetesClient(object):
     _, err = self._RunKubectl(['apply', '-f', '-'], stdin=manifest)
     return err
 
-  def Delete(self, manifest):
-    _, err = self._RunKubectl(['delete', '-f', '-'], stdin=manifest)
-    return err
+  def Logs(self, namespace, log_target):
+    """Gets logs from a workload in the cluster.
 
-  def Logs(self, namespace, pod):
-    return self._RunKubectl(['logs', '-n', namespace, pod])
+    Args:
+      namespace: the namespace from which to collect logs.
+      log_target: the target for the logs command. Any target supported by
+        'kubectl logs' is supported here.
+
+    Returns:
+      The logs, or an error if there was an error gathering these logs.
+    """
+    return self._RunKubectl(['logs', '-n', namespace, log_target])
 
   def _GetKubeconfigAndContext(self, kubeconfig_file, context):
     """Gets the kubeconfig and cluster context from arguments and defaults.

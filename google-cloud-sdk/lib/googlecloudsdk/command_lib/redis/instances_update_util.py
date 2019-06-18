@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 
 from apitools.base.py import encoding
 from googlecloudsdk.command_lib.redis import util
-from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.console import console_io
 from six.moves import filter  # pylint: disable=redefined-builtin
@@ -38,16 +37,6 @@ def CheckFieldsSpecified(unused_instance_ref, args, patch_request):
     return patch_request
   raise NoFieldsSpecified(
       'Must specify at least one valid instance parameter to update')
-
-
-def GetExistingInstance(instance_ref, unused_args, patch_request):
-  """Fetch existing redis instance to update and add it to Patch request."""
-  client = util.GetClientForResource(instance_ref)
-  messages = util.GetMessagesForResource(instance_ref)
-  get_request = messages.RedisProjectsLocationsInstancesGetRequest(
-      name=instance_ref.RelativeName())
-  patch_request.instance = client.projects_locations_instances.Get(get_request)
-  return patch_request
 
 
 def AddFieldToUpdateMask(field, patch_request):
@@ -130,21 +119,4 @@ def AddNewRedisConfigs(instance_ref, redis_configs_dict, patch_request):
                                                       messages)
   patch_request.instance.redisConfigs = new_redis_configs
   patch_request = AddFieldToUpdateMask('redis_configs', patch_request)
-  return patch_request
-
-
-def UpdateLabels(instance_ref, args, patch_request):
-  labels_diff = labels_util.Diff.FromUpdateArgs(args)
-  if labels_diff.MayHaveUpdates():
-    patch_request = AddFieldToUpdateMask('labels', patch_request)
-    messages = util.GetMessagesForResource(instance_ref)
-    new_labels = labels_diff.Apply(messages.Instance.LabelsValue,
-                                   patch_request.instance.labels).GetOrNone()
-    if new_labels:
-      patch_request.instance.labels = new_labels
-  return patch_request
-
-
-def ResetDefaultMaskField(unused_instance_ref, unused_args, patch_request):
-  patch_request.updateMask = ''
   return patch_request

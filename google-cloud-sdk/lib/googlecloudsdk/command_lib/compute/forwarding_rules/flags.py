@@ -184,7 +184,7 @@ def NetworkArg(include_l7_internal_load_balancing):
                            '--load-balancing-scheme=INTERNAL_SELF_MANAGED')
 
   if include_l7_internal_load_balancing:
-    load_balancing_scheme += 'or --load-balancing-scheme=INTERNAL_MANAGED'
+    load_balancing_scheme += ' or --load-balancing-scheme=INTERNAL_MANAGED'
 
   return compute_flags.ResourceArgument(
       name='--network',

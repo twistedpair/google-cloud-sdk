@@ -276,13 +276,13 @@ in the past.
           config, request, global_params=global_params)
 
     GetAuthorizationCode.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}:getAuthorizationCode',
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}/authorizationCode',
         http_method=u'GET',
         method_id=u'domains.projects.locations.registrations.getAuthorizationCode',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1alpha1/{+name}:getAuthorizationCode',
+        relative_path=u'v1alpha1/{+name}/authorizationCode',
         request_field='',
         request_type_name=u'DomainsProjectsLocationsRegistrationsGetAuthorizationCodeRequest',
         response_type_name=u'AuthorizationCode',

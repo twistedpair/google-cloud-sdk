@@ -52,13 +52,13 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesPatchRequest(_messages.Messa
   Fields:
     googleCloudDatacatalogV1beta1Entry: A GoogleCloudDatacatalogV1beta1Entry
       resource to be passed as the request body.
-    name: The Data Catalog resource name of the entry in URL format. For
-      example, "projects/{project_id}/locations/{location}/entryGroups/{entry_
-      group_id}/entries/{entry_id}".
-    updateMask: The fields to update on the entry.  If absent or empty, all
-      modifiable fields are updated.  Modifiable fields in synced entries:  1.
-      schema (Pub/Sub topics only)  Modifiable fields in native entries:  1.
-      display_name 2. description 3. schema
+    name: Required when used in UpdateEntryRequest. The Data Catalog resource
+      name of the entry in URL format. For example, "projects/{project_id}/loc
+      ations/{location}/entryGroups/{entry_group_id}/entries/{entry_id}".
+    updateMask: Optional. The fields to update on the entry.  If absent or
+      empty, all modifiable fields are updated.  Modifiable fields in synced
+      entries:  1. schema (Pub/Sub topics only)  Modifiable fields in native
+      entries:  1. display_name 2. description 3. schema
   """
 
   googleCloudDatacatalogV1beta1Entry = _messages.MessageField('GoogleCloudDatacatalogV1beta1Entry', 1)
@@ -70,16 +70,16 @@ class GoogleCloudDatacatalogV1beta1BigQueryTableSpec(_messages.Message):
   r"""Describes a BigQuery table.
 
   Enums:
-    TableSourceTypeValueValuesEnum: The table source type.
+    TableSourceTypeValueValuesEnum: Output only. The table source type.
 
   Fields:
-    tableSourceType: The table source type.
+    tableSourceType: Output only. The table source type.
     viewSpec: Table view specification. This field should only be populated if
       table_source_type is BIGQUERY_VIEW.
   """
 
   class TableSourceTypeValueValuesEnum(_messages.Enum):
-    r"""The table source type.
+    r"""Output only. The table source type.
 
     Values:
       TABLE_SOURCE_TYPE_UNSPECIFIED: Default unknown type.
@@ -100,11 +100,13 @@ class GoogleCloudDatacatalogV1beta1ColumnSchema(_messages.Message):
 
   Fields:
     column: Required. Name of the column.
-    description: Description of the column.
-    mode: A column's mode indicates whether the values in this column are
-      required, nullable, etc. Only 'NULLABLE', 'REQUIRED' and 'REPEATED' are
-      supported, default mode is 'NULLABLE'.
-    subcolumns: Schema of sub-columns.
+    description: Optional. Description of the column. Default value is an
+      empty string.
+    mode: Optional. A column's mode indicates whether the values in this
+      column are required, nullable, etc. Only 'NULLABLE', 'REQUIRED' and
+      'REPEATED' are supported. Default mode is 'NULLABLE'.
+    subcolumns: Optional. Schema of sub-columns. A column can have zero or
+      more sub-columns.
     type: Required. Type of the column.
   """
 
@@ -124,15 +126,17 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
   attach flexible metadata, such as a Tag.
 
   Enums:
-    TypeValueValuesEnum: Type of entry.
+    TypeValueValuesEnum: Required. Type of entry.
 
   Fields:
     bigqueryTableSpec: Specification that applies to a BigQuery table. This is
       only valid on entries of type TABLE.
-    description: Entry description, which can consist of several sentences or
-      paragraphs that describe entry contents.
-    displayName: Display information such as title and description. A short
-      name to identify the entry, for example, "Analytics Data - Jan 2011".
+    description: Optional. Entry description, which can consist of several
+      sentences or paragraphs that describe entry contents. Default value is
+      an empty string.
+    displayName: Optional. Display information such as title and description.
+      A short name to identify the entry, for example, "Analytics Data - Jan
+      2011". Default value is an empty string.
     linkedResource: Output only. The full name of the cloud resource the entry
       belongs to. See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name
@@ -141,17 +145,18 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
       resource. For example, the `linked_resource` for a table resource from
       BigQuery is:  "//bigquery.googleapis.com/projects/projectId/datasets/dat
       asetId/tables/tableId".
-    name: The Data Catalog resource name of the entry in URL format. For
-      example, "projects/{project_id}/locations/{location}/entryGroups/{entry_
-      group_id}/entries/{entry_id}".
-    schema: Schema of the entry.
+    name: Required when used in UpdateEntryRequest. The Data Catalog resource
+      name of the entry in URL format. For example, "projects/{project_id}/loc
+      ations/{location}/entryGroups/{entry_group_id}/entries/{entry_id}".
+    schema: Optional. Schema of the entry. An entry might not have any schema
+      attached to it.
     sourceSystemTimestamps: Output only. Timestamps about the underlying
       Google Cloud Platform resource -- not about this Data Catalog Entry.
-    type: Type of entry.
+    type: Required. Type of entry.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Type of entry.
+    r"""Required. Type of entry.
 
     Values:
       ENTRY_TYPE_UNSPECIFIED: Default unknown type
@@ -178,8 +183,8 @@ class GoogleCloudDatacatalogV1beta1Schema(_messages.Message):
   r"""Represents a schema (e.g. BigQuery, GoogleSQL, Avro schema).
 
   Fields:
-    columns: Schema of columns. A maximum of 10,000 columns and sub-columns
-      can be specified.
+    columns: Required. Schema of columns. A maximum of 10,000 columns and sub-
+      columns can be specified.
   """
 
   columns = _messages.MessageField('GoogleCloudDatacatalogV1beta1ColumnSchema', 1, repeated=True)
@@ -206,7 +211,7 @@ class GoogleCloudDatacatalogV1beta1ViewSpec(_messages.Message):
   r"""Table view specification.
 
   Fields:
-    viewQuery: The query that defines the table view.
+    viewQuery: Output only. The query that defines the table view.
   """
 
   viewQuery = _messages.StringField(1)

@@ -72,6 +72,20 @@ class TargetHttpsProxiesCompleterAlpha(completers.MultiResourceCompleter):
         **kwargs)
 
 
+def AddProxyBind(parser, default):
+  """Adds the proxy bind argument."""
+  parser.add_argument(
+      '--proxy-bind',
+      action='store_true',
+      default=default,
+      help="""\
+      This flag only applies when the load_balancing_scheme of the associated
+      backend service is INTERNAL_SELF_MANAGED. When specified, the envoy binds
+      to the IP address and port specified by the forwarding rule. By default
+      this flag is off.
+      """)
+
+
 def TargetHttpsProxyArgument(required=True,
                              plural=False,
                              include_l7_internal_load_balancing=False):

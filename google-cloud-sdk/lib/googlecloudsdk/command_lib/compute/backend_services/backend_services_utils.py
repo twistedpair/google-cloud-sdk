@@ -359,7 +359,7 @@ def ApplyFailoverPolicyArgs(messages, args, backend_service, support_failover):
   remains unmodified.
 
   Args:
-    messages: The avalible API proto messages.
+    messages: The available API proto messages.
     args: The arguments passed to the gcloud command.
     backend_service: The backend service proto message object.
     support_failover: Failover functionality is supported.

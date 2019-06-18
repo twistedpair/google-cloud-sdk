@@ -128,7 +128,7 @@ Flag --cluster-ipv4-cidr must be fully specified (e.g. `10.96.0.0/14`, but not `
 """
 
 ALLOW_ROUTE_OVERLAP_WITHOUT_SERVICES_CIDR_ERROR_MSG = """\
-Flag --services-ipv4-cidr must be fully specified (e.g. `10.96.0.0/14`, but not `/14`) with --allow-route-overlap and --enable-ip-alias.
+Flag --services-ipv4-cidr must be fully specified (e.g. `10.96.0.0/14`, but not `/14`) with --allow-route-overlap.
 """
 
 PREREQUISITE_OPTION_ERROR_MSG = """\
@@ -212,6 +212,7 @@ INGRESS = 'HttpLoadBalancing'
 HPA = 'HorizontalPodAutoscaling'
 DASHBOARD = 'KubernetesDashboard'
 CLOUDRUN = 'CloudRun'
+CONFIGCONNECTOR = 'ConfigConnector'
 ISTIO = 'Istio'
 NETWORK_POLICY = 'NetworkPolicy'
 NODELOCALDNS = 'NodeLocalDNS'
@@ -222,7 +223,7 @@ AUTOPROVISIONING_LOCATIONS = 'autoprovisioningLocations'
 DEFAULT_ADDONS = [INGRESS, HPA]
 ADDONS_OPTIONS = DEFAULT_ADDONS + [DASHBOARD, ISTIO, NETWORK_POLICY]
 BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [CLOUDRUN]
-ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS + [NODELOCALDNS]
+ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS + [NODELOCALDNS, CONFIGCONNECTOR]
 
 
 def CheckResponse(response):
@@ -615,6 +616,7 @@ class SetMasterAuthOptions(object):
 
 
 class SetNetworkPolicyOptions(object):
+  """Options to pass to SetNetworkPolicy."""
 
   def __init__(self, enabled):
     self.enabled = enabled
@@ -942,6 +944,7 @@ class APIAdapter(object):
           disable_network_policy=(
               NETWORK_POLICY not in options.addons),
           enable_node_local_dns=(NODELOCALDNS in options.addons),
+          enable_config_connector=(CONFIGCONNECTOR in options.addons),
           )
       cluster.addonsConfig = addons
 
@@ -1216,6 +1219,9 @@ class APIAdapter(object):
         policy.tpuUseServiceNetworking = options.enable_tpu_service_networking
       cluster.clusterIpv4Cidr = None
       cluster.ipAllocationPolicy = policy
+    else:
+      cluster.ipAllocationPolicy = self.messages.IPAllocationPolicy(
+          useIpAliases=options.enable_ip_alias)
     return cluster
 
   def ParseAllowRouteOverlapOptions(self, options, cluster):
@@ -1513,7 +1519,8 @@ class APIAdapter(object):
                     disable_hpa=None,
                     disable_dashboard=None,
                     disable_network_policy=None,
-                    enable_node_local_dns=None):
+                    enable_node_local_dns=None,
+                    enable_config_connector=None):
     """Generates an AddonsConfig object given specific parameters.
 
     Args:
@@ -1522,6 +1529,7 @@ class APIAdapter(object):
       disable_dashboard: whether to disable the Kuberntes Dashboard.
       disable_network_policy: whether to disable NetworkPolicy enforcement.
       enable_node_local_dns: whether to enable NodeLocalDNS cache.
+      enable_config_connector: whether to enable ConfigConnector.
 
     Returns:
       An AddonsConfig object that contains the options defining what addons to
@@ -1543,6 +1551,9 @@ class APIAdapter(object):
           disabled=disable_network_policy)
     if enable_node_local_dns:
       addons.dnsCacheConfig = self.messages.DnsCacheConfig(
+          enabled=True)
+    if enable_config_connector:
+      addons.configConnectorConfig = self.messages.ConfigConnectorConfig(
           enabled=True)
     return addons
 
@@ -2692,7 +2703,7 @@ def _AddNodeLabelsToNodeConfig(node_config, options):
 
 
 def _AddWorkloadMetadataToNodeConfig(node_config, options, messages):
-  """Adds WorkLoadMetadata to NodeConfig."""
+  """Adds workload metadata to NodeConfig."""
   if options.workload_metadata_from_node is not None:
     option = options.workload_metadata_from_node
     if option == 'UNSPECIFIED':

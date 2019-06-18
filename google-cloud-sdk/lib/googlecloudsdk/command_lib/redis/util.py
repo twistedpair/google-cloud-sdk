@@ -57,7 +57,7 @@ def InstanceLabelsArgType(value):
 
 
 def AdditionalInstanceUpdateArguments():
-  return InstanceUpdateLabelsFlags() + [
+  return [
       InstanceUpdateRedisConfigFlag(),
       InstanceRemoveRedisConfigFlag()
   ]

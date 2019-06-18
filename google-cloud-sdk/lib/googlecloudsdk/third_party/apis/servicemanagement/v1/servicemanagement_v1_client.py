@@ -618,7 +618,7 @@ Operation<response: Rollout>
         method_id=u'servicemanagement.services.rollouts.create',
         ordered_params=[u'serviceName'],
         path_params=[u'serviceName'],
-        query_params=[u'force'],
+        query_params=[u'baseRolloutId', u'force'],
         relative_path=u'v1/services/{serviceName}/rollouts',
         request_field=u'rollout',
         request_type_name=u'ServicemanagementServicesRolloutsCreateRequest',

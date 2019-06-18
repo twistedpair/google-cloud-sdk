@@ -117,7 +117,7 @@ deleted.
     )
 
     def Export(self, request, global_params=None):
-      r"""Export Redis instance data into a Redis RDB format file in GCS.
+      r"""Export Redis instance data into a Redis RDB format file in Cloud Storage.
 
 Redis will continue serving during this operation.
 
@@ -144,6 +144,34 @@ there is no need to call DeleteOperation.
         relative_path=u'v1beta1/{+name}:export',
         request_field=u'exportInstanceRequest',
         request_type_name=u'RedisProjectsLocationsInstancesExportRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Failover(self, request, global_params=None):
+      r"""Initiates a failover of the master node to current replica node for a.
+specific STANDARD tier Cloud Memorystore for Redis instance.
+
+      Args:
+        request: (RedisProjectsLocationsInstancesFailoverRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Failover')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Failover.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:failover',
+        http_method=u'POST',
+        method_id=u'redis.projects.locations.instances.failover',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:failover',
+        request_field=u'failoverInstanceRequest',
+        request_type_name=u'RedisProjectsLocationsInstancesFailoverRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -176,7 +204,7 @@ there is no need to call DeleteOperation.
     )
 
     def Import(self, request, global_params=None):
-      r"""Import a Redis RDB snapshot file from GCS into a Redis instance.
+      r"""Import a Redis RDB snapshot file from Cloud Storage into a Redis instance.
 
 Redis may stop serving during this operation. Instance state will be
 IMPORTING for entire operation. When complete, the instance will contain

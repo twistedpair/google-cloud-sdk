@@ -157,7 +157,7 @@ While the long running operation is in progress, any call to
         method_id=u'remotebuildexecution.projects.instances.workerpools.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[],
+        query_params=[u'filter'],
         relative_path=u'v1alpha/{+parent}/workerpools',
         request_field='',
         request_type_name=u'RemotebuildexecutionProjectsInstancesWorkerpoolsListRequest',

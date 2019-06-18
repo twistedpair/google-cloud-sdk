@@ -281,6 +281,10 @@
           "description": "Release channel configuration.",
           "$ref": "ReleaseChannel"
         },
+        "tierSettings": {
+          "description": "Cluster tier settings.",
+          "$ref": "TierSettings"
+        },
         "workloadIdentityConfig": {
           "description": "Configuration for the use of Kubernetes Service Accounts in GCP IAM\npolicies.",
           "$ref": "WorkloadIdentityConfig"
@@ -621,7 +625,6 @@
           "$ref": "ClientCertificateConfig"
         },
         "clusterCaCertificate": {
-          "description": "[Output only] Base64-encoded public certificate that is the root of\ntrust for the cluster.",
           "type": "string"
         },
         "clientCertificate": {
@@ -1342,6 +1345,27 @@
           "enum": [
             "UNSPECIFIED",
             "RAPID"
+          ]
+        }
+      }
+    },
+    "TierSettings": {
+      "id": "TierSettings",
+      "description": "Cluster tier settings.",
+      "type": "object",
+      "properties": {
+        "tier": {
+          "description": "Cluster tier.",
+          "enumDescriptions": [
+            "UNSPECIFIED is the default value. If this value is set during create or\nupdate, it defaults to the project level tier setting.",
+            "Represents the standard tier or base Google Kubernetes Engine offering.",
+            "Represents the advanced tier."
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED",
+            "STANDARD",
+            "ADVANCED"
           ]
         }
       }
@@ -2144,6 +2168,30 @@
           "items": {
             "type": "string"
           }
+        },
+        "cacheHeader": {
+          "description": "OnePlatform automatically extracts this field and uses it to set the HTTP\nCache-Control header.",
+          "$ref": "HttpCacheControlResponseHeader"
+        }
+      }
+    },
+    "HttpCacheControlResponseHeader": {
+      "id": "HttpCacheControlResponseHeader",
+      "description": "RFC-2616: cache control support",
+      "type": "object",
+      "properties": {
+        "directive": {
+          "description": "14.9 request and response directives",
+          "type": "string"
+        },
+        "age": {
+          "description": "14.6 response cache age, in seconds since the response is generated",
+          "type": "string",
+          "format": "int64"
+        },
+        "expires": {
+          "description": "14.21 response cache expires, in RFC 1123 date format",
+          "type": "string"
         }
       }
     },
@@ -2158,6 +2206,10 @@
           "items": {
             "$ref": "Jwk"
           }
+        },
+        "cacheHeader": {
+          "description": "OnePlatform automatically extracts this field and uses it to set the HTTP\nCache-Control header.",
+          "$ref": "HttpCacheControlResponseHeader"
         }
       }
     },

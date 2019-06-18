@@ -109,8 +109,9 @@ def RunSSHCommandToInstance(command_list,
   Raises:
     ssh.CommandError: there was an error running a SSH command
   """
-  external_ip_address = ssh_utils.GetExternalIPAddress(instance)
-  remote = ssh.Remote(external_ip_address, user)
+  external_address = ssh_utils.GetExternalIPAddress(instance)
+  internal_address = ssh_utils.GetInternalIpAddress(instance)
+  remote = ssh.Remote(external_address, user)
 
   identity_file = None
   options = None
@@ -118,7 +119,8 @@ def RunSSHCommandToInstance(command_list,
     identity_file = ssh_helper.keys.key_file
     options = ssh_helper.GetConfig(ssh_utils.HostKeyAlias(instance),
                                    args.strict_host_key_checking)
-  extra_flags = ssh.ParseAndSubstituteSSHFlags(args, remote, user)
+  extra_flags = ssh.ParseAndSubstituteSSHFlags(args, remote, external_address,
+                                               internal_address)
   remainder = []
 
   remote_command = containers.GetRemoteCommand(None, command_list)

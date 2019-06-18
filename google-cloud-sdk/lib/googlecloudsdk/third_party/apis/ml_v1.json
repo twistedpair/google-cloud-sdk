@@ -295,6 +295,11 @@
         "pythonVersion": {
           "description": "Optional. The version of Python used in training. If not set, the default\nversion is '2.7'. Python '3.5' is available when `runtime_version` is set\nto '1.4' and above. Python '2.7' works with all supported\n<a href=\"\/ml-engine\/docs\/runtime-version-list\">runtime versions<\/a>.",
           "type": "string"
+        },
+        "maxRunningTime": {
+          "description": "Optional. The maximum job running time. The default is 7 days.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
@@ -389,7 +394,7 @@
           "format": "int32"
         },
         "hyperparameterMetricTag": {
-          "description": "Optional. The Tensorflow summary tag name to use for optimizing trials. For\ncurrent versions of Tensorflow, this tag name should exactly match what is\nshown in Tensorboard, including all scopes.  For versions of Tensorflow\nprior to 0.12, this should be only the tag passed to tf.Summary.\nBy default, \"training\/hptuning\/metric\" will be used.",
+          "description": "Optional. The TensorFlow summary tag name to use for optimizing trials. For\ncurrent versions of TensorFlow, this tag name should exactly match what is\nshown in TensorBoard, including all scopes.  For versions of TensorFlow\nprior to 0.12, this should be only the tag passed to tf.Summary.\nBy default, \"training\/hptuning\/metric\" will be used.",
           "type": "string"
         },
         "resumePreviousJobId": {
@@ -752,7 +757,7 @@
         "treeShapAttribution": {
           "$ref": "GoogleCloudMlV1__TreeShapAttribution"
         },
-        "sabaasAttribution": {
+        "saabasAttribution": {
           "$ref": "GoogleCloudMlV1__SaabasAttribution"
         }
       }
@@ -828,6 +833,10 @@
         "builtInAlgorithmOutput": {
           "description": "Details related to built-in algorithms jobs.\nOnly set for built-in algorithms jobs.",
           "$ref": "GoogleCloudMlV1__BuiltInAlgorithmOutput"
+        },
+        "hyperparameterMetricTag": {
+          "description": "The TensorFlow summary tag name used for optimizing hyperparameter tuning\ntrials. See\n[`HyperparameterSpec.hyperparameterMetricTag`](#HyperparameterSpec.FIELDS.hyperparameter_metric_tag)\nfor more information. Only set for hyperparameter tuning jobs.",
+          "type": "string"
         }
       }
     },
@@ -1126,7 +1135,7 @@
     },
     "GoogleRpc__Status": {
       "id": "GoogleRpc__Status",
-      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error\nmessage, and error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains\nthree pieces of data: error code, error message, and error details.\n\nYou can find out more about this error model and how to work with it in the\n[API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
       "type": "object",
       "properties": {
         "code": {

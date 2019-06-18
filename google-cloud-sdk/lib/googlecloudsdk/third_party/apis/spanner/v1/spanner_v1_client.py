@@ -669,8 +669,8 @@ multiple sessions. Note that standalone reads and queries use a
 transaction internally, and count toward the one transaction
 limit.
 
-Cloud Spanner limits the number of sessions that can exist at any given
-time; thus, it is a good idea to delete idle and/or unneeded sessions.
+Active sessions use additional server resources, so it is a good idea to
+delete idle and unneeded sessions.
 Aside from explicit deletes, Cloud Spanner can delete sessions for which no
 operations are sent for more than an hour. If a session is deleted,
 requests to it return `NOT_FOUND`.

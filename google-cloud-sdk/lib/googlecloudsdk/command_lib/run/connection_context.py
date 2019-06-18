@@ -20,10 +20,14 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import abc
+import base64
 import contextlib
+import functools
+import os
 import re
 import ssl
 import sys
+import tempfile
 from googlecloudsdk.api_lib.run import gke
 from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.util import apis
@@ -31,6 +35,7 @@ from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import flags
 
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import files
 
 import six
 from six.moves.urllib import parse as urlparse
@@ -125,17 +130,48 @@ def _CheckTLSSupport():
             min_required_version))
 
 
-class _GKEConnectionContext(ConnectionInfo):
-  """Context manager to connect to the GKE Cloud Run add-in."""
+class _ClusterConnectionContext(ConnectionInfo):
+  """Context manager to connect to a generic cluster."""
 
-  def __init__(self, cluster_ref):
-    super(_GKEConnectionContext, self).__init__()
-    self.cluster_ref = cluster_ref
+  def __init__(self, conn_info_getter):
+    super(_ClusterConnectionContext, self).__init__()
+    self.conn_info_getter = conn_info_getter
     self.region = None
 
   @property
   def ns_label(self):
     return 'namespace'
+
+  @property
+  def operator(self):
+    return 'cluster'
+
+  @abc.abstractproperty
+  def location_label(self):
+    pass
+
+  @contextlib.contextmanager
+  def Connect(self):
+    _CheckTLSSupport()
+    with self.conn_info_getter() as (ip, ca_certs):
+      self.ca_certs = ca_certs
+      with gke.MonkeypatchAddressChecking('kubernetes.default', ip) as endpoint:
+        self.endpoint = 'https://{}/'.format(endpoint)
+        with _OverrideEndpointOverrides(self.endpoint):
+          yield self
+
+  @property
+  def supports_one_platform(self):
+    return False
+
+
+class _GKEConnectionContext(_ClusterConnectionContext):
+  """Context manager to connect to the GKE Cloud Run add-in."""
+
+  def __init__(self, cluster_ref):
+    super(_GKEConnectionContext, self).__init__(
+        functools.partial(gke.ClusterConnectionInfo, cluster_ref))
+    self.cluster_ref = cluster_ref
 
   @property
   def operator(self):
@@ -146,19 +182,68 @@ class _GKEConnectionContext(ConnectionInfo):
     return ' of cluster [{{{{bold}}}}{}{{{{reset}}}}]'.format(
         self.cluster_ref.Name())
 
-  @contextlib.contextmanager
-  def Connect(self):
-    _CheckTLSSupport()
-    with gke.ClusterConnectionInfo(self.cluster_ref) as (ip, ca_certs):
-      self.ca_certs = ca_certs
-      with gke.MonkeypatchAddressChecking('kubernetes.default', ip) as endpoint:
-        self.endpoint = 'https://{}/'.format(endpoint)
-        with _OverrideEndpointOverrides(self.endpoint):
-          yield self
+
+class _KubeconfigConnectionContext(_ClusterConnectionContext):
+  """Context manager to connect to a cluster defined in a Kubeconfig file."""
+
+  def __init__(self, kubeconfig, context=None):
+    super(_KubeconfigConnectionContext, self).__init__(
+        self._LoadClusterDetails)
+    self.config = kubeconfig
+    self.context = context
 
   @property
-  def supports_one_platform(self):
-    return False
+  def location_label(self):
+    return ' of cluster [{{{{bold}}}}{}{{{{reset}}}}]'.format(
+        self.cluster['name'])
+
+  @contextlib.contextmanager
+  def _LoadClusterDetails(self):
+    """Get the current cluster and its connection info from the kubeconfig.
+
+    Yields:
+      A tuple of (endpoint, ca_certs), where endpoint is the ip address
+      of the GKE master, and ca_certs is the absolute path of a temporary file
+      (lasting the life of the python process) holding the ca_certs to connect
+      to the GKE cluster.
+    Raises:
+      flags.KubeconfigError: if the config file has missing keys or values.
+    """
+    try:
+      if self.context:
+        curr_ctx_name = self.context
+      else:
+        curr_ctx_name = self.config['current-context']
+      curr_ctx = next((c for c in self.config['contexts']
+                       if c['name'] == curr_ctx_name), None)
+      if not curr_ctx:
+        raise flags.KubeconfigError(
+            'Count not find context [{}] in kubeconfig.'.format(
+                curr_ctx_name))
+
+      self.cluster = next((c for c in self.config['clusters']
+                           if c['name'] == curr_ctx['context']['cluster']),
+                          None)
+      if not self.cluster:
+        raise flags.KubeconfigError(
+            'Could not find cluster [{}] specified by context [{}] in '
+            'kubeconfig.'.format(
+                curr_ctx['context']['cluster'], curr_ctx_name))
+
+      ca_data = self.cluster['cluster']['certificate-authority-data']
+      endpoint = self.cluster['cluster']['server'].replace('https://', '')
+    except KeyError as e:
+      raise flags.KubeconfigError('Missing key `{}` in kubeconfig.'.format(
+          e.args[0]))
+
+    fd, filename = tempfile.mkstemp()
+    os.close(fd)
+    files.WriteBinaryFileContents(
+        filename, base64.b64decode(ca_data), private=True)
+    try:
+      yield endpoint, filename
+    finally:
+      os.remove(filename)
 
 
 def DeriveRegionalEndpoint(endpoint, region):
@@ -208,16 +293,28 @@ def GetConnectionContext(args):
     args: Namespace, the args namespace.
 
   Raises:
-    ConfigurationError if cluster is specified without a location.
+    ArgumentError if region or cluster is not specified.
 
   Returns:
     A GKE or regional ConnectionInfo object.
   """
-  if flags.ValidateIsGKE(args):
+  if flags.IsKubernetes(args):
+    config = flags.GetKubeconfig(args)
+    return _KubeconfigConnectionContext(config, args.context)
+
+  if flags.IsGKE(args):
     cluster_ref = args.CONCEPTS.cluster.Parse()
+    if not cluster_ref:
+      raise flags.ArgumentError(
+          'You must specify a cluster in a given location. '
+          'Either use the `--cluster` and `--cluster-location` flags '
+          'or set the run/cluster and run/cluster_location properties.')
     return _GKEConnectionContext(cluster_ref)
 
-  region = flags.GetRegion(args, prompt=True)
-  if not region:
-    raise flags.ArgumentError('You must specify either a cluster or a region.')
-  return _RegionalConnectionContext(region)
+  if flags.IsManaged(args):
+    region = flags.GetRegion(args, prompt=True)
+    if not region:
+      raise flags.ArgumentError(
+          'You must specify a region. Either use the `--region` flag '
+          'or set the run/region property.')
+    return _RegionalConnectionContext(region)

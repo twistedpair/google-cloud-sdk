@@ -61,9 +61,14 @@ def _AddActiveProjectFilter(filter_expr):
   return 'lifecycleState:ACTIVE AND ({})'.format(filter_expr)
 
 
-def Get(project_ref, api_version=DEFAULT_API_VERSION):
+def Get(project_ref, api_version=DEFAULT_API_VERSION,
+        disable_api_enablement_check=False):
   """Get project information."""
   client = projects_util.GetClient(api_version)
+  # disable_api_enablement_check added to handle special case of
+  # setting config value core/project, see b/133841504/
+  if disable_api_enablement_check:
+    client.check_response_func = None
   return client.projects.Get(
       client.MESSAGES_MODULE.CloudresourcemanagerProjectsGetRequest(
           projectId=project_ref.projectId))

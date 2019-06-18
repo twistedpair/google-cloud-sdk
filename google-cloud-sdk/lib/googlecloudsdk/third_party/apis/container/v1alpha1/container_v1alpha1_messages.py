@@ -1386,11 +1386,14 @@ class GetJSONWebKeysResponse(_messages.Message):
   7517
 
   Fields:
+    cacheHeader: OnePlatform automagically extracts this field and uses it to
+      set the HTTP Cache-Control header.
     keys: The public component of the keys used by the cluster to sign token
       requests.
   """
 
-  keys = _messages.MessageField('Jwk', 1, repeated=True)
+  cacheHeader = _messages.MessageField('HttpCacheControlResponseHeader', 1)
+  keys = _messages.MessageField('Jwk', 2, repeated=True)
 
 
 class GetOpenIDConfigResponse(_messages.Message):
@@ -1398,6 +1401,8 @@ class GetOpenIDConfigResponse(_messages.Message):
   See the OpenID Connect Discovery 1.0 specification for details.
 
   Fields:
+    cacheHeader: OnePlatform automagically extracts this field and uses it to
+      set the HTTP Cache-Control header.
     claims_supported: Supported claims.
     grant_types: Supported grant types.
     id_token_signing_alg_values_supported: supported ID Token signing
@@ -1408,13 +1413,14 @@ class GetOpenIDConfigResponse(_messages.Message):
     subject_types_supported: Supported subject types.
   """
 
-  claims_supported = _messages.StringField(1, repeated=True)
-  grant_types = _messages.StringField(2, repeated=True)
-  id_token_signing_alg_values_supported = _messages.StringField(3, repeated=True)
-  issuer = _messages.StringField(4)
-  jwks_uri = _messages.StringField(5)
-  response_types_supported = _messages.StringField(6, repeated=True)
-  subject_types_supported = _messages.StringField(7, repeated=True)
+  cacheHeader = _messages.MessageField('HttpCacheControlResponseHeader', 1)
+  claims_supported = _messages.StringField(2, repeated=True)
+  grant_types = _messages.StringField(3, repeated=True)
+  id_token_signing_alg_values_supported = _messages.StringField(4, repeated=True)
+  issuer = _messages.StringField(5)
+  jwks_uri = _messages.StringField(6)
+  response_types_supported = _messages.StringField(7, repeated=True)
+  subject_types_supported = _messages.StringField(8, repeated=True)
 
 
 class GoogleIamV1Binding(_messages.Message):
@@ -1540,6 +1546,20 @@ class HorizontalPodAutoscaling(_messages.Message):
   """
 
   disabled = _messages.BooleanField(1)
+
+
+class HttpCacheControlResponseHeader(_messages.Message):
+  r"""RFC-2616: cache control support
+
+  Fields:
+    age: 14.6 response cache age, in seconds since the response is generated
+    directive: 14.9 request and response directives
+    expires: 14.21 response cache expires, in RFC 1123 date format
+  """
+
+  age = _messages.IntegerField(1)
+  directive = _messages.StringField(2)
+  expires = _messages.StringField(3)
 
 
 class HttpLoadBalancing(_messages.Message):
@@ -2138,6 +2158,7 @@ class NodeConfig(_messages.Message):
       'pd-ssd')  If unspecified, the default disk type is 'pd-standard'
     imageType: The image type to use for this node. Note that for a given
       image type, the latest version of it will be used.
+    kubeletConfig: Node kubelet configs.
     labels: The map of Kubernetes labels (key/value pairs) to be applied to
       each node. These will added in addition to any default label(s) that
       Kubernetes may apply to the node. In case of conflict in label keys, the
@@ -2290,24 +2311,43 @@ class NodeConfig(_messages.Message):
   diskSizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   diskType = _messages.StringField(3)
   imageType = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 6)
-  localSsdCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  localSsdVolumeConfigs = _messages.MessageField('LocalSsdVolumeConfig', 8, repeated=True)
-  machineType = _messages.StringField(9)
-  metadata = _messages.MessageField('MetadataValue', 10)
-  minCpuPlatform = _messages.StringField(11)
-  nodeGroup = _messages.StringField(12)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 13)
-  oauthScopes = _messages.StringField(14, repeated=True)
-  preemptible = _messages.BooleanField(15)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 16)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 17)
-  serviceAccount = _messages.StringField(18)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 19)
-  tags = _messages.StringField(20, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 21, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 22)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 7)
+  localSsdCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  localSsdVolumeConfigs = _messages.MessageField('LocalSsdVolumeConfig', 9, repeated=True)
+  machineType = _messages.StringField(10)
+  metadata = _messages.MessageField('MetadataValue', 11)
+  minCpuPlatform = _messages.StringField(12)
+  nodeGroup = _messages.StringField(13)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 14)
+  oauthScopes = _messages.StringField(15, repeated=True)
+  preemptible = _messages.BooleanField(16)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 17)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 18)
+  serviceAccount = _messages.StringField(19)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 20)
+  tags = _messages.StringField(21, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 22, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 23)
+
+
+class NodeKubeletConfig(_messages.Message):
+  r"""Node kubelet configs. NOTE: This is an Alpha only API.
+
+  Fields:
+    cpuCfsQuota: Enable CPU CFS quota enforcement for containers that specify
+      CPU limits.
+    cpuManagerPolicy: Control the CPU management policy on the node. See
+      https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-
+      policies/  The following values are allowed.   - "none": the default,
+      which represents the existing scheduling behavior.   - "static": allows
+      pods with certain resource characteristics to be               granted
+      increased CPU affinity and exclusivity on the node.
+  """
+
+  cpuCfsQuota = _messages.BooleanField(1)
+  cpuManagerPolicy = _messages.StringField(2)
 
 
 class NodeManagement(_messages.Message):

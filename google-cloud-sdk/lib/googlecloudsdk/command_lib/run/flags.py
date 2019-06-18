@@ -19,9 +19,11 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import os
 import re
 
 from googlecloudsdk.api_lib.run import global_methods
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.functions.deploy import env_vars_util
 from googlecloudsdk.command_lib.run import config_changes
@@ -33,7 +35,10 @@ from googlecloudsdk.command_lib.util.args import repeated
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
 
 
@@ -42,8 +47,27 @@ _VISIBILITY_MODES = {
     'external': 'Visible from outside the cluster.',
 }
 
+_PLATFORMS = {
+    'managed': 'Fully managed version of Cloud Run. Use with the `--region` '
+               'flag or set the [run/region] property to specify a Cloud Run '
+               'region.',
+    'gke': 'Cloud Run on Google Kubernetes Engine. Use with the `--cluster` '
+           'and `--cluster-location` flags or set the [run/cluster] and '
+           '[run/cluster_location] properties to specify a cluster in a given '
+           'zone.',
+    'kubernetes': 'Use a Knative-compatible kubernetes cluster. Use with the '
+                  '`--kubeconfig` and `--context` flags to specify a '
+                  'kubeconfig file and the context for connecting.'
+}
+
+_DEFAULT_KUBECONFIG_PATH = '~/.kube/config'
+
 
 class ArgumentError(exceptions.Error):
+  pass
+
+
+class KubeconfigError(exceptions.Error):
   pass
 
 
@@ -63,7 +87,8 @@ def _AddImageArg(parser):
   """Add an image resource arg."""
   parser.add_argument(
       '--image',
-      help='Path to the GCR container to deploy.')
+      help='Name of the container image to deploy (e.g. '
+      '`gcr.io/cloudrun/hello:latest`).')
 
 
 def AddAllowUnauthenticatedFlag(parser):
@@ -211,6 +236,31 @@ def AddServiceAccountFlag(parser):
       'account.')
 
 
+def AddPlatformArg(parser):
+  """Add a platform arg."""
+  parser.add_argument(
+      '--platform',
+      choices=_PLATFORMS,
+      action=actions.StoreProperty(properties.VALUES.run.platform),
+      help='Target platform for running commands. '
+      'Alternatively, set the property [run/platform]. '
+      'This flag will be required in a future version of '
+      'the gcloud command-line tool.')
+
+
+def AddKubeconfigFlags(parser):
+  parser.add_argument(
+      '--kubeconfig',
+      help='The absolute path to your kubectl config file. If not specified, '
+      'the colon-separated list of paths specified by $KUBECONFIG will be '
+      'used. If $KUBECONFIG is unset, this defaults to `{}`.'.format(
+          _DEFAULT_KUBECONFIG_PATH))
+  parser.add_argument(
+      '--context',
+      help='The name of the context in your kubectl config file to use for '
+      'connecting.')
+
+
 def _HasEnvChanges(args):
   """True iff any of the env var flags are set."""
   env_flags = ['update_env_vars', 'set_env_vars',
@@ -318,6 +368,17 @@ def GetService(args):
       'and cannot be longer than 63 characters.'.format(service_ref.servicesId))
 
 
+def GetClusterRef(cluster):
+  project = properties.VALUES.core.project.Get(required=True)
+  return resources.REGISTRY.Parse(
+      cluster.name,
+      params={
+          'projectId': project,
+          'zone': cluster.zone
+      },
+      collection='container.projects.zones.clusters')
+
+
 def GetRegion(args, prompt=False):
   """Prompt for region if not provided.
 
@@ -396,6 +457,76 @@ def GetAllowUnauthenticated(args, client, service_ref, prompt=False):
   return None
 
 
+def _DeepMergeConfigs(config, other_config):
+  """Deep merges other_config into config with a single level of depth.
+
+  Merge rules:
+    - list values should concat new items
+    - dict values should merge new items
+    - other values are replaced and missing values are added
+
+  Args:
+    config: dict to be merged into
+    other_config: dict to merge
+
+  Raises:
+    KubeconfigError: if there's mis-matching types for a given key across
+    multiple config files
+  """
+  for k in other_config:
+    if k in config:
+      if not isinstance(config[k], type(other_config[k])):
+        raise KubeconfigError(
+            'Mis-matching types in config files for key: `{}`'.format(k))
+      if isinstance(config[k], list):
+        config[k] += other_config[k]
+      elif isinstance(config[k], dict):
+        config[k].update(other_config[k])
+      else:
+        config[k] = other_config[k]
+    else:
+      config[k] = other_config[k]
+
+
+def GetKubeconfig(args):
+  """Get config from kubeconfig file.
+
+  Get config from potentially 3 different places, falling back to the next
+  option as necessary:
+  1. file_path specified as argument by the user
+  2. List of file paths specified in $KUBECONFIG
+  3. Default config path (~/.kube/config)
+
+  Args:
+    args: Namespace, The args namespace.
+
+  Returns:
+    dict: config object
+
+  Raises:
+    KubeconfigError: if $KUBECONFIG is set but contains no valid paths
+  """
+  if getattr(args, 'kubeconfig', None):
+    return yaml.load_path(files.ExpandHomeDir(args.kubeconfig))
+  if os.getenv('KUBECONFIG'):
+    config_paths = os.getenv('KUBECONFIG').split(':')
+    config = {}
+    # Merge together all valid paths into single config
+    for path in config_paths:
+      try:
+        if not config:
+          config = yaml.load_path(files.ExpandHomeDir(path))
+        else:
+          other_config = yaml.load_path(files.ExpandHomeDir(path))
+          _DeepMergeConfigs(config, other_config)
+      except yaml.FileLoadError:
+        pass
+    if not config:
+      raise KubeconfigError('No valid file paths found in $KUBECONFIG')
+    return config
+  return yaml.load_path(files.ExpandHomeDir(_DEFAULT_KUBECONFIG_PATH))
+
+
 def ValidateClusterArgs(args):
   """Raise an error if a cluster is provided with no region or vice versa.
 
@@ -406,9 +537,11 @@ def ValidateClusterArgs(args):
     ConfigurationError if a cluster is specified without a location or a
     location is specified without a cluster.
   """
-  cluster_name = args.cluster or properties.VALUES.run.cluster.Get()
-  cluster_location = (args.cluster_location or
-                      properties.VALUES.run.cluster_location.Get())
+  cluster_name = (
+      getattr(args, 'cluster', None) or properties.VALUES.run.cluster.Get())
+  cluster_location = (
+      getattr(args, 'cluster_location', None) or
+      properties.VALUES.run.cluster_location.Get())
   error_msg = ('Connecting to a cluster requires a {} to be specified. '
                'Either set the {} property or use the `{}` flag.')
   if cluster_name and not cluster_location:
@@ -420,30 +553,209 @@ def ValidateClusterArgs(args):
         error_msg.format('cluster name', 'run/cluster', '--cluster'))
 
 
+def _FlagIsExplicitlySet(args, flag):
+  """Return True if --flag is explicitly passed by the user."""
+  return hasattr(args, flag) and args.IsSpecified(flag)
+
+
 def VerifyOnePlatformFlags(args):
   """Raise ConfigurationError if args includes GKE only arguments."""
-  if getattr(args, 'connectivity', None):
-    raise serverless_exceptions.ConfigurationError(
-        'The `--connectivity=[internal|external]` flag '
-        'is not supported on the fully managed version of Cloud Run.')
+  error_msg = ('The `{flag}` flag is not supported on the fully managed '
+               'version of Cloud Run. Specify `--platform {platform}` or run '
+               '`gcloud config set run/platform {platform}` to work with '
+               '{platform_desc}.')
 
-  if getattr(args, 'cpu', None):
+  if _FlagIsExplicitlySet(args, 'connectivity'):
     raise serverless_exceptions.ConfigurationError(
-        'The `--cpu flag is not supported on the fully managed version '
-        'of Cloud Run.')
+        error_msg.format(
+            flag='--connectivity=[internal|external]',
+            platform='gke',
+            platform_desc='Cloud Run on GKE'))
+
+  if _FlagIsExplicitlySet(args, 'cpu'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--cpu',
+            platform='gke',
+            platform_desc='Cloud Run on GKE'))
+
+  if _FlagIsExplicitlySet(args, 'cluster'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--cluster',
+            platform='gke',
+            platform_desc='Cloud Run on GKE'))
+
+  if _FlagIsExplicitlySet(args, 'cluster_location'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--cluster-location',
+            platform='gke',
+            platform_desc='Cloud Run on GKE'))
+
+  if _FlagIsExplicitlySet(args, 'kubeconfig'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--kubeconfig',
+            platform='kubernetes',
+            platform_desc='a Kubernetes cluster'))
+
+  if _FlagIsExplicitlySet(args, 'context'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--context',
+            platform='kubernetes',
+            platform_desc='a Kubernetes cluster'))
 
 
 def VerifyGKEFlags(args):
   """Raise ConfigurationError if args includes OnePlatform only arguments."""
-  if getattr(args, 'allow_unauthenticated', None):
-    raise serverless_exceptions.ConfigurationError(
-        'The `--allow-unauthenticated` flag '
-        'is not supported with Cloud Run on GKE.')
+  error_msg = ('The `{flag}` flag is not supported with Cloud Run on GKE. '
+               'Specify `--platform {platform}` or run `gcloud config set '
+               'run/platform {platform}` to work with {platform_desc}.')
 
-  if getattr(args, 'service_account', None):
+  if _FlagIsExplicitlySet(args, 'allow_unauthenticated'):
     raise serverless_exceptions.ConfigurationError(
-        'The `--service-account` flag '
-        'is not supported with Cloud Run on GKE.')
+        error_msg.format(
+            flag='--allow-unauthenticated',
+            platform='managed',
+            platform_desc='the managed version of Cloud Run'))
+
+  if _FlagIsExplicitlySet(args, 'service_account'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--service-account',
+            platform='managed',
+            platform_desc='the managed version of Cloud Run'))
+
+  if _FlagIsExplicitlySet(args, 'region'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--region',
+            platform='managed',
+            platform_desc='the managed version of Cloud Run'))
+
+  if _FlagIsExplicitlySet(args, 'kubeconfig'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--kubeconfig',
+            platform='kubernetes',
+            platform_desc='a Kubernetes cluster'))
+
+  if _FlagIsExplicitlySet(args, 'context'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--context',
+            platform='kubernetes',
+            platform_desc='a Kubernetes cluster'))
+
+
+def VerifyKubernetesFlags(args):
+  """Raise ConfigurationError if args includes OnePlatform or GKE only arguments."""
+  error_msg = ('The `{flag}` flag is not supported when connecting to a '
+               'Kubenetes cluster. Specify `--platform {platform}` or run '
+               '`gcloud config set run/platform {platform}` to work with '
+               '{platform_desc}.')
+
+  if _FlagIsExplicitlySet(args, 'allow_unauthenticated'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--allow-unauthenticated',
+            platform='managed',
+            platform_desc='the managed version of Cloud Run'))
+
+  if _FlagIsExplicitlySet(args, 'service_account'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--service-account',
+            platform='managed',
+            platform_desc='the managed version of Cloud Run'))
+
+  if _FlagIsExplicitlySet(args, 'region'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--region',
+            platform='managed',
+            platform_desc='the managed version of Cloud Run'))
+
+  if _FlagIsExplicitlySet(args, 'cluster'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--cluster',
+            platform='gke',
+            platform_desc='Cloud Run on GKE'))
+
+  if _FlagIsExplicitlySet(args, 'cluster_location'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--cluster-location',
+            platform='gke',
+            platform_desc='Cloud Run on GKE'))
+
+
+def GetPlatform(args):
+  """Returns the platform to run on."""
+  platform = properties.VALUES.run.platform.Get()
+  if platform is None:
+    log.warning(
+        'No target platform specified. This will be a required flag in a '
+        'future version of the gcloud command-line tool. Pass the `--platform` '
+        'flag or set the [run/platform] property to satisfy this warning.\n'
+        'Available platforms:\n{}\n'.format('\n'.join(
+            ['- {}: {}'.format(k, v) for k, v in _PLATFORMS.items()])))
+    # The check below ends up calling this method so to prevent a stack overflow
+    # we set the platform temporarily
+    properties.VALUES.run.platform.Set('temp_skip')
+    if ValidateIsGKE(args):
+      platform = 'gke'
+    elif getattr(args, 'kubeconfig', None):
+      platform = 'kubernetes'
+    else:
+      platform = 'managed'
+    # Set the platform so we don't warn on future calls to this method
+    properties.VALUES.run.platform.Set(platform)
+
+  if platform == 'managed':
+    VerifyOnePlatformFlags(args)
+  elif platform == 'gke':
+    VerifyGKEFlags(args)
+  elif platform == 'kubernetes':
+    VerifyKubernetesFlags(args)
+  elif platform != 'temp_skip':
+    raise ArgumentError(
+        'Invalid target platform specified: [{}].\n'
+        'Available platforms:\n{}'.format(
+            platform,
+            '\n'.join(['- {}: {}'.format(k, v) for k, v in _PLATFORMS.items()
+                      ])))
+  return platform
+
+
+def IsKubernetes(args):
+  """Returns True if args property specify Kubernetes.
+
+  Args:
+    args: Namespace, The args namespace.
+  """
+  return GetPlatform(args) == 'kubernetes'
+
+
+def IsGKE(args):
+  """Returns True if args properly specify GKE.
+
+  Args:
+    args: Namespace, The args namespace.
+  """
+  return GetPlatform(args) == 'gke'
+
+
+def IsManaged(args):
+  """Returns True if args properly specify managed.
+
+  Args:
+    args: Namespace, The args namespace.
+  """
+  return GetPlatform(args) == 'managed'
 
 
 def ValidateIsGKE(args):

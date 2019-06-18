@@ -25,9 +25,6 @@ _CURRENT_ACTION_TYPES = ['abandoning', 'creating', 'creatingWithoutRetries',
                          'verifying']
 
 
-_PENDING_ACTION_TYPES = ['creating', 'deleting', 'restarting', 'recreating']
-
-
 def CreateWaitText(igm_ref):
   """Creates text presented at each wait operation.
 
@@ -42,14 +39,7 @@ def CreateWaitText(igm_ref):
       igm_ref.currentActions,
       _CURRENT_ACTION_TYPES)
 
-  # Pending actions are populated in alpha and beta only, so we need to check
-  # for their existence.
-  pending_actions_text = ''
-  pending_actions = getattr(igm_ref, 'pendingActions', None)
-  if pending_actions is not None:
-    pending_actions_text = _CreateActionsText(
-        ', pending operations: ', pending_actions, _PENDING_ACTION_TYPES)
-  return text + current_actions_text + pending_actions_text
+  return text + current_actions_text
 
 
 def _CreateActionsText(text, igm_field, action_types):

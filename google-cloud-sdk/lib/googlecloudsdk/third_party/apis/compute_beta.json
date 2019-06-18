@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20190520",
+ "revision": "20190611",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -2924,6 +2924,24 @@
     "statusMessage": {
      "type": "string",
      "description": "[Output Only] An optional, human-readable explanation of the status."
+    },
+    "type": {
+     "type": "string",
+     "description": "The type of commitment, which affects the discount rate and the eligible resources. Type MEMORY_OPTIMIZED specifies a commitment that will only apply to memory optimized machines.",
+     "enum": [
+      "COMPUTE_OPTIMIZED",
+      "GENERAL_PURPOSE",
+      "GENERAL_PURPOSE_N2",
+      "MEMORY_OPTIMIZED",
+      "TYPE_UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
     }
    }
   },
@@ -4541,7 +4559,7 @@
     },
     "imported": {
      "type": "boolean",
-     "description": "If the peering route is imported if there is no confliction."
+     "description": "True if the peering route has been imported from a peer. The actual import happens if the field networkPeering.importCustomRoutes is true for this network, and networkPeering.exportCustomRoutes is true for the peer network, and the import does not result in a route conflict."
     },
     "nextHopRegion": {
      "type": "string",
@@ -5820,6 +5838,7 @@
      "description": "The ID of a supported feature. Read  Enabling guest operating system features to see a list of available options.",
      "enum": [
       "FEATURE_TYPE_UNSPECIFIED",
+      "GVNIC",
       "MULTI_IP_SUBNET",
       "SECURE_BOOT",
       "UEFI_COMPATIBLE",
@@ -5827,6 +5846,7 @@
       "WINDOWS"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -8679,14 +8699,14 @@
    "properties": {
     "instances": {
      "type": "array",
-     "description": "The list of URLs of one or more instances for which we want to apply updates on this managed instance group. This can be a full URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].",
+     "description": "The list of URLs of one or more instances for which you want to apply updates. Each URL can be a full URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].",
      "items": {
       "type": "string"
      }
     },
     "minimalAction": {
      "type": "string",
-     "description": "The minimal action that should be perfomed on the instances. By default NONE.",
+     "description": "The minimal action that you want to perform on each instance during the update:  \n- REPLACE: At minimum, delete the instance and create it again. \n- RESTART: Stop the instance and start it again. \n- REFRESH: Do not stop the instance. \n- NONE: Do not disrupt the instance at all.  By default, the minimum action is NONE. If your update requires a more disruptive action than you set with this flag, the necessary action is performed to execute the update.",
      "enum": [
       "NONE",
       "REFRESH",
@@ -8702,7 +8722,7 @@
     },
     "mostDisruptiveAllowedAction": {
      "type": "string",
-     "description": "The most disruptive action that allowed to be performed on the instances. By default REPLACE.",
+     "description": "The most disruptive action that you want to perform on each instance during the update:  \n- REPLACE: Delete the instance and create it again. \n- RESTART: Stop the instance and start it again. \n- REFRESH: Do not stop the instance. \n- NONE: Do not disrupt the instance at all.  By default, the most disruptive allowed action is REPLACE. If your update requires a more disruptive action than you set with this flag, the update request will fail.",
      "enum": [
       "NONE",
       "REFRESH",
@@ -10165,7 +10185,7 @@
     },
     "googleReferenceId": {
      "type": "string",
-     "description": "[Output Only] Google reference ID, to be used when raising support tickets with Google or otherwise to debug backend connectivity issues."
+     "description": "[Output Only] Google reference ID, to be used when raising support tickets with Google or otherwise to debug backend connectivity issues. [Deprecated] This field is not used."
     },
     "id": {
      "type": "string",
@@ -13680,7 +13700,7 @@
   "NodeTemplate": {
    "id": "NodeTemplate",
    "type": "object",
-   "description": "Represent a sole-tenant Node Template resource.\n\nYou can use a template to define properties for nodes in a node group. For more information, read Creating node groups and instances. (== resource_for beta.nodeTemplates ==) (== resource_for v1.nodeTemplates ==) NextID: 16",
+   "description": "Represent a sole-tenant Node Template resource.\n\nYou can use a template to define properties for nodes in a node group. For more information, read Creating node groups and instances. (== resource_for beta.nodeTemplates ==) (== resource_for v1.nodeTemplates ==) (== NextID: 16 ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -13729,7 +13749,7 @@
     },
     "serverBinding": {
      "$ref": "ServerBinding",
-     "description": "Binding properties for the physical server."
+     "description": "Sets the binding properties for the physical server. Valid values include:  \n- [Default] RESTART_NODE_ON_ANY_SERVER: Restarts VMs on any available physical server \n- RESTART_NODE_ON_MINIMAL_SERVER: Restarts VMs on the same physical server whenever possible  \n\nSee Sole-tenant node options for more information."
     },
     "status": {
      "type": "string",
@@ -15356,7 +15376,15 @@
       "AUTOSCALERS",
       "BACKEND_BUCKETS",
       "BACKEND_SERVICES",
+      "C2_CPUS",
       "COMMITMENTS",
+      "COMMITTED_CPUS",
+      "COMMITTED_LOCAL_SSD_TOTAL_GB",
+      "COMMITTED_NVIDIA_K80_GPUS",
+      "COMMITTED_NVIDIA_P100_GPUS",
+      "COMMITTED_NVIDIA_P4_GPUS",
+      "COMMITTED_NVIDIA_T4_GPUS",
+      "COMMITTED_NVIDIA_V100_GPUS",
       "CPUS",
       "CPUS_ALL_REGIONS",
       "DISKS_TOTAL_GB",
@@ -15379,6 +15407,7 @@
       "IN_USE_BACKUP_SCHEDULES",
       "IN_USE_SNAPSHOT_SCHEDULES",
       "LOCAL_SSD_TOTAL_GB",
+      "N2_CPUS",
       "NETWORKS",
       "NETWORK_ENDPOINT_GROUPS",
       "NVIDIA_K80_GPUS",
@@ -15401,6 +15430,7 @@
       "PREEMPTIBLE_NVIDIA_V100_GPUS",
       "REGIONAL_AUTOSCALERS",
       "REGIONAL_INSTANCE_GROUP_MANAGERS",
+      "RESERVATIONS",
       "RESOURCE_POLICIES",
       "ROUTERS",
       "ROUTES",
@@ -15423,6 +15453,16 @@
       "VPN_TUNNELS"
      ],
      "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
       "",
       "",
       "",
@@ -16108,14 +16148,14 @@
    "properties": {
     "instances": {
      "type": "array",
-     "description": "The list of instances for which we want to apply changes on this managed instance group.",
+     "description": "The list of URLs of one or more instances for which you want to apply updates. Each URL can be a full URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].",
      "items": {
       "type": "string"
      }
     },
     "minimalAction": {
      "type": "string",
-     "description": "The minimal action that should be perfomed on the instances. By default NONE.",
+     "description": "The minimal action that you want to perform on each instance during the update:  \n- REPLACE: At minimum, delete the instance and create it again. \n- RESTART: Stop the instance and start it again. \n- REFRESH: Do not stop the instance. \n- NONE: Do not disrupt the instance at all.  By default, the minimum action is NONE. If your update requires a more disruptive action than you set with this flag, the necessary action is performed to execute the update.",
      "enum": [
       "NONE",
       "REFRESH",
@@ -16131,7 +16171,7 @@
     },
     "mostDisruptiveAllowedAction": {
      "type": "string",
-     "description": "The most disruptive action that allowed to be performed on the instances. By default REPLACE.",
+     "description": "The most disruptive action that you want to perform on each instance during the update:  \n- REPLACE: Delete the instance and create it again. \n- RESTART: Stop the instance and start it again. \n- REFRESH: Do not stop the instance. \n- NONE: Do not disrupt the instance at all.  By default, the most disruptive allowed action is REPLACE. If your update requires a more disruptive action than you set with this flag, the update request will fail.",
      "enum": [
       "NONE",
       "REFRESH",
@@ -16644,7 +16684,7 @@
   "ReservationAffinity": {
    "id": "ReservationAffinity",
    "type": "object",
-   "description": "AllocationAffinity is the configuration of desired allocation which this instance could take capacity from.",
+   "description": "ReservationAffinity is the configuration of desired reservation which this instance could take capacity from.",
    "properties": {
     "consumeReservationType": {
      "type": "string",
@@ -20844,7 +20884,7 @@
     },
     "metadata": {
      "type": "string",
-     "description": "Can only be specified if VPC flow logging for this subnetwork is enabled. Configures whether metadata fields should be added to the reported VPC flow logs. Default is INCLUDE_ALL_METADATA.",
+     "description": "Can only be specified if VPC flow logs for this subnetwork is enabled. Configures whether all, none or a subset of metadata fields should be added to the reported VPC flow logs. Default is INCLUDE_ALL_METADATA.",
      "enum": [
       "EXCLUDE_ALL_METADATA",
       "INCLUDE_ALL_METADATA"
@@ -43229,6 +43269,48 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "getIamPolicy": {
+     "id": "compute.resourcePolicies.getIamPolicy",
+     "path": "{project}/regions/{region}/resourcePolicies/{resource}/getIamPolicy",
+     "httpMethod": "GET",
+     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "resource"
+     ],
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
     "insert": {
      "id": "compute.resourcePolicies.insert",
      "path": "{project}/regions/{region}/resourcePolicies",
@@ -43325,6 +43407,50 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "setIamPolicy": {
+     "id": "compute.resourcePolicies.setIamPolicy",
+     "path": "{project}/regions/{region}/resourcePolicies/{resource}/setIamPolicy",
+     "httpMethod": "POST",
+     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "resource"
+     ],
+     "request": {
+      "$ref": "RegionSetPolicyRequest"
+     },
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
      ]
     },
     "testIamPermissions": {
@@ -43861,7 +43987,7 @@
      "id": "compute.routers.update",
      "path": "{project}/regions/{region}/routers/{router}",
      "httpMethod": "PUT",
-     "description": "Updates the specified Router resource with the data included in the request.",
+     "description": "Updates the specified Router resource with the data included in the request. This method conforms to PUT semantics, which requests that the state of the target resource be created or replaced with the state defined by the representation enclosed in the request message payload.",
      "parameters": {
       "project": {
        "type": "string",

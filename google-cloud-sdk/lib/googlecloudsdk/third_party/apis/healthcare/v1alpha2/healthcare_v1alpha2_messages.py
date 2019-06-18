@@ -639,6 +639,19 @@ class FhirStore(_messages.Message):
       this FHIR store to this destination. The Cloud Pub/Sub message
       attributes will contain a map with a string describing the action that
       has triggered the notification, e.g. "action":"CreateResource".
+    streamConfigs: A list of streaming configs that configure the destinations
+      of streaming export for every resource mutation in this FHIR store. Each
+      store is allowed to have up to 10 streaming configs. After a new config
+      is added, the next resource mutation will be streamed to the new
+      location in addition to the existing ones. When a location is removed
+      from the list, the server will simply stop streaming to that location.
+      Before adding a new config, you must add the required
+      [`bigquery.dataEditor`](https://cloud.google.com/bigquery/docs/access-
+      control#bigquery.dataEditor) role to your project's **Cloud Healthcare
+      Service Agent** [service account](https://cloud.google.com/iam/docs
+      /service-accounts). Some lag (typically on the order of dozens of
+      seconds) is expected before the results show up in the streaming
+      destination.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -679,6 +692,7 @@ class FhirStore(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
   notificationConfig = _messages.MessageField('NotificationConfig', 7)
+  streamConfigs = _messages.MessageField('StreamConfig', 8, repeated=True)
 
 
 class FieldMetadata(_messages.Message):
@@ -1200,8 +1214,9 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebSearchForInstancesRe
   esRequest object.
 
   Fields:
-    dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
-      RS, WADO-RS, or QIDO-RS standard (e.g., `instances`).
+    dicomWebPath: The path of the SearchForInstancesRequest DICOMweb request
+      (e.g., `instances` or `series/{series_uid}/instances` or
+      `studies/{study_uid}/instances`).
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
       /{dicom_store_id}`).
@@ -1217,8 +1232,8 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebSearchForSeriesReque
   object.
 
   Fields:
-    dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
-      RS, WADO-RS, or QIDO-RS standard (e.g., `series`).
+    dicomWebPath: The path of the SearchForSeries DICOMweb request(e.g.,
+      `series` or `studies/{study_uid}/series`).
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
       /{dicom_store_id}`).
@@ -1233,8 +1248,8 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebSearchForStudiesRequ
   Request object.
 
   Fields:
-    dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
-      RS, WADO-RS, or QIDO-RS standard (e.g., `studies`).
+    dicomWebPath: The path of the SearchForStudies DICOMweb request (e.g.,
+      `studies`).
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
       /{dicom_store_id}`).
@@ -1250,8 +1265,8 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStoreInstancesReques
   object.
 
   Fields:
-    dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
-      RS, WADO-RS, or QIDO-RS standard (e.g., `studies/{study_id}`).
+    dicomWebPath: The path of the StoreInstances DICOMweb request (e.g.,
+      `studies/[{study_id}]`). Note that the `study_uid` is optional.
     httpBody: A HttpBody resource to be passed as the request body.
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
@@ -1269,8 +1284,8 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesDeleteRequest
   object.
 
   Fields:
-    dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
-      RS, WADO-RS, or QIDO-RS standard (e.g., `studies/{study_id}`).
+    dicomWebPath: The path of the DeleteStudy request (e.g.,
+      `studies/{study_id}`).
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
       /{dicom_store_id}`).
@@ -1286,8 +1301,8 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesMetadataReque
   object.
 
   Fields:
-    dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
-      RS, WADO-RS, or QIDO-RS standard (e.g., `studies/{study_id}/metadata`.
+    dicomWebPath: The path of the RetrieveStudyMetadata DICOMweb request
+      (e.g., `studies/{study_id}/metadata`).
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
       /{dicom_store_id}`).
@@ -1302,8 +1317,8 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesRetrieveStudy
   tudyRequest object.
 
   Fields:
-    dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
-      RS, WADO-RS, or QIDO-RS standard (e.g., `studies/{study_id}`).
+    dicomWebPath: The path of the RetrieveStudy DICOMweb request (e.g.,
+      `studies/{study_id}`).
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
       /{dicom_store_id}`).
@@ -1318,8 +1333,9 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSearchForInst
   InstancesRequest object.
 
   Fields:
-    dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
-      RS, WADO-RS, or QIDO-RS standard (e.g., `instances`).
+    dicomWebPath: The path of the SearchForInstancesRequest DICOMweb request
+      (e.g., `instances` or `series/{series_uid}/instances` or
+      `studies/{study_uid}/instances`).
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
       /{dicom_store_id}`).
@@ -1334,8 +1350,8 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSearchForSeri
   SeriesRequest object.
 
   Fields:
-    dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
-      RS, WADO-RS, or QIDO-RS standard (e.g., `series`).
+    dicomWebPath: The path of the SearchForSeries DICOMweb request(e.g.,
+      `series` or `studies/{study_uid}/series`).
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
       /{dicom_store_id}`).
@@ -1350,8 +1366,7 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesDeleteR
   eteRequest object.
 
   Fields:
-    dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
-      RS, WADO-RS, or QIDO-RS standard (e.g.,
+    dicomWebPath: The path of the DeleteSeries request (e.g.,
       `studies/{study_id}/series/{series_id}`).
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
@@ -1367,8 +1382,7 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstanc
   tancesDeleteRequest object.
 
   Fields:
-    dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
-      RS, WADO-RS, or QIDO-RS standard (e.g.,
+    dicomWebPath: The path of the DeleteInstance request (e.g.,
       `studies/{study_id}/series/{series_id}/instances/{instance_id}`).
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
@@ -1384,9 +1398,9 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstanc
   tancesFramesRenderedRequest object.
 
   Fields:
-    dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
-      RS, WADO-RS, or QIDO-RS standard (e.g., `studies/{study_id}/series/{seri
-      es_id}/instances/{instance_id}/frames/{frame_list}/rendered`).
+    dicomWebPath: The path of the RetrieveRenderedFrames DICOMweb request
+      (e.g., `studies/{study_id}/series/{series_id}/instances/{instance_id}/fr
+      ames/{frame_list}/rendered`).
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
       /{dicom_store_id}`).
@@ -1401,9 +1415,9 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstanc
   tancesFramesRetrieveFramesRequest object.
 
   Fields:
-    dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
-      RS, WADO-RS, or QIDO-RS standard (e.g., `studies/{study_id}/series/{seri
-      es_id}/instances/{instance_id}/frames/{frame_list}`).
+    dicomWebPath: The path of the RetrieveFrames DICOMweb request (e.g., `stud
+      ies/{study_id}/series/{series_id}/instances/{instance_id}/frames/{frame_
+      list}`).
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
       /{dicom_store_id}`).
@@ -1418,9 +1432,9 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstanc
   tancesMetadataRequest object.
 
   Fields:
-    dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
-      RS, WADO-RS, or QIDO-RS standard (e.g., `studies/{study_id}/series/{seri
-      es_id}/instances/{instance_id}/metadata`).
+    dicomWebPath: The path of the RetrieveInstanceMetadata DICOMweb request
+      (e.g., `studies/{study_id}/series/{series_id}/instances/{instance_id}/me
+      tadata`).
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
       /{dicom_store_id}`).
@@ -1435,9 +1449,9 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstanc
   tancesRenderedRequest object.
 
   Fields:
-    dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
-      RS, WADO-RS, or QIDO-RS standard (e.g., `studies/{study_id}/series/{seri
-      es_id}/instances/{instance_id}/rendered`).
+    dicomWebPath: The path of the RetrieveRenderedInstance DICOMweb request
+      (e.g., `studies/{study_id}/series/{series_id}/instances/{instance_id}/re
+      ndered`).
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
       /{dicom_store_id}`).
@@ -1452,8 +1466,7 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstanc
   tancesRetrieveInstanceRequest object.
 
   Fields:
-    dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
-      RS, WADO-RS, or QIDO-RS standard (e.g.,
+    dicomWebPath: The path of the RetrieveInstance DICOMweb request (e.g.,
       `studies/{study_id}/series/{series_id}/instances/{instance_id}`).
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
@@ -1469,9 +1482,8 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesMetadat
   adataRequest object.
 
   Fields:
-    dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
-      RS, WADO-RS, or QIDO-RS standard (e.g.,
-      `studies/{study_id}/series/{series_id}/metadata`.
+    dicomWebPath: The path of the RetrieveSeriesMetadata DICOMweb request
+      (e.g., `studies/{study_id}/series/{series_id}/metadata`).
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
       /{dicom_store_id}`).
@@ -1486,8 +1498,7 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesRetriev
   rieveSeriesRequest object.
 
   Fields:
-    dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
-      RS, WADO-RS, or QIDO-RS standard (e.g.,
+    dicomWebPath: The path of the RetrieveSeries DICOMweb request (e.g.,
       `studies/{study_id}/series/{series_id}`).
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
@@ -1503,8 +1514,9 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesSearchF
   rchForInstancesRequest object.
 
   Fields:
-    dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
-      RS, WADO-RS, or QIDO-RS standard (e.g., `instances`).
+    dicomWebPath: The path of the SearchForInstancesRequest DICOMweb request
+      (e.g., `instances` or `series/{series_uid}/instances` or
+      `studies/{study_uid}/instances`).
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
       /{dicom_store_id}`).
@@ -1519,8 +1531,8 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesStoreInstance
   ancesRequest object.
 
   Fields:
-    dicomWebPath: The path of the DICOMweb request, as specified in the STOW-
-      RS, WADO-RS, or QIDO-RS standard (e.g., `studies/{study_id}`).
+    dicomWebPath: The path of the StoreInstances DICOMweb request (e.g.,
+      `studies/[{study_id}]`). Note that the `study_uid` is optional.
     httpBody: A HttpBody resource to be passed as the request body.
     parent: The name of the DICOM store that is being accessed (e.g., `project
       s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
@@ -2689,11 +2701,12 @@ class ImportResourcesRequest(_messages.Message):
 
   Enums:
     ContentStructureValueValuesEnum: The content structure in the source
-      location. The default is BUNDLE.
+      location. If not specified, the server treats the input source files as
+      BUNDLE.
 
   Fields:
-    contentStructure: The content structure in the source location. The
-      default is BUNDLE.
+    contentStructure: The content structure in the source location. If not
+      specified, the server treats the input source files as BUNDLE.
     gcsErrorDestination: The Cloud Storage destination to write the error
       report to.  The Cloud Storage location requires the
       `roles/storage.objectAdmin` Cloud IAM role.  Note that writing a file to
@@ -2702,25 +2715,31 @@ class ImportResourcesRequest(_messages.Message):
     gcsSource: Cloud Storage source data location and import configuration.
       The Cloud Storage location requires the `roles/storage.objectViewer`
       Cloud IAM role.  Each Cloud Storage object should be a text file that
-      contains newline delimited JSON structures conforming to FHIR standard.
-      To improve performance, use multiple Cloud Storage objects where each
-      object contains a subset of all of the newline-delimited JSON
-      structures. You can select all of the objects using the uri as the
-      prefix. The maximum number of objects is 1,000.
+      contains the format specified in ContentStructu.
   """
 
   class ContentStructureValueValuesEnum(_messages.Enum):
-    r"""The content structure in the source location. The default is BUNDLE.
+    r"""The content structure in the source location. If not specified, the
+    server treats the input source files as BUNDLE.
 
     Values:
       CONTENT_STRUCTURE_UNSPECIFIED: <no description>
-      BUNDLE: Each line is a bundle, which contains one or more resources. Set
-        the bundle type to `history` to import resource versions.
-      RESOURCE: Each line is a single resource.
+      BUNDLE: The source file contains one or more lines of newline-delimited
+        JSON (ndjson). Each line is a bundle, which contains one or more
+        resources. Set the bundle type to `history` to import resource
+        versions.
+      RESOURCE: The source file contains one or more lines of newline-
+        delimited JSON (ndjson). Each line is a single resource.
+      BUNDLE_PRETTY: The entire file is one JSON bundle. The JSON can span
+        multiple lines.
+      RESOURCE_PRETTY: The entire file is one JSON resource. The JSON can span
+        multiple lines.
     """
     CONTENT_STRUCTURE_UNSPECIFIED = 0
     BUNDLE = 1
     RESOURCE = 2
+    BUNDLE_PRETTY = 3
+    RESOURCE_PRETTY = 4
 
   contentStructure = _messages.EnumField('ContentStructureValueValuesEnum', 1)
   gcsErrorDestination = _messages.MessageField('GoogleCloudHealthcareV1alpha2FhirRestGcsErrorDestination', 2)
@@ -3564,37 +3583,10 @@ class StandardQueryParameters(_messages.Message):
 class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
-  used by [gRPC](https://github.com/grpc). The error model is designed to be:
-  - Simple to use and understand for most users - Flexible enough to meet
-  unexpected needs  # Overview  The `Status` message contains three pieces of
-  data: error code, error message, and error details. The error code should be
-  an enum value of google.rpc.Code, but it may accept additional error codes
-  if needed.  The error message should be a developer-facing English message
-  that helps developers *understand* and *resolve* the error. If a localized
-  user-facing error message is needed, put the localized message in the error
-  details or localize it in the client. The optional error details may contain
-  arbitrary information about the error. There is a predefined set of error
-  detail types in the package `google.rpc` that can be used for common error
-  conditions.  # Language mapping  The `Status` message is the logical
-  representation of the error model, but it is not necessarily the actual wire
-  format. When the `Status` message is exposed in different client libraries
-  and different wire protocols, it can be mapped differently. For example, it
-  will likely be mapped to some exceptions in Java, but more likely mapped to
-  some error codes in C.  # Other uses  The error model and the `Status`
-  message can be used in a variety of environments, either with or without
-  APIs, to provide a consistent developer experience across different
-  environments.  Example uses of this error model include:  - Partial errors.
-  If a service needs to return partial errors to the client,     it may embed
-  the `Status` in the normal response to indicate the partial     errors.  -
-  Workflow errors. A typical workflow has multiple steps. Each step may
-  have a `Status` message for error reporting.  - Batch operations. If a
-  client uses batch request and batch response, the     `Status` message
-  should be used directly inside batch response, one for     each error sub-
-  response.  - Asynchronous operations. If an API call embeds asynchronous
-  operation     results in its response, the status of those operations should
-  be     represented directly using the `Status` message.  - Logging. If some
-  API errors are stored in logs, the message `Status` could     be used
-  directly after any stripping needed for security/privacy reasons.
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details.  You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
 
   Messages:
     DetailsValueListEntry: A DetailsValueListEntry object.
@@ -3637,6 +3629,28 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class StreamConfig(_messages.Message):
+  r"""This structure contains configuration for streaming FHIR export.
+
+  Fields:
+    bigqueryDestination: The destination BigQuery structure that contains both
+      the dataset location and corresponding schema config. The output will be
+      organized in one table per resource type. The server will inspect and
+      potentially create new tables (if they don't exist) in the given
+      BigQuery dataset. Results will be appended to the corresponding BigQuery
+      tables. The views of the latest snapshot will also be automatically
+      created in the dataset.
+    resourceTypes: Supply a FHIR resource type (such as "Patient" or
+      "Observation"). See https://www.hl7.org/fhir/valueset-resource-
+      types.html for a list of all FHIR resource types. The server will treat
+      an empty list as an intent to stream all the supported resource types in
+      this FHIR store.
+  """
+
+  bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1alpha2FhirBigQueryDestination', 1)
+  resourceTypes = _messages.StringField(2, repeated=True)
 
 
 class TagFilterList(_messages.Message):

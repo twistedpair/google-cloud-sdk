@@ -315,6 +315,8 @@ If you want to enable all scopes use the 'cloud-platform' scope.
           information on time formats.
           """)
 
+  AddKerberosGroup(parser)
+
 
 def _AddDiskArgs(parser):
   """Adds disk related args to the parser."""
@@ -392,8 +394,6 @@ def BetaArgsForClusterRef(parser):
   autoscaling_group = parser.add_argument_group()
   flags.AddAutoscalingPolicyResourceArgForCluster(
       autoscaling_group, api_version='v1beta2')
-
-  AddKerberosGroup(parser)
 
   parser.add_argument(
       '--enable-component-gateway',
@@ -595,21 +595,20 @@ def GetClusterConfig(args,
       softwareConfig=software_config,
   )
 
-  if beta:
-    if args.kerberos_config_file or args.kerberos_root_principal_password_uri:
-      cluster_config.securityConfig = dataproc.messages.SecurityConfig()
-      if args.kerberos_config_file:
-        cluster_config.securityConfig.kerberosConfig = ParseKerberosConfigFile(
-            dataproc, args.kerberos_config_file)
-      else:
-        kerberos_config = dataproc.messages.KerberosConfig()
-        kerberos_config.enableKerberos = True
-        if args.kerberos_root_principal_password_uri:
-          kerberos_config.rootPrincipalPasswordUri = \
-            args.kerberos_root_principal_password_uri
-          kerberos_kms_ref = args.CONCEPTS.kerberos_kms_key.Parse()
-          kerberos_config.kmsKeyUri = kerberos_kms_ref.RelativeName()
-        cluster_config.securityConfig.kerberosConfig = kerberos_config
+  if args.kerberos_config_file or args.kerberos_root_principal_password_uri:
+    cluster_config.securityConfig = dataproc.messages.SecurityConfig()
+    if args.kerberos_config_file:
+      cluster_config.securityConfig.kerberosConfig = ParseKerberosConfigFile(
+          dataproc, args.kerberos_config_file)
+    else:
+      kerberos_config = dataproc.messages.KerberosConfig()
+      kerberos_config.enableKerberos = True
+      if args.kerberos_root_principal_password_uri:
+        kerberos_config.rootPrincipalPasswordUri = \
+          args.kerberos_root_principal_password_uri
+        kerberos_kms_ref = args.CONCEPTS.kerberos_kms_key.Parse()
+        kerberos_config.kmsKeyUri = kerberos_kms_ref.RelativeName()
+      cluster_config.securityConfig.kerberosConfig = kerberos_config
 
   if beta:
     if args.enable_component_gateway:

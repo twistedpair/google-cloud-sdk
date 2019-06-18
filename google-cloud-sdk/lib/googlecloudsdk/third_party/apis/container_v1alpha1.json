@@ -534,6 +534,10 @@
         "linuxNodeConfig": {
           "description": "Parameters that can be configured on Linux nodes.",
           "$ref": "LinuxNodeConfig"
+        },
+        "kubeletConfig": {
+          "description": "Node kubelet configs.",
+          "$ref": "NodeKubeletConfig"
         }
       }
     },
@@ -727,6 +731,21 @@
           "additionalProperties": {
             "type": "string"
           }
+        }
+      }
+    },
+    "NodeKubeletConfig": {
+      "id": "NodeKubeletConfig",
+      "description": "Node kubelet configs.\nNOTE: This is an Alpha only API.",
+      "type": "object",
+      "properties": {
+        "cpuManagerPolicy": {
+          "description": "Control the CPU management policy on the node.\nSee\nhttps:\/\/kubernetes.io\/docs\/tasks\/administer-cluster\/cpu-management-policies\/\n\nThe following values are allowed.\n  - \"none\": the default, which represents the existing scheduling behavior.\n  - \"static\": allows pods with certain resource characteristics to be\n              granted increased CPU affinity and exclusivity on the node.",
+          "type": "string"
+        },
+        "cpuCfsQuota": {
+          "description": "Enable CPU CFS quota enforcement for containers that specify CPU limits.",
+          "type": "boolean"
         }
       }
     },
@@ -2457,6 +2476,30 @@
           "items": {
             "type": "string"
           }
+        },
+        "cacheHeader": {
+          "description": "OnePlatform automagically extracts this field and uses it to set the HTTP\nCache-Control header.",
+          "$ref": "HttpCacheControlResponseHeader"
+        }
+      }
+    },
+    "HttpCacheControlResponseHeader": {
+      "id": "HttpCacheControlResponseHeader",
+      "description": "RFC-2616: cache control support",
+      "type": "object",
+      "properties": {
+        "directive": {
+          "description": "14.9 request and response directives",
+          "type": "string"
+        },
+        "age": {
+          "description": "14.6 response cache age, in seconds since the response is generated",
+          "type": "string",
+          "format": "int64"
+        },
+        "expires": {
+          "description": "14.21 response cache expires, in RFC 1123 date format",
+          "type": "string"
         }
       }
     },
@@ -2471,6 +2514,10 @@
           "items": {
             "$ref": "Jwk"
           }
+        },
+        "cacheHeader": {
+          "description": "OnePlatform automagically extracts this field and uses it to set the HTTP\nCache-Control header.",
+          "$ref": "HttpCacheControlResponseHeader"
         }
       }
     },

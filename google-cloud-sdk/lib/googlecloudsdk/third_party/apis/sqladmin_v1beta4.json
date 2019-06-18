@@ -5,7 +5,7 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20190524",
+ "revision": "20190607",
  "title": "Cloud SQL Admin API",
  "description": "Creates and manages Cloud SQL instances, which provide fully managed MySQL or PostgreSQL databases.",
  "ownerDomain": "google.com",
@@ -1305,6 +1305,10 @@
      "type": "string",
      "description": "This is always sql#restoreBackupContext.",
      "default": "sql#restoreBackupContext"
+    },
+    "project": {
+     "type": "string",
+     "description": "The full project ID of the source instance."
     }
    }
   },

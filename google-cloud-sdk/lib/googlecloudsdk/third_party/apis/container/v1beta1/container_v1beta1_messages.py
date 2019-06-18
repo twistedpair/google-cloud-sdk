@@ -338,6 +338,7 @@ class Cluster(_messages.Message):
     subnetwork: The name of the Google Compute Engine
       [subnetwork](/compute/docs/subnetworks) to which the cluster is
       connected. On output this shows the subnetwork ID instead of the name.
+    tierSettings: Cluster tier settings.
     tpuIpv4CidrBlock: [Output only] The IP address range of the Cloud TPUs in
       this cluster, in [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
       Domain_Routing) notation (e.g. `1.2.3.4/29`).
@@ -453,10 +454,11 @@ class Cluster(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 48)
   statusMessage = _messages.StringField(49)
   subnetwork = _messages.StringField(50)
-  tpuIpv4CidrBlock = _messages.StringField(51)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 52)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 53)
-  zone = _messages.StringField(54)
+  tierSettings = _messages.MessageField('TierSettings', 51)
+  tpuIpv4CidrBlock = _messages.StringField(52)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 53)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 54)
+  zone = _messages.StringField(55)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -1211,11 +1213,14 @@ class GetJSONWebKeysResponse(_messages.Message):
   7517
 
   Fields:
+    cacheHeader: OnePlatform automatically extracts this field and uses it to
+      set the HTTP Cache-Control header.
     keys: The public component of the keys used by the cluster to sign token
       requests.
   """
 
-  keys = _messages.MessageField('Jwk', 1, repeated=True)
+  cacheHeader = _messages.MessageField('HttpCacheControlResponseHeader', 1)
+  keys = _messages.MessageField('Jwk', 2, repeated=True)
 
 
 class GetOpenIDConfigResponse(_messages.Message):
@@ -1223,6 +1228,8 @@ class GetOpenIDConfigResponse(_messages.Message):
   See the OpenID Connect Discovery 1.0 specification for details.
 
   Fields:
+    cacheHeader: OnePlatform automatically extracts this field and uses it to
+      set the HTTP Cache-Control header.
     claims_supported: Supported claims.
     grant_types: Supported grant types.
     id_token_signing_alg_values_supported: supported ID Token signing
@@ -1233,13 +1240,14 @@ class GetOpenIDConfigResponse(_messages.Message):
     subject_types_supported: Supported subject types.
   """
 
-  claims_supported = _messages.StringField(1, repeated=True)
-  grant_types = _messages.StringField(2, repeated=True)
-  id_token_signing_alg_values_supported = _messages.StringField(3, repeated=True)
-  issuer = _messages.StringField(4)
-  jwks_uri = _messages.StringField(5)
-  response_types_supported = _messages.StringField(6, repeated=True)
-  subject_types_supported = _messages.StringField(7, repeated=True)
+  cacheHeader = _messages.MessageField('HttpCacheControlResponseHeader', 1)
+  claims_supported = _messages.StringField(2, repeated=True)
+  grant_types = _messages.StringField(3, repeated=True)
+  id_token_signing_alg_values_supported = _messages.StringField(4, repeated=True)
+  issuer = _messages.StringField(5)
+  jwks_uri = _messages.StringField(6)
+  response_types_supported = _messages.StringField(7, repeated=True)
+  subject_types_supported = _messages.StringField(8, repeated=True)
 
 
 class HorizontalPodAutoscaling(_messages.Message):
@@ -1254,6 +1262,20 @@ class HorizontalPodAutoscaling(_messages.Message):
   """
 
   disabled = _messages.BooleanField(1)
+
+
+class HttpCacheControlResponseHeader(_messages.Message):
+  r"""RFC-2616: cache control support
+
+  Fields:
+    age: 14.6 response cache age, in seconds since the response is generated
+    directive: 14.9 request and response directives
+    expires: 14.21 response cache expires, in RFC 1123 date format
+  """
+
+  age = _messages.IntegerField(1)
+  directive = _messages.StringField(2)
+  expires = _messages.StringField(3)
 
 
 class HttpLoadBalancing(_messages.Message):
@@ -1586,8 +1608,7 @@ class MasterAuth(_messages.Message):
       configuration is specified, a client certificate is issued.
     clientKey: [Output only] Base64-encoded private key used by clients to
       authenticate to the cluster endpoint.
-    clusterCaCertificate: [Output only] Base64-encoded public certificate that
-      is the root of trust for the cluster.
+    clusterCaCertificate: A string attribute.
     password: The password to use for HTTP basic authentication to the master
       endpoint. Because the master endpoint is open to the Internet, you
       should create a strong password.  If a password is provided for cluster
@@ -2894,6 +2915,34 @@ class StatusCondition(_messages.Message):
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
+
+
+class TierSettings(_messages.Message):
+  r"""Cluster tier settings.
+
+  Enums:
+    TierValueValuesEnum: Cluster tier.
+
+  Fields:
+    tier: Cluster tier.
+  """
+
+  class TierValueValuesEnum(_messages.Enum):
+    r"""Cluster tier.
+
+    Values:
+      UNSPECIFIED: UNSPECIFIED is the default value. If this value is set
+        during create or update, it defaults to the project level tier
+        setting.
+      STANDARD: Represents the standard tier or base Google Kubernetes Engine
+        offering.
+      ADVANCED: Represents the advanced tier.
+    """
+    UNSPECIFIED = 0
+    STANDARD = 1
+    ADVANCED = 2
+
+  tier = _messages.EnumField('TierValueValuesEnum', 1)
 
 
 class UpdateClusterRequest(_messages.Message):

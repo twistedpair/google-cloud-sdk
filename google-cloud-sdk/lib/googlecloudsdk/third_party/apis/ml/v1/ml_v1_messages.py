@@ -251,13 +251,13 @@ class GoogleCloudMlV1ExplanationConfig(_messages.Message):
     ablationAttribution: A GoogleCloudMlV1AblationAttribution attribute.
     integratedGradientsAttribution: A
       GoogleCloudMlV1IntegratedGradientsAttribution attribute.
-    sabaasAttribution: A GoogleCloudMlV1SaabasAttribution attribute.
+    saabasAttribution: A GoogleCloudMlV1SaabasAttribution attribute.
     treeShapAttribution: A GoogleCloudMlV1TreeShapAttribution attribute.
   """
 
   ablationAttribution = _messages.MessageField('GoogleCloudMlV1AblationAttribution', 1)
   integratedGradientsAttribution = _messages.MessageField('GoogleCloudMlV1IntegratedGradientsAttribution', 2)
-  sabaasAttribution = _messages.MessageField('GoogleCloudMlV1SaabasAttribution', 3)
+  saabasAttribution = _messages.MessageField('GoogleCloudMlV1SaabasAttribution', 3)
   treeShapAttribution = _messages.MessageField('GoogleCloudMlV1TreeShapAttribution', 4)
 
 
@@ -518,10 +518,10 @@ class GoogleCloudMlV1HyperparameterSpec(_messages.Message):
       job enables auto trial early stopping.
     goal: Required. The type of goal to use for tuning. Available types are
       `MAXIMIZE` and `MINIMIZE`.  Defaults to `MAXIMIZE`.
-    hyperparameterMetricTag: Optional. The Tensorflow summary tag name to use
-      for optimizing trials. For current versions of Tensorflow, this tag name
-      should exactly match what is shown in Tensorboard, including all scopes.
-      For versions of Tensorflow prior to 0.12, this should be only the tag
+    hyperparameterMetricTag: Optional. The TensorFlow summary tag name to use
+      for optimizing trials. For current versions of TensorFlow, this tag name
+      should exactly match what is shown in TensorBoard, including all scopes.
+      For versions of TensorFlow prior to 0.12, this should be only the tag
       passed to tf.Summary. By default, "training/hptuning/metric" will be
       used.
     maxFailedTrials: Optional. The number of failed trials that need to be
@@ -1350,6 +1350,8 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       See more about [using Compute Engine machine types](/ml-
       engine/docs/tensorflow/machine-types#compute-engine-machine-types).  You
       must set this value when `scaleTier` is set to `CUSTOM`.
+    maxRunningTime: Optional. The maximum job running time. The default is 7
+      days.
     packageUris: Required. The Google Cloud Storage location of the packages
       with the training program and any additional dependencies. The maximum
       number of package URIs is 100.
@@ -1463,18 +1465,19 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
   jobDir = _messages.StringField(3)
   masterConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 4)
   masterType = _messages.StringField(5)
-  packageUris = _messages.StringField(6, repeated=True)
-  parameterServerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 7)
-  parameterServerCount = _messages.IntegerField(8)
-  parameterServerType = _messages.StringField(9)
-  pythonModule = _messages.StringField(10)
-  pythonVersion = _messages.StringField(11)
-  region = _messages.StringField(12)
-  runtimeVersion = _messages.StringField(13)
-  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 14)
-  workerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 15)
-  workerCount = _messages.IntegerField(16)
-  workerType = _messages.StringField(17)
+  maxRunningTime = _messages.StringField(6)
+  packageUris = _messages.StringField(7, repeated=True)
+  parameterServerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 8)
+  parameterServerCount = _messages.IntegerField(9)
+  parameterServerType = _messages.StringField(10)
+  pythonModule = _messages.StringField(11)
+  pythonVersion = _messages.StringField(12)
+  region = _messages.StringField(13)
+  runtimeVersion = _messages.StringField(14)
+  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 15)
+  workerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 16)
+  workerCount = _messages.IntegerField(17)
+  workerType = _messages.StringField(18)
 
 
 class GoogleCloudMlV1TrainingOutput(_messages.Message):
@@ -1486,6 +1489,10 @@ class GoogleCloudMlV1TrainingOutput(_messages.Message):
     completedTrialCount: The number of hyperparameter tuning trials that
       completed successfully. Only set for hyperparameter tuning jobs.
     consumedMLUnits: The amount of ML units consumed by the job.
+    hyperparameterMetricTag: The TensorFlow summary tag name used for
+      optimizing hyperparameter tuning trials. See [`HyperparameterSpec.hyperp
+      arameterMetricTag`](#HyperparameterSpec.FIELDS.hyperparameter_metric_tag
+      ) for more information. Only set for hyperparameter tuning jobs.
     isBuiltInAlgorithmJob: Whether this job is a built-in Algorithm job.
     isHyperparameterTuningJob: Whether this job is a hyperparameter tuning
       job.
@@ -1496,9 +1503,10 @@ class GoogleCloudMlV1TrainingOutput(_messages.Message):
   builtInAlgorithmOutput = _messages.MessageField('GoogleCloudMlV1BuiltInAlgorithmOutput', 1)
   completedTrialCount = _messages.IntegerField(2)
   consumedMLUnits = _messages.FloatField(3)
-  isBuiltInAlgorithmJob = _messages.BooleanField(4)
-  isHyperparameterTuningJob = _messages.BooleanField(5)
-  trials = _messages.MessageField('GoogleCloudMlV1HyperparameterOutput', 6, repeated=True)
+  hyperparameterMetricTag = _messages.StringField(4)
+  isBuiltInAlgorithmJob = _messages.BooleanField(5)
+  isHyperparameterTuningJob = _messages.BooleanField(6)
+  trials = _messages.MessageField('GoogleCloudMlV1HyperparameterOutput', 7, repeated=True)
 
 
 class GoogleCloudMlV1TreeShapAttribution(_messages.Message):
@@ -2074,37 +2082,10 @@ class GoogleProtobufEmpty(_messages.Message):
 class GoogleRpcStatus(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
-  used by [gRPC](https://github.com/grpc). The error model is designed to be:
-  - Simple to use and understand for most users - Flexible enough to meet
-  unexpected needs  # Overview  The `Status` message contains three pieces of
-  data: error code, error message, and error details. The error code should be
-  an enum value of google.rpc.Code, but it may accept additional error codes
-  if needed.  The error message should be a developer-facing English message
-  that helps developers *understand* and *resolve* the error. If a localized
-  user-facing error message is needed, put the localized message in the error
-  details or localize it in the client. The optional error details may contain
-  arbitrary information about the error. There is a predefined set of error
-  detail types in the package `google.rpc` that can be used for common error
-  conditions.  # Language mapping  The `Status` message is the logical
-  representation of the error model, but it is not necessarily the actual wire
-  format. When the `Status` message is exposed in different client libraries
-  and different wire protocols, it can be mapped differently. For example, it
-  will likely be mapped to some exceptions in Java, but more likely mapped to
-  some error codes in C.  # Other uses  The error model and the `Status`
-  message can be used in a variety of environments, either with or without
-  APIs, to provide a consistent developer experience across different
-  environments.  Example uses of this error model include:  - Partial errors.
-  If a service needs to return partial errors to the client,     it may embed
-  the `Status` in the normal response to indicate the partial     errors.  -
-  Workflow errors. A typical workflow has multiple steps. Each step may
-  have a `Status` message for error reporting.  - Batch operations. If a
-  client uses batch request and batch response, the     `Status` message
-  should be used directly inside batch response, one for     each error sub-
-  response.  - Asynchronous operations. If an API call embeds asynchronous
-  operation     results in its response, the status of those operations should
-  be     represented directly using the `Status` message.  - Logging. If some
-  API errors are stored in logs, the message `Status` could     be used
-  directly after any stripping needed for security/privacy reasons.
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details.  You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
 
   Messages:
     DetailsValueListEntry: A DetailsValueListEntry object.
