@@ -309,7 +309,7 @@ required: [request, help_text, arguments]
 properties:
 
   # Determines whether the command is visible in help text or not.
-  is_hidden: {type: boolean}
+  hidden: {type: boolean}
 
   # Determines which release tracks this command implementation will apply to.
   release_tracks:
@@ -497,6 +497,9 @@ properties:
       api_version: {type: string}
       # The API method to call to get the operation ('get' by default).
       method: {type: string}
+      # The message to print when the request is issued. The default depends on
+      # the command type.
+      request_issued_message: {type: string}
       # The field in the operation message that corresponds to the operation's
       # full name ('name' by default). Not used by Wait commands.
       response_name_field: {type: string}

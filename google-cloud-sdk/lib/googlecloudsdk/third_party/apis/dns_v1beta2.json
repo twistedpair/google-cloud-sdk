@@ -4,7 +4,7 @@
  "id": "dns:v1beta2",
  "name": "dns",
  "version": "v1beta2",
- "revision": "20190524",
+ "revision": "20190615",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -15,9 +15,9 @@
  },
  "documentationLink": "https://developers.google.com/cloud-dns",
  "protocol": "rest",
- "baseUrl": "https://www.googleapis.com/dns/v1beta2/projects/",
+ "baseUrl": "https://dns.googleapis.com/dns/v1beta2/projects/",
  "basePath": "/dns/v1beta2/projects/",
- "rootUrl": "https://www.googleapis.com/",
+ "rootUrl": "https://dns.googleapis.com/",
  "servicePath": "dns/v1beta2/projects/",
  "batchPath": "batch/dns/v1beta2",
  "parameters": {
@@ -421,7 +421,7 @@
    "properties": {
     "defaultKeySpecs": {
      "type": "array",
-     "description": "Specifies parameters that will be used for generating initial DnsKeys for this ManagedZone. Output only while state is not OFF.",
+     "description": "Specifies parameters that will be used for generating initial DnsKeys for this ManagedZone. Can only be changed while state is OFF.",
      "items": {
       "$ref": "DnsKeySpec"
      }
@@ -433,7 +433,7 @@
     },
     "nonExistence": {
      "type": "string",
-     "description": "Specifies the mechanism used to provide authenticated denial-of-existence responses. Output only while state is not OFF.",
+     "description": "Specifies the mechanism used to provide authenticated denial-of-existence responses. Can only be changed while state is OFF.",
      "enum": [
       "nsec",
       "nsec3"

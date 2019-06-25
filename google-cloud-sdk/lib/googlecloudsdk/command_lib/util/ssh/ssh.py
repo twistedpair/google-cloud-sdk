@@ -974,7 +974,7 @@ def _BuildIapTunnelProxyCommandArgs(iap_tunnel_args, env):
   # correct as long as the python executable path doesn't contain a doublequote
   # or end with a backslash, which should never happen.
   gcloud_command = [_EscapeProxyCommandArg(x, env) for x in gcloud_command]
-  # track, project, zone, instance, interface, verbosity should only contain
+  # track, project, zone, instance, verbosity should only contain
   # characters that don't need escaping, so don't bother escaping them.
   if iap_tunnel_args.track:
     gcloud_command.append(iap_tunnel_args.track)
@@ -983,8 +983,7 @@ def _BuildIapTunnelProxyCommandArgs(iap_tunnel_args, env):
       'compute', 'start-iap-tunnel', iap_tunnel_args.instance, port_token,
       '--listen-on-stdin',
       '--project=' + iap_tunnel_args.project,
-      '--zone=' + iap_tunnel_args.zone,
-      '--network-interface=' + iap_tunnel_args.interface])
+      '--zone=' + iap_tunnel_args.zone])
   for arg in iap_tunnel_args.pass_through_args:
     gcloud_command.append(_EscapeProxyCommandArg(arg, env))
 

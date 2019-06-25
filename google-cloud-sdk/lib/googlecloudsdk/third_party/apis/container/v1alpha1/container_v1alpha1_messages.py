@@ -39,6 +39,8 @@ class AddonsConfig(_messages.Message):
       Kubernetes API
     dnsCacheConfig: Configuration for NodeLocalDNS, a dns cache running on
       cluster nodes
+    gcePersistentDiskCsiDriverConfig: Configuration for the GCE PD CSI driver.
+      This option can only be enabled at cluster creation time.
     horizontalPodAutoscaling: Configuration for the horizontal pod autoscaling
       feature, which increases or decreases the number of replica pods a
       replication controller has based on the resource usage of the existing
@@ -56,18 +58,17 @@ class AddonsConfig(_messages.Message):
     networkPolicyConfig: Configuration for NetworkPolicy. This only tracks
       whether the addon is enabled or not on the Master, it does not track
       whether network policy is enabled for the nodes.
-    serverlessConfig: Deprecated: use CloudRunConfig instead (same behavior).
   """
 
   cloudRunConfig = _messages.MessageField('CloudRunConfig', 1)
   configConnectorConfig = _messages.MessageField('ConfigConnectorConfig', 2)
   dnsCacheConfig = _messages.MessageField('DnsCacheConfig', 3)
-  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 4)
-  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 5)
-  istioConfig = _messages.MessageField('IstioConfig', 6)
-  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 7)
-  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 8)
-  serverlessConfig = _messages.MessageField('ServerlessConfig', 9)
+  gcePersistentDiskCsiDriverConfig = _messages.MessageField('GcePersistentDiskCsiDriverConfig', 4)
+  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 5)
+  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 6)
+  istioConfig = _messages.MessageField('IstioConfig', 7)
+  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 8)
+  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 9)
 
 
 class AuthenticatorGroupsConfig(_messages.Message):
@@ -540,11 +541,13 @@ class ClusterAutoscaling(_messages.Message):
     r"""Defines autoscaling behaviour.
 
     Values:
-      PROFILE_UNSPECIFIED: Use default (balanced) autoscaling configuration.
+      PROFILE_UNSPECIFIED: No change to autoscaling configuration.
       OPTIMIZE_UTILIZATION: Prioritize optimizing utilization of resources.
+      BALANCED: Use default (balanced) autoscaling configuration.
     """
     PROFILE_UNSPECIFIED = 0
     OPTIMIZE_UTILIZATION = 1
+    BALANCED = 2
 
   autoprovisioningLocations = _messages.StringField(1, repeated=True)
   autoprovisioningNodePoolDefaults = _messages.MessageField('AutoprovisioningNodePoolDefaults', 2)
@@ -1379,6 +1382,17 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class GcePersistentDiskCsiDriverConfig(_messages.Message):
+  r"""Configuration for the GCE PD CSI driver. This option can only be enabled
+  at cluster creation time.
+
+  Fields:
+    enabled: Whether the GCE PD CSI driver is enabled for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class GetJSONWebKeysResponse(_messages.Message):
@@ -2881,16 +2895,6 @@ class ServerConfig(_messages.Message):
   validImageTypes = _messages.StringField(3, repeated=True)
   validMasterVersions = _messages.StringField(4, repeated=True)
   validNodeVersions = _messages.StringField(5, repeated=True)
-
-
-class ServerlessConfig(_messages.Message):
-  r"""Configuration options for the serverless feature.
-
-  Fields:
-    disabled: Whether serverless is enabled for this cluster.
-  """
-
-  disabled = _messages.BooleanField(1)
 
 
 class SetAddonsConfigRequest(_messages.Message):

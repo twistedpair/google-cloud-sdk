@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://dialogflow.googleapis.com/v2/'
-DOCS_URL = 'https://cloud.google.com/dialogflow-enterprise/'
+DOCS_URL = 'https://cloud.google.com/dialogflow/'
 
 
 class Collections(enum.Enum):

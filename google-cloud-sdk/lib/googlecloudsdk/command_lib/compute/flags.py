@@ -900,7 +900,7 @@ def AddEraseVssSignature(parser, resource):
       default=False,
       help="""
               Specifies whether the disk restored from {resource} should
-              erase Windows specific VSS signature. See
-                *https://cloud.google.com/sdk/gcloud/reference/compute/disks/snapshot#--guest-flush
+              erase Windows specific VSS signature.
+              See https://cloud.google.com/sdk/gcloud/reference/compute/disks/snapshot#--guest-flush
            """.format(resource=resource)
   )

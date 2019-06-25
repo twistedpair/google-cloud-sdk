@@ -146,6 +146,23 @@ class Kubeconfig(object):
               if platforms.OperatingSystem.IsWindows() else 'HOME'))
     return os.path.join(home_dir, '.kube', 'config')
 
+  def Merge(self, kubeconfig):
+    """Merge another kubeconfig into self.
+
+    In case of overlapping keys, the value in self is kept and the value in
+    the other kubeconfig is lost.
+
+    Args:
+      kubeconfig: a Kubeconfig instance
+    """
+    self.SetCurrentContext(self.current_context or kubeconfig.current_context)
+    self.clusters = dict(
+        list(kubeconfig.clusters.items()) + list(self.clusters.items()))
+    self.users = dict(
+        list(kubeconfig.users.items()) + list(self.users.items()))
+    self.contexts = dict(
+        list(kubeconfig.contexts.items()) + list(self.contexts.items()))
+
 
 def Cluster(name, server, ca_path=None, ca_data=None):
   """Generate and return a cluster kubeconfig object."""

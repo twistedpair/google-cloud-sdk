@@ -639,12 +639,14 @@ class GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata(_messages.M
       semantic see SloMetadata.exclusions. If both instance and node level
       exclusions are present for time period, the node level's reason will be
       reported by Eligibility Exporter.
+    location: The location of the node, if different from instance location.
     nodeId: The id of the node. This should be equal to
       SaasInstanceNode.node_id.
   """
 
   exclusions = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion', 1, repeated=True)
-  nodeId = _messages.StringField(2)
+  location = _messages.StringField(2)
+  nodeId = _messages.StringField(3)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1NotificationMetadata(_messages.Message):

@@ -22,7 +22,6 @@ import getpass
 
 from googlecloudsdk.api_lib.sql import constants
 from googlecloudsdk.api_lib.sql import instance_prop_reducers as reducers
-from googlecloudsdk.api_lib.sql import instances as api_util
 from googlecloudsdk.api_lib.sql import validate
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
@@ -272,14 +271,6 @@ class _BaseInstances(object):
 
     if args.storage_type:
       settings.dataDiskType = STORAGE_TYPE_PREFIX + args.storage_type
-
-    # Check that availability type is only specified if this is Postgres.
-    if (args.IsSpecified('availability_type') and
-        not api_util.InstancesV1Beta4.IsPostgresDatabaseVersion(
-            args.database_version)):
-      raise exceptions.InvalidArgumentException(
-          '--availability-type', 'Cannot set [--availability-type] on a '
-          'non-Postgres instance.')
 
     # BETA args.
     if _IsBetaOrNewer(release_track):

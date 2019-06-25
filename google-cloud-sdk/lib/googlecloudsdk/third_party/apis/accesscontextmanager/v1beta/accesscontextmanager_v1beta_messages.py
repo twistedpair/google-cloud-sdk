@@ -365,6 +365,21 @@ class BasicLevel(_messages.Message):
   conditions = _messages.MessageField('Condition', 2, repeated=True)
 
 
+class BridgeServiceRestriction(_messages.Message):
+  r"""Alpha. Specifies which services are granted access via this Bridge
+  Service Perimeter.
+
+  Fields:
+    allowedServices: The list of APIs usable through the Bridge Perimeter.
+      Must be empty unless 'enable_restriction' is True.
+    enableRestriction: Whether to restrict the set of APIs callable through
+      the Bridge Service Perimeter.
+  """
+
+  allowedServices = _messages.StringField(1, repeated=True)
+  enableRestriction = _messages.BooleanField(2)
+
+
 class Condition(_messages.Message):
   r"""A condition necessary for an `AccessLevel` to be granted. The Condition
   is an AND over its fields. So a Condition is true if: 1) the request IP is
@@ -470,6 +485,21 @@ class DevicePolicy(_messages.Message):
   requireAdminApproval = _messages.BooleanField(4)
   requireCorpOwned = _messages.BooleanField(5)
   requireScreenlock = _messages.BooleanField(6)
+
+
+class IngressServiceRestriction(_messages.Message):
+  r"""Alpha. Specifies how Access Levels are to be used for accessing the
+  Service Perimeter.
+
+  Fields:
+    allowedServices: The list of APIs usable with a valid Access Level. Must
+      be empty unless 'enable_restriction' is True.
+    enableRestriction: Whether to restrict the set of APIs callable outside
+      the Service Perimeter via Access Levels.
+  """
+
+  allowedServices = _messages.StringField(1, repeated=True)
+  enableRestriction = _messages.BooleanField(2)
 
 
 class ListAccessLevelsResponse(_messages.Message):
@@ -735,6 +765,11 @@ class ServicePerimeterConfig(_messages.Message):
       the perimeter. Example:
       `"accessPolicies/MY_POLICY/accessLevels/MY_LEVEL"`. For Service
       Perimeter Bridge, must be empty.
+    bridgeServiceRestriction: Alpha. Configuration for what services are
+      accessible via the Bridge Perimeter. Must be empty for non-Bridge
+      Perimeters.
+    ingressServiceRestriction: Alpha. Configuration for which services may be
+      used with Access Levels.
     resources: A list of GCP resources that are inside of the service
       perimeter. Currently only projects are allowed. Format:
       `projects/{project_number}`
@@ -746,12 +781,17 @@ class ServicePerimeterConfig(_messages.Message):
       Perimeter restrictions. Deprecated. Must be set to a single wildcard
       "*".  The wildcard means that unless explicitly specified by
       "restricted_services" list, any service is treated as unrestricted.
+    vpcServiceRestriction: Alpha. Configuration for within Perimeter allowed
+      APIs.
   """
 
   accessLevels = _messages.StringField(1, repeated=True)
-  resources = _messages.StringField(2, repeated=True)
-  restrictedServices = _messages.StringField(3, repeated=True)
-  unrestrictedServices = _messages.StringField(4, repeated=True)
+  bridgeServiceRestriction = _messages.MessageField('BridgeServiceRestriction', 2)
+  ingressServiceRestriction = _messages.MessageField('IngressServiceRestriction', 3)
+  resources = _messages.StringField(4, repeated=True)
+  restrictedServices = _messages.StringField(5, repeated=True)
+  unrestrictedServices = _messages.StringField(6, repeated=True)
+  vpcServiceRestriction = _messages.MessageField('VpcServiceRestriction', 7)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -866,6 +906,21 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class VpcServiceRestriction(_messages.Message):
+  r"""Alpha. Specifies how APIs are allowed to communicate within the Service
+  Perimeter.
+
+  Fields:
+    allowedServices: The list of APIs usable within the Service Perimeter.
+      Must be empty unless 'enable_restriction' is True.
+    enableRestriction: Whether to restrict API calls within the Service
+      Perimeter to the list of APIs specified in 'allowed_services'.
+  """
+
+  allowedServices = _messages.StringField(1, repeated=True)
+  enableRestriction = _messages.BooleanField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

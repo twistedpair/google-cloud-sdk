@@ -1286,13 +1286,15 @@ class TestCase(_messages.Message):
     Values:
       error: <no description>
       failed: <no description>
+      flaky: <no description>
       passed: <no description>
       skipped: <no description>
     """
     error = 0
     failed = 1
-    passed = 2
-    skipped = 3
+    flaky = 2
+    passed = 3
+    skipped = 4
 
   endTime = _messages.MessageField('Timestamp', 1)
   skippedMessage = _messages.StringField(2)
@@ -1469,6 +1471,7 @@ class TestSuiteOverview(_messages.Message):
   mode for the corresponding step.
 
   Fields:
+    elapsedTime: Elapsed time of test suite.
     errorCount: Number of test cases in error, typically set by the service by
       parsing the xml_source.  - In create/response: always set - In update
       request: never
@@ -1489,12 +1492,13 @@ class TestSuiteOverview(_messages.Message):
       supported.  - In create/response: optional - In update request: never
   """
 
-  errorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  failureCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  name = _messages.StringField(3)
-  skippedCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  totalCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  xmlSource = _messages.MessageField('FileReference', 6)
+  elapsedTime = _messages.MessageField('Duration', 1)
+  errorCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  failureCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  name = _messages.StringField(4)
+  skippedCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  totalCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  xmlSource = _messages.MessageField('FileReference', 7)
 
 
 class TestTiming(_messages.Message):

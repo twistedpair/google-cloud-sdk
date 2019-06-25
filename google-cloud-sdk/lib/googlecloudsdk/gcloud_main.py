@@ -40,6 +40,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import store as creds_store
+from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.survey import survey_check
 from googlecloudsdk.core.updater import local_state
 from googlecloudsdk.core.updater import update_manager
@@ -67,9 +68,14 @@ def UpdateCheck(command_path, **unused_kwargs):
 
 
 def SurveyPromptCheck(command_path, **unused_kwargs):
+  """Checks for in-tool survey prompt."""
   del command_path
   try:
-    if not properties.VALUES.survey.disable_prompts.GetBool():
+    # dev shell environment uses temporary folder for user config. That means
+    # survey prompt cache gets cleaned each time user starts a new session,
+    # which results in too frequent prompting.
+    if not (properties.VALUES.survey.disable_prompts.GetBool() or
+            c_devshell.IsDevshellEnvironment()):
       survey_check.SurveyPrompter().PromptForSurvey()
   # pylint:disable=broad-except, We never want this to escape, ever. Only
   # messages printed should reach the user.

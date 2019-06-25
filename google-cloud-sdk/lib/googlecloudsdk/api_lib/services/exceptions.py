@@ -34,6 +34,10 @@ class ListServicesPermissionDeniedException(Error):
   pass
 
 
+class GetServicePermissionDeniedException(Error):
+  pass
+
+
 class CreateConnectionsPermissionDeniedException(Error):
   pass
 

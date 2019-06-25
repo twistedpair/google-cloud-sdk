@@ -187,10 +187,16 @@ class _KubeconfigConnectionContext(_ClusterConnectionContext):
   """Context manager to connect to a cluster defined in a Kubeconfig file."""
 
   def __init__(self, kubeconfig, context=None):
+    """Initialize connection context based on kubeconfig file.
+
+    Args:
+      kubeconfig: googlecloudsdk.api_lib.container.kubeconfig.Kubeconfig object
+      context: str, current context name
+    """
     super(_KubeconfigConnectionContext, self).__init__(
         self._LoadClusterDetails)
-    self.config = kubeconfig
-    self.context = context
+    self.kubeconfig = kubeconfig
+    self.kubeconfig.SetCurrentContext(context or kubeconfig.current_context)
 
   @property
   def location_label(self):
@@ -210,26 +216,8 @@ class _KubeconfigConnectionContext(_ClusterConnectionContext):
       flags.KubeconfigError: if the config file has missing keys or values.
     """
     try:
-      if self.context:
-        curr_ctx_name = self.context
-      else:
-        curr_ctx_name = self.config['current-context']
-      curr_ctx = next((c for c in self.config['contexts']
-                       if c['name'] == curr_ctx_name), None)
-      if not curr_ctx:
-        raise flags.KubeconfigError(
-            'Count not find context [{}] in kubeconfig.'.format(
-                curr_ctx_name))
-
-      self.cluster = next((c for c in self.config['clusters']
-                           if c['name'] == curr_ctx['context']['cluster']),
-                          None)
-      if not self.cluster:
-        raise flags.KubeconfigError(
-            'Could not find cluster [{}] specified by context [{}] in '
-            'kubeconfig.'.format(
-                curr_ctx['context']['cluster'], curr_ctx_name))
-
+      curr_ctx = self.kubeconfig.contexts[self.kubeconfig.current_context]
+      self.cluster = self.kubeconfig.clusters[curr_ctx['context']['cluster']]
       ca_data = self.cluster['cluster']['certificate-authority-data']
       endpoint = self.cluster['cluster']['server'].replace('https://', '')
     except KeyError as e:
@@ -299,8 +287,8 @@ def GetConnectionContext(args):
     A GKE or regional ConnectionInfo object.
   """
   if flags.IsKubernetes(args):
-    config = flags.GetKubeconfig(args)
-    return _KubeconfigConnectionContext(config, args.context)
+    kubeconfig = flags.GetKubeconfig(args)
+    return _KubeconfigConnectionContext(kubeconfig, args.context)
 
   if flags.IsGKE(args):
     cluster_ref = args.CONCEPTS.cluster.Parse()

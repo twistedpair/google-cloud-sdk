@@ -1127,6 +1127,60 @@ service.
       self._upload_configs = {
           }
 
+    def Agent(self, request, global_params=None):
+      r"""Creates/updates the specified agent.
+
+      Args:
+        request: (DialogflowProjectsAgentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Agent) The response message.
+      """
+      config = self.GetMethodConfig('Agent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Agent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/agent',
+        http_method=u'POST',
+        method_id=u'dialogflow.projects.agent',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'updateMask'],
+        relative_path=u'v2/{+parent}/agent',
+        request_field=u'googleCloudDialogflowV2Agent',
+        request_type_name=u'DialogflowProjectsAgentRequest',
+        response_type_name=u'GoogleCloudDialogflowV2Agent',
+        supports_download=False,
+    )
+
+    def DeleteAgent(self, request, global_params=None):
+      r"""Deletes the specified agent.
+
+      Args:
+        request: (DialogflowProjectsDeleteAgentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('DeleteAgent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteAgent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/agent',
+        http_method=u'DELETE',
+        method_id=u'dialogflow.projects.deleteAgent',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v2/{+parent}/agent',
+        request_field='',
+        request_type_name=u'DialogflowProjectsDeleteAgentRequest',
+        response_type_name=u'GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
     def GetAgent(self, request, global_params=None):
       r"""Retrieves the specified agent.
 

@@ -23,6 +23,18 @@ from googlecloudsdk.core import properties
 
 INSTANCE_NAME_TEMPLATE = 'projects/{}/locations/{}/instances/{}'
 SNAPSHOT_NAME_TEMPLATE = 'projects/{}/locations/{}/snapshots/{}'
+PARENT_TEMPLATE = 'projects/{}/locations/{}'
+
+
+def FormatSnapshotCreateRequest(ref, args, req):
+  """Python hook for yaml commands to supply the snapshot create request with proper values."""
+  del ref
+  req.snapshotId = args.snapshot
+  # If this is a local snapshot, create it in args.instance_zone
+  project = properties.VALUES.core.project.Get(required=True)
+  location = args.region or args.instance_zone
+  req.parent = PARENT_TEMPLATE.format(project, location)
+  return req
 
 
 def AddInstanceNameToRequest(ref, args, req):

@@ -230,7 +230,7 @@ def PromptToEnableApi(project, service_token, exception,
                      'Would you like to enable and retry (this will take a '
                      'few minutes)?')
       .format(service_token, project)):
-    enable_api.EnableServiceIfDisabled(project, service_token)
+    enable_api.EnableService(project, service_token)
     # In the case of a batch request, as long as the error's retryable code
     # (in this case 403) was set, after this runs it should retry. This
     # error code should be consistent with apis.GetApiEnablementInfo

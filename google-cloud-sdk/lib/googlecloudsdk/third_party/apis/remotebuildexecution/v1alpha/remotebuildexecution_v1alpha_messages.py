@@ -336,11 +336,11 @@ class BuildBazelRemoteExecutionV2ExecuteOperationMetadata(_messages.Message):
   metadata field of the Operation.
 
   Enums:
-    StageValueValuesEnum:
+    StageValueValuesEnum: The current stage of execution.
 
   Fields:
     actionDigest: The digest of the Action being executed.
-    stage: A StageValueValuesEnum attribute.
+    stage: The current stage of execution.
     stderrStreamName: If set, the client can use this name with
       ByteStream.Read to stream the standard error.
     stdoutStreamName: If set, the client can use this name with
@@ -348,10 +348,10 @@ class BuildBazelRemoteExecutionV2ExecuteOperationMetadata(_messages.Message):
   """
 
   class StageValueValuesEnum(_messages.Enum):
-    r"""StageValueValuesEnum enum type.
+    r"""The current stage of execution.
 
     Values:
-      UNKNOWN: <no description>
+      UNKNOWN: Invalid value.
       CACHE_CHECK: Checking the result against the cache.
       QUEUED: Currently idle, awaiting a free machine to execute.
       EXECUTING: Currently being executed by a worker.

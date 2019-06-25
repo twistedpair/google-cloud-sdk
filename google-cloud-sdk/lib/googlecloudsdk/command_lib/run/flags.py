@@ -22,7 +22,9 @@ from __future__ import unicode_literals
 import os
 import re
 
+from googlecloudsdk.api_lib.container import kubeconfig
 from googlecloudsdk.api_lib.run import global_methods
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.functions.deploy import env_vars_util
@@ -36,7 +38,6 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
@@ -54,10 +55,13 @@ _PLATFORMS = {
     'gke': 'Cloud Run on Google Kubernetes Engine. Use with the `--cluster` '
            'and `--cluster-location` flags or set the [run/cluster] and '
            '[run/cluster_location] properties to specify a cluster in a given '
-           'zone.',
-    'kubernetes': 'Use a Knative-compatible kubernetes cluster. Use with the '
-                  '`--kubeconfig` and `--context` flags to specify a '
-                  'kubeconfig file and the context for connecting.'
+           'zone.'
+}
+
+_PLATFORM_SHORT_DESCRIPTIONS = {
+    'managed': 'the managed version of Cloud Run',
+    'gke': 'Cloud Run on GKE',
+    'kubernetes': 'a Kubernetes cluster'
 }
 
 _DEFAULT_KUBECONFIG_PATH = '~/.kube/config'
@@ -251,14 +255,26 @@ def AddPlatformArg(parser):
 def AddKubeconfigFlags(parser):
   parser.add_argument(
       '--kubeconfig',
+      hidden=True,
       help='The absolute path to your kubectl config file. If not specified, '
-      'the colon-separated list of paths specified by $KUBECONFIG will be '
-      'used. If $KUBECONFIG is unset, this defaults to `{}`.'.format(
-          _DEFAULT_KUBECONFIG_PATH))
+      'the colon- or semicolon-delimited list of paths specified by '
+      '$KUBECONFIG will be used. If $KUBECONFIG is unset, this defaults to '
+      '`{}`.'.format(_DEFAULT_KUBECONFIG_PATH))
   parser.add_argument(
       '--context',
+      hidden=True,
       help='The name of the context in your kubectl config file to use for '
       'connecting.')
+
+
+def AddRevisionSuffixArg(parser):
+  parser.add_argument(
+      '--revision-suffix',
+      hidden=True,
+      help='Specify the suffix of the revision name. Revision names always '
+      'start with the service name automatically. For example, specifying '
+      '[--revision-suffix=v1] for a service named \'helloworld\', '
+      'would lead to a revision named \'helloworld-v1\'.')
 
 
 def _HasEnvChanges(args):
@@ -305,6 +321,24 @@ def _GetEnvChanges(args):
   return config_changes.EnvVarChanges(**kwargs)
 
 
+_CLOUD_SQL_API_SERVICE_TOKEN = 'sql-component.googleapis.com'
+_CLOUD_SQL_ADMIN_API_SERVICE_TOKEN = 'sqladmin.googleapis.com'
+
+
+def _CheckCloudSQLApiEnablement():
+  if not properties.VALUES.core.should_prompt_to_enable_api.GetBool():
+    return
+  project = properties.VALUES.core.project.Get(required=True)
+  apis.PromptToEnableApi(
+      project, _CLOUD_SQL_API_SERVICE_TOKEN,
+      serverless_exceptions.CloudSQLError(
+          'Cloud SQL API could not be enabled.'))
+  apis.PromptToEnableApi(
+      project, _CLOUD_SQL_ADMIN_API_SERVICE_TOKEN,
+      serverless_exceptions.CloudSQLError(
+          'Cloud SQL Admin API could not be enabled.'))
+
+
 def GetConfigurationChanges(args):
   """Returns a list of changes to Configuration, based on the flags set."""
   changes = []
@@ -315,6 +349,7 @@ def GetConfigurationChanges(args):
     region = GetRegion(args)
     project = (getattr(args, 'project', None) or
                properties.VALUES.core.project.Get(required=True))
+    _CheckCloudSQLApiEnablement()
     changes.append(config_changes.CloudSQLChanges(project, region, args))
 
   if 'cpu' in args and args.cpu:
@@ -349,7 +384,8 @@ def GetConfigurationChanges(args):
     diff = labels_util.Diff.FromUpdateArgs(args)
     if diff.MayHaveUpdates():
       changes.append(config_changes.LabelChanges(diff))
-
+  if 'revision_suffix' in args and args.revision_suffix:
+    changes.append(config_changes.RevisionNameChanges(args.revision_suffix))
   return changes
 
 
@@ -425,7 +461,7 @@ def GetEndpointVisibility(args):
   return None
 
 
-def GetAllowUnauthenticated(args, client, service_ref, prompt=False):
+def GetAllowUnauthenticated(args, client=None, service_ref=None, prompt=False):
   """Return bool for the explicit intent to allow unauth invocations or None.
 
   If --[no-]allow-unauthenticated is set, return that value. If not set,
@@ -433,7 +469,7 @@ def GetAllowUnauthenticated(args, client, service_ref, prompt=False):
   return None, indicating that no action needs to be taken.
 
   Args:
-    args: Namespace, The args namespace.
+    args: Namespace, The args namespace
     client: from googlecloudsdk.command_lib.run import serverless_operations
       serverless_operations.ServerlessOperations object
     service_ref: service resource reference (e.g. args.CONCEPTS.service.Parse())
@@ -446,6 +482,10 @@ def GetAllowUnauthenticated(args, client, service_ref, prompt=False):
     return args.allow_unauthenticated
 
   if prompt:
+    if client is None or service_ref is None:
+      raise ValueError(
+          'A client and service reference are required for determining if the '
+          'service\'s IAM policy binding can be modified.')
     if client.CanSetIamPolicyBinding(service_ref):
       return console_io.PromptContinue(
           prompt_string=('Allow unauthenticated invocations '
@@ -455,37 +495,6 @@ def GetAllowUnauthenticated(args, client, service_ref, prompt=False):
       pretty_print.Info(
           'This service will require authentication to be invoked.')
   return None
-
-
-def _DeepMergeConfigs(config, other_config):
-  """Deep merges other_config into config with a single level of depth.
-
-  Merge rules:
-    - list values should concat new items
-    - dict values should merge new items
-    - other values are replaced and missing values are added
-
-  Args:
-    config: dict to be merged into
-    other_config: dict to merge
-
-  Raises:
-    KubeconfigError: if there's mis-matching types for a given key across
-    multiple config files
-  """
-  for k in other_config:
-    if k in config:
-      if not isinstance(config[k], type(other_config[k])):
-        raise KubeconfigError(
-            'Mis-matching types in config files for key: `{}`'.format(k))
-      if isinstance(config[k], list):
-        config[k] += other_config[k]
-      elif isinstance(config[k], dict):
-        config[k].update(other_config[k])
-      else:
-        config[k] = other_config[k]
-    else:
-      config[k] = other_config[k]
 
 
 def GetKubeconfig(args):
@@ -507,24 +516,27 @@ def GetKubeconfig(args):
     KubeconfigError: if $KUBECONFIG is set but contains no valid paths
   """
   if getattr(args, 'kubeconfig', None):
-    return yaml.load_path(files.ExpandHomeDir(args.kubeconfig))
+    return kubeconfig.Kubeconfig.LoadFromFile(
+        files.ExpandHomeDir(args.kubeconfig))
   if os.getenv('KUBECONFIG'):
-    config_paths = os.getenv('KUBECONFIG').split(':')
-    config = {}
+    config_paths = os.getenv('KUBECONFIG').split(os.pathsep)
+    config = None
     # Merge together all valid paths into single config
     for path in config_paths:
       try:
+        other_config = kubeconfig.Kubeconfig.LoadFromFile(
+            files.ExpandHomeDir(path))
         if not config:
-          config = yaml.load_path(files.ExpandHomeDir(path))
+          config = other_config
         else:
-          other_config = yaml.load_path(files.ExpandHomeDir(path))
-          _DeepMergeConfigs(config, other_config)
-      except yaml.FileLoadError:
+          config.Merge(other_config)
+      except kubeconfig.Error:
         pass
     if not config:
       raise KubeconfigError('No valid file paths found in $KUBECONFIG')
     return config
-  return yaml.load_path(files.ExpandHomeDir(_DEFAULT_KUBECONFIG_PATH))
+  return kubeconfig.Kubeconfig.LoadFromFile(
+      files.ExpandHomeDir(_DEFAULT_KUBECONFIG_PATH))
 
 
 def ValidateClusterArgs(args):
@@ -570,42 +582,42 @@ def VerifyOnePlatformFlags(args):
         error_msg.format(
             flag='--connectivity=[internal|external]',
             platform='gke',
-            platform_desc='Cloud Run on GKE'))
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['gke']))
 
   if _FlagIsExplicitlySet(args, 'cpu'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--cpu',
             platform='gke',
-            platform_desc='Cloud Run on GKE'))
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['gke']))
 
   if _FlagIsExplicitlySet(args, 'cluster'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--cluster',
             platform='gke',
-            platform_desc='Cloud Run on GKE'))
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['gke']))
 
   if _FlagIsExplicitlySet(args, 'cluster_location'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--cluster-location',
             platform='gke',
-            platform_desc='Cloud Run on GKE'))
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['gke']))
 
   if _FlagIsExplicitlySet(args, 'kubeconfig'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--kubeconfig',
             platform='kubernetes',
-            platform_desc='a Kubernetes cluster'))
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['kubernetes']))
 
   if _FlagIsExplicitlySet(args, 'context'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--context',
             platform='kubernetes',
-            platform_desc='a Kubernetes cluster'))
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['kubernetes']))
 
 
 def VerifyGKEFlags(args):
@@ -619,35 +631,42 @@ def VerifyGKEFlags(args):
         error_msg.format(
             flag='--allow-unauthenticated',
             platform='managed',
-            platform_desc='the managed version of Cloud Run'))
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['managed']))
 
   if _FlagIsExplicitlySet(args, 'service_account'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--service-account',
             platform='managed',
-            platform_desc='the managed version of Cloud Run'))
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['managed']))
 
   if _FlagIsExplicitlySet(args, 'region'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--region',
             platform='managed',
-            platform_desc='the managed version of Cloud Run'))
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['managed']))
+
+  if _FlagIsExplicitlySet(args, 'revision_suffix'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--revision-suffix',
+            platform='managed',
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['managed']))
 
   if _FlagIsExplicitlySet(args, 'kubeconfig'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--kubeconfig',
             platform='kubernetes',
-            platform_desc='a Kubernetes cluster'))
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['kubernetes']))
 
   if _FlagIsExplicitlySet(args, 'context'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--context',
             platform='kubernetes',
-            platform_desc='a Kubernetes cluster'))
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['kubernetes']))
 
 
 def VerifyKubernetesFlags(args):
@@ -662,35 +681,42 @@ def VerifyKubernetesFlags(args):
         error_msg.format(
             flag='--allow-unauthenticated',
             platform='managed',
-            platform_desc='the managed version of Cloud Run'))
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['managed']))
 
   if _FlagIsExplicitlySet(args, 'service_account'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--service-account',
             platform='managed',
-            platform_desc='the managed version of Cloud Run'))
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['managed']))
 
   if _FlagIsExplicitlySet(args, 'region'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--region',
             platform='managed',
-            platform_desc='the managed version of Cloud Run'))
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['managed']))
+
+  if _FlagIsExplicitlySet(args, 'revision_suffix'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--revision-suffix',
+            platform='managed',
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['managed']))
 
   if _FlagIsExplicitlySet(args, 'cluster'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--cluster',
             platform='gke',
-            platform_desc='Cloud Run on GKE'))
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['gke']))
 
   if _FlagIsExplicitlySet(args, 'cluster_location'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--cluster-location',
             platform='gke',
-            platform_desc='Cloud Run on GKE'))
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['gke']))
 
 
 def GetPlatform(args):

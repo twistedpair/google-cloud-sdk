@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Flags and helpers for the container related commands."""
 
 from __future__ import absolute_import
@@ -196,7 +195,8 @@ return an error.
       '--release-channel',
       metavar='CHANNEL',
       choices={
-          'rapid': """\
+          'rapid':
+              """\
 'rapid' channel clusters are the first to receive the latest releases of
 Kubernetes and other components.
 """
@@ -329,7 +329,7 @@ def AddAutoscalingProfilesFlag(parser, hidden=False):
       required=False,
       default=None,
       help="""\
-         Set autoscaling behaviour, choices are 'optimize_utilization' and 'balanced'.
+         Set autoscaling behaviour, choices are 'optimize-utilization' and 'balanced'.
          Default is 'balanced'.
       """,
       hidden=hidden,
@@ -435,10 +435,13 @@ Minimum number of gigabytes of memory to which the cluster can scale.""",
       'Arguments to set limits on accelerators:')
   accelerator_group.add_argument(
       '--max-accelerator',
-      type=arg_parsers.ArgDict(spec={
-          'type': str,
-          'count': int,
-      }, required_keys=['type', 'count'], max_length=2),
+      type=arg_parsers.ArgDict(
+          spec={
+              'type': str,
+              'count': int,
+          },
+          required_keys=['type', 'count'],
+          max_length=2),
       required=True,
       metavar='type=TYPE,count=COUNT',
       hidden=hidden,
@@ -454,10 +457,13 @@ to which the cluster can be scaled.
 """)
   accelerator_group.add_argument(
       '--min-accelerator',
-      type=arg_parsers.ArgDict(spec={
-          'type': str,
-          'count': int,
-      }, required_keys=['type', 'count'], max_length=2),
+      type=arg_parsers.ArgDict(
+          spec={
+              'type': str,
+              'count': int,
+          },
+          required_keys=['type', 'count'],
+          max_length=2),
       metavar='type=TYPE,count=COUNT',
       hidden=hidden,
       help="""\
@@ -527,8 +533,7 @@ def AddZoneAndRegionFlags(parser):
       help='Compute zone (e.g. us-central1-a) for the cluster',
       action=actions.StoreProperty(properties.VALUES.compute.zone))
   group.add_argument(
-      '--region',
-      help='Compute region (e.g. us-central1) for the cluster.')
+      '--region', help='Compute region (e.g. us-central1) for the cluster.')
 
 
 def AddAsyncFlag(parser):
@@ -551,9 +556,7 @@ disabled and the cluster will be automatically deleted after 30 days.
 Alpha clusters are not covered by the Kubernetes Engine SLA and should not be
 used for production workloads."""
   parser.add_argument(
-      '--enable-kubernetes-alpha',
-      action='store_true',
-      help=help_text)
+      '--enable-kubernetes-alpha', action='store_true', help=help_text)
 
 
 def AddEnableStackdriverKubernetesFlag(parser):
@@ -594,7 +597,8 @@ and usage information."""
       help=help_text)
 
 
-def AddLocalSSDAndLocalSSDVolumeConfigsFlag(parser, for_node_pool=False,
+def AddLocalSSDAndLocalSSDVolumeConfigsFlag(parser,
+                                            for_node_pool=False,
                                             suppressed=False):
   """Adds the --local-ssd-count and --local-ssd-volumes flags to the parser."""
   help_text = """\
@@ -603,8 +607,8 @@ def AddLocalSSDAndLocalSSDVolumeConfigsFlag(parser, for_node_pool=False,
 
 """
   group = parser.add_mutually_exclusive_group()
-  AddLocalSSDVolumeConfigsFlag(group, for_node_pool=for_node_pool,
-                               help_text=help_text)
+  AddLocalSSDVolumeConfigsFlag(
+      group, for_node_pool=for_node_pool, help_text=help_text)
   AddLocalSSDFlag(group, suppressed=suppressed, help_text=help_text)
 
 
@@ -699,10 +703,7 @@ VM instances. See https://cloud.google.com/kubernetes-engine/docs/preemptible-vm
 for more information on how to use Preemptible VMs with Kubernetes Engine."""
 
   parser.add_argument(
-      '--preemptible',
-      action='store_true',
-      help=help_text,
-      hidden=suppressed)
+      '--preemptible', action='store_true', help=help_text, hidden=suppressed)
 
 
 def AddNodePoolNameArg(parser, help_text):
@@ -757,8 +758,7 @@ See https://cloud.google.com/kubernetes-engine/docs/how-to/node-auto-repair for 
 more info."""
 
   parser.add_argument(
-      '--enable-autorepair', action='store_true', default=None,
-      help=help_text)
+      '--enable-autorepair', action='store_true', default=None, help=help_text)
 
 
 def AddEnableAutoUpgradeFlag(parser,
@@ -814,8 +814,8 @@ def AddMasterAuthorizedNetworksFlags(parser, enable_group_for_update=None):
   Args:
     parser: A given parser.
     enable_group_for_update: An optional group of mutually exclusive flag
-        options to which an --enable-master-authorized-networks flag is added
-        in an update command.
+      options to which an --enable-master-authorized-networks flag is added in
+      an update command.
   """
   if enable_group_for_update is None:
     # Flags are being added to the same group.
@@ -944,10 +944,7 @@ including it as a direct member of this group.
 
 If unspecified, no groups will be returned for use with RBAC."""
   parser.add_argument(
-      '--security-group',
-      help=help_text,
-      default=None,
-      hidden=hidden)
+      '--security-group', help=help_text, default=None, hidden=hidden)
 
 
 def AddStartIpRotationFlag(parser, hidden=False):
@@ -1124,9 +1121,7 @@ def AddDiskTypeFlag(parser):
 Type of the node VM boot disk. Defaults to pd-standard.
 """
   parser.add_argument(
-      '--disk-type',
-      help=help_text,
-      choices=['pd-standard', 'pd-ssd'])
+      '--disk-type', help=help_text, choices=['pd-standard', 'pd-ssd'])
 
 
 def AddIPAliasFlags(parser):
@@ -1227,8 +1222,8 @@ def AddMaxPodsPerNodeFlag(parser, for_node_pool=False, hidden=False):
 
   Args:
     parser: A given parser.
-    for_node_pool: True if it's applied to a node pool.
-                   False if it's applied to a cluster.
+    for_node_pool: True if it's applied to a node pool. False if it's applied to
+      a cluster.
     hidden: Whether or not to hide the help text.
   """
   parser.add_argument(
@@ -1324,7 +1319,7 @@ def AddWorkloadMetadataFromNodeFlag(parser, hidden=False):
                     'This feature is scheduled to be deprecated in the future '
                     'and later removed.',
           'EXPOSED': "Pods running in this nodepool have access to the node's "
-                     "underlying Compute Engine Metadata Server.",
+                     'underlying Compute Engine Metadata Server.',
           'GKE_METADATA_SERVER':
               'Run the Kubernetes Engine Metadata Server on this node. The Kubernetes '
               'Engine Metadata Server exposes a metadata API to workloads that is '
@@ -1459,8 +1454,7 @@ are disabled (see `--enable-cloud-logging` and `--enable-cloud-monitoring`
 for more information).
 {scopes_help}
 """.format(
-    example_target=example_target,
-    scopes_help=compute_constants.ScopesHelp()))
+    example_target=example_target, scopes_help=compute_constants.ScopesHelp()))
 
   sa_help_text = (
       'The Google Cloud Platform Service Account to be used by the node VMs. '
@@ -1567,7 +1561,7 @@ def AddTpuFlags(parser, hidden=False, enable_tpu_service_networking=False):
     parser: A given parser.
     hidden: Whether or not to hide the help text.
     enable_tpu_service_networking: Whether to add the
-    enable_tpu_service_networking flag.
+      enable_tpu_service_networking flag.
   """
 
   tpu_group = parser.add_group(help='Flags relating to Cloud TPUs:')
@@ -1653,10 +1647,9 @@ Example:
   parser.add_argument(
       '--istio-config',
       metavar='auth=MTLS_PERMISSIVE',
-      type=arg_parsers.ArgDict(
-          spec={
-              'auth': (lambda x: x.upper()),
-          }),
+      type=arg_parsers.ArgDict(spec={
+          'auth': (lambda x: x.upper()),
+      }),
       help=help_text,
       hidden=suppressed)
 
@@ -1667,6 +1660,7 @@ def ValidateIstioConfigCreateArgs(istio_config_args, addons_args):
   Args:
     istio_config_args: parsed comandline arguments for --istio_config.
     addons_args: parsed comandline arguments for --addons.
+
   Raises:
     InvalidArgumentException: when auth is not MTLS_PERMISSIVE nor MTLS_STRICT,
     or --addon=Istio is not specified
@@ -1689,6 +1683,7 @@ def ValidateIstioConfigUpdateArgs(istio_config_args, disable_addons_args):
   Args:
     istio_config_args: parsed comandline arguments for --istio_config.
     disable_addons_args: parsed comandline arguments for --update-addons.
+
   Raises:
     InvalidArgumentException: when auth is not MTLS_PERMISSIVE nor MTLS_STRICT,
     or --update-addons=Istio=ENABLED is not specified
@@ -1758,9 +1753,7 @@ of RAM:
   $ {command} high-mem-pool --machine-type=custom-2-12288
 """
 
-  parser.add_argument(
-      '--machine-type', '-m',
-      help=help_text)
+  parser.add_argument('--machine-type', '-m', help=help_text)
 
 
 def AddManagedPodIdentityFlags(parser):
@@ -1817,12 +1810,9 @@ Instead, use the beta `--identity-namespace` flag:
 
 def AddWorkloadIdentityFlags(parser):
   """Adds Workload Identity flags to the parser."""
-  # TODO(b/126751755): Once we have a beta docs page, update the documentation
-  # link in the help text.
   parser.add_argument(
       '--identity-namespace',
       default=None,
-      hidden=True,
       help="""\
 Enable Workload Identity on the cluster.
 
@@ -1831,19 +1821,24 @@ Service Accounts, through the provided identity namespace.
 
 Currently, the only accepted identity namespace is the identity namespace of
 the Cloud project containing the cluster, `PROJECT_NAME.svc.id.goog`.
+
+For more information on Workload Identity, see
+
+            https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
 """)
 
 
 def AddWorkloadIdentityUpdateFlags(parser):
-  # TODO(b/126751755): Once we have a beta docs page, update the documentation
-  # link in the help text.
   parser.add_argument(
       '--disable-workload-identity',
       default=False,
       action='store_true',
-      hidden=True,
       help="""\
 Disable Workload Identity on the cluster.
+
+For more information on Workload Identity, see
+
+            https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
 """)
 
 
@@ -1851,8 +1846,7 @@ def AddResourceUsageExportFlags(parser, is_update=False, hidden=False):
   """Adds flags about exporting cluster resource usage to BigQuery."""
 
   group = parser.add_group(
-      "Exports cluster's usage of cloud resources",
-      hidden=hidden)
+      "Exports cluster's usage of cloud resources", hidden=hidden)
   if is_update:
     group.is_mutex = True
     group.add_argument(
@@ -2010,14 +2004,12 @@ def AddSandboxFlag(parser, hidden=False):
     parser: A given parser.
     hidden: Whether or not to hide the help text.
   """
-  type_validator = arg_parsers.RegexpValidator(
-      r'^gvisor$', 'Type must be "gvisor"')
+  type_validator = arg_parsers.RegexpValidator(r'^gvisor$',
+                                               'Type must be "gvisor"')
   parser.add_argument(
       '--sandbox',
       type=arg_parsers.ArgDict(
-          spec={'type': type_validator},
-          required_keys=['type'],
-          max_length=1),
+          spec={'type': type_validator}, required_keys=['type'], max_length=1),
       metavar='type=TYPE',
       hidden=hidden,
       help="""\
@@ -2146,9 +2138,7 @@ See https://cloud.google.com/compute/docs/nodes for more
 information on sole tenancy and node groups.
 """
 
-  parser.add_argument(
-      '--node-group',
-      help=help_text)
+  parser.add_argument('--node-group', help=help_text)
 
 
 def AddInitialNodePoolNameArg(parser, hidden=True):

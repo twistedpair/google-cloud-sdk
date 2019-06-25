@@ -711,8 +711,9 @@
       "type": "object",
       "properties": {
         "stage": {
+          "description": "The current stage of execution.",
           "enumDescriptions": [
-            "",
+            "Invalid value.",
             "Checking the result against the cache.",
             "Currently idle, awaiting a free machine to execute.",
             "Currently being executed by a worker.",

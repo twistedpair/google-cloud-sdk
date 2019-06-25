@@ -51,17 +51,6 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
-  PROJECTS_INSTANCES_BACKUPS = (
-      'projects.instances.backups',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/instances/{instancesId}/backups/'
-              '{backupsId}',
-      },
-      [u'name'],
-      True
-  )
   PROJECTS_INSTANCES_DATABASES = (
       'projects.instances.databases',
       '{+name}',

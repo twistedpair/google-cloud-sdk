@@ -47,6 +47,14 @@ RUNTIME_CONNECT_AGENT_DEPLOYMENT_NAME = 'gke-connect-agent'
 # The app label applied to Pods for the install agent workload.
 AGENT_INSTALL_APP_LABEL = 'gke-connect-agent-installer'
 
+# The name of the Connect agent install deployment.
+AGENT_INSTALL_DEPLOYMENT_NAME = 'gke-connect-agent-installer'
+
+# The name of the Secret that stores the Google Cloud Service Account
+# credentials. This is also the basename of the only key in that secret's Data
+# map, the filename '$GCP_SA_KEY_SECRET_NAME.json'.
+GCP_SA_KEY_SECRET_NAME = 'creds-gcp'
+
 # The name of the secret that will store the Docker private registry
 # credentials, if they are provided.
 IMAGE_PULL_SECRET_NAME = 'connect-image-pull-secret'
@@ -87,8 +95,14 @@ data:
   membership_name: "{membership_name}"
   proxy: "{proxy}"
   image: "{image}"
-binaryData:
-  gcp_sa_key: "{gcp_sa_key}"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {gcp_sa_key_secret_name}
+  namespace: {namespace}
+data:
+  {gcp_sa_key_secret_name}.json: {gcp_sa_key}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -343,7 +357,6 @@ def GenerateInstallManifest(project_id, namespace, image, sa_key_data,
     )
   """
   project_number = p_util.GetProjectNumber(project_id)
-  agent_install_deployment_name = 'gke-connect-agent-installer'
 
   install_manifest = INSTALL_MANIFEST_TEMPLATE.format(
       namespace=namespace,
@@ -354,7 +367,8 @@ def GenerateInstallManifest(project_id, namespace, image, sa_key_data,
       proxy=proxy or '',
       image=image,
       gcp_sa_key=sa_key_data,
-      agent_install_deployment_name=agent_install_deployment_name,
+      gcp_sa_key_secret_name=GCP_SA_KEY_SECRET_NAME,
+      agent_install_deployment_name=AGENT_INSTALL_DEPLOYMENT_NAME,
       agent_install_app_label=AGENT_INSTALL_APP_LABEL)
 
   if image_pull_secret_data:
@@ -373,7 +387,7 @@ def GenerateInstallManifest(project_id, namespace, image, sa_key_data,
             project_id=project_id,
             image_pull_secret=image_pull_secret_data))
 
-  return install_manifest, agent_install_deployment_name
+  return install_manifest, AGENT_INSTALL_DEPLOYMENT_NAME
 
 
 def Base64EncodedFileContents(filename):

@@ -37,7 +37,7 @@ class CommandData(object):
   """A general holder object for yaml command schema."""
 
   def __init__(self, name, data):
-    self.is_hidden = data.get('is_hidden', False)
+    self.hidden = data.get('hidden', False)
     self.release_tracks = [
         base.ReleaseTrack.FromId(i) for i in data.get('release_tracks', [])]
     self.command_type = CommandType.ForName(data.get('command_type', name))
@@ -147,6 +147,7 @@ class Async(object):
     self.collection = data['collection']
     self.api_version = data.get('api_version')
     self.method = data.get('method', 'get')
+    self.request_issued_message = data.get('request_issued_message')
     self.response_name_field = data.get('response_name_field', 'name')
     self.extract_resource_result = data.get('extract_resource_result', True)
     resource_get_method = data.get('resource_get_method')

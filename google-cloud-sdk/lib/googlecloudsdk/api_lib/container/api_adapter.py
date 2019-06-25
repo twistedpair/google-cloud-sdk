@@ -221,8 +221,8 @@ SERVICE_ACCOUNT = 'serviceAccount'
 SCOPES = 'scopes'
 AUTOPROVISIONING_LOCATIONS = 'autoprovisioningLocations'
 DEFAULT_ADDONS = [INGRESS, HPA]
-ADDONS_OPTIONS = DEFAULT_ADDONS + [DASHBOARD, ISTIO, NETWORK_POLICY]
-BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [CLOUDRUN]
+ADDONS_OPTIONS = DEFAULT_ADDONS + [DASHBOARD, NETWORK_POLICY]
+BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [ISTIO, CLOUDRUN]
 ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS + [NODELOCALDNS, CONFIGCONNECTOR]
 
 
@@ -2548,7 +2548,13 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if cluster_ref:
       cluster = self.GetCluster(cluster_ref)
     if cluster and cluster.autoscaling:
-      autoscaling = cluster.autoscaling
+      autoscaling.enableNodeAutoprovisioning = \
+          cluster.autoscaling.enableNodeAutoprovisioning
+      # TODO(b/131216098): Remove when passing resourceLimits and
+      # autoprovisioning locations are not overridden by empty list.
+      autoscaling.resourceLimits = cluster.autoscaling.resourceLimits
+      autoscaling.autoprovisioningLocations = \
+          cluster.autoscaling.autoprovisioningLocations
 
     resource_limits = []
     if options.autoprovisioning_config_file is not None:

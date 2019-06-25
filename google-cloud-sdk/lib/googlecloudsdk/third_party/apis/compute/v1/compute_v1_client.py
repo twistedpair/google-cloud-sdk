@@ -8362,7 +8362,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a new reservation.
+      r"""Creates a new reservation. For more information, read Reserving zonal resources.
 
       Args:
         request: (ComputeReservationsInsertRequest) input message

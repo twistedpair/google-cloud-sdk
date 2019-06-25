@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.services import exceptions
-from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import retry
@@ -126,6 +126,38 @@ def DisableApiCall(project, service, force=False):
     exceptions.ReraiseError(e, exceptions.Error)
 
 
+def GetService(project, service):
+  """Get a service.
+
+  Args:
+    project: The project for which to get the service.
+    service: The service to get.
+
+  Raises:
+    exceptions.GetServicePermissionDeniedException: when getting service fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The service configuration.
+  """
+  client = _GetClientInstance()
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageServicesGetRequest(
+      name=_PROJECT_SERVICE_RESOURCE % (project, service))
+  try:
+    return client.services.Get(request)
+  except (apitools_exceptions.HttpForbiddenError,
+          apitools_exceptions.HttpNotFoundError) as e:
+    exceptions.ReraiseError(e, exceptions.GetServicePermissionDeniedException)
+
+
+def IsServiceEnabled(service):
+  client = _GetClientInstance()
+  messages = client.MESSAGES_MODULE
+  return service.state == messages.GoogleApiServiceusageV1Service.StateValueValuesEnum.ENABLED
+
+
 def ListServices(project, enabled, page_size, limit):
   """Make API call to list services.
 
@@ -225,6 +257,7 @@ def WaitOperation(name):
 
 
 def _GetClientInstance():
+  # pylint:disable=protected-access
   # Specifically disable resource quota in all cases for service management.
   # We need to use this API to turn on APIs and sometimes the user doesn't have
   # this API turned on. We should always use the shared project to do this
@@ -232,5 +265,5 @@ def _GetClientInstance():
   # has explicitly set the quota project, then respect that.
   enable_resource_quota = (
       properties.VALUES.billing.quota_project.IsExplicitlySet())
-  return apis.GetClientInstance(
+  return apis_internal._GetClientInstance(
       'serviceusage', 'v1', enable_resource_quota=enable_resource_quota)

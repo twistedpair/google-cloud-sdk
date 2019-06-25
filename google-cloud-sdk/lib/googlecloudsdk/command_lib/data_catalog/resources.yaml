@@ -36,16 +36,30 @@ entry_group:
 entry:
   name: entry
   collection: datacatalog.projects.locations.entryGroups.entries
-  request_id_field: googleCloudDatacatalogV1beta1CreateEntryRequest.entryId
   disable_auto_completers: true
   attributes:
   - *project
   - *location
   - *entry_group
-  - parameter_name: entriesId
+  - &entry
+    parameter_name: entriesId
     attribute_name: entry
     help: |
       Entry of the {resource}.
+
+tag:
+  name: tag
+  collection: datacatalog.projects.locations.entryGroups.entries.tags
+  disable_auto_completers: true
+  attributes:
+  - *project
+  - *location
+  - *entry_group
+  - *entry
+  - parameter_name: tagsId
+    attribute_name: tag
+    help: |
+      Tag of the {resource}.
 
 crawler:
   name: crawler
@@ -70,3 +84,34 @@ crawler_run:
     attribute_name: crawler_run
     help: |
       The Cloud Data Catalog crawler run for the {resource}.
+
+tag_template:
+  name: tag template
+  collection: datacatalog.projects.locations.tagTemplates
+  request_id_field: tagTemplateId
+  disable_auto_completers: true
+  attributes:
+  - *project
+  - *location
+  - &tag_template
+    parameter_name: tagTemplatesId
+    attribute_name: tag_template
+    help: |
+      Tag template of the {resource}.
+
+tag_template_field:
+  name: tag template field
+  collection: datacatalog.projects.locations.tagTemplates.fields
+  request_id_field: tagTemplateFieldId
+  disable_auto_completers: true
+  attributes:
+  - *project
+  - *location
+  - parameter_name: tagTemplatesId
+    attribute_name: tag-template
+    help: |
+      Tag template of the {resource}.
+  - parameter_name: fieldsId
+    attribute_name: field
+    help: |
+      Tag template field of the {resource}.

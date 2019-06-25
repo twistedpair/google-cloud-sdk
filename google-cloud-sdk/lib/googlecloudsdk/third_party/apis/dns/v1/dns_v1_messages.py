@@ -714,25 +714,25 @@ class ManagedZoneDnsSecConfig(_messages.Message):
 
   Enums:
     NonExistenceValueValuesEnum: Specifies the mechanism used to provide
-      authenticated denial-of-existence responses. Output only while state is
-      not OFF.
+      authenticated denial-of-existence responses. Can only be changed while
+      state is OFF.
     StateValueValuesEnum: Specifies whether DNSSEC is enabled, and what mode
       it is in.
 
   Fields:
     defaultKeySpecs: Specifies parameters that will be used for generating
-      initial DnsKeys for this ManagedZone. Output only while state is not
+      initial DnsKeys for this ManagedZone. Can only be changed while state is
       OFF.
     kind: Identifies what kind of resource this is. Value: the fixed string
       "dns#managedZoneDnsSecConfig".
     nonExistence: Specifies the mechanism used to provide authenticated
-      denial-of-existence responses. Output only while state is not OFF.
+      denial-of-existence responses. Can only be changed while state is OFF.
     state: Specifies whether DNSSEC is enabled, and what mode it is in.
   """
 
   class NonExistenceValueValuesEnum(_messages.Enum):
     r"""Specifies the mechanism used to provide authenticated denial-of-
-    existence responses. Output only while state is not OFF.
+    existence responses. Can only be changed while state is OFF.
 
     Values:
       nsec: <no description>

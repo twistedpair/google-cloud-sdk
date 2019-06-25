@@ -3,6 +3,8 @@ rem Copyright 2013 Google Inc. All Rights Reserved.
 
 echo %CmdCmdLine% | %WINDIR%\System32\find /i "%~0" >nul
 SET INTERACTIVE=%ERRORLEVEL%
+rem install.bat lives in the root of the Cloud SDK installation directory.
+SET CLOUDSDK_ROOT_DIR=%~dp0
 
 echo Welcome to the Google Cloud SDK!
 
@@ -18,9 +20,6 @@ IF "%CLOUDSDK_COMPONENT_MANAGER_SNAPSHOT_URL%"=="" (
 
 :SETENABLEDELAYED
 SETLOCAL EnableDelayedExpansion
-
-rem install.bat lives in the root of the Cloud SDK installation directory.
-SET CLOUDSDK_ROOT_DIR=%~dp0
 
 IF "%CLOUDSDK_PYTHON%"=="" (
   SET BUNDLED_PYTHON=!CLOUDSDK_ROOT_DIR!\platform\bundledpython\python.exe

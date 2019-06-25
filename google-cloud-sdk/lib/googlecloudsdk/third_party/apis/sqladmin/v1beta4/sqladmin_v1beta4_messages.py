@@ -70,6 +70,10 @@ class BackupRun(_messages.Message):
   Fields:
     description: The description of this run, only applicable to on-demand
       backups.
+    diskEncryptionConfiguration: Disk encryption configuration specific to a
+      backup. Applies only to Second Generation instances.
+    diskEncryptionStatus: Disk encryption status specific to a backup. Applies
+      only to Second Generation instances.
     endTime: The time the backup operation completed in UTC timezone in RFC
       3339 format, for example 2012-11-15T16:19:00.094Z.
     enqueuedTime: The time the run was enqueued in UTC timezone in RFC 3339
@@ -92,18 +96,20 @@ class BackupRun(_messages.Message):
   """
 
   description = _messages.StringField(1)
-  endTime = _message_types.DateTimeField(2)
-  enqueuedTime = _message_types.DateTimeField(3)
-  error = _messages.MessageField('OperationError', 4)
-  id = _messages.IntegerField(5)
-  instance = _messages.StringField(6)
-  kind = _messages.StringField(7, default=u'sql#backupRun')
-  location = _messages.StringField(8)
-  selfLink = _messages.StringField(9)
-  startTime = _message_types.DateTimeField(10)
-  status = _messages.StringField(11)
-  type = _messages.StringField(12)
-  windowStartTime = _message_types.DateTimeField(13)
+  diskEncryptionConfiguration = _messages.MessageField('DiskEncryptionConfiguration', 2)
+  diskEncryptionStatus = _messages.MessageField('DiskEncryptionStatus', 3)
+  endTime = _message_types.DateTimeField(4)
+  enqueuedTime = _message_types.DateTimeField(5)
+  error = _messages.MessageField('OperationError', 6)
+  id = _messages.IntegerField(7)
+  instance = _messages.StringField(8)
+  kind = _messages.StringField(9, default=u'sql#backupRun')
+  location = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  startTime = _message_types.DateTimeField(12)
+  status = _messages.StringField(13)
+  type = _messages.StringField(14)
+  windowStartTime = _message_types.DateTimeField(15)
 
 
 class BackupRunsListResponse(_messages.Message):
@@ -1682,7 +1688,8 @@ class SqlUsersUpdateRequest(_messages.Message):
   r"""A SqlUsersUpdateRequest object.
 
   Fields:
-    host: Host of the user in the instance.
+    host: Host of the user in the instance. For a MySQL instance, it's
+      required; For a PostgreSQL instance, it's optional.
     instance: Database instance ID. This does not include the project ID.
     name: Name of the user in the instance.
     project: Project ID of the project that contains the instance.

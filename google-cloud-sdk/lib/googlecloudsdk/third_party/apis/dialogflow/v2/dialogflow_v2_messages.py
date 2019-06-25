@@ -51,9 +51,10 @@ class DialogflowProjectsAgentEntityTypesCreateRequest(_messages.Message):
       resource to be passed as the request body.
     languageCode: Optional. The language of entity synonyms defined in
       `entity_type`. If not specified, the agent's default language is used.
-      [Many languages](https://cloud.google.com/dialogflow-
-      enterprise/docs/reference/language) are supported. Note: languages must
-      be enabled in the agent before they can be used.
+      [Many
+      languages](https://cloud.google.com/dialogflow/docs/reference/language)
+      are supported. Note: languages must be enabled in the agent before they
+      can be used.
     parent: Required. The agent to create a entity type for. Format:
       `projects/<Project ID>/agent`.
   """
@@ -125,9 +126,9 @@ class DialogflowProjectsAgentEntityTypesGetRequest(_messages.Message):
   Fields:
     languageCode: Optional. The language to retrieve entity synonyms for. If
       not specified, the agent's default language is used. [Many
-      languages](https://cloud.google.com/dialogflow-
-      enterprise/docs/reference/language) are supported. Note: languages must
-      be enabled in the agent before they can be used.
+      languages](https://cloud.google.com/dialogflow/docs/reference/language)
+      are supported. Note: languages must be enabled in the agent before they
+      can be used.
     name: Required. The name of the entity type. Format: `projects/<Project
       ID>/agent/entityTypes/<EntityType ID>`.
   """
@@ -142,9 +143,9 @@ class DialogflowProjectsAgentEntityTypesListRequest(_messages.Message):
   Fields:
     languageCode: Optional. The language to list entity synonyms for. If not
       specified, the agent's default language is used. [Many
-      languages](https://cloud.google.com/dialogflow-
-      enterprise/docs/reference/language) are supported. Note: languages must
-      be enabled in the agent before they can be used.
+      languages](https://cloud.google.com/dialogflow/docs/reference/language)
+      are supported. Note: languages must be enabled in the agent before they
+      can be used.
     pageSize: Optional. The maximum number of items to return in a single
       page. By default 100 and at most 1000.
     pageToken: Optional. The next_page_token value returned from a previous
@@ -167,9 +168,10 @@ class DialogflowProjectsAgentEntityTypesPatchRequest(_messages.Message):
       resource to be passed as the request body.
     languageCode: Optional. The language of entity synonyms defined in
       `entity_type`. If not specified, the agent's default language is used.
-      [Many languages](https://cloud.google.com/dialogflow-
-      enterprise/docs/reference/language) are supported. Note: languages must
-      be enabled in the agent before they can be used.
+      [Many
+      languages](https://cloud.google.com/dialogflow/docs/reference/language)
+      are supported. Note: languages must be enabled in the agent before they
+      can be used.
     name: The unique identifier of the entity type. Required for
       EntityTypes.UpdateEntityType and EntityTypes.BatchUpdateEntityTypes
       methods. Format: `projects/<Project ID>/agent/entityTypes/<Entity Type
@@ -256,9 +258,10 @@ class DialogflowProjectsAgentIntentsCreateRequest(_messages.Message):
     intentView: Optional. The resource view to apply to the returned intent.
     languageCode: Optional. The language of training phrases, parameters and
       rich messages defined in `intent`. If not specified, the agent's default
-      language is used. [Many languages](https://cloud.google.com/dialogflow-
-      enterprise/docs/reference/language) are supported. Note: languages must
-      be enabled in the agent before they can be used.
+      language is used. [Many
+      languages](https://cloud.google.com/dialogflow/docs/reference/language)
+      are supported. Note: languages must be enabled in the agent before they
+      can be used.
     parent: Required. The agent to create a intent for. Format:
       `projects/<Project ID>/agent`.
   """
@@ -302,9 +305,10 @@ class DialogflowProjectsAgentIntentsGetRequest(_messages.Message):
     intentView: Optional. The resource view to apply to the returned intent.
     languageCode: Optional. The language to retrieve training phrases,
       parameters and rich messages for. If not specified, the agent's default
-      language is used. [Many languages](https://cloud.google.com/dialogflow-
-      enterprise/docs/reference/language) are supported. Note: languages must
-      be enabled in the agent before they can be used.
+      language is used. [Many
+      languages](https://cloud.google.com/dialogflow/docs/reference/language)
+      are supported. Note: languages must be enabled in the agent before they
+      can be used.
     name: Required. The name of the intent. Format: `projects/<Project
       ID>/agent/intents/<Intent ID>`.
   """
@@ -335,9 +339,10 @@ class DialogflowProjectsAgentIntentsListRequest(_messages.Message):
     intentView: Optional. The resource view to apply to the returned intent.
     languageCode: Optional. The language to list training phrases, parameters
       and rich messages for. If not specified, the agent's default language is
-      used. [Many languages](https://cloud.google.com/dialogflow-
-      enterprise/docs/reference/language) are supported. Note: languages must
-      be enabled in the agent before they can be used.
+      used. [Many
+      languages](https://cloud.google.com/dialogflow/docs/reference/language)
+      are supported. Note: languages must be enabled in the agent before they
+      can be used.
     pageSize: Optional. The maximum number of items to return in a single
       page. By default 100 and at most 1000.
     pageToken: Optional. The next_page_token value returned from a previous
@@ -376,9 +381,10 @@ class DialogflowProjectsAgentIntentsPatchRequest(_messages.Message):
     intentView: Optional. The resource view to apply to the returned intent.
     languageCode: Optional. The language of training phrases, parameters and
       rich messages defined in `intent`. If not specified, the agent's default
-      language is used. [Many languages](https://cloud.google.com/dialogflow-
-      enterprise/docs/reference/language) are supported. Note: languages must
-      be enabled in the agent before they can be used.
+      language is used. [Many
+      languages](https://cloud.google.com/dialogflow/docs/reference/language)
+      are supported. Note: languages must be enabled in the agent before they
+      can be used.
     name: The unique identifier of this intent. Required for
       Intents.UpdateIntent and Intents.BatchUpdateIntents methods. Format:
       `projects/<Project ID>/agent/intents/<Intent ID>`.
@@ -400,6 +406,22 @@ class DialogflowProjectsAgentIntentsPatchRequest(_messages.Message):
   languageCode = _messages.StringField(3)
   name = _messages.StringField(4, required=True)
   updateMask = _messages.StringField(5)
+
+
+class DialogflowProjectsAgentRequest(_messages.Message):
+  r"""A DialogflowProjectsAgentRequest object.
+
+  Fields:
+    googleCloudDialogflowV2Agent: A GoogleCloudDialogflowV2Agent resource to
+      be passed as the request body.
+    parent: Required. The project of this agent. Format: `projects/<Project
+      ID>`.
+    updateMask: Optional. The mask to control which fields get updated.
+  """
+
+  googleCloudDialogflowV2Agent = _messages.MessageField('GoogleCloudDialogflowV2Agent', 1)
+  parent = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class DialogflowProjectsAgentRestoreRequest(_messages.Message):
@@ -626,6 +648,17 @@ class DialogflowProjectsAgentTrainRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class DialogflowProjectsDeleteAgentRequest(_messages.Message):
+  r"""A DialogflowProjectsDeleteAgentRequest object.
+
+  Fields:
+    parent: Required. The project that the agent to delete is associated with.
+      Format: `projects/<Project ID>`.
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
 class DialogflowProjectsGetAgentRequest(_messages.Message):
   r"""A DialogflowProjectsGetAgentRequest object.
 
@@ -651,14 +684,24 @@ class GoogleCloudDialogflowV2Agent(_messages.Message):
   r"""Represents a conversational agent.
 
   Enums:
+    ApiVersionValueValuesEnum: Optional. API version displayed in Dialogflow
+      console. If not specified, V2 API is assumed. Clients are free to query
+      different service endpoints for different API versions. However, bots
+      connectors and webhook calls will follow the specified API version.
     MatchModeValueValuesEnum: Optional. Determines how intents are detected
       from user queries.
+    TierValueValuesEnum: Optional. The agent tier. If not specified,
+      TIER_STANDARD is assumed.
 
   Fields:
+    apiVersion: Optional. API version displayed in Dialogflow console. If not
+      specified, V2 API is assumed. Clients are free to query different
+      service endpoints for different API versions. However, bots connectors
+      and webhook calls will follow the specified API version.
     avatarUri: Optional. The URI of the agent's avatar. Avatars are used
       throughout the Dialogflow console and in the self-hosted [Web
-      Demo](https://cloud.google.com/dialogflow-enterprise/docs/integrations
-      /web-demo) integration.
+      Demo](https://cloud.google.com/dialogflow/docs/integrations/web-demo)
+      integration.
     classificationThreshold: Optional. To filter out false positive results
       and still get variety in matched natural language inputs for your agent,
       you can tune the machine learning classification threshold. If the
@@ -668,10 +711,10 @@ class GoogleCloudDialogflowV2Agent(_messages.Message):
       uncertain) to 1.0 (completely certain). If set to 0.0, the default of
       0.3 is used.
     defaultLanguageCode: Required. The default language of the agent as a
-      language tag. See [Language Support](https://cloud.google.com
-      /dialogflow-enterprise/docs/reference/language) for a list of the
-      currently supported language codes. This field cannot be set by the
-      `Update` method.
+      language tag. See [Language
+      Support](https://cloud.google.com/dialogflow/docs/reference/language)
+      for a list of the currently supported language codes. This field cannot
+      be set by the `Update` method.
     description: Optional. The description of this agent. The maximum length
       is 500 characters. If exceeded, the request is rejected.
     displayName: Required. The name of this agent.
@@ -683,10 +726,29 @@ class GoogleCloudDialogflowV2Agent(_messages.Message):
       ID>`.
     supportedLanguageCodes: Optional. The list of all languages supported by
       this agent (except for the `default_language_code`).
+    tier: Optional. The agent tier. If not specified, TIER_STANDARD is
+      assumed.
     timeZone: Required. The time zone of this agent from the [time zone
       database](https://www.iana.org/time-zones), e.g., America/New_York,
       Europe/Paris.
   """
+
+  class ApiVersionValueValuesEnum(_messages.Enum):
+    r"""Optional. API version displayed in Dialogflow console. If not
+    specified, V2 API is assumed. Clients are free to query different service
+    endpoints for different API versions. However, bots connectors and webhook
+    calls will follow the specified API version.
+
+    Values:
+      API_VERSION_UNSPECIFIED: Not specified.
+      API_VERSION_V1: Legacy V1 API.
+      API_VERSION_V2: V2 API.
+      API_VERSION_V2_BETA_1: V2beta1 API.
+    """
+    API_VERSION_UNSPECIFIED = 0
+    API_VERSION_V1 = 1
+    API_VERSION_V2 = 2
+    API_VERSION_V2_BETA_1 = 3
 
   class MatchModeValueValuesEnum(_messages.Enum):
     r"""Optional. Determines how intents are detected from user queries.
@@ -703,16 +765,32 @@ class GoogleCloudDialogflowV2Agent(_messages.Message):
     MATCH_MODE_HYBRID = 1
     MATCH_MODE_ML_ONLY = 2
 
-  avatarUri = _messages.StringField(1)
-  classificationThreshold = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  defaultLanguageCode = _messages.StringField(3)
-  description = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  enableLogging = _messages.BooleanField(6)
-  matchMode = _messages.EnumField('MatchModeValueValuesEnum', 7)
-  parent = _messages.StringField(8)
-  supportedLanguageCodes = _messages.StringField(9, repeated=True)
-  timeZone = _messages.StringField(10)
+  class TierValueValuesEnum(_messages.Enum):
+    r"""Optional. The agent tier. If not specified, TIER_STANDARD is assumed.
+
+    Values:
+      TIER_UNSPECIFIED: Not specified. This value should never be used.
+      TIER_STANDARD: Standard tier.
+      TIER_ENTERPRISE: Enterprise tier (Essentials).
+      TIER_ENTERPRISE_PLUS: Enterprise tier (Plus).
+    """
+    TIER_UNSPECIFIED = 0
+    TIER_STANDARD = 1
+    TIER_ENTERPRISE = 2
+    TIER_ENTERPRISE_PLUS = 3
+
+  apiVersion = _messages.EnumField('ApiVersionValueValuesEnum', 1)
+  avatarUri = _messages.StringField(2)
+  classificationThreshold = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  defaultLanguageCode = _messages.StringField(4)
+  description = _messages.StringField(5)
+  displayName = _messages.StringField(6)
+  enableLogging = _messages.BooleanField(7)
+  matchMode = _messages.EnumField('MatchModeValueValuesEnum', 8)
+  parent = _messages.StringField(9)
+  supportedLanguageCodes = _messages.StringField(10, repeated=True)
+  tier = _messages.EnumField('TierValueValuesEnum', 11)
+  timeZone = _messages.StringField(12)
 
 
 class GoogleCloudDialogflowV2BatchCreateEntitiesRequest(_messages.Message):
@@ -722,9 +800,10 @@ class GoogleCloudDialogflowV2BatchCreateEntitiesRequest(_messages.Message):
     entities: Required. The entities to create.
     languageCode: Optional. The language of entity synonyms defined in
       `entities`. If not specified, the agent's default language is used.
-      [Many languages](https://cloud.google.com/dialogflow-
-      enterprise/docs/reference/language) are supported. Note: languages must
-      be enabled in the agent before they can be used.
+      [Many
+      languages](https://cloud.google.com/dialogflow/docs/reference/language)
+      are supported. Note: languages must be enabled in the agent before they
+      can be used.
   """
 
   entities = _messages.MessageField('GoogleCloudDialogflowV2EntityTypeEntity', 1, repeated=True)
@@ -740,9 +819,10 @@ class GoogleCloudDialogflowV2BatchDeleteEntitiesRequest(_messages.Message):
       with `projects/<Project ID>`.
     languageCode: Optional. The language of entity synonyms defined in
       `entities`. If not specified, the agent's default language is used.
-      [Many languages](https://cloud.google.com/dialogflow-
-      enterprise/docs/reference/language) are supported. Note: languages must
-      be enabled in the agent before they can be used.
+      [Many
+      languages](https://cloud.google.com/dialogflow/docs/reference/language)
+      are supported. Note: languages must be enabled in the agent before they
+      can be used.
   """
 
   entityValues = _messages.StringField(1, repeated=True)
@@ -778,9 +858,10 @@ class GoogleCloudDialogflowV2BatchUpdateEntitiesRequest(_messages.Message):
     entities: Required. The entities to update or create.
     languageCode: Optional. The language of entity synonyms defined in
       `entities`. If not specified, the agent's default language is used.
-      [Many languages](https://cloud.google.com/dialogflow-
-      enterprise/docs/reference/language) are supported. Note: languages must
-      be enabled in the agent before they can be used.
+      [Many
+      languages](https://cloud.google.com/dialogflow/docs/reference/language)
+      are supported. Note: languages must be enabled in the agent before they
+      can be used.
     updateMask: Optional. The mask to control which fields get updated.
   """
 
@@ -800,9 +881,10 @@ class GoogleCloudDialogflowV2BatchUpdateEntityTypesRequest(_messages.Message):
       must start with "gs://".
     languageCode: Optional. The language of entity synonyms defined in
       `entity_types`. If not specified, the agent's default language is used.
-      [Many languages](https://cloud.google.com/dialogflow-
-      enterprise/docs/reference/language) are supported. Note: languages must
-      be enabled in the agent before they can be used.
+      [Many
+      languages](https://cloud.google.com/dialogflow/docs/reference/language)
+      are supported. Note: languages must be enabled in the agent before they
+      can be used.
     updateMask: Optional. The mask to control which fields get updated.
   """
 
@@ -838,9 +920,10 @@ class GoogleCloudDialogflowV2BatchUpdateIntentsRequest(_messages.Message):
     intentView: Optional. The resource view to apply to the returned intent.
     languageCode: Optional. The language of training phrases, parameters and
       rich messages defined in `intents`. If not specified, the agent's
-      default language is used. [Many languages](https://cloud.google.com
-      /dialogflow-enterprise/docs/reference/language) are supported. Note:
-      languages must be enabled in the agent before they can be used.
+      default language is used. [Many
+      languages](https://cloud.google.com/dialogflow/docs/reference/language)
+      are supported. Note: languages must be enabled in the agent before they
+      can be used.
     updateMask: Optional. The mask to control which fields get updated.
   """
 
@@ -877,8 +960,9 @@ class GoogleCloudDialogflowV2Context(_messages.Message):
 
   Messages:
     ParametersValue: Optional. The collection of parameters associated with
-      this context. Refer to [this doc](https://cloud.google.com/dialogflow-
-      enterprise/docs/intents-actions-parameters) for syntax.
+      this context. Refer to [this
+      doc](https://cloud.google.com/dialogflow/docs/intents-actions-
+      parameters) for syntax.
 
   Fields:
     lifespanCount: Optional. The number of conversational query requests after
@@ -890,15 +974,15 @@ class GoogleCloudDialogflowV2Context(_messages.Message):
       ID>`.  The `Context ID` is always converted to lowercase, may only
       contain characters in [a-zA-Z0-9_-%] and may be at most 250 bytes long.
     parameters: Optional. The collection of parameters associated with this
-      context. Refer to [this doc](https://cloud.google.com/dialogflow-
-      enterprise/docs/intents-actions-parameters) for syntax.
+      context. Refer to [this doc](https://cloud.google.com/dialogflow/docs
+      /intents-actions-parameters) for syntax.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParametersValue(_messages.Message):
     r"""Optional. The collection of parameters associated with this context.
-    Refer to [this doc](https://cloud.google.com/dialogflow-enterprise/docs
-    /intents-actions-parameters) for syntax.
+    Refer to [this doc](https://cloud.google.com/dialogflow/docs/intents-
+    actions-parameters) for syntax.
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -1075,10 +1159,10 @@ class GoogleCloudDialogflowV2EventInput(_messages.Message):
 
   Fields:
     languageCode: Required. The language of this query. See [Language
-      Support](https://cloud.google.com/dialogflow-
-      enterprise/docs/reference/language) for a list of the currently
-      supported language codes. Note that queries in the same session do not
-      necessarily need to specify the same language.
+      Support](https://cloud.google.com/dialogflow/docs/reference/language)
+      for a list of the currently supported language codes. Note that queries
+      in the same session do not necessarily need to specify the same
+      language.
     name: Required. The unique identifier of the event.
     parameters: Optional. The collection of parameters associated with the
       event.
@@ -1179,10 +1263,10 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
     audioEncoding: Required. Audio encoding of the audio content to process.
     languageCode: Required. The language of the supplied audio. Dialogflow
       does not do translations. See [Language
-      Support](https://cloud.google.com/dialogflow-
-      enterprise/docs/reference/language) for a list of the currently
-      supported language codes. Note that queries in the same session do not
-      necessarily need to specify the same language.
+      Support](https://cloud.google.com/dialogflow/docs/reference/language)
+      for a list of the currently supported language codes. Note that queries
+      in the same session do not necessarily need to specify the same
+      language.
     modelVariant: Optional. Which variant of the Speech model to use.
     phraseHints: Optional. A list of strings containing words and phrases that
       the speech recognizer should recognize with higher likelihood.  See [the
@@ -1247,8 +1331,8 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
         case Dialogflow defaults to USE_BEST_AVAILABLE.
       USE_BEST_AVAILABLE: Use the best available variant of the Speech model
         that the caller is eligible for.  Please see the [Dialogflow
-        docs](https://cloud.google.com/dialogflow-enterprise/docs/data-
-        logging) for how to make your project eligible for enhanced models.
+        docs](https://cloud.google.com/dialogflow/docs/data-logging) for how
+        to make your project eligible for enhanced models.
       USE_STANDARD: Use standard model variant even if an enhanced model is
         available.  See the [Cloud Speech
         documentation](https://cloud.google.com/speech-to-text/docs/enhanced-
@@ -1259,9 +1343,9 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
         documentation](https://cloud.google.com/speech-to-text/docs/enhanced-
         models)   describes which models have enhanced variants.  * If the API
         caller isn't eligible for enhanced models, Dialogflow returns   an
-        error. Please see the [Dialogflow   docs](https://cloud.google.com
-        /dialogflow-enterprise/docs/data-logging)   for how to make your
-        project eligible.
+        error. Please see the [Dialogflow
+        docs](https://cloud.google.com/dialogflow/docs/data-logging)   for how
+        to make your project eligible.
     """
     SPEECH_MODEL_VARIANT_UNSPECIFIED = 0
     USE_BEST_AVAILABLE = 1
@@ -1802,7 +1886,7 @@ class GoogleCloudDialogflowV2IntentParameter(_messages.Message):
       value.
     name: The unique identifier of this parameter.
     prompts: Optional. The collection of prompts that the agent can present to
-      the user in order to collect value for the parameter.
+      the user in order to collect a value for the parameter.
     value: Optional. The definition of the parameter value. It can be: - a
       constant string, - a parameter value defined as `$parameter_name`, - an
       original parameter value defined as `$parameter_name.original`, - a
@@ -2177,9 +2261,9 @@ class GoogleCloudDialogflowV2QueryResult(_messages.Message):
       are `multiple knowledge_answers` messages, this value is set to the
       greatest `knowledgeAnswers.match_confidence` value in the list.
     languageCode: The language that was triggered during intent detection. See
-      [Language Support](https://cloud.google.com/dialogflow-
-      enterprise/docs/reference/language) for a list of the currently
-      supported language codes.
+      [Language
+      Support](https://cloud.google.com/dialogflow/docs/reference/language)
+      for a list of the currently supported language codes.
     outputContexts: The collection of output contexts. If applicable,
       `output_contexts.parameters` contains entries with name `<parameter
       name>.original` containing the original parameter values before the
@@ -2465,10 +2549,11 @@ class GoogleCloudDialogflowV2TextInput(_messages.Message):
 
   Fields:
     languageCode: Required. The language of this conversational query. See
-      [Language Support](https://cloud.google.com/dialogflow-
-      enterprise/docs/reference/language) for a list of the currently
-      supported language codes. Note that queries in the same session do not
-      necessarily need to specify the same language.
+      [Language
+      Support](https://cloud.google.com/dialogflow/docs/reference/language)
+      for a list of the currently supported language codes. Note that queries
+      in the same session do not necessarily need to specify the same
+      language.
     text: Required. The UTF-8 encoded natural language text to be processed.
       Text length must not exceed 256 characters.
   """
@@ -2570,7 +2655,8 @@ class GoogleCloudDialogflowV2WebhookResponse(_messages.Message):
   Fields:
     followupEventInput: Optional. Makes the platform immediately invoke
       another `DetectIntent` call internally with the specified event as
-      input.
+      input. When this field is set, Dialogflow ignores the
+      `fulfillment_text`, `fulfillment_messages`, and `payload` fields.
     fulfillmentMessages: Optional. The collection of rich messages to present
       to the user. This value is passed directly to
       `QueryResult.fulfillment_messages`.
@@ -2660,8 +2746,9 @@ class GoogleCloudDialogflowV2beta1Context(_messages.Message):
 
   Messages:
     ParametersValue: Optional. The collection of parameters associated with
-      this context. Refer to [this doc](https://cloud.google.com/dialogflow-
-      enterprise/docs/intents-actions-parameters) for syntax.
+      this context. Refer to [this
+      doc](https://cloud.google.com/dialogflow/docs/intents-actions-
+      parameters) for syntax.
 
   Fields:
     lifespanCount: Optional. The number of conversational query requests after
@@ -2677,15 +2764,15 @@ class GoogleCloudDialogflowV2beta1Context(_messages.Message):
       `Environment ID` is not specified, we assume default 'draft'
       environment. If `User ID` is not specified, we assume default '-' user.
     parameters: Optional. The collection of parameters associated with this
-      context. Refer to [this doc](https://cloud.google.com/dialogflow-
-      enterprise/docs/intents-actions-parameters) for syntax.
+      context. Refer to [this doc](https://cloud.google.com/dialogflow/docs
+      /intents-actions-parameters) for syntax.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParametersValue(_messages.Message):
     r"""Optional. The collection of parameters associated with this context.
-    Refer to [this doc](https://cloud.google.com/dialogflow-enterprise/docs
-    /intents-actions-parameters) for syntax.
+    Refer to [this doc](https://cloud.google.com/dialogflow/docs/intents-
+    actions-parameters) for syntax.
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -2801,10 +2888,10 @@ class GoogleCloudDialogflowV2beta1EventInput(_messages.Message):
 
   Fields:
     languageCode: Required. The language of this query. See [Language
-      Support](https://cloud.google.com/dialogflow-
-      enterprise/docs/reference/language) for a list of the currently
-      supported language codes. Note that queries in the same session do not
-      necessarily need to specify the same language.
+      Support](https://cloud.google.com/dialogflow/docs/reference/language)
+      for a list of the currently supported language codes. Note that queries
+      in the same session do not necessarily need to specify the same
+      language.
     name: Required. The unique identifier of the event.
     parameters: Optional. The collection of parameters associated with the
       event.
@@ -3451,7 +3538,7 @@ class GoogleCloudDialogflowV2beta1IntentParameter(_messages.Message):
       value.
     name: The unique identifier of this parameter.
     prompts: Optional. The collection of prompts that the agent can present to
-      the user in order to collect value for the parameter.
+      the user in order to collect a value for the parameter.
     value: Optional. The definition of the parameter value. It can be: - a
       constant string, - a parameter value defined as `$parameter_name`, - an
       original parameter value defined as `$parameter_name.original`, - a
@@ -3744,9 +3831,9 @@ class GoogleCloudDialogflowV2beta1QueryResult(_messages.Message):
     knowledgeAnswers: The result from Knowledge Connector (if any), ordered by
       decreasing `KnowledgeAnswers.match_confidence`.
     languageCode: The language that was triggered during intent detection. See
-      [Language Support](https://cloud.google.com/dialogflow-
-      enterprise/docs/reference/language) for a list of the currently
-      supported language codes.
+      [Language
+      Support](https://cloud.google.com/dialogflow/docs/reference/language)
+      for a list of the currently supported language codes.
     outputContexts: The collection of output contexts. If applicable,
       `output_contexts.parameters` contains entries with name `<parameter
       name>.original` containing the original parameter values before the
@@ -3947,7 +4034,8 @@ class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
       false.
     followupEventInput: Optional. Makes the platform immediately invoke
       another `DetectIntent` call internally with the specified event as
-      input.
+      input. When this field is set, Dialogflow ignores the
+      `fulfillment_text`, `fulfillment_messages`, and `payload` fields.
     fulfillmentMessages: Optional. The collection of rich messages to present
       to the user. This value is passed directly to
       `QueryResult.fulfillment_messages`.

@@ -788,6 +788,11 @@ class ServerlessOperations(object):
         elif service.ENDPOINT_VISIBILITY in serv.labels:
           del serv.labels[service.ENDPOINT_VISIBILITY]
 
+        # Revision names must be unique across the namespace.
+        # To prevent the revision name being unchanged from the last revision,
+        # we reset the value so the default naming scheme will be used instead.
+        serv.template.name = None
+
         # PUT the changed Service
         for config_change in config_changes:
           config_change.Adjust(serv)
@@ -974,8 +979,13 @@ class ServerlessOperations(object):
         domainMapping=new_mapping.Message(),
         parent=domain_mapping_ref.Parent().RelativeName())
     with metrics.RecordDuration(metric_names.CREATE_DOMAIN_MAPPING):
-      response = self._client.namespaces_domainmappings.Create(request)
-      # 'run domain-mappings create' is synchronous. Poll for its completion.
+      try:
+        response = self._client.namespaces_domainmappings.Create(request)
+      except api_exceptions.HttpConflictError:
+        raise serverless_exceptions.DomainMappingCreationError(
+            'Domain mapping to [{}] for service [{}] already exists.'.format(
+                domain_mapping_ref.Name(), service_name))
+      # 'run domain-mappings create' is synchronous. Poll for its completion.x
       with progress_tracker.ProgressTracker('Creating...'):
         mapping = waiter.PollUntilDone(
             DomainMappingResourceRecordPoller(self), domain_mapping_ref)

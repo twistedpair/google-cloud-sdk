@@ -1819,6 +1819,17 @@
         "environment": {
           "description": "The runtime environment for the job.",
           "$ref": "RuntimeEnvironment"
+        },
+        "update": {
+          "description": "If set, replace the existing pipeline with the name specified by jobName\nwith this pipeline, preserving state.",
+          "type": "boolean"
+        },
+        "transformNameMapping": {
+          "description": "Only applicable when updating a pipeline. Map of transform name prefixes of\nthe job to be replaced to the corresponding name prefixes of the new job.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

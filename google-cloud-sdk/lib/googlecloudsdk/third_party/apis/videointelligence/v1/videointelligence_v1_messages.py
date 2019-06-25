@@ -401,15 +401,16 @@ class GoogleCloudVideointelligenceV1SpeechRecognitionAlternative(_messages.Messa
   r"""Alternative hypotheses (a.k.a. n-best list).
 
   Fields:
-    confidence: The confidence estimate between 0.0 and 1.0. A higher number
-      indicates an estimated greater likelihood that the recognized words are
-      correct. This field is typically provided only for the top hypothesis,
-      and only for `is_final=true` results. Clients should not rely on the
-      `confidence` field as it is not guaranteed to be accurate or consistent.
-      The default of 0.0 is a sentinel value indicating `confidence` was not
-      set.
+    confidence: Output only. The confidence estimate between 0.0 and 1.0. A
+      higher number indicates an estimated greater likelihood that the
+      recognized words are correct. This field is set only for the top
+      alternative. This field is not guaranteed to be accurate and users
+      should not rely on it to be always provided. The default of 0.0 is a
+      sentinel value indicating `confidence` was not set.
     transcript: Transcript text representing the words that the user spoke.
-    words: A list of word-specific information for each recognized word.
+    words: Output only. A list of word-specific information for each
+      recognized word. Note: When `enable_speaker_diarization` is true, you
+      will see all the words from the beginning of the audio.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -612,13 +613,13 @@ class GoogleCloudVideointelligenceV1VideoAnnotationResults(_messages.Message):
       Storage](https://cloud.google.com/storage/).
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
-    segmentLabelAnnotations: Label annotations on video level or user
+    segmentLabelAnnotations: Topical label annotations on video level or user
       specified segment level. There is exactly one element for each unique
       label.
     shotAnnotations: Shot annotations. Each shot is represented as a video
       segment.
-    shotLabelAnnotations: Label annotations on shot level. There is exactly
-      one element for each unique label.
+    shotLabelAnnotations: Topical label annotations on shot level. There is
+      exactly one element for each unique label.
     speechTranscriptions: Speech transcription.
     textAnnotations: OCR text detection and tracking. Annotations for list of
       detected text snippets. Each will have list of frame information
@@ -933,15 +934,16 @@ class GoogleCloudVideointelligenceV1beta2SpeechRecognitionAlternative(_messages.
   r"""Alternative hypotheses (a.k.a. n-best list).
 
   Fields:
-    confidence: The confidence estimate between 0.0 and 1.0. A higher number
-      indicates an estimated greater likelihood that the recognized words are
-      correct. This field is typically provided only for the top hypothesis,
-      and only for `is_final=true` results. Clients should not rely on the
-      `confidence` field as it is not guaranteed to be accurate or consistent.
-      The default of 0.0 is a sentinel value indicating `confidence` was not
-      set.
+    confidence: Output only. The confidence estimate between 0.0 and 1.0. A
+      higher number indicates an estimated greater likelihood that the
+      recognized words are correct. This field is set only for the top
+      alternative. This field is not guaranteed to be accurate and users
+      should not rely on it to be always provided. The default of 0.0 is a
+      sentinel value indicating `confidence` was not set.
     transcript: Transcript text representing the words that the user spoke.
-    words: A list of word-specific information for each recognized word.
+    words: Output only. A list of word-specific information for each
+      recognized word. Note: When `enable_speaker_diarization` is true, you
+      will see all the words from the beginning of the audio.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -1072,13 +1074,13 @@ class GoogleCloudVideointelligenceV1beta2VideoAnnotationResults(_messages.Messag
       Storage](https://cloud.google.com/storage/).
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
-    segmentLabelAnnotations: Label annotations on video level or user
+    segmentLabelAnnotations: Topical label annotations on video level or user
       specified segment level. There is exactly one element for each unique
       label.
     shotAnnotations: Shot annotations. Each shot is represented as a video
       segment.
-    shotLabelAnnotations: Label annotations on shot level. There is exactly
-      one element for each unique label.
+    shotLabelAnnotations: Topical label annotations on shot level. There is
+      exactly one element for each unique label.
     speechTranscriptions: Speech transcription.
     textAnnotations: OCR text detection and tracking. Annotations for list of
       detected text snippets. Each will have list of frame information
@@ -1369,15 +1371,16 @@ class GoogleCloudVideointelligenceV1p1beta1SpeechRecognitionAlternative(_message
   r"""Alternative hypotheses (a.k.a. n-best list).
 
   Fields:
-    confidence: The confidence estimate between 0.0 and 1.0. A higher number
-      indicates an estimated greater likelihood that the recognized words are
-      correct. This field is typically provided only for the top hypothesis,
-      and only for `is_final=true` results. Clients should not rely on the
-      `confidence` field as it is not guaranteed to be accurate or consistent.
-      The default of 0.0 is a sentinel value indicating `confidence` was not
-      set.
+    confidence: Output only. The confidence estimate between 0.0 and 1.0. A
+      higher number indicates an estimated greater likelihood that the
+      recognized words are correct. This field is set only for the top
+      alternative. This field is not guaranteed to be accurate and users
+      should not rely on it to be always provided. The default of 0.0 is a
+      sentinel value indicating `confidence` was not set.
     transcript: Transcript text representing the words that the user spoke.
-    words: A list of word-specific information for each recognized word.
+    words: Output only. A list of word-specific information for each
+      recognized word. Note: When `enable_speaker_diarization` is true, you
+      will see all the words from the beginning of the audio.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -1508,13 +1511,13 @@ class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationResults(_messages.Mess
       Storage](https://cloud.google.com/storage/).
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
-    segmentLabelAnnotations: Label annotations on video level or user
+    segmentLabelAnnotations: Topical label annotations on video level or user
       specified segment level. There is exactly one element for each unique
       label.
     shotAnnotations: Shot annotations. Each shot is represented as a video
       segment.
-    shotLabelAnnotations: Label annotations on shot level. There is exactly
-      one element for each unique label.
+    shotLabelAnnotations: Topical label annotations on shot level. There is
+      exactly one element for each unique label.
     speechTranscriptions: Speech transcription.
     textAnnotations: OCR text detection and tracking. Annotations for list of
       detected text snippets. Each will have list of frame information
@@ -1805,15 +1808,16 @@ class GoogleCloudVideointelligenceV1p2beta1SpeechRecognitionAlternative(_message
   r"""Alternative hypotheses (a.k.a. n-best list).
 
   Fields:
-    confidence: The confidence estimate between 0.0 and 1.0. A higher number
-      indicates an estimated greater likelihood that the recognized words are
-      correct. This field is typically provided only for the top hypothesis,
-      and only for `is_final=true` results. Clients should not rely on the
-      `confidence` field as it is not guaranteed to be accurate or consistent.
-      The default of 0.0 is a sentinel value indicating `confidence` was not
-      set.
+    confidence: Output only. The confidence estimate between 0.0 and 1.0. A
+      higher number indicates an estimated greater likelihood that the
+      recognized words are correct. This field is set only for the top
+      alternative. This field is not guaranteed to be accurate and users
+      should not rely on it to be always provided. The default of 0.0 is a
+      sentinel value indicating `confidence` was not set.
     transcript: Transcript text representing the words that the user spoke.
-    words: A list of word-specific information for each recognized word.
+    words: Output only. A list of word-specific information for each
+      recognized word. Note: When `enable_speaker_diarization` is true, you
+      will see all the words from the beginning of the audio.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -1944,13 +1948,13 @@ class GoogleCloudVideointelligenceV1p2beta1VideoAnnotationResults(_messages.Mess
       Storage](https://cloud.google.com/storage/).
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
-    segmentLabelAnnotations: Label annotations on video level or user
+    segmentLabelAnnotations: Topical label annotations on video level or user
       specified segment level. There is exactly one element for each unique
       label.
     shotAnnotations: Shot annotations. Each shot is represented as a video
       segment.
-    shotLabelAnnotations: Label annotations on shot level. There is exactly
-      one element for each unique label.
+    shotLabelAnnotations: Topical label annotations on shot level. There is
+      exactly one element for each unique label.
     speechTranscriptions: Speech transcription.
     textAnnotations: OCR text detection and tracking. Annotations for list of
       detected text snippets. Each will have list of frame information
@@ -2277,15 +2281,16 @@ class GoogleCloudVideointelligenceV1p3beta1SpeechRecognitionAlternative(_message
   r"""Alternative hypotheses (a.k.a. n-best list).
 
   Fields:
-    confidence: The confidence estimate between 0.0 and 1.0. A higher number
-      indicates an estimated greater likelihood that the recognized words are
-      correct. This field is typically provided only for the top hypothesis,
-      and only for `is_final=true` results. Clients should not rely on the
-      `confidence` field as it is not guaranteed to be accurate or consistent.
-      The default of 0.0 is a sentinel value indicating `confidence` was not
-      set.
+    confidence: Output only. The confidence estimate between 0.0 and 1.0. A
+      higher number indicates an estimated greater likelihood that the
+      recognized words are correct. This field is set only for the top
+      alternative. This field is not guaranteed to be accurate and users
+      should not rely on it to be always provided. The default of 0.0 is a
+      sentinel value indicating `confidence` was not set.
     transcript: Transcript text representing the words that the user spoke.
-    words: A list of word-specific information for each recognized word.
+    words: Output only. A list of word-specific information for each
+      recognized word. Note: When `enable_speaker_diarization` is true, you
+      will see all the words from the beginning of the audio.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -2493,13 +2498,13 @@ class GoogleCloudVideointelligenceV1p3beta1VideoAnnotationResults(_messages.Mess
       tracked and recognized in video.
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
-    segmentLabelAnnotations: Label annotations on video level or user
+    segmentLabelAnnotations: Topical label annotations on video level or user
       specified segment level. There is exactly one element for each unique
       label.
     shotAnnotations: Shot annotations. Each shot is represented as a video
       segment.
-    shotLabelAnnotations: Label annotations on shot level. There is exactly
-      one element for each unique label.
+    shotLabelAnnotations: Topical label annotations on shot level. There is
+      exactly one element for each unique label.
     speechTranscriptions: Speech transcription.
     textAnnotations: OCR text detection and tracking. Annotations for list of
       detected text snippets. Each will have list of frame information

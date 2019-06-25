@@ -862,6 +862,7 @@ class CommandBuilder(object):
     operation_ref = resources.REGISTRY.Parse(
         getattr(operation, self.spec.async.response_name_field),
         collection=self.spec.async.collection)
+    request_string = self.spec.async.request_issued_message or request_string
     if request_string:
       log.status.Print(self._Format(request_string, resource_ref,
                                     self._GetDisplayName(resource_ref, args)))
@@ -996,7 +997,7 @@ class CommandBuilder(object):
     Args:
       command: The command being generated.
     """
-    if self.spec.is_hidden:
+    if self.spec.hidden:
       command = base.Hidden(command)
     if self.spec.release_tracks:
       command = base.ReleaseTracks(*self.spec.release_tracks)(command)

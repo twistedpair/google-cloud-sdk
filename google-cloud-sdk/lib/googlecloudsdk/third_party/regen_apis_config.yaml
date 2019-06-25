@@ -21,7 +21,7 @@
 # To add new api simply add an entry with its api name and version
 # pointing to its discovery doc file which should be checked into root_dir.
 
-# api version can have the follwing fields:
+# api version can have the following fields:
 # api_name:
 #   api_version:
 #     discovery_doc: <relative path wrt root_dir>
@@ -86,6 +86,12 @@ apis:
     v1beta1:
       default: false
       discovery_doc: binaryauthorization_v1beta1.json
+      resources:
+        projects.policy:
+          path: projects/{projectsId}/policy
+    v1:
+      default: false
+      discovery_doc: binaryauthorization_v1.json
       resources:
         projects.policy:
           path: projects/{projectsId}/policy
@@ -269,8 +275,14 @@ apis:
       discovery_doc: datacatalog_v1beta1.json
       default: true
       resources:
+        catalog:
+          path: catalog
         entries:
           path: entries
+        projects.locations.tagTemplates.fields:
+          path: projects/{projectsId}/locations/{locationsId}/tagTemplates/{tagTemplatesId}/fields/{fieldsId}
+        projects.locations.entryGroups.entries.tags:
+          path: projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags/{tagsId}
   dataflow:
     v1b3:
       discovery_doc: dataflow_v1b3.json

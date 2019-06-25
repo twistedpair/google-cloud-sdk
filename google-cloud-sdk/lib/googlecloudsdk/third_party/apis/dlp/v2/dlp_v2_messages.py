@@ -1027,6 +1027,7 @@ class GooglePrivacyDlpV2ByteContentItem(_messages.Message):
       IMAGE_PNG: <no description>
       IMAGE_SVG: <no description>
       TEXT_UTF8: <no description>
+      AVRO: <no description>
     """
     BYTES_TYPE_UNSPECIFIED = 0
     IMAGE = 1
@@ -1035,6 +1036,7 @@ class GooglePrivacyDlpV2ByteContentItem(_messages.Message):
     IMAGE_PNG = 4
     IMAGE_SVG = 5
     TEXT_UTF8 = 6
+    AVRO = 7
 
   data = _messages.BytesField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -1206,11 +1208,13 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
       BINARY_FILE: <no description>
       TEXT_FILE: <no description>
       IMAGE: <no description>
+      AVRO: <no description>
     """
     FILE_TYPE_UNSPECIFIED = 0
     BINARY_FILE = 1
     TEXT_FILE = 2
     IMAGE = 3
+    AVRO = 4
 
   class SampleMethodValueValuesEnum(_messages.Enum):
     r"""SampleMethodValueValuesEnum enum type.

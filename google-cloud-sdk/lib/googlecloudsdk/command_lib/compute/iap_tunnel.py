@@ -87,7 +87,6 @@ class SshTunnelArgs(object):
     project: str, the project id (string with dashes).
     zone: str, the zone name.
     instance: str, the instance name.
-    interface: str, the interface name.
     pass_through_args: [str], additional args to be passed to the inner gcloud.
   """
 
@@ -96,12 +95,10 @@ class SshTunnelArgs(object):
     self.project = ''
     self.zone = ''
     self.instance = ''
-    self.interface = ''
     self.pass_through_args = []
 
   @staticmethod
-  def FromArgs(args, track, instance_ref, internal_interface,
-               external_interface):
+  def FromArgs(args, track, instance_ref, external_interface):
     """Construct an SshTunnelArgs from command line args and values.
 
     Args:
@@ -109,7 +106,6 @@ class SshTunnelArgs(object):
         AddSshTunnelArgs called.
       track: ReleaseTrack, The currently running release track.
       instance_ref: The target instance reference object.
-      internal_interface: The internal interface of target resource object.
       external_interface: The external interface of target resource object, if
         available, otherwise None.
     Returns:
@@ -141,7 +137,6 @@ class SshTunnelArgs(object):
     res.project = instance_ref.project
     res.zone = instance_ref.zone
     res.instance = instance_ref.instance
-    res.interface = internal_interface.name
 
     # The tunnel_through_iap attribute existed, so these must too.
     if args.IsSpecified('iap_tunnel_url_override'):
@@ -158,7 +153,6 @@ class SshTunnelArgs(object):
         self.project,
         self.zone,
         self.instance,
-        self.interface,
         self.pass_through_args,
     )
 

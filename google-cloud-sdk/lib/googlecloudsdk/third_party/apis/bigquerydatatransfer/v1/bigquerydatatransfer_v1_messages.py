@@ -845,6 +845,8 @@ class DataSourceParameter(_messages.Message):
 
   Fields:
     allowedValues: All possible values for the parameter.
+    deprecated: If true, it should not be used in new transfers, and it should
+      not be visible to users.
     description: Parameter description.
     displayName: Parameter display name in the user interface.
     fields: Deprecated. This field has no effect.
@@ -887,20 +889,21 @@ class DataSourceParameter(_messages.Message):
     PLUS_PAGE = 6
 
   allowedValues = _messages.StringField(1, repeated=True)
-  description = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  fields = _messages.MessageField('DataSourceParameter', 4, repeated=True)
-  immutable = _messages.BooleanField(5)
-  maxValue = _messages.FloatField(6)
-  minValue = _messages.FloatField(7)
-  paramId = _messages.StringField(8)
-  recurse = _messages.BooleanField(9)
-  repeated = _messages.BooleanField(10)
-  required = _messages.BooleanField(11)
-  type = _messages.EnumField('TypeValueValuesEnum', 12)
-  validationDescription = _messages.StringField(13)
-  validationHelpUrl = _messages.StringField(14)
-  validationRegex = _messages.StringField(15)
+  deprecated = _messages.BooleanField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  fields = _messages.MessageField('DataSourceParameter', 5, repeated=True)
+  immutable = _messages.BooleanField(6)
+  maxValue = _messages.FloatField(7)
+  minValue = _messages.FloatField(8)
+  paramId = _messages.StringField(9)
+  recurse = _messages.BooleanField(10)
+  repeated = _messages.BooleanField(11)
+  required = _messages.BooleanField(12)
+  type = _messages.EnumField('TypeValueValuesEnum', 13)
+  validationDescription = _messages.StringField(14)
+  validationHelpUrl = _messages.StringField(15)
+  validationRegex = _messages.StringField(16)
 
 
 class Empty(_messages.Message):
@@ -1434,7 +1437,7 @@ class TransferRun(_messages.Message):
       form `projects/{project_id}/locations/{location}/transferConfigs/{config
       _id}/runs/{run_id}`. The name is ignored when creating a transfer run.
     params: Output only. Data transfer specific parameters.
-    runTime: For batch transfer runs, specifies the date and time that data
+    runTime: For batch transfer runs, specifies the date and time of the data
       should be ingested.
     schedule: Output only. Describes the schedule of this transfer run if it
       was created as part of a regular schedule. For batch transfer runs that

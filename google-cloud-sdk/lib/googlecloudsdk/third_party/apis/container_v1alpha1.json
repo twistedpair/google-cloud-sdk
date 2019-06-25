@@ -816,10 +816,6 @@
           "description": "Configuration for Istio, an open platform to connect, manage, and secure\nmicroservices.",
           "$ref": "IstioConfig"
         },
-        "serverlessConfig": {
-          "description": "Deprecated: use CloudRunConfig instead (same behavior).",
-          "$ref": "ServerlessConfig"
-        },
         "cloudRunConfig": {
           "description": "Configuration for the Cloud Run addon. The `IstioConfig` addon must be\nenabled in order to enable Cloud Run. This option can only be enabled at\ncluster creation time.",
           "$ref": "CloudRunConfig"
@@ -831,6 +827,10 @@
         "configConnectorConfig": {
           "description": "Configuration for the ConfigConnector add-on, a Kubernetes\nextension to manage hosted GCP services through the Kubernetes API",
           "$ref": "ConfigConnectorConfig"
+        },
+        "gcePersistentDiskCsiDriverConfig": {
+          "description": "Configuration for the GCE PD CSI driver. This option can only be enabled\nat cluster creation time.",
+          "$ref": "GcePersistentDiskCsiDriverConfig"
         }
       }
     },
@@ -905,17 +905,6 @@
         }
       }
     },
-    "ServerlessConfig": {
-      "id": "ServerlessConfig",
-      "description": "Configuration options for the serverless feature.",
-      "type": "object",
-      "properties": {
-        "disabled": {
-          "description": "Whether serverless is enabled for this cluster.",
-          "type": "boolean"
-        }
-      }
-    },
     "CloudRunConfig": {
       "id": "CloudRunConfig",
       "description": "Configuration options for the Cloud Run feature.",
@@ -945,6 +934,17 @@
       "properties": {
         "enabled": {
           "description": "Whether Cloud Connector is enabled for this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GcePersistentDiskCsiDriverConfig": {
+      "id": "GcePersistentDiskCsiDriverConfig",
+      "description": "Configuration for the GCE PD CSI driver. This option can only be enabled\nat cluster creation time.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether the GCE PD CSI driver is enabled for this cluster.",
           "type": "boolean"
         }
       }
@@ -1374,13 +1374,15 @@
         "autoscalingProfile": {
           "description": "Defines autoscaling behaviour.",
           "enumDescriptions": [
-            "Use default (balanced) autoscaling configuration.",
-            "Prioritize optimizing utilization of resources."
+            "No change to autoscaling configuration.",
+            "Prioritize optimizing utilization of resources.",
+            "Use default (balanced) autoscaling configuration."
           ],
           "type": "string",
           "enum": [
             "PROFILE_UNSPECIFIED",
-            "OPTIMIZE_UTILIZATION"
+            "OPTIMIZE_UTILIZATION",
+            "BALANCED"
           ]
         },
         "autoprovisioningNodePoolDefaults": {

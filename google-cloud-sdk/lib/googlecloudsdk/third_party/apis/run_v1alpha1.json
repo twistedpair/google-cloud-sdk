@@ -439,10 +439,6 @@
           "type": "integer",
           "format": "int32"
         },
-        "serviceAccountName": {
-          "description": "Not currently used by Cloud Run.",
-          "type": "string"
-        },
         "servingState": {
           "description": "ServingState holds a value describing the state the resources\nare in for this Revision.\nUsers must not specify this when creating a revision. It is expected\nthat the system will manipulate this based on routability and load.\n\nPopulated by the system.\nRead-only.",
           "enumDescriptions": [
@@ -464,8 +460,12 @@
           "type": "integer",
           "format": "int32"
         },
+        "serviceAccountName": {
+          "description": "Email address of the IAM service account associated with the revision\nof the service. The service account represents the identity of the\nrunning revision, and determines what permissions the revision has. If\nnot provided, the revision will use the project's default service account.",
+          "type": "string"
+        },
         "containers": {
-          "description": "Containers holds the single container that defines the unit of execution\nfor this Revision. In the context of a Revision, we disallow a number of\nfields on this Container, including: name and lifecycle.",
+          "description": "Containers holds the single container that defines the unit of execution\nfor this Revision. In the context of a Revision, we disallow a number of\nfields on this Container, including: name and lifecycle.\nIn Cloud Run, only a single container may be provided.",
           "type": "array",
           "items": {
             "$ref": "Container"
@@ -1722,7 +1722,7 @@
       "type": "object",
       "properties": {
         "domain": {
-          "description": "Domain holds the top-level domain that will distribute traffic over the\nprovided targets. It generally has the form\nhttps:\/\/{route-hash}-{project-hash}-{cluster-level-suffix}.a.run.app",
+          "description": "Deprecated - use url instead.\nDomain holds the top-level domain that will distribute traffic over the\nprovided targets.",
           "type": "string"
         },
         "traffic": {
@@ -1745,12 +1745,16 @@
           }
         },
         "domainInternal": {
-          "description": "For Cloud Run, identifical to domain.",
+          "description": "Deprecated - use address instead.\nFor Cloud Run, identifical to domain.",
           "type": "string"
         },
         "address": {
-          "description": "Similar to domain, information on where the service is available on HTTP.",
+          "description": "Similar to url, information on where the service is available on HTTP.",
           "$ref": "Addressable"
+        },
+        "url": {
+          "description": "URL holds the url that will distribute traffic over the provided traffic\ntargets. It generally has the form\nhttps:\/\/{route-hash}-{project-hash}-{cluster-level-suffix}.a.run.app",
+          "type": "string"
         }
       }
     },
@@ -1792,6 +1796,10 @@
       "type": "object",
       "properties": {
         "hostname": {
+          "description": "Deprecated - use url instead.",
+          "type": "string"
+        },
+        "url": {
           "type": "string"
         }
       }
@@ -1968,8 +1976,12 @@
           "type": "string"
         },
         "address": {
-          "description": "From RouteStatus.\nSimilar to domain, information on where the service is available on HTTP.",
+          "description": "From RouteStatus.\nSimilar to url, information on where the service is available on HTTP.",
           "$ref": "Addressable"
+        },
+        "url": {
+          "description": "From RouteStatus.\nURL holds the url that will distribute traffic over the provided traffic\ntargets. It generally has the form\nhttps:\/\/{route-hash}-{project-hash}-{cluster-level-suffix}.a.run.app",
+          "type": "string"
         },
         "observedGeneration": {
           "description": "ObservedGeneration is the 'Generation' of the Route that\nwas last processed by the controller.\n\nClients polling for completed reconciliation should poll until\nobservedGeneration = metadata.generation and the Ready condition's status\nis True or False.",

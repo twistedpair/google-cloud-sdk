@@ -42,6 +42,45 @@ class BucketOptions(_messages.Message):
   linearBuckets = _messages.MessageField('Linear', 3)
 
 
+class CmekSettings(_messages.Message):
+  r"""Describes the Customer-Managed Encryption Key (CMEK) Settings associated
+  with a project, folder, organization, billing account, or flexible
+  resource.Note: CMEK for the Log Router can currently only be configured at
+  the organization-level and settings are inherited by all projects in the
+  organization.See CMEK for the Stackdriver Logging Log Router for more
+  information.
+
+  Fields:
+    kmsKeyName: The resource name for the configured Cloud KMS key.KMS key
+      name format:  "projects/PROJECT_ID/locations/LOCATION/keyRings/KEYRING/c
+      ryptoKeys/KEY"For example:  "projects/my-project-id/locations/my-
+      region/keyRings/key-ring-name/cryptoKeys/key-name"To enable CMEK for the
+      Stackdriver Logging Log Router, set this field to a valid kms_key_name
+      for which the associated CMEK-specific service account has the required
+      role roles/cloudkms.cryptoKeyEncrypterDecrypter assigned for the key.The
+      Cloud KMS key used by the Log Router can be updated by changing the
+      kms_key_name to a new valid key name. Encryption operations that are in
+      progress will be completed with the key that was in use when they
+      started. Decryption operations will be completed using the key that was
+      used at the time of encryption.To disable CMEK for the Stackdriver
+      Logging Log Router, set this field to an empty string.See CMEK for the
+      Stackdriver Logging Log Router for more information.
+    name: Output Only. The resource name of the CMEK settings.
+    serviceAccountId: Output Only. The service account that will be used by
+      the Stackdriver Logging Log Router access your Cloud KMS key.Before
+      enabling CMEK for the Stackdriver Logging Log Router, you must first
+      assign the role roles/cloudkms.cryptoKeyEncrypterDecrypter to the
+      service account that the Stackdriver Logging Log Router will use to
+      access your Cloud KMS key. Use GetCmekSettings to obtain the service
+      account identity.See CMEK for the Stackdriver Logging Log Router for
+      more information.
+  """
+
+  kmsKeyName = _messages.StringField(1)
+  name = _messages.StringField(2)
+  serviceAccountId = _messages.StringField(3)
+
+
 class DlpOptions(_messages.Message):
   r"""Options specific to sinks that require de-identification by the Data
   Loss Prevention (DLP) API.
@@ -1170,6 +1209,23 @@ class LoggingBillingAccountsExclusionsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class LoggingBillingAccountsGetCmekSettingsRequest(_messages.Message):
+  r"""A LoggingBillingAccountsGetCmekSettingsRequest object.
+
+  Fields:
+    name: Required. The resource for which to retrieve CMEK settings.
+      "projects/[PROJECT_ID]/cmekSettings"
+      "organizations/[ORGANIZATION_ID]/cmekSettings"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
+      "folders/[FOLDER_ID]/cmekSettings" Example: "organizations/my-
+      organization-id/cmekSettings".Note: CMEK for the Log Router can
+      currently only be configured at the organization-level and settings are
+      inherited by all projects in the organization.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class LoggingBillingAccountsLocationsBucketsCreateRequest(_messages.Message):
   r"""A LoggingBillingAccountsLocationsBucketsCreateRequest object.
 
@@ -1451,6 +1507,31 @@ class LoggingBillingAccountsSinksUpdateRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class LoggingBillingAccountsUpdateCmekSettingsRequest(_messages.Message):
+  r"""A LoggingBillingAccountsUpdateCmekSettingsRequest object.
+
+  Fields:
+    cmekSettings: A CmekSettings resource to be passed as the request body.
+    name: Required. The resource name for the CMEK settings to update.
+      "projects/[PROJECT_ID]/cmekSettings"
+      "organizations/[ORGANIZATION_ID]/cmekSettings"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
+      "folders/[FOLDER_ID]/cmekSettings" Example: "organizations/my-
+      organization-id/cmekSettings".Note: CMEK for the Log Router can
+      currently only be configured at the organization-level and settings are
+      inherited by all projects in the organization.
+    updateMask: Optional. Field mask identifying which fields from
+      cmek_settings should be updated. A field will be overwritten if and only
+      if it is in the update mask. Output only fields cannot be updated.See
+      FieldMask(google.protobuf.FieldMask] for more information.Example:
+      "updateMask=kmsKeyName"
+  """
+
+  cmekSettings = _messages.MessageField('CmekSettings', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class LoggingBucketsGetRequest(_messages.Message):
   r"""A LoggingBucketsGetRequest object.
 
@@ -1697,6 +1778,23 @@ class LoggingFoldersExclusionsPatchRequest(_messages.Message):
   logExclusion = _messages.MessageField('LogExclusion', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class LoggingFoldersGetCmekSettingsRequest(_messages.Message):
+  r"""A LoggingFoldersGetCmekSettingsRequest object.
+
+  Fields:
+    name: Required. The resource for which to retrieve CMEK settings.
+      "projects/[PROJECT_ID]/cmekSettings"
+      "organizations/[ORGANIZATION_ID]/cmekSettings"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
+      "folders/[FOLDER_ID]/cmekSettings" Example: "organizations/my-
+      organization-id/cmekSettings".Note: CMEK for the Log Router can
+      currently only be configured at the organization-level and settings are
+      inherited by all projects in the organization.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class LoggingFoldersLocationsBucketsCreateRequest(_messages.Message):
@@ -1997,6 +2095,48 @@ class LoggingFoldersSinksUpdateRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class LoggingFoldersUpdateCmekSettingsRequest(_messages.Message):
+  r"""A LoggingFoldersUpdateCmekSettingsRequest object.
+
+  Fields:
+    cmekSettings: A CmekSettings resource to be passed as the request body.
+    name: Required. The resource name for the CMEK settings to update.
+      "projects/[PROJECT_ID]/cmekSettings"
+      "organizations/[ORGANIZATION_ID]/cmekSettings"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
+      "folders/[FOLDER_ID]/cmekSettings" Example: "organizations/my-
+      organization-id/cmekSettings".Note: CMEK for the Log Router can
+      currently only be configured at the organization-level and settings are
+      inherited by all projects in the organization.
+    updateMask: Optional. Field mask identifying which fields from
+      cmek_settings should be updated. A field will be overwritten if and only
+      if it is in the update mask. Output only fields cannot be updated.See
+      FieldMask(google.protobuf.FieldMask] for more information.Example:
+      "updateMask=kmsKeyName"
+  """
+
+  cmekSettings = _messages.MessageField('CmekSettings', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class LoggingGetCmekSettingsRequest(_messages.Message):
+  r"""A LoggingGetCmekSettingsRequest object.
+
+  Fields:
+    name: Required. The resource for which to retrieve CMEK settings.
+      "projects/[PROJECT_ID]/cmekSettings"
+      "organizations/[ORGANIZATION_ID]/cmekSettings"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
+      "folders/[FOLDER_ID]/cmekSettings" Example: "organizations/my-
+      organization-id/cmekSettings".Note: CMEK for the Log Router can
+      currently only be configured at the organization-level and settings are
+      inherited by all projects in the organization.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class LoggingLocationsBucketsCreateRequest(_messages.Message):
   r"""A LoggingLocationsBucketsCreateRequest object.
 
@@ -2176,6 +2316,23 @@ class LoggingOrganizationsExclusionsPatchRequest(_messages.Message):
   logExclusion = _messages.MessageField('LogExclusion', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class LoggingOrganizationsGetCmekSettingsRequest(_messages.Message):
+  r"""A LoggingOrganizationsGetCmekSettingsRequest object.
+
+  Fields:
+    name: Required. The resource for which to retrieve CMEK settings.
+      "projects/[PROJECT_ID]/cmekSettings"
+      "organizations/[ORGANIZATION_ID]/cmekSettings"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
+      "folders/[FOLDER_ID]/cmekSettings" Example: "organizations/my-
+      organization-id/cmekSettings".Note: CMEK for the Log Router can
+      currently only be configured at the organization-level and settings are
+      inherited by all projects in the organization.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class LoggingOrganizationsLocationsBucketsCreateRequest(_messages.Message):
@@ -2476,6 +2633,31 @@ class LoggingOrganizationsSinksUpdateRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class LoggingOrganizationsUpdateCmekSettingsRequest(_messages.Message):
+  r"""A LoggingOrganizationsUpdateCmekSettingsRequest object.
+
+  Fields:
+    cmekSettings: A CmekSettings resource to be passed as the request body.
+    name: Required. The resource name for the CMEK settings to update.
+      "projects/[PROJECT_ID]/cmekSettings"
+      "organizations/[ORGANIZATION_ID]/cmekSettings"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
+      "folders/[FOLDER_ID]/cmekSettings" Example: "organizations/my-
+      organization-id/cmekSettings".Note: CMEK for the Log Router can
+      currently only be configured at the organization-level and settings are
+      inherited by all projects in the organization.
+    updateMask: Optional. Field mask identifying which fields from
+      cmek_settings should be updated. A field will be overwritten if and only
+      if it is in the update mask. Output only fields cannot be updated.See
+      FieldMask(google.protobuf.FieldMask] for more information.Example:
+      "updateMask=kmsKeyName"
+  """
+
+  cmekSettings = _messages.MessageField('CmekSettings', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class LoggingProjectsExclusionsCreateRequest(_messages.Message):
   r"""A LoggingProjectsExclusionsCreateRequest object.
 
@@ -2564,6 +2746,23 @@ class LoggingProjectsExclusionsPatchRequest(_messages.Message):
   logExclusion = _messages.MessageField('LogExclusion', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class LoggingProjectsGetCmekSettingsRequest(_messages.Message):
+  r"""A LoggingProjectsGetCmekSettingsRequest object.
+
+  Fields:
+    name: Required. The resource for which to retrieve CMEK settings.
+      "projects/[PROJECT_ID]/cmekSettings"
+      "organizations/[ORGANIZATION_ID]/cmekSettings"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
+      "folders/[FOLDER_ID]/cmekSettings" Example: "organizations/my-
+      organization-id/cmekSettings".Note: CMEK for the Log Router can
+      currently only be configured at the organization-level and settings are
+      inherited by all projects in the organization.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class LoggingProjectsLocationsBucketsCreateRequest(_messages.Message):
@@ -2935,6 +3134,31 @@ class LoggingProjectsSinksUpdateRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class LoggingProjectsUpdateCmekSettingsRequest(_messages.Message):
+  r"""A LoggingProjectsUpdateCmekSettingsRequest object.
+
+  Fields:
+    cmekSettings: A CmekSettings resource to be passed as the request body.
+    name: Required. The resource name for the CMEK settings to update.
+      "projects/[PROJECT_ID]/cmekSettings"
+      "organizations/[ORGANIZATION_ID]/cmekSettings"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
+      "folders/[FOLDER_ID]/cmekSettings" Example: "organizations/my-
+      organization-id/cmekSettings".Note: CMEK for the Log Router can
+      currently only be configured at the organization-level and settings are
+      inherited by all projects in the organization.
+    updateMask: Optional. Field mask identifying which fields from
+      cmek_settings should be updated. A field will be overwritten if and only
+      if it is in the update mask. Output only fields cannot be updated.See
+      FieldMask(google.protobuf.FieldMask] for more information.Example:
+      "updateMask=kmsKeyName"
+  """
+
+  cmekSettings = _messages.MessageField('CmekSettings', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class LoggingSinksCreateRequest(_messages.Message):
   r"""A LoggingSinksCreateRequest object.
 
@@ -3050,6 +3274,31 @@ class LoggingSinksUpdateRequest(_messages.Message):
   sinkName = _messages.StringField(2, required=True)
   uniqueWriterIdentity = _messages.BooleanField(3)
   updateMask = _messages.StringField(4)
+
+
+class LoggingUpdateCmekSettingsRequest(_messages.Message):
+  r"""A LoggingUpdateCmekSettingsRequest object.
+
+  Fields:
+    cmekSettings: A CmekSettings resource to be passed as the request body.
+    name: Required. The resource name for the CMEK settings to update.
+      "projects/[PROJECT_ID]/cmekSettings"
+      "organizations/[ORGANIZATION_ID]/cmekSettings"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
+      "folders/[FOLDER_ID]/cmekSettings" Example: "organizations/my-
+      organization-id/cmekSettings".Note: CMEK for the Log Router can
+      currently only be configured at the organization-level and settings are
+      inherited by all projects in the organization.
+    updateMask: Optional. Field mask identifying which fields from
+      cmek_settings should be updated. A field will be overwritten if and only
+      if it is in the update mask. Output only fields cannot be updated.See
+      FieldMask(google.protobuf.FieldMask] for more information.Example:
+      "updateMask=kmsKeyName"
+  """
+
+  cmekSettings = _messages.MessageField('CmekSettings', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class MetricDescriptor(_messages.Message):

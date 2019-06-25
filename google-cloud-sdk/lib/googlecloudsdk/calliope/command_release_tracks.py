@@ -60,7 +60,7 @@ def _SetValuesForTrack(obj, track):
         del obj[track_key]
     # Recursively update all children.
     # Remove them if they don't exist for the track.
-    for key, child in obj.items():
+    for key, child in list(obj.items()):
       try:
         _SetValuesForTrack(child, track)
       except DoesNotExistForTrackError:

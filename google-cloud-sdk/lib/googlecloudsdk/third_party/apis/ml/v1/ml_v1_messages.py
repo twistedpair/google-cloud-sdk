@@ -441,6 +441,9 @@ class GoogleCloudMlV1HyperparameterOutput(_messages.Message):
   completion of a training job with hyperparameter tuning includes a list of
   HyperparameterOutput objects, one for each successful trial.
 
+  Enums:
+    StateValueValuesEnum: Output only. The detailed state of the trial.
+
   Messages:
     HyperparametersValue: The hyperparameters given to this trial.
 
@@ -449,11 +452,39 @@ class GoogleCloudMlV1HyperparameterOutput(_messages.Message):
       currently populated.
     builtInAlgorithmOutput: Details related to built-in algorithms jobs. Only
       set for trials of built-in algorithms jobs that have succeeded.
+    endTime: Output only. End time for the trial.
     finalMetric: The final objective metric seen for this trial.
     hyperparameters: The hyperparameters given to this trial.
     isTrialStoppedEarly: True if the trial is stopped early.
+    startTime: Output only. Start time for the trial.
+    state: Output only. The detailed state of the trial.
     trialId: The trial id for these results.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The detailed state of the trial.
+
+    Values:
+      STATE_UNSPECIFIED: The job state is unspecified.
+      QUEUED: The job has been just created and processing has not yet begun.
+      PREPARING: The service is preparing to run the job.
+      RUNNING: The job is in progress.
+      SUCCEEDED: The job completed successfully.
+      FAILED: The job failed. `error_message` should contain the details of
+        the failure.
+      CANCELLING: The job is being cancelled. `error_message` should describe
+        the reason for the cancellation.
+      CANCELLED: The job has been cancelled. `error_message` should describe
+        the reason for the cancellation.
+    """
+    STATE_UNSPECIFIED = 0
+    QUEUED = 1
+    PREPARING = 2
+    RUNNING = 3
+    SUCCEEDED = 4
+    FAILED = 5
+    CANCELLING = 6
+    CANCELLED = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class HyperparametersValue(_messages.Message):
@@ -482,10 +513,13 @@ class GoogleCloudMlV1HyperparameterOutput(_messages.Message):
 
   allMetrics = _messages.MessageField('GoogleCloudMlV1HyperparameterOutputHyperparameterMetric', 1, repeated=True)
   builtInAlgorithmOutput = _messages.MessageField('GoogleCloudMlV1BuiltInAlgorithmOutput', 2)
-  finalMetric = _messages.MessageField('GoogleCloudMlV1HyperparameterOutputHyperparameterMetric', 3)
-  hyperparameters = _messages.MessageField('HyperparametersValue', 4)
-  isTrialStoppedEarly = _messages.BooleanField(5)
-  trialId = _messages.StringField(6)
+  endTime = _messages.StringField(3)
+  finalMetric = _messages.MessageField('GoogleCloudMlV1HyperparameterOutputHyperparameterMetric', 4)
+  hyperparameters = _messages.MessageField('HyperparametersValue', 5)
+  isTrialStoppedEarly = _messages.BooleanField(6)
+  startTime = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  trialId = _messages.StringField(9)
 
 
 class GoogleCloudMlV1HyperparameterOutputHyperparameterMetric(_messages.Message):

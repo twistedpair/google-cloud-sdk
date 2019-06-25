@@ -116,6 +116,6 @@ def SslCertificatesArgumentForOtherResource(resource,
         References to at most 15 SSL certificate resources that are used for
         server-side authentication. The first SSL certificate in this list is
         considered the primary SSL certificate associated with the load
-        balancer. The SSL certificate must exist and cannot be deleted while
+        balancer. The SSL certificates must exist and cannot be deleted while
         referenced by a {0}.
         """.format(resource))

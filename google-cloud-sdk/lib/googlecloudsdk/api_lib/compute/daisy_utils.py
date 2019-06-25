@@ -27,7 +27,6 @@ from googlecloudsdk.api_lib.cloudbuild import logs as cb_logs
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.services import enable_api as services_api
-from googlecloudsdk.api_lib.services import services_util
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -174,10 +173,7 @@ def _CheckIamPermissions(project_id):
           'Would you like to enable this service?',
           throw_if_unattended=True,
           cancel_on_no=True)
-      operation = services_api.EnableServiceApiCall(project.projectId,
-                                                    service_name)
-      # Wait for the operation to finish.
-      services_util.ProcessOperationResult(operation, is_async=False)
+      services_api.EnableService(project.projectId, service_name)
 
   # Now that we're sure the service account exists, actually check permissions.
   service_account = 'serviceAccount:{0}@cloudbuild.gserviceaccount.com'.format(

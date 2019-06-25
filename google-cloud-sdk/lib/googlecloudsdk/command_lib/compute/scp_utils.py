@@ -138,7 +138,6 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
 
     iap_tunnel_args = iap_tunnel.SshTunnelArgs.FromArgs(
         args, release_track, instance_ref,
-        ssh_utils.GetInternalInterface(instance),
         ssh_utils.GetExternalInterface(instance, no_raise=True))
 
     if iap_tunnel_args:

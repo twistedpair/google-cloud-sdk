@@ -30,7 +30,7 @@ operation:
     help: Cloud Game Services Operation.
 
 allocation_policy:
-  name: allocationPolicy
+  name: allocation policy
   collection: gameservices.projects.locations.allocationPolicies
   request_id_field: allocationPolicyId
   attributes:
@@ -54,7 +54,7 @@ realm:
     help: Cloud Game Services Realm.
 
 game_server_cluster:
-  name: gameServerCluster
+  name: game server cluster
   collection: gameservices.projects.locations.realms.gameServerClusters
   request_id_field: gameServerClusterId
   attributes:
@@ -79,7 +79,7 @@ deployment:
     help: Cloud Game Services Deployment.
 
 scaling_policy:
-  name: scalingPolicy
+  name: scaling policy
   collection: gameservices.projects.locations.scalingPolicies
   request_id_field: scalingPolicyId
   attributes:

@@ -237,3 +237,15 @@ class ServiceAccountChanges(ConfigChanger):
   def Adjust(self, resource):
     """Mutates the given config's service account to match what's desired."""
     resource.template.service_account = self._service_account
+
+
+class RevisionNameChanges(ConfigChanger):
+  """Represents the user intent to change revision name."""
+
+  def __init__(self, revision_suffix):
+    self._revision_suffix = revision_suffix
+
+  def Adjust(self, resource):
+    """Mutates the given config's revision name to match what's desired."""
+    resource.template.name = '{}-{}'.format(resource.name,
+                                            self._revision_suffix)

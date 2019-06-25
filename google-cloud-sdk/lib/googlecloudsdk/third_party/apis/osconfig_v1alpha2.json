@@ -7,7 +7,7 @@
   "version": "v1alpha2",
   "revision": "0",
   "title": "Cloud OS Config API",
-  "description": "Manages OS configurations for GCE VM instances.",
+  "description": "OS management tools that can be used for patch management, patch compliance, and configuration management on VM instances.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -681,6 +681,13 @@
             "$ref": "PackageRepository"
           }
         },
+        "recipes": {
+          "description": "Optional. A list of Recipes to install on the VM.",
+          "type": "array",
+          "items": {
+            "$ref": "SoftwareRecipe"
+          }
+        },
         "etag": {
           "description": "The etag for this GuestPolicy.\nIf this is provided on update, it must match the server's etag.",
           "type": "string"
@@ -938,6 +945,294 @@
         }
       }
     },
+    "SoftwareRecipe": {
+      "id": "SoftwareRecipe",
+      "description": "A software recipe is a set of instructions for installing and configuring a\npiece of software. It consists of a set of artifacts that will be\ndownloaded and a set of steps that install, configure, and\/or update th\nsoftware.\n\nRecipes supports installing and updating software from artifacts in the\nfollowing formats:\nZip archive, Tar archive, Windows MSI, Debian package, and RPM package.\n\nAdditionally it supports executing a script (either defined in a file or\ndirectly in this api) in bash, sh, cmd, and powershell.\n\nUpdating a Software Recipe\n\nIf a recipe is assigned to an instance and there is a recipe with the same\nname but a lower version already installed on the instance and the state\nof the recipe is INSTALLED_KEEP_UPDATED then the recipe will be updated to\nthe new version.\n\nScript Working Directories\n\nEach script or exec step will be run in its own temporary directory which\nis deleted after completing the step.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Unique identifier for the recipe. Only one recipe with a given name will\nbe installed on an instance.\n\nNames are also used to identify resource to determine whether guest\npolicies conflict. This means that requests to create multiple recipes\nwith the same name and version that could possibly have conflicting\nassignments will be rejected.",
+          "type": "string"
+        },
+        "version": {
+          "description": "The version of this software recipe. Version can be up to 4 period\nseparated numbers (e.g. 12.34.56.78).",
+          "type": "string"
+        },
+        "artifacts": {
+          "description": "Resources available to be used in the steps in the recipe.",
+          "type": "array",
+          "items": {
+            "$ref": "Artifact"
+          }
+        },
+        "installSteps": {
+          "description": "Actions to be taken for installing this recipe. On failure it will stop\nexecuting steps and not attempt another installation. Any steps taken\n(including partially completed steps) will not be rolled back.",
+          "type": "array",
+          "items": {
+            "$ref": "Step"
+          }
+        },
+        "updateSteps": {
+          "description": "Actions to be taken for updating this recipe. On failure it will stop\nexecuting steps and not attempt another update for this recipe. Any steps\ntaken (including partially completed steps) will not be rolled back.",
+          "type": "array",
+          "items": {
+            "$ref": "Step"
+          }
+        },
+        "desiredState": {
+          "description": "Default is INSTALLED. The desired state the agent should maintain for this\nrecipe.\n\nINSTALLED: The software recipe will be installed on the instance but\n           won't be updated to new versions.\nINSTALLED_KEEP_UPDATED: The software recipe will be installed on the\n                        instance. It will also be updated to a higher\n                        version of the recipe if a higher version is\n                        assigned to this instance.\nREMOVE: Remove is unsupported for software recipes and attempts to\n        create or update a recipe to the REMOVE state will be rejected.",
+          "enumDescriptions": [
+            "The default is to ensure the package is installed.",
+            "The agent will ensure that the package is installed.",
+            "The agent will ensure that the package is installed and will\nperiodically check for and install any updates.",
+            "The agent will ensure that the package is not installed and uninstall it\nif detected."
+          ],
+          "type": "string",
+          "enum": [
+            "DESIRED_STATE_UNSPECIFIED",
+            "INSTALLED",
+            "UPDATED",
+            "REMOVED"
+          ]
+        }
+      }
+    },
+    "Artifact": {
+      "id": "Artifact",
+      "description": "Specifies a resource to be used in the recipe.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Id of the artifact, which the installation and update steps of this\nrecipe can reference. Artifacts in a recipe cannot have the same id.",
+          "type": "string"
+        },
+        "uri": {
+          "description": "URI from which to fetch the object. It should contain both the protocol\nand path following the format {protocol}:\/\/{location}.\n\nThe format of the location varies based on the specied protocol but it\nmust contain all the information required to successfully retrieve the\nintended object. This means that, for example, if you need to retrieve\na specific version of an object in GCS the version needs to be\nspecified as part of the uri.",
+          "type": "string"
+        },
+        "allowInsecure": {
+          "description": "Defaults to false. If false it will verify that the downloaded artifact\nis the artifact that this recipe expects. The checks it makes are\ndependent on the protocol for the artifact:\nhttps: The file will be verified that it matches the checksum.\nhttp:  This protocol is disabled if allow_insecure is false. Use https\n       instead.\ngcs:   A version will need to be specified as part of the uri.",
+          "type": "boolean"
+        },
+        "checksum": {
+          "description": "Optional if allow_insecure is true or if the protocol is gcs:\/\/.\nSHA256 checksum to compare to the checksum of the artifact. If the\nchecksum is not empty and it doesn't match the artifact then the recipe\ninstallation will fail before running any of the steps.",
+          "type": "string"
+        }
+      }
+    },
+    "Step": {
+      "id": "Step",
+      "description": "An action that can be taken as part of installing or updating a recipe.",
+      "type": "object",
+      "properties": {
+        "fileCopy": {
+          "description": "Copies a file onto the instance.",
+          "$ref": "CopyFile"
+        },
+        "archiveExtraction": {
+          "description": "Extracts an archive into the specified directory.",
+          "$ref": "ExtractArchive"
+        },
+        "msiInstallation": {
+          "description": "Installs an MSI file.",
+          "$ref": "InstallMsi"
+        },
+        "dpkgInstallation": {
+          "description": "Installs a deb file via dpkg.",
+          "$ref": "InstallDpkg"
+        },
+        "rpmInstallation": {
+          "description": "Installs an rpm file via the rpm utility.",
+          "$ref": "InstallRpm"
+        },
+        "fileExec": {
+          "description": "Executes an artifact or local file.",
+          "$ref": "ExecFile"
+        },
+        "scriptRun": {
+          "description": "Runs commands in a shell.",
+          "$ref": "RunScript"
+        }
+      }
+    },
+    "CopyFile": {
+      "id": "CopyFile",
+      "description": "Copies the artifact to the specified path on the instance.",
+      "type": "object",
+      "properties": {
+        "artifactId": {
+          "description": "The id of the relevant artifact in the recipe.",
+          "type": "string"
+        },
+        "destination": {
+          "description": "The absolute path on the instance to put the file.",
+          "type": "string"
+        },
+        "overwrite": {
+          "description": "Whether to allow this step to overwrite existing files. If this is\nfalse and the file already exists the file will not be overwritten\nand the step will be considered a success. Defaults to false.",
+          "type": "boolean"
+        },
+        "permissions": {
+          "description": "Consists of three octal digits which represent, in\norder, the permissions of the owner, group, and other users for the\nfile (similarly to the numeric mode used in the linux chmod utility).\nEach digit represents a three bit number with the 4 bit\ncorresponding to the read permissions, the 2 bit corresponds to the\nwrite bit, and the one bit corresponds to the execute permission.\nDefault behavior is 755.\n\nBelow are some examples of permissions and their associated values:\nread, write, and execute: 7\nread and execute: 5\nread and write: 6\nread only: 4",
+          "type": "string"
+        }
+      }
+    },
+    "ExtractArchive": {
+      "id": "ExtractArchive",
+      "description": "Extracts an archive of the type specified in the specified directory.",
+      "type": "object",
+      "properties": {
+        "artifactId": {
+          "description": "The id of the relevant artifact in the recipe.",
+          "type": "string"
+        },
+        "destination": {
+          "description": "Directory to extract archive to.\nDefaults to \/ on Linux or C:\\ on Windows.",
+          "type": "string"
+        },
+        "type": {
+          "description": "The type of the archive to extract.",
+          "enumDescriptions": [
+            "Indicates that the archive type isn't specified.",
+            "Indicates that the archive is a tar archive with no encryption.",
+            "Indicates that the archive is a tar archive with gzip encryption.",
+            "Indicates that the archive is a tar archive with bzip encryption.",
+            "Indicates that the archive is a tar archive with lzma encryption.",
+            "Indicates that the archive is a tar archive with xz encryption.",
+            "Indicates that the archive is a zip archive."
+          ],
+          "type": "string",
+          "enum": [
+            "ARCHIVE_TYPE_UNSPECIFIED",
+            "TAR",
+            "TAR_GZIP",
+            "TAR_BZIP",
+            "TAR_LZMA",
+            "TAR_XZ",
+            "ZIP"
+          ]
+        }
+      }
+    },
+    "InstallMsi": {
+      "id": "InstallMsi",
+      "description": "Installs an MSI file.",
+      "type": "object",
+      "properties": {
+        "artifactId": {
+          "description": "The id of the relevant artifact in the recipe.",
+          "type": "string"
+        },
+        "flags": {
+          "description": "The flags to use when installing the MSI\ndefaults to [\"\/i\"] (i.e. the install flag).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowedExitCodes": {
+          "description": "Return codes that indicate that the software installed or updated\nsuccessfully. Behaviour defaults to [0]",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      }
+    },
+    "InstallDpkg": {
+      "id": "InstallDpkg",
+      "description": "Installs a deb via dpkg.",
+      "type": "object",
+      "properties": {
+        "artifactId": {
+          "description": "The id of the relevant artifact in the recipe.",
+          "type": "string"
+        }
+      }
+    },
+    "InstallRpm": {
+      "id": "InstallRpm",
+      "description": "Installs an rpm file via the rpm utility.",
+      "type": "object",
+      "properties": {
+        "artifactId": {
+          "description": "The id of the relevant artifact in the recipe.",
+          "type": "string"
+        }
+      }
+    },
+    "ExecFile": {
+      "id": "ExecFile",
+      "description": "Executes an artifact or local file.",
+      "type": "object",
+      "properties": {
+        "artifactId": {
+          "description": "The id of the relevant artifact in the recipe.",
+          "type": "string"
+        },
+        "localPath": {
+          "description": "The absolute path of the file on the local filesystem.",
+          "type": "string"
+        },
+        "args": {
+          "description": "Arguments to be passed to the provided executable.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowedExitCodes": {
+          "description": "Defaults to [0]. A list of possible return values that the program\ncan return to indicate a success.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      }
+    },
+    "RunScript": {
+      "id": "RunScript",
+      "description": "Runs a script through an interpreter.",
+      "type": "object",
+      "properties": {
+        "script": {
+          "description": "The shell script to be executed.",
+          "type": "string"
+        },
+        "args": {
+          "description": "Arguments to be passed to the provided script.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowedExitCodes": {
+          "description": "Return codes that indicate that the software installed or updated\nsuccessfully. Behaviour defaults to [0]",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "interpreter": {
+          "description": "The script interpreter to use to run the script. If no interpreter is\nspecified the script will be executed directly, which will likely\nonly succeed for scripts with shebang lines.\n[Wikipedia shebang](https:\/\/en.wikipedia.org\/wiki\/Shebang_(Unix)).",
+          "enumDescriptions": [
+            "Default value for ScriptType.",
+            "Indicates that the script will be run with \/bin\/sh on Linux and cmd\non windows.",
+            "Indicates that the script will be run with powershell."
+          ],
+          "type": "string",
+          "enum": [
+            "INTERPRETER_UNSPECIFIED",
+            "SHELL",
+            "POWERSHELL"
+          ]
+        }
+      }
+    },
     "ListGuestPoliciesResponse": {
       "id": "ListGuestPoliciesResponse",
       "description": "A response message for listing GuestPolicies.",
@@ -988,40 +1283,52 @@
     },
     "LookupEffectiveGuestPoliciesResponse": {
       "id": "LookupEffectiveGuestPoliciesResponse",
-      "description": "Response with policies assigned to the instance.",
+      "description": "Response with policy configs assigned to the instance.",
       "type": "object",
       "properties": {
-        "guestPolicies": {
-          "description": "List of GuestPolicies assigned to this instance.",
+        "packages": {
+          "description": "List of package configurations assigned to the VM",
           "type": "array",
           "items": {
-            "$ref": "GuestConfig"
+            "$ref": "SourcedPackage"
+          }
+        },
+        "packageRepositories": {
+          "description": "List of package repository configurations assigned to the VM.",
+          "type": "array",
+          "items": {
+            "$ref": "SourcedPackageRepository"
           }
         }
       }
     },
-    "GuestConfig": {
-      "id": "GuestConfig",
-      "description": "A shortened description of the GuestPolicy only including the name and\nconfigs that should be applied to the instance.",
+    "SourcedPackage": {
+      "id": "SourcedPackage",
+      "description": "A GuestPolicy package including its source.",
       "type": "object",
       "properties": {
         "source": {
           "description": "Name of the GuestPolicy providing this config.",
           "type": "string"
         },
-        "packages": {
-          "description": "The software packages managed by this policy.",
-          "type": "array",
-          "items": {
-            "$ref": "Package"
-          }
+        "package": {
+          "description": "A software package to configure on the VM.",
+          "$ref": "Package"
+        }
+      }
+    },
+    "SourcedPackageRepository": {
+      "id": "SourcedPackageRepository",
+      "description": "A GuestPolicy package repository including its source.",
+      "type": "object",
+      "properties": {
+        "source": {
+          "description": "Name of the GuestPolicy providing this config.",
+          "type": "string"
         },
-        "packageRepositories": {
-          "description": "The software package repositories managed by this policy.",
-          "type": "array",
-          "items": {
-            "$ref": "PackageRepository"
-          }
+        "packageRepository": {
+          "description": "A software package repository to configure on the VM.",
+          "$ref": "PackageRepository"
         }
       }
     }

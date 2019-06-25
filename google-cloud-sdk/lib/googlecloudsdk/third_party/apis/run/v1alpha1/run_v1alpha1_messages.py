@@ -17,10 +17,12 @@ class Addressable(_messages.Message):
   r"""Information for connecting over HTTP(s).
 
   Fields:
-    hostname: A string attribute.
+    hostname: Deprecated - use url instead.
+    url: A string attribute.
   """
 
   hostname = _messages.StringField(1)
+  url = _messages.StringField(2)
 
 
 class AuditConfig(_messages.Message):
@@ -1718,11 +1720,16 @@ class RevisionSpec(_messages.Message):
       - `2-N` thread-safe, max concurrency of N
     containers: Containers holds the single container that defines the unit of
       execution for this Revision. In the context of a Revision, we disallow a
-      number of fields on this Container, including: name and lifecycle.
+      number of fields on this Container, including: name and lifecycle. In
+      Cloud Run, only a single container may be provided.
     generation: Deprecated and not currently populated by Cloud Run. See
       metadata.generation instead, which is the sequence number containing the
       latest generation of the desired state.  Read-only.
-    serviceAccountName: Not currently used by Cloud Run.
+    serviceAccountName: Email address of the IAM service account associated
+      with the revision of the service. The service account represents the
+      identity of the running revision, and determines what permissions the
+      revision has. If not provided, the revision will use the project's
+      default service account.
     servingState: ServingState holds a value describing the state the
       resources are in for this Revision. Users must not specify this when
       creating a revision. It is expected that the system will manipulate this
@@ -1888,15 +1895,15 @@ class RouteStatus(_messages.Message):
   controller).
 
   Fields:
-    address: Similar to domain, information on where the service is available
-      on HTTP.
+    address: Similar to url, information on where the service is available on
+      HTTP.
     conditions: Conditions communicates information about ongoing/complete
       reconciliation processes that bring the "spec" inline with the observed
       state of the world.
-    domain: Domain holds the top-level domain that will distribute traffic
-      over the provided targets. It generally has the form https://{route-hash
-      }-{project-hash}-{cluster-level-suffix}.a.run.app
-    domainInternal: For Cloud Run, identifical to domain.
+    domain: Deprecated - use url instead. Domain holds the top-level domain
+      that will distribute traffic over the provided targets.
+    domainInternal: Deprecated - use address instead. For Cloud Run,
+      identifical to domain.
     observedGeneration: ObservedGeneration is the 'Generation' of the Route
       that was last processed by the controller.  Clients polling for
       completed reconciliation should poll until observedGeneration =
@@ -1910,6 +1917,9 @@ class RouteStatus(_messages.Message):
       will always contain RevisionName references. When ConfigurationName
       appears in the spec, this will hold the LatestReadyRevisionName that we
       last observed.
+    url: URL holds the url that will distribute traffic over the provided
+      traffic targets. It generally has the form https://{route-hash
+      }-{project-hash}-{cluster-level-suffix}.a.run.app
   """
 
   address = _messages.MessageField('Addressable', 1)
@@ -1918,6 +1928,7 @@ class RouteStatus(_messages.Message):
   domainInternal = _messages.StringField(4)
   observedGeneration = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   traffic = _messages.MessageField('TrafficTarget', 6, repeated=True)
+  url = _messages.StringField(7)
 
 
 class RunNamespacesAuthorizeddomainsListRequest(_messages.Message):
@@ -3169,7 +3180,7 @@ class ServiceStatus(_messages.Message):
   r"""The current state of the Service. Output only.
 
   Fields:
-    address: From RouteStatus. Similar to domain, information on where the
+    address: From RouteStatus. Similar to url, information on where the
       service is available on HTTP.
     conditions: Conditions communicates information about ongoing/complete
       reconciliation processes that bring the "spec" inline with the observed
@@ -3192,6 +3203,9 @@ class ServiceStatus(_messages.Message):
       distribution. These entries will always contain RevisionName references.
       When ConfigurationName appears in the spec, this will hold the
       LatestReadyRevisionName that we last observed.
+    url: From RouteStatus. URL holds the url that will distribute traffic over
+      the provided traffic targets. It generally has the form https://{route-
+      hash}-{project-hash}-{cluster-level-suffix}.a.run.app
   """
 
   address = _messages.MessageField('Addressable', 1)
@@ -3201,6 +3215,7 @@ class ServiceStatus(_messages.Message):
   latestReadyRevisionName = _messages.StringField(5)
   observedGeneration = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   traffic = _messages.MessageField('TrafficTarget', 7, repeated=True)
+  url = _messages.StringField(8)
 
 
 class SetIamPolicyRequest(_messages.Message):

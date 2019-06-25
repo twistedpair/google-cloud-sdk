@@ -2790,11 +2790,19 @@ class LaunchTemplateParameters(_messages.Message):
 
   Messages:
     ParametersValue: The runtime parameters to pass to the job.
+    TransformNameMappingValue: Only applicable when updating a pipeline. Map
+      of transform name prefixes of the job to be replaced to the
+      corresponding name prefixes of the new job.
 
   Fields:
     environment: The runtime environment for the job.
     jobName: Required. The job name to use for the created job.
     parameters: The runtime parameters to pass to the job.
+    transformNameMapping: Only applicable when updating a pipeline. Map of
+      transform name prefixes of the job to be replaced to the corresponding
+      name prefixes of the new job.
+    update: If set, replace the existing pipeline with the name specified by
+      jobName with this pipeline, preserving state.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2821,9 +2829,39 @@ class LaunchTemplateParameters(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TransformNameMappingValue(_messages.Message):
+    r"""Only applicable when updating a pipeline. Map of transform name
+    prefixes of the job to be replaced to the corresponding name prefixes of
+    the new job.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        TransformNameMappingValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        TransformNameMappingValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TransformNameMappingValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   environment = _messages.MessageField('RuntimeEnvironment', 1)
   jobName = _messages.StringField(2)
   parameters = _messages.MessageField('ParametersValue', 3)
+  transformNameMapping = _messages.MessageField('TransformNameMappingValue', 4)
+  update = _messages.BooleanField(5)
 
 
 class LaunchTemplateResponse(_messages.Message):

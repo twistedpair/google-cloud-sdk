@@ -153,18 +153,22 @@ class Bucket(_messages.Message):
 
     Messages:
       BucketPolicyOnlyValue: The bucket's Bucket Policy Only configuration.
+      UniformBucketLevelAccessValue: The bucket's uniform bucket-level access
+        configuration.
 
     Fields:
       bucketPolicyOnly: The bucket's Bucket Policy Only configuration.
+      uniformBucketLevelAccess: The bucket's uniform bucket-level access
+        configuration.
     """
 
     class BucketPolicyOnlyValue(_messages.Message):
       r"""The bucket's Bucket Policy Only configuration.
 
       Fields:
-        enabled: If set, access checks only use bucket-level IAM policies or
-          above.
-        lockedTime: The deadline time for changing
+        enabled: If set, access is controlled only by bucket-level or above
+          IAM policies.
+        lockedTime: The deadline for changing
           iamConfiguration.bucketPolicyOnly.enabled from true to false in RFC
           3339 format. iamConfiguration.bucketPolicyOnly.enabled may be
           changed from true to false until the locked time, after which the
@@ -174,7 +178,25 @@ class Bucket(_messages.Message):
       enabled = _messages.BooleanField(1)
       lockedTime = _message_types.DateTimeField(2)
 
+    class UniformBucketLevelAccessValue(_messages.Message):
+      r"""The bucket's uniform bucket-level access configuration.
+
+      Fields:
+        enabled: If set, access is controlled only by bucket-level or above
+          IAM policies.
+        lockedTime: The deadline for changing
+          iamConfiguration.uniformBucketLevelAccess.enabled from true to false
+          in RFC 3339  format.
+          iamConfiguration.uniformBucketLevelAccess.enabled may be changed
+          from true to false until the locked time, after which the field is
+          immutable.
+      """
+
+      enabled = _messages.BooleanField(1)
+      lockedTime = _message_types.DateTimeField(2)
+
     bucketPolicyOnly = _messages.MessageField('BucketPolicyOnlyValue', 1)
+    uniformBucketLevelAccess = _messages.MessageField('UniformBucketLevelAccessValue', 2)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -479,7 +501,7 @@ class Channel(_messages.Message):
       a Unix timestamp, in milliseconds. Optional.
     id: A UUID or similar unique string that identifies this channel.
     kind: Identifies this as a notification channel used to watch for changes
-      to a resource. Value: the fixed string "api#channel".
+      to a resource, which is "api#channel".
     params: Additional parameters controlling delivery channel behavior.
       Optional.
     payload: A Boolean value to indicate whether payload is wanted. Optional.

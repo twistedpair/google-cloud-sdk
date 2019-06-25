@@ -148,8 +148,7 @@ def AddAvailabilityType(parser):
                       'to another zone within your selected region.',
           'zonal': 'Provides no failover capability. This is the default.'
       },
-      help_str=('Specifies level of availability. Only applies to PostgreSQL '
-                'instances.'))
+      help_str=('Specifies level of availability.'))
   availabilty_type_flag.AddToParser(parser)
 
 

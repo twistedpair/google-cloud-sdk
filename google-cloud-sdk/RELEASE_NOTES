@@ -5,6 +5,70 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 252.0.0 (2019-06-25)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Removed `--network-interface` from `gcloud beta compute start-iap-tunnel`.
+
+
+### Cloud SDK
+
+* Fixed issue where the Cloud SDK failed to install on Windows if the install
+  path contained exclamation point characters.
+
+### Cloud Data Catalog
+
+* Added `gcloud <alpha|beta> data-catalog <tags|tag-templates>` to manage tags
+  and tag templates in Cloud Data Catalog.
+* Added `gcloud <alpha|beta> data-catalog search` to search Cloud Data Catalog
+  resources.
+
+### Cloud Datalab
+
+* Updated `datalab` component to the 20190610 release.
+  Released changes are documented in its tracking issue at
+        [https://github.com/googledatalab/datalab/issues/2144](https://github.com/googledatalab/datalab/issues/2144).
+
+### Cloud Functions
+
+* Promoted `gcloud functions <add-iam-policy-binding|get-iam-policy|remove-iam-policy-binding|set-iam-policy>` to beta.
+* Promoted `--max-instances` and `--clear-max-instances` flags of `gcloud functions deploy` to GA.
+
+### Cloud Pub/Sub
+
+* Promoted `gcloud` labels functionality to GA for topics and subscriptions. These features allow users to create resource labels, or update existing resource labels. The label features now live on the following commands:
+  * `gcloud pubsub topics create`
+  * `gcloud pubsub topics update`
+  * `gcloud pubsub subscriptions create`
+  * `gcloud pubsub subscriptions update`
+
+### Cloud Storage
+
+* 
+* Updated gsutil component to 4.39.
+
+### Compute Engine
+
+* Promoted `--allow-global-access` flag of `gcloud compute forwarding-rules <create|update>` to beta.
+* Promoted `--source-snapshot` flag of `gcloud compute instances create` to GA.
+* Promoted `source-snapshot` option of `--create-disk` flag of
+  `gcloud compute instances create` to GA.
+* `update-instances` command (`gcloud beta compute instance-groups managed update-instances`) is now available in beta.
+* Added `gcloud beta compute reservations <get|set>-iam-policy` and `gcloud beta compute reservations <add|remove>-iam-policy-binding`.
+
+### Kubernetes Engine
+
+* Promoted `--identity-namespace` and `--disable-workload-identity` flags of
+  `gcloud container clusters <create|update>` to beta.  These flags control
+  Workload Identity, which lets Kubernetes service accounts act as Google
+  service accounts.  For more information, see
+  <https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity>.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 251.0.0 (2019-06-18)
 
 ### Breaking Changes
@@ -14,7 +78,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
   * `gcloud beta compute target-https-proxies`
   * `gcloud beta compute url-maps`
   * `gcloud beta compute health-checks`
-*   **(Kubernetes Engine)** 
 *   **(Kubernetes Engine)** Modified Kubernetes Engine cluster creation such that new clusters now
   come up in VPC-native (IP Alias enabled) mode by default.
   Use `--[no-]enable-ip-alias` flag for the old, non-default behavior (Routes
@@ -34,7 +97,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Firestore Emulator
 
-* Release Cloud Firestore emulator v1.5.0.
+* Released Cloud Firestore emulator v1.5.0.
   * Fixed bug where property paths with special characters would cause errors due to ClassNotFound exceptions.
   * Fixed bug where auto-id allocation only worked once per collection.
   * Added REST API to set security rules.
@@ -125,7 +188,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 * Added `gcloud beta redis operations cancel` to cancel a Memorystore Redis
   import or export operation.
 
-### Cloud PubSub
+### Cloud Pub/Sub
 
 * Added the following optional flags to `gcloud beta pubsub topics create` to support Cloud KMS integration:
   * `--topic-encryption-key`

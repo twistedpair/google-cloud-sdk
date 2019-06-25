@@ -530,7 +530,7 @@ def PossiblyEnableFlex(project):
   try:
     enable_api.EnableServiceIfDisabled(project,
                                        'appengineflex.googleapis.com')
-  except s_exceptions.ListServicesPermissionDeniedException:
+  except s_exceptions.GetServicePermissionDeniedException:
     # If we can't find out whether the Flexible API is enabled, proceed with
     # a warning.
     warning = FLEXIBLE_SERVICE_VERIFY_WARNING.format(project)

@@ -80,6 +80,10 @@ IMAGE_ALIASES = {
         project='rhel-cloud',
         name_prefix='rhel-7',
         family='rhel-7'),
+    'rhel-8': ImageAlias(
+        project='rhel-cloud',
+        name_prefix='rhel-8',
+        family='rhel-8'),
     'sles-11': ImageAlias(
         project='suse-cloud',
         name_prefix='sles-11',

@@ -669,6 +669,10 @@
           "description": "The id of the node.\nThis should be equal to SaasInstanceNode.node_id.",
           "type": "string"
         },
+        "location": {
+          "description": "The location of the node, if different from instance location.",
+          "type": "string"
+        },
         "exclusions": {
           "description": "By default node is eligible if instance is eligible.\nBut individual node might be excluded from SLO by adding entry here.\nFor semantic see SloMetadata.exclusions.\nIf both instance and node level exclusions are present for time period,\nthe node level's reason will be reported by Eligibility Exporter.",
           "type": "array",

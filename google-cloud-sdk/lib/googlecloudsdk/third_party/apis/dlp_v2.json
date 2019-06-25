@@ -744,6 +744,7 @@
             "",
             "",
             "",
+            "",
             ""
           ],
           "type": "string",
@@ -754,7 +755,8 @@
             "IMAGE_BMP",
             "IMAGE_PNG",
             "IMAGE_SVG",
-            "TEXT_UTF8"
+            "TEXT_UTF8",
+            "AVRO"
           ]
         },
         "data": {
@@ -2384,7 +2386,8 @@
             "Includes all files.",
             "Includes all file extensions not covered by text file types.",
             "Included file extensions:\n  asc, brf, c, cc, cpp, csv, cxx, c++, cs, css, dart, eml, go, h, hh, hpp,\n  hxx, h++, hs, html, htm, shtml, shtm, xhtml, lhs, ini, java, js, json,\n  ocaml, md, mkd, markdown, m, ml, mli, pl, pm, php, phtml, pht, py, pyw,\n  rb, rbw, rs, rc, scala, sh, sql, tex, txt, text, tsv, vcard, vcs, wml,\n  xml, xsl, xsd, yml, yaml.",
-            "Included file extensions:\n  bmp, gif, jpg, jpeg, jpe, png.\nbytes_limit_per_file has no effect on image files."
+            "Included file extensions:\n  bmp, gif, jpg, jpeg, jpe, png.\nbytes_limit_per_file has no effect on image files.",
+            "Included file extensions:\n  avro"
           ],
           "type": "array",
           "items": {
@@ -2393,7 +2396,8 @@
               "FILE_TYPE_UNSPECIFIED",
               "BINARY_FILE",
               "TEXT_FILE",
-              "IMAGE"
+              "IMAGE",
+              "AVRO"
             ]
           }
         },

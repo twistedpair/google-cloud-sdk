@@ -4,7 +4,7 @@
  "id": "dns:v1",
  "name": "dns",
  "version": "v1",
- "revision": "20190524",
+ "revision": "20190615",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -413,7 +413,7 @@
    "properties": {
     "defaultKeySpecs": {
      "type": "array",
-     "description": "Specifies parameters that will be used for generating initial DnsKeys for this ManagedZone. Output only while state is not OFF.",
+     "description": "Specifies parameters that will be used for generating initial DnsKeys for this ManagedZone. Can only be changed while state is OFF.",
      "items": {
       "$ref": "DnsKeySpec"
      }
@@ -425,7 +425,7 @@
     },
     "nonExistence": {
      "type": "string",
-     "description": "Specifies the mechanism used to provide authenticated denial-of-existence responses. Output only while state is not OFF.",
+     "description": "Specifies the mechanism used to provide authenticated denial-of-existence responses. Can only be changed while state is OFF.",
      "enum": [
       "nsec",
       "nsec3"

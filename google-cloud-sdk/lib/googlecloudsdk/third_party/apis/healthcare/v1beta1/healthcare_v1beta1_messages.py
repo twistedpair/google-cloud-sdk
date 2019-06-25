@@ -265,7 +265,8 @@ class DicomConfig(_messages.Message):
         DICOM.
       ATTRIBUTE_CONFIDENTIALITY_BASIC_PROFILE: Remove tags based on DICOM
         Standard's Attribute Confidentiality Basic Profile (DICOM Standard
-        Edition 2018e).
+        Edition 2018e) http://dicom.nema.org/medical/dicom/2018e/output/chtml/
+        part15/chapter_E.html.
       KEEP_ALL_PROFILE: Keep all tags.
       DEIDENTIFY_TAG_CONTENTS: Inspects within tag contents and replaces
         sensitive text. The process can be configured using the TextConfig.
