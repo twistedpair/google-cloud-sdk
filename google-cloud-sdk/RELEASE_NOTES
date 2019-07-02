@@ -5,6 +5,95 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 253.0.0 (2019-07-02)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Deprecated `gcloud beta compute resource-policies create-snapshot-schedule`.
+  Use `gcloud beta compute resource-policies create snapshot-schedule` instead.
+
+
+### Cloud SDK
+
+* Promoted `--audiences` flag of `gcloud auth print-identity-token` to GA.
+
+### App Engine
+
+* 
+* Updated the Java SDK to version 1.9.76.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/java/release-notes>
+
+### BigQuery
+
+* Added support for persistent user-defined functions and stored procedures in
+  `bq show --routine`, `bq ls --routines`, and `bq rm --routine`.
+* Added support for creating scheduled queries; use `bq query` with `--schedule`
+  as well as `--destination_table` and `--target_dataset` flags.
+* Increased number of projects listed from the 'bq show' command.
+* Added 'clustered fields' information for `list dataset` and `show table`
+  commands.
+* Modified `bq show --connection` to use the default location if the connection
+  name is given in 'short' form.
+* Fixed Python 3 compatibility issues.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.6.0.
+  * Calling SetSecurityRules with invalid rules is allowed.
+
+
+### Cloud Key Management Service
+
+*   Promoted `gcloud kms import-jobs` and other import-related commands to beta.
+
+### Cloud Run
+
+* Removed `--kubeconfig` and `--context` flags and `--platform=kubernetes`
+  option from `gcloud beta run`.
+
+### Cloud SQL
+
+* Updated `gcloud sql instances describe` to show the 'STOPPED' instance state,
+  to be consistent with the 'gcloud sql instances list` command.
+
+### Compute Engine
+
+* Fixed bug where `gcloud compute images import` would create temporary Cloud Storage bucket in US multi-region when source image file is in a different region.
+* Promoted `gcloud compute instances get-guest-attributes` to GA.
+* Promoted `--storage-location` flag of `gcloud compute images create` to beta.
+* Modified `gcloud compute backend-services <create|update>` to relax validation for specifying `--enable-logging`, and `--logging-sample-rate`.
+* Promoted `http2` value to v1 for `--protocol` flag of `gcloud compute
+  backend-services <create|update>`.
+* Promoted `gcloud compute start-iap-tunnel` to GA.
+* Promoted `--tunnel-through-iap` flag of `gcloud compute ssh` and `gcloud compute scp` to GA.
+* Promoted `--internal-ip` flag of `gcloud compute scp` to GA.
+* Promoted `gcloud compute health-checks <create|update> http2` commands to GA.
+* Promoted `gcloud compute instances import` to beta.
+* Added `--ssh_key_expiration` and `--ssh_key_expire_after` flags to
+  `gcloud compute scp`, and `gcloud compute ssh`, and
+  `gcloud compute connect-to-serial-port` commands to set expirations for
+   ssh keys.
+
+### Kubernetes Engine
+
+*   Promoted Google Kubernetes Engine kubectl to 1.12.9 from 1.12.8, to address
+    CVE-2019-11246.
+*   Promoted the following flags of `gcloud container clusters update` to beta:
+
+    *   `--database-encryption-key`
+    *   `--database-encryption-key-keyring`
+    *   `--database-encryption-key-location`
+    *   `--database-encryption-key-project`
+
+    These flags control Database Encryption which encrypt Kubernetes Secrets at
+    the application layer. For more information, see
+    <https://cloud.google.com/kubernetes-engine/docs/how-to/encrypting-secrets>.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 252.0.0 (2019-06-25)
 
 ### Breaking Changes

@@ -24,6 +24,16 @@ DOCS_URL = 'https://cloud.google.com/service-consumer-management/docs/overview'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  OPERATIONS = (
+      'operations',
+      '{+name}',
+      {
+          '':
+              'operations/{operationsId}',
+      },
+      [u'name'],
+      True
+  )
   SERVICES = (
       'services',
       'services/{servicesId}/{servicesId1}/{servicesId2}',

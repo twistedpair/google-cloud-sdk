@@ -47,7 +47,6 @@ snapshot:
   collection: file.projects.locations.snapshots
   request_id_field: snapshotId
   attributes:
-  - *region
   - parameter_name: snapshotsId
     attribute_name: snapshot
     help: The name of the Filestore snapshot.

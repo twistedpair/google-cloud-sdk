@@ -60,6 +60,28 @@ class LabelChanges(ConfigChanger):
       resource.metadata.labels = maybe_new_labels
 
 
+class VpcConnectorChange(ConfigChanger):
+  """Sets a VPC connector annotation on the service."""
+
+  def __init__(self, connector_name):
+    self._connector_name = connector_name
+
+  def Adjust(self, resource):
+    annotations = k8s_object.AnnotationsFromMetadata(resource.MessagesModule(),
+                                                     resource.metadata)
+    annotations['run.googleapis.com/vpc-access-connector'] = (
+        self._connector_name)
+
+
+class ClearVpcConnectorChange(ConfigChanger):
+  """Clears a VPC connector annotation on the service."""
+
+  def Adjust(self, resource):
+    annotations = k8s_object.AnnotationsFromMetadata(resource.MessagesModule(),
+                                                     resource.metadata)
+    del annotations['run.googleapis.com/vpc-access-connector']
+
+
 class ImageChange(ConfigChanger):
   """A Cloud Run container deployment."""
 

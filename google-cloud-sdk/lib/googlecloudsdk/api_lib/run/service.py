@@ -112,7 +112,7 @@ class Service(k8s_object.KubernetesObject):
 
   @property
   def domain(self):
-    return self._m.status.domain
+    return self._m.status.url or self._m.status.domain
 
   @property
   def ready_symbol(self):
@@ -131,3 +131,7 @@ class Service(k8s_object.KubernetesObject):
     return next((c.lastTransitionTime
                  for c in self.status.conditions
                  if c.type == u'Ready'), None)
+
+  @property
+  def vpc_connector(self):
+    return self.annotations.get(u'run.googleapis.com/vpc-access-connector')

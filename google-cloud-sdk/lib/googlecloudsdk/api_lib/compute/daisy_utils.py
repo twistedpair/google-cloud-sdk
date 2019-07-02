@@ -44,6 +44,8 @@ _DAISY_BUILDER = 'gcr.io/compute-image-tools/daisy:release'
 
 _IMAGE_IMPORT_BUILDER = 'gcr.io/compute-image-tools/gce_vm_image_import:release'
 
+_IMAGE_EXPORT_BUILDER = 'gcr.io/compute-image-tools/gce_vm_image_export:release'
+
 _OVF_IMPORT_BUILDER = 'gcr.io/compute-image-tools/gce_ovf_import:release'
 
 SERVICE_ACCOUNT_ROLES = [
@@ -319,16 +321,16 @@ def ExtractNetworkAndSubnetDaisyVariables(args, operation):
   return variables
 
 
-def AppendNetworkAndSubnetArgs(args, import_args):
+def AppendNetworkAndSubnetArgs(args, builder_args):
   """Extracts network/subnet out of CLI args and append for importer.
 
   Args:
     args: list of str, CLI args that might contain network/subnet args.
-    import_args: list of str, args for importer.
+    builder_args: list of str, args for builder.
   """
   network_full_path = None
   if args.subnet:
-    AppendArg(import_args, 'subnet', 'regions/{0}/subnetworks/{1}'.format(
+    AppendArg(builder_args, 'subnet', 'regions/{0}/subnetworks/{1}'.format(
         GetSubnetRegion(), args.subnet.lower()))
 
     # The network variable should be empty string when subnet is specified
@@ -340,7 +342,7 @@ def AppendNetworkAndSubnetArgs(args, import_args):
     network_full_path = 'global/networks/{0}'.format(args.network.lower())
 
   if network_full_path is not None:
-    AppendArg(import_args, 'network', network_full_path)
+    AppendArg(builder_args, 'network', network_full_path)
 
 
 def RunDaisyBuild(args,
@@ -414,12 +416,59 @@ def RunImageImport(args, import_args, tags, output_filter):
   Raises:
     FailedBuildException: If the build is completed and not 'SUCCESS'.
   """
+  return _RunImageCloudBuild(args, _IMAGE_IMPORT_BUILDER, import_args, tags,
+                             output_filter)
+
+
+def RunImageExport(args, export_args, tags, output_filter):
+  """Run a build over gce_vm_image_export on Google Cloud Builder.
+
+  Args:
+    args: An argparse namespace. All the arguments that were provided to this
+      command invocation.
+    export_args: A list of key-value pairs to pass to exporter.
+    tags: A list of strings for adding tags to the Argo build.
+    output_filter: A list of strings indicating what lines from the log should
+      be output. Only lines that start with one of the strings in output_filter
+      will be displayed.
+
+  Returns:
+    A build object that either streams the output or is displayed as a
+    link to the build.
+
+  Raises:
+    FailedBuildException: If the build is completed and not 'SUCCESS'.
+  """
+  return _RunImageCloudBuild(args, _IMAGE_EXPORT_BUILDER, export_args, tags,
+                             output_filter)
+
+
+def _RunImageCloudBuild(args, builder, builder_args, tags, output_filter):
+  """Run a build related to image on Google Cloud Builder.
+
+  Args:
+    args: An argparse namespace. All the arguments that were provided to this
+      command invocation.
+    builder: Path to builder image.
+    builder_args: A list of key-value pairs to pass to builder.
+    tags: A list of strings for adding tags to the Argo build.
+    output_filter: A list of strings indicating what lines from the log should
+      be output. Only lines that start with one of the strings in output_filter
+      will be displayed.
+
+  Returns:
+    A build object that either streams the output or is displayed as a
+    link to the build.
+
+  Raises:
+    FailedBuildException: If the build is completed and not 'SUCCESS'.
+  """
   project_id = projects_util.ParseProject(
       properties.VALUES.core.project.GetOrFail())
 
   _CheckIamPermissions(project_id)
 
-  return _RunCloudBuild(args, _IMAGE_IMPORT_BUILDER, import_args,
+  return _RunCloudBuild(args, builder, builder_args,
                         ['gce-daisy'] + tags, output_filter, args.log_location)
 
 

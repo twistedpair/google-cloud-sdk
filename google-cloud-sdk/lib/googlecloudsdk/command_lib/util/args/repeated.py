@@ -147,8 +147,9 @@ def ParseResourceNameArgs(args, arg_name, current_value_thunk, resource_parser):
   add = _ConvertValuesToRelativeNames(
       getattr(args, 'add_' + underscored_name), resource_parser)
   clear = getattr(args, 'clear_' + underscored_name)
+  # 'set' is allowed to be None, as it is deprecated.
   set_ = _ConvertValuesToRelativeNames(
-      getattr(args, 'set_' + underscored_name), resource_parser)
+      getattr(args, 'set_' + underscored_name, None), resource_parser)
 
   return _ModifyCurrentValue(remove, add, clear, set_, current_value_thunk)
 
@@ -181,7 +182,7 @@ def ParsePrimitiveArgs(args, arg_name, current_value_thunk):
   remove = getattr(args, 'remove_' + underscored_name)
   add = getattr(args, 'add_' + underscored_name)
   clear = getattr(args, 'clear_' + underscored_name)
-  set_ = getattr(args, 'set_' + underscored_name)
+  set_ = getattr(args, 'set_' + underscored_name, None)
 
   return _ModifyCurrentValue(remove, add, clear, set_, current_value_thunk)
 
@@ -232,7 +233,8 @@ def AddPrimitiveArgs(parser,
                      additional_help='',
                      metavar=None,
                      is_dict_args=False,
-                     auto_group_help=True):
+                     auto_group_help=True,
+                     include_set=True):
   """Add arguments for updating a field to the given parser.
 
   Adds `--{add,remove,set,clear-<resource>` arguments.
@@ -240,8 +242,8 @@ def AddPrimitiveArgs(parser,
   Args:
     parser: calliope.parser_extensions.ArgumentInterceptor, the parser to add
       arguments to.
-    resource_name: str, the (singular) name of the resource being modified
-      (in whatever format you'd like it to appear in help text).
+    resource_name: str, the (singular) name of the resource being modified (in
+      whatever format you'd like it to appear in help text).
     arg_name: str, the (plural) argument suffix to use (hyphen-case).
     property_name: str, the description of the property being modified (plural;
       in whatever format you'd like it to appear in help text)
@@ -250,6 +252,7 @@ def AddPrimitiveArgs(parser,
       arg_name.upper()).
     is_dict_args: boolean, True when the primitive args are dict args.
     auto_group_help: bool, True to generate a summary help.
+    include_set: bool, True to include the (deprecated) set argument.
   """
   properties_name = property_name
   if auto_group_help:
@@ -264,9 +267,10 @@ def AddPrimitiveArgs(parser,
   args = [
       _GetAppendArg(arg_name, metavar, properties_name, is_dict_args),
       _GetRemoveArg(arg_name, metavar, properties_name, is_dict_args),
-      _GetSetArg(arg_name, metavar, properties_name, is_dict_args),
       _GetClearArg(arg_name, properties_name),
   ]
+  if include_set:
+    args.append(_GetSetArg(arg_name, metavar, properties_name, is_dict_args))
   for arg in args:
     arg.AddToParser(group)
 

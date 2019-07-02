@@ -410,13 +410,6 @@ def ApplyLogConfigArgs(messages, args, backend_service, support_logging):
   logging_specified = (
       support_logging and (args.IsSpecified('enable_logging') or
                            args.IsSpecified('logging_sample_rate')))
-  if (logging_specified and backend_service.loadBalancingScheme is not None and
-      backend_service.loadBalancingScheme !=
-      messages.BackendService.LoadBalancingSchemeValueValuesEnum.EXTERNAL):
-    raise exceptions.InvalidArgumentException(
-        '--load-balancing-scheme',
-        'can only specify --enable-logging or --logging-sample-rate if the '
-        'load balancing scheme is EXTERNAL.')
   if (logging_specified and backend_service.protocol !=
       messages.BackendService.ProtocolValueValuesEnum.HTTP and
       backend_service.protocol !=

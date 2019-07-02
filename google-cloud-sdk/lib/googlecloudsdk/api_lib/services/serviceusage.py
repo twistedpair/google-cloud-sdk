@@ -24,7 +24,6 @@ from googlecloudsdk.api_lib.services import exceptions
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.util import retry
 
 _PROJECT_RESOURCE = 'projects/%s'
 _PROJECT_SERVICE_RESOURCE = 'projects/%s/services/%s'
@@ -219,41 +218,6 @@ def GetOperation(name):
   except (apitools_exceptions.HttpForbiddenError,
           apitools_exceptions.HttpNotFoundError) as e:
     exceptions.ReraiseError(e, exceptions.OperationErrorException)
-
-
-def WaitOperation(name):
-  """Wait till the operation is done.
-
-  Args:
-    name: The name of operation.
-
-  Raises:
-    exceptions.OperationErrorException: when the getting operation API fails.
-    apitools_exceptions.HttpError: Another miscellaneous error with the service.
-
-  Returns:
-    The result of the operation
-  """
-
-  def _CheckOp(name, result):
-    op = GetOperation(name)
-    if op.done:
-      result.append(op)
-    return not op.done
-
-  # Wait for no more than 30 minutes while retrying the Operation retrieval
-  result = []
-  try:
-    retry.Retryer(
-        exponential_sleep_multiplier=1.1,
-        wait_ceiling_ms=10000,
-        max_wait_ms=30 * 60 * 1000).RetryOnResult(
-            _CheckOp, [name, result], should_retry_if=True, sleep_ms=2000)
-  except retry.MaxRetrialsException:
-    raise exceptions.TimeoutError('Timed out while waiting for '
-                                  'operation {0}. Note that the operation '
-                                  'is still pending.'.format(name))
-  return result[0] if result else None
 
 
 def _GetClientInstance():

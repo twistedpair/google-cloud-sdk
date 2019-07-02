@@ -992,8 +992,8 @@ class Detail(_messages.Message):
     fixedLocation: The fix for this specific package version.
     isObsolete: Whether this Detail is obsolete. Occurrences are expected not
       to point to obsolete details.
-    maxAffectedVersion: Deprecated, do not use. Use fixed_location instead.
-      The max version of the package in which the vulnerability exists.
+    maxAffectedVersion: The max version of the package in which the
+      vulnerability exists.
     minAffectedVersion: The min version of the package in which the
       vulnerability exists.
     package: The name of the package where the vulnerability was found. This

@@ -147,14 +147,12 @@ https://cloud.google.com/compute/docs/instances/creating-instance-with-custom-ma
   resources_group.add_argument(
       '--resources',
       help=resources_help,
-      required=True,
       type=arg_parsers.ArgDict(
           spec={
               'vcpu': int,
               'local-ssd': int,
               'memory': arg_parsers.BinarySize()
-          },
-          required_keys=['vcpu', 'memory']))
+          }))
   accelerator_help = """\
 Manage the configuration of the type and number of accelerator cards to include in the commitment.
 *count*::: The number of accelerators to include.

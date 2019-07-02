@@ -27,6 +27,17 @@ keyring:
     attribute_name: keyring
     help: The containing keyring.
 
+import_job:
+  name: import job
+  collection: cloudkms.projects.locations.keyRings.importJobs
+  attributes:
+  - *project
+  - *location
+  - *keyring
+  - parameter_name: importJobsId
+    attribute_name: import_job
+    help: The name of the import job.
+
 key:
   name: key
   collection: cloudkms.projects.locations.keyRings.cryptoKeys

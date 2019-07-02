@@ -214,7 +214,7 @@
           "format": "google-datetime"
         },
         "rotationPeriod": {
-          "description": "next_rotation_time will be advanced by this period when the service\nautomatically rotates a key. Must be at least one day.\n\nIf rotation_period is set, next_rotation_time must also be set.\n\nKeys with purpose\nENCRYPT_DECRYPT support\nautomatic rotation. For other keys, this field must be omitted.",
+          "description": "next_rotation_time will be advanced by this period when the service\nautomatically rotates a key. Must be at least 24 hours and at most\n876,000 hours.\n\nIf rotation_period is set, next_rotation_time must also be set.\n\nKeys with purpose\nENCRYPT_DECRYPT support\nautomatic rotation. For other keys, this field must be omitted.",
           "type": "string",
           "format": "google-duration"
         },
@@ -248,7 +248,9 @@
             "This version may be used for cryptographic operations.",
             "This version may not be used, but the key material is still available,\nand the version can be placed back into the ENABLED state.",
             "This version is destroyed, and the key material is no longer stored.\nA version may not leave this state once entered.",
-            "This version is scheduled for destruction, and will be destroyed soon.\nCall\nRestoreCryptoKeyVersion\nto put it back into the DISABLED state."
+            "This version is scheduled for destruction, and will be destroyed soon.\nCall\nRestoreCryptoKeyVersion\nto put it back into the DISABLED state.",
+            "This version is still being imported. It may not be used, enabled,\ndisabled, or destroyed yet. Cloud KMS will automatically mark this\nversion ENABLED as soon as the version is ready.",
+            "This version was not imported successfully. It may not be used, enabled,\ndisabled, or destroyed. The submitted key material has been discarded.\nAdditional details can be found in\nCryptoKeyVersion.import_failure_reason."
           ],
           "type": "string",
           "enum": [
@@ -257,7 +259,9 @@
             "ENABLED",
             "DISABLED",
             "DESTROYED",
-            "DESTROY_SCHEDULED"
+            "DESTROY_SCHEDULED",
+            "PENDING_IMPORT",
+            "IMPORT_FAILED"
           ]
         },
         "protectionLevel": {
@@ -337,6 +341,19 @@
           "description": "Output only. The time this CryptoKeyVersion's key material was\ndestroyed. Only present if state is\nDESTROYED.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "importJob": {
+          "description": "Output only. The name of the ImportJob used to import this\nCryptoKeyVersion. Only present if the underlying key material was\nimported.",
+          "type": "string"
+        },
+        "importTime": {
+          "description": "Output only. The time at which this CryptoKeyVersion's key material\nwas imported.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "importFailureReason": {
+          "description": "Output only. The root cause of an import failure. Only present if\nstate is\nIMPORT_FAILED.",
+          "type": "string"
         }
       }
     },
@@ -450,6 +467,123 @@
         }
       }
     },
+    "ListImportJobsResponse": {
+      "id": "ListImportJobsResponse",
+      "description": "Response message for KeyManagementService.ListImportJobs.",
+      "type": "object",
+      "properties": {
+        "importJobs": {
+          "description": "The list of ImportJobs.",
+          "type": "array",
+          "items": {
+            "$ref": "ImportJob"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to retrieve next page of results. Pass this value in\nListImportJobsRequest.page_token to retrieve the next page of results.",
+          "type": "string"
+        },
+        "totalSize": {
+          "description": "The total number of ImportJobs that matched the query.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ImportJob": {
+      "id": "ImportJob",
+      "description": "An ImportJob can be used to create CryptoKeys and\nCryptoKeyVersions using pre-existing key material,\ngenerated outside of Cloud KMS.\n\nWhen an ImportJob is created, Cloud KMS will generate a \"wrapping key\",\nwhich is a public\/private key pair. You use the wrapping key to encrypt (also\nknown as wrap) the pre-existing key material to protect it during the import\nprocess. The nature of the wrapping key depends on the choice of\nimport_method. When the wrapping key generation\nis complete, the state will be set to\nACTIVE and the public_key\ncan be fetched. The fetched public key can then be used to wrap your\npre-existing key material.\n\nOnce the key material is wrapped, it can be imported into a new\nCryptoKeyVersion in an existing CryptoKey by calling\nImportCryptoKeyVersion.\nMultiple CryptoKeyVersions can be imported with a single\nImportJob. Cloud KMS uses the private key portion of the wrapping key to\nunwrap the key material. Only Cloud KMS has access to the private key.\n\nAn ImportJob expires 3 days after it is created. Once expired, Cloud KMS\nwill no longer be able to import or unwrap any key material that was wrapped\nwith the ImportJob's public key.\n\nFor more information, see\n[Importing a key](https:\/\/cloud.google.com\/kms\/docs\/importing-a-key).",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name for this ImportJob in the format\n`projects\/*\/locations\/*\/keyRings\/*\/importJobs\/*`.",
+          "type": "string"
+        },
+        "importMethod": {
+          "description": "Required and immutable. The wrapping method to be used for incoming\nkey material.",
+          "enumDescriptions": [
+            "Not specified.",
+            "This ImportMethod represents the CKM_RSA_AES_KEY_WRAP key wrapping\nscheme defined in the PKCS #11 standard. In summary, this involves\nwrapping the raw key with an ephemeral AES key, and wrapping the\nephemeral AES key with a 3072 bit RSA key. For more details, see\n[RSA AES key wrap\nmechanism](http:\/\/docs.oasis-open.org\/pkcs11\/pkcs11-curr\/v2.40\/cos01\/pkcs11-curr-v2.40-cos01.html#_Toc408226908).",
+            "This ImportMethod represents the CKM_RSA_AES_KEY_WRAP key wrapping\nscheme defined in the PKCS #11 standard. In summary, this involves\nwrapping the raw key with an ephemeral AES key, and wrapping the\nephemeral AES key with a 4096 bit RSA key. For more details, see\n[RSA AES key wrap\nmechanism](http:\/\/docs.oasis-open.org\/pkcs11\/pkcs11-curr\/v2.40\/cos01\/pkcs11-curr-v2.40-cos01.html#_Toc408226908)."
+          ],
+          "type": "string",
+          "enum": [
+            "IMPORT_METHOD_UNSPECIFIED",
+            "RSA_OAEP_3072_SHA1_AES_256",
+            "RSA_OAEP_4096_SHA1_AES_256"
+          ]
+        },
+        "protectionLevel": {
+          "description": "Required and immutable. The protection level of the ImportJob. This\nmust match the\nprotection_level of the\nversion_template on the CryptoKey you\nattempt to import into.",
+          "enumDescriptions": [
+            "Not specified.",
+            "Crypto operations are performed in software.",
+            "Crypto operations are performed in a Hardware Security Module."
+          ],
+          "type": "string",
+          "enum": [
+            "PROTECTION_LEVEL_UNSPECIFIED",
+            "SOFTWARE",
+            "HSM"
+          ]
+        },
+        "createTime": {
+          "description": "Output only. The time at which this ImportJob was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "generateTime": {
+          "description": "Output only. The time this ImportJob's key material was generated.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "expireTime": {
+          "description": "Output only. The time at which this ImportJob is scheduled for\nexpiration and can no longer be used to import key material.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "expireEventTime": {
+          "description": "Output only. The time this ImportJob expired. Only present if\nstate is EXPIRED.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "Output only. The current state of the ImportJob, indicating if it can\nbe used.",
+          "enumDescriptions": [
+            "Not specified.",
+            "The wrapping key for this job is still being generated. It may not be\nused. Cloud KMS will automatically mark this job as\nACTIVE as soon as the wrapping key is generated.",
+            "This job may be used in\nCreateCryptoKey and\nCreateCryptoKeyVersion\nrequests.",
+            "This job can no longer be used and may not leave this state once entered."
+          ],
+          "type": "string",
+          "enum": [
+            "IMPORT_JOB_STATE_UNSPECIFIED",
+            "PENDING_GENERATION",
+            "ACTIVE",
+            "EXPIRED"
+          ]
+        },
+        "publicKey": {
+          "description": "Output only. The public key with which to wrap key material prior to\nimport. Only returned if state is\nACTIVE.",
+          "$ref": "WrappingPublicKey"
+        },
+        "attestation": {
+          "description": "Output only. Statement that was generated and signed by the key creator\n(for example, an HSM) at key creation time. Use this statement to verify\nattributes of the key as stored on the HSM, independently of Google.\nOnly present if the chosen ImportMethod is one with a protection\nlevel of HSM.",
+          "$ref": "KeyOperationAttestation"
+        }
+      }
+    },
+    "WrappingPublicKey": {
+      "id": "WrappingPublicKey",
+      "description": "The public key component of the wrapping key. For details of the type of\nkey this public key corresponds to, see the ImportMethod.",
+      "type": "object",
+      "properties": {
+        "pem": {
+          "description": "The public key, encoded in PEM format. For more information, see the [RFC\n7468](https:\/\/tools.ietf.org\/html\/rfc7468) sections for [General\nConsiderations](https:\/\/tools.ietf.org\/html\/rfc7468#section-2) and\n[Textual Encoding of Subject Public Key Info]\n(https:\/\/tools.ietf.org\/html\/rfc7468#section-13).",
+          "type": "string"
+        }
+      }
+    },
     "PublicKey": {
       "id": "PublicKey",
       "description": "The public key for a given CryptoKeyVersion. Obtained via\nGetPublicKey.",
@@ -498,6 +632,62 @@
             "EC_SIGN_P256_SHA256",
             "EC_SIGN_P384_SHA384"
           ]
+        }
+      }
+    },
+    "ImportCryptoKeyVersionRequest": {
+      "id": "ImportCryptoKeyVersionRequest",
+      "description": "Request message for KeyManagementService.ImportCryptoKeyVersion.",
+      "type": "object",
+      "properties": {
+        "algorithm": {
+          "description": "Required. The algorithm of\nthe key being imported. This does not need to match the\nversion_template of the CryptoKey this\nversion imports into.",
+          "enumDescriptions": [
+            "Not specified.",
+            "Creates symmetric encryption keys.",
+            "RSASSA-PSS 2048 bit key with a SHA256 digest.",
+            "RSASSA-PSS 3072 bit key with a SHA256 digest.",
+            "RSASSA-PSS 4096 bit key with a SHA256 digest.",
+            "RSASSA-PSS 4096 bit key with a SHA512 digest.",
+            "RSASSA-PKCS1-v1_5 with a 2048 bit key and a SHA256 digest.",
+            "RSASSA-PKCS1-v1_5 with a 3072 bit key and a SHA256 digest.",
+            "RSASSA-PKCS1-v1_5 with a 4096 bit key and a SHA256 digest.",
+            "RSASSA-PKCS1-v1_5 with a 4096 bit key and a SHA512 digest.",
+            "RSAES-OAEP 2048 bit key with a SHA256 digest.",
+            "RSAES-OAEP 3072 bit key with a SHA256 digest.",
+            "RSAES-OAEP 4096 bit key with a SHA256 digest.",
+            "RSAES-OAEP 4096 bit key with a SHA512 digest.",
+            "ECDSA on the NIST P-256 curve with a SHA256 digest.",
+            "ECDSA on the NIST P-384 curve with a SHA384 digest."
+          ],
+          "type": "string",
+          "enum": [
+            "CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED",
+            "GOOGLE_SYMMETRIC_ENCRYPTION",
+            "RSA_SIGN_PSS_2048_SHA256",
+            "RSA_SIGN_PSS_3072_SHA256",
+            "RSA_SIGN_PSS_4096_SHA256",
+            "RSA_SIGN_PSS_4096_SHA512",
+            "RSA_SIGN_PKCS1_2048_SHA256",
+            "RSA_SIGN_PKCS1_3072_SHA256",
+            "RSA_SIGN_PKCS1_4096_SHA256",
+            "RSA_SIGN_PKCS1_4096_SHA512",
+            "RSA_DECRYPT_OAEP_2048_SHA256",
+            "RSA_DECRYPT_OAEP_3072_SHA256",
+            "RSA_DECRYPT_OAEP_4096_SHA256",
+            "RSA_DECRYPT_OAEP_4096_SHA512",
+            "EC_SIGN_P256_SHA256",
+            "EC_SIGN_P384_SHA384"
+          ]
+        },
+        "importJob": {
+          "description": "Required. The name of the ImportJob that was used to\nwrap this key material.",
+          "type": "string"
+        },
+        "rsaAesWrappedKey": {
+          "description": "Wrapped key material produced with\nRSA_OAEP_3072_SHA1_AES_256\nor\nRSA_OAEP_4096_SHA1_AES_256.\n\nThis field contains the concatenation of two wrapped keys:\n<ol>\n  <li>An ephemeral AES-256 wrapping key wrapped with the\n      public_key using RSAES-OAEP with SHA-1,\n      MGF1 with SHA-1, and an empty label.\n  <\/li>\n  <li>The key to be imported, wrapped with the ephemeral AES-256 key\n      using AES-KWP (RFC 5649).\n  <\/li>\n<\/ol>\n\nThis format is the same as the format produced by PKCS#11 mechanism\nCKM_RSA_AES_KEY_WRAP.",
+          "type": "string",
+          "format": "byte"
         }
       }
     },
@@ -990,6 +1180,16 @@
                       "description": "Optional pagination token, returned earlier via\nListKeyRingsResponse.next_page_token.",
                       "location": "query",
                       "type": "string"
+                    },
+                    "filter": {
+                      "description": "Optional. Only include resources that match the filter in the response\n(https:\/\/cloud.google.com\/kms\/docs\/sorting-and-filtering).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Optional. Specify how the results should be sorted. If not specified, the\nresults will be sorted in the default order\n(https:\/\/cloud.google.com\/kms\/docs\/sorting-and-filtering).",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -1185,6 +1385,16 @@
                             "CRYPTO_KEY_VERSION_VIEW_UNSPECIFIED",
                             "FULL"
                           ]
+                        },
+                        "filter": {
+                          "description": "Optional. Only include resources that match the filter in the response\n(https:\/\/cloud.google.com\/kms\/docs\/sorting-and-filtering).",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Optional. Specify how the results should be sorted. If not specified, the\nresults will be sorted in the default order\n(https:\/\/cloud.google.com\/kms\/docs\/sorting-and-filtering).",
+                          "location": "query",
+                          "type": "string"
                         }
                       },
                       "parameterOrder": [
@@ -1242,6 +1452,11 @@
                           "description": "Required. It must be unique within a KeyRing and match the regular\nexpression `[a-zA-Z0-9_-]{1,63}`",
                           "location": "query",
                           "type": "string"
+                        },
+                        "skipInitialVersionCreation": {
+                          "description": "If set to true, the request will create a CryptoKey without any\nCryptoKeyVersions. You must manually call\nCreateCryptoKeyVersion or\nImportCryptoKeyVersion\nbefore you can use this CryptoKey.",
+                          "location": "query",
+                          "type": "boolean"
                         }
                       },
                       "parameterOrder": [
@@ -1502,6 +1717,16 @@
                                 "CRYPTO_KEY_VERSION_VIEW_UNSPECIFIED",
                                 "FULL"
                               ]
+                            },
+                            "filter": {
+                              "description": "Optional. Only include resources that match the filter in the response\n(https:\/\/cloud.google.com\/kms\/docs\/sorting-and-filtering).",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "orderBy": {
+                              "description": "Optional. Specify how the results should be sorted. If not specified, the\nresults will be sorted in the default order\n(https:\/\/cloud.google.com\/kms\/docs\/sorting-and-filtering).",
+                              "location": "query",
+                              "type": "string"
                             }
                           },
                           "parameterOrder": [
@@ -1596,6 +1821,35 @@
                             "https://www.googleapis.com/auth/cloudkms"
                           ],
                           "description": "Create a new CryptoKeyVersion in a CryptoKey.\n\nThe server will assign the next sequential id. If unset,\nstate will be set to\nENABLED."
+                        },
+                        "import": {
+                          "id": "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.import",
+                          "path": "v1/{+parent}/cryptoKeyVersions:import",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions:import",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The name of the CryptoKey to\nbe imported into.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "request": {
+                            "$ref": "ImportCryptoKeyVersionRequest"
+                          },
+                          "response": {
+                            "$ref": "CryptoKeyVersion"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/cloudkms"
+                          ],
+                          "description": "Imports a new CryptoKeyVersion into an existing CryptoKey using the\nwrapped key material provided in the request.\n\nThe version ID will be assigned the next sequential id within the\nCryptoKey."
                         },
                         "patch": {
                           "id": "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.patch",
@@ -1754,6 +2008,113 @@
                 },
                 "importJobs": {
                   "methods": {
+                    "list": {
+                      "id": "cloudkms.projects.locations.keyRings.importJobs.list",
+                      "path": "v1/{+parent}/importJobs",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/importJobs",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the KeyRing to list, in the format\n`projects\/*\/locations\/*\/keyRings\/*`.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional limit on the number of ImportJobs to include in the\nresponse. Further ImportJobs can subsequently be obtained by\nincluding the ListImportJobsResponse.next_page_token in a subsequent\nrequest. If unspecified, the server will pick an appropriate default.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Optional pagination token, returned earlier via\nListImportJobsResponse.next_page_token.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Optional. Only include resources that match the filter in the response\n(https:\/\/cloud.google.com\/kms\/docs\/sorting-and-filtering).",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Optional. Specify how the results should be sorted. If not specified, the\nresults will be sorted in the default order\n(https:\/\/cloud.google.com\/kms\/docs\/sorting-and-filtering).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListImportJobsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloudkms"
+                      ],
+                      "description": "Lists ImportJobs."
+                    },
+                    "get": {
+                      "id": "cloudkms.projects.locations.keyRings.importJobs.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/importJobs/{importJobsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the ImportJob to get.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/importJobs\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "ImportJob"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloudkms"
+                      ],
+                      "description": "Returns metadata for a given ImportJob."
+                    },
+                    "create": {
+                      "id": "cloudkms.projects.locations.keyRings.importJobs.create",
+                      "path": "v1/{+parent}/importJobs",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/importJobs",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The name of the KeyRing associated with the\nImportJobs.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "importJobId": {
+                          "description": "Required. It must be unique within a KeyRing and match the regular\nexpression `[a-zA-Z0-9_-]{1,63}`",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "ImportJob"
+                      },
+                      "response": {
+                        "$ref": "ImportJob"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloudkms"
+                      ],
+                      "description": "Create a new ImportJob within a KeyRing.\n\nImportJob.import_method is required."
+                    },
                     "setIamPolicy": {
                       "id": "cloudkms.projects.locations.keyRings.importJobs.setIamPolicy",
                       "path": "v1/{+resource}:setIamPolicy",

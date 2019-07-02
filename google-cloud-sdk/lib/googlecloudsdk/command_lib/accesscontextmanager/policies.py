@@ -35,6 +35,15 @@ class DefaultPolicyResolutionError(exceptions.Error):
   pass
 
 
+def ValidateAccessPolicyArg(ref, args, req=None):
+  """Add the particular service filter message based on specified args."""
+  del ref  # unused
+  if args.IsSpecified('policy'):
+    properties.AccessPolicyValidator(args.policy)
+
+  return req
+
+
 def GetAttributeConfig():
   property_ = properties.VALUES.access_context_manager.policy
   return concepts.ResourceParameterAttributeConfig(
@@ -171,8 +180,8 @@ def GetDefaultPolicy():
     try:
       # pylint: disable=too-many-function-args
       organization_ref = _GetOrganization(cache, domain)
-      policy_ref = _GetPolicy(
-          cache, organization_ref.RelativeName(), (organization_ref,))
+      policy_ref = _GetPolicy(cache, organization_ref.RelativeName(),
+                              (organization_ref,))
     except DefaultPolicyResolutionError as err:
       log.info('Unable to automatically resolve policy: %s', err)
       return None

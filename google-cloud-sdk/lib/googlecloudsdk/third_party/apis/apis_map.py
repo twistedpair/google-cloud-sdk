@@ -711,6 +711,20 @@ MAP = {
             default_version=True
         ),
     },
+    'managedidentities': {
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.managedidentities.v1alpha1',
+            client_classpath='managedidentities_v1alpha1_client.ManagedidentitiesV1alpha1',
+            messages_modulepath='managedidentities_v1alpha1_messages',
+            default_version=False
+        ),
+        'v1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.managedidentities.v1beta1',
+            client_classpath='managedidentities_v1beta1_client.ManagedidentitiesV1beta1',
+            messages_modulepath='managedidentities_v1beta1_messages',
+            default_version=True
+        ),
+    },
     'ml': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.ml.v1',
@@ -776,6 +790,12 @@ MAP = {
             messages_modulepath='recommender_v1alpha1_messages',
             default_version=True
         ),
+        'v1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.recommender.v1beta1',
+            client_classpath='recommender_v1beta1_client.RecommenderV1beta1',
+            messages_modulepath='recommender_v1beta1_messages',
+            default_version=False
+        ),
     },
     'redis': {
         'v1': APIDef(
@@ -818,6 +838,14 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.runtimeconfig.v1beta1',
             client_classpath='runtimeconfig_v1beta1_client.RuntimeconfigV1beta1',
             messages_modulepath='runtimeconfig_v1beta1_messages',
+            default_version=True
+        ),
+    },
+    'secretmanager': {
+        'v1alpha': APIDef(
+            class_path='googlecloudsdk.third_party.apis.secretmanager.v1alpha',
+            client_classpath='secretmanager_v1alpha_client.SecretmanagerV1alpha',
+            messages_modulepath='secretmanager_v1alpha_messages',
             default_version=True
         ),
     },

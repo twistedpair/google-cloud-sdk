@@ -595,13 +595,6 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
-class CheckSuiteFilter(_messages.Message):
-  r"""A CheckSuiteFilter is a filter that indicates that we should build on
-  all check suite events.
-  """
-
-
-
 class CloudbuildOperationsCancelRequest(_messages.Message):
   r"""A CloudbuildOperationsCancelRequest object.
 
@@ -815,21 +808,18 @@ class GitHubEventsConfig(_messages.Message):
   a build whenever a GitHub event is received.  This message is experimental.
 
   Fields:
-    checkSuite: Output only. Indicates that a build was generated from a check
-      suite event.
-    installationId: The installationID that emmits the GitHub event.
+    installationId: The installationID that emits the GitHub event.
     name: Name of the repository.
     owner: Owner of the repository.
     pullRequest: filter to match changes in pull requests.
     push: filter to match changes in refs like branches, tags.
   """
 
-  checkSuite = _messages.MessageField('CheckSuiteFilter', 1)
-  installationId = _messages.IntegerField(2)
-  name = _messages.StringField(3)
-  owner = _messages.StringField(4)
-  pullRequest = _messages.MessageField('PullRequestFilter', 5)
-  push = _messages.MessageField('PushFilter', 6)
+  installationId = _messages.IntegerField(1)
+  name = _messages.StringField(2)
+  owner = _messages.StringField(3)
+  pullRequest = _messages.MessageField('PullRequestFilter', 4)
+  push = _messages.MessageField('PushFilter', 5)
 
 
 class Hash(_messages.Message):

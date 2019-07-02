@@ -286,12 +286,13 @@ class _Sections(object):
     pubsub: Section, The section containing pubsub properties for the Cloud SDK.
     redis: Section, The section containing redis properties for the Cloud SDK.
     run: Section, The section containing run properties for the Cloud SDK.
+    secrets: Section, The section containing secretmanager properties for the
+      Cloud SDK.
     spanner: Section, The section containing spanner properties for the Cloud
       SDK.
     storage: Section, The section containing storage properties for the Cloud
       SDK.
-    survey: Section, The section containing survey properties for the Cloud
-      SDK.
+    survey: Section, The section containing survey properties for the Cloud SDK.
     test: Section, The section containing test properties for the Cloud SDK.
   """
 
@@ -334,6 +335,7 @@ class _Sections(object):
     self.pubsub = _SectionPubsub()
     self.redis = _SectionRedis()
     self.run = _SectionRun()
+    self.secrets = _SectionSecrets()
     self.spanner = _SectionSpanner()
     self.storage = _SectionStorage()
     self.survey = _SectionSurvey()
@@ -371,6 +373,7 @@ class _Sections(object):
         self.proxy,
         self.redis,
         self.run,
+        self.secrets,
         self.spanner,
         self.survey,
         self.test,
@@ -715,6 +718,13 @@ class _SectionRun(_Section):
         help_text='Target platform for running commands.')
 
 
+class _SectionSecrets(_Section):
+  """Contains the properties for the 'secrets' section."""
+
+  def __init__(self):
+    super(_SectionSecrets, self).__init__('secrets', hidden=True)
+
+
 class _SectionSpanner(_Section):
   """Contains the properties for the 'spanner' section."""
 
@@ -811,8 +821,7 @@ class _SectionGameServices(_Section):
   """Contains the properties for the 'game_services' section."""
 
   def __init__(self):
-    super(_SectionGameServices, self).__init__(
-        'game_services')
+    super(_SectionGameServices, self).__init__('game_services')
     self.location = self._Add(
         'location',
         default='us-central1',
@@ -1656,6 +1665,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.serviceuser = self._Add('serviceuser')
     self.source = self._Add('source')
     self.sourcerepo = self._Add('sourcerepo')
+    self.secrets = self._Add('secretmanager')
     self.spanner = self._Add('spanner')
     self.speech = self._Add('speech')
     self.sql = self._Add('sql')
@@ -1715,14 +1725,26 @@ class _SectionEmulator(_Section):
         'bigtable_host_port', default='localhost:8086')
 
 
+def AccessPolicyValidator(policy):
+  """Checks to see if the Access Policy string is valid."""
+  if policy is None:
+    return
+  if not policy.isdigit():
+    raise InvalidValueError(
+        'The access_context_manager.policy property must be set '
+        'to the policy number, not a string.')
+
+
 class _SectionAccessContextManager(_Section):
   """Contains the properties for the 'access_context_manager' section."""
 
   def __init__(self):
     super(_SectionAccessContextManager, self).__init__(
         'access_context_manager', hidden=True)
+
     self.policy = self._Add(
         'policy',
+        validator=AccessPolicyValidator,
         help_text=('ID of the policy resource to operate on. Can be found '
                    'by running the `access-context-manager policies list` '
                    'command.'))

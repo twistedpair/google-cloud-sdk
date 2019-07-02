@@ -315,6 +315,10 @@
         "imageUri": {
           "description": "The Docker image to run on the replica. This image must be in Container\nRegistry. Learn more about [configuring custom\ncontainers](\/ml-engine\/docs\/distributed-training-containers).",
           "type": "string"
+        },
+        "tpuTfVersion": {
+          "description": "TensorFlow version used in the custom container. This field is required if\nthe replica is a TPU worker that uses a custom container. Otherwise, do not\nspecify this field.",
+          "type": "string"
         }
       }
     },
@@ -1767,35 +1771,6 @@
     }
   },
   "resources": {
-    "operations": {
-      "methods": {
-        "delete": {
-          "id": "ml.operations.delete",
-          "path": "v1/{+name}",
-          "flatPath": "v1/operations/{operationsId}",
-          "httpMethod": "DELETE",
-          "parameters": {
-            "name": {
-              "description": "The name of the operation resource to be deleted.",
-              "location": "path",
-              "required": true,
-              "pattern": "^operations\/.+$",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "response": {
-            "$ref": "GoogleProtobuf__Empty"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`."
-        }
-      }
-    },
     "projects": {
       "methods": {
         "predict": {

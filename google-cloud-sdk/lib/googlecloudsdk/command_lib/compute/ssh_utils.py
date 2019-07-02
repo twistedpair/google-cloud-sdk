@@ -30,10 +30,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
+import datetime
+import json
+
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util.ssh import ssh
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -41,6 +46,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
+from googlecloudsdk.core.util import times
 
 # The maximum amount of time to wait for a newly-added SSH key to
 # propagate before giving up.
@@ -194,6 +200,22 @@ def GetInternalIPAddress(instance_resource):
   return GetInternalInterface(instance_resource).networkIP
 
 
+def GetSSHKeyExpirationFromArgs(args):
+  """Converts flags to an ssh key expiration in datetime and micros."""
+  if args.ssh_key_expiration:
+    # this argument is checked in ParseFutureDatetime to be sure that it
+    # is not already expired.  I.e. the expiration should be in the future.
+    expiration = args.ssh_key_expiration
+  elif args.ssh_key_expire_after:
+    expiration = times.Now() + datetime.timedelta(
+        seconds=args.ssh_key_expire_after)
+  else:
+    return None, None
+
+  expiration_micros = times.GetTimeStampFromDateTime(expiration) * 1e6
+  return expiration, int(expiration_micros)
+
+
 def _GetSSHKeyListFromMetadataEntry(metadata_entry):
   """Returns a list of SSH keys (without whitespace) from a metadata entry."""
   keys = []
@@ -232,13 +254,44 @@ def _GetSSHKeysFromMetadata(metadata):
   return ssh_keys, ssh_legacy_keys
 
 
+def _SSHKeyExpiration(ssh_key):
+  """Returns a datetime expiration time for an ssh key entry from metadata.
+
+  Args:
+    ssh_key: A single ssh key entry.
+
+  Returns:
+    None if no expiration set or a datetime object of the expiration (in UTC).
+
+  Raises:
+    ValueError: If the ssh key entry could not be parsed for expiration (invalid
+      format, missing expected entries, etc).
+    dateutil.DateTimeSyntaxError: The found expiration could not be parsed.
+    dateutil.DateTimeValueError: The found expiration could not be parsed.
+  """
+  # Valid format of a key with expiration is:
+  # <user>:<protocol> <key> google-ssh {... "expireOn": "<iso-8601>" ...}
+  #        0            1        2                  json @ 3+
+  key_parts = ssh_key.split()
+  if len(key_parts) < 4 or key_parts[2] != 'google-ssh':
+    return None
+  expiration_json = ' '.join(key_parts[3:])
+  expiration = json.loads(expiration_json)
+  try:
+    expireon = times.ParseDateTime(expiration['expireOn'])
+  except KeyError:
+    raise ValueError('Unable to find expireOn entry')
+  return times.LocalizeDateTime(expireon, times.UTC)
+
+
 def _PrepareSSHKeysValue(ssh_keys):
   """Returns a string appropriate for the metadata.
 
-  Values from are taken from the tail until either all values are
-  taken or _MAX_METADATA_VALUE_SIZE_IN_BYTES is reached, whichever
-  comes first. The selected values are then reversed. Only values at
-  the head of the list will be subject to removal.
+  Expired SSH keys are always removed.
+  Then Values are taken from the tail until either all values are taken or
+  _MAX_METADATA_VALUE_SIZE_IN_BYTES is reached, whichever comes first. The
+  selected values are then reversed. Only values at the head of the list will be
+  subject to removal.
 
   Args:
     ssh_keys: A list of keys. Each entry should be one key.
@@ -249,7 +302,21 @@ def _PrepareSSHKeysValue(ssh_keys):
   keys = []
   bytes_consumed = 0
 
+  now = times.LocalizeDateTime(times.Now(), times.UTC)
+
   for key in reversed(ssh_keys):
+    try:
+      expiration = _SSHKeyExpiration(key)
+      expired = expiration is not None and expiration < now
+      if expired:
+        continue
+    except (ValueError, times.DateTimeSyntaxError,
+            times.DateTimeValueError) as exc:
+      # Unable to get expiration, so treat it like it is unexpiring.
+      log.warning(
+          'Treating {0!r} as unexpiring, since unable to parse: {1}'.format(
+              key, exc))
+
     num_bytes = len(key + '\n')
     if bytes_consumed + num_bytes > constants.MAX_METADATA_VALUE_SIZE_IN_BYTES:
       prompt_message = ('The following SSH key will be removed from your '
@@ -267,7 +334,7 @@ def _PrepareSSHKeysValue(ssh_keys):
 
 
 def _AddSSHKeyToMetadataMessage(message_classes, user, public_key, metadata,
-                                legacy=False):
+                                expiration=None, legacy=False):
   """Adds the public key material to the metadata if it's not already there.
 
   Args:
@@ -275,13 +342,29 @@ def _AddSSHKeyToMetadataMessage(message_classes, user, public_key, metadata,
     user: The username for the SSH key.
     public_key: The SSH public key to add to the metadata.
     metadata: The existing metadata.
+    expiration: If provided, a datetime after which the key is no longer valid.
     legacy: If true, store the key in the legacy "sshKeys" metadata entry.
 
   Returns:
     An updated metadata API message.
   """
-  entry = '{user}:{public_key}'.format(
-      user=user, public_key=public_key)
+  if expiration is None:
+    entry = '{user}:{public_key}'.format(
+        user=user, public_key=public_key.ToEntry(include_comment=True))
+  else:
+    # The client only supports a specific format. See
+    # https://github.com/GoogleCloudPlatform/compute-image-packages/blob/master/packages/python-google-compute-engine/google_compute_engine/accounts/accounts_daemon.py#L118
+    expire_on = times.FormatDateTime(expiration, '%Y-%m-%dT%H:%M:%S+0000',
+                                     times.UTC)
+    entry = '{user}:{public_key} google-ssh {jsondict}'.format(
+        user=user, public_key=public_key.ToEntry(include_comment=False),
+        # The json blob has strict encoding requirements by some systems.
+        # Order entries to meet requirements.
+        # Any spaces produces a Pantheon Invalid Key Required Format error:
+        # cs/java/com/google/developers/console/web/compute/angular/ssh_keys_editor_item.ng
+        jsondict=json.dumps(collections.OrderedDict([
+            ('userName', user),
+            ('expireOn', expire_on)])).replace(' ', ''))
 
   ssh_keys, ssh_legacy_keys = _GetSSHKeysFromMetadata(metadata)
   all_ssh_keys = ssh_keys + ssh_legacy_keys
@@ -518,7 +601,8 @@ class BaseSSHHelper(object):
     with progress_tracker.ProgressTracker('Updating instance ssh metadata'):
       self._SetInstanceMetadata(client, instance, new_metadata)
 
-  def EnsureSSHKeyIsInInstance(self, client, user, instance, legacy=False):
+  def EnsureSSHKeyIsInInstance(self, client, user, instance, expiration,
+                               legacy=False):
     """Ensures that the user's public SSH key is in the instance metadata.
 
     Args:
@@ -526,6 +610,8 @@ class BaseSSHHelper(object):
       user: str, the name of the user associated with the SSH key in the
           metadata
       instance: Instance, ensure the SSH key is in the metadata of this instance
+      expiration: datetime, If not None, the point after which the key is no
+          longer valid.
       legacy: If the key is not present in metadata, add it to the legacy
           metadata entry instead of the default entry.
 
@@ -533,15 +619,17 @@ class BaseSSHHelper(object):
       bool, True if the key was newly added, False if it was in the metadata
           already
     """
-    public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
+    public_key = self.keys.GetPublicKey()
     new_metadata = _AddSSHKeyToMetadataMessage(
-        client.messages, user, public_key, instance.metadata, legacy=legacy)
+        client.messages, user, public_key, instance.metadata,
+        expiration=expiration, legacy=legacy)
     has_new_metadata = new_metadata != instance.metadata
     if has_new_metadata:
       self.SetInstanceMetadata(client, instance, new_metadata)
     return has_new_metadata
 
-  def EnsureSSHKeyIsInProject(self, client, user, project=None):
+  def EnsureSSHKeyIsInProject(self, client, user, project=None,
+                              expiration=None):
     """Ensures that the user's public SSH key is in the project metadata.
 
     Args:
@@ -549,24 +637,28 @@ class BaseSSHHelper(object):
       user: str, the name of the user associated with the SSH key in the
           metadata
       project: Project, the project SSH key will be added to
+      expiration: datetime, If not None, the point after which the key is no
+          longer valid.
 
     Returns:
       bool, True if the key was newly added, False if it was in the metadata
           already
     """
-    public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
+    public_key = self.keys.GetPublicKey()
     if not project:
       project = self.GetProject(client, None)
     existing_metadata = project.commonInstanceMetadata
     new_metadata = _AddSSHKeyToMetadataMessage(
-        client.messages, user, public_key, existing_metadata)
+        client.messages, user, public_key, existing_metadata,
+        expiration=expiration)
     if new_metadata != existing_metadata:
       self.SetProjectMetadata(client, new_metadata)
       return True
     else:
       return False
 
-  def EnsureSSHKeyExists(self, compute_client, user, instance, project):
+  def EnsureSSHKeyExists(self, compute_client, user, instance, project,
+                         expiration):
     """Controller for EnsureSSHKey* variants.
 
     Sends the key to the project metadata or instance metadata,
@@ -576,7 +668,10 @@ class BaseSSHHelper(object):
       compute_client: The compute client.
       user: str, The user name.
       instance: Instance, the instance to connect to.
-      project: Project, the project instance is in
+      project: Project, the project instance is in.
+      expiration: datetime, If not None, the point after which the key is no
+          longer valid.
+
 
     Returns:
       bool, True if the key was newly added.
@@ -616,18 +711,18 @@ class BaseSSHHelper(object):
       # won't check the project-wide metadata. To avoid this, if the instance
       # has per-instance SSH key metadata, we add the key there instead.
       keys_newly_added = self.EnsureSSHKeyIsInInstance(
-          compute_client, user, instance, legacy=True)
+          compute_client, user, instance, expiration, legacy=True)
     elif _MetadataHasBlockProjectSshKeys(instance.metadata):
       # If the instance 'ssh-keys' metadata overrides the project-wide
       # 'ssh-keys' metadata, we should put our key there.
       keys_newly_added = self.EnsureSSHKeyIsInInstance(
-          compute_client, user, instance)
+          compute_client, user, instance, expiration)
     else:
       # Otherwise, try to add to the project-wide metadata. If we don't have
       # permissions to do that, add to the instance 'ssh-keys' metadata.
       try:
         keys_newly_added = self.EnsureSSHKeyIsInProject(
-            compute_client, user, project)
+            compute_client, user, project, expiration)
       except SetProjectMetadataError:
         log.info('Could not set project metadata:', exc_info=True)
         # If we can't write to the project metadata, it may be because of a
@@ -638,7 +733,7 @@ class BaseSSHHelper(object):
         # project metadata.
         log.info('Attempting to set instance metadata.')
         keys_newly_added = self.EnsureSSHKeyIsInInstance(
-            compute_client, user, instance)
+            compute_client, user, instance, expiration)
     return keys_newly_added
 
   def GetConfig(self, host_key_alias, strict_host_key_checking=None,
@@ -675,6 +770,37 @@ class BaseSSHHelper(object):
     config['StrictHostKeyChecking'] = strict_host_key_checking
     config['HostKeyAlias'] = host_key_alias
     return config
+
+
+def AddSSHKeyExpirationArgs(parser):
+  """Additional flags to handle expiring SSH keys."""
+  group = parser.add_mutually_exclusive_group()
+
+  def ParseFutureDatetime(s):
+    """Parses a string value into a future Datetime object."""
+    dt = arg_parsers.Datetime.Parse(s)
+    if dt < times.Now():
+      raise arg_parsers.ArgumentTypeError(
+          'Date/time must be in the future: {0}'.format(s))
+    return dt
+
+  group.add_argument(
+      '--ssh-key-expiration',
+      type=ParseFutureDatetime,
+      help="""\
+        The time when the ssh key will be valid until, such as
+        "2017-08-29T18:52:51.142Z." This is only valid if the instance is not
+        using OS Login. See $ gcloud topic datetimes for information on time
+        formats.
+        """)
+  group.add_argument(
+      '--ssh-key-expire-after',
+      type=arg_parsers.Duration(lower_bound='1s'),
+      help="""\
+        The maximum length of time an SSH key is valid for once created and
+        installed, e.g. 2m for 2 minutes. See $ gcloud topic datetimes for
+        information on duration formats.
+      """)
 
 
 class BaseSSHCLIHelper(BaseSSHHelper):
@@ -718,6 +844,8 @@ class BaseSSHCLIHelper(BaseSSHHelper):
         time you connect to an instance, and will be set to 'yes' for all
         subsequent connections.
         """)
+
+    AddSSHKeyExpirationArgs(parser)
 
   def Run(self, args):
     super(BaseSSHCLIHelper, self).Run(args)

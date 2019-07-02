@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2017 Google LLC. All Rights Reserved.
+# Copyright 2019 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,3 +40,7 @@ class GitCredentialHelperError(exceptions.Error):
 
 class InvalidIdentityTokenError(exceptions.Error):
   """Raised when identity token of credential is None."""
+
+
+class WrongAccountTypeError(exceptions.Error):
+  """Raised when audiences are specified but account type is not service account."""

@@ -226,7 +226,7 @@
           "type": "string"
         },
         "type": {
-          "description": "Required. Type of entry.",
+          "description": "The type of the entry.",
           "enumDescriptions": [
             "Default unknown type",
             "The type of entry that has a GoogleSQL schema, including logical views.",
@@ -781,7 +781,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Updates an existing entry."
+                      "description": "Updates an existing entry.\nThe user should enable the Data Catalog API in the project identified by\nthe `entry.name` parameter (see [Data Catalog Resource Project]\n(\/data-catalog\/docs\/concepts\/resource-project) for more information)."
                     },
                     "get": {
                       "id": "datacatalog.projects.locations.entryGroups.entries.get",
@@ -839,7 +839,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Creates a tag on an Entry."
+                          "description": "Creates a tag on an Entry.\nNote: The project identified by the `parent` parameter for the\n[tag](\/data-catalog\/docs\/reference\/rest\/v1beta1\/projects.locations.entryGroups.entries.tags\/create#path-parameters)\nand the\n[tag\ntemplate](\/data-catalog\/docs\/reference\/rest\/v1beta1\/projects.locations.tagTemplates\/create#path-parameters)\nused to create the tag must be from the same organization."
                         },
                         "patch": {
                           "id": "datacatalog.projects.locations.entryGroups.entries.tags.patch",
@@ -975,7 +975,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a tag template."
+                  "description": "Creates a tag template. The user should enable the Data Catalog API in\nthe project identified by the `parent` parameter (see [Data Catalog\nResource Project](\/data-catalog\/docs\/concepts\/resource-project) for more\ninformation)."
                 },
                 "get": {
                   "id": "datacatalog.projects.locations.tagTemplates.get",
@@ -1034,7 +1034,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates a tag template. This method cannot be used to update the fields of\na template. The tag template fields are represented as separate resources\nand should be updated using their own create\/update\/delete methods."
+                  "description": "Updates a tag template. This method cannot be used to update the fields of\na template. The tag template fields are represented as separate resources\nand should be updated using their own create\/update\/delete methods.\nThe user should enable the Data Catalog API in the project identified by\nthe `tag_template.name` parameter (see [Data Catalog Resource Project]\n(\/data-catalog\/docs\/concepts\/resource-project) for more information)."
                 },
                 "delete": {
                   "id": "datacatalog.projects.locations.tagTemplates.delete",
@@ -1064,7 +1064,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a tag template and all tags using the template."
+                  "description": "Deletes a tag template and all tags using the template.\nThe user should enable the Data Catalog API in the project identified by\nthe `name` parameter (see [Data Catalog Resource Project]\n(\/data-catalog\/docs\/concepts\/resource-project) for more information)."
                 },
                 "setIamPolicy": {
                   "id": "datacatalog.projects.locations.tagTemplates.setIamPolicy",
@@ -1186,7 +1186,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates a field in a tag template."
+                      "description": "Creates a field in a tag template. The user should enable the Data Catalog\nAPI in the project identified by the `parent` parameter (see\n[Data Catalog Resource\nProject](\/data-catalog\/docs\/concepts\/resource-project) for more\ninformation)."
                     },
                     "patch": {
                       "id": "datacatalog.projects.locations.tagTemplates.fields.patch",
@@ -1220,7 +1220,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Updates a field in a tag template. This method cannot be used to update the\nfield type."
+                      "description": "Updates a field in a tag template. This method cannot be used to update the\nfield type. The user should enable the Data Catalog API in the project\nidentified by the `name` parameter (see [Data Catalog Resource Project]\n(\/data-catalog\/docs\/concepts\/resource-project) for more information)."
                     },
                     "rename": {
                       "id": "datacatalog.projects.locations.tagTemplates.fields.rename",
@@ -1248,7 +1248,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Renames a field in a tag template."
+                      "description": "Renames a field in a tag template. The user should enable the Data Catalog\nAPI in the project identified by the `name` parameter (see [Data Catalog\nResource Project](\/data-catalog\/docs\/concepts\/resource-project) for more\ninformation)."
                     },
                     "delete": {
                       "id": "datacatalog.projects.locations.tagTemplates.fields.delete",
@@ -1278,7 +1278,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes a field in a tag template and all uses of that field."
+                      "description": "Deletes a field in a tag template and all uses of that field.\nThe user should enable the Data Catalog API in the project identified by\nthe `name` parameter (see [Data Catalog Resource Project]\n(\/data-catalog\/docs\/concepts\/resource-project) for more information)."
                     }
                   }
                 }

@@ -25,6 +25,7 @@ from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.container import constants
+from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
@@ -2417,3 +2418,43 @@ def AddShieldedInstanceFlags(parser):
       '--shielded-integrity-monitoring',
       action='store_true',
       help=integrity_monitoring_help)
+
+
+def AddDatabaseEncryptionFlag(parser):
+  """Adds Database Encryption flags to the given parser."""
+  kms_flag_overrides = {
+      'kms-key': '--database-encryption-key',
+      'kms-keyring': '--database-encryption-key-keyring',
+      'kms-location': '--database-encryption-key-location',
+      'kms-project': '--database-encryption-key-project'
+  }
+  kms_resource_args.AddKmsKeyResourceArg(
+      parser, 'cluster', flag_overrides=kms_flag_overrides)
+
+
+def GetDatabaseEncryptionOption(args):
+  """Gets kms key from the flags specifying Database Encryption config.
+
+  Args:
+    args: an argparse namespace. All the arguments that were provided to this
+      command invocation.
+
+  Raises:
+    InvalidArgumentException: when provided kms_key is not fully specified.
+
+  Returns:
+    String: the name of database encryption key.
+  """
+  kms_ref = args.CONCEPTS.kms_key.Parse()
+  if kms_ref:
+    return kms_ref.RelativeName()
+  else:
+    # Check for partially specified database-encryption-key.
+    keywords = [
+        'database-encryption-key', 'database-encryption-key-keyring',
+        'database-encryption-key-location', 'database-encryption-key-project'
+    ]
+    for keyword in keywords:
+      if getattr(args, keyword.replace('-', '_'), None):
+        raise exceptions.InvalidArgumentException('--database-encryption-key',
+                                                  'not fully specified.')

@@ -308,8 +308,8 @@
         }
       }
     },
-    "OperationMetadata": {
-      "id": "OperationMetadata",
+    "OperationMetadataV1Alpha1": {
+      "id": "OperationMetadataV1Alpha1",
       "description": "Metadata for google.longrunning.Operation.",
       "type": "object",
       "properties": {
@@ -340,6 +340,31 @@
       "properties": {
         "method": {
           "description": "Output only. Method that initiated the operation e.g.\ngoogle.cloud.vpcaccess.v1beta1.Connectors.CreateConnector.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Time when the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. Time when the operation completed.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Name of the resource that this operation is acting on e.g.\nprojects\/my-project\/locations\/us-central1\/connectors\/v1.",
+          "type": "string"
+        }
+      }
+    },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "Metadata for google.longrunning.Operation.",
+      "type": "object",
+      "properties": {
+        "method": {
+          "description": "Output only. Method that initiated the operation e.g.\ngoogle.cloud.vpcaccess.v1.Connectors.CreateConnector.",
           "type": "string"
         },
         "createTime": {

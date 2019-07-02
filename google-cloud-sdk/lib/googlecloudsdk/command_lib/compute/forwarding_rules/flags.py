@@ -189,7 +189,7 @@ def NetworkArg(include_l7_internal_load_balancing):
   return compute_flags.ResourceArgument(
       name='--network',
       required=False,
-      resource_name='networks',
+      resource_name='network',
       global_collection='compute.networks',
       short_help='Network that this forwarding rule applies to.',
       detailed_help="""
@@ -571,6 +571,18 @@ def AddNetworkTier(parser, supports_network_tier_flag, for_update):
           Network tier to assign to the forwarding rules. ``NETWORK_TIER''
           must be one of: `PREMIUM`, `STANDARD`. The default value is `PREMIUM`.
           """)
+
+
+def AddIsMirroringCollector(parser):
+  parser.add_argument(
+      '--is-mirroring-collector',
+      action='store_true',
+      default=None,
+      help="""\
+      If set, this forwarding rule can be used as a collector for packet
+      mirroring. This can only be specified for forwarding rules with the
+      LOAD_BALANCING_SCHEME set to INTERNAL.
+      """)
 
 
 class PortRangesWithAll(object):

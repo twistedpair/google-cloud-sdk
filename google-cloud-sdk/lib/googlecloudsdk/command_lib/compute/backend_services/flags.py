@@ -128,6 +128,18 @@ GLOBAL_REGIONAL_MULTI_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     global_collection='compute.backendServices')
 
 
+NETWORK_ARG = compute_flags.ResourceArgument(
+    name='--network',
+    required=False,
+    resource_name='network',
+    global_collection='compute.networks',
+    short_help='Network that this backend service applies to.',
+    detailed_help="""\
+        Network that this backend service applies to. It can only be set if
+        the load-balancing-scheme is INTERNAL.
+        """)
+
+
 def BackendServiceArgumentForUrlMap(required=True,
                                     include_l7_internal_load_balancing=False):
   return compute_flags.ResourceArgument(
@@ -562,8 +574,7 @@ def AddProtocol(parser, default='HTTP'):
 
       If the load-balancing-scheme is `EXTERNAL`, the protocol must be one of:
       `HTTP`, `HTTPS`, `HTTP2`, `SSL`, `TCP`.
-      """
-  )
+      """)
 
 
 def AddConnectionDrainOnFailover(parser, default):
@@ -642,3 +653,7 @@ def AddInstanceGroupAndNetworkEndpointGroupArgs(parser, verb):
       instance_group, operation_type='{} the backend service'.format(verb))
   NETWORK_ENDPOINT_GROUP_ARG.AddArgument(
       neg_group, operation_type='{} the backend service'.format(verb))
+
+
+def AddNetwork(parser):
+  NETWORK_ARG.AddArgument(parser)

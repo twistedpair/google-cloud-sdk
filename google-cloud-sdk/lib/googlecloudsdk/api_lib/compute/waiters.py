@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2014 Google LLC. All Rights Reserved.
+# Copyright 2019 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,15 +36,39 @@ _MAX_TIME_BETWEEN_POLLS_SEC = 5
 # In our status reporting, we use the following
 # mapping. Anything not in the map is reported as "Updated".
 _HUMAN_FRIENDLY_OPERATION_TYPE_SUFFIXES = {
-    'createSnapshot': {'past': 'created', 'present': 'create'},
+    'createSnapshot': {
+        'past': 'created',
+        'present': 'create'
+    },
     'recreateInstancesInstanceGroupManager': {
-        'past': 'recreated', 'present': 'recreate'},
-    'insert': {'past': 'created', 'present': 'create'},
-    'delete': {'past': 'deleted', 'present': 'delete'},
-    'update': {'past': 'updated', 'present': 'update'},
+        'past': 'recreated',
+        'present': 'recreate'
+    },
+    'createFirewallSecurityPolicy': {
+        'past': 'created',
+        'present': 'create'
+    },
+    'deleteFirewallSecurityPolicy': {
+        'past': 'deleted',
+        'present': 'delete'
+    },
+    'insert': {
+        'past': 'created',
+        'present': 'create'
+    },
+    'delete': {
+        'past': 'deleted',
+        'present': 'delete'
+    },
+    'update': {
+        'past': 'updated',
+        'present': 'update'
+    },
     'invalidateCache': {
         'past': 'completed invalidation for',
-        'present': 'complete invalidation for'}}
+        'present': 'complete invalidation for'
+    }
+}
 
 
 def _HumanFrieldlyNamesForOp(op_type):
@@ -105,7 +129,11 @@ class OperationData(object):
       is used to fetch the mutated object after the operation is done.
   """
 
-  def __init__(self, operation, project, operation_service, resource_service):
+  def __init__(self,
+               operation,
+               operation_service,
+               resource_service,
+               project=None):
     self.operation = operation
     self.project = project
     self.operation_service = operation_service
@@ -185,7 +213,6 @@ def WaitForOperations(
         # problems it contains (if any) and proceed to get the target
         # resource if there were no problems and the operation is not
         # a deletion.
-
         _RecordProblems(operation, warnings, errors)
 
         # We shouldn't attempt to get the target resource if there was
@@ -206,7 +233,19 @@ def WaitForOperations(
         # We shouldn't get the target resource if the operation type
         # is delete because there will be no resource left.
         if not _IsDeleteOp(operation.operationType):
-          request = resource_service.GetRequestType('Get')(project=project)
+          if project:
+            request = resource_service.GetRequestType('Get')(project=project)
+          else:
+            # Gets the flexible resource ID.
+            if target_link is None:
+              log.status.write('{0}.\n'.format(
+                  _HumanFrieldlyNameForOpPastTense(
+                      operation.operationType).capitalize()))
+              return
+            token_list = target_link.split('/')
+            flexible_resource_id = token_list[-1]
+            request = resource_service.GetRequestType('Get')(
+                securityPolicy=flexible_resource_id)
           if operation.zone:
             request.zone = path_simplifier.Name(operation.zone)
           elif operation.region:
@@ -219,15 +258,20 @@ def WaitForOperations(
 
         log.status.write('{0} [{1}].\n'.format(
             _HumanFrieldlyNameForOpPastTense(
-                operation.operationType).capitalize(),
-            target_link))
+                operation.operationType).capitalize(), target_link))
 
       else:
         # The operation has not reached the DONE state, so we add a
         # get request to poll the operation.
-        request = operation_service.GetRequestType('Get')(
-            operation=operation.name,
-            project=project)
+        if project:
+          request = operation_service.GetRequestType('Get')(
+              operation=operation.name, project=project)
+        else:
+          # Fetches the parent ID from the operation name.
+          token_list = operation.name.split('-')
+          parent_id = 'organizations/' + token_list[1]
+          request = operation_service.GetRequestType('Get')(
+              operation=operation.name, parentId=parent_id)
         if operation.zone:
           request.zone = path_simplifier.Name(operation.zone)
         elif operation.region:

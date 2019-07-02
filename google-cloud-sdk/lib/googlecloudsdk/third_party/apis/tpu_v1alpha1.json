@@ -279,7 +279,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only.\nThe immutable name of the TPU",
+          "description": "Output only. The immutable name of the TPU",
           "type": "string"
         },
         "description": {
@@ -291,15 +291,15 @@
           "type": "string"
         },
         "ipAddress": {
-          "description": "Output only.\nDEPRECATED! Use network_endpoints instead.\nThe network address for the TPU Node as visible to Compute Engine\ninstances.",
+          "description": "Output only. DEPRECATED! Use network_endpoints instead.\nThe network address for the TPU Node as visible to Compute Engine\ninstances.",
           "type": "string"
         },
         "port": {
-          "description": "Output only.\nDEPRECATED! Use network_endpoints instead.\nThe network port for the TPU Node as visible to Compute Engine instances.",
+          "description": "Output only. DEPRECATED! Use network_endpoints instead.\nThe network port for the TPU Node as visible to Compute Engine instances.",
           "type": "string"
         },
         "state": {
-          "description": "Output only.\nThe current state for the TPU Node.",
+          "description": "Output only. The current state for the TPU Node.",
           "enumDescriptions": [
             "TPU node state is not known\/set.",
             "TPU node is being created.",
@@ -337,7 +337,7 @@
           ]
         },
         "healthDescription": {
-          "description": "Output only.\nIf this field is populated, it contains a description of why the TPU Node\nis unhealthy.",
+          "description": "Output only. If this field is populated, it contains a description of why the TPU Node\nis unhealthy.",
           "type": "string"
         },
         "tensorflowVersion": {
@@ -353,11 +353,11 @@
           "type": "string"
         },
         "serviceAccount": {
-          "description": "Output only.\nThe service account used to run the tensor flow services within the node.\nTo share resources, including Google Cloud Storage data, with the\nTensorflow job running in the Node, this account must have permissions to\nthat data.",
+          "description": "Output only. The service account used to run the tensor flow services within the node.\nTo share resources, including Google Cloud Storage data, with the\nTensorflow job running in the Node, this account must have permissions to\nthat data.",
           "type": "string"
         },
         "createTime": {
-          "description": "Output only.\nThe time when the node was created.",
+          "description": "Output only. The time when the node was created.",
           "type": "string",
           "format": "google-datetime"
         },

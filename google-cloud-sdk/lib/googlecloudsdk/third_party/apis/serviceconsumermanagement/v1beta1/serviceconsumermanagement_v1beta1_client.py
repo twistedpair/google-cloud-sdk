@@ -35,10 +35,50 @@ class ServiceconsumermanagementV1beta1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.operations = self.OperationsService(self)
     self.services_consumerQuotaMetrics_limits_producerOverrides = self.ServicesConsumerQuotaMetricsLimitsProducerOverridesService(self)
     self.services_consumerQuotaMetrics_limits = self.ServicesConsumerQuotaMetricsLimitsService(self)
     self.services_consumerQuotaMetrics = self.ServicesConsumerQuotaMetricsService(self)
     self.services = self.ServicesService(self)
+
+  class OperationsService(base_api.BaseApiService):
+    """Service class for the operations resource."""
+
+    _NAME = u'operations'
+
+    def __init__(self, client):
+      super(ServiceconsumermanagementV1beta1.OperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
+method to poll the operation result at intervals as recommended by the API
+service.
+
+      Args:
+        request: (ServiceconsumermanagementOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/operations/{operationsId}',
+        http_method=u'GET',
+        method_id=u'serviceconsumermanagement.operations.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}',
+        request_field='',
+        request_type_name=u'ServiceconsumermanagementOperationsGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
   class ServicesConsumerQuotaMetricsLimitsProducerOverridesService(base_api.BaseApiService):
     """Service class for the services_consumerQuotaMetrics_limits_producerOverrides resource."""

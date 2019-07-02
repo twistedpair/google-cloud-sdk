@@ -189,11 +189,16 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysCreateRequest(_messages.Message
     cryptoKeyId: Required. It must be unique within a KeyRing and match the
       regular expression `[a-zA-Z0-9_-]{1,63}`
     parent: Required. The name of the KeyRing associated with the CryptoKeys.
+    skipInitialVersionCreation: If set to true, the request will create a
+      CryptoKey without any CryptoKeyVersions. You must manually call
+      CreateCryptoKeyVersion or ImportCryptoKeyVersion before you can use this
+      CryptoKey.
   """
 
   cryptoKey = _messages.MessageField('CryptoKey', 1)
   cryptoKeyId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  skipInitialVersionCreation = _messages.BooleanField(4)
 
 
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecryptRequest(_messages.Message):
@@ -279,6 +284,21 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetRequest(_me
   name = _messages.StringField(1, required=True)
 
 
+class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImportRequest(_messages.Message):
+  r"""A
+  CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImportRequest
+  object.
+
+  Fields:
+    importCryptoKeyVersionRequest: A ImportCryptoKeyVersionRequest resource to
+      be passed as the request body.
+    parent: Required. The name of the CryptoKey to be imported into.
+  """
+
+  importCryptoKeyVersionRequest = _messages.MessageField('ImportCryptoKeyVersionRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsListRequest(_messages.Message):
   r"""A
   CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsListRequest
@@ -288,6 +308,11 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsListRequest(_m
     ViewValueValuesEnum: The fields to include in the response.
 
   Fields:
+    filter: Optional. Only include resources that match the filter in the
+      response (https://cloud.google.com/kms/docs/sorting-and-filtering).
+    orderBy: Optional. Specify how the results should be sorted. If not
+      specified, the results will be sorted in the default order
+      (https://cloud.google.com/kms/docs/sorting-and-filtering).
     pageSize: Optional limit on the number of CryptoKeyVersions to include in
       the response. Further CryptoKeyVersions can subsequently be obtained by
       including the ListCryptoKeyVersionsResponse.next_page_token in a
@@ -310,10 +335,12 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsListRequest(_m
     CRYPTO_KEY_VERSION_VIEW_UNSPECIFIED = 0
     FULL = 1
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 4)
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 6)
 
 
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatchRequest(_messages.Message):
@@ -409,6 +436,11 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysListRequest(_messages.Message):
       in the response.
 
   Fields:
+    filter: Optional. Only include resources that match the filter in the
+      response (https://cloud.google.com/kms/docs/sorting-and-filtering).
+    orderBy: Optional. Specify how the results should be sorted. If not
+      specified, the results will be sorted in the default order
+      (https://cloud.google.com/kms/docs/sorting-and-filtering).
     pageSize: Optional limit on the number of CryptoKeys to include in the
       response.  Further CryptoKeys can subsequently be obtained by including
       the ListCryptoKeysResponse.next_page_token in a subsequent request.  If
@@ -430,10 +462,12 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysListRequest(_messages.Message):
     CRYPTO_KEY_VERSION_VIEW_UNSPECIFIED = 0
     FULL = 1
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  versionView = _messages.EnumField('VersionViewValueValuesEnum', 4)
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  versionView = _messages.EnumField('VersionViewValueValuesEnum', 6)
 
 
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysPatchRequest(_messages.Message):
@@ -519,6 +553,21 @@ class CloudkmsProjectsLocationsKeyRingsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class CloudkmsProjectsLocationsKeyRingsImportJobsCreateRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsKeyRingsImportJobsCreateRequest object.
+
+  Fields:
+    importJob: A ImportJob resource to be passed as the request body.
+    importJobId: Required. It must be unique within a KeyRing and match the
+      regular expression `[a-zA-Z0-9_-]{1,63}`
+    parent: Required. The name of the KeyRing associated with the ImportJobs.
+  """
+
+  importJob = _messages.MessageField('ImportJob', 1)
+  importJobId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class CloudkmsProjectsLocationsKeyRingsImportJobsGetIamPolicyRequest(_messages.Message):
   r"""A CloudkmsProjectsLocationsKeyRingsImportJobsGetIamPolicyRequest object.
 
@@ -529,6 +578,42 @@ class CloudkmsProjectsLocationsKeyRingsImportJobsGetIamPolicyRequest(_messages.M
   """
 
   resource = _messages.StringField(1, required=True)
+
+
+class CloudkmsProjectsLocationsKeyRingsImportJobsGetRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsKeyRingsImportJobsGetRequest object.
+
+  Fields:
+    name: The name of the ImportJob to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudkmsProjectsLocationsKeyRingsImportJobsListRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsKeyRingsImportJobsListRequest object.
+
+  Fields:
+    filter: Optional. Only include resources that match the filter in the
+      response (https://cloud.google.com/kms/docs/sorting-and-filtering).
+    orderBy: Optional. Specify how the results should be sorted. If not
+      specified, the results will be sorted in the default order
+      (https://cloud.google.com/kms/docs/sorting-and-filtering).
+    pageSize: Optional limit on the number of ImportJobs to include in the
+      response. Further ImportJobs can subsequently be obtained by including
+      the ListImportJobsResponse.next_page_token in a subsequent request. If
+      unspecified, the server will pick an appropriate default.
+    pageToken: Optional pagination token, returned earlier via
+      ListImportJobsResponse.next_page_token.
+    parent: Required. The resource name of the KeyRing to list, in the format
+      `projects/*/locations/*/keyRings/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class CloudkmsProjectsLocationsKeyRingsImportJobsSetIamPolicyRequest(_messages.Message):
@@ -566,6 +651,11 @@ class CloudkmsProjectsLocationsKeyRingsListRequest(_messages.Message):
   r"""A CloudkmsProjectsLocationsKeyRingsListRequest object.
 
   Fields:
+    filter: Optional. Only include resources that match the filter in the
+      response (https://cloud.google.com/kms/docs/sorting-and-filtering).
+    orderBy: Optional. Specify how the results should be sorted. If not
+      specified, the results will be sorted in the default order
+      (https://cloud.google.com/kms/docs/sorting-and-filtering).
     pageSize: Optional limit on the number of KeyRings to include in the
       response.  Further KeyRings can subsequently be obtained by including
       the ListKeyRingsResponse.next_page_token in a subsequent request.  If
@@ -576,9 +666,11 @@ class CloudkmsProjectsLocationsKeyRingsListRequest(_messages.Message):
       KeyRings, in the format `projects/*/locations/*`.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class CloudkmsProjectsLocationsKeyRingsSetIamPolicyRequest(_messages.Message):
@@ -658,10 +750,10 @@ class CryptoKey(_messages.Message):
       have a primary. For other keys, this field will be omitted.
     purpose: The immutable purpose of this CryptoKey.
     rotationPeriod: next_rotation_time will be advanced by this period when
-      the service automatically rotates a key. Must be at least one day.  If
-      rotation_period is set, next_rotation_time must also be set.  Keys with
-      purpose ENCRYPT_DECRYPT support automatic rotation. For other keys, this
-      field must be omitted.
+      the service automatically rotates a key. Must be at least 24 hours and
+      at most 876,000 hours.  If rotation_period is set, next_rotation_time
+      must also be set.  Keys with purpose ENCRYPT_DECRYPT support automatic
+      rotation. For other keys, this field must be omitted.
     versionTemplate: A template describing settings for new CryptoKeyVersion
       instances. The properties of new CryptoKeyVersion instances created by
       either CreateCryptoKeyVersion or auto-rotation are controlled by this
@@ -751,6 +843,13 @@ class CryptoKeyVersion(_messages.Message):
       scheduled for destruction. Only present if state is DESTROY_SCHEDULED.
     generateTime: Output only. The time this CryptoKeyVersion's key material
       was generated.
+    importFailureReason: Output only. The root cause of an import failure.
+      Only present if state is IMPORT_FAILED.
+    importJob: Output only. The name of the ImportJob used to import this
+      CryptoKeyVersion. Only present if the underlying key material was
+      imported.
+    importTime: Output only. The time at which this CryptoKeyVersion's key
+      material was imported.
     name: Output only. The resource name for this CryptoKeyVersion in the
       format
       `projects/*/locations/*/keyRings/*/cryptoKeys/*/cryptoKeyVersions/*`.
@@ -836,6 +935,14 @@ class CryptoKeyVersion(_messages.Message):
       DESTROY_SCHEDULED: This version is scheduled for destruction, and will
         be destroyed soon. Call RestoreCryptoKeyVersion to put it back into
         the DISABLED state.
+      PENDING_IMPORT: This version is still being imported. It may not be
+        used, enabled, disabled, or destroyed yet. Cloud KMS will
+        automatically mark this version ENABLED as soon as the version is
+        ready.
+      IMPORT_FAILED: This version was not imported successfully. It may not be
+        used, enabled, disabled, or destroyed. The submitted key material has
+        been discarded. Additional details can be found in
+        CryptoKeyVersion.import_failure_reason.
     """
     CRYPTO_KEY_VERSION_STATE_UNSPECIFIED = 0
     PENDING_GENERATION = 1
@@ -843,6 +950,8 @@ class CryptoKeyVersion(_messages.Message):
     DISABLED = 3
     DESTROYED = 4
     DESTROY_SCHEDULED = 5
+    PENDING_IMPORT = 6
+    IMPORT_FAILED = 7
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   attestation = _messages.MessageField('KeyOperationAttestation', 2)
@@ -850,9 +959,12 @@ class CryptoKeyVersion(_messages.Message):
   destroyEventTime = _messages.StringField(4)
   destroyTime = _messages.StringField(5)
   generateTime = _messages.StringField(6)
-  name = _messages.StringField(7)
-  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
+  importFailureReason = _messages.StringField(7)
+  importJob = _messages.StringField(8)
+  importTime = _messages.StringField(9)
+  name = _messages.StringField(10)
+  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
 
 
 class CryptoKeyVersionTemplate(_messages.Message):
@@ -1045,6 +1157,206 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class ImportCryptoKeyVersionRequest(_messages.Message):
+  r"""Request message for KeyManagementService.ImportCryptoKeyVersion.
+
+  Enums:
+    AlgorithmValueValuesEnum: Required. The algorithm of the key being
+      imported. This does not need to match the version_template of the
+      CryptoKey this version imports into.
+
+  Fields:
+    algorithm: Required. The algorithm of the key being imported. This does
+      not need to match the version_template of the CryptoKey this version
+      imports into.
+    importJob: Required. The name of the ImportJob that was used to wrap this
+      key material.
+    rsaAesWrappedKey: Wrapped key material produced with
+      RSA_OAEP_3072_SHA1_AES_256 or RSA_OAEP_4096_SHA1_AES_256.  This field
+      contains the concatenation of two wrapped keys: <ol>   <li>An ephemeral
+      AES-256 wrapping key wrapped with the       public_key using RSAES-OAEP
+      with SHA-1,       MGF1 with SHA-1, and an empty label.   </li>   <li>The
+      key to be imported, wrapped with the ephemeral AES-256 key       using
+      AES-KWP (RFC 5649).   </li> </ol>  This format is the same as the format
+      produced by PKCS#11 mechanism CKM_RSA_AES_KEY_WRAP.
+  """
+
+  class AlgorithmValueValuesEnum(_messages.Enum):
+    r"""Required. The algorithm of the key being imported. This does not need
+    to match the version_template of the CryptoKey this version imports into.
+
+    Values:
+      CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED: Not specified.
+      GOOGLE_SYMMETRIC_ENCRYPTION: Creates symmetric encryption keys.
+      RSA_SIGN_PSS_2048_SHA256: RSASSA-PSS 2048 bit key with a SHA256 digest.
+      RSA_SIGN_PSS_3072_SHA256: RSASSA-PSS 3072 bit key with a SHA256 digest.
+      RSA_SIGN_PSS_4096_SHA256: RSASSA-PSS 4096 bit key with a SHA256 digest.
+      RSA_SIGN_PSS_4096_SHA512: RSASSA-PSS 4096 bit key with a SHA512 digest.
+      RSA_SIGN_PKCS1_2048_SHA256: RSASSA-PKCS1-v1_5 with a 2048 bit key and a
+        SHA256 digest.
+      RSA_SIGN_PKCS1_3072_SHA256: RSASSA-PKCS1-v1_5 with a 3072 bit key and a
+        SHA256 digest.
+      RSA_SIGN_PKCS1_4096_SHA256: RSASSA-PKCS1-v1_5 with a 4096 bit key and a
+        SHA256 digest.
+      RSA_SIGN_PKCS1_4096_SHA512: RSASSA-PKCS1-v1_5 with a 4096 bit key and a
+        SHA512 digest.
+      RSA_DECRYPT_OAEP_2048_SHA256: RSAES-OAEP 2048 bit key with a SHA256
+        digest.
+      RSA_DECRYPT_OAEP_3072_SHA256: RSAES-OAEP 3072 bit key with a SHA256
+        digest.
+      RSA_DECRYPT_OAEP_4096_SHA256: RSAES-OAEP 4096 bit key with a SHA256
+        digest.
+      RSA_DECRYPT_OAEP_4096_SHA512: RSAES-OAEP 4096 bit key with a SHA512
+        digest.
+      EC_SIGN_P256_SHA256: ECDSA on the NIST P-256 curve with a SHA256 digest.
+      EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
+    """
+    CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
+    GOOGLE_SYMMETRIC_ENCRYPTION = 1
+    RSA_SIGN_PSS_2048_SHA256 = 2
+    RSA_SIGN_PSS_3072_SHA256 = 3
+    RSA_SIGN_PSS_4096_SHA256 = 4
+    RSA_SIGN_PSS_4096_SHA512 = 5
+    RSA_SIGN_PKCS1_2048_SHA256 = 6
+    RSA_SIGN_PKCS1_3072_SHA256 = 7
+    RSA_SIGN_PKCS1_4096_SHA256 = 8
+    RSA_SIGN_PKCS1_4096_SHA512 = 9
+    RSA_DECRYPT_OAEP_2048_SHA256 = 10
+    RSA_DECRYPT_OAEP_3072_SHA256 = 11
+    RSA_DECRYPT_OAEP_4096_SHA256 = 12
+    RSA_DECRYPT_OAEP_4096_SHA512 = 13
+    EC_SIGN_P256_SHA256 = 14
+    EC_SIGN_P384_SHA384 = 15
+
+  algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
+  importJob = _messages.StringField(2)
+  rsaAesWrappedKey = _messages.BytesField(3)
+
+
+class ImportJob(_messages.Message):
+  r"""An ImportJob can be used to create CryptoKeys and CryptoKeyVersions
+  using pre-existing key material, generated outside of Cloud KMS.  When an
+  ImportJob is created, Cloud KMS will generate a "wrapping key", which is a
+  public/private key pair. You use the wrapping key to encrypt (also known as
+  wrap) the pre-existing key material to protect it during the import process.
+  The nature of the wrapping key depends on the choice of import_method. When
+  the wrapping key generation is complete, the state will be set to ACTIVE and
+  the public_key can be fetched. The fetched public key can then be used to
+  wrap your pre-existing key material.  Once the key material is wrapped, it
+  can be imported into a new CryptoKeyVersion in an existing CryptoKey by
+  calling ImportCryptoKeyVersion. Multiple CryptoKeyVersions can be imported
+  with a single ImportJob. Cloud KMS uses the private key portion of the
+  wrapping key to unwrap the key material. Only Cloud KMS has access to the
+  private key.  An ImportJob expires 3 days after it is created. Once expired,
+  Cloud KMS will no longer be able to import or unwrap any key material that
+  was wrapped with the ImportJob's public key.  For more information, see
+  [Importing a key](https://cloud.google.com/kms/docs/importing-a-key).
+
+  Enums:
+    ImportMethodValueValuesEnum: Required and immutable. The wrapping method
+      to be used for incoming key material.
+    ProtectionLevelValueValuesEnum: Required and immutable. The protection
+      level of the ImportJob. This must match the protection_level of the
+      version_template on the CryptoKey you attempt to import into.
+    StateValueValuesEnum: Output only. The current state of the ImportJob,
+      indicating if it can be used.
+
+  Fields:
+    attestation: Output only. Statement that was generated and signed by the
+      key creator (for example, an HSM) at key creation time. Use this
+      statement to verify attributes of the key as stored on the HSM,
+      independently of Google. Only present if the chosen ImportMethod is one
+      with a protection level of HSM.
+    createTime: Output only. The time at which this ImportJob was created.
+    expireEventTime: Output only. The time this ImportJob expired. Only
+      present if state is EXPIRED.
+    expireTime: Output only. The time at which this ImportJob is scheduled for
+      expiration and can no longer be used to import key material.
+    generateTime: Output only. The time this ImportJob's key material was
+      generated.
+    importMethod: Required and immutable. The wrapping method to be used for
+      incoming key material.
+    name: Output only. The resource name for this ImportJob in the format
+      `projects/*/locations/*/keyRings/*/importJobs/*`.
+    protectionLevel: Required and immutable. The protection level of the
+      ImportJob. This must match the protection_level of the version_template
+      on the CryptoKey you attempt to import into.
+    publicKey: Output only. The public key with which to wrap key material
+      prior to import. Only returned if state is ACTIVE.
+    state: Output only. The current state of the ImportJob, indicating if it
+      can be used.
+  """
+
+  class ImportMethodValueValuesEnum(_messages.Enum):
+    r"""Required and immutable. The wrapping method to be used for incoming
+    key material.
+
+    Values:
+      IMPORT_METHOD_UNSPECIFIED: Not specified.
+      RSA_OAEP_3072_SHA1_AES_256: This ImportMethod represents the
+        CKM_RSA_AES_KEY_WRAP key wrapping scheme defined in the PKCS #11
+        standard. In summary, this involves wrapping the raw key with an
+        ephemeral AES key, and wrapping the ephemeral AES key with a 3072 bit
+        RSA key. For more details, see [RSA AES key wrap
+        mechanism](http://docs.oasis-open.org/pkcs11/pkcs11-curr/v2.40/cos01/p
+        kcs11-curr-v2.40-cos01.html#_Toc408226908).
+      RSA_OAEP_4096_SHA1_AES_256: This ImportMethod represents the
+        CKM_RSA_AES_KEY_WRAP key wrapping scheme defined in the PKCS #11
+        standard. In summary, this involves wrapping the raw key with an
+        ephemeral AES key, and wrapping the ephemeral AES key with a 4096 bit
+        RSA key. For more details, see [RSA AES key wrap
+        mechanism](http://docs.oasis-open.org/pkcs11/pkcs11-curr/v2.40/cos01/p
+        kcs11-curr-v2.40-cos01.html#_Toc408226908).
+    """
+    IMPORT_METHOD_UNSPECIFIED = 0
+    RSA_OAEP_3072_SHA1_AES_256 = 1
+    RSA_OAEP_4096_SHA1_AES_256 = 2
+
+  class ProtectionLevelValueValuesEnum(_messages.Enum):
+    r"""Required and immutable. The protection level of the ImportJob. This
+    must match the protection_level of the version_template on the CryptoKey
+    you attempt to import into.
+
+    Values:
+      PROTECTION_LEVEL_UNSPECIFIED: Not specified.
+      SOFTWARE: Crypto operations are performed in software.
+      HSM: Crypto operations are performed in a Hardware Security Module.
+    """
+    PROTECTION_LEVEL_UNSPECIFIED = 0
+    SOFTWARE = 1
+    HSM = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the ImportJob, indicating if it can
+    be used.
+
+    Values:
+      IMPORT_JOB_STATE_UNSPECIFIED: Not specified.
+      PENDING_GENERATION: The wrapping key for this job is still being
+        generated. It may not be used. Cloud KMS will automatically mark this
+        job as ACTIVE as soon as the wrapping key is generated.
+      ACTIVE: This job may be used in CreateCryptoKey and
+        CreateCryptoKeyVersion requests.
+      EXPIRED: This job can no longer be used and may not leave this state
+        once entered.
+    """
+    IMPORT_JOB_STATE_UNSPECIFIED = 0
+    PENDING_GENERATION = 1
+    ACTIVE = 2
+    EXPIRED = 3
+
+  attestation = _messages.MessageField('KeyOperationAttestation', 1)
+  createTime = _messages.StringField(2)
+  expireEventTime = _messages.StringField(3)
+  expireTime = _messages.StringField(4)
+  generateTime = _messages.StringField(5)
+  importMethod = _messages.EnumField('ImportMethodValueValuesEnum', 6)
+  name = _messages.StringField(7)
+  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 8)
+  publicKey = _messages.MessageField('WrappingPublicKey', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+
+
 class KeyOperationAttestation(_messages.Message):
   r"""Contains an HSM-generated attestation about a key operation. For more
   information, see [Verifying attestations] (https://cloud.google.com/kms/docs
@@ -1119,6 +1431,22 @@ class ListCryptoKeysResponse(_messages.Message):
   """
 
   cryptoKeys = _messages.MessageField('CryptoKey', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  totalSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class ListImportJobsResponse(_messages.Message):
+  r"""Response message for KeyManagementService.ListImportJobs.
+
+  Fields:
+    importJobs: The list of ImportJobs.
+    nextPageToken: A token to retrieve next page of results. Pass this value
+      in ListImportJobsRequest.page_token to retrieve the next page of
+      results.
+    totalSize: The total number of ImportJobs that matched the query.
+  """
+
+  importJobs = _messages.MessageField('ImportJob', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   totalSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
@@ -1467,6 +1795,21 @@ class UpdateCryptoKeyPrimaryVersionRequest(_messages.Message):
   """
 
   cryptoKeyVersionId = _messages.StringField(1)
+
+
+class WrappingPublicKey(_messages.Message):
+  r"""The public key component of the wrapping key. For details of the type of
+  key this public key corresponds to, see the ImportMethod.
+
+  Fields:
+    pem: The public key, encoded in PEM format. For more information, see the
+      [RFC 7468](https://tools.ietf.org/html/rfc7468) sections for [General
+      Considerations](https://tools.ietf.org/html/rfc7468#section-2) and
+      [Textual Encoding of Subject Public Key Info]
+      (https://tools.ietf.org/html/rfc7468#section-13).
+  """
+
+  pem = _messages.StringField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

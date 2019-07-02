@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2014 Google LLC. All Rights Reserved.
+# Copyright 2019 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -248,14 +248,12 @@ def MakeRequests(requests, http, batch_url, errors, progress_tracker=None):
         requests=requests, http=http, batch_url=batch_url, errors=errors):
       yield item
     return
-
   responses, new_errors = batch_helper.MakeRequests(
       requests=requests, http=http, batch_url=batch_url)
   errors.extend(new_errors)
 
   operation_service = None
   resource_service = None
-  project = None
 
   # Collects all operation objects in a list so they can be waited on
   # and yields all non-operation objects since non-operation responses
@@ -269,24 +267,26 @@ def MakeRequests(requests, http, batch_url, errors, progress_tracker=None):
     service, _, request_body = request
     if (isinstance(response, service.client.MESSAGES_MODULE.Operation) and
         service.__class__.__name__ not in (
-            'GlobalOperationsService',
-            'RegionOperationsService',
-            'ZoneOperationsService',
+            'GlobalOperationsService', 'RegionOperationsService',
+            'ZoneOperationsService', 'GlobalOrganizationOperationsService',
             'GlobalAccountsOperationsService')):
 
       resource_service = service
-      project = request_body.project
-
-      if response.zone:
-        operation_service = service.client.zoneOperations
-      elif response.region:
-        operation_service = service.client.regionOperations
+      project = None
+      if hasattr(request_body, 'project'):
+        project = request_body.project
+        if response.zone:
+          operation_service = service.client.zoneOperations
+        elif response.region:
+          operation_service = service.client.regionOperations
+        else:
+          operation_service = service.client.globalOperations
       else:
-        operation_service = service.client.globalOperations
+        operation_service = service.client.globalOrganizationOperations
 
       operations_data.append(
-          waiters.OperationData(response, project, operation_service,
-                                resource_service))
+          waiters.OperationData(
+              response, operation_service, resource_service, project=project))
 
     else:
       yield response

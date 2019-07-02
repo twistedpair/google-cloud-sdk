@@ -75,6 +75,17 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  PROJECTS_LOCATIONS_KEYRINGS_IMPORTJOBS = (
+      'projects.locations.keyRings.importJobs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/keyRings/'
+              '{keyRingsId}/importJobs/{importJobsId}',
+      },
+      [u'name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

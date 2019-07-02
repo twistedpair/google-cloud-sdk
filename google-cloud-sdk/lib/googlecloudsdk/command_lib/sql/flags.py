@@ -497,7 +497,7 @@ def AddStorageSize(parser):
       '--storage-size',
       type=arg_parsers.BinarySize(
           lower_bound='10GB',
-          upper_bound='30710GB',
+          upper_bound='30720GB',
           suggested_binary_size_scales=['GB']),
       help=('Amount of storage allocated to the instance. Must be an integer '
             'number of GB. The default is 10GB. Information on storage '
@@ -584,6 +584,13 @@ def AddUriArgument(parser, help_text):
       help=help_text)
 
 
+DEFAULT_DATABASE_IMPORT_HELP_TEXT = (
+    'Database to which the import is made. If not set, it is assumed that '
+    'the database is specified in the file to be imported. If your SQL '
+    'dump file includes a database statement, it will override the '
+    'database set in this flag.')
+
+
 def AddDatabase(parser, help_text, required=False):
   """Add the '--database' flag to the parser, with help text help_text."""
   parser.add_argument(
@@ -591,6 +598,12 @@ def AddDatabase(parser, help_text, required=False):
       '-d',
       required=required,
       help=help_text)
+
+
+DEFAULT_DATABASE_LIST_EXPORT_HELP_TEXT = (
+    'Database(s) from which the export is made. Information on requirements '
+    'can be found here: https://cloud.google.com/sql/docs/mysql/admin-api/'
+    'v1beta4/instances/export#exportContext.databases')
 
 
 def AddDatabaseList(parser, help_text):

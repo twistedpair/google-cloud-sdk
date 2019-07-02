@@ -366,7 +366,7 @@
       "type": "object",
       "properties": {
         "namespace": {
-          "description": "Namespace for Kubernetes API server endpoint.",
+          "description": "Namespace designated on the game server cluster where the game server\ninstances will be created. The namespace existence will be validated\nduring creation.",
           "type": "string"
         },
         "gkeName": {

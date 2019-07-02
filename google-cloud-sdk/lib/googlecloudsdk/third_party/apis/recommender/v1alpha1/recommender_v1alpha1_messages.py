@@ -820,6 +820,17 @@ class RecommenderProjectsLocationsRecommendersRecommendationsCreateRuleRequest(_
   name = _messages.StringField(2, required=True)
 
 
+class RecommenderProjectsLocationsRecommendersRecommendationsGetRequest(_messages.Message):
+  r"""A RecommenderProjectsLocationsRecommendersRecommendationsGetRequest
+  object.
+
+  Fields:
+    name: Name of the recommendation.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class RecommenderProjectsLocationsRecommendersRecommendationsListRequest(_messages.Message):
   r"""A RecommenderProjectsLocationsRecommendersRecommendationsListRequest
   object.

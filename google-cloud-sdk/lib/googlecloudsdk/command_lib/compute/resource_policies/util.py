@@ -52,11 +52,21 @@ def _FormatStartTime(dt):
 
 def MakeVmMaintenancePolicy(policy_ref, args, messages):
   """Creates a VM Maintenance Window Resource Policy message from args."""
-  _, daily_cycle, _ = _ParseCycleFrequencyArgs(args, messages)
-  vm_policy = messages.ResourcePolicyVmMaintenancePolicy(
-      maintenanceWindow=
+  vm_policy = messages.ResourcePolicyVmMaintenancePolicy()
+  if args.IsSpecified('daily_cycle'):
+    _, daily_cycle, _ = _ParseCycleFrequencyArgs(args, messages)
+    vm_policy.maintenanceWindow = \
       messages.ResourcePolicyVmMaintenancePolicyMaintenanceWindow(
-          dailyMaintenanceWindow=daily_cycle))
+          dailyMaintenanceWindow=daily_cycle)
+  else:
+    if 1 <= args.concurrency_limit_percent <= 100:
+      concurrency_control_group = \
+        messages.ResourcePolicyVmMaintenancePolicyConcurrencyControl(
+            concurrencyLimit=args.concurrency_limit_percent)
+      vm_policy.concurrencyControlGroup = concurrency_control_group
+    else:
+      raise ValueError('--concurrency-limit-percent must be greater or equal to'
+                       ' 1 and less or equal to 100')
   return messages.ResourcePolicy(
       name=policy_ref.Name(),
       description=args.description,

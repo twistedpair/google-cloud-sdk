@@ -452,6 +452,12 @@ apis:
       resources:
         documents:
           path: documents
+  managedidentities:
+    v1alpha1:
+      discovery_doc: managedidentities_v1alpha1.json
+    v1beta1:
+      discovery_doc: managedidentities_v1beta1.json
+      default: true
   logging:
     v2:
       discovery_doc: logging_v2.json
@@ -488,6 +494,9 @@ apis:
   runtimeconfig:
     v1beta1:
       discovery_doc: runtimeconfig_v1beta1.json
+  secretmanager:
+    v1alpha:
+      discovery_doc: secretmanager_v1alpha.json
   securitycenter:
     v1beta1:
       discovery_doc: securitycenter_v1beta1.json
@@ -639,6 +648,7 @@ apis:
   recommender:
     v1alpha1:
       discovery_doc: recommender_v1alpha1.json
+      default: true
       resources:
         projects.locations:
           path: projects/{projectsId}/locations/{locationsId}
@@ -651,6 +661,8 @@ apis:
           enable_uri_parsing: false
         operations:
           path: operations/{+operationId}
+    v1beta1:
+      discovery_doc: recommender_v1beta1.json
   gameservices:
     v1alpha:
       discovery_doc: gameservices_v1alpha.json

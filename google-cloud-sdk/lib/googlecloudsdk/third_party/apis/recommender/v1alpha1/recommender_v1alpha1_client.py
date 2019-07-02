@@ -79,6 +79,34 @@ Check recommender.*.list and recommender.rule.create IAM permissions.
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Gets the requested recommendation and requires the recommendation.*.get.
+IAM permission.
+
+      Args:
+        request: (RecommenderProjectsLocationsRecommendersRecommendationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1alpha1Recommendation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}',
+        http_method=u'GET',
+        method_id=u'recommender.projects.locations.recommenders.recommendations.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'RecommenderProjectsLocationsRecommendersRecommendationsGetRequest',
+        response_type_name=u'GoogleCloudRecommenderV1alpha1Recommendation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists recommendations for a Cloud project and requires the.
 recommendation.*.list IAM permission.

@@ -18,7 +18,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.dns import operations
+from googlecloudsdk.api_lib.dns import util
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.core import log
 
 
 class Client(object):
@@ -44,6 +47,7 @@ class Client(object):
 
   def Patch(self,
             zone_ref,
+            is_async,
             dnssec_config=None,
             description=None,
             labels=None,
@@ -62,8 +66,29 @@ class Client(object):
       zone.forwardingConfig = forwarding_config
     if peering_config:
       zone.peeringConfig = peering_config
-    return self._service.Patch(
+
+    operation = self._service.Patch(
         self.messages.DnsManagedZonesPatchRequest(
             managedZoneResource=zone,
             project=zone_ref.project,
             managedZone=zone_ref.Name()))
+
+    operation_ref = util.GetRegistry(self.version).Parse(
+        operation.id,
+        params={
+            'project': zone_ref.project,
+            'managedZone': zone_ref.Name(),
+        },
+        collection='dns.managedZoneOperations')
+
+    if is_async:
+      log.status.write(
+          'Updating [{0}] with operation [{1}].'.format(
+              zone_ref.Name(), operation_ref.Name()))
+      return
+
+    return operations.WaitFor(
+        self.version,
+        operation_ref,
+        'Updating managed zone [{}]'.format(zone_ref.Name())
+    )

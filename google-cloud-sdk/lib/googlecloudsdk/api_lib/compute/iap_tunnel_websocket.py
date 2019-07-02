@@ -30,11 +30,12 @@ from googlecloudsdk.core import http
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import retry
 
-MAX_WEBSOCKET_OPEN_WAIT_TIME_SEC = 60  # seconds
-MAX_RECONNECT_SLEEP_TIME_MS = 20 * 1000  # milliseconds
-MAX_RECONNECT_WAIT_TIME_MS = 60 * 60 * 1000  # milliseconds
-MAX_UNSENT_QUEUE_LENGTH = 20
-RECONNECT_INITIAL_SLEEP_MS = 1500  # milliseconds
+MAX_WEBSOCKET_OPEN_WAIT_TIME_SEC = 60
+MAX_RECONNECT_SLEEP_TIME_MS = 20 * 1000  # 20 seconds
+MAX_RECONNECT_WAIT_TIME_MS = 15 * 60 * 1000  # 15 minutes
+MAX_UNSENT_QUEUE_LENGTH = 5
+ALL_DATA_SENT_WAIT_TIME_SEC = 10
+RECONNECT_INITIAL_SLEEP_MS = 1500
 
 
 class ConnectionCreationError(exceptions.Error):
@@ -70,7 +71,11 @@ class SubprotocolOutOfOrderAckError(exceptions.Error):
 
 
 class IapTunnelWebSocket(object):
-  """Cloud IAP WebSocket class for tunnelling connections."""
+  """Cloud IAP WebSocket class for tunnelling connections.
+
+  It takes in local data (via Send()) which it sends over the websocket. It
+  takes data from the websocket and gives it to data_handler_callback.
+  """
 
   def __init__(self, tunnel_target, get_access_token_callback,
                data_handler_callback, close_handler_callback,
@@ -87,6 +92,11 @@ class IapTunnelWebSocket(object):
     self._stopping = False
     self._close_message_sent = False
     self._send_and_reconnect_thread = None
+    # Indicates if the local input gave an EOF.
+    self._input_eof = False
+    # Indicates that after getting a local input EOF, we have send all previous
+    # local data over the websocket.
+    self._sent_all = threading.Event()
 
     self._total_bytes_confirmed = 0
     self._total_bytes_received = 0
@@ -124,12 +134,48 @@ class IapTunnelWebSocket(object):
     self._send_and_reconnect_thread.start()
 
   def Send(self, bytes_to_send):
-    """Send bytes over WebSocket connection."""
+    """Send bytes over WebSocket connection.
+
+    Args:
+      bytes_to_send: The bytes to send. Must not be empty.
+
+    Raises:
+      ConnectionReconnectTimeout: If something is preventing data from being
+        sent.
+    """
     while bytes_to_send:
       first_to_send = bytes_to_send[:utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE]
       bytes_to_send = bytes_to_send[utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE:]
       if first_to_send:
         self._EnqueueBytesWithWaitForReconnect(first_to_send)
+
+  def LocalEOF(self):
+    """Indicate that the local input gave an EOF.
+
+    Send must not be called after this.
+    """
+    self._input_eof = True
+    if not self._unsent_data:
+      self._sent_all.set()
+
+  def WaitForAllSent(self):
+    """Wait until all local data has been sent on the websocket.
+
+    Blocks until either all data from Send() has been sent, or it times out
+    waiting. Once true, always returns true. Even if this returns true, a
+    reconnect could occur causing previously sent data to be resent. Must only
+    be called after an EOF has been given to Send().
+
+    Returns:
+      True on success, False on timeout.
+    """
+    # If we didn't have any wait time, python2 would ignore ctrl-c when in
+    # --listen-on-stdin mode. With a wait time, it pays attention to ctrl-c.
+    # When doing ssh, the inner gcloud will continue behind the scenes until
+    # either all data is sent or this times out. We don't want a weird hidden
+    # gcloud staying around like that for a long time (even in the case of a
+    # write block), so the wait time isn't very long.
+    return self._sent_all.wait(ALL_DATA_SENT_WAIT_TIME_SEC)
 
   def _AttemptReconnect(self, reconnect_func):
     """Attempt to reconnect with a new WebSocket."""
@@ -146,12 +192,21 @@ class IapTunnelWebSocket(object):
       self._StopConnectionAsync()
 
   def _EnqueueBytesWithWaitForReconnect(self, bytes_to_send):
-    """Add bytes to the queue; sleep waiting for reconnect if queue is full."""
+    """Add bytes to the queue; sleep waiting for reconnect if queue is full.
+
+    Args:
+      bytes_to_send: The local bytes to send over the websocket. At most
+        utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE.
+
+    Raises:
+      ConnectionReconnectTimeout: If something is preventing data from being
+        sent.
+    """
     end_time = time.time() + MAX_RECONNECT_WAIT_TIME_MS / 1000.0
     while time.time() < end_time:
       if len(self._unsent_data) < MAX_UNSENT_QUEUE_LENGTH:
         self._unsent_data.append(bytes_to_send)
-        log.debug('ENQUEUE data_len [%d] bytes_to_send[:20] [%r]',
+        log.debug('ENQUEUED data_len [%d] bytes_to_send[:20] [%r]',
                   len(bytes_to_send), bytes_to_send[:20])
         return
       time.sleep(0.01)
@@ -231,8 +286,17 @@ class IapTunnelWebSocket(object):
     while self._unsent_data and not self._stopping:
       try:
         send_data = utils.CreateSubprotocolDataFrame(self._unsent_data[0])
-        self._websocket_helper.Send(send_data)
+        # We need to append to _unconfirmed_data before calling Send(), because
+        # otherwise we could receive the ack for the sent data before we do the
+        # append, which we would interpret as an invalid ack. This does mean
+        # there's a small window of time where we'll accept acks of data that
+        # hasn't truly been sent if a badly behaving server sends such acks, but
+        # that's not really a problem, because we'll behave identically to as if
+        # the ack was received after the data was sent (so no data or control
+        # flow corruption), and we don't have a goal of giving an error every
+        # time the server misbehaves.
         self._unconfirmed_data.append(self._unsent_data.popleft())
+        self._websocket_helper.Send(send_data)
       except helper.WebSocketConnectionClosed:
         break
       except EnvironmentError as e:
@@ -242,6 +306,10 @@ class IapTunnelWebSocket(object):
         log.info('Error while attempting to send [%d] bytes', len(send_data),
                  exc_info=True)
         break
+    # We need to check _input_eof before _unsent_data to avoid a race
+    # condition with setting _input_eof simultaneously with this check.
+    if self._input_eof and not self._unsent_data:
+      self._sent_all.set()
 
   def _StopConnectionAsync(self):
     self._stopping = True

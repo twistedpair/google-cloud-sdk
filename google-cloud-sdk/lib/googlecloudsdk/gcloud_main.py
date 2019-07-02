@@ -67,16 +67,30 @@ def UpdateCheck(command_path, **unused_kwargs):
     log.debug('Failed to perform update check.', exc_info=True)
 
 
+def _ShouldCheckSurveyPrompt(command_path):
+  """Decides if survey prompt should be checked."""
+  if properties.VALUES.survey.disable_prompts.GetBool():
+    return False
+  # dev shell environment uses temporary folder for user config. That means
+  # survey prompt cache gets cleaned each time user starts a new session,
+  # which results in too frequent prompting.
+  if c_devshell.IsDevshellEnvironment():
+    return False
+
+  exempt_commands = ['gcloud.components.post-process',]
+  for exempt_command in exempt_commands:
+    if command_path.startswith(exempt_command):
+      return False
+
+  return True
+
+
 def SurveyPromptCheck(command_path, **unused_kwargs):
   """Checks for in-tool survey prompt."""
-  del command_path
+  if not _ShouldCheckSurveyPrompt(command_path):
+    return
   try:
-    # dev shell environment uses temporary folder for user config. That means
-    # survey prompt cache gets cleaned each time user starts a new session,
-    # which results in too frequent prompting.
-    if not (properties.VALUES.survey.disable_prompts.GetBool() or
-            c_devshell.IsDevshellEnvironment()):
-      survey_check.SurveyPrompter().PromptForSurvey()
+    survey_check.SurveyPrompter().PromptForSurvey()
   # pylint:disable=broad-except, We never want this to escape, ever. Only
   # messages printed should reach the user.
   except Exception:

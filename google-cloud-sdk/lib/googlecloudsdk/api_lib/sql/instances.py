@@ -161,6 +161,13 @@ def IsInstanceV2(instance):
   return instance.backendType == 'SECOND_GEN'
 
 
+def GetInstanceState(instance):
+  """Return the default state string unless the instance is stopped."""
+  if instance.settings and instance.settings.activationPolicy == 'NEVER':
+    return 'STOPPED'
+  return instance.state
+
+
 # TODO(b/73648377): Factor out static methods into module-level functions.
 class _BaseInstances(object):
   """Common utility functions for sql instances."""
@@ -199,8 +206,7 @@ class _BaseInstances(object):
     def YieldInstancesWithAModifiedState():
       for result in yielded:
         # TODO(b/63139112): Investigate impact of instances without settings.
-        if result.settings and result.settings.activationPolicy == 'NEVER':
-          result.state = 'STOPPED'
+        result.state = GetInstanceState(result)
         yield result
 
     return YieldInstancesWithAModifiedState()

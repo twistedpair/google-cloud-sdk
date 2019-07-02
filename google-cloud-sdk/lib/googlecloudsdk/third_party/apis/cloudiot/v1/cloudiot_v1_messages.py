@@ -323,55 +323,6 @@ class CloudiotProjectsLocationsRegistriesGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class CloudiotProjectsLocationsRegistriesGroupsBindDeviceToGatewayRequest(_messages.Message):
-  r"""A CloudiotProjectsLocationsRegistriesGroupsBindDeviceToGatewayRequest
-  object.
-
-  Fields:
-    bindDeviceToGatewayRequest: A BindDeviceToGatewayRequest resource to be
-      passed as the request body.
-    parent: The name of the registry. For example, `projects/example-
-      project/locations/us-central1/registries/my-registry`.
-  """
-
-  bindDeviceToGatewayRequest = _messages.MessageField('BindDeviceToGatewayRequest', 1)
-  parent = _messages.StringField(2, required=True)
-
-
-class CloudiotProjectsLocationsRegistriesGroupsDevicesConfigVersionsListRequest(_messages.Message):
-  r"""A
-  CloudiotProjectsLocationsRegistriesGroupsDevicesConfigVersionsListRequest
-  object.
-
-  Fields:
-    name: The name of the device. For example, `projects/p0/locations/us-
-      central1/registries/registry0/devices/device0` or `projects/p0/locations
-      /us-central1/registries/registry0/devices/{num_id}`.
-    numVersions: The number of versions to list. Versions are listed in
-      decreasing order of the version number. The maximum number of versions
-      retained is 10. If this value is zero, it will return all the versions
-      available.
-  """
-
-  name = _messages.StringField(1, required=True)
-  numVersions = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-
-
-class CloudiotProjectsLocationsRegistriesGroupsDevicesGetRequest(_messages.Message):
-  r"""A CloudiotProjectsLocationsRegistriesGroupsDevicesGetRequest object.
-
-  Fields:
-    fieldMask: The fields of the `Device` resource to be returned in the
-      response. If the field mask is unset or empty, all fields are returned.
-    name: The name of the device. For example, `projects/p0/locations/us-
-      central1/registries/registry0/devices/device0` or `projects/p0/locations
-      /us-central1/registries/registry0/devices/{num_id}`.
-  """
-
-  fieldMask = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-
-
 class CloudiotProjectsLocationsRegistriesGroupsDevicesListRequest(_messages.Message):
   r"""A CloudiotProjectsLocationsRegistriesGroupsDevicesListRequest object.
 
@@ -439,77 +390,6 @@ class CloudiotProjectsLocationsRegistriesGroupsDevicesListRequest(_messages.Mess
   parent = _messages.StringField(9, required=True)
 
 
-class CloudiotProjectsLocationsRegistriesGroupsDevicesModifyCloudToDeviceConfigRequest(_messages.Message):
-  r"""A CloudiotProjectsLocationsRegistriesGroupsDevicesModifyCloudToDeviceCon
-  figRequest object.
-
-  Fields:
-    modifyCloudToDeviceConfigRequest: A ModifyCloudToDeviceConfigRequest
-      resource to be passed as the request body.
-    name: The name of the device. For example, `projects/p0/locations/us-
-      central1/registries/registry0/devices/device0` or `projects/p0/locations
-      /us-central1/registries/registry0/devices/{num_id}`.
-  """
-
-  modifyCloudToDeviceConfigRequest = _messages.MessageField('ModifyCloudToDeviceConfigRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class CloudiotProjectsLocationsRegistriesGroupsDevicesPatchRequest(_messages.Message):
-  r"""A CloudiotProjectsLocationsRegistriesGroupsDevicesPatchRequest object.
-
-  Fields:
-    device: A Device resource to be passed as the request body.
-    name: The resource path name. For example, `projects/p1/locations/us-
-      central1/registries/registry0/devices/dev0` or `projects/p1/locations
-      /us-central1/registries/registry0/devices/{num_id}`. When `name` is
-      populated as a response from the service, it always ends in the device
-      numeric ID.
-    updateMask: Only updates the `device` fields indicated by this mask. The
-      field mask must not be empty, and it must not contain fields that are
-      immutable or only set by the server. Mutable top-level fields:
-      `credentials`, `blocked`, and `metadata`
-  """
-
-  device = _messages.MessageField('Device', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-
-
-class CloudiotProjectsLocationsRegistriesGroupsDevicesSendCommandToDeviceRequest(_messages.Message):
-  r"""A
-  CloudiotProjectsLocationsRegistriesGroupsDevicesSendCommandToDeviceRequest
-  object.
-
-  Fields:
-    name: The name of the device. For example, `projects/p0/locations/us-
-      central1/registries/registry0/devices/device0` or `projects/p0/locations
-      /us-central1/registries/registry0/devices/{num_id}`.
-    sendCommandToDeviceRequest: A SendCommandToDeviceRequest resource to be
-      passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  sendCommandToDeviceRequest = _messages.MessageField('SendCommandToDeviceRequest', 2)
-
-
-class CloudiotProjectsLocationsRegistriesGroupsDevicesStatesListRequest(_messages.Message):
-  r"""A CloudiotProjectsLocationsRegistriesGroupsDevicesStatesListRequest
-  object.
-
-  Fields:
-    name: The name of the device. For example, `projects/p0/locations/us-
-      central1/registries/registry0/devices/device0` or `projects/p0/locations
-      /us-central1/registries/registry0/devices/{num_id}`.
-    numStates: The number of states to list. States are listed in descending
-      order of update time. The maximum number of states retained is 10. If
-      this value is zero, it will return all the states available.
-  """
-
-  name = _messages.StringField(1, required=True)
-  numStates = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-
-
 class CloudiotProjectsLocationsRegistriesGroupsGetIamPolicyRequest(_messages.Message):
   r"""A CloudiotProjectsLocationsRegistriesGroupsGetIamPolicyRequest object.
 
@@ -554,22 +434,6 @@ class CloudiotProjectsLocationsRegistriesGroupsTestIamPermissionsRequest(_messag
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class CloudiotProjectsLocationsRegistriesGroupsUnbindDeviceFromGatewayRequest(_messages.Message):
-  r"""A
-  CloudiotProjectsLocationsRegistriesGroupsUnbindDeviceFromGatewayRequest
-  object.
-
-  Fields:
-    parent: The name of the registry. For example, `projects/example-
-      project/locations/us-central1/registries/my-registry`.
-    unbindDeviceFromGatewayRequest: A UnbindDeviceFromGatewayRequest resource
-      to be passed as the request body.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  unbindDeviceFromGatewayRequest = _messages.MessageField('UnbindDeviceFromGatewayRequest', 2)
 
 
 class CloudiotProjectsLocationsRegistriesListRequest(_messages.Message):
@@ -1429,37 +1293,10 @@ class StateNotificationConfig(_messages.Message):
 class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
-  used by [gRPC](https://github.com/grpc). The error model is designed to be:
-  - Simple to use and understand for most users - Flexible enough to meet
-  unexpected needs  # Overview  The `Status` message contains three pieces of
-  data: error code, error message, and error details. The error code should be
-  an enum value of google.rpc.Code, but it may accept additional error codes
-  if needed.  The error message should be a developer-facing English message
-  that helps developers *understand* and *resolve* the error. If a localized
-  user-facing error message is needed, put the localized message in the error
-  details or localize it in the client. The optional error details may contain
-  arbitrary information about the error. There is a predefined set of error
-  detail types in the package `google.rpc` that can be used for common error
-  conditions.  # Language mapping  The `Status` message is the logical
-  representation of the error model, but it is not necessarily the actual wire
-  format. When the `Status` message is exposed in different client libraries
-  and different wire protocols, it can be mapped differently. For example, it
-  will likely be mapped to some exceptions in Java, but more likely mapped to
-  some error codes in C.  # Other uses  The error model and the `Status`
-  message can be used in a variety of environments, either with or without
-  APIs, to provide a consistent developer experience across different
-  environments.  Example uses of this error model include:  - Partial errors.
-  If a service needs to return partial errors to the client,     it may embed
-  the `Status` in the normal response to indicate the partial     errors.  -
-  Workflow errors. A typical workflow has multiple steps. Each step may
-  have a `Status` message for error reporting.  - Batch operations. If a
-  client uses batch request and batch response, the     `Status` message
-  should be used directly inside batch response, one for     each error sub-
-  response.  - Asynchronous operations. If an API call embeds asynchronous
-  operation     results in its response, the status of those operations should
-  be     represented directly using the `Status` message.  - Logging. If some
-  API errors are stored in logs, the message `Status` could     be used
-  directly after any stripping needed for security/privacy reasons.
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details.  You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
 
   Messages:
     DetailsValueListEntry: A DetailsValueListEntry object.

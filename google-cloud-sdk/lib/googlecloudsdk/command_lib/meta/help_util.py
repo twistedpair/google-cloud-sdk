@@ -32,7 +32,7 @@ import six
 
 
 # Help documents must not contain any of these invalid brand abbreviations.
-INVALID_BRAND_ABBREVIATIONS = ['GAE', 'GCE', 'GCP', 'GCS', 'GKE']
+INVALID_BRAND_ABBREVIATIONS = ['GAE', 'GCE', 'GCP', 'GCS']
 # Max number of test changes to display.
 TEST_CHANGES_DISPLAY_MAX = 32
 

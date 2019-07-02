@@ -701,7 +701,7 @@ def _MetadataHasOsloginEnable(metadata):
 
 
 def CheckForOsloginAndGetUser(instance, project, requested_user, public_key,
-                              release_track):
+                              expiration_time, release_track):
   """Check instance/project metadata for oslogin and return updated username.
 
   Check to see if OS Login is enabled in metadata and if it is, return
@@ -713,6 +713,10 @@ def CheckForOsloginAndGetUser(instance, project, requested_user, public_key,
     project: project, The object representing the current project.
     requested_user: str, The default or requested username to connect as.
     public_key: str, The public key of the user connecting.
+    expiration_time: int, Microseconds after epoch when the ssh key should
+      expire. If None, an existing key will not be modified and a new key will
+      not be set to expire.  If not None, an existing key may be modified
+      with the new expiry.
     release_track: release_track, The object representing the release track.
 
   Returns:
@@ -740,14 +744,20 @@ def CheckForOsloginAndGetUser(instance, project, requested_user, public_key,
     return requested_user, use_oslogin
   user_email = properties.VALUES.core.account.Get()
 
-  # Check to see if public key is already in profile, and import if not.
+  # Check to see if public key is already in profile, import if not, and update
+  # the expiration if it is.
   login_profile = oslogin.GetLoginProfile(user_email, project.name)
   keys = oslogin_utils.GetKeyDictionaryFromProfile(
       user_email, oslogin, profile=login_profile)
   fingerprint = oslogin_utils.FindKeyInKeyList(public_key, keys)
   if not fingerprint:
-    import_response = oslogin.ImportSshPublicKey(user_email, public_key)
+    import_response = oslogin.ImportSshPublicKey(user_email, public_key,
+                                                 expiration_time)
     login_profile = import_response.loginProfile
+  elif expiration_time:
+    oslogin.UpdateSshPublicKey(user_email, fingerprint, keys[fingerprint],
+                               'expirationTimeUsec',
+                               expiration_time=expiration_time)
   use_oslogin = True
 
   # Get the username for the oslogin user. If the username is the same as the

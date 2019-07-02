@@ -641,6 +641,31 @@
                       ],
                       "description": "Lists recommendations for a Cloud project and requires the\nrecommendation.*.list IAM permission."
                     },
+                    "get": {
+                      "id": "recommender.projects.locations.recommenders.recommendations.get",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Name of the recommendation.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudRecommenderV1alpha1Recommendation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the requested recommendation and requires the recommendation.*.get\nIAM permission."
+                    },
                     "markClaimed": {
                       "id": "recommender.projects.locations.recommenders.recommendations.markClaimed",
                       "path": "v1alpha1/{+name}:markClaimed",

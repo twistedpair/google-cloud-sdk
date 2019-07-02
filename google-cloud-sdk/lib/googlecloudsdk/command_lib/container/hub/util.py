@@ -19,12 +19,14 @@ from __future__ import unicode_literals
 
 import base64
 import os
+import re
 import subprocess
 import tempfile
 import textwrap
 
 from containerregistry.client import docker_name
 from containerregistry.client.v2_2 import docker_image
+from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.container import kubeconfig as kconfig
 from googlecloudsdk.api_lib.container import util as c_util
 from googlecloudsdk.api_lib.container.images import util as i_util
@@ -165,6 +167,57 @@ data:
   .dockerconfigjson: {image_pull_secret}
 type: kubernetes.io/dockerconfigjson"""
 
+# The CustomResourceDefinition for the Membership Resource. It is created on an
+# as needed basis when registering a cluster to the hub.
+MEMBERSHIP_CRD_MANIFEST = """\
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: memberships.hub.gke.io
+spec:
+  group: hub.gke.io
+  scope: Cluster
+  names:
+    plural: memberships
+    singular: membership
+    kind: Membership
+  versions:
+  - name: v1beta1
+    served: true
+    storage: true
+  validation:
+    openAPIV3Schema:
+      required:
+      - spec
+      properties:
+        metadata:
+          type: object
+          properties:
+            name:
+              type: string
+              pattern: '^(membership|test-[a-f0-9\\-]+)$'
+        spec:
+          type: object
+          properties:
+            owner:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Membership owner ID. Should be immutable."""
+
+# The Membership Resource that enforces cluster exclusivity. It specifies the
+# hub project that the cluster is registered to. During registration, it is used
+# to ensure a user does not register a cluster to multiple hub projects.
+MEMBERSHIP_CR_TEMPLATE = """\
+kind: Membership
+apiVersion: hub.gke.io/v1beta1
+metadata:
+  name: membership
+spec:
+  owner:
+    id: projects/{project_id}"""
+
 AGENT_INSTALL_INITIAL_WAIT_MS = 1000 * 2
 AGENT_INSTALL_TIMEOUT_MS = 1000 * 45
 AGENT_INSTALL_MAX_POLL_INTERVAL_MS = 1000 * 3
@@ -204,6 +257,15 @@ def AddCommonArgs(parser):
           to $HOME/.kube/config.
         """),
   )
+
+
+def UserAccessibleProjectIDSet():
+  """Retrieve the project IDs of projects the user can access.
+
+  Returns:
+    set of project IDs.
+  """
+  return set(p.projectId for p in projects_api.List())
 
 
 def _MembershipClient():
@@ -260,6 +322,57 @@ def GetMembership(name):
           name=name))
 
 
+def ProjectForClusterUUID(uuid, projects):
+  """Retrieves the project that the cluster UUID has a Membership with.
+
+  Args:
+    uuid: the UUID of the cluster.
+    projects: sequence of project IDs to consider.
+
+  Returns:
+    a project ID.
+
+  Raises:
+    apitools.base.py.HttpError: if any request returns an HTTP error
+  """
+
+  client = _MembershipClient()
+  for project in projects:
+    if project:
+      parent = 'projects/{}/locations/global'.format(project)
+      membership_response = client.projects_locations_global_memberships.List(
+          client.MESSAGES_MODULE
+          .GkehubProjectsLocationsGlobalMembershipsListRequest(parent=parent))
+      for membership in membership_response.resources:
+        membership_uuid = _ClusterUUIDForMembershipName(membership.name)
+        if membership_uuid == uuid:
+          return project
+  return None
+
+
+def _ClusterUUIDForMembershipName(membership_name):
+  """Extracts the cluster UUID from the Membership resource name.
+
+  Args:
+    membership_name: the full resource name of a membership, e.g.,
+      projects/foo/locations/global/memberships/name.
+
+  Returns:
+    the name in the membership resource, a cluster UUID.
+
+  Raises:
+    exceptions.Error: if the membership was malformed.
+  """
+
+  match_membership = 'projects/.+/locations/global/memberships/(.+)'
+  matches = re.compile(match_membership).findall(membership_name)
+  if len(matches) != 1:
+    # This should never happen.
+    raise exceptions.Error('unable to parse membership {}'
+                           .format(membership_name))
+  return matches[0]
+
+
 def DeleteMembership(name):
   """Deletes a membership from the GKE Hub.
 
@@ -283,11 +396,11 @@ def DeleteMembership(name):
       'Waiting for membership to be deleted')
 
 
-def GetClusterUUID(args):
+def GetClusterUUID(kube_client):
   """Gets the UUID of the kube-system namespace.
 
   Args:
-    args: command line arguments
+    kube_client: A KubernetesClient.
 
   Returns:
     the namespace UID
@@ -297,7 +410,7 @@ def GetClusterUUID(args):
     calliope_exceptions.MinimumArgumentException: if a kubeconfig file cannot be
       deduced from the command line flags or environment
   """
-  return KubernetesClient(args).GetNamespaceUID('kube-system')
+  return kube_client.GetNamespaceUID('kube-system')
 
 
 def ImageDigestForContainerImage(name, tag):
@@ -702,12 +815,8 @@ class KubernetesClient(object):
     """
     self.kubectl_timeout = '20s'
 
-    # Warn if kubectl is not installed.
-    if not c_util.CheckKubectlInstalled():
-      raise exceptions.Error('kubectl not installed.')
-
-    self.kubeconfig, self.context = self._GetKubeconfigAndContext(
-        flags.kubeconfig_file, flags.context)
+    processor = KubeconfigProcessor()
+    self.kubeconfig, self.context = processor.GetKubeconfigAndContext(flags)
 
   def GetNamespaceUID(self, namespace):
     cmd = ['get', 'namespace', namespace, '-o', 'jsonpath=\'{.metadata.uid}\'']
@@ -725,6 +834,41 @@ class KubernetesClient(object):
       raise exceptions.Error(
           'Failed to list namespaces in the cluster: {}'.format(err))
     return out.strip().split(' ') if out else []
+
+  def DeleteMembership(self):
+    _, err = self._RunKubectl(['delete', 'membership', 'membership'])
+    return err
+
+  def _MembershipCRDExists(self):
+    cmd = ['get', 'crds', 'memberships.hub.gke.io']
+    _, err = self._RunKubectl(cmd, None)
+    if err:
+      if 'NotFound' in err:
+        return False
+      raise exceptions.Error('Error retrieving Membership CRD: {}'.format(err))
+    return True
+
+  def GetMembershipOwnerID(self):
+    """Looks up the owner id field in the Membership resource."""
+    if not self._MembershipCRDExists():
+      return None
+
+    cmd = ['get', 'membership', 'membership', '-o', 'jsonpath={.spec.owner.id}']
+    out, err = self._RunKubectl(cmd, None)
+    if err:
+      if 'NotFound' in err:
+        return None
+      raise exceptions.Error('Error retrieving membership id: {}'.format(err))
+    return out
+
+  def ApplyMembership(self, membership_cr_manifest):
+    # We need to apply the CRD before the resource. `kubectl apply` does not
+    # handle ordering CR and CRD creations.
+    for manifest in [MEMBERSHIP_CRD_MANIFEST, membership_cr_manifest]:
+      err = self.Apply(manifest)
+      if err:
+        raise exceptions.Error(
+            'Failed to apply Membership manifest to cluster: {}'.format(err))
 
   def NamespaceExists(self, namespace):
     _, err = self._RunKubectl(['get', 'namespace', namespace])
@@ -770,41 +914,6 @@ class KubernetesClient(object):
     """
     return self._RunKubectl(['logs', '-n', namespace, log_target])
 
-  def _GetKubeconfigAndContext(self, kubeconfig_file, context):
-    """Gets the kubeconfig and cluster context from arguments and defaults.
-
-    Args:
-      kubeconfig_file: The kubecontext file to use
-      context: The value of the context flag
-
-    Returns:
-      the kubeconfig filepath and context name
-
-    Raises:
-      calliope_exceptions.MinimumArgumentException: if a kubeconfig file cannot
-        be deduced from the command line flags or environment
-      exceptions.Error: if the context does not exist in the deduced kubeconfig
-        file
-    """
-    kubeconfig_file = (
-        kubeconfig_file or os.getenv('KUBECONFIG') or '~/.kube/config')
-    kubeconfig = files.ExpandHomeDir(kubeconfig_file)
-    if not kubeconfig:
-      raise calliope_exceptions.MinimumArgumentException(
-          ['--kubeconfig-file'],
-          'Please specify --kubeconfig, set the $KUBECONFIG environment '
-          'variable, or ensure that $HOME/.kube/config exists')
-    kc = kconfig.Kubeconfig.LoadFromFile(kubeconfig)
-
-    context_name = context
-
-    if context_name not in kc.contexts:
-      raise exceptions.Error(
-          'context [{}] does not exist in kubeconfig [{}]'.format(
-              context_name, kubeconfig))
-
-    return kubeconfig, context_name
-
   def _RunKubectl(self, args, stdin=None):
     """Runs a kubectl command with the cluster referenced by this client.
 
@@ -834,6 +943,55 @@ class KubernetesClient(object):
       err = 'kubectl exited with return code {}'.format(p.returncode)
 
     return out if p.returncode == 0 else None, err if p.returncode != 0 else None
+
+
+class KubeconfigProcessor(object):
+  """A helper class that processes kubeconfig and context arguments."""
+
+  def __init__(self):
+    """Constructor for KubeconfigProcessor.
+
+    Raises:
+      exceptions.Error: if kubectl is not installed
+    """
+    # Warn if kubectl is not installed.
+    if not c_util.CheckKubectlInstalled():
+      raise exceptions.Error('kubectl not installed.')
+
+  def GetKubeconfigAndContext(self, flags):
+    """Gets the kubeconfig and cluster context from arguments and defaults.
+
+    Args:
+      flags: the flags passed to the enclosing command. It must include
+        kubeconfig_file and context.
+
+    Returns:
+      the kubeconfig filepath and context name
+
+    Raises:
+      calliope_exceptions.MinimumArgumentException: if a kubeconfig file cannot
+        be deduced from the command line flags or environment
+      exceptions.Error: if the context does not exist in the deduced kubeconfig
+        file
+    """
+    kubeconfig_file = (
+        flags.kubeconfig_file or os.getenv('KUBECONFIG') or '~/.kube/config')
+    kubeconfig = files.ExpandHomeDir(kubeconfig_file)
+    if not kubeconfig:
+      raise calliope_exceptions.MinimumArgumentException(
+          ['--kubeconfig-file'],
+          'Please specify --kubeconfig, set the $KUBECONFIG environment '
+          'variable, or ensure that $HOME/.kube/config exists')
+    kc = kconfig.Kubeconfig.LoadFromFile(kubeconfig)
+
+    context_name = flags.context
+
+    if context_name not in kc.contexts:
+      raise exceptions.Error(
+          'context [{}] does not exist in kubeconfig [{}]'.format(
+              context_name, kubeconfig))
+
+    return kubeconfig, context_name
 
 
 def DeleteConnectNamespace(args):
@@ -895,3 +1053,86 @@ def _GKEConnectNamespace(kube_client, project_id):
     return namespaces[0]
   raise exceptions.Error(
       'Multiple GKE Connect namespaces in cluster: {}'.format(namespaces))
+
+
+def GetMembershipCROwnerID(kube_client):
+  """Returns the project id of the hub the cluster is a member of.
+
+  The Membership Custom Resource stores the project id of the hub the cluster
+  is registered to in the `.spec.owner.id` field.
+
+  Args:
+    kube_client: A KubernetesClient.
+
+  Returns:
+    a string, the project id
+    None, if the Membership CRD or CR do not exist on the cluster.
+
+  Raises:
+    exceptions.Error: if the Membership resource does not have a valid owner id
+  """
+
+  owner_id = kube_client.GetMembershipOwnerID()
+  if owner_id is None:
+    return None
+  id_prefix = 'projects/'
+  if not owner_id.startswith(id_prefix):
+    raise exceptions.Error(
+        'Membership .spec.owner.id is invalid: {}'.format(owner_id))
+  return owner_id[len(id_prefix):]
+
+
+def ApplyMembershipResources(kube_client, project):
+  """Creates or updates the Membership CRD and CR with the hub project id.
+
+  Args:
+    kube_client: A KubernetesClient.
+    project: The project id of the hub the cluster is a member of.
+
+  Raises:
+    exceptions.Error: if the Membership CR or CRD couldn't be applied.
+  """
+
+  membership_cr_manifest = MEMBERSHIP_CR_TEMPLATE.format(project_id=project)
+  kube_client.ApplyMembership(membership_cr_manifest)
+
+
+def DeleteMembershipResources(kube_client):
+  """Deletes the Membership CRD.
+
+  Due to garbage collection all Membership resources will also be deleted.
+
+  Args:
+    kube_client: A KubernetesClient.
+  """
+
+  err = kube_client.DeleteMembership()
+  if err:
+    if 'NotFound' in err:
+      # If the Membership resources were not found, then do not log an error.
+      log.status.Print(
+          'Membership for context [{}]) did not exist, so it did not '
+          'require deletion.'.format(kube_client.context))
+      return
+    log.warning(
+        'Failed to delete membership (for context [{}]): {}. '
+        'Please delete the membership resource, manually in your cluster:\n\n'
+        '  kubectl delete membership membership'.format(kube_client.context,
+                                                        err))
+
+
+def ReleaseTrackCommandPrefix(release_track):
+  """Returns a prefix to add to a gcloud command.
+
+  This is meant for formatting an example string, such as:
+    gcloud {}container hub register-cluster
+
+  Args:
+    release_track: A ReleaseTrack
+
+  Returns:
+   a prefix to add to a gcloud based on the release track
+  """
+
+  prefix = release_track.prefix
+  return prefix + ' ' if prefix else ''

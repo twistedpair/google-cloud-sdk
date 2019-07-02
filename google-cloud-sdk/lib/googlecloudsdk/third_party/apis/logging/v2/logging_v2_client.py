@@ -627,60 +627,6 @@ class LoggingV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def GetCmekSettings(self, request, global_params=None):
-      r"""Returns the Stackdriver Logging Log Router CMEK settings for the given parent resource.Note: CMEK for the Log Router can currently only be configured at the organization-level and settings are inherited by all projects in the organization.See CMEK for the Stackdriver Logging Log Router for more information.
-
-      Args:
-        request: (LoggingBillingAccountsGetCmekSettingsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (CmekSettings) The response message.
-      """
-      config = self.GetMethodConfig('GetCmekSettings')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetCmekSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/cmekSettings',
-        http_method=u'GET',
-        method_id=u'logging.billingAccounts.getCmekSettings',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v2/{+name}',
-        request_field='',
-        request_type_name=u'LoggingBillingAccountsGetCmekSettingsRequest',
-        response_type_name=u'CmekSettings',
-        supports_download=False,
-    )
-
-    def UpdateCmekSettings(self, request, global_params=None):
-      r"""Updates the Stackdriver Logging Log Router CMEK settings for the given parent resource.Note: CMEK for the Log Router can currently only be configured at the organization-level and settings are inherited by all projects in the organization.UpdateCmekSettings will fail if 1) the kms_key_name is invalid, or 2) the associated service account does not have the role roles/cloudkms.cryptoKeyEncrypterDecrypter assigned for the key, or 3) access to the key is disabled.See CMEK for the Stackdriver Logging Log Router for more information.
-
-      Args:
-        request: (LoggingBillingAccountsUpdateCmekSettingsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (CmekSettings) The response message.
-      """
-      config = self.GetMethodConfig('UpdateCmekSettings')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    UpdateCmekSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/billingAccounts/{billingAccountsId}/cmekSettings',
-        http_method=u'PATCH',
-        method_id=u'logging.billingAccounts.updateCmekSettings',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'cmekSettings',
-        request_type_name=u'LoggingBillingAccountsUpdateCmekSettingsRequest',
-        response_type_name=u'CmekSettings',
-        supports_download=False,
-    )
-
   class BucketsService(base_api.BaseApiService):
     """Service class for the buckets resource."""
 
@@ -1525,60 +1471,6 @@ class LoggingV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def GetCmekSettings(self, request, global_params=None):
-      r"""Returns the Stackdriver Logging Log Router CMEK settings for the given parent resource.Note: CMEK for the Log Router can currently only be configured at the organization-level and settings are inherited by all projects in the organization.See CMEK for the Stackdriver Logging Log Router for more information.
-
-      Args:
-        request: (LoggingFoldersGetCmekSettingsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (CmekSettings) The response message.
-      """
-      config = self.GetMethodConfig('GetCmekSettings')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetCmekSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/cmekSettings',
-        http_method=u'GET',
-        method_id=u'logging.folders.getCmekSettings',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v2/{+name}',
-        request_field='',
-        request_type_name=u'LoggingFoldersGetCmekSettingsRequest',
-        response_type_name=u'CmekSettings',
-        supports_download=False,
-    )
-
-    def UpdateCmekSettings(self, request, global_params=None):
-      r"""Updates the Stackdriver Logging Log Router CMEK settings for the given parent resource.Note: CMEK for the Log Router can currently only be configured at the organization-level and settings are inherited by all projects in the organization.UpdateCmekSettings will fail if 1) the kms_key_name is invalid, or 2) the associated service account does not have the role roles/cloudkms.cryptoKeyEncrypterDecrypter assigned for the key, or 3) access to the key is disabled.See CMEK for the Stackdriver Logging Log Router for more information.
-
-      Args:
-        request: (LoggingFoldersUpdateCmekSettingsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (CmekSettings) The response message.
-      """
-      config = self.GetMethodConfig('UpdateCmekSettings')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    UpdateCmekSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/folders/{foldersId}/cmekSettings',
-        http_method=u'PATCH',
-        method_id=u'logging.folders.updateCmekSettings',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'cmekSettings',
-        request_type_name=u'LoggingFoldersUpdateCmekSettingsRequest',
-        response_type_name=u'CmekSettings',
-        supports_download=False,
-    )
-
   class LocationsBucketsService(base_api.BaseApiService):
     """Service class for the locations_buckets resource."""
 
@@ -2300,7 +2192,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def GetCmekSettings(self, request, global_params=None):
-      r"""Returns the Stackdriver Logging Log Router CMEK settings for the given parent resource.Note: CMEK for the Log Router can currently only be configured at the organization-level and settings are inherited by all projects in the organization.See CMEK for the Stackdriver Logging Log Router for more information.
+      r"""Gets the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.See Enabling CMEK for Logs Router for more information.
 
       Args:
         request: (LoggingOrganizationsGetCmekSettingsRequest) input message
@@ -2319,7 +2211,7 @@ class LoggingV2(base_api.BaseApiClient):
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path=u'v2/{+name}/cmekSettings',
         request_field='',
         request_type_name=u'LoggingOrganizationsGetCmekSettingsRequest',
         response_type_name=u'CmekSettings',
@@ -2327,7 +2219,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def UpdateCmekSettings(self, request, global_params=None):
-      r"""Updates the Stackdriver Logging Log Router CMEK settings for the given parent resource.Note: CMEK for the Log Router can currently only be configured at the organization-level and settings are inherited by all projects in the organization.UpdateCmekSettings will fail if 1) the kms_key_name is invalid, or 2) the associated service account does not have the role roles/cloudkms.cryptoKeyEncrypterDecrypter assigned for the key, or 3) access to the key is disabled.See CMEK for the Stackdriver Logging Log Router for more information.
+      r"""Updates the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.UpdateCmekSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled.See Enabling CMEK for Logs Router for more information.
 
       Args:
         request: (LoggingOrganizationsUpdateCmekSettingsRequest) input message
@@ -2346,7 +2238,7 @@ class LoggingV2(base_api.BaseApiClient):
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
+        relative_path=u'v2/{+name}/cmekSettings',
         request_field=u'cmekSettings',
         request_type_name=u'LoggingOrganizationsUpdateCmekSettingsRequest',
         response_type_name=u'CmekSettings',
@@ -3044,60 +2936,6 @@ class LoggingV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def GetCmekSettings(self, request, global_params=None):
-      r"""Returns the Stackdriver Logging Log Router CMEK settings for the given parent resource.Note: CMEK for the Log Router can currently only be configured at the organization-level and settings are inherited by all projects in the organization.See CMEK for the Stackdriver Logging Log Router for more information.
-
-      Args:
-        request: (LoggingProjectsGetCmekSettingsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (CmekSettings) The response message.
-      """
-      config = self.GetMethodConfig('GetCmekSettings')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetCmekSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/cmekSettings',
-        http_method=u'GET',
-        method_id=u'logging.projects.getCmekSettings',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v2/{+name}',
-        request_field='',
-        request_type_name=u'LoggingProjectsGetCmekSettingsRequest',
-        response_type_name=u'CmekSettings',
-        supports_download=False,
-    )
-
-    def UpdateCmekSettings(self, request, global_params=None):
-      r"""Updates the Stackdriver Logging Log Router CMEK settings for the given parent resource.Note: CMEK for the Log Router can currently only be configured at the organization-level and settings are inherited by all projects in the organization.UpdateCmekSettings will fail if 1) the kms_key_name is invalid, or 2) the associated service account does not have the role roles/cloudkms.cryptoKeyEncrypterDecrypter assigned for the key, or 3) access to the key is disabled.See CMEK for the Stackdriver Logging Log Router for more information.
-
-      Args:
-        request: (LoggingProjectsUpdateCmekSettingsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (CmekSettings) The response message.
-      """
-      config = self.GetMethodConfig('UpdateCmekSettings')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    UpdateCmekSettings.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/cmekSettings',
-        http_method=u'PATCH',
-        method_id=u'logging.projects.updateCmekSettings',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'cmekSettings',
-        request_type_name=u'LoggingProjectsUpdateCmekSettingsRequest',
-        response_type_name=u'CmekSettings',
-        supports_download=False,
-    )
-
   class SinksService(base_api.BaseApiService):
     """Service class for the sinks resource."""
 
@@ -3254,7 +3092,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def GetCmekSettings(self, request, global_params=None):
-      r"""Returns the Stackdriver Logging Log Router CMEK settings for the given parent resource.Note: CMEK for the Log Router can currently only be configured at the organization-level and settings are inherited by all projects in the organization.See CMEK for the Stackdriver Logging Log Router for more information.
+      r"""Gets the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.See Enabling CMEK for Logs Router for more information.
 
       Args:
         request: (LoggingGetCmekSettingsRequest) input message
@@ -3273,7 +3111,7 @@ class LoggingV2(base_api.BaseApiClient):
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
-        relative_path=u'v2/{+name}',
+        relative_path=u'v2/{+name}/cmekSettings',
         request_field='',
         request_type_name=u'LoggingGetCmekSettingsRequest',
         response_type_name=u'CmekSettings',
@@ -3281,7 +3119,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def UpdateCmekSettings(self, request, global_params=None):
-      r"""Updates the Stackdriver Logging Log Router CMEK settings for the given parent resource.Note: CMEK for the Log Router can currently only be configured at the organization-level and settings are inherited by all projects in the organization.UpdateCmekSettings will fail if 1) the kms_key_name is invalid, or 2) the associated service account does not have the role roles/cloudkms.cryptoKeyEncrypterDecrypter assigned for the key, or 3) access to the key is disabled.See CMEK for the Stackdriver Logging Log Router for more information.
+      r"""Updates the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.UpdateCmekSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled.See Enabling CMEK for Logs Router for more information.
 
       Args:
         request: (LoggingUpdateCmekSettingsRequest) input message
@@ -3300,7 +3138,7 @@ class LoggingV2(base_api.BaseApiClient):
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
+        relative_path=u'v2/{+name}/cmekSettings',
         request_field=u'cmekSettings',
         request_type_name=u'LoggingUpdateCmekSettingsRequest',
         response_type_name=u'CmekSettings',

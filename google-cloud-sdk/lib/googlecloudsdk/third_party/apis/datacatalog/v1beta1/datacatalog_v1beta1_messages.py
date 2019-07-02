@@ -484,7 +484,7 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
   also be used to attach flexible metadata, such as a Tag.
 
   Enums:
-    TypeValueValuesEnum: Required. Type of entry.
+    TypeValueValuesEnum: The type of the entry.
 
   Fields:
     bigqueryDateShardedSpec: Specification for a group of BigQuery tables with
@@ -516,11 +516,11 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
       attached to it.
     sourceSystemTimestamps: Output only. Timestamps about the underlying
       Google Cloud Platform resource -- not about this Data Catalog Entry.
-    type: Required. Type of entry.
+    type: The type of the entry.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. Type of entry.
+    r"""The type of the entry.
 
     Values:
       ENTRY_TYPE_UNSPECIFIED: Default unknown type

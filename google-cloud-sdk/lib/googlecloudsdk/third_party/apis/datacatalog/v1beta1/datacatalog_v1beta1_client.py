@@ -145,6 +145,12 @@ Data Catalog Entry.
 
     def Create(self, request, global_params=None):
       r"""Creates a tag on an Entry.
+Note: The project identified by the `parent` parameter for the
+[tag](/data-catalog/docs/reference/rest/v1beta1/projects.locations.entryGroups.entries.tags/create#path-parameters)
+and the
+[tag
+template](/data-catalog/docs/reference/rest/v1beta1/projects.locations.tagTemplates/create#path-parameters)
+used to create the tag must be from the same organization.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsEntriesTagsCreateRequest) input message
@@ -290,6 +296,9 @@ Data Catalog Entry.
 
     def Patch(self, request, global_params=None):
       r"""Updates an existing entry.
+The user should enable the Data Catalog API in the project identified by
+the `entry.name` parameter (see [Data Catalog Resource Project]
+(/data-catalog/docs/concepts/resource-project) for more information).
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsEntriesPatchRequest) input message
@@ -336,7 +345,11 @@ Data Catalog Entry.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a field in a tag template.
+      r"""Creates a field in a tag template. The user should enable the Data Catalog.
+API in the project identified by the `parent` parameter (see
+[Data Catalog Resource
+Project](/data-catalog/docs/concepts/resource-project) for more
+information).
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesFieldsCreateRequest) input message
@@ -364,6 +377,9 @@ Data Catalog Entry.
 
     def Delete(self, request, global_params=None):
       r"""Deletes a field in a tag template and all uses of that field.
+The user should enable the Data Catalog API in the project identified by
+the `name` parameter (see [Data Catalog Resource Project]
+(/data-catalog/docs/concepts/resource-project) for more information).
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesFieldsDeleteRequest) input message
@@ -391,7 +407,9 @@ Data Catalog Entry.
 
     def Patch(self, request, global_params=None):
       r"""Updates a field in a tag template. This method cannot be used to update the.
-field type.
+field type. The user should enable the Data Catalog API in the project
+identified by the `name` parameter (see [Data Catalog Resource Project]
+(/data-catalog/docs/concepts/resource-project) for more information).
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesFieldsPatchRequest) input message
@@ -418,7 +436,10 @@ field type.
     )
 
     def Rename(self, request, global_params=None):
-      r"""Renames a field in a tag template.
+      r"""Renames a field in a tag template. The user should enable the Data Catalog.
+API in the project identified by the `name` parameter (see [Data Catalog
+Resource Project](/data-catalog/docs/concepts/resource-project) for more
+information).
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesFieldsRenameRequest) input message
@@ -455,7 +476,10 @@ field type.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a tag template.
+      r"""Creates a tag template. The user should enable the Data Catalog API in.
+the project identified by the `parent` parameter (see [Data Catalog
+Resource Project](/data-catalog/docs/concepts/resource-project) for more
+information).
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesCreateRequest) input message
@@ -483,6 +507,9 @@ field type.
 
     def Delete(self, request, global_params=None):
       r"""Deletes a tag template and all tags using the template.
+The user should enable the Data Catalog API in the project identified by
+the `name` parameter (see [Data Catalog Resource Project]
+(/data-catalog/docs/concepts/resource-project) for more information).
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesDeleteRequest) input message
@@ -577,6 +604,9 @@ Callers must have following Google IAM permission
       r"""Updates a tag template. This method cannot be used to update the fields of.
 a template. The tag template fields are represented as separate resources
 and should be updated using their own create/update/delete methods.
+The user should enable the Data Catalog API in the project identified by
+the `tag_template.name` parameter (see [Data Catalog Resource Project]
+(/data-catalog/docs/concepts/resource-project) for more information).
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesPatchRequest) input message

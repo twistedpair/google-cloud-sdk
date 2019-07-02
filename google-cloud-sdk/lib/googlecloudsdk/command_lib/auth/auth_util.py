@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2016 Google LLC. All Rights Reserved.
+# Copyright 2019 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import store as c_store
+from oauth2client import service_account
 
 
 ACCOUNT_TABLE_FORMAT = ("""\
@@ -48,3 +49,11 @@ def AllAccounts():
   active_account = properties.VALUES.core.account.Get()
   return [_AcctInfo(account, account == active_account)
           for account in c_store.AvailableAccounts()]
+
+
+def CheckAccountType(cred):
+  """check account type."""
+  if isinstance(cred, service_account.ServiceAccountCredentials):
+    return True
+  return False
+

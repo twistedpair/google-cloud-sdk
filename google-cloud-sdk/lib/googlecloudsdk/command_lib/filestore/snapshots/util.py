@@ -37,6 +37,15 @@ def FormatSnapshotCreateRequest(ref, args, req):
   return req
 
 
+def FormatSnapshotAccessRequest(ref, args, req):
+  """Python hook for yaml commands to supply snapshot access requests with the proper name."""
+  del ref
+  project = properties.VALUES.core.project.Get(required=True)
+  location = args.region or args.zone
+  req.name = SNAPSHOT_NAME_TEMPLATE.format(project, location, args.snapshot)
+  return req
+
+
 def AddInstanceNameToRequest(ref, args, req):
   """Python hook for yaml commands to process the source instance name."""
   del ref

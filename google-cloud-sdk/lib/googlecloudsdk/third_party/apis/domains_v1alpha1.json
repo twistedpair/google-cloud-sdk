@@ -459,7 +459,7 @@
     },
     "PostalAddress": {
       "id": "PostalAddress",
-      "description": "Represents a postal address, e.g. for postal delivery or payments addresses.\nGiven a postal address, a postal service can deliver items to a premise, P.O.\nBox or similar.\nIt is not intended to model geographical locations (roads, towns,\nmountains).\n\nIn typical usage an address would be created via user input or from importing\nexisting data, depending on the type of process.\n\nAdvice on address input \/ editing:\n - Use an i18n-ready address widget such as\n   https:\/\/github.com\/googlei18n\/libaddressinput)\n- Users should not be presented with UI elements for input or editing of\n  fields outside countries where that field is used.\n\nFor more guidance on how to use this schema, please see:\nhttps:\/\/support.google.com\/business\/answer\/6397478",
+      "description": "Represents a postal address, e.g. for postal delivery or payments addresses.\nGiven a postal address, a postal service can deliver items to a premise, P.O.\nBox or similar.\nIt is not intended to model geographical locations (roads, towns,\nmountains).\n\nIn typical usage an address would be created via user input or from importing\nexisting data, depending on the type of process.\n\nAdvice on address input \/ editing:\n - Use an i18n-ready address widget such as https:\/\/github.com\/google\/libaddressinput) - Users\n  should not be presented with UI elements for input or editing of fields\n  outside countries where that field is used.  For more guidance on how to use\n  this schema, please see: https:\/\/support.google.com\/business\/answer\/6397478",
       "type": "object",
       "properties": {
         "revision": {

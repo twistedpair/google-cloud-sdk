@@ -41,13 +41,13 @@ def AddTriggerArgs(parser):
 
   # Allow trigger config to be specified on the command line or STDIN.
   trigger_config.add_argument(
-      '--trigger_config',
+      '--trigger-config',
       help='Path to Build Trigger config file. See https://cloud.google.com/cloud-build/docs/api/reference/rest/v1/projects.triggers#BuildTrigger',
       metavar='PATH',
   )
 
   trigger_config.add_argument(
-      'inline_config',
+      'inline-config',
       # This argument is optional.
       nargs='?',
       metavar='JSON',
@@ -69,13 +69,13 @@ def AddBuildConfigArgs(flag_config):
   """
 
   flag_config.add_argument(
-      '--included_files',
+      '--included-files',
       help='Glob filter. Changes affecting at least one included file will trigger builds.',
       type=arg_parsers.ArgList(),
       metavar='GLOB',
   )
   flag_config.add_argument(
-      '--ignored_files',
+      '--ignored-files',
       help='Glob filter. Changes only affecting ignored files won\'t trigger builds.',
       type=arg_parsers.ArgList(),
       metavar='GLOB',
@@ -86,7 +86,7 @@ def AddBuildConfigArgs(flag_config):
   build_file_config = build_config.add_argument_group(
       help='Build file configuration flags')
   build_file_config.add_argument(
-      '--build_config',
+      '--build-config',
       metavar='PATH',
       help="""\
 Path to a YAML or JSON file containing the build configuration in the repository.
@@ -131,7 +131,7 @@ build using the specified file.
 The filename is relative to the Dockerfile directory.
 """)
   docker.add_argument(
-      '--dockerfile_dir',
+      '--dockerfile-dir',
       default='/',
       help="""\
 Location of the directory containing the Dockerfile in the repository.
@@ -139,7 +139,7 @@ Location of the directory containing the Dockerfile in the repository.
 The directory will also be used as the Docker build context.
 """)
   docker.add_argument(
-      '--dockerfile_image',
+      '--dockerfile-image',
       help="""\
 Docker image name to build.
 
@@ -151,7 +151,7 @@ Use a build configuration (cloudbuild.yaml) file for building multiple images in
 
 def AddBranchPattern(parser):
   parser.add_argument(
-      '--branch_pattern',
+      '--branch-pattern',
       metavar='REGEX',
       help="""\
 A regular expression specifying which git branches to match.
@@ -167,7 +167,7 @@ RE2 and described at https://github.com/google/re2/wiki/Syntax.
 
 def AddTagPattern(parser):
   parser.add_argument(
-      '--tag_pattern',
+      '--tag-pattern',
       metavar='REGEX',
       help="""\
 A regular expression specifying which git tags to match.

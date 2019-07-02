@@ -33,13 +33,40 @@ def MakeResourcePolicyArg():
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 
+def AddMaintenanceParentGroup(parser):
+  return parser.add_argument_group('Maintenance configuration.',
+                                   required=True,
+                                   mutex=True)
+
+
+def AddConcurrentControlGroupArgs(parent_group):
+  concurrent_group = parent_group.add_argument_group("""\
+  Concurrent Maintenance Controls Group. Defines a group config that, when
+  attached to an instance, recognizes that instance as a part of a group of
+  instances where only up the configured amount of instances in that group can
+  undergo simultaneous maintenance.
+  """)
+  concurrent_group.add_argument('--concurrency-limit-percent', type=int,
+                                help="""\
+  Defines the max percentage of instances in a concurrency group that go to
+  maintenance simultaneously. Value must be greater or equal to 1 and less or
+  equal to 100.
+  Usage examples:
+  `--concurrency-limit=1` sets to 1%.
+  `--concurrency-limit=55` sets to 55%.""")
+
+
 def AddCycleFrequencyArgs(parser, flag_suffix, start_time_help,
                           cadence_help, supports_hourly=False,
                           has_restricted_start_times=False,
-                          supports_weekly=False):
+                          supports_weekly=False, parent_group=None):
   """Add Cycle Frequency args for Resource Policies."""
-  freq_group = parser.add_argument_group(
-      'Cycle Frequency Group.', required=True, mutex=True)
+  if parent_group:
+    freq_group = parent_group.add_argument_group(
+        'Cycle Frequency Group.', mutex=True)
+  else:
+    freq_group = parser.add_argument_group(
+        'Cycle Frequency Group.', required=True, mutex=True)
   if has_restricted_start_times:
     start_time_help += """\
         Valid choices are 00:00, 04:00, 08:00,12:00,

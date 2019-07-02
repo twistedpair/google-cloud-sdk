@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.accesscontextmanager import util
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.accesscontextmanager import common
 from googlecloudsdk.command_lib.accesscontextmanager import levels
@@ -28,8 +29,76 @@ from googlecloudsdk.command_lib.util.args import repeated
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import resources
 
-
 REGISTRY = resources.REGISTRY
+
+
+def _AddServiceFilterRestriction(args, req, version, restriction_type):
+  """Add the particular service filter message based on specified args."""
+  service_restriction_config = None
+  allowed_services = None
+  enable_restriction = None
+  restriction_modified = False
+  service_perimeter_config = req.servicePerimeter.status
+  if not service_perimeter_config:
+    service_perimeter_config = (
+        util.GetMessages(version=version).ServicePerimeterConfig)
+
+  if args.IsSpecified(restriction_type + '_allowed_services'):
+    allowed_services = getattr(args, restriction_type + '_allowed_services')
+    restriction_modified = True
+
+  if args.IsSpecified('enable_' + restriction_type + '_service_restriction'):
+    enable_restriction = getattr(
+        args, 'enable_' + restriction_type + '_service_restriction')
+    restriction_modified = True
+
+  if restriction_modified:
+    service_restriction_config = getattr(
+        service_perimeter_config, restriction_type + 'ServiceRestriction')
+    if not service_restriction_config:
+      service_restriction_config = (
+          getattr(
+              util.GetMessages(version=version),
+              restriction_type.capitalize() + 'ServiceRestriction'))
+    service_restriction_config.allowedServices = allowed_services
+    service_restriction_config.enableRestriction = enable_restriction
+
+  setattr(service_perimeter_config, restriction_type + 'ServiceRestriction',
+          service_restriction_config)
+  req.servicePerimeter.status = service_perimeter_config
+
+  return req
+
+
+def AddIngressServiceRestrictionBeta(ref, args, req):
+  del ref  # Unused
+  return AddIngressServiceRestriction(args, req, 'v1beta')
+
+
+def AddIngressServiceRestriction(args, req, version=None):
+  """Hook to add the IngressServiceRestriction to request."""
+  return _AddServiceFilterRestriction(args, req, version, 'ingress')
+
+
+def AddVpcServiceRestrictionBeta(ref, args, req):
+  del ref  # Unused
+  return AddVpcServiceRestriction(args, req, 'v1beta')
+
+
+def AddVpcServiceRestriction(args, req, version=None):
+  """Hook to add the VpcServiceRestriction to request."""
+  return _AddServiceFilterRestriction(args, req, version, 'vpc')
+
+
+def AddBridgeServiceRestrictionBeta(ref, args, req):
+  """Hook to add the v1beta BridgeServiceRestriction to request."""
+  del ref  # Unused
+  return AddBridgeServiceRestriction(args, req, 'v1beta')
+
+
+def AddBridgeServiceRestriction(args, req, version=None):
+  """Hook to add the BridgeServiceRestriction to request."""
+  return _AddServiceFilterRestriction(args, req, version, 'bridge')
 
 
 def AddAccessLevelsGA(ref, args, req):
@@ -51,7 +120,8 @@ def AddAccessLevelsBase(ref, args, req, version=None):
     for access_level in args.access_levels:
       level_ref = resources.REGISTRY.Create(
           'accesscontextmanager.accessPolicies.accessLevels',
-          accessLevelsId=access_level, **ref.Parent().AsDict())
+          accessLevelsId=access_level,
+          **ref.Parent().AsDict())
       access_levels.append(level_ref.RelativeName())
     service_perimeter_config = req.servicePerimeter.status
     if not service_perimeter_config:
@@ -141,7 +211,7 @@ def GetTypeEnumMapper(version=None):
   )
 
 
-def AddPerimeterUpdateArgs(parser, version=None):
+def AddPerimeterUpdateArgs(parser, version=None, track=None):
   """Add args for perimeters update command."""
   args = [
       common.GetDescriptionArg('service perimeter'),
@@ -153,6 +223,10 @@ def AddPerimeterUpdateArgs(parser, version=None):
   _AddResources(parser)
   _AddRestrictedServices(parser)
   _AddLevelsUpdate(parser)
+  if track == 'ALPHA':
+    _AddIngressRestrictionArgs(parser)
+    _AddVpcRestrictionArgs(parser)
+    _AddBridgeRestrictionArgs(parser)
 
 
 def _AddResources(parser):
@@ -184,8 +258,117 @@ def _AddRestrictedServices(parser):
 
 def ParseRestrictedServices(args, perimeter_result):
   return repeated.ParsePrimitiveArgs(
-      args, 'restricted_services',
-      lambda: perimeter_result.Get().status.restrictedServices)
+      args, 'restricted_services', lambda: perimeter_result.Get().status.
+      restrictedServices)
+
+
+# Checks if the given filter_type string has an update argument specified in
+# args.
+def _IsServiceFilterUpdateSpecified(args, filter_type):
+  # We leave out the deprecated 'set' arg
+  list_command_prefixes = ['remove_', 'add_', 'clear_']
+  list_name = filter_type + '_allowed_services'
+  list_args = [command + list_name for command in list_command_prefixes]
+
+  switch_name = 'enable_' + filter_type + '_service_restriction'
+  return any([args.IsSpecified(arg) for arg in list_args + [switch_name]])
+
+
+def _AddServiceRestrictionArgs(parser, restriction_type, list_help,
+                               enable_help):
+  """Add to the parser arguments for this service restriction type."""
+  group = parser.add_argument_group()
+  repeated.AddPrimitiveArgs(
+      group,
+      'perimeter',
+      restriction_type + '-allowed-services',
+      restriction_type + ' allowed services',
+      metavar=restriction_type.upper() + '_SERVICE',
+      include_set=False,
+      additional_help=(list_help))
+  group.add_argument(
+      '--enable-' + restriction_type + '-service-restriction',
+      default=None,
+      action='store_true',
+      help=enable_help)
+
+
+def _ParseRestriction(args, perimeter_result, version, restriction_type):
+  """Parse service restriction related arguments."""
+  if _IsServiceFilterUpdateSpecified(args, restriction_type):
+    # If there is no service restriction message in the request, make an empty
+    # one to populate.
+    if getattr(perimeter_result.Get().status,
+               restriction_type + 'ServiceRestriction', None) is None:
+      restriction_message = getattr(
+          apis.GetMessagesModule('accesscontextmanager', version),
+          restriction_type.capitalize() + 'ServiceRestriction')()
+      setattr(perimeter_result.Get().status,
+              restriction_type + 'ServiceRestriction', restriction_message)
+
+  def FetchAllowed():
+    return getattr(perimeter_result.Get().status,
+                   restriction_type + 'ServiceRestriction').allowedServices
+
+  return repeated.ParsePrimitiveArgs(args,
+                                     restriction_type + '_allowed_services',
+                                     FetchAllowed)
+
+
+def _AddIngressRestrictionArgs(parser):
+  """Add arguments related to the Ingress Service Restriction to 'parser'."""
+  _AddServiceRestrictionArgs(
+      parser=parser,
+      restriction_type='ingress',
+      list_help='Services allowed to use Access Levels for access when '
+      'Ingress Service Restriction is enabled.',
+      enable_help='Restrict services able to use Access Levels for access to '
+      'those in \'ingress-allowed-services\'.')
+
+
+def ParseIngressRestriction(args, perimeter_result, version):
+  return _ParseRestriction(
+      args=args,
+      perimeter_result=perimeter_result,
+      version=version,
+      restriction_type='ingress')
+
+
+def _AddVpcRestrictionArgs(parser):
+  """Add arguments related to the VPC Service Restriction to 'parser'."""
+  _AddServiceRestrictionArgs(
+      parser=parser,
+      restriction_type='vpc',
+      list_help='Services allowed to be called within the Perimeter when '
+      'VPC Service Restriction is enabled',
+      enable_help='Restrict API calls within the Perimeter to the list '
+      'specified in \'vpc-allowed-services\'.')
+
+
+def ParseVpcRestriction(args, perimeter_result, version):
+  return _ParseRestriction(
+      args=args,
+      perimeter_result=perimeter_result,
+      version=version,
+      restriction_type='vpc')
+
+
+def _AddBridgeRestrictionArgs(parser):
+  """Add arguments related to the Bridge Service Restriction to 'parser'."""
+  _AddServiceRestrictionArgs(
+      parser=parser,
+      restriction_type='bridge',
+      list_help='List of services allowed through the Bridge Service Perimeter.',
+      enable_help='Restrict APIs callable through the Bridge Perimeter to those in '
+      ' \'bridge-allowed-services\'.')
+
+
+def ParseBridgeRestriction(args, perimeter_result, version):
+  return _ParseRestriction(
+      args=args,
+      perimeter_result=perimeter_result,
+      version=version,
+      restriction_type='bridge')
 
 
 def _AddLevelsUpdate(parser):
@@ -202,8 +385,7 @@ def _AddLevelsUpdate(parser):
 
 
 def _GetLevelIdFromLevelName(level_name):
-  return REGISTRY.Parse(
-      level_name, collection=levels.COLLECTION).accessLevelsId
+  return REGISTRY.Parse(level_name, collection=levels.COLLECTION).accessLevelsId
 
 
 def ParseLevels(args, perimeter_result, policy_id):
@@ -219,6 +401,8 @@ def ParseLevels(args, perimeter_result, policy_id):
 
   if level_ids is None:
     return None
-  return [REGISTRY.Create(levels.COLLECTION,
-                          accessPoliciesId=policy_id,
-                          accessLevelsId=l) for l in level_ids]
+  return [
+      REGISTRY.Create(
+          levels.COLLECTION, accessPoliciesId=policy_id, accessLevelsId=l)
+      for l in level_ids
+  ]

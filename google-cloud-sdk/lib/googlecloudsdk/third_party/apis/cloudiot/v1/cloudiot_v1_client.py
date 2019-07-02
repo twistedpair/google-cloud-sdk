@@ -38,8 +38,6 @@ class CloudiotV1(base_api.BaseApiClient):
     self.projects_locations_registries_devices_configVersions = self.ProjectsLocationsRegistriesDevicesConfigVersionsService(self)
     self.projects_locations_registries_devices_states = self.ProjectsLocationsRegistriesDevicesStatesService(self)
     self.projects_locations_registries_devices = self.ProjectsLocationsRegistriesDevicesService(self)
-    self.projects_locations_registries_groups_devices_configVersions = self.ProjectsLocationsRegistriesGroupsDevicesConfigVersionsService(self)
-    self.projects_locations_registries_groups_devices_states = self.ProjectsLocationsRegistriesGroupsDevicesStatesService(self)
     self.projects_locations_registries_groups_devices = self.ProjectsLocationsRegistriesGroupsDevicesService(self)
     self.projects_locations_registries_groups = self.ProjectsLocationsRegistriesGroupsService(self)
     self.projects_locations_registries = self.ProjectsLocationsRegistriesService(self)
@@ -335,82 +333,6 @@ guaranteed; for QoS 0, no acknowledgment will be expected from the device.
         supports_download=False,
     )
 
-  class ProjectsLocationsRegistriesGroupsDevicesConfigVersionsService(base_api.BaseApiService):
-    """Service class for the projects_locations_registries_groups_devices_configVersions resource."""
-
-    _NAME = u'projects_locations_registries_groups_devices_configVersions'
-
-    def __init__(self, client):
-      super(CloudiotV1.ProjectsLocationsRegistriesGroupsDevicesConfigVersionsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""Lists the last few versions of the device configuration in descending.
-order (i.e.: newest first).
-
-      Args:
-        request: (CloudiotProjectsLocationsRegistriesGroupsDevicesConfigVersionsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListDeviceConfigVersionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}/devices/{devicesId}/configVersions',
-        http_method=u'GET',
-        method_id=u'cloudiot.projects.locations.registries.groups.devices.configVersions.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'numVersions'],
-        relative_path=u'v1/{+name}/configVersions',
-        request_field='',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesGroupsDevicesConfigVersionsListRequest',
-        response_type_name=u'ListDeviceConfigVersionsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsRegistriesGroupsDevicesStatesService(base_api.BaseApiService):
-    """Service class for the projects_locations_registries_groups_devices_states resource."""
-
-    _NAME = u'projects_locations_registries_groups_devices_states'
-
-    def __init__(self, client):
-      super(CloudiotV1.ProjectsLocationsRegistriesGroupsDevicesStatesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""Lists the last few versions of the device state in descending order (i.e.:.
-newest first).
-
-      Args:
-        request: (CloudiotProjectsLocationsRegistriesGroupsDevicesStatesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListDeviceStatesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}/devices/{devicesId}/states',
-        http_method=u'GET',
-        method_id=u'cloudiot.projects.locations.registries.groups.devices.states.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'numStates'],
-        relative_path=u'v1/{+name}/states',
-        request_field='',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesGroupsDevicesStatesListRequest',
-        response_type_name=u'ListDeviceStatesResponse',
-        supports_download=False,
-    )
-
   class ProjectsLocationsRegistriesGroupsDevicesService(base_api.BaseApiService):
     """Service class for the projects_locations_registries_groups_devices resource."""
 
@@ -420,33 +342,6 @@ newest first).
       super(CloudiotV1.ProjectsLocationsRegistriesGroupsDevicesService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def Get(self, request, global_params=None):
-      r"""Gets details about a device.
-
-      Args:
-        request: (CloudiotProjectsLocationsRegistriesGroupsDevicesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Device) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}/devices/{devicesId}',
-        http_method=u'GET',
-        method_id=u'cloudiot.projects.locations.registries.groups.devices.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'fieldMask'],
-        relative_path=u'v1/{+name}',
-        request_field='',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesGroupsDevicesGetRequest',
-        response_type_name=u'Device',
-        supports_download=False,
-    )
 
     def List(self, request, global_params=None):
       r"""List devices in a device registry.
@@ -475,101 +370,6 @@ newest first).
         supports_download=False,
     )
 
-    def ModifyCloudToDeviceConfig(self, request, global_params=None):
-      r"""Modifies the configuration for the device, which is eventually sent from.
-the Cloud IoT Core servers. Returns the modified configuration version and
-its metadata.
-
-      Args:
-        request: (CloudiotProjectsLocationsRegistriesGroupsDevicesModifyCloudToDeviceConfigRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (DeviceConfig) The response message.
-      """
-      config = self.GetMethodConfig('ModifyCloudToDeviceConfig')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ModifyCloudToDeviceConfig.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}/devices/{devicesId}:modifyCloudToDeviceConfig',
-        http_method=u'POST',
-        method_id=u'cloudiot.projects.locations.registries.groups.devices.modifyCloudToDeviceConfig',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1/{+name}:modifyCloudToDeviceConfig',
-        request_field=u'modifyCloudToDeviceConfigRequest',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesGroupsDevicesModifyCloudToDeviceConfigRequest',
-        response_type_name=u'DeviceConfig',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates a device.
-
-      Args:
-        request: (CloudiotProjectsLocationsRegistriesGroupsDevicesPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Device) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}/devices/{devicesId}',
-        http_method=u'PATCH',
-        method_id=u'cloudiot.projects.locations.registries.groups.devices.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/{+name}',
-        request_field=u'device',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesGroupsDevicesPatchRequest',
-        response_type_name=u'Device',
-        supports_download=False,
-    )
-
-    def SendCommandToDevice(self, request, global_params=None):
-      r"""Sends a command to the specified device. In order for a device to be able.
-to receive commands, it must:
-1) be connected to Cloud IoT Core using the MQTT protocol, and
-2) be subscribed to the group of MQTT topics specified by
-   /devices/{device-id}/commands/#. This subscription will receive commands
-   at the top-level topic /devices/{device-id}/commands as well as commands
-   for subfolders, like /devices/{device-id}/commands/subfolder.
-   Note that subscribing to specific subfolders is not supported.
-If the command could not be delivered to the device, this method will
-return an error; in particular, if the device is not subscribed, this
-method will return FAILED_PRECONDITION. Otherwise, this method will
-return OK. If the subscription is QoS 1, at least once delivery will be
-guaranteed; for QoS 0, no acknowledgment will be expected from the device.
-
-      Args:
-        request: (CloudiotProjectsLocationsRegistriesGroupsDevicesSendCommandToDeviceRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (SendCommandToDeviceResponse) The response message.
-      """
-      config = self.GetMethodConfig('SendCommandToDevice')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SendCommandToDevice.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}/devices/{devicesId}:sendCommandToDevice',
-        http_method=u'POST',
-        method_id=u'cloudiot.projects.locations.registries.groups.devices.sendCommandToDevice',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1/{+name}:sendCommandToDevice',
-        request_field=u'sendCommandToDeviceRequest',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesGroupsDevicesSendCommandToDeviceRequest',
-        response_type_name=u'SendCommandToDeviceResponse',
-        supports_download=False,
-    )
-
   class ProjectsLocationsRegistriesGroupsService(base_api.BaseApiService):
     """Service class for the projects_locations_registries_groups resource."""
 
@@ -579,33 +379,6 @@ guaranteed; for QoS 0, no acknowledgment will be expected from the device.
       super(CloudiotV1.ProjectsLocationsRegistriesGroupsService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def BindDeviceToGateway(self, request, global_params=None):
-      r"""Associates the device with the gateway.
-
-      Args:
-        request: (CloudiotProjectsLocationsRegistriesGroupsBindDeviceToGatewayRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (BindDeviceToGatewayResponse) The response message.
-      """
-      config = self.GetMethodConfig('BindDeviceToGateway')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    BindDeviceToGateway.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}:bindDeviceToGateway',
-        http_method=u'POST',
-        method_id=u'cloudiot.projects.locations.registries.groups.bindDeviceToGateway',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[],
-        relative_path=u'v1/{+parent}:bindDeviceToGateway',
-        request_field=u'bindDeviceToGatewayRequest',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesGroupsBindDeviceToGatewayRequest',
-        response_type_name=u'BindDeviceToGatewayResponse',
-        supports_download=False,
-    )
 
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource.
@@ -690,33 +463,6 @@ permissions, not a NOT_FOUND error.
         request_field=u'testIamPermissionsRequest',
         request_type_name=u'CloudiotProjectsLocationsRegistriesGroupsTestIamPermissionsRequest',
         response_type_name=u'TestIamPermissionsResponse',
-        supports_download=False,
-    )
-
-    def UnbindDeviceFromGateway(self, request, global_params=None):
-      r"""Deletes the association between the device and the gateway.
-
-      Args:
-        request: (CloudiotProjectsLocationsRegistriesGroupsUnbindDeviceFromGatewayRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (UnbindDeviceFromGatewayResponse) The response message.
-      """
-      config = self.GetMethodConfig('UnbindDeviceFromGateway')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    UnbindDeviceFromGateway.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}:unbindDeviceFromGateway',
-        http_method=u'POST',
-        method_id=u'cloudiot.projects.locations.registries.groups.unbindDeviceFromGateway',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[],
-        relative_path=u'v1/{+parent}:unbindDeviceFromGateway',
-        request_field=u'unbindDeviceFromGatewayRequest',
-        request_type_name=u'CloudiotProjectsLocationsRegistriesGroupsUnbindDeviceFromGatewayRequest',
-        response_type_name=u'UnbindDeviceFromGatewayResponse',
         supports_download=False,
     )
 

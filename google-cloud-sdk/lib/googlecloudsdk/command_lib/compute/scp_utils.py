@@ -119,6 +119,7 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
             compute_holder.client))[0]
     instance = self.GetInstance(compute_holder.client, instance_ref)
     project = self.GetProject(compute_holder.client, instance_ref.project)
+    expiration, expiration_micros = ssh_utils.GetSSHKeyExpirationFromArgs(args)
 
     if not remote.user:
       remote.user = ssh.GetDefaultSshUsername(warn_on_account_user=True)
@@ -127,7 +128,8 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
     else:
       public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
       remote.user, use_oslogin = ssh.CheckForOsloginAndGetUser(
-          instance, project, remote.user, public_key, release_track)
+          instance, project, remote.user, public_key, expiration_micros,
+          release_track)
 
     identity_file = None
     options = None
@@ -163,7 +165,8 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
           compute_holder.client,
           remote.user,
           instance,
-          project)
+          project,
+          expiration=expiration)
 
     if keys_newly_added:
       poller = ssh_utils.CreateSSHPoller(remote, identity_file, options,

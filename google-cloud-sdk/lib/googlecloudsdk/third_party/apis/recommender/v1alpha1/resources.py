@@ -55,11 +55,14 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_RECOMMENDERS_RECOMMENDATIONS = (
       'projects.locations.recommenders.recommendations',
-      'projects/{projectsId}/locations/{locationsId}/recommenders/'
-      '{recommendersId}/recommendations/{recommendationsId}',
-      {},
-      [u'projectsId', u'locationsId', u'recommendersId', u'recommendationsId'],
-      False
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/recommenders/'
+              '{recommendersId}/recommendations/{recommendationsId}',
+      },
+      [u'name'],
+      True
   )
   PROJECTS_RULES = (
       'projects.rules',

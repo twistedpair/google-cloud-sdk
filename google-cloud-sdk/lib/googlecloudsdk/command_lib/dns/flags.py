@@ -208,10 +208,10 @@ def GetDnsPeeringArgs():
   """Return arg group for DNS Peering flags."""
   peering_group = base.ArgumentGroup(required=False)
   target_network_help_text = (
-      'The network id of the Google Compute Engine private network to forward'
+      'Network ID of the Google Compute Engine private network to forward'
       ' queries to.')
   target_project_help_text = (
-      'The project id of the Google Compute Engine private network to forward'
+      'Project ID of the Google Compute Engine private network to forward'
       ' queries to.')
   peering_group.AddArgument(
       base.Argument(
@@ -226,13 +226,18 @@ def GetDnsPeeringArgs():
   return peering_group
 
 
-def GetForwardingTargetsArg():
-  return base.Argument(
+def GetForwardingTargetsGroupArg(parser):
+  parent_group = parser.add_group(
+      'Managed Zone Resolving.', mutex=True)
+  forwarding_group = parent_group.add_group('Target name servers group.')
+  forwarding_group.add_argument(
       '--forwarding-targets',
       type=arg_parsers.ArgList(),
       metavar='IP_ADDRESSES',
       help=('List of IPv4 addresses of target name servers that the zone '
-            'will forward queries to. Ignored for `public` visibility.'))
+            'will forward queries to. Ignored for `public` visibility. '
+            'Non-RFC1918 addresses will forward to the target through the '
+            'Internet. RFC1918 addresses will forward through the VPC.'))
 
 
 # Policy Flags

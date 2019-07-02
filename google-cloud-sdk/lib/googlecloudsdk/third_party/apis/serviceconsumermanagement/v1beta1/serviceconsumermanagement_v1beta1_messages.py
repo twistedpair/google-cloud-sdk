@@ -1936,6 +1936,16 @@ class Service(_messages.Message):
   usage = _messages.MessageField('Usage', 27)
 
 
+class ServiceconsumermanagementOperationsGetRequest(_messages.Message):
+  r"""A ServiceconsumermanagementOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ServiceconsumermanagementServicesConsumerQuotaMetricsGetRequest(_messages.Message):
   r"""A ServiceconsumermanagementServicesConsumerQuotaMetricsGetRequest
   object.

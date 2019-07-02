@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2016 Google LLC. All Rights Reserved.
+# Copyright 2019 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -68,6 +68,8 @@ CONDITION_FILE_FORMAT_EXCEPTION = gcloud_exceptions.InvalidArgumentException(
     'condition-from-file must be a path to a YAML or JSON file containing the '
     'condition. `expression` and `title` are required keys. `description` is '
     'optional. To specify a `None` condition, use --condition=None.')
+
+MAX_LIBRARY_IAM_SUPPORTED_VERSION = 3
 
 _ALL_CONDITIONS = {'All': None}
 

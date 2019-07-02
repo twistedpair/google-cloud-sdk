@@ -1273,10 +1273,14 @@ class GoogleCloudMlV1ReplicaConfig(_messages.Message):
     imageUri: The Docker image to run on the replica. This image must be in
       Container Registry. Learn more about [configuring custom containers
       ](/ml-engine/docs/distributed-training-containers).
+    tpuTfVersion: TensorFlow version used in the custom container. This field
+      is required if the replica is a TPU worker that uses a custom container.
+      Otherwise, do not specify this field.
   """
 
   acceleratorConfig = _messages.MessageField('GoogleCloudMlV1AcceleratorConfig', 1)
   imageUri = _messages.StringField(2)
+  tpuTfVersion = _messages.StringField(3)
 
 
 class GoogleCloudMlV1RequestLoggingConfig(_messages.Message):
@@ -2186,16 +2190,6 @@ class GoogleTypeExpr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
-
-
-class MlOperationsDeleteRequest(_messages.Message):
-  r"""A MlOperationsDeleteRequest object.
-
-  Fields:
-    name: The name of the operation resource to be deleted.
-  """
-
-  name = _messages.StringField(1, required=True)
 
 
 class MlProjectsGetConfigRequest(_messages.Message):

@@ -58,6 +58,13 @@ _PLATFORMS = {
            'zone.'
 }
 
+_PLATFORMS_ALPHA = {
+    'kubernetes': 'Use a Knative-compatible kubernetes cluster. Use with the '
+                  '`--kubeconfig` and `--context` flags to specify a '
+                  'kubeconfig file and the context for connecting.'
+}
+_PLATFORMS_ALPHA.update(_PLATFORMS)
+
 _PLATFORM_SHORT_DESCRIPTIONS = {
     'managed': 'the managed version of Cloud Run',
     'gke': 'Cloud Run on GKE',
@@ -252,17 +259,27 @@ def AddPlatformArg(parser):
       'the gcloud command-line tool.')
 
 
+def AddAlphaPlatformArg(parser):
+  """Add a platform arg with alpha choices."""
+  parser.add_argument(
+      '--platform',
+      choices=_PLATFORMS_ALPHA,
+      action=actions.StoreProperty(properties.VALUES.run.platform),
+      help='Target platform for running commands. '
+      'Alternatively, set the property [run/platform]. '
+      'This flag will be required in a future version of '
+      'the gcloud command-line tool.')
+
+
 def AddKubeconfigFlags(parser):
   parser.add_argument(
       '--kubeconfig',
-      hidden=True,
       help='The absolute path to your kubectl config file. If not specified, '
       'the colon- or semicolon-delimited list of paths specified by '
       '$KUBECONFIG will be used. If $KUBECONFIG is unset, this defaults to '
       '`{}`.'.format(_DEFAULT_KUBECONFIG_PATH))
   parser.add_argument(
       '--context',
-      hidden=True,
       help='The name of the context in your kubectl config file to use for '
       'connecting.')
 
@@ -275,6 +292,14 @@ def AddRevisionSuffixArg(parser):
       'start with the service name automatically. For example, specifying '
       '[--revision-suffix=v1] for a service named \'helloworld\', '
       'would lead to a revision named \'helloworld-v1\'.')
+
+
+def AddVpcConnectorArg(parser):
+  parser.add_argument(
+      '--vpc-connector', help='Set a VPC connector for this Service.')
+  parser.add_argument(
+      '--clear-vpc-connector',
+      help='Remove the VPC connector for this Service.')
 
 
 def _HasEnvChanges(args):
@@ -386,6 +411,11 @@ def GetConfigurationChanges(args):
       changes.append(config_changes.LabelChanges(diff))
   if 'revision_suffix' in args and args.revision_suffix:
     changes.append(config_changes.RevisionNameChanges(args.revision_suffix))
+  if 'vpc_connector' in args and args.vpc_connector:
+    changes.append(config_changes.VpcConnectorChange(args.vpc_connector))
+  if 'clear_vpc_connector' in args and args.clear_vpc_connector:
+    changes.append(config_changes.ClearVpcConnectorChange())
+
   return changes
 
 
@@ -723,19 +753,19 @@ def GetPlatform(args):
   """Returns the platform to run on."""
   platform = properties.VALUES.run.platform.Get()
   if platform is None:
+    # {str, str} map of platform option to its help text
+    choices = args.GetFlagArgument('platform').choices_help
     log.warning(
         'No target platform specified. This will be a required flag in a '
         'future version of the gcloud command-line tool. Pass the `--platform` '
         'flag or set the [run/platform] property to satisfy this warning.\n'
         'Available platforms:\n{}\n'.format('\n'.join(
-            ['- {}: {}'.format(k, v) for k, v in _PLATFORMS.items()])))
+            ['- {}: {}'.format(k, v) for k, v in choices.items()])))
     # The check below ends up calling this method so to prevent a stack overflow
     # we set the platform temporarily
     properties.VALUES.run.platform.Set('temp_skip')
     if ValidateIsGKE(args):
       platform = 'gke'
-    elif getattr(args, 'kubeconfig', None):
-      platform = 'kubernetes'
     else:
       platform = 'managed'
     # Set the platform so we don't warn on future calls to this method

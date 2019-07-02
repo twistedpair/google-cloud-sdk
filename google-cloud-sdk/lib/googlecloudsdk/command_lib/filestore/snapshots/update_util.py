@@ -18,9 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import encoding
 from googlecloudsdk.api_lib.filestore import filestore_client
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.args import labels_util
+from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 
 
 def AdditionalSnapshotUpdateArguments():
@@ -35,6 +38,8 @@ def SnapshotUpdateLabelsFlags():
 
 
 def UpdateLabels(ref, args, req):
+  """Update snapshot labels."""
+  ref = GetResourceRef(args)
   labels_diff = labels_util.Diff.FromUpdateArgs(args)
   if labels_diff.MayHaveUpdates():
     req = AddFieldToUpdateMask('labels', req)
@@ -47,6 +52,7 @@ def UpdateLabels(ref, args, req):
 
 
 def AddDescription(unused_instance_ref, args, patch_request):
+  del unused_instance_ref
   if args.IsSpecified('description'):
     patch_request.snapshot.description = args.description
     patch_request = AddFieldToUpdateMask('description', patch_request)
@@ -69,10 +75,30 @@ def GetMessagesForResource(resource_ref):
   return messages
 
 
-def GetExistingSnapshot(resource_ref, unused_args, patch_request):
-  """Fetch existing redis instance to update and add it to Patch request."""
+def GetResourceRef(args):
+  project = properties.VALUES.core.project.Get(required=True)
+  location = args.region or args.zone
+  ref = resources.REGISTRY.Create(
+      'file.projects.locations.snapshots', projectsId=project,
+      locationsId=location, snapshotsId=args.snapshot)
+  return ref
+
+
+def GetExistingSnapshot(resource_ref, args, patch_request):
+  """Fetch existing Filestore instance to update and add it to Patch request."""
+  resource_ref = GetResourceRef(args)
   api_version = resource_ref.GetCollectionInfo().api_version
   client = filestore_client.FilestoreClient(api_version)
   orig_snapshot = client.GetSnapshot(resource_ref)
   patch_request.snapshot = orig_snapshot
   return patch_request
+
+
+def FormatSnapshotUpdateResponse(response, args):
+  """Python hook to generate the snapshot update response."""
+  del response
+  # Return snapshot describe output.
+  resource_ref = GetResourceRef(args)
+  api_version = resource_ref.GetCollectionInfo().api_version
+  client = filestore_client.FilestoreClient(api_version)
+  return encoding.MessageToDict(client.GetSnapshot(resource_ref))

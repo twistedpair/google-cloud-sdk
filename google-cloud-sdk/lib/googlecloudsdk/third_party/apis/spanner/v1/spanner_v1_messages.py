@@ -238,20 +238,24 @@ class Empty(_messages.Message):
 
 
 class ExecuteBatchDmlRequest(_messages.Message):
-  r"""The request for ExecuteBatchDml
+  r"""The request for ExecuteBatchDml.
 
   Fields:
     seqno: A per-transaction sequence number used to identify this request.
-      This is used in the same space as the seqno in ExecuteSqlRequest. See
-      more details in ExecuteSqlRequest.
+      This field makes each request idempotent such that if the request is
+      received multiple times, at most one will succeed.  The sequence number
+      must be monotonically increasing within the transaction. If a request
+      arrives for the first time with an out-of-order sequence number, the
+      transaction may be aborted. Replays of previously handled requests will
+      yield the same response as the first execution.
     statements: The list of statements to execute in this batch. Statements
-      are executed serially, such that the effects of statement i are visible
-      to statement i+1. Each statement must be a DML statement. Execution will
-      stop at the first failed statement; the remaining statements will not
-      run.  REQUIRES: `statements_size()` > 0.
-    transaction: The transaction to use. A ReadWrite transaction is required.
-      Single-use transactions are not supported (to avoid replay).  The caller
-      must either supply an existing transaction ID or begin a new
+      are executed serially, such that the effects of statement `i` are
+      visible to statement `i+1`. Each statement must be a DML statement.
+      Execution stops at the first failed statement; the remaining statements
+      are not executed.  Callers must provide at least one statement.
+    transaction: The transaction to use. Must be a read-write transaction.  To
+      protect against replays, single-use transactions are not supported. The
+      caller must either supply an existing transaction ID or begin a new
       transaction.
   """
 
@@ -261,29 +265,30 @@ class ExecuteBatchDmlRequest(_messages.Message):
 
 
 class ExecuteBatchDmlResponse(_messages.Message):
-  r"""The response for ExecuteBatchDml. Contains a list of ResultSet, one for
-  each DML statement that has successfully executed. If a statement fails, the
-  error is returned as part of the response payload. Clients can determine
-  whether all DML statements have run successfully, or if a statement failed,
-  using one of the following approaches:    1. Check if `'status'` field is
-  `OkStatus`.   2. Check if `result_sets_size()` equals the number of
-  statements in      ExecuteBatchDmlRequest.  Example 1: A request with 5 DML
-  statements, all executed successfully.  Result: A response with 5
-  ResultSets, one for each statement in the same order, and an `OkStatus`.
-  Example 2: A request with 5 DML statements. The 3rd statement has a syntax
-  error.  Result: A response with 2 ResultSets, for the first 2 statements
-  that run successfully, and a syntax error (`INVALID_ARGUMENT`) status. From
-  `result_set_size()` client can determine that the 3rd statement has failed.
+  r"""The response for ExecuteBatchDml. Contains a list of ResultSet messages,
+  one for each DML statement that has successfully executed, in the same order
+  as the statements in the request. If a statement fails, the status in the
+  response body identifies the cause of the failure.  To check for DML
+  statements that failed, use the following approach:  1. Check the status in
+  the response message. The google.rpc.Code enum    value `OK` indicates that
+  all statements were executed successfully. 2. If the status was not `OK`,
+  check the number of result sets in the    response. If the response contains
+  `N` ResultSet messages, then    statement `N+1` in the request failed.
+  Example 1:  * Request: 5 DML statements, all executed successfully. *
+  Response: 5 ResultSet messages, with the status `OK`.  Example 2:  *
+  Request: 5 DML statements. The third statement has a syntax error. *
+  Response: 2 ResultSet messages, and a syntax error (`INVALID_ARGUMENT`)
+  status. The number of ResultSet messages indicates that the third
+  statement failed, and the fourth and fifth statements were not executed.
 
   Fields:
-    resultSets: ResultSets, one for each statement in the request that ran
+    resultSets: One ResultSet for each statement in the request that ran
       successfully, in the same order as the statements in the request. Each
-      ResultSet will not contain any rows. The ResultSetStats in each
-      ResultSet will contain the number of rows modified by the statement.
-      Only the first ResultSet in the response contains a valid
-      ResultSetMetadata.
-    status: If all DML statements are executed successfully, status will be
-      OK. Otherwise, the error status of the first failed statement.
+      ResultSet does not contain any rows. The ResultSetStats in each
+      ResultSet contain the number of rows modified by the statement.  Only
+      the first ResultSet in the response contains valid ResultSetMetadata.
+    status: If all DML statements are executed successfully, the status is
+      `OK`. Otherwise, the error status of the first failed statement.
   """
 
   resultSets = _messages.MessageField('ResultSet', 1, repeated=True)
@@ -305,16 +310,14 @@ class ExecuteSqlRequest(_messages.Message):
       these cases, `param_types` can be used to specify the exact SQL type for
       some or all of the SQL statement parameters. See the definition of Type
       for more information about SQL types.
-    ParamsValue: The SQL string can contain parameter placeholders. A
-      parameter placeholder consists of `'@'` followed by the parameter name.
-      Parameter names consist of any combination of letters, numbers, and
-      underscores.  Parameters can appear anywhere that a literal value is
-      expected.  The same parameter name can be used more than once, for
-      example:   `"WHERE id > @msg_id AND id < @msg_id + 100"`  It is an error
-      to execute an SQL statement with unbound parameters.  Parameter values
-      are specified using `params`, which is a JSON object whose keys are
-      parameter names, and whose values are the corresponding parameter
-      values.
+    ParamsValue: Parameter names and values that bind to placeholders in the
+      SQL string.  A parameter placeholder consists of the `@` character
+      followed by the parameter name (for example, `@firstName`). Parameter
+      names can contain letters, numbers, and underscores.  Parameters can
+      appear anywhere that a literal value is expected.  The same parameter
+      name can be used more than once, for example:  `"WHERE id > @msg_id AND
+      id < @msg_id + 100"`  It is an error to execute a SQL statement with
+      unbound parameters.
 
   Fields:
     paramTypes: It is not always possible for Cloud Spanner to infer the right
@@ -323,15 +326,14 @@ class ExecuteSqlRequest(_messages.Message):
       cases, `param_types` can be used to specify the exact SQL type for some
       or all of the SQL statement parameters. See the definition of Type for
       more information about SQL types.
-    params: The SQL string can contain parameter placeholders. A parameter
-      placeholder consists of `'@'` followed by the parameter name. Parameter
-      names consist of any combination of letters, numbers, and underscores.
-      Parameters can appear anywhere that a literal value is expected.  The
-      same parameter name can be used more than once, for example:   `"WHERE
-      id > @msg_id AND id < @msg_id + 100"`  It is an error to execute an SQL
-      statement with unbound parameters.  Parameter values are specified using
-      `params`, which is a JSON object whose keys are parameter names, and
-      whose values are the corresponding parameter values.
+    params: Parameter names and values that bind to placeholders in the SQL
+      string.  A parameter placeholder consists of the `@` character followed
+      by the parameter name (for example, `@firstName`). Parameter names can
+      contain letters, numbers, and underscores.  Parameters can appear
+      anywhere that a literal value is expected.  The same parameter name can
+      be used more than once, for example:  `"WHERE id > @msg_id AND id <
+      @msg_id + 100"`  It is an error to execute a SQL statement with unbound
+      parameters.
     partitionToken: If present, results will be restricted to the specified
       partition previously created using PartitionQuery().  There must be an
       exact match for the values of fields common to this message and the
@@ -346,22 +348,21 @@ class ExecuteSqlRequest(_messages.Message):
       rest of the request parameters must exactly match the request that
       yielded this token.
     seqno: A per-transaction sequence number used to identify this request.
-      This makes each request idempotent such that if the request is received
-      multiple times, at most one will succeed.  The sequence number must be
-      monotonically increasing within the transaction. If a request arrives
-      for the first time with an out-of-order sequence number, the transaction
-      may be aborted. Replays of previously handled requests will yield the
-      same response as the first execution.  Required for DML statements.
-      Ignored for queries.
+      This field makes each request idempotent such that if the request is
+      received multiple times, at most one will succeed.  The sequence number
+      must be monotonically increasing within the transaction. If a request
+      arrives for the first time with an out-of-order sequence number, the
+      transaction may be aborted. Replays of previously handled requests will
+      yield the same response as the first execution.  Required for DML
+      statements. Ignored for queries.
     sql: Required. The SQL string.
-    transaction: The transaction to use. If none is provided, the default is a
-      temporary read-only transaction with strong concurrency.  The
-      transaction to use.  For queries, if none is provided, the default is a
-      temporary read-only transaction with strong concurrency.  Standard DML
-      statements require a ReadWrite transaction. Single-use transactions are
-      not supported (to avoid replay).  The caller must either supply an
-      existing transaction ID or begin a new transaction.  Partitioned DML
-      requires an existing PartitionedDml transaction ID.
+    transaction: The transaction to use.  For queries, if none is provided,
+      the default is a temporary read-only transaction with strong
+      concurrency.  Standard DML statements require a read-write transaction.
+      To protect against replays, single-use transactions are not supported.
+      The caller must either supply an existing transaction ID or begin a new
+      transaction.  Partitioned DML requires an existing Partitioned DML
+      transaction ID.
   """
 
   class QueryModeValueValuesEnum(_messages.Enum):
@@ -411,15 +412,13 @@ class ExecuteSqlRequest(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParamsValue(_messages.Message):
-    r"""The SQL string can contain parameter placeholders. A parameter
-    placeholder consists of `'@'` followed by the parameter name. Parameter
-    names consist of any combination of letters, numbers, and underscores.
-    Parameters can appear anywhere that a literal value is expected.  The same
-    parameter name can be used more than once, for example:   `"WHERE id >
-    @msg_id AND id < @msg_id + 100"`  It is an error to execute an SQL
-    statement with unbound parameters.  Parameter values are specified using
-    `params`, which is a JSON object whose keys are parameter names, and whose
-    values are the corresponding parameter values.
+    r"""Parameter names and values that bind to placeholders in the SQL
+    string.  A parameter placeholder consists of the `@` character followed by
+    the parameter name (for example, `@firstName`). Parameter names can
+    contain letters, numbers, and underscores.  Parameters can appear anywhere
+    that a literal value is expected.  The same parameter name can be used
+    more than once, for example:  `"WHERE id > @msg_id AND id < @msg_id +
+    100"`  It is an error to execute a SQL statement with unbound parameters.
 
     Messages:
       AdditionalProperty: An additional property for a ParamsValue object.
@@ -1060,16 +1059,14 @@ class PartitionQueryRequest(_messages.Message):
       these cases, `param_types` can be used to specify the exact SQL type for
       some or all of the SQL query parameters. See the definition of Type for
       more information about SQL types.
-    ParamsValue: The SQL query string can contain parameter placeholders. A
-      parameter placeholder consists of `'@'` followed by the parameter name.
-      Parameter names consist of any combination of letters, numbers, and
-      underscores.  Parameters can appear anywhere that a literal value is
-      expected.  The same parameter name can be used more than once, for
-      example:   `"WHERE id > @msg_id AND id < @msg_id + 100"`  It is an error
-      to execute an SQL query with unbound parameters.  Parameter values are
-      specified using `params`, which is a JSON object whose keys are
-      parameter names, and whose values are the corresponding parameter
-      values.
+    ParamsValue: Parameter names and values that bind to placeholders in the
+      SQL string.  A parameter placeholder consists of the `@` character
+      followed by the parameter name (for example, `@firstName`). Parameter
+      names can contain letters, numbers, and underscores.  Parameters can
+      appear anywhere that a literal value is expected.  The same parameter
+      name can be used more than once, for example:  `"WHERE id > @msg_id AND
+      id < @msg_id + 100"`  It is an error to execute a SQL statement with
+      unbound parameters.
 
   Fields:
     paramTypes: It is not always possible for Cloud Spanner to infer the right
@@ -1078,16 +1075,14 @@ class PartitionQueryRequest(_messages.Message):
       cases, `param_types` can be used to specify the exact SQL type for some
       or all of the SQL query parameters. See the definition of Type for more
       information about SQL types.
-    params: The SQL query string can contain parameter placeholders. A
-      parameter placeholder consists of `'@'` followed by the parameter name.
-      Parameter names consist of any combination of letters, numbers, and
-      underscores.  Parameters can appear anywhere that a literal value is
-      expected.  The same parameter name can be used more than once, for
-      example:   `"WHERE id > @msg_id AND id < @msg_id + 100"`  It is an error
-      to execute an SQL query with unbound parameters.  Parameter values are
-      specified using `params`, which is a JSON object whose keys are
-      parameter names, and whose values are the corresponding parameter
-      values.
+    params: Parameter names and values that bind to placeholders in the SQL
+      string.  A parameter placeholder consists of the `@` character followed
+      by the parameter name (for example, `@firstName`). Parameter names can
+      contain letters, numbers, and underscores.  Parameters can appear
+      anywhere that a literal value is expected.  The same parameter name can
+      be used more than once, for example:  `"WHERE id > @msg_id AND id <
+      @msg_id + 100"`  It is an error to execute a SQL statement with unbound
+      parameters.
     partitionOptions: Additional options that affect how many partitions are
       created.
     sql: The query request to generate partitions for. The request will fail
@@ -1133,15 +1128,13 @@ class PartitionQueryRequest(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParamsValue(_messages.Message):
-    r"""The SQL query string can contain parameter placeholders. A parameter
-    placeholder consists of `'@'` followed by the parameter name. Parameter
-    names consist of any combination of letters, numbers, and underscores.
-    Parameters can appear anywhere that a literal value is expected.  The same
-    parameter name can be used more than once, for example:   `"WHERE id >
-    @msg_id AND id < @msg_id + 100"`  It is an error to execute an SQL query
-    with unbound parameters.  Parameter values are specified using `params`,
-    which is a JSON object whose keys are parameter names, and whose values
-    are the corresponding parameter values.
+    r"""Parameter names and values that bind to placeholders in the SQL
+    string.  A parameter placeholder consists of the `@` character followed by
+    the parameter name (for example, `@firstName`). Parameter names can
+    contain letters, numbers, and underscores.  Parameters can appear anywhere
+    that a literal value is expected.  The same parameter name can be used
+    more than once, for example:  `"WHERE id > @msg_id AND id < @msg_id +
+    100"`  It is an error to execute a SQL statement with unbound parameters.
 
     Messages:
       AdditionalProperty: An additional property for a ParamsValue object.
@@ -2421,16 +2414,14 @@ class Statement(_messages.Message):
       these cases, `param_types` can be used to specify the exact SQL type for
       some or all of the SQL statement parameters. See the definition of Type
       for more information about SQL types.
-    ParamsValue: The DML string can contain parameter placeholders. A
-      parameter placeholder consists of `'@'` followed by the parameter name.
-      Parameter names consist of any combination of letters, numbers, and
-      underscores.  Parameters can appear anywhere that a literal value is
-      expected.  The same parameter name can be used more than once, for
-      example:   `"WHERE id > @msg_id AND id < @msg_id + 100"`  It is an error
-      to execute an SQL statement with unbound parameters.  Parameter values
-      are specified using `params`, which is a JSON object whose keys are
-      parameter names, and whose values are the corresponding parameter
-      values.
+    ParamsValue: Parameter names and values that bind to placeholders in the
+      DML string.  A parameter placeholder consists of the `@` character
+      followed by the parameter name (for example, `@firstName`). Parameter
+      names can contain letters, numbers, and underscores.  Parameters can
+      appear anywhere that a literal value is expected.  The same parameter
+      name can be used more than once, for example:  `"WHERE id > @msg_id AND
+      id < @msg_id + 100"`  It is an error to execute a SQL statement with
+      unbound parameters.
 
   Fields:
     paramTypes: It is not always possible for Cloud Spanner to infer the right
@@ -2439,15 +2430,14 @@ class Statement(_messages.Message):
       cases, `param_types` can be used to specify the exact SQL type for some
       or all of the SQL statement parameters. See the definition of Type for
       more information about SQL types.
-    params: The DML string can contain parameter placeholders. A parameter
-      placeholder consists of `'@'` followed by the parameter name. Parameter
-      names consist of any combination of letters, numbers, and underscores.
-      Parameters can appear anywhere that a literal value is expected.  The
-      same parameter name can be used more than once, for example:   `"WHERE
-      id > @msg_id AND id < @msg_id + 100"`  It is an error to execute an SQL
-      statement with unbound parameters.  Parameter values are specified using
-      `params`, which is a JSON object whose keys are parameter names, and
-      whose values are the corresponding parameter values.
+    params: Parameter names and values that bind to placeholders in the DML
+      string.  A parameter placeholder consists of the `@` character followed
+      by the parameter name (for example, `@firstName`). Parameter names can
+      contain letters, numbers, and underscores.  Parameters can appear
+      anywhere that a literal value is expected.  The same parameter name can
+      be used more than once, for example:  `"WHERE id > @msg_id AND id <
+      @msg_id + 100"`  It is an error to execute a SQL statement with unbound
+      parameters.
     sql: Required. The DML string.
   """
 
@@ -2482,15 +2472,13 @@ class Statement(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParamsValue(_messages.Message):
-    r"""The DML string can contain parameter placeholders. A parameter
-    placeholder consists of `'@'` followed by the parameter name. Parameter
-    names consist of any combination of letters, numbers, and underscores.
-    Parameters can appear anywhere that a literal value is expected.  The same
-    parameter name can be used more than once, for example:   `"WHERE id >
-    @msg_id AND id < @msg_id + 100"`  It is an error to execute an SQL
-    statement with unbound parameters.  Parameter values are specified using
-    `params`, which is a JSON object whose keys are parameter names, and whose
-    values are the corresponding parameter values.
+    r"""Parameter names and values that bind to placeholders in the DML
+    string.  A parameter placeholder consists of the `@` character followed by
+    the parameter name (for example, `@firstName`). Parameter names can
+    contain letters, numbers, and underscores.  Parameters can appear anywhere
+    that a literal value is expected.  The same parameter name can be used
+    more than once, for example:  `"WHERE id > @msg_id AND id < @msg_id +
+    100"`  It is an error to execute a SQL statement with unbound parameters.
 
     Messages:
       AdditionalProperty: An additional property for a ParamsValue object.

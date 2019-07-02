@@ -698,39 +698,6 @@
               }
             }
           }
-        },
-        "operations": {
-          "resources": {
-            "manualRecognitionTasks": {
-              "methods": {
-                "get": {
-                  "id": "speech.projects.operations.manualRecognitionTasks.get",
-                  "path": "v1/{+name}",
-                  "flatPath": "v1/projects/{projectsId}/operations/manualRecognitionTasks/{manualRecognitionTasksId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "The name of the operation resource.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/operations\/manualRecognitionTasks\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
-                }
-              }
-            }
-          }
         }
       }
     },

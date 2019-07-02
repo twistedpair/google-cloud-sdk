@@ -34,6 +34,13 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  PROJECTS = (
+      'projects',
+      'projects/{projectsId}',
+      {},
+      [u'projectsId'],
+      True
+  )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectsId}/locations/{locationsId}',
@@ -48,24 +55,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
-      },
-      [u'name'],
-      True
-  )
-  PROJECTS_OPERATIONS = (
-      'projects.operations',
-      'projects/{projectsId}',
-      {},
-      [u'projectsId'],
-      True
-  )
-  PROJECTS_OPERATIONS_MANUALRECOGNITIONTASKS = (
-      'projects.operations.manualRecognitionTasks',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/operations/manualRecognitionTasks/'
-              '{manualRecognitionTasksId}',
       },
       [u'name'],
       True

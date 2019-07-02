@@ -699,6 +699,7 @@ class Dataset(_messages.Message):
     creationTime: [Output-only] The time when this dataset was created, in
       milliseconds since the epoch.
     datasetReference: [Required] A reference that identifies the dataset.
+    defaultEncryptionConfiguration: A EncryptionConfiguration attribute.
     defaultPartitionExpirationMs: [Optional] The default partition expiration
       for all partitioned tables in the dataset, in milliseconds. Once this
       property is set, all newly-created partitioned tables in the dataset
@@ -815,17 +816,18 @@ class Dataset(_messages.Message):
   access = _messages.MessageField('AccessValueListEntry', 1, repeated=True)
   creationTime = _messages.IntegerField(2)
   datasetReference = _messages.MessageField('DatasetReference', 3)
-  defaultPartitionExpirationMs = _messages.IntegerField(4)
-  defaultTableExpirationMs = _messages.IntegerField(5)
-  description = _messages.StringField(6)
-  etag = _messages.StringField(7)
-  friendlyName = _messages.StringField(8)
-  id = _messages.StringField(9)
-  kind = _messages.StringField(10, default=u'bigquery#dataset')
-  labels = _messages.MessageField('LabelsValue', 11)
-  lastModifiedTime = _messages.IntegerField(12)
-  location = _messages.StringField(13)
-  selfLink = _messages.StringField(14)
+  defaultEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 4)
+  defaultPartitionExpirationMs = _messages.IntegerField(5)
+  defaultTableExpirationMs = _messages.IntegerField(6)
+  description = _messages.StringField(7)
+  etag = _messages.StringField(8)
+  friendlyName = _messages.StringField(9)
+  id = _messages.StringField(10)
+  kind = _messages.StringField(11, default=u'bigquery#dataset')
+  labels = _messages.MessageField('LabelsValue', 12)
+  lastModifiedTime = _messages.IntegerField(13)
+  location = _messages.StringField(14)
+  selfLink = _messages.StringField(15)
 
 
 class DatasetList(_messages.Message):
@@ -1863,6 +1865,10 @@ class JobStatistics(_messages.Message):
     quotaDeferments: [Output-only] Quotas which delayed this job's start time.
     reservationUsage: [Output-only] Job resource usage breakdown by
       reservation.
+    reservation_id: [Output-only] Name of the primary reservation assigned to
+      this job. Note that this could be different than reservations reported
+      in the reservation usage field if parent reservations were used to
+      execute this job.
     startTime: [Output-only] Start time of this job, in milliseconds since the
       epoch. This field will be present when the job transitions from the
       PENDING state to either RUNNING or DONE.
@@ -1894,9 +1900,10 @@ class JobStatistics(_messages.Message):
   query = _messages.MessageField('JobStatistics2', 8)
   quotaDeferments = _messages.StringField(9, repeated=True)
   reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 10, repeated=True)
-  startTime = _messages.IntegerField(11)
-  totalBytesProcessed = _messages.IntegerField(12)
-  totalSlotMs = _messages.IntegerField(13)
+  reservation_id = _messages.StringField(11)
+  startTime = _messages.IntegerField(12)
+  totalBytesProcessed = _messages.IntegerField(13)
+  totalSlotMs = _messages.IntegerField(14)
 
 
 class JobStatistics2(_messages.Message):

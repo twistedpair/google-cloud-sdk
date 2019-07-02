@@ -941,7 +941,7 @@
       "type": "object",
       "properties": {
         "installationId": {
-          "description": "The installationID that emmits the GitHub event.",
+          "description": "The installationID that emits the GitHub event.",
           "type": "string",
           "format": "int64"
         },
@@ -953,10 +953,6 @@
           "description": "Name of the repository.",
           "type": "string"
         },
-        "checkSuite": {
-          "description": "Output only. Indicates that a build was generated from a check suite\nevent.",
-          "$ref": "CheckSuiteFilter"
-        },
         "pullRequest": {
           "description": "filter to match changes in pull requests.",
           "$ref": "PullRequestFilter"
@@ -965,13 +961,6 @@
           "description": "filter to match changes in refs like branches, tags.",
           "$ref": "PushFilter"
         }
-      }
-    },
-    "CheckSuiteFilter": {
-      "id": "CheckSuiteFilter",
-      "description": "A CheckSuiteFilter is a filter that indicates that we should build on all\ncheck suite events.",
-      "type": "object",
-      "properties": {
       }
     },
     "PullRequestFilter": {

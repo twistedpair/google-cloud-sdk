@@ -1168,16 +1168,6 @@ class SpeechProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class SpeechProjectsOperationsManualRecognitionTasksGetRequest(_messages.Message):
-  r"""A SpeechProjectsOperationsManualRecognitionTasksGetRequest object.
-
-  Fields:
-    name: The name of the operation resource.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class SpeechRecognitionAlternative(_messages.Message):
   r"""Alternative hypotheses (a.k.a. n-best list).
 

@@ -963,8 +963,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListWorkerPoolsRequest(_mess
       presence. Parenthesis determine AND/OR precedence. In space separated
       restrictions, AND is implicit, e.g. "a = b x = y" is equivalent to "a =
       b AND x = y".  Example filter: configuration.labels.key1 = * AND (state
-      = RUNNING OR state = UPDATING)  This field is currently ignored in all
-      requests.
+      = RUNNING OR state = UPDATING)
     parent: Resource name of the instance. Format:
       `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
   """
@@ -1010,8 +1009,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
     LabelsValue: Labels associated with the workers. Label keys and values can
       be no longer than 63 characters, can only contain lowercase letters,
       numeric characters, underscores and dashes. International letters are
-      permitted. Keys must start with a letter but values are optional. This
-      field is currently ignored in all requests.
+      permitted. Keys must start with a letter but values are optional. There
+      can not be more than 64 labels per resource.
 
   Fields:
     diskSizeGb: Required. Size of the disk attached to the worker, in GB. See
@@ -1022,8 +1021,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
     labels: Labels associated with the workers. Label keys and values can be
       no longer than 63 characters, can only contain lowercase letters,
       numeric characters, underscores and dashes. International letters are
-      permitted. Keys must start with a letter but values are optional. This
-      field is currently ignored in all requests.
+      permitted. Keys must start with a letter but values are optional. There
+      can not be more than 64 labels per resource.
     machineType: Required. Machine type of the worker, such as
       `n1-standard-2`. See https://cloud.google.com/compute/docs/machine-types
       for a list of supported machine types. Note that `f1-micro` and
@@ -1041,8 +1040,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
     r"""Labels associated with the workers. Label keys and values can be no
     longer than 63 characters, can only contain lowercase letters, numeric
     characters, underscores and dashes. International letters are permitted.
-    Keys must start with a letter but values are optional. This field is
-    currently ignored in all requests.
+    Keys must start with a letter but values are optional. There can not be
+    more than 64 labels per resource.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2118,8 +2117,7 @@ class RemotebuildexecutionProjectsInstancesWorkerpoolsListRequest(_messages.Mess
       presence. Parenthesis determine AND/OR precedence. In space separated
       restrictions, AND is implicit, e.g. "a = b x = y" is equivalent to "a =
       b AND x = y".  Example filter: configuration.labels.key1 = * AND (state
-      = RUNNING OR state = UPDATING)  This field is currently ignored in all
-      requests.
+      = RUNNING OR state = UPDATING)
     parent: Resource name of the instance. Format:
       `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
   """

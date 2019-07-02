@@ -234,7 +234,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only.\nThe resource name of the instance, in the format\nprojects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}.",
+          "description": "Output only. The resource name of the instance, in the format\nprojects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}.",
           "type": "string"
         },
         "description": {
@@ -242,7 +242,7 @@
           "type": "string"
         },
         "state": {
-          "description": "Output only.\nThe instance state.",
+          "description": "Output only. The instance state.",
           "enumDescriptions": [
             "State not set.",
             "The instance is being created.",
@@ -262,11 +262,11 @@
           ]
         },
         "statusMessage": {
-          "description": "Output only.\nAdditional information about the instance state, if available.",
+          "description": "Output only. Additional information about the instance state, if available.",
           "type": "string"
         },
         "createTime": {
-          "description": "Output only.\nThe time when the instance was created.",
+          "description": "Output only. The time when the instance was created.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -356,7 +356,7 @@
           "type": "string"
         },
         "ipAddresses": {
-          "description": "Output only.\nIPv4 addresses in the format\n{octet 1}.{octet 2}.{octet 3}.{octet 4} or IPv6 addresses in the format\n{block 1}:{block 2}:{block 3}:{block 4}:{block 5}:{block 6}:{block\n7}:{block 8}.",
+          "description": "Output only. IPv4 addresses in the format\n{octet 1}.{octet 2}.{octet 3}.{octet 4} or IPv6 addresses in the format\n{block 1}:{block 2}:{block 3}:{block 4}:{block 5}:{block 6}:{block\n7}:{block 8}.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1014,7 +1014,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Output only.\nThe resource name of the instance, in the format\nprojects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}.",
+                      "description": "Output only. The resource name of the instance, in the format\nprojects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",

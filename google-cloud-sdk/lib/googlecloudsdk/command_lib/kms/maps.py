@@ -28,6 +28,14 @@ DIGESTS = {'sha256', 'sha384', 'sha512'}
 ALGORITHM_ENUM = MESSAGES.CryptoKeyVersionTemplate.AlgorithmValueValuesEnum
 ALGORITHM_MAPPER = arg_utils.ChoiceEnumMapper('algorithm_enum', ALGORITHM_ENUM)
 
+ALGORITHM_ENUM_FOR_IMPORT = MESSAGES.ImportCryptoKeyVersionRequest.AlgorithmValueValuesEnum
+ALGORITHM_MAPPER_FOR_IMPORT = arg_utils.ChoiceEnumMapper(
+    'algorithm_enum_for_import', ALGORITHM_ENUM_FOR_IMPORT)
+
+IMPORT_METHOD_ENUM = MESSAGES.ImportJob.ImportMethodValueValuesEnum
+IMPORT_METHOD_MAPPER = arg_utils.ChoiceEnumMapper('import_method_enum',
+                                                  IMPORT_METHOD_ENUM)
+
 PURPOSE_ENUM = MESSAGES.CryptoKey.PurposeValueValuesEnum
 PURPOSE_MAP = {
     'encryption': PURPOSE_ENUM.ENCRYPT_DECRYPT,
@@ -39,6 +47,10 @@ PROTECTION_LEVEL_ENUM = (
     MESSAGES.CryptoKeyVersionTemplate.ProtectionLevelValueValuesEnum)
 PROTECTION_LEVEL_MAPPER = arg_utils.ChoiceEnumMapper('protection_level_enum',
                                                      PROTECTION_LEVEL_ENUM)
+IMPORT_PROTECTION_LEVEL_ENUM = (
+    MESSAGES.ImportJob.ProtectionLevelValueValuesEnum)
+IMPORT_PROTECTION_LEVEL_MAPPER = arg_utils.ChoiceEnumMapper(
+    'protection_level_enum', IMPORT_PROTECTION_LEVEL_ENUM)
 
 # Add new algorithms according to their purposes here.
 VALID_ALGORITHMS_MAP = {

@@ -41,7 +41,7 @@ class Route(k8s_object.KubernetesObject):
 
   @property
   def domain(self):
-    return self._m.status.domain
+    return self._m.status.url or self._m.status.domain
 
   @property
   def active_revisions(self):

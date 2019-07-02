@@ -575,7 +575,9 @@ class GameServerClusterConnectionInfo(_messages.Message):
     gkeName: This is the gkeName where the game server cluster is installed.
       It must the format "projects/*/locations/*/clusters/*". For example,
       "projects/my-project/locations/us-central1/clusters/test".
-    namespace: Namespace for Kubernetes API server endpoint.
+    namespace: Namespace designated on the game server cluster where the game
+      server instances will be created. The namespace existence will be
+      validated during creation.
   """
 
   gkeName = _messages.StringField(1)

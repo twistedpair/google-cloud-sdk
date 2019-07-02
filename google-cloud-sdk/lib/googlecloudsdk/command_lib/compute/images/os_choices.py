@@ -65,26 +65,4 @@ OS_CHOICES_IMAGE_IMPORT_GA = [
 ]
 OS_CHOICES_IMAGE_IMPORT_BETA = OS_CHOICES_IMAGE_IMPORT_GA + []
 OS_CHOICES_IMAGE_IMPORT_ALPHA = OS_CHOICES_IMAGE_IMPORT_BETA + []
-
-OS_CHOICES_INSTANCE_IMPORT_ALPHA = [
-    'debian-8',
-    'debian-9',
-    'centos-6',
-    'centos-7',
-    'rhel-6',
-    'rhel-7',
-    'rhel-6-byol',
-    'rhel-7-byol',
-    'ubuntu-1404',
-    'ubuntu-1604',
-    'windows-2008r2',
-    'windows-2012',
-    'windows-2012r2',
-    'windows-2016',
-    'windows-2008r2-byol',
-    'windows-2012-byol',
-    'windows-2012r2-byol',
-    'windows-2016-byol',
-    'windows-7-byol',
-    'windows-10-byol',
-]
+OS_CHOICES_INSTANCE_IMPORT_BETA = OS_CHOICES_IMAGE_IMPORT_GA

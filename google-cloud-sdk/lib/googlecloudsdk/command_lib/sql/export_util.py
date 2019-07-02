@@ -36,10 +36,7 @@ def AddBaseExportFlags(parser):
       'will be stored. The URI is in the form gs://bucketName/fileName. '
       'If the file already exists, the operation fails. If the filename '
       'ends with .gz, the contents are compressed.')
-  flags.AddDatabaseList(
-      parser,
-      'Database (for example, guestbook) from which the export is '
-      'made. If unspecified, all databases are exported.')
+  flags.AddDatabaseList(parser, flags.DEFAULT_DATABASE_LIST_EXPORT_HELP_TEXT)
 
 
 def RunExportCommand(args, client, export_context):

@@ -45,7 +45,9 @@ class HadoopBase(job_base.JobBase):
         type=arg_parsers.ArgList(),
         metavar='FILE',
         default=[],
-        help='Comma separated list of files to be provided to the job.')
+        help='Comma separated list of file paths to be provided to the job. '
+             'A file path can either be a path to a local file or a path '
+             'to a file already in a Cloud Storage bucket.')
     parser.add_argument(
         '--archives',
         type=arg_parsers.ArgList(),
