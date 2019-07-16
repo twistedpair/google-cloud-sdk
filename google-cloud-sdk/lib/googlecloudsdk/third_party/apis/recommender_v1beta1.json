@@ -122,26 +122,26 @@
           }
         },
         "nextPageToken": {
-          "description": "If there might be more results than those appearing in this response, then\n`next_page_token` is included. To get the next set of results, call this\nmethod again using the value of `next_page_token` as `page_token`.",
+          "description": "A token that can be used to request the next page of results. This field is\nempty if there are no additional results.",
           "type": "string"
         }
       }
     },
     "GoogleCloudRecommenderV1beta1Recommendation": {
       "id": "GoogleCloudRecommenderV1beta1Recommendation",
-      "description": "A recommendation along with a suggested action. E.g., a rightsizing\nrecommendation for an underutilized VM, next product suggestion for billing\naccount.",
+      "description": "A recommendation along with a suggested action. E.g., a rightsizing\nrecommendation for an underutilized VM, IAM role recommendations, etc",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Name of recommendation.\n\n* A project recommendation is represented as\n  projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\/recommendations\/[RECOMMENDATION_ID]",
+          "description": "Name of recommendation.\n\nA project recommendation is represented as\n  projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\/recommendations\/[RECOMMENDATION_ID]",
           "type": "string"
         },
         "description": {
           "description": "Free-form human readable summary in English. The maximum length is 500\ncharacters.",
           "type": "string"
         },
-        "recommenderVariant": {
-          "description": "Contains an identifier for a variant of recommendations produced for the\nsame recommender. Variant is a function of content and impact, meaning a\nnew variant will be added when either content or primary impact category\nchanges. The schema of the recommendation will be constant for a given\nrecommender + variant.\nExamples:\n  For recommender = \"google.compute.instance.MachineTypeRecommender\",\n  recommender_variant can be one of \"DOWNSIZE\"\/\"UPSIZE\"\n\n  For recommender = \"google.iam.policy.RoleRecommender\",\n  recommender_variant can be one of \"REMOVE_ROLE\"\/\"REPLACE_ROLE\"",
+        "recommenderSubtype": {
+          "description": "Contains an identifier for a subtype of recommendations produced for the\nsame recommender. Subtype is a function of content and impact, meaning a\nnew subtype will be added when either content or primary impact category\nchanges.\n\nExamples:\n  For recommender = \"google.iam.policy.RoleRecommender\",\n  recommender_subtype can be one of \"REMOVE_ROLE\"\/\"REPLACE_ROLE\"",
           "type": "string"
         },
         "lastRefreshTime": {
@@ -161,7 +161,7 @@
           }
         },
         "content": {
-          "description": "Content of the recommendation describing why a recommendation was\ngenerated and what the changes are.",
+          "description": "Content of the recommendation describing recommended changes to resources.",
           "$ref": "GoogleCloudRecommenderV1beta1RecommendationContent"
         },
         "stateInfo": {
@@ -169,7 +169,7 @@
           "$ref": "GoogleCloudRecommenderV1beta1RecommendationStateInfo"
         },
         "etag": {
-          "description": "Fingerprint of the Recommendation. Provides optimistics locking when\nupdating states.",
+          "description": "Fingerprint of the Recommendation. Provides optimistic locking when\nupdating states.",
           "type": "string"
         }
       }
@@ -240,7 +240,7 @@
     },
     "GoogleCloudRecommenderV1beta1RecommendationContent": {
       "id": "GoogleCloudRecommenderV1beta1RecommendationContent",
-      "description": "Contains reasoning around why a recommendation is generated, what resources\nare changing and how they are changing.",
+      "description": "Contains what resources are changing and how they are changing.",
       "type": "object",
       "properties": {
         "operationGroups": {
@@ -321,7 +321,7 @@
             "Recommendation is in claimed state. Recommendations content is\nimmutable and cannot be updated by Google.\n\nCLAIMED recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
             "Recommendation is in succeeded state. Recommendations content is\nimmutable and cannot be updated by Google.\n\nSUCCEEDED recommendations can be marked as SUCCEEDED, or FAILED.",
             "Recommendation is in failed state. Recommendations content is immutable\nand cannot be updated by Google.\n\nFAILED recommendations can be marked as SUCCEEDED, or FAILED.",
-            "Recommendation is in dismissed state.\n\nDISMISSED recommendations can be marked as ACTIVE."
+            "Recommendation is in dismissed state. Recommendation content can be\nupdated by Google.\n\nDISMISSED recommendations can be marked as ACTIVE."
           ],
           "type": "string",
           "enum": [
@@ -344,11 +344,11 @@
     },
     "GoogleCloudRecommenderV1beta1MarkRecommendationClaimedRequest": {
       "id": "GoogleCloudRecommenderV1beta1MarkRecommendationClaimedRequest",
-      "description": "Request for the `MarkClaimed` Method.",
+      "description": "Request for the `MarkRecommendationClaimed` Method.",
       "type": "object",
       "properties": {
         "stateMetadata": {
-          "description": "State properties user wish to include with this state.  Full replace of\nthe current state_metadata.",
+          "description": "State properties to include with this state. Overwrites any existing\n`state_metadata`.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -362,11 +362,11 @@
     },
     "GoogleCloudRecommenderV1beta1MarkRecommendationSucceededRequest": {
       "id": "GoogleCloudRecommenderV1beta1MarkRecommendationSucceededRequest",
-      "description": "Request for the `MarkSucceeded` Method.",
+      "description": "Request for the `MarkRecommendationSucceeded` Method.",
       "type": "object",
       "properties": {
         "stateMetadata": {
-          "description": "State properties user wish to include with this state.  Full replace of\nthe current state_metadata.",
+          "description": "State properties to include with this state. Overwrites any existing\n`state_metadata`.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -380,18 +380,18 @@
     },
     "GoogleCloudRecommenderV1beta1MarkRecommendationFailedRequest": {
       "id": "GoogleCloudRecommenderV1beta1MarkRecommendationFailedRequest",
-      "description": "Request for the `MarkFailed` Method.",
+      "description": "Request for the `MarkRecommendationFailed` Method.",
       "type": "object",
       "properties": {
         "stateMetadata": {
-          "description": "State properties user wish to include with this state.  Full replace of\nthe current state_metadata.",
+          "description": "State properties to include with this state. Overwrites any existing\n`state_metadata`.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "etag": {
-          "description": "Fingerprint of the Recommendation. Provides optimistics locking.",
+          "description": "Fingerprint of the Recommendation. Provides optimistic locking.",
           "type": "string"
         }
       }
@@ -420,13 +420,13 @@
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "Optional. The maximum number of results to return from this request.\nNon-positive values are ignored. The presence of `next_page_token` in the\nresponse indicates that more results might be available.\nIf not specified, the default page_size is 50.",
+                          "description": "Optional. The maximum number of results to return from this request.\nNon-positive values are ignored. If not specified, the server will\ndetermine the number of results to return.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
                         },
                         "pageToken": {
-                          "description": "Optional. If present, retrieves the next batch of results from the\npreceding call to this method. `page_token` must be the value of\n`next_page_token` from the previous response. The values of other method\nparameters should be identical to those in the previous call.",
+                          "description": "Optional. If present, retrieves the next batch of results from the\npreceding call to this method. `page_token` must be the value of\n`next_page_token` from the previous response. The values of other method\nparameters must be identical to those in the previous call.",
                           "location": "query",
                           "type": "string"
                         },
@@ -445,7 +445,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists recommendations for a Cloud project and requires the\nrecommender.*.list IAM permission."
+                      "description": "Lists recommendations for a Cloud project. Requires the recommender.*.list\nIAM permission for the specified recommender."
                     },
                     "get": {
                       "id": "recommender.projects.locations.recommenders.recommendations.get",
@@ -470,7 +470,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets the requested recommendation and requires the recommender.*.get\nIAM permission."
+                      "description": "Gets the requested recommendation. Requires the recommender.*.get\nIAM permission for the specified recommender."
                     },
                     "markClaimed": {
                       "id": "recommender.projects.locations.recommenders.recommendations.markClaimed",
@@ -498,7 +498,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Mark the Recommendation State as Claimed. Users can use this method to\nindicate to the Recommender API that they are starting to apply the\nrecommendation themselves. This stops the recommendation content from being\nupdated.\n\nMarkClaimed can be applied to recommendations in CLAIMED, or ACTIVE state.\n\nrecommender.*.update IAM permission is required to make this change."
+                      "description": "Mark the Recommendation State as Claimed. Users can use this method to\nindicate to the Recommender API that they are starting to apply the\nrecommendation themselves. This stops the recommendation content from being\nupdated.\n\nMarkRecommendationClaimed can be applied to recommendations in CLAIMED,\nSUCCEEDED, FAILED, or ACTIVE state.\n\nRequires the recommender.*.update IAM permission for the specified\nrecommender."
                     },
                     "markSucceeded": {
                       "id": "recommender.projects.locations.recommenders.recommendations.markSucceeded",
@@ -526,7 +526,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Mark the Recommendation State as Succeeded. Users can use this method to\nindicate to the Recommender API that they have applied the recommendation\nthemselves, and the operation was successful. This stops the recommendation\ncontent from being updated.\n\nMarkSucceeded can be applied to recommendations in ACTIVE, CLAIMED,\nSUCCEEDED, or FAILED state.\n\nrecommender.*.update IAM permission is required to make this change."
+                      "description": "Mark the Recommendation State as Succeeded. Users can use this method to\nindicate to the Recommender API that they have applied the recommendation\nthemselves, and the operation was successful. This stops the recommendation\ncontent from being updated.\n\nMarkRecommendationSucceeded can be applied to recommendations in ACTIVE,\nCLAIMED, SUCCEEDED, or FAILED state.\n\nRequires the recommender.*.update IAM permission for the specified\nrecommender."
                     },
                     "markFailed": {
                       "id": "recommender.projects.locations.recommenders.recommendations.markFailed",
@@ -554,7 +554,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Mark the Recommendation State as Failed. Users can use this method to\nindicate to the Recommender API that they have applied the recommendation\nthemselves, and the operation failed. This stops the recommendation content\nfrom being updated.\n\nMarkFailed can be applied to recommendations in ACTIVE, CLAIMED, SUCCEEDED,\nor FAILED state.\n\nrecommender.*.update IAM permission is required to make this change."
+                      "description": "Mark the Recommendation State as Failed. Users can use this method to\nindicate to the Recommender API that they have applied the recommendation\nthemselves, and the operation failed. This stops the recommendation content\nfrom being updated.\n\nMarkRecommendationFailed can be applied to recommendations in ACTIVE,\nCLAIMED, SUCCEEDED, or FAILED state.\n\nRequires the recommender.*.update IAM permission for the specified\nrecommender."
                     }
                   }
                 }

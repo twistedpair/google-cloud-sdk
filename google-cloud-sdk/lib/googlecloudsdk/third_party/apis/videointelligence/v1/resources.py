@@ -24,16 +24,6 @@ DOCS_URL = 'https://cloud.google.com/video-intelligence/docs/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
-  OPERATIONS = (
-      'operations',
-      'operations/{+name}',
-      {
-          '':
-              'operations/{operationsId}',
-      },
-      [u'name'],
-      True
-  )
   OPERATIONS_PROJECTS = (
       'operations.projects',
       'operations/projects/{projectsId}',

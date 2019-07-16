@@ -242,6 +242,8 @@ class _Sections(object):
     billing: Section, The section containing billing properties for the Cloud
       SDK.
     builds: Section, The section containing builds properties for the Cloud SDK.
+    build_artifacts: Section, The section containing build artifacts properties
+      for the Cloud SDK.
     component_manager: Section, The section containing properties for the
       component_manager.
     composer: Section, The section containing composer properties for the Cloud
@@ -311,6 +313,7 @@ class _Sections(object):
     self.auth = _SectionAuth()
     self.billing = _SectionBilling()
     self.builds = _SectionBuilds()
+    self.build_artifacts = _SectionBuildArtifacts()
     self.component_manager = _SectionComponentManager()
     self.composer = _SectionComposer()
     self.compute = _SectionCompute()
@@ -350,6 +353,7 @@ class _Sections(object):
         self.auth,
         self.billing,
         self.builds,
+        self.build_artifacts,
         self.component_manager,
         self.composer,
         self.compute,
@@ -824,7 +828,7 @@ class _SectionGameServices(_Section):
     super(_SectionGameServices, self).__init__('game_services')
     self.location = self._Add(
         'location',
-        default='us-central1',
+        default='global',
         help_text='Default location to use when working with Cloud Game '
         'Services resources. When a `--location` flag is required but not '
         'provided, the command will fall back to this value.')
@@ -946,6 +950,19 @@ class _SectionBuilds(_Section):
         hidden=True,
         help_text='Kaniko builder image to use when use_kaniko=True. Defaults '
         'to gcr.io/kaniko-project/executor:latest')
+
+
+class _SectionBuildArtifacts(_Section):
+  """Contains the properties for the 'build_artifacts' section."""
+
+  def __init__(self):
+    super(_SectionBuildArtifacts, self).__init__('build_artifacts')
+
+    self.repository = self._Add(
+        'repository',
+        help_text='Default repository to use when working with Cloud '
+        'Build Artifacts resources. When a `repository` is required but not '
+        'provided by a flag, the command will fall back to this value, if set.')
 
 
 class _SectionContainer(_Section):
@@ -1613,6 +1630,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.bigtableclusteradmin = self._Add('bigtableclusteradmin')
     self.binaryauthorization = self._Add('binaryauthorization')
     self.bio = self._Add('bio')
+    self.buildartifacts = self._Add('buildartifacts')
     self.categorymanager = self._Add('categorymanager')
     self.cloudbilling = self._Add('cloudbilling')
     self.cloudbuild = self._Add('cloudbuild')

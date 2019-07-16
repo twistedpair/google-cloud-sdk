@@ -228,7 +228,7 @@ set.
         method_id=u'gkehub.projects.locations.memberships.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1beta1/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'GkehubProjectsLocationsMembershipsGetIamPolicyRequest',

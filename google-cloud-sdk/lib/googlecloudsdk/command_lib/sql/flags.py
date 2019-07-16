@@ -192,14 +192,13 @@ def AddActivationPolicy(parser):
   ).AddToParser(parser)
 
 
-def AddAssignIp(parser, show_negated_in_help=False):
-  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+def AddAssignIp(parser):
   parser.add_argument(
       '--assign-ip',
-      help='Assign an IPv4 external address to this instance.  This setting is '
-           'enabled by default.  To create an instance which only has a '
-           'private IP, use --no-assign-ip and specify a private network.',
-      **kwargs)
+      help='Assign an IPv4 external address to this instance. This setting is '
+           'enabled by default when creating a new instance, but can be '
+           'disabled to use private IP connectivity.',
+      action=arg_parsers.StoreTrueFalseAction)
 
 
 def AddAuthorizedGAEApps(parser, update=False):

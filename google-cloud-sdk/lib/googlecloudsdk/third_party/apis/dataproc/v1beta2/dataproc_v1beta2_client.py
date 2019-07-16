@@ -156,7 +156,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
         method_id=u'dataproc.projects.locations.autoscalingPolicies.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1beta2/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'DataprocProjectsLocationsAutoscalingPoliciesGetIamPolicyRequest',
@@ -382,7 +382,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
         method_id=u'dataproc.projects.locations.workflowTemplates.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1beta2/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'DataprocProjectsLocationsWorkflowTemplatesGetIamPolicyRequest',
@@ -391,7 +391,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Instantiate(self, request, global_params=None):
-      r"""Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata.On successful completion, Operation.response will be Empty.
+      r"""Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata. Also see Using WorkflowMetadata.On successful completion, Operation.response will be Empty.
 
       Args:
         request: (DataprocProjectsLocationsWorkflowTemplatesInstantiateRequest) input message
@@ -418,7 +418,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def InstantiateInline(self, request, global_params=None):
-      r"""Instantiates a template and begins execution.This method is equivalent to executing the sequence CreateWorkflowTemplate, InstantiateWorkflowTemplate, DeleteWorkflowTemplate.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata.On successful completion, Operation.response will be Empty.
+      r"""Instantiates a template and begins execution.This method is equivalent to executing the sequence CreateWorkflowTemplate, InstantiateWorkflowTemplate, DeleteWorkflowTemplate.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata. Also see Using WorkflowMetadata.On successful completion, Operation.response will be Empty.
 
       Args:
         request: (DataprocProjectsLocationsWorkflowTemplatesInstantiateInlineRequest) input message
@@ -672,7 +672,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
         method_id=u'dataproc.projects.regions.autoscalingPolicies.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1beta2/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'DataprocProjectsRegionsAutoscalingPoliciesGetIamPolicyRequest',
@@ -921,7 +921,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
         method_id=u'dataproc.projects.regions.clusters.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1beta2/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'DataprocProjectsRegionsClustersGetIamPolicyRequest',
@@ -1142,7 +1142,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
         method_id=u'dataproc.projects.regions.jobs.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1beta2/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'DataprocProjectsRegionsJobsGetIamPolicyRequest',
@@ -1392,7 +1392,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
         method_id=u'dataproc.projects.regions.operations.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1beta2/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'DataprocProjectsRegionsOperationsGetIamPolicyRequest',
@@ -1591,7 +1591,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
         method_id=u'dataproc.projects.regions.workflowTemplates.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1beta2/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'DataprocProjectsRegionsWorkflowTemplatesGetIamPolicyRequest',
@@ -1600,7 +1600,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Instantiate(self, request, global_params=None):
-      r"""Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata.On successful completion, Operation.response will be Empty.
+      r"""Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata. Also see Using WorkflowMetadata.On successful completion, Operation.response will be Empty.
 
       Args:
         request: (DataprocProjectsRegionsWorkflowTemplatesInstantiateRequest) input message
@@ -1627,7 +1627,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def InstantiateInline(self, request, global_params=None):
-      r"""Instantiates a template and begins execution.This method is equivalent to executing the sequence CreateWorkflowTemplate, InstantiateWorkflowTemplate, DeleteWorkflowTemplate.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata.On successful completion, Operation.response will be Empty.
+      r"""Instantiates a template and begins execution.This method is equivalent to executing the sequence CreateWorkflowTemplate, InstantiateWorkflowTemplate, DeleteWorkflowTemplate.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata. Also see Using WorkflowMetadata.On successful completion, Operation.response will be Empty.
 
       Args:
         request: (DataprocProjectsRegionsWorkflowTemplatesInstantiateInlineRequest) input message

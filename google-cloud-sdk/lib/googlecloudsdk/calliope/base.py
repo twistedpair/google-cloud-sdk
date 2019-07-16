@@ -104,9 +104,8 @@ class ReleaseTrack(object):
       '{0}(ALPHA){0} '.format(MARKDOWN_BOLD),
       'This command is currently in ALPHA and may change without notice. '
       'If this command fails with API permission errors despite specifying '
-      'the right project, you will have to apply for early access and have your'
-      ' projects registered on the API whitelist to use it. To do so, contact '
-      'Support at https://cloud.google.com/support/.')
+      'the right project, you may be trying to access an API with '
+      'an invitation-only early access whitelist.')
   _ALL = [GA, BETA, ALPHA]
 
   @staticmethod

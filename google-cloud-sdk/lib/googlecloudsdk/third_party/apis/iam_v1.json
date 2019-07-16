@@ -541,7 +541,7 @@
           }
         },
         "etag": {
-          "description": "`etag` is used for optimistic concurrency control as a way to help\nprevent simultaneous updates of a policy from overwriting each other.\nIt is strongly suggested that systems make use of the `etag` in the\nread-modify-write cycle to perform policy updates in order to avoid race\nconditions: An `etag` is returned in the response to `getIamPolicy`, and\nsystems are expected to put that etag in the request to `setIamPolicy` to\nensure that their change will be applied to the same version of the policy.\n\nIf no `etag` is provided in the call to `setIamPolicy`, then the existing\npolicy is overwritten blindly.",
+          "description": "`etag` is used for optimistic concurrency control as a way to help\nprevent simultaneous updates of a policy from overwriting each other.\nIt is strongly suggested that systems make use of the `etag` in the\nread-modify-write cycle to perform policy updates in order to avoid race\nconditions: An `etag` is returned in the response to `getIamPolicy`, and\nsystems are expected to put that etag in the request to `setIamPolicy` to\nensure that their change will be applied to the same version of the policy.\n\nIf no `etag` is provided in the call to `setIamPolicy`, then the existing\npolicy is overwritten.",
           "type": "string",
           "format": "byte"
         }
@@ -557,7 +557,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -594,7 +594,7 @@
     },
     "AuditConfig": {
       "id": "AuditConfig",
-      "description": "Specifies the audit configuration for a service.\nThe configuration determines which permission types are logged, and what\nidentities, if any, are exempted from logging.\nAn AuditConfig must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditLogConfig are exempted.\n\nExample Policy with multiple AuditConfigs:\n\n    {\n      \"audit_configs\": [\n        {\n          \"service\": \"allServices\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n              \"exempted_members\": [\n                \"user:foo@gmail.com\"\n              ]\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n            },\n            {\n              \"log_type\": \"ADMIN_READ\",\n            }\n          ]\n        },\n        {\n          \"service\": \"fooservice.googleapis.com\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n              \"exempted_members\": [\n                \"user:bar@gmail.com\"\n              ]\n            }\n          ]\n        }\n      ]\n    }\n\nFor fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts foo@gmail.com from DATA_READ logging, and\nbar@gmail.com from DATA_WRITE logging.",
+      "description": "Specifies the audit configuration for a service.\nThe configuration determines which permission types are logged, and what\nidentities, if any, are exempted from logging.\nAn AuditConfig must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditLogConfig are exempted.\n\nExample Policy with multiple AuditConfigs:\n\n    {\n      \"audit_configs\": [\n        {\n          \"service\": \"allServices\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n              \"exempted_members\": [\n                \"user:jose@example.com\"\n              ]\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n            },\n            {\n              \"log_type\": \"ADMIN_READ\",\n            }\n          ]\n        },\n        {\n          \"service\": \"sampleservice.googleapis.com\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n              \"exempted_members\": [\n                \"user:aliya@example.com\"\n              ]\n            }\n          ]\n        }\n      ]\n    }\n\nFor sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts jose@example.com from DATA_READ logging, and\naliya@example.com from DATA_WRITE logging.",
       "type": "object",
       "properties": {
         "service": {
@@ -612,7 +612,7 @@
     },
     "AuditLogConfig": {
       "id": "AuditLogConfig",
-      "description": "Provides the configuration for logging a type of permissions.\nExample:\n\n    {\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n          \"exempted_members\": [\n            \"user:foo@gmail.com\"\n          ]\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n        }\n      ]\n    }\n\nThis enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting\nfoo@gmail.com from DATA_READ logging.",
+      "description": "Provides the configuration for logging a type of permissions.\nExample:\n\n    {\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n          \"exempted_members\": [\n            \"user:jose@example.com\"\n          ]\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n        }\n      ]\n    }\n\nThis enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting\njose@example.com from DATA_READ logging.",
       "type": "object",
       "properties": {
         "logType": {
@@ -743,11 +743,11 @@
           "type": "string"
         },
         "title": {
-          "description": "Optional.  A human-readable title for the role.  Typically this\nis limited to 100 UTF-8 bytes.",
+          "description": "Optional. A human-readable title for the role.  Typically this\nis limited to 100 UTF-8 bytes.",
           "type": "string"
         },
         "description": {
-          "description": "Optional.  A human-readable description for the role.",
+          "description": "Optional. A human-readable description for the role.",
           "type": "string"
         },
         "includedPermissions": {
@@ -812,7 +812,7 @@
       "type": "object",
       "properties": {
         "roleId": {
-          "description": "The role id to use for this role.",
+          "description": "The role ID to use for this role.",
           "type": "string"
         },
         "role": {
@@ -925,6 +925,10 @@
         "apiDisabled": {
           "description": "The service API associated with the permission is not enabled.",
           "type": "boolean"
+        },
+        "primaryPermission": {
+          "description": "The preferred name for this permission. If present, then this permission is\nan alias of, and equivalent to, the listed primary_permission.",
+          "type": "string"
         }
       }
     },
@@ -1347,7 +1351,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT_UNIQUE_ID}'.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account.",
+                  "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT_UNIQUE_ID}`.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
@@ -1375,7 +1379,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT_UNIQUE_ID}'.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account.",
+                  "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
@@ -1492,6 +1496,12 @@
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "type": "string"
+                },
+                "options.requestedPolicyVersion": {
+                  "description": "Optional. The policy format version to be returned.\nAcceptable values are 0 and 1.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
                 }
               },
               "parameterOrder": [
@@ -1838,7 +1848,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The resource name of the parent resource in one of the following formats:\n`` (empty string) -- this refers to curated roles.\n`organizations\/{ORGANIZATION_ID}`\n`projects\/{PROJECT_ID}`",
+                  "description": "The `parent` parameter's value depends on the target resource for the\nrequest, namely\n[`roles`](\/iam\/reference\/rest\/v1\/roles),\n[`projects`](\/iam\/reference\/rest\/v1\/projects.roles), or\n[`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each\nresource type's `parent` value format is described below:\n\n* [`roles.list()`](\/iam\/reference\/rest\/v1\/roles\/list): An empty string.\n  This method doesn't require a resource; it simply returns all\n  [predefined roles](\/iam\/docs\/understanding-roles#predefined_roles) in\n  Cloud IAM. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/roles`\n\n* [`projects.roles.list()`](\/iam\/reference\/rest\/v1\/projects.roles\/list):\n  `projects\/{PROJECT_ID}`. This method lists all project-level\n  [custom roles](\/iam\/docs\/understanding-custom-roles).\n  Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles`\n\n* [`organizations.roles.list()`](\/iam\/reference\/rest\/v1\/organizations.roles\/list):\n  `organizations\/{ORGANIZATION_ID}`. This method lists all\n  organization-level [custom roles](\/iam\/docs\/understanding-custom-roles).\n  Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles`\n\nNote: Wildcard (*) values are invalid; you must specify a complete project\nID or organization ID.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -1888,7 +1898,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the role in one of the following formats:\n`roles\/{ROLE_NAME}`\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
+                  "description": "The `name` parameter's value depends on the target resource for the\nrequest, namely\n[`roles`](\/iam\/reference\/rest\/v1\/roles),\n[`projects`](\/iam\/reference\/rest\/v1\/projects.roles), or\n[`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each\nresource type's `name` value format is described below:\n\n* [`roles.get()`](\/iam\/reference\/rest\/v1\/roles\/get): `roles\/{ROLE_NAME}`.\n  This method returns results from all\n  [predefined roles](\/iam\/docs\/understanding-roles#predefined_roles) in\n  Cloud IAM. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/roles\/{ROLE_NAME}`\n\n* [`projects.roles.get()`](\/iam\/reference\/rest\/v1\/projects.roles\/get):\n  `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method returns only\n  [custom roles](\/iam\/docs\/understanding-custom-roles) that have been\n  created at the project level. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`\n\n* [`organizations.roles.get()`](\/iam\/reference\/rest\/v1\/organizations.roles\/get):\n  `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method\n  returns only [custom roles](\/iam\/docs\/understanding-custom-roles) that\n  have been created at the organization level. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`\n\nNote: Wildcard (*) values are invalid; you must specify a complete project\nID or organization ID.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/roles\/[^\/]+$",
@@ -1913,7 +1923,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "The resource name of the parent resource in one of the following formats:\n`organizations\/{ORGANIZATION_ID}`\n`projects\/{PROJECT_ID}`",
+                  "description": "The `parent` parameter's value depends on the target resource for the\nrequest, namely\n[`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or\n[`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each\nresource type's `parent` value format is described below:\n\n* [`projects.roles.create()`](\/iam\/reference\/rest\/v1\/projects.roles\/create):\n  `projects\/{PROJECT_ID}`. This method creates project-level\n  [custom roles](\/iam\/docs\/understanding-custom-roles).\n  Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles`\n\n* [`organizations.roles.create()`](\/iam\/reference\/rest\/v1\/organizations.roles\/create):\n  `organizations\/{ORGANIZATION_ID}`. This method creates organization-level\n  [custom roles](\/iam\/docs\/understanding-custom-roles). Example request\n  URL:\n  `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles`\n\nNote: Wildcard (*) values are invalid; you must specify a complete project\nID or organization ID.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -1941,7 +1951,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the role in one of the following formats:\n`roles\/{ROLE_NAME}`\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
+                  "description": "The `name` parameter's value depends on the target resource for the\nrequest, namely\n[`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or\n[`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each\nresource type's `name` value format is described below:\n\n* [`projects.roles.patch()`](\/iam\/reference\/rest\/v1\/projects.roles\/patch):\n  `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method updates only\n  [custom roles](\/iam\/docs\/understanding-custom-roles) that have been\n  created at the project level. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`\n\n* [`organizations.roles.patch()`](\/iam\/reference\/rest\/v1\/organizations.roles\/patch):\n  `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method\n  updates only [custom roles](\/iam\/docs\/understanding-custom-roles) that\n  have been created at the organization level. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`\n\nNote: Wildcard (*) values are invalid; you must specify a complete project\nID or organization ID.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/roles\/[^\/]+$",
@@ -1975,7 +1985,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the role in one of the following formats:\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
+                  "description": "The `name` parameter's value depends on the target resource for the\nrequest, namely\n[`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or\n[`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each\nresource type's `name` value format is described below:\n\n* [`projects.roles.delete()`](\/iam\/reference\/rest\/v1\/projects.roles\/delete):\n  `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method deletes only\n  [custom roles](\/iam\/docs\/understanding-custom-roles) that have been\n  created at the project level. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`\n\n* [`organizations.roles.delete()`](\/iam\/reference\/rest\/v1\/organizations.roles\/delete):\n  `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method\n  deletes only [custom roles](\/iam\/docs\/understanding-custom-roles) that\n  have been created at the organization level. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`\n\nNote: Wildcard (*) values are invalid; you must specify a complete project\nID or organization ID.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/roles\/[^\/]+$",
@@ -2006,7 +2016,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the role in one of the following formats:\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
+                  "description": "The `name` parameter's value depends on the target resource for the\nrequest, namely\n[`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or\n[`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each\nresource type's `name` value format is described below:\n\n* [`projects.roles.undelete()`](\/iam\/reference\/rest\/v1\/projects.roles\/undelete):\n  `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method undeletes\n  only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been\n  created at the project level. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`\n\n* [`organizations.roles.undelete()`](\/iam\/reference\/rest\/v1\/organizations.roles\/undelete):\n  `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method\n  undeletes only [custom roles](\/iam\/docs\/understanding-custom-roles) that\n  have been created at the organization level. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`\n\nNote: Wildcard (*) values are invalid; you must specify a complete project\nID or organization ID.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/roles\/[^\/]+$",
@@ -2060,7 +2070,7 @@
           "httpMethod": "GET",
           "parameters": {
             "parent": {
-              "description": "The resource name of the parent resource in one of the following formats:\n`` (empty string) -- this refers to curated roles.\n`organizations\/{ORGANIZATION_ID}`\n`projects\/{PROJECT_ID}`",
+              "description": "The `parent` parameter's value depends on the target resource for the\nrequest, namely\n[`roles`](\/iam\/reference\/rest\/v1\/roles),\n[`projects`](\/iam\/reference\/rest\/v1\/projects.roles), or\n[`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each\nresource type's `parent` value format is described below:\n\n* [`roles.list()`](\/iam\/reference\/rest\/v1\/roles\/list): An empty string.\n  This method doesn't require a resource; it simply returns all\n  [predefined roles](\/iam\/docs\/understanding-roles#predefined_roles) in\n  Cloud IAM. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/roles`\n\n* [`projects.roles.list()`](\/iam\/reference\/rest\/v1\/projects.roles\/list):\n  `projects\/{PROJECT_ID}`. This method lists all project-level\n  [custom roles](\/iam\/docs\/understanding-custom-roles).\n  Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles`\n\n* [`organizations.roles.list()`](\/iam\/reference\/rest\/v1\/organizations.roles\/list):\n  `organizations\/{ORGANIZATION_ID}`. This method lists all\n  organization-level [custom roles](\/iam\/docs\/understanding-custom-roles).\n  Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles`\n\nNote: Wildcard (*) values are invalid; you must specify a complete project\nID or organization ID.",
               "location": "query",
               "type": "string"
             },
@@ -2107,7 +2117,7 @@
           "httpMethod": "GET",
           "parameters": {
             "name": {
-              "description": "The resource name of the role in one of the following formats:\n`roles\/{ROLE_NAME}`\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
+              "description": "The `name` parameter's value depends on the target resource for the\nrequest, namely\n[`roles`](\/iam\/reference\/rest\/v1\/roles),\n[`projects`](\/iam\/reference\/rest\/v1\/projects.roles), or\n[`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each\nresource type's `name` value format is described below:\n\n* [`roles.get()`](\/iam\/reference\/rest\/v1\/roles\/get): `roles\/{ROLE_NAME}`.\n  This method returns results from all\n  [predefined roles](\/iam\/docs\/understanding-roles#predefined_roles) in\n  Cloud IAM. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/roles\/{ROLE_NAME}`\n\n* [`projects.roles.get()`](\/iam\/reference\/rest\/v1\/projects.roles\/get):\n  `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method returns only\n  [custom roles](\/iam\/docs\/understanding-custom-roles) that have been\n  created at the project level. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`\n\n* [`organizations.roles.get()`](\/iam\/reference\/rest\/v1\/organizations.roles\/get):\n  `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method\n  returns only [custom roles](\/iam\/docs\/understanding-custom-roles) that\n  have been created at the organization level. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`\n\nNote: Wildcard (*) values are invalid; you must specify a complete project\nID or organization ID.",
               "location": "path",
               "required": true,
               "pattern": "^roles\/[^\/]+$",
@@ -2138,7 +2148,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The resource name of the parent resource in one of the following formats:\n`` (empty string) -- this refers to curated roles.\n`organizations\/{ORGANIZATION_ID}`\n`projects\/{PROJECT_ID}`",
+                  "description": "The `parent` parameter's value depends on the target resource for the\nrequest, namely\n[`roles`](\/iam\/reference\/rest\/v1\/roles),\n[`projects`](\/iam\/reference\/rest\/v1\/projects.roles), or\n[`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each\nresource type's `parent` value format is described below:\n\n* [`roles.list()`](\/iam\/reference\/rest\/v1\/roles\/list): An empty string.\n  This method doesn't require a resource; it simply returns all\n  [predefined roles](\/iam\/docs\/understanding-roles#predefined_roles) in\n  Cloud IAM. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/roles`\n\n* [`projects.roles.list()`](\/iam\/reference\/rest\/v1\/projects.roles\/list):\n  `projects\/{PROJECT_ID}`. This method lists all project-level\n  [custom roles](\/iam\/docs\/understanding-custom-roles).\n  Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles`\n\n* [`organizations.roles.list()`](\/iam\/reference\/rest\/v1\/organizations.roles\/list):\n  `organizations\/{ORGANIZATION_ID}`. This method lists all\n  organization-level [custom roles](\/iam\/docs\/understanding-custom-roles).\n  Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles`\n\nNote: Wildcard (*) values are invalid; you must specify a complete project\nID or organization ID.",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+$",
@@ -2188,7 +2198,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the role in one of the following formats:\n`roles\/{ROLE_NAME}`\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
+                  "description": "The `name` parameter's value depends on the target resource for the\nrequest, namely\n[`roles`](\/iam\/reference\/rest\/v1\/roles),\n[`projects`](\/iam\/reference\/rest\/v1\/projects.roles), or\n[`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each\nresource type's `name` value format is described below:\n\n* [`roles.get()`](\/iam\/reference\/rest\/v1\/roles\/get): `roles\/{ROLE_NAME}`.\n  This method returns results from all\n  [predefined roles](\/iam\/docs\/understanding-roles#predefined_roles) in\n  Cloud IAM. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/roles\/{ROLE_NAME}`\n\n* [`projects.roles.get()`](\/iam\/reference\/rest\/v1\/projects.roles\/get):\n  `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method returns only\n  [custom roles](\/iam\/docs\/understanding-custom-roles) that have been\n  created at the project level. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`\n\n* [`organizations.roles.get()`](\/iam\/reference\/rest\/v1\/organizations.roles\/get):\n  `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method\n  returns only [custom roles](\/iam\/docs\/understanding-custom-roles) that\n  have been created at the organization level. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`\n\nNote: Wildcard (*) values are invalid; you must specify a complete project\nID or organization ID.",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",
@@ -2213,7 +2223,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "The resource name of the parent resource in one of the following formats:\n`organizations\/{ORGANIZATION_ID}`\n`projects\/{PROJECT_ID}`",
+                  "description": "The `parent` parameter's value depends on the target resource for the\nrequest, namely\n[`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or\n[`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each\nresource type's `parent` value format is described below:\n\n* [`projects.roles.create()`](\/iam\/reference\/rest\/v1\/projects.roles\/create):\n  `projects\/{PROJECT_ID}`. This method creates project-level\n  [custom roles](\/iam\/docs\/understanding-custom-roles).\n  Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles`\n\n* [`organizations.roles.create()`](\/iam\/reference\/rest\/v1\/organizations.roles\/create):\n  `organizations\/{ORGANIZATION_ID}`. This method creates organization-level\n  [custom roles](\/iam\/docs\/understanding-custom-roles). Example request\n  URL:\n  `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles`\n\nNote: Wildcard (*) values are invalid; you must specify a complete project\nID or organization ID.",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+$",
@@ -2241,7 +2251,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the role in one of the following formats:\n`roles\/{ROLE_NAME}`\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
+                  "description": "The `name` parameter's value depends on the target resource for the\nrequest, namely\n[`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or\n[`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each\nresource type's `name` value format is described below:\n\n* [`projects.roles.patch()`](\/iam\/reference\/rest\/v1\/projects.roles\/patch):\n  `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method updates only\n  [custom roles](\/iam\/docs\/understanding-custom-roles) that have been\n  created at the project level. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`\n\n* [`organizations.roles.patch()`](\/iam\/reference\/rest\/v1\/organizations.roles\/patch):\n  `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method\n  updates only [custom roles](\/iam\/docs\/understanding-custom-roles) that\n  have been created at the organization level. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`\n\nNote: Wildcard (*) values are invalid; you must specify a complete project\nID or organization ID.",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",
@@ -2275,7 +2285,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the role in one of the following formats:\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
+                  "description": "The `name` parameter's value depends on the target resource for the\nrequest, namely\n[`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or\n[`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each\nresource type's `name` value format is described below:\n\n* [`projects.roles.delete()`](\/iam\/reference\/rest\/v1\/projects.roles\/delete):\n  `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method deletes only\n  [custom roles](\/iam\/docs\/understanding-custom-roles) that have been\n  created at the project level. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`\n\n* [`organizations.roles.delete()`](\/iam\/reference\/rest\/v1\/organizations.roles\/delete):\n  `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method\n  deletes only [custom roles](\/iam\/docs\/understanding-custom-roles) that\n  have been created at the organization level. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`\n\nNote: Wildcard (*) values are invalid; you must specify a complete project\nID or organization ID.",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",
@@ -2306,7 +2316,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the role in one of the following formats:\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
+                  "description": "The `name` parameter's value depends on the target resource for the\nrequest, namely\n[`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or\n[`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each\nresource type's `name` value format is described below:\n\n* [`projects.roles.undelete()`](\/iam\/reference\/rest\/v1\/projects.roles\/undelete):\n  `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method undeletes\n  only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been\n  created at the project level. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`\n\n* [`organizations.roles.undelete()`](\/iam\/reference\/rest\/v1\/organizations.roles\/undelete):\n  `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method\n  undeletes only [custom roles](\/iam\/docs\/understanding-custom-roles) that\n  have been created at the organization level. Example request URL:\n  `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`\n\nNote: Wildcard (*) values are invalid; you must specify a complete project\nID or organization ID.",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",

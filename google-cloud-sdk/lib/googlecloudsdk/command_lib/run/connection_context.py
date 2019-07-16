@@ -219,7 +219,8 @@ class _KubeconfigConnectionContext(_ClusterConnectionContext):
       curr_ctx = self.kubeconfig.contexts[self.kubeconfig.current_context]
       self.cluster = self.kubeconfig.clusters[curr_ctx['context']['cluster']]
       ca_data = self.cluster['cluster']['certificate-authority-data']
-      endpoint = self.cluster['cluster']['server'].replace('https://', '')
+      parsed_server = urlparse.urlparse(self.cluster['cluster']['server'])
+      endpoint = parsed_server.hostname
     except KeyError as e:
       raise flags.KubeconfigError('Missing key `{}` in kubeconfig.'.format(
           e.args[0]))

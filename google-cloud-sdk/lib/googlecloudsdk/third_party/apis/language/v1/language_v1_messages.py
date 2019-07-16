@@ -22,7 +22,7 @@ class AnalyzeEntitiesRequest(_messages.Message):
       calculate offsets.
 
   Fields:
-    document: Input document.
+    document: Required. Input document.
     encodingType: The encoding type used by the API to calculate offsets.
   """
 
@@ -73,7 +73,7 @@ class AnalyzeEntitySentimentRequest(_messages.Message):
       calculate offsets.
 
   Fields:
-    document: Input document.
+    document: Required. Input document.
     encodingType: The encoding type used by the API to calculate offsets.
   """
 
@@ -125,7 +125,7 @@ class AnalyzeSentimentRequest(_messages.Message):
       calculate sentence offsets.
 
   Fields:
-    document: Input document.
+    document: Required. Input document.
     encodingType: The encoding type used by the API to calculate sentence
       offsets.
   """
@@ -179,7 +179,7 @@ class AnalyzeSyntaxRequest(_messages.Message):
       calculate offsets.
 
   Fields:
-    document: Input document.
+    document: Required. Input document.
     encodingType: The encoding type used by the API to calculate offsets.
   """
 
@@ -234,9 +234,9 @@ class AnnotateTextRequest(_messages.Message):
       calculate offsets.
 
   Fields:
-    document: Input document.
+    document: Required. Input document.
     encodingType: The encoding type used by the API to calculate offsets.
-    features: The enabled features.
+    features: Required. The enabled features.
   """
 
   class EncodingTypeValueValuesEnum(_messages.Enum):
@@ -313,7 +313,7 @@ class ClassifyTextRequest(_messages.Message):
   r"""The document classification request message.
 
   Fields:
-    document: Input document.
+    document: Required. Input document.
   """
 
   document = _messages.MessageField('Document', 1)

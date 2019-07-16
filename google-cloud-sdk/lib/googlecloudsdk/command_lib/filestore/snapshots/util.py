@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.command_lib.filestore import locations_util
 from googlecloudsdk.core import properties
 
 INSTANCE_NAME_TEMPLATE = 'projects/{}/locations/{}/instances/{}'
@@ -58,8 +57,7 @@ def AddInstanceNameToRequest(ref, args, req):
 def AddSnapshotNameToRequest(ref, args, req):
   """Python hook for yaml commands to process the source snapshot name."""
   project = properties.VALUES.core.project.Get(required=True)
-  location = (args.source_snapshot_region or
-              locations_util.GetRegionFromZone(ref.locationsId))
+  location = args.source_snapshot_region or ref.locationsId
   req.restoreInstanceRequest.sourceSnapshot = SNAPSHOT_NAME_TEMPLATE.format(
       project, location, args.source_snapshot)
   return req

@@ -18,18 +18,24 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.services import exceptions
 from googlecloudsdk.api_lib.util import apis
 
 _SERVICE_CONSUMER_RESOURCE = 'services/%s/%s'
+_LIMIT_OVERRIDE_RESOURCE = '%s/producerOverrides/%s'
+# Use an synthetic override ID for create limit call because the server will
+# generate an override ID anyway.
+_OVERRIDE_ID = 'kawaii'
 
 
 def ListQuotaMetrics(service, consumer, page_size=None, limit=None):
   """List service quota metrics for a consumer.
 
   Args:
-    service: The service for which to list metrics.
-    consumer: The consumer for which to list metrics, e.g. "projects/123".
+    service: The service to list metrics for.
+    consumer: The consumer to list metrics for, e.g. "projects/123".
     page_size: The page size to list.
     limit: The max number of metrics to return.
 
@@ -52,6 +58,219 @@ def ListQuotaMetrics(service, consumer, page_size=None, limit=None):
       batch_size_attribute='pageSize',
       batch_size=page_size,
       field='metrics')
+
+
+def CreateQuotaOverrideCall(service,
+                            consumer,
+                            metric,
+                            unit,
+                            dimensions,
+                            value,
+                            force=False):
+  """Create a quota override.
+
+  Args:
+    service: The service to create an override for.
+    consumer: The consumer to create an override for, e.g. "projects/123".
+    metric: The quota metric name.
+    unit: The unit of quota metric.
+    dimensions: The dimensions of the override in dictionary format. It can be
+      None.
+    value: The override integer value.
+    force: Force override creation even if the change results in a substantial
+      decrease in available quota.
+
+  Raises:
+    exceptions.CreateQuotaOverridePermissionDeniedException: when creating an
+    override fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The quota override operation.
+  """
+  client = _GetClientInstance()
+  messages = client.MESSAGES_MODULE
+
+  parent = _GetMetricResourceName(service, consumer, metric, unit)
+  name = _LIMIT_OVERRIDE_RESOURCE % (parent, _OVERRIDE_ID)
+  dimensions_message = _GetDimensions(messages, dimensions)
+  request = messages.ServiceconsumermanagementServicesConsumerQuotaMetricsLimitsProducerOverridesCreateRequest(
+      parent=parent,
+      v1Beta1QuotaOverride=messages.V1Beta1QuotaOverride(
+          name=name,
+          metric=metric,
+          unit=unit,
+          dimensions=dimensions_message,
+          overrideValue=value,
+      ),
+      force=force,
+  )
+  try:
+    return client.services_consumerQuotaMetrics_limits_producerOverrides.Create(
+        request)
+  except (apitools_exceptions.HttpForbiddenError,
+          apitools_exceptions.HttpNotFoundError) as e:
+    exceptions.ReraiseError(
+        e, exceptions.CreateQuotaOverridePermissionDeniedException)
+
+
+def UpdateQuotaOverrideCall(service,
+                            consumer,
+                            metric,
+                            unit,
+                            override_id,
+                            dimensions,
+                            value,
+                            force=False):
+  """Update a quota override.
+
+  Args:
+    service: The service to update a quota override for.
+    consumer: The consumer to update a quota override for, e.g. "projects/123".
+    metric: The quota metric name.
+    unit: The unit of quota metric.
+    override_id: The override ID.
+    dimensions: The dimensions of the override in dictionary format. It can be
+      None.
+    value: The override integer value.
+    force: Force override update even if the change results in a substantial
+      decrease in available quota.
+
+  Raises:
+    exceptions.UpdateQuotaOverridePermissionDeniedException: when updating an
+    override fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The quota override operation.
+  """
+  client = _GetClientInstance()
+  messages = client.MESSAGES_MODULE
+
+  parent = _GetMetricResourceName(service, consumer, metric, unit)
+  name = _LIMIT_OVERRIDE_RESOURCE % (parent, override_id)
+  dimensions_message = _GetDimensions(messages, dimensions)
+  request = messages.ServiceconsumermanagementServicesConsumerQuotaMetricsLimitsProducerOverridesPatchRequest(
+      name=name,
+      v1Beta1QuotaOverride=messages.V1Beta1QuotaOverride(
+          name=name,
+          metric=metric,
+          unit=unit,
+          dimensions=dimensions_message,
+          overrideValue=value,
+      ),
+      force=force,
+  )
+  try:
+    return client.services_consumerQuotaMetrics_limits_producerOverrides.Patch(
+        request)
+  except (apitools_exceptions.HttpForbiddenError,
+          apitools_exceptions.HttpNotFoundError) as e:
+    exceptions.ReraiseError(
+        e, exceptions.UpdateQuotaOverridePermissionDeniedException)
+
+
+def DeleteQuotaOverrideCall(service,
+                            consumer,
+                            metric,
+                            unit,
+                            override_id,
+                            force=False):
+  """Delete a quota override.
+
+  Args:
+    service: The service to delete a quota aoverride for.
+    consumer: The consumer to delete a quota override for, e.g. "projects/123".
+    metric: The quota metric name.
+    unit: The unit of quota metric.
+    override_id: The override ID.
+    force: Force override deletion even if the change results in a substantial
+      decrease in available quota.
+
+  Raises:
+    exceptions.DeleteQuotaOverridePermissionDeniedException: when deleting an
+    override fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The quota override operation.
+  """
+  client = _GetClientInstance()
+  messages = client.MESSAGES_MODULE
+
+  parent = _GetMetricResourceName(service, consumer, metric, unit)
+  name = _LIMIT_OVERRIDE_RESOURCE % (parent, override_id)
+  request = messages.ServiceconsumermanagementServicesConsumerQuotaMetricsLimitsProducerOverridesDeleteRequest(
+      name=name,
+      force=force,
+  )
+  try:
+    return client.services_consumerQuotaMetrics_limits_producerOverrides.Delete(
+        request)
+  except (apitools_exceptions.HttpForbiddenError,
+          apitools_exceptions.HttpNotFoundError) as e:
+    exceptions.ReraiseError(
+        e, exceptions.DeleteQuotaOverridePermissionDeniedException)
+
+
+def _GetDimensions(messages, dimensions):
+  if dimensions is None:
+    return None
+  dt = messages.V1Beta1QuotaOverride.DimensionsValue
+  # sorted by key strings to maintain the unit test behavior consistency.
+  return dt(
+      additionalProperties=[
+          dt.AdditionalProperty(key=k, value=dimensions[k])
+          for k in sorted(dimensions.keys())
+      ],)
+
+
+def _GetMetricResourceName(service, consumer, metric, unit):
+  """Get the metric resource name from metric name and unit.
+
+  Args:
+    service: The service to manage an override for.
+    consumer: The consumer to manage an override for, e.g. "projects/123".
+    metric: The quota metric name.
+    unit: The unit of quota metric.
+
+  Raises:
+    exceptions.Error: when the limit with given metric and unit is not found.
+
+  Returns:
+    The quota override operation.
+  """
+  metrics = ListQuotaMetrics(service, consumer)
+  for m in metrics:
+    if m.metric == metric:
+      for q in m.consumerQuotaLimits:
+        if q.unit == unit:
+          return q.name
+  raise exceptions.Error('limit not found with name "%s" and unit "%s".' %
+                         (metric, unit))
+
+
+def GetOperation(name):
+  """Make API call to get an operation.
+
+  Args:
+    name: The name of the operation.
+
+  Raises:
+    exceptions.OperationErrorException: when the getting operation API fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The result of the operation
+  """
+  client = _GetClientInstance()
+  messages = client.MESSAGES_MODULE
+  request = messages.ServiceconsumermanagementOperationsGetRequest(name=name)
+  try:
+    return client.operations.Get(request)
+  except (apitools_exceptions.HttpForbiddenError,
+          apitools_exceptions.HttpNotFoundError) as e:
+    exceptions.ReraiseError(e, exceptions.OperationErrorException)
 
 
 def _GetClientInstance():

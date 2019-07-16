@@ -543,6 +543,8 @@ class InconclusiveDetail(_messages.Message):
     abortedByUser: If the end user aborted the test execution before a pass or
       fail could be determined. For example, the user pressed ctrl-c which
       sent a kill signal to the test runner while the test was running.
+    hasErrorLogs: If results are being provided to the user in certain cases
+      of infrastructure failures
     infrastructureFailure: If the test runner could not determine success or
       failure because the test depends on a component other than the system
       under test which failed.  For example, a mobile test requires
@@ -551,7 +553,8 @@ class InconclusiveDetail(_messages.Message):
   """
 
   abortedByUser = _messages.BooleanField(1)
-  infrastructureFailure = _messages.BooleanField(2)
+  hasErrorLogs = _messages.BooleanField(2)
+  infrastructureFailure = _messages.BooleanField(3)
 
 
 class IndividualOutcome(_messages.Message):
@@ -1410,6 +1413,7 @@ class TestIssue(_messages.Message):
       availableDeepLinks: <no description>
       compatibleWithOrchestrator: <no description>
       completeRoboScriptExecution: <no description>
+      crashDialogError: <no description>
       encounteredLoginScreen: <no description>
       encounteredNonAndroidUiWidgetScreen: <no description>
       failedToInstall: <no description>
@@ -1435,26 +1439,27 @@ class TestIssue(_messages.Message):
     availableDeepLinks = 1
     compatibleWithOrchestrator = 2
     completeRoboScriptExecution = 3
-    encounteredLoginScreen = 4
-    encounteredNonAndroidUiWidgetScreen = 5
-    failedToInstall = 6
-    fatalException = 7
-    inAppPurchases = 8
-    incompleteRoboScriptExecution = 9
-    insufficientCoverage = 10
-    iosCrash = 11
-    iosException = 12
-    launcherActivityNotFound = 13
-    nativeCrash = 14
-    nonSdkApiUsageReport = 15
-    nonSdkApiUsageViolation = 16
-    performedGoogleLogin = 17
-    performedMonkeyActions = 18
-    startActivityNotFound = 19
-    unspecifiedType = 20
-    unusedRoboDirective = 21
-    usedRoboDirective = 22
-    usedRoboIgnoreDirective = 23
+    crashDialogError = 4
+    encounteredLoginScreen = 5
+    encounteredNonAndroidUiWidgetScreen = 6
+    failedToInstall = 7
+    fatalException = 8
+    inAppPurchases = 9
+    incompleteRoboScriptExecution = 10
+    insufficientCoverage = 11
+    iosCrash = 12
+    iosException = 13
+    launcherActivityNotFound = 14
+    nativeCrash = 15
+    nonSdkApiUsageReport = 16
+    nonSdkApiUsageViolation = 17
+    performedGoogleLogin = 18
+    performedMonkeyActions = 19
+    startActivityNotFound = 20
+    unspecifiedType = 21
+    unusedRoboDirective = 22
+    usedRoboDirective = 23
+    usedRoboIgnoreDirective = 24
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   errorMessage = _messages.StringField(2)

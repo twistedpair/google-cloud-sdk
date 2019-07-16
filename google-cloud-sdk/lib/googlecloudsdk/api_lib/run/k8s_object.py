@@ -417,7 +417,7 @@ class ListAsDictionaryWrapper(collections.MutableMapping):
     return len(self._m)
 
   def __iter__(self):
-    """Returns a generator yielding the env var keys."""
+    """Returns a generator yielding the message keys."""
     for item in self._m:
       yield getattr(item, self._key_field)
 

@@ -45,16 +45,16 @@ class AuditConfig(_messages.Message):
   multiple AuditConfigs:      {       "audit_configs": [         {
   "service": "allServices"           "audit_log_configs": [             {
   "log_type": "DATA_READ",               "exempted_members": [
-  "user:foo@gmail.com"               ]             },             {
+  "user:jose@example.com"               ]             },             {
   "log_type": "DATA_WRITE",             },             {
   "log_type": "ADMIN_READ",             }           ]         },         {
-  "service": "fooservice.googleapis.com"           "audit_log_configs": [
+  "service": "sampleservice.googleapis.com"           "audit_log_configs": [
   {               "log_type": "DATA_READ",             },             {
   "log_type": "DATA_WRITE",               "exempted_members": [
-  "user:bar@gmail.com"               ]             }           ]         }
-  ]     }  For fooservice, this policy enables DATA_READ, DATA_WRITE and
-  ADMIN_READ logging. It also exempts foo@gmail.com from DATA_READ logging,
-  and bar@gmail.com from DATA_WRITE logging.
+  "user:aliya@example.com"               ]             }           ]         }
+  ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
+  ADMIN_READ logging. It also exempts jose@example.com from DATA_READ logging,
+  and aliya@example.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -70,10 +70,10 @@ class AuditConfig(_messages.Message):
 class AuditLogConfig(_messages.Message):
   r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
-  "exempted_members": [             "user:foo@gmail.com"           ]
+  "exempted_members": [             "user:jose@example.com"           ]
   },         {           "log_type": "DATA_WRITE",         }       ]     }
   This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
-  foo@gmail.com from DATA_READ logging.
+  jose@example.com from DATA_READ logging.
 
   Enums:
     LogTypeValueValuesEnum: The log type that this config enables.
@@ -116,9 +116,9 @@ class Binding(_messages.Message):
       with or without a Google account.  * `allAuthenticatedUsers`: A special
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
-      represents a specific Google    account. For example, `alice@gmail.com`
-      .   * `serviceAccount:{emailid}`: An email address that represents a
-      service    account. For example, `my-other-
+      represents a specific Google    account. For example,
+      `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
+      that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
       * `domain:{domain}`: The G Suite domain (primary) that represents all
@@ -190,7 +190,8 @@ class ListSecretVersionsResponse(_messages.Message):
     nextPageToken: A token to retrieve the next page of results. Pass this
       value in ListSecretVersionsRequest.page_token to retrieve the next page.
     totalSize: The total number of SecretVersions.
-    versions: The list of SecretVersions.
+    versions: The list of SecretVersions sorted in reverse by create_time
+      (newest first).
   """
 
   nextPageToken = _messages.StringField(1)
@@ -204,7 +205,8 @@ class ListSecretsResponse(_messages.Message):
   Fields:
     nextPageToken: A token to retrieve the next page of results. Pass this
       value in ListSecretsRequest.page_token to retrieve the next page.
-    secrets: The list of Secrets.
+    secrets: The list of Secrets sorted in reverse by create_time (newest
+      first).
     totalSize: The total number of Secrets.
   """
 
@@ -325,7 +327,7 @@ class Policy(_messages.Message):
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten blindly.
+      the existing policy is overwritten.
     version: Deprecated.
   """
 
@@ -508,12 +510,16 @@ class SecretmanagerProjectsSecretsGetIamPolicyRequest(_messages.Message):
   r"""A SecretmanagerProjectsSecretsGetIamPolicyRequest object.
 
   Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Acceptable values are 0 and 1. If the value is 0, or the field
+      is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
   """
 
-  resource = _messages.StringField(1, required=True)
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class SecretmanagerProjectsSecretsGetLatestRequest(_messages.Message):
@@ -631,7 +637,7 @@ class SecretmanagerProjectsSecretsVersionsAccessRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the SecretVersion in the format
-      `projects/*/secrets/*/secretVersions/*`.
+      `projects/*/secrets/*/versions/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -644,7 +650,7 @@ class SecretmanagerProjectsSecretsVersionsDestroyRequest(_messages.Message):
     destroySecretVersionRequest: A DestroySecretVersionRequest resource to be
       passed as the request body.
     name: Required. The resource name of the SecretVersion to destroy in the
-      format `projects/*/secrets/*/secretVersions/*`.
+      format `projects/*/secrets/*/versions/*`.
   """
 
   destroySecretVersionRequest = _messages.MessageField('DestroySecretVersionRequest', 1)
@@ -656,7 +662,7 @@ class SecretmanagerProjectsSecretsVersionsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the SecretVersion in the format
-      `projects/*/secrets/*/secretVersions/*`.
+      `projects/*/secrets/*/versions/*`.
   """
 
   name = _messages.StringField(1, required=True)

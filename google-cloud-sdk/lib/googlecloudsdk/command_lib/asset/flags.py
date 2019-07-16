@@ -72,9 +72,10 @@ def AddContentTypeArgs(parser, required):
   """--content-type argument for asset export and get-history."""
   if required:
     help_text = (
-        'Asset content type. Choices are `resource`, `iam-policy`. '
-        'Specifying `resource` will export resource metadata, and specifying '
-        '`iam-policy` will export IAM policy set on assets.')
+        'Asset content type. Choices are `resource`, `iam-policy` and '
+        '`org-policy`. Specifying `resource` will export resource metadata, '
+        'specifying `iam-policy` will export IAM policy set on assets, and '
+        'specifying `org-policy` will export Org Policy set on asset.')
   else:
     help_text = (
         'Asset content type. If specified, only content matching the '
@@ -87,7 +88,7 @@ def AddContentTypeArgs(parser, required):
   parser.add_argument(
       '--content-type',
       required=required,
-      choices=['resource', 'iam-policy'],
+      choices=['resource', 'iam-policy', 'org-policy'],
       help=help_text)
 
 

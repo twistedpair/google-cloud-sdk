@@ -359,6 +359,22 @@
       "description": "Request message for `GetIamPolicy` method.",
       "type": "object",
       "properties": {
+        "options": {
+          "description": "OPTIONAL: A `GetPolicyOptions` object for specifying options to\n`GetIamPolicy`. This field is only used by Cloud IAM.",
+          "$ref": "GetPolicyOptions"
+        }
+      }
+    },
+    "GetPolicyOptions": {
+      "id": "GetPolicyOptions",
+      "description": "Encapsulates settings provided to GetIamPolicy.",
+      "type": "object",
+      "properties": {
+        "requestedPolicyVersion": {
+          "description": "Optional. The policy format version to be returned.\nAcceptable values are 0 and 1.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+          "type": "integer",
+          "format": "int32"
+        }
       }
     },
     "Policy": {
@@ -379,7 +395,7 @@
           }
         },
         "etag": {
-          "description": "`etag` is used for optimistic concurrency control as a way to help\nprevent simultaneous updates of a policy from overwriting each other.\nIt is strongly suggested that systems make use of the `etag` in the\nread-modify-write cycle to perform policy updates in order to avoid race\nconditions: An `etag` is returned in the response to `getIamPolicy`, and\nsystems are expected to put that etag in the request to `setIamPolicy` to\nensure that their change will be applied to the same version of the policy.\n\nIf no `etag` is provided in the call to `setIamPolicy`, then the existing\npolicy is overwritten blindly.",
+          "description": "`etag` is used for optimistic concurrency control as a way to help\nprevent simultaneous updates of a policy from overwriting each other.\nIt is strongly suggested that systems make use of the `etag` in the\nread-modify-write cycle to perform policy updates in order to avoid race\nconditions: An `etag` is returned in the response to `getIamPolicy`, and\nsystems are expected to put that etag in the request to `setIamPolicy` to\nensure that their change will be applied to the same version of the policy.\n\nIf no `etag` is provided in the call to `setIamPolicy`, then the existing\npolicy is overwritten.",
           "type": "string",
           "format": "byte"
         }
@@ -395,7 +411,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -681,7 +697,7 @@
       "type": "object",
       "properties": {
         "task": {
-          "description": "Required.\n\nThe task to add.\n\nTask names have the following format:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`.\nThe user can optionally specify a task name. If a\nname is not specified then the system will generate a random\nunique task id, which will be set in the task returned in the\nresponse.\n\nIf schedule_time is not set or is in the\npast then Cloud Tasks will set it to the current time.\n\nTask De-duplication:\n\nExplicitly specifying a task ID enables task de-duplication.  If\na task's ID is identical to that of an existing task or a task\nthat was deleted or completed recently then the call will fail\nwith ALREADY_EXISTS.\nIf the task's queue was created using Cloud Tasks, then another task with\nthe same name can't be created for ~1hour after the original task was\ndeleted or completed. If the task's queue was created using queue.yaml or\nqueue.xml, then another task with the same name can't be created\nfor ~9days after the original task was deleted or completed.\n\nBecause there is an extra lookup cost to identify duplicate task\nnames, these CreateTask calls have significantly\nincreased latency. Using hashed strings for the task id or for\nthe prefix of the task id is recommended. Choosing task ids that\nare sequential or have sequential prefixes, for example using a\ntimestamp, causes an increase in latency and error rates in all\ntask commands. The infrastructure relies on an approximately\nuniform distribution of task ids to store and serve tasks\nefficiently.",
+          "description": "Required. The task to add.\n\nTask names have the following format:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`.\nThe user can optionally specify a task name. If a\nname is not specified then the system will generate a random\nunique task id, which will be set in the task returned in the\nresponse.\n\nIf schedule_time is not set or is in the\npast then Cloud Tasks will set it to the current time.\n\nTask De-duplication:\n\nExplicitly specifying a task ID enables task de-duplication.  If\na task's ID is identical to that of an existing task or a task\nthat was deleted or completed recently then the call will fail\nwith ALREADY_EXISTS.\nIf the task's queue was created using Cloud Tasks, then another task with\nthe same name can't be created for ~1hour after the original task was\ndeleted or completed. If the task's queue was created using queue.yaml or\nqueue.xml, then another task with the same name can't be created\nfor ~9days after the original task was deleted or completed.\n\nBecause there is an extra lookup cost to identify duplicate task\nnames, these CreateTask calls have significantly\nincreased latency. Using hashed strings for the task id or for\nthe prefix of the task id is recommended. Choosing task ids that\nare sequential or have sequential prefixes, for example using a\ntimestamp, causes an increase in latency and error rates in all\ntask commands. The infrastructure relies on an approximately\nuniform distribution of task ids to store and serve tasks\nefficiently.",
           "$ref": "Task"
         },
         "responseView": {
@@ -711,7 +727,7 @@
           "format": "int32"
         },
         "leaseDuration": {
-          "description": "Required.\n\nThe duration of the lease.\n\nEach task returned in the response will\nhave its schedule_time set to the current\ntime plus the `lease_duration`. The task is leased until its\nschedule_time; thus, the task will not be\nreturned to another LeaseTasks call\nbefore its schedule_time.\n\n\nAfter the worker has successfully finished the work associated\nwith the task, the worker must call via\nAcknowledgeTask before the\nschedule_time. Otherwise the task will be\nreturned to a later LeaseTasks call so\nthat another worker can retry it.\n\nThe maximum lease duration is 1 week.\n`lease_duration` will be truncated to the nearest second.",
+          "description": "Required. The duration of the lease.\n\nEach task returned in the response will\nhave its schedule_time set to the current\ntime plus the `lease_duration`. The task is leased until its\nschedule_time; thus, the task will not be\nreturned to another LeaseTasks call\nbefore its schedule_time.\n\n\nAfter the worker has successfully finished the work associated\nwith the task, the worker must call via\nAcknowledgeTask before the\nschedule_time. Otherwise the task will be\nreturned to a later LeaseTasks call so\nthat another worker can retry it.\n\nThe maximum lease duration is 1 week.\n`lease_duration` will be truncated to the nearest second.",
           "type": "string",
           "format": "google-duration"
         },
@@ -755,7 +771,7 @@
       "type": "object",
       "properties": {
         "scheduleTime": {
-          "description": "Required.\n\nThe task's current schedule time, available in the\nschedule_time returned by\nLeaseTasks response or\nRenewLease response. This restriction is\nto ensure that your worker currently holds the lease.",
+          "description": "Required. The task's current schedule time, available in the\nschedule_time returned by\nLeaseTasks response or\nRenewLease response. This restriction is\nto ensure that your worker currently holds the lease.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -767,12 +783,12 @@
       "type": "object",
       "properties": {
         "scheduleTime": {
-          "description": "Required.\n\nThe task's current schedule time, available in the\nschedule_time returned by\nLeaseTasks response or\nRenewLease response. This restriction is\nto ensure that your worker currently holds the lease.",
+          "description": "Required. The task's current schedule time, available in the\nschedule_time returned by\nLeaseTasks response or\nRenewLease response. This restriction is\nto ensure that your worker currently holds the lease.",
           "type": "string",
           "format": "google-datetime"
         },
         "leaseDuration": {
-          "description": "Required.\n\nThe desired new lease duration, starting from now.\n\n\nThe maximum lease duration is 1 week.\n`lease_duration` will be truncated to the nearest second.",
+          "description": "Required. The desired new lease duration, starting from now.\n\n\nThe maximum lease duration is 1 week.\n`lease_duration` will be truncated to the nearest second.",
           "type": "string",
           "format": "google-duration"
         },
@@ -798,7 +814,7 @@
       "type": "object",
       "properties": {
         "scheduleTime": {
-          "description": "Required.\n\nThe task's current schedule time, available in the\nschedule_time returned by\nLeaseTasks response or\nRenewLease response. This restriction is\nto ensure that your worker currently holds the lease.",
+          "description": "Required. The task's current schedule time, available in the\nschedule_time returned by\nLeaseTasks response or\nRenewLease response. This restriction is\nto ensure that your worker currently holds the lease.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -923,7 +939,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required.\n\nThe location name.\nFor example: `projects\/PROJECT_ID\/locations\/LOCATION_ID`",
+                      "description": "Required. The location name.\nFor example: `projects\/PROJECT_ID\/locations\/LOCATION_ID`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -964,7 +980,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required.\n\nThe resource name of the queue. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID`",
+                      "description": "Required. The resource name of the queue. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
@@ -989,7 +1005,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required.\n\nThe location name in which the queue will be created.\nFor example: `projects\/PROJECT_ID\/locations\/LOCATION_ID`\n\nThe list of allowed locations can be obtained by calling Cloud\nTasks' implementation of\nListLocations.",
+                      "description": "Required. The location name in which the queue will be created.\nFor example: `projects\/PROJECT_ID\/locations\/LOCATION_ID`\n\nThe list of allowed locations can be obtained by calling Cloud\nTasks' implementation of\nListLocations.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1051,7 +1067,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required.\n\nThe queue name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID`",
+                      "description": "Required. The queue name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
@@ -1076,7 +1092,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required.\n\nThe queue name. For example:\n`projects\/PROJECT_ID\/location\/LOCATION_ID\/queues\/QUEUE_ID`",
+                      "description": "Required. The queue name. For example:\n`projects\/PROJECT_ID\/location\/LOCATION_ID\/queues\/QUEUE_ID`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
@@ -1104,7 +1120,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required.\n\nThe queue name. For example:\n`projects\/PROJECT_ID\/location\/LOCATION_ID\/queues\/QUEUE_ID`",
+                      "description": "Required. The queue name. For example:\n`projects\/PROJECT_ID\/location\/LOCATION_ID\/queues\/QUEUE_ID`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
@@ -1132,7 +1148,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required.\n\nThe queue name. For example:\n`projects\/PROJECT_ID\/location\/LOCATION_ID\/queues\/QUEUE_ID`",
+                      "description": "Required. The queue name. For example:\n`projects\/PROJECT_ID\/location\/LOCATION_ID\/queues\/QUEUE_ID`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
@@ -1249,7 +1265,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required.\n\nThe queue name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID`",
+                          "description": "Required. The queue name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
@@ -1295,7 +1311,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required.\n\nThe task name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`",
+                          "description": "Required. The task name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+\/tasks\/[^\/]+$",
@@ -1330,7 +1346,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required.\n\nThe queue name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID`\n\nThe queue must already exist.",
+                          "description": "Required. The queue name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID`\n\nThe queue must already exist.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
@@ -1358,7 +1374,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required.\n\nThe task name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`",
+                          "description": "Required. The task name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+\/tasks\/[^\/]+$",
@@ -1383,7 +1399,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required.\n\nThe queue name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID`",
+                          "description": "Required. The queue name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
@@ -1411,7 +1427,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "Required.\n\nThe task name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`",
+                          "description": "Required. The task name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+\/tasks\/[^\/]+$",
@@ -1439,7 +1455,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "Required.\n\nThe task name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`",
+                          "description": "Required. The task name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+\/tasks\/[^\/]+$",
@@ -1467,7 +1483,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "Required.\n\nThe task name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`",
+                          "description": "Required. The task name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+\/tasks\/[^\/]+$",
@@ -1495,7 +1511,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "Required.\n\nThe task name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`",
+                          "description": "Required. The task name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+\/tasks\/[^\/]+$",

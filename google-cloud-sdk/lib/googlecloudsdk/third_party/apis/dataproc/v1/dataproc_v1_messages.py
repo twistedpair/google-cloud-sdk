@@ -63,7 +63,7 @@ class Binding(_messages.Message):
       without a Google account. allAuthenticatedUsers: A special identifier
       that represents anyone  who is authenticated with a Google account or a
       service account. user:{emailid}: An email address that represents a
-      specific Google  account. For example, alice@gmail.com .
+      specific Google  account. For example, alice@example.com .
       serviceAccount:{emailid}: An email address that represents a service
       account. For example, my-other-app@appspot.gserviceaccount.com.
       group:{emailid}: An email address that represents a Google group.  For
@@ -477,54 +477,6 @@ class ClusterStatus(_messages.Message):
   substate = _messages.EnumField('SubstateValueValuesEnum', 4)
 
 
-class DataprocProjectsLocationsAutoscalingPoliciesGetIamPolicyRequest(_messages.Message):
-  r"""A DataprocProjectsLocationsAutoscalingPoliciesGetIamPolicyRequest
-  object.
-
-  Fields:
-    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class DataprocProjectsLocationsAutoscalingPoliciesSetIamPolicyRequest(_messages.Message):
-  r"""A DataprocProjectsLocationsAutoscalingPoliciesSetIamPolicyRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class DataprocProjectsLocationsAutoscalingPoliciesTestIamPermissionsRequest(_messages.Message):
-  r"""A DataprocProjectsLocationsAutoscalingPoliciesTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
 class DataprocProjectsLocationsWorkflowTemplatesCreateRequest(_messages.Message):
   r"""A DataprocProjectsLocationsWorkflowTemplatesCreateRequest object.
 
@@ -661,52 +613,6 @@ class DataprocProjectsLocationsWorkflowTemplatesSetIamPolicyRequest(_messages.Me
 
 class DataprocProjectsLocationsWorkflowTemplatesTestIamPermissionsRequest(_messages.Message):
   r"""A DataprocProjectsLocationsWorkflowTemplatesTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class DataprocProjectsRegionsAutoscalingPoliciesGetIamPolicyRequest(_messages.Message):
-  r"""A DataprocProjectsRegionsAutoscalingPoliciesGetIamPolicyRequest object.
-
-  Fields:
-    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class DataprocProjectsRegionsAutoscalingPoliciesSetIamPolicyRequest(_messages.Message):
-  r"""A DataprocProjectsRegionsAutoscalingPoliciesSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class DataprocProjectsRegionsAutoscalingPoliciesTestIamPermissionsRequest(_messages.Message):
-  r"""A DataprocProjectsRegionsAutoscalingPoliciesTestIamPermissionsRequest
   object.
 
   Fields:
@@ -1558,7 +1464,26 @@ class GceClusterConfig(_messages.Message):
 
 
 class GetIamPolicyRequest(_messages.Message):
-  r"""Request message for GetIamPolicy method."""
+  r"""Request message for GetIamPolicy method.
+
+  Fields:
+    options: OPTIONAL: A GetPolicyOptions object for specifying options to
+      GetIamPolicy. This field is only used by Cloud IAM.
+  """
+
+  options = _messages.MessageField('GetPolicyOptions', 1)
+
+
+class GetPolicyOptions(_messages.Message):
+  r"""Encapsulates settings provided to GetIamPolicy.
+
+  Fields:
+    requestedPolicyVersion: Optional. The policy format version to be
+      returned. Acceptable values are 0 and 1. If the value is 0, or the field
+      is omitted, policy format version 1 will be returned.
+  """
+
+  requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class HadoopJob(_messages.Message):
@@ -2660,7 +2585,7 @@ class Policy(_messages.Message):
       systems are expected to put that etag in the request to setIamPolicy to
       ensure that their change will be applied to the same version of the
       policy.If no etag is provided in the call to setIamPolicy, then the
-      existing policy is overwritten blindly.
+      existing policy is overwritten.
     version: Deprecated.
   """
 

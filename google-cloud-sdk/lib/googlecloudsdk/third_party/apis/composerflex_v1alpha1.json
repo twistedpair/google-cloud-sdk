@@ -385,11 +385,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only.\nThe resource name of the workflow run, in the form:\n\"projects\/{projectId}\/locations\/{locationId}\/workflows\/{workflowId}\/runs\/{runId}\"",
+          "description": "Output only. The resource name of the workflow run, in the form:\n\"projects\/{projectId}\/locations\/{locationId}\/workflows\/{workflowId}\/runs\/{runId}\"",
           "type": "string"
         },
         "intervalStartTime": {
-          "description": "Output only.\nThe start of the time interval corresponding to this workflow run. Only set\nfor SCHEDULED runs. This value is analagous to the Apache Airflow notion\nof `execution_date`; it refers to the left boundary of the scheduling\ninterval.",
+          "description": "Output only. The start of the time interval corresponding to this workflow run. Only set\nfor SCHEDULED runs. This value is analagous to the Apache Airflow notion\nof `execution_date`; it refers to the left boundary of the scheduling\ninterval.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -491,12 +491,12 @@
           }
         },
         "createTime": {
-          "description": "Output only.\nThe time at which this workflow was created.",
+          "description": "Output only. The time at which this workflow was created.",
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only.\nThe time at which this workflow was last updated.",
+          "description": "Output only. The time at which this workflow was last updated.",
           "type": "string",
           "format": "google-datetime"
         },

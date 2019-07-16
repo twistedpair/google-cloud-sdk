@@ -551,6 +551,8 @@ class LogEntry(_messages.Message):
       "type.googleapis.com/google.appengine.logging.v1.RequestLog"
     receiveTimestamp: Output only. The time the log entry was received by
       Logging.
+    receivedLocation: Output only. The cloud region that this LogEntry was
+      received in, such as "us-east1".
     resource: Required. The monitored resource that produced this log
       entry.Example: a log entry that reports a database error would be
       associated with the monitored resource designating the particular
@@ -703,14 +705,15 @@ class LogEntry(_messages.Message):
   operation = _messages.MessageField('LogEntryOperation', 7)
   protoPayload = _messages.MessageField('ProtoPayloadValue', 8)
   receiveTimestamp = _messages.StringField(9)
-  resource = _messages.MessageField('MonitoredResource', 10)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 11)
-  sourceLocation = _messages.MessageField('LogEntrySourceLocation', 12)
-  spanId = _messages.StringField(13)
-  textPayload = _messages.StringField(14)
-  timestamp = _messages.StringField(15)
-  trace = _messages.StringField(16)
-  traceSampled = _messages.BooleanField(17)
+  receivedLocation = _messages.StringField(10)
+  resource = _messages.MessageField('MonitoredResource', 11)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 12)
+  sourceLocation = _messages.MessageField('LogEntrySourceLocation', 13)
+  spanId = _messages.StringField(14)
+  textPayload = _messages.StringField(15)
+  timestamp = _messages.StringField(16)
+  trace = _messages.StringField(17)
+  traceSampled = _messages.BooleanField(18)
 
 
 class LogEntryOperation(_messages.Message):

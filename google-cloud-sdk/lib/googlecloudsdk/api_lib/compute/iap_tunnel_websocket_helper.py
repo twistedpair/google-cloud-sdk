@@ -202,5 +202,18 @@ class IapTunnelWebSocketHelper(object):
         self._websocket.run_forever(origin=TUNNEL_CLOUDPROXY_ORIGIN,
                                     sslopt=self._sslopt)
     except:  # pylint: disable=bare-except
-      log.info('Error while receiving from WebSocket.', exc_info=True)
-    self.Close()
+      try:
+        log.info('Error while receiving from WebSocket.', exc_info=True)
+      except:
+        # This is a daemon thread, so it could be running while the interpreter
+        # is exiting, so logging could fail. At that point the only thing to do
+        # is ignore the exception. Ideally we would make this a non-daemon
+        # thread.
+        pass
+    try:
+      self.Close()
+    except:  # pylint: disable=bare-except
+      try:
+        log.info('Error while closing in receiving thread.', exc_info=True)
+      except:
+        pass

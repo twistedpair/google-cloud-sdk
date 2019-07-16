@@ -675,6 +675,10 @@
           "description": "The URL to the root of documentation.",
           "type": "string"
         },
+        "serviceRootUrl": {
+          "description": "Specifies the service root url if the default one (the service name\nfrom the yaml file) is not suitable. This can be seen in any fully\nspecified service urls as well as sections that show a base that other\nurls are relative to.",
+          "type": "string"
+        },
         "overview": {
           "description": "Declares a single overview page. For example:\n<pre><code>documentation:\n  summary: ...\n  overview: &#40;== include overview.md ==&#41;\n<\/code><\/pre>\nThis is a shortcut for the following declaration (using pages style):\n<pre><code>documentation:\n  summary: ...\n  pages:\n  - name: Overview\n    content: &#40;== include overview.md ==&#41;\n<\/code><\/pre>\nNote: you cannot specify both `overview` field and `pages` field.",
           "type": "string"

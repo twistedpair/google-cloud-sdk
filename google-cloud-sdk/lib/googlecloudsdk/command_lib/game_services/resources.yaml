@@ -16,6 +16,7 @@ location:
   - &location
     parameter_name: locationsId
     attribute_name: location
+    property: game_services/location
     help: Google Cloud location.
 
 operation:

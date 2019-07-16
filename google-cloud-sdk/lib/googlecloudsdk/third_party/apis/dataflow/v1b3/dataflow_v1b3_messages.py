@@ -3688,6 +3688,9 @@ class RuntimeEnvironment(_messages.Message):
       resources#restrictions) page.
     bypassTempDirValidation: Whether to bypass the safety checks for the job's
       temporary directory. Use with caution.
+    kmsKeyName: Optional. Name for the Cloud KMS key for the job. Key format
+      is: projects/<project>/locations/<location>/keyRings/<keyring>/cryptoKey
+      s/<key>
     machineType: The machine type to use for the job. Defaults to the value
       from the template if not specified.
     maxWorkers: The maximum number of Google Compute Engine instances to be
@@ -3739,14 +3742,15 @@ class RuntimeEnvironment(_messages.Message):
   additionalExperiments = _messages.StringField(1, repeated=True)
   additionalUserLabels = _messages.MessageField('AdditionalUserLabelsValue', 2)
   bypassTempDirValidation = _messages.BooleanField(3)
-  machineType = _messages.StringField(4)
-  maxWorkers = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  network = _messages.StringField(6)
-  numWorkers = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  serviceAccountEmail = _messages.StringField(8)
-  subnetwork = _messages.StringField(9)
-  tempLocation = _messages.StringField(10)
-  zone = _messages.StringField(11)
+  kmsKeyName = _messages.StringField(4)
+  machineType = _messages.StringField(5)
+  maxWorkers = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  network = _messages.StringField(7)
+  numWorkers = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  serviceAccountEmail = _messages.StringField(9)
+  subnetwork = _messages.StringField(10)
+  tempLocation = _messages.StringField(11)
+  zone = _messages.StringField(12)
 
 
 class SdkVersion(_messages.Message):

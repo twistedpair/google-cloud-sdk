@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1beta2",
-  "revision": "20190621",
+  "revision": "20190709",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development.\n",
   "ownerDomain": "google.com",
@@ -118,7 +118,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only.\nA server defined name for this index.\nThe form of this name for composite indexes will be:\n`projects\/{project_id}\/databases\/{database_id}\/collectionGroups\/{collection_id}\/indexes\/{composite_index_id}`\nFor single field indexes, this field will be empty.",
+          "description": "Output only. A server defined name for this index.\nThe form of this name for composite indexes will be:\n`projects\/{project_id}\/databases\/{database_id}\/collectionGroups\/{collection_id}\/indexes\/{composite_index_id}`\nFor single field indexes, this field will be empty.",
           "type": "string"
         },
         "queryScope": {
@@ -143,7 +143,7 @@
           }
         },
         "state": {
-          "description": "Output only.\nThe serving state of the index.",
+          "description": "Output only. The serving state of the index.",
           "enumDescriptions": [
             "The state is unspecified.",
             "The index is being created.\nThere is an active long-running operation for the index.\nThe index is updated when writing a document.\nSome index data may exist.",
@@ -312,11 +312,11 @@
           }
         },
         "usesAncestorConfig": {
-          "description": "Output only.\nWhen true, the `Field`'s index configuration is set from the\nconfiguration specified by the `ancestor_field`.\nWhen false, the `Field`'s index configuration is defined explicitly.",
+          "description": "Output only. When true, the `Field`'s index configuration is set from the\nconfiguration specified by the `ancestor_field`.\nWhen false, the `Field`'s index configuration is defined explicitly.",
           "type": "boolean"
         },
         "ancestorField": {
-          "description": "Output only.\nSpecifies the resource name of the `Field` from which this field's\nindex configuration is set (when `uses_ancestor_config` is true),\nor from which it *would* be set if this field had no index configuration\n(when `uses_ancestor_config` is false).",
+          "description": "Output only. Specifies the resource name of the `Field` from which this field's\nindex configuration is set (when `uses_ancestor_config` is true),\nor from which it *would* be set if this field had no index configuration\n(when `uses_ancestor_config` is false).",
           "type": "string"
         },
         "reverting": {

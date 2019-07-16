@@ -118,7 +118,7 @@
       "type": "object",
       "properties": {
         "document": {
-          "description": "Input document.",
+          "description": "Required. Input document.",
           "$ref": "Document"
         },
         "encodingType": {
@@ -248,7 +248,7 @@
       "type": "object",
       "properties": {
         "document": {
-          "description": "Input document.",
+          "description": "Required. Input document.",
           "$ref": "Document"
         },
         "encodingType": {
@@ -390,7 +390,7 @@
       "type": "object",
       "properties": {
         "document": {
-          "description": "Input document.",
+          "description": "Required. Input document.",
           "$ref": "Document"
         },
         "encodingType": {
@@ -435,7 +435,7 @@
       "type": "object",
       "properties": {
         "document": {
-          "description": "Input document.",
+          "description": "Required. Input document.",
           "$ref": "Document"
         },
         "encodingType": {
@@ -963,7 +963,7 @@
       "type": "object",
       "properties": {
         "document": {
-          "description": "Input document.",
+          "description": "Required. Input document.",
           "$ref": "Document"
         }
       }
@@ -1004,11 +1004,11 @@
       "type": "object",
       "properties": {
         "document": {
-          "description": "Input document.",
+          "description": "Required. Input document.",
           "$ref": "Document"
         },
         "features": {
-          "description": "The enabled features.",
+          "description": "Required. The enabled features.",
           "$ref": "Features"
         },
         "encodingType": {

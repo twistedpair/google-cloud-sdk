@@ -206,7 +206,9 @@ def CreatePersistentCreateDiskMessages(
              * image-project - the project name that has the image,
              * auto-delete - whether disks is deleted when VM is deleted ('yes'
                if True),
-             * device-name - device name on VM.
+             * device-name - device name on VM,
+             * disk-resource-policy - resource policies applied to disk.
+
     support_kms: if KMS is supported
     container_mount_disk: list of disks to be mounted to container, if any.
 
@@ -248,16 +250,22 @@ def CreatePersistentCreateDiskMessages(
     device_name = instance_utils.GetDiskDeviceName(disk, name,
                                                    container_mount_disk)
 
+    init_params = client.messages.AttachedDiskInitializeParams(
+        diskName=name,
+        description=disk.get('description'),
+        sourceImage=image_uri,
+        diskSizeGb=disk_size_gb,
+        diskType=disk.get('type'))
+
+    policies = disk.get('disk-resource-policy')
+    if policies:
+      init_params.resourcePolicies = policies
+
     create_disk = client.messages.AttachedDisk(
         autoDelete=auto_delete,
         boot=False,
         deviceName=device_name,
-        initializeParams=client.messages.AttachedDiskInitializeParams(
-            diskName=name,
-            description=disk.get('description'),
-            sourceImage=image_uri,
-            diskSizeGb=disk_size_gb,
-            diskType=disk.get('type')),
+        initializeParams=init_params,
         mode=mode,
         type=client.messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
         diskEncryptionKey=disk_key)

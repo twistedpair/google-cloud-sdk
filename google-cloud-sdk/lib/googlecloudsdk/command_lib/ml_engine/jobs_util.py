@@ -50,7 +50,6 @@ _TEXT_FILE_URL = ('https://www.tensorflow.org/guide/datasets'
 _TF_RECORD_URL = ('https://www.tensorflow.org/guide/datasets'
                   '#consuming_tfrecord_data')
 
-
 _PREDICTION_DATA_FORMAT_MAPPER = arg_utils.ChoiceEnumMapper(
     '--data-format',
     jobs.GetMessagesModule(
@@ -341,8 +340,7 @@ def SubmitTraining(jobs_client, job, job_dir=None, staging_bucket=None,
                    packages=None, package_path=None, scale_tier=None,
                    config=None, module_name=None, runtime_version=None,
                    python_version=None, stream_logs=None, user_args=None,
-                   labels=None, supports_container_training=False,
-                   custom_train_server_config=None):
+                   labels=None, custom_train_server_config=None):
   """Submit a training job."""
   region = properties.VALUES.compute.region.Get(required=True)
   staging_location = jobs_prep.GetStagingLocation(
@@ -352,8 +350,7 @@ def SubmitTraining(jobs_client, job, job_dir=None, staging_bucket=None,
     uris = jobs_prep.UploadPythonPackages(
         packages=packages,
         package_path=package_path,
-        staging_location=staging_location,
-        supports_container_training=supports_container_training)
+        staging_location=staging_location)
   except jobs_prep.NoStagingLocationError:
     raise flags.ArgumentError(
         'If local packages are provided, the `--staging-bucket` or '
@@ -363,20 +360,24 @@ def SubmitTraining(jobs_client, job, job_dir=None, staging_bucket=None,
   scale_tier_enum = jobs_client.training_input_class.ScaleTierValueValuesEnum
   scale_tier = scale_tier_enum(scale_tier) if scale_tier else None
 
-  job = jobs_client.BuildTrainingJob(
-      path=config,
-      module_name=module_name,
-      job_name=job,
-      trainer_uri=uris,
-      region=region,
-      job_dir=job_dir.ToUrl() if job_dir else None,
-      scale_tier=scale_tier,
-      user_args=user_args,
-      runtime_version=runtime_version,
-      python_version=python_version,
-      labels=labels,
-      custom_train_server_config=custom_train_server_config
-  )
+  try:
+    job = jobs_client.BuildTrainingJob(
+        path=config,
+        module_name=module_name,
+        job_name=job,
+        trainer_uri=uris,
+        region=region,
+        job_dir=job_dir.ToUrl() if job_dir else None,
+        scale_tier=scale_tier,
+        user_args=user_args,
+        runtime_version=runtime_version,
+        python_version=python_version,
+        labels=labels,
+        custom_train_server_config=custom_train_server_config)
+  except jobs.NoStagingLocationError:
+    raise flags.ArgumentError(
+        'If `--package-path` is not specified, at least one Python package '
+        'must be specified via `--packages`.')
 
   project_ref = resources.REGISTRY.Parse(
       properties.VALUES.core.project.Get(required=True),

@@ -255,8 +255,8 @@ class Flow(_messages.Message):
     metadata: Kubernates-style standard metadata. The Google Hosted version of
       this API uses the flow metadata fields as follows:  name: is of the form
       "flowId" (does not include project ID or slashes)  generate_name: is
-      optionally used used on creation if name is not set, in which case it is
-      a prefix of a system-generated name.  namespace: the project ID for the
+      optionally used on creation if name is not set, in which case it is a
+      prefix of a system-generated name.  namespace: the project ID for the
       project storing owning this flow (not necessarily the project of the
       event source)  creation_timestamp: The time at which the flow was first
       created in the underlying database.  Output only. labels["event_type"]:

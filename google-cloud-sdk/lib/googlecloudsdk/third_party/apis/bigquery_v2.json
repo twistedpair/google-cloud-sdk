@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20190621",
+ "revision": "20190709",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -15,9 +15,9 @@
  },
  "documentationLink": "https://cloud.google.com/bigquery/",
  "protocol": "rest",
- "baseUrl": "https://www.googleapis.com/bigquery/v2/",
+ "baseUrl": "https://bigquery.googleapis.com/bigquery/v2/",
  "basePath": "/bigquery/v2/",
- "rootUrl": "https://www.googleapis.com/",
+ "rootUrl": "https://bigquery.googleapis.com/",
  "servicePath": "bigquery/v2/",
  "batchPath": "batch/bigquery/v2",
  "parameters": {
@@ -1551,6 +1551,13 @@
      "description": "[Output-only] Describes execution plan for the query.",
      "items": {
       "$ref": "ExplainQueryStage"
+     }
+    },
+    "referencedRoutines": {
+     "type": "array",
+     "description": "[Output-only] Referenced routines (persistent user-defined functions and stored procedures) for the job.",
+     "items": {
+      "$ref": "RoutineReference"
      }
     },
     "referencedTables": {

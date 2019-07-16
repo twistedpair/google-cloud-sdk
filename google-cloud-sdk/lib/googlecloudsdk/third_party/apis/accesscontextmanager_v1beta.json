@@ -897,7 +897,7 @@
                   "type": "string"
                 },
                 "updateMask": {
-                  "description": "Required.  Mask to control which fields get updated. Must be non-empty.",
+                  "description": "Required. Mask to control which fields get updated. Must be non-empty.",
                   "location": "query",
                   "type": "string",
                   "format": "google-fieldmask"

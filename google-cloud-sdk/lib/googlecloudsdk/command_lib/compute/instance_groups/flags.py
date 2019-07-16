@@ -67,9 +67,7 @@ class AutoDeleteFlag(enum.Enum):
   """CLI flag values for `auto-delete' flag."""
 
   NEVER = 'never'
-  # The name of the flag needs to be changed to ON_PERMANENT_INSTANCE_DELETION
-  # pending the change in the API.
-  WHEN_NOT_IN_USE = 'on-permanent-instance-deletion'
+  ON_PERMANENT_INSTANCE_DELETION = 'on-permanent-instance-deletion'
 
   def GetAutoDeleteEnumValue(self, base_enum):
     return base_enum(self.name)

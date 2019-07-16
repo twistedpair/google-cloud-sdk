@@ -809,8 +809,12 @@ class GitHubEventsConfig(_messages.Message):
 
   Fields:
     installationId: The installationID that emits the GitHub event.
-    name: Name of the repository.
-    owner: Owner of the repository.
+    name: Name of the repository. For example: The name for
+      https://github.com/googlecloudplatform/cloud-builders is "cloud-
+      builders".
+    owner: Owner of the repository. For example: The owner for
+      https://github.com/googlecloudplatform/cloud-builders is
+      "googlecloudplatform".
     pullRequest: filter to match changes in pull requests.
     push: filter to match changes in refs like branches, tags.
   """

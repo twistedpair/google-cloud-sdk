@@ -332,9 +332,9 @@ class Binding(_messages.Message):
       with or without a Google account.  * `allAuthenticatedUsers`: A special
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
-      represents a specific Google    account. For example, `alice@gmail.com`
-      .   * `serviceAccount:{emailid}`: An email address that represents a
-      service    account. For example, `my-other-
+      represents a specific Google    account. For example,
+      `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
+      that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
       * `domain:{domain}`: The G Suite domain (primary) that represents all
@@ -378,7 +378,7 @@ class CloudtasksProjectsLocationsQueuesCreateRequest(_messages.Message):
   r"""A CloudtasksProjectsLocationsQueuesCreateRequest object.
 
   Fields:
-    parent: Required.  The location name in which the queue will be created.
+    parent: Required. The location name in which the queue will be created.
       For example: `projects/PROJECT_ID/locations/LOCATION_ID`  The list of
       allowed locations can be obtained by calling Cloud Tasks' implementation
       of ListLocations.
@@ -393,7 +393,7 @@ class CloudtasksProjectsLocationsQueuesDeleteRequest(_messages.Message):
   r"""A CloudtasksProjectsLocationsQueuesDeleteRequest object.
 
   Fields:
-    name: Required.  The queue name. For example:
+    name: Required. The queue name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`
   """
 
@@ -419,7 +419,7 @@ class CloudtasksProjectsLocationsQueuesGetRequest(_messages.Message):
   r"""A CloudtasksProjectsLocationsQueuesGetRequest object.
 
   Fields:
-    name: Required.  The resource name of the queue. For example:
+    name: Required. The resource name of the queue. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`
   """
 
@@ -446,7 +446,7 @@ class CloudtasksProjectsLocationsQueuesListRequest(_messages.Message):
       page of results, page_token must be the value of next_page_token
       returned from the previous call to ListQueues method. It is an error to
       switch the value of the filter while iterating through pages.
-    parent: Required.  The location name. For example:
+    parent: Required. The location name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID`
   """
 
@@ -486,7 +486,7 @@ class CloudtasksProjectsLocationsQueuesPauseRequest(_messages.Message):
   r"""A CloudtasksProjectsLocationsQueuesPauseRequest object.
 
   Fields:
-    name: Required.  The queue name. For example:
+    name: Required. The queue name. For example:
       `projects/PROJECT_ID/location/LOCATION_ID/queues/QUEUE_ID`
     pauseQueueRequest: A PauseQueueRequest resource to be passed as the
       request body.
@@ -500,7 +500,7 @@ class CloudtasksProjectsLocationsQueuesPurgeRequest(_messages.Message):
   r"""A CloudtasksProjectsLocationsQueuesPurgeRequest object.
 
   Fields:
-    name: Required.  The queue name. For example:
+    name: Required. The queue name. For example:
       `projects/PROJECT_ID/location/LOCATION_ID/queues/QUEUE_ID`
     purgeQueueRequest: A PurgeQueueRequest resource to be passed as the
       request body.
@@ -514,7 +514,7 @@ class CloudtasksProjectsLocationsQueuesResumeRequest(_messages.Message):
   r"""A CloudtasksProjectsLocationsQueuesResumeRequest object.
 
   Fields:
-    name: Required.  The queue name. For example:
+    name: Required. The queue name. For example:
       `projects/PROJECT_ID/location/LOCATION_ID/queues/QUEUE_ID`
     resumeQueueRequest: A ResumeQueueRequest resource to be passed as the
       request body.
@@ -545,7 +545,7 @@ class CloudtasksProjectsLocationsQueuesTasksCreateRequest(_messages.Message):
   Fields:
     createTaskRequest: A CreateTaskRequest resource to be passed as the
       request body.
-    parent: Required.  The queue name. For example:
+    parent: Required. The queue name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`  The queue
       must already exist.
   """
@@ -558,7 +558,7 @@ class CloudtasksProjectsLocationsQueuesTasksDeleteRequest(_messages.Message):
   r"""A CloudtasksProjectsLocationsQueuesTasksDeleteRequest object.
 
   Fields:
-    name: Required.  The task name. For example:
+    name: Required. The task name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID
       `
   """
@@ -579,7 +579,7 @@ class CloudtasksProjectsLocationsQueuesTasksGetRequest(_messages.Message):
       IAM](https://cloud.google.com/iam/) permission on the Task resource.
 
   Fields:
-    name: Required.  The task name. For example:
+    name: Required. The task name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID
       `
     responseView: The response_view specifies which subset of the Task will be
@@ -635,7 +635,7 @@ class CloudtasksProjectsLocationsQueuesTasksListRequest(_messages.Message):
       page of results, page_token must be the value of next_page_token
       returned from the previous call to ListTasks method.  The page token is
       valid for only 2 hours.
-    parent: Required.  The queue name. For example:
+    parent: Required. The queue name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`
     responseView: The response_view specifies which subset of the Task will be
       returned.  By default response_view is BASIC; not all information is
@@ -674,7 +674,7 @@ class CloudtasksProjectsLocationsQueuesTasksRunRequest(_messages.Message):
   r"""A CloudtasksProjectsLocationsQueuesTasksRunRequest object.
 
   Fields:
-    name: Required.  The task name. For example:
+    name: Required. The task name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID
       `
     runTaskRequest: A RunTaskRequest resource to be passed as the request
@@ -720,7 +720,7 @@ class CreateTaskRequest(_messages.Message):
       because of the sensitivity of data that it contains.  Authorization for
       FULL requires `cloudtasks.tasks.fullView` [Google
       IAM](https://cloud.google.com/iam/) permission on the Task resource.
-    task: Required.  The task to add.  Task names have the following format:
+    task: Required. The task to add.  Task names have the following format:
       `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID
       `. The user can optionally specify a task name. If a name is not
       specified then the system will generate a random unique task id, which
@@ -807,7 +807,26 @@ class Expr(_messages.Message):
 
 
 class GetIamPolicyRequest(_messages.Message):
-  r"""Request message for `GetIamPolicy` method."""
+  r"""Request message for `GetIamPolicy` method.
+
+  Fields:
+    options: OPTIONAL: A `GetPolicyOptions` object for specifying options to
+      `GetIamPolicy`. This field is only used by Cloud IAM.
+  """
+
+  options = _messages.MessageField('GetPolicyOptions', 1)
+
+
+class GetPolicyOptions(_messages.Message):
+  r"""Encapsulates settings provided to GetIamPolicy.
+
+  Fields:
+    requestedPolicyVersion: Optional. The policy format version to be
+      returned. Acceptable values are 0 and 1. If the value is 0, or the field
+      is omitted, policy format version 1 will be returned.
+  """
+
+  requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class HttpRequest(_messages.Message):
@@ -1155,7 +1174,7 @@ class Policy(_messages.Message):
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten blindly.
+      the existing policy is overwritten.
     version: Deprecated.
   """
 

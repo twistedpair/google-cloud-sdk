@@ -710,6 +710,23 @@ class DlpProjectsJobTriggersPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class DlpProjectsLocationsContentDeidentifyRequest(_messages.Message):
+  r"""A DlpProjectsLocationsContentDeidentifyRequest object.
+
+  Fields:
+    googlePrivacyDlpV2DeidentifyContentRequest: A
+      GooglePrivacyDlpV2DeidentifyContentRequest resource to be passed as the
+      request body.
+    location: The geographic location to process de-identification. Reserved
+      for future extensions.
+    parent: The parent resource name, for example projects/my-project-id.
+  """
+
+  googlePrivacyDlpV2DeidentifyContentRequest = _messages.MessageField('GooglePrivacyDlpV2DeidentifyContentRequest', 1)
+  location = _messages.StringField(2, required=True)
+  parent = _messages.StringField(3, required=True)
+
+
 class DlpProjectsStoredInfoTypesCreateRequest(_messages.Message):
   r"""A DlpProjectsStoredInfoTypesCreateRequest object.
 
@@ -799,6 +816,7 @@ class GooglePrivacyDlpV2Action(_messages.Message):
     jobNotificationEmails: Enable email notification to project owners and
       editors on job's completion/failure.
     pubSub: Publish a notification to a pubsub topic.
+    publishFindingsToCloudDataCatalog: Publish findings to Cloud Datahub.
     publishSummaryToCscc: Publish summary to Cloud Security Command Center
       (Alpha).
     saveFindings: Save resulting findings in a provided location.
@@ -806,8 +824,9 @@ class GooglePrivacyDlpV2Action(_messages.Message):
 
   jobNotificationEmails = _messages.MessageField('GooglePrivacyDlpV2JobNotificationEmails', 1)
   pubSub = _messages.MessageField('GooglePrivacyDlpV2PublishToPubSub', 2)
-  publishSummaryToCscc = _messages.MessageField('GooglePrivacyDlpV2PublishSummaryToCscc', 3)
-  saveFindings = _messages.MessageField('GooglePrivacyDlpV2SaveFindings', 4)
+  publishFindingsToCloudDataCatalog = _messages.MessageField('GooglePrivacyDlpV2PublishFindingsToCloudDataCatalog', 3)
+  publishSummaryToCscc = _messages.MessageField('GooglePrivacyDlpV2PublishSummaryToCscc', 4)
+  saveFindings = _messages.MessageField('GooglePrivacyDlpV2SaveFindings', 5)
 
 
 class GooglePrivacyDlpV2ActivateJobTriggerRequest(_messages.Message):
@@ -1865,6 +1884,8 @@ class GooglePrivacyDlpV2DeidentifyContentRequest(_messages.Message):
       corresponding fields in the template. Repeated fields are appended.
       Singular sub-messages and groups are recursively merged.
     item: The item to de-identify. Will be treated as text.
+    location: The geographic location to process de-identification. Reserved
+      for future extensions.
   """
 
   deidentifyConfig = _messages.MessageField('GooglePrivacyDlpV2DeidentifyConfig', 1)
@@ -1872,6 +1893,7 @@ class GooglePrivacyDlpV2DeidentifyContentRequest(_messages.Message):
   inspectConfig = _messages.MessageField('GooglePrivacyDlpV2InspectConfig', 3)
   inspectTemplateName = _messages.StringField(4)
   item = _messages.MessageField('GooglePrivacyDlpV2ContentItem', 5)
+  location = _messages.StringField(6)
 
 
 class GooglePrivacyDlpV2DeidentifyContentResponse(_messages.Message):
@@ -3464,6 +3486,20 @@ class GooglePrivacyDlpV2Proximity(_messages.Message):
 
   windowAfter = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   windowBefore = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GooglePrivacyDlpV2PublishFindingsToCloudDataCatalog(_messages.Message):
+  r"""Publish findings of a DlpJob to Cloud Data Catalog. Labels summarizing
+  the results of the DlpJob will be applied to the entry for the resource
+  scanned in Cloud Data Catalog. Any labels previously written by another
+  DlpJob will be deleted. InfoType naming patterns are strictly enforced when
+  using this feature. Note that the findings will be persisted in Cloud Data
+  Catalog storage and are governed by Data Catalog service-specific policy,
+  see https://cloud.google.com/terms/service-terms Only a single instance of
+  this action can be specified and only allowed if all resources being scanned
+  are BigQuery tables. Compatible with: Inspect
+  """
+
 
 
 class GooglePrivacyDlpV2PublishSummaryToCscc(_messages.Message):

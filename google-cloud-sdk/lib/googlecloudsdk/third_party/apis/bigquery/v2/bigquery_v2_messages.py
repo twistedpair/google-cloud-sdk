@@ -1938,6 +1938,8 @@ class JobStatistics2(_messages.Message):
     numDmlAffectedRows: [Output-only] The number of rows affected by a DML
       statement. Present only for DML statements INSERT, UPDATE or DELETE.
     queryPlan: [Output-only] Describes execution plan for the query.
+    referencedRoutines: [Output-only] Referenced routines (persistent user-
+      defined functions and stored procedures) for the job.
     referencedTables: [Output-only] Referenced tables for the job. Queries
       that reference more than 50 tables will not have a complete list.
     reservationUsage: [Output-only] Job resource usage breakdown by
@@ -2002,17 +2004,18 @@ class JobStatistics2(_messages.Message):
   modelTrainingExpectedTotalIteration = _messages.IntegerField(9)
   numDmlAffectedRows = _messages.IntegerField(10)
   queryPlan = _messages.MessageField('ExplainQueryStage', 11, repeated=True)
-  referencedTables = _messages.MessageField('TableReference', 12, repeated=True)
-  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 13, repeated=True)
-  schema = _messages.MessageField('TableSchema', 14)
-  statementType = _messages.StringField(15)
-  timeline = _messages.MessageField('QueryTimelineSample', 16, repeated=True)
-  totalBytesBilled = _messages.IntegerField(17)
-  totalBytesProcessed = _messages.IntegerField(18)
-  totalBytesProcessedAccuracy = _messages.StringField(19)
-  totalPartitionsProcessed = _messages.IntegerField(20)
-  totalSlotMs = _messages.IntegerField(21)
-  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 22, repeated=True)
+  referencedRoutines = _messages.MessageField('RoutineReference', 12, repeated=True)
+  referencedTables = _messages.MessageField('TableReference', 13, repeated=True)
+  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 14, repeated=True)
+  schema = _messages.MessageField('TableSchema', 15)
+  statementType = _messages.StringField(16)
+  timeline = _messages.MessageField('QueryTimelineSample', 17, repeated=True)
+  totalBytesBilled = _messages.IntegerField(18)
+  totalBytesProcessed = _messages.IntegerField(19)
+  totalBytesProcessedAccuracy = _messages.StringField(20)
+  totalPartitionsProcessed = _messages.IntegerField(21)
+  totalSlotMs = _messages.IntegerField(22)
+  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 23, repeated=True)
 
 
 class JobStatistics3(_messages.Message):

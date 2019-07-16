@@ -31,18 +31,6 @@ operation:
     attribute_name: operation
     help: Cloud Healthcare Operation
 
-annotation_store:
-  name: annotationStore
-  collection: healthcare.projects.locations.datasets.annotationStores
-  request_id_field: annotationStoreId
-  attributes:
-  - *location
-  - *dataset
-  - &annotation-store
-    parameter_name: annotationStoresId
-    attribute_name: annotation_store
-    help: Cloud Healthcare annotation store.
-
 dicom_store:
   name: dicomStore
   collection: healthcare.projects.locations.datasets.dicomStores

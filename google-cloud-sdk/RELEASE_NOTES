@@ -5,6 +5,78 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 254.0.0 (2019-07-16)
+
+### AI Platform
+
+*   Promoted the following flags for `gcloud ai-platform jobs submit training`
+    to GA:
+    *   `--master-machine-type`
+    *   `--master-accelerator`
+    *   `--master-image-uri`
+    *   `--worker-count`
+    *   `--worker-machine-type`
+    *   `--worker-accelerator`
+    *   `--worker-image-uri`
+    *   `--parameter-server-count`
+    *   `--parameter-server-machine-type`
+    *   `--parameter-server-accelerator`
+    *   `--parameter-server-image-uri`
+    Use these flags to configure training VMs and deploy custom containers.
+
+### BigQuery
+
+* Removed json formatting requirement for `bq ls --print_last_token`.
+* Added support for dataset default KMS key.
+
+### Cloud Asset Inventory
+
+* Added `--output-path-prefix` flag to `gcloud asset export`.
+* Added new content type `org-policy` to `gcloud asset export` and `gcloud asset get-history`.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.6.1.
+  * Fix bug where ClearData would fail for databases with more than 500 documents.
+* Release Cloud Firestore emulator v1.6.2.
+  * Fix bug where Firestore queries with cursors had incorrect boundary behavior.
+
+### Cloud Pub/Sub
+
+* Promoted `--message-storage-policy-allowed-regions` flag of
+  `gcloud pubsub topics create` to beta. This feature allows users to control
+  the Cloud regions where published messages are stored at rest.
+* Promoted `--recompute-message-storage-policy` and
+  `--message-storage-policy-allowed-regions` flags of
+  `gcloud pubsub topics update` to beta. This feature allows users to control
+  the Cloud regions where published messages are stored at rest.
+
+### Cloud Run
+
+* Fixed bug causing unnecessary API enablement prompt when working with Cloud SQL instances.
+
+### Cloud Storage
+
+* 
+* Updated gsutil component to 4.40.
+
+### Compute Engine
+
+* Added `disk-resource-policy` option to `--create-disk` flag in
+  `gcloud beta compute instance-templates create`.
+* Fixed bug where `gcloud compute images export` would create temporary Cloud Storage bucket in US
+  multi-region when destination file is in a different region.
+* Promoted `gcloud compute resource-policies` to GA.
+* Promoted resource policies in `gcloud compute disks` to GA.
+
+### Firebase Test Lab
+
+* Fixed a possible crash when invalid iOS device dimensions are specified for a test run.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 253.0.0 (2019-07-02)
 
 ### Breaking Changes

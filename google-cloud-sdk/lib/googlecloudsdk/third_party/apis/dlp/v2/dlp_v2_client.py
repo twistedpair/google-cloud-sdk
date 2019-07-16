@@ -46,6 +46,8 @@ class DlpV2(base_api.BaseApiClient):
     self.projects_image = self.ProjectsImageService(self)
     self.projects_inspectTemplates = self.ProjectsInspectTemplatesService(self)
     self.projects_jobTriggers = self.ProjectsJobTriggersService(self)
+    self.projects_locations_content = self.ProjectsLocationsContentService(self)
+    self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_storedInfoTypes = self.ProjectsStoredInfoTypesService(self)
     self.projects = self.ProjectsService(self)
 
@@ -1361,6 +1363,60 @@ See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
         response_type_name=u'GooglePrivacyDlpV2JobTrigger',
         supports_download=False,
     )
+
+  class ProjectsLocationsContentService(base_api.BaseApiService):
+    """Service class for the projects_locations_content resource."""
+
+    _NAME = u'projects_locations_content'
+
+    def __init__(self, client):
+      super(DlpV2.ProjectsLocationsContentService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Deidentify(self, request, global_params=None):
+      r"""De-identifies potentially sensitive info from a ContentItem.
+This method has limits on input size and output size.
+See https://cloud.google.com/dlp/docs/deidentify-sensitive-data to
+learn more.
+
+When no InfoTypes or CustomInfoTypes are specified in this request, the
+system will automatically choose what detectors to run. By default this may
+be all types, but may change over time as detectors are updated.
+
+      Args:
+        request: (DlpProjectsLocationsContentDeidentifyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2DeidentifyContentResponse) The response message.
+      """
+      config = self.GetMethodConfig('Deidentify')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Deidentify.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/locations/{location}/content:deidentify',
+        http_method=u'POST',
+        method_id=u'dlp.projects.locations.content.deidentify',
+        ordered_params=[u'parent', u'location'],
+        path_params=[u'location', u'parent'],
+        query_params=[],
+        relative_path=u'v2/{+parent}/locations/{location}/content:deidentify',
+        request_field=u'googlePrivacyDlpV2DeidentifyContentRequest',
+        request_type_name=u'DlpProjectsLocationsContentDeidentifyRequest',
+        response_type_name=u'GooglePrivacyDlpV2DeidentifyContentResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsService(base_api.BaseApiService):
+    """Service class for the projects_locations resource."""
+
+    _NAME = u'projects_locations'
+
+    def __init__(self, client):
+      super(DlpV2.ProjectsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsStoredInfoTypesService(base_api.BaseApiService):
     """Service class for the projects_storedInfoTypes resource."""

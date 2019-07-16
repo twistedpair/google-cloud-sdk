@@ -51,8 +51,8 @@ class RecommenderV1beta1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets the requested recommendation and requires the recommender.*.get.
-IAM permission.
+      r"""Gets the requested recommendation. Requires the recommender.*.get.
+IAM permission for the specified recommender.
 
       Args:
         request: (RecommenderProjectsLocationsRecommendersRecommendationsGetRequest) input message
@@ -79,8 +79,8 @@ IAM permission.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists recommendations for a Cloud project and requires the.
-recommender.*.list IAM permission.
+      r"""Lists recommendations for a Cloud project. Requires the recommender.*.list.
+IAM permission for the specified recommender.
 
       Args:
         request: (RecommenderProjectsLocationsRecommendersRecommendationsListRequest) input message
@@ -112,9 +112,11 @@ indicate to the Recommender API that they are starting to apply the
 recommendation themselves. This stops the recommendation content from being
 updated.
 
-MarkClaimed can be applied to recommendations in CLAIMED, or ACTIVE state.
+MarkRecommendationClaimed can be applied to recommendations in CLAIMED,
+SUCCEEDED, FAILED, or ACTIVE state.
 
-recommender.*.update IAM permission is required to make this change.
+Requires the recommender.*.update IAM permission for the specified
+recommender.
 
       Args:
         request: (RecommenderProjectsLocationsRecommendersRecommendationsMarkClaimedRequest) input message
@@ -146,10 +148,11 @@ indicate to the Recommender API that they have applied the recommendation
 themselves, and the operation failed. This stops the recommendation content
 from being updated.
 
-MarkFailed can be applied to recommendations in ACTIVE, CLAIMED, SUCCEEDED,
-or FAILED state.
+MarkRecommendationFailed can be applied to recommendations in ACTIVE,
+CLAIMED, SUCCEEDED, or FAILED state.
 
-recommender.*.update IAM permission is required to make this change.
+Requires the recommender.*.update IAM permission for the specified
+recommender.
 
       Args:
         request: (RecommenderProjectsLocationsRecommendersRecommendationsMarkFailedRequest) input message
@@ -181,10 +184,11 @@ indicate to the Recommender API that they have applied the recommendation
 themselves, and the operation was successful. This stops the recommendation
 content from being updated.
 
-MarkSucceeded can be applied to recommendations in ACTIVE, CLAIMED,
-SUCCEEDED, or FAILED state.
+MarkRecommendationSucceeded can be applied to recommendations in ACTIVE,
+CLAIMED, SUCCEEDED, or FAILED state.
 
-recommender.*.update IAM permission is required to make this change.
+Requires the recommender.*.update IAM permission for the specified
+recommender.
 
       Args:
         request: (RecommenderProjectsLocationsRecommendersRecommendationsMarkSucceededRequest) input message

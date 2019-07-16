@@ -328,21 +328,11 @@ def AppendNetworkAndSubnetArgs(args, builder_args):
     args: list of str, CLI args that might contain network/subnet args.
     builder_args: list of str, args for builder.
   """
-  network_full_path = None
   if args.subnet:
-    AppendArg(builder_args, 'subnet', 'regions/{0}/subnetworks/{1}'.format(
-        GetSubnetRegion(), args.subnet.lower()))
-
-    # The network variable should be empty string when subnet is specified
-    # and network is not. Otherwise, Daisy will default network to
-    # `global/networks/default` which will fail except for default networks.
-    network_full_path = ''
+    AppendArg(builder_args, 'subnet', args.subnet.lower())
 
   if args.network:
-    network_full_path = 'global/networks/{0}'.format(args.network.lower())
-
-  if network_full_path is not None:
-    AppendArg(builder_args, 'network', network_full_path)
+    AppendArg(builder_args, 'network', args.network.lower())
 
 
 def RunDaisyBuild(args,

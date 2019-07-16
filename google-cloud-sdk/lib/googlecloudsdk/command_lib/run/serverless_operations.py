@@ -44,6 +44,7 @@ from googlecloudsdk.command_lib.run import stages
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import retry
@@ -833,8 +834,9 @@ class ServerlessOperations(object):
           exceptions.reraise(serverless_exceptions.BadImageError(e))
       exceptions.reraise(e)
     except api_exceptions.HttpNotFoundError as e:
+      platform = properties.VALUES.run.platform.Get()
       error_msg = 'Deployment endpoint was not found.'
-      if not self._region:
+      if platform == 'gke':
         all_clusters = global_methods.ListClusters()
         clusters = ['* {} in {}'.format(c.name, c.zone) for c in all_clusters]
         error_msg += (' Perhaps the provided cluster was invalid or '
@@ -843,7 +845,7 @@ class ServerlessOperations(object):
                       '`run/cluster` and `run/cluster_location` properties to '
                       'a valid cluster and zone and retry.'
                       '\nAvailable clusters:\n{}'.format('\n'.join(clusters)))
-      else:
+      elif platform == 'managed':
         all_regions = global_methods.ListRegions(self._op_client)
         if self._region not in all_regions:
           regions = ['* {}'.format(r) for r in all_regions]
@@ -851,6 +853,12 @@ class ServerlessOperations(object):
                         'Pass the `--region` flag or set the '
                         '`run/region` property to a valid region and retry.'
                         '\nAvailable regions:\n{}'.format('\n'.join(regions)))
+      elif platform == 'kubernetes':
+        error_msg += (' Perhaps the provided cluster was invalid or '
+                      'does not have Cloud Run enabled. Ensure in your '
+                      'kubeconfig file that the cluster referenced in '
+                      'the current context or the specified context '
+                      'is a valid cluster and retry.')
       raise serverless_exceptions.DeploymentFailedError(error_msg)
 
   def ReleaseService(self, service_ref, config_changes, tracker=None,

@@ -262,11 +262,11 @@
       "type": "object",
       "properties": {
         "topicName": {
-          "description": "Required.\n\nThe name of the Cloud Pub\/Sub topic to which messages will\nbe published when a job is delivered. The topic name must be in the\nsame format as required by PubSub's\n[PublishRequest.name](https:\/\/cloud.google.com\/pubsub\/docs\/reference\/rpc\/google.pubsub.v1#publishrequest),\nfor example `projects\/PROJECT_ID\/topics\/TOPIC_ID`.\n\nThe topic must be in the same project as the Cloud Scheduler job.",
+          "description": "Required. The name of the Cloud Pub\/Sub topic to which messages will\nbe published when a job is delivered. The topic name must be in the\nsame format as required by PubSub's\n[PublishRequest.name](https:\/\/cloud.google.com\/pubsub\/docs\/reference\/rpc\/google.pubsub.v1#publishrequest),\nfor example `projects\/PROJECT_ID\/topics\/TOPIC_ID`.\n\nThe topic must be in the same project as the Cloud Scheduler job.",
           "type": "string"
         },
         "pubsubMessage": {
-          "description": "Required.\n\nThis pubsub message is sent when the job is attempted.\n\n`pubsub_message` should be a google.pubsub.v1.PubsubMessage.",
+          "description": "Required. This pubsub message is sent when the job is attempted.\n\n`pubsub_message` should be a google.pubsub.v1.PubsubMessage.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -355,7 +355,7 @@
       "type": "object",
       "properties": {
         "url": {
-          "description": "Required.\n\nThe full url path that the request will be sent to. This string\nmust begin with either \"http:\/\/\" or \"https:\/\/\". Some examples of\nvalid values for HttpTarget.url are:\n`http:\/\/acme.com` and `https:\/\/acme.com\/sales:8080`. Cloud Scheduler will\nencode some characters for safety and compatibility. The maximum allowed\nURL length is 2083 characters after encoding.",
+          "description": "Required. The full url path that the request will be sent to. This string\nmust begin with either \"http:\/\/\" or \"https:\/\/\". Some examples of\nvalid values for HttpTarget.url are:\n`http:\/\/acme.com` and `https:\/\/acme.com\/sales:8080`. Cloud Scheduler will\nencode some characters for safety and compatibility. The maximum allowed\nURL length is 2083 characters after encoding.",
           "type": "string"
         },
         "httpMethod": {
@@ -444,7 +444,7 @@
           "type": "string"
         },
         "schedule": {
-          "description": "Required.\n\nScheduler schedules are specified using an English-like\nformat. See\nhttps:\/\/cloud.google.com\/cloud-scheduler\/docs\/running-cron-jobs-with-cloud-scheduler#defining_the_job_schedule",
+          "description": "Required. Scheduler schedules are specified using an English-like\nformat. See\nhttps:\/\/cloud.google.com\/cloud-scheduler\/docs\/running-cron-jobs-with-cloud-scheduler#defining_the_job_schedule",
           "type": "string"
         }
       }
@@ -648,7 +648,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required.\n\nThe location name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID`.",
+                      "description": "Required. The location name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -684,7 +684,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required.\n\nThe job name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.",
+                      "description": "Required. The job name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
@@ -709,7 +709,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required.\n\nThe location name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID`.",
+                      "description": "Required. The location name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -771,7 +771,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required.\n\nThe job name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.",
+                      "description": "Required. The job name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
@@ -796,7 +796,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required.\n\nThe job name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.",
+                      "description": "Required. The job name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
@@ -824,7 +824,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required.\n\nThe job name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.",
+                      "description": "Required. The job name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
@@ -852,7 +852,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required.\n\nThe job name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.",
+                      "description": "Required. The job name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",

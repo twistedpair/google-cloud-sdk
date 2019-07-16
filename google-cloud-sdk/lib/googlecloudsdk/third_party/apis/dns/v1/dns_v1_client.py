@@ -8,7 +8,7 @@ class DnsV1(base_api.BaseApiClient):
   """Generated client library for service dns version v1."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://www.googleapis.com/dns/v1/'
+  BASE_URL = u'https://dns.googleapis.com/dns/v1/'
 
   _PACKAGE = u'dns'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only', u'https://www.googleapis.com/auth/ndev.clouddns.readonly', u'https://www.googleapis.com/auth/ndev.clouddns.readwrite']

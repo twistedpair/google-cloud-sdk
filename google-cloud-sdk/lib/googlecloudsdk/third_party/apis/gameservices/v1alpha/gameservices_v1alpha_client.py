@@ -359,7 +359,7 @@ set.
         method_id=u'gameservices.projects.locations.gameServerDeployments.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1alpha/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'GameservicesProjectsLocationsGameServerDeploymentsGetIamPolicyRequest',

@@ -680,6 +680,22 @@ class DialogflowProjectsOperationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class DialogflowProjectsOperationsListRequest(_messages.Message):
+  r"""A DialogflowProjectsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
 class GoogleCloudDialogflowV2Agent(_messages.Message):
   r"""Represents a conversational agent.
 
@@ -1276,6 +1292,15 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
       sent in the query. Refer to [Cloud Speech API
       documentation](https://cloud.google.com/speech-to-text/docs/basics) for
       more details.
+    singleUtterance: Optional. If `false` (default), recognition does not
+      cease until the client closes the stream. If `true`, the recognizer will
+      detect a single spoken utterance in input audio. Recognition ceases when
+      it detects the audio's voice has stopped or paused. In this case, once a
+      detected intent is received, the client should close the stream and
+      start a new request with a new stream as needed. Note: This setting is
+      relevant only for streaming methods. Note: When specified,
+      InputAudioConfig.single_utterance takes precedence over
+      StreamingDetectIntentRequest.single_utterance.
   """
 
   class AudioEncodingValueValuesEnum(_messages.Enum):
@@ -1357,6 +1382,7 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
   modelVariant = _messages.EnumField('ModelVariantValueValuesEnum', 3)
   phraseHints = _messages.StringField(4, repeated=True)
   sampleRateHertz = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  singleUtterance = _messages.BooleanField(6)
 
 
 class GoogleCloudDialogflowV2Intent(_messages.Message):
@@ -2257,9 +2283,13 @@ class GoogleCloudDialogflowV2QueryResult(_messages.Message):
       fields are filled in this message, including but not limited to: `name`,
       `display_name` and `webhook_state`.
     intentDetectionConfidence: The intent detection confidence. Values range
-      from 0.0 (completely uncertain) to 1.0 (completely certain). If there
-      are `multiple knowledge_answers` messages, this value is set to the
-      greatest `knowledgeAnswers.match_confidence` value in the list.
+      from 0.0 (completely uncertain) to 1.0 (completely certain). This value
+      is for informational purpose only and is only used to help match the
+      best intent within the classification threshold. This value may change
+      for the same end-user expression at any time due to a model retraining
+      or change in implementation. If there are `multiple knowledge_answers`
+      messages, this value is set to the greatest
+      `knowledgeAnswers.match_confidence` value in the list.
     languageCode: The language that was triggered during intent detection. See
       [Language
       Support](https://cloud.google.com/dialogflow/docs/reference/language)
@@ -2721,6 +2751,18 @@ class GoogleCloudDialogflowV2WebhookResponse(_messages.Message):
   source = _messages.StringField(6)
 
 
+class GoogleCloudDialogflowV2beta1ArticleSuggestionModelMetadata(_messages.Message):
+  r"""Metadata for article suggestion models.
+
+  Fields:
+    modelType: Optional. Type of the article suggestion model. The available
+      values are: *   `article-suggestion-gbt-1` - (default) Article
+      Suggestion Gbt model.
+  """
+
+  modelType = _messages.StringField(1)
+
+
 class GoogleCloudDialogflowV2beta1BatchUpdateEntityTypesResponse(_messages.Message):
   r"""The response message for EntityTypes.BatchUpdateEntityTypes.
 
@@ -2797,6 +2839,57 @@ class GoogleCloudDialogflowV2beta1Context(_messages.Message):
   lifespanCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   name = _messages.StringField(2)
   parameters = _messages.MessageField('ParametersValue', 3)
+
+
+class GoogleCloudDialogflowV2beta1ConversationModel(_messages.Message):
+  r"""Represents a conversation model.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the model. A model can only
+      serve prediction requests after it gets deployed.
+
+  Fields:
+    articleSuggestionModelMetadata: Metadata for article suggestion models.
+    createTime: Output only. Creation time of this model.
+    datasets: Required. Datasets used to create model.
+    displayName: Required. The display name of the model. At most 64 bytes
+      long.
+    name: Output only. ConversationModel resource name. Format:
+      `projects/<Project ID>/conversationModels/<Conversation Model ID>`
+    state: Output only. State of the model. A model can only serve prediction
+      requests after it gets deployed.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the model. A model can only serve prediction
+    requests after it gets deployed.
+
+    Values:
+      STATE_UNSPECIFIED: Should not be used, an un-set enum has this value by
+        default.
+      CREATING: Model is creating.
+      UNDEPLOYED: Model is not deployed but ready to deploy.
+      DEPLOYING: Model is deploying.
+      DEPLOYED: Model is deployed and ready to use.
+      UNDEPLOYING: Model is undeploying.
+      DELETING: Model is deleting.
+      FAILED: Model is in error state. Not ready to deploy and use.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    UNDEPLOYED = 2
+    DEPLOYING = 3
+    DEPLOYED = 4
+    UNDEPLOYING = 5
+    DELETING = 6
+    FAILED = 7
+
+  articleSuggestionModelMetadata = _messages.MessageField('GoogleCloudDialogflowV2beta1ArticleSuggestionModelMetadata', 1)
+  createTime = _messages.StringField(2)
+  datasets = _messages.MessageField('GoogleCloudDialogflowV2beta1InputDataset', 3, repeated=True)
+  displayName = _messages.StringField(4)
+  name = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
 class GoogleCloudDialogflowV2beta1EntityType(_messages.Message):
@@ -2944,6 +3037,19 @@ class GoogleCloudDialogflowV2beta1ExportAgentResponse(_messages.Message):
 
   agentContent = _messages.BytesField(1)
   agentUri = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowV2beta1InputDataset(_messages.Message):
+  r"""InputDataset used to create model or do evaluation.
+
+  Fields:
+    dataset: Required. ConversationDataset resource name. Format:
+      `projects/<Project ID>/conversationDatasets/<Conversation Dataset ID>`
+      or `projects/<Project ID>/conversationDatasets/<Conversation Dataset
+      ID>/annotatedConversationDatasets/<Annotated Conversation Dataset ID>`
+  """
+
+  dataset = _messages.StringField(1)
 
 
 class GoogleCloudDialogflowV2beta1Intent(_messages.Message):
@@ -3129,6 +3235,13 @@ class GoogleCloudDialogflowV2beta1IntentMessage(_messages.Message):
       structure that may be required for your platform.
     platform: Optional. The platform that this message is intended for.
     quickReplies: Displays quick replies.
+    rbmCarouselRichCard: Rich Business Messaging (RBM) carousel rich card
+      response.
+    rbmStandaloneRichCard: Standalone Rich Business Messaging (RBM) rich card
+      response.
+    rbmText: Rich Business Messaging (RBM) text response.  RBM allows
+      businesses to send enriched and branded versions of SMS. See
+      https://jibe.google.com/business-messaging.
     simpleResponses: Returns a voice or text-only response for Actions on
       Google.
     suggestions: Displays suggestion chips for Actions on Google.
@@ -3224,12 +3337,15 @@ class GoogleCloudDialogflowV2beta1IntentMessage(_messages.Message):
   payload = _messages.MessageField('PayloadValue', 7)
   platform = _messages.EnumField('PlatformValueValuesEnum', 8)
   quickReplies = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageQuickReplies', 9)
-  simpleResponses = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageSimpleResponses', 10)
-  suggestions = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageSuggestions', 11)
-  telephonyPlayAudio = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageTelephonyPlayAudio', 12)
-  telephonySynthesizeSpeech = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageTelephonySynthesizeSpeech', 13)
-  telephonyTransferCall = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageTelephonyTransferCall', 14)
-  text = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageText', 15)
+  rbmCarouselRichCard = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageRbmCarouselCard', 10)
+  rbmStandaloneRichCard = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageRbmStandaloneCard', 11)
+  rbmText = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageRbmText', 12)
+  simpleResponses = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageSimpleResponses', 13)
+  suggestions = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageSuggestions', 14)
+  telephonyPlayAudio = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageTelephonyPlayAudio', 15)
+  telephonySynthesizeSpeech = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageTelephonySynthesizeSpeech', 16)
+  telephonyTransferCall = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageTelephonyTransferCall', 17)
+  text = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageText', 18)
 
 
 class GoogleCloudDialogflowV2beta1IntentMessageBasicCard(_messages.Message):
@@ -3395,6 +3511,257 @@ class GoogleCloudDialogflowV2beta1IntentMessageQuickReplies(_messages.Message):
 
   quickReplies = _messages.StringField(1, repeated=True)
   title = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageRbmCardContent(_messages.Message):
+  r"""Rich Business Messaging (RBM) Card content
+
+  Fields:
+    description: Optional. Description of the card (at most 2000 bytes).  At
+      least one of the title, description or media must be set.
+    media: Optional. However at least one of the title, description or media
+      must be set. Media (image, GIF or a video) to include in the card.
+    suggestions: Optional. List of suggestions to include in the card.
+    title: Optional. Title of the card (at most 200 bytes).  At least one of
+      the title, description or media must be set.
+  """
+
+  description = _messages.StringField(1)
+  media = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageRbmCardContentRbmMedia', 2)
+  suggestions = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageRbmSuggestion', 3, repeated=True)
+  title = _messages.StringField(4)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageRbmCardContentRbmMedia(_messages.Message):
+  r"""Rich Business Messaging (RBM) Media displayed in Cards The following
+  media-types are currently supported:  ## Image Types   image/jpeg
+  image/jpg'  image/gif  image/png  ## Video Types   video/h263  video/m4v
+  video/mp4  video/mpeg  video/mpeg4  video/webm
+
+  Enums:
+    HeightValueValuesEnum: Required for cards with vertical orientation. The
+      height of the media within a rich card with a vertical layout.
+      (https://goo.gl/NeFCjz). For a standalone card with horizontal layout,
+      height is not customizable, and this field is ignored.
+
+  Fields:
+    fileUri: Required. Publicly reachable URI of the file. The RBM platform
+      determines the MIME type of the file from the content-type field in the
+      HTTP headers when the platform fetches the file. The content-type field
+      must be present and accurate in the HTTP response from the URL.
+    height: Required for cards with vertical orientation. The height of the
+      media within a rich card with a vertical layout.
+      (https://goo.gl/NeFCjz). For a standalone card with horizontal layout,
+      height is not customizable, and this field is ignored.
+    thumbnailUri: Optional. Publicly reachable URI of the thumbnail.If you
+      don't provide a thumbnail URI, the RBM platform displays a blank
+      placeholder thumbnail until the user's device downloads the file.
+      Depending on the user's setting, the file may not download automatically
+      and may require the user to tap a download button.
+  """
+
+  class HeightValueValuesEnum(_messages.Enum):
+    r"""Required for cards with vertical orientation. The height of the media
+    within a rich card with a vertical layout. (https://goo.gl/NeFCjz). For a
+    standalone card with horizontal layout, height is not customizable, and
+    this field is ignored.
+
+    Values:
+      HEIGHT_UNSPECIFIED: Not specified.
+      SHORT: 112 DP.
+      MEDIUM: 168 DP.
+      TALL: 264 DP. Not available for rich card carousels when the card width
+        is set to small.
+    """
+    HEIGHT_UNSPECIFIED = 0
+    SHORT = 1
+    MEDIUM = 2
+    TALL = 3
+
+  fileUri = _messages.StringField(1)
+  height = _messages.EnumField('HeightValueValuesEnum', 2)
+  thumbnailUri = _messages.StringField(3)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageRbmCarouselCard(_messages.Message):
+  r"""Carousel Rich Business Messaging (RBM) rich card.  Rich cards allow you
+  to respond to users with more vivid content, e.g. with media and
+  suggestions.  For more details about RBM rich cards, please see:
+  https://developers.google.com/rcs-business-messaging/rbm/guides/build/send-
+  messages#rich-cards. If you want to show a single card with more control
+  over the layout, please use RbmStandaloneCard instead.
+
+  Enums:
+    CardWidthValueValuesEnum: Required. The width of the cards in the
+      carousel.
+
+  Fields:
+    cardContents: Required. The cards in the carousel. A carousel must have at
+      least 2 cards and at most 10.
+    cardWidth: Required. The width of the cards in the carousel.
+  """
+
+  class CardWidthValueValuesEnum(_messages.Enum):
+    r"""Required. The width of the cards in the carousel.
+
+    Values:
+      CARD_WIDTH_UNSPECIFIED: Not specified.
+      SMALL: 120 DP. Note that tall media cannot be used.
+      MEDIUM: 232 DP.
+    """
+    CARD_WIDTH_UNSPECIFIED = 0
+    SMALL = 1
+    MEDIUM = 2
+
+  cardContents = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageRbmCardContent', 1, repeated=True)
+  cardWidth = _messages.EnumField('CardWidthValueValuesEnum', 2)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageRbmStandaloneCard(_messages.Message):
+  r"""Standalone Rich Business Messaging (RBM) rich card.  Rich cards allow
+  you to respond to users with more vivid content, e.g. with media and
+  suggestions.  For more details about RBM rich cards, please see:
+  https://developers.google.com/rcs-business-messaging/rbm/guides/build/send-
+  messages#rich-cards. You can group multiple rich cards into one using
+  RbmCarouselCard but carousel cards will give you less control over the card
+  layout.
+
+  Enums:
+    CardOrientationValueValuesEnum: Required. Orientation of the card.
+    ThumbnailImageAlignmentValueValuesEnum: Required if orientation is
+      horizontal. Image preview alignment for standalone cards with horizontal
+      layout.
+
+  Fields:
+    cardContent: Required. Card content.
+    cardOrientation: Required. Orientation of the card.
+    thumbnailImageAlignment: Required if orientation is horizontal. Image
+      preview alignment for standalone cards with horizontal layout.
+  """
+
+  class CardOrientationValueValuesEnum(_messages.Enum):
+    r"""Required. Orientation of the card.
+
+    Values:
+      CARD_ORIENTATION_UNSPECIFIED: Not specified.
+      HORIZONTAL: Horizontal layout.
+      VERTICAL: Vertical layout.
+    """
+    CARD_ORIENTATION_UNSPECIFIED = 0
+    HORIZONTAL = 1
+    VERTICAL = 2
+
+  class ThumbnailImageAlignmentValueValuesEnum(_messages.Enum):
+    r"""Required if orientation is horizontal. Image preview alignment for
+    standalone cards with horizontal layout.
+
+    Values:
+      THUMBNAIL_IMAGE_ALIGNMENT_UNSPECIFIED: Not specified.
+      LEFT: Thumbnail preview is left-aligned.
+      RIGHT: Thumbnail preview is right-aligned.
+    """
+    THUMBNAIL_IMAGE_ALIGNMENT_UNSPECIFIED = 0
+    LEFT = 1
+    RIGHT = 2
+
+  cardContent = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageRbmCardContent', 1)
+  cardOrientation = _messages.EnumField('CardOrientationValueValuesEnum', 2)
+  thumbnailImageAlignment = _messages.EnumField('ThumbnailImageAlignmentValueValuesEnum', 3)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageRbmSuggestedAction(_messages.Message):
+  r"""Rich Business Messaging (RBM) suggested client-side action that the user
+  can choose from the card.
+
+  Fields:
+    dial: Suggested client side action: Dial a phone number
+    openUrl: Suggested client side action: Open a URI on device
+    postbackData: Opaque payload that the Dialogflow receives in a user event
+      when the user taps the suggested action. This data will be also
+      forwarded to webhook to allow performing custom business logic.
+    shareLocation: Suggested client side action: Share user location
+    text: Text to display alongside the action.
+  """
+
+  dial = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageRbmSuggestedActionRbmSuggestedActionDial', 1)
+  openUrl = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageRbmSuggestedActionRbmSuggestedActionOpenUri', 2)
+  postbackData = _messages.StringField(3)
+  shareLocation = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageRbmSuggestedActionRbmSuggestedActionShareLocation', 4)
+  text = _messages.StringField(5)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageRbmSuggestedActionRbmSuggestedActionDial(_messages.Message):
+  r"""Opens the user's default dialer app with the specified phone number but
+  does not dial automatically (https://goo.gl/ergbB2).
+
+  Fields:
+    phoneNumber: Required. The phone number to fill in the default dialer app.
+      This field should be in [E.164](https://en.wikipedia.org/wiki/E.164)
+      format. An example of a correctly formatted phone number: +15556767888.
+  """
+
+  phoneNumber = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageRbmSuggestedActionRbmSuggestedActionOpenUri(_messages.Message):
+  r"""Opens the user's default web browser app to the specified uri
+  (https://goo.gl/6GLJD2). If the user has an app installed that is registered
+  as the default handler for the URL, then this app will be opened instead,
+  and its icon will be used in the suggested action UI.
+
+  Fields:
+    uri: Required. The uri to open on the user device
+  """
+
+  uri = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageRbmSuggestedActionRbmSuggestedActionShareLocation(_messages.Message):
+  r"""Opens the device's location chooser so the user can pick a location to
+  send back to the agent (https://goo.gl/GXotJW).
+  """
+
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageRbmSuggestedReply(_messages.Message):
+  r"""Rich Business Messaging (RBM) suggested reply that the user can click
+  instead of typing in their own response.
+
+  Fields:
+    postbackData: Opaque payload that the Dialogflow receives in a user event
+      when the user taps the suggested reply. This data will be also forwarded
+      to webhook to allow performing custom business logic.
+    text: Suggested reply text.
+  """
+
+  postbackData = _messages.StringField(1)
+  text = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageRbmSuggestion(_messages.Message):
+  r"""Rich Business Messaging (RBM) suggestion. Suggestions allow user to
+  easily select/click a predefined response or perform an action (like opening
+  a web uri).
+
+  Fields:
+    action: Predefined client side actions that user can choose
+    reply: Predefined replies for user to select instead of typing
+  """
+
+  action = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageRbmSuggestedAction', 1)
+  reply = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageRbmSuggestedReply', 2)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageRbmText(_messages.Message):
+  r"""Rich Business Messaging (RBM) text response with suggestions.
+
+  Fields:
+    rbmSuggestion: Optional. One or more suggestions to show to the user.
+    text: Required. Text sent and displayed to the user.
+  """
+
+  rbmSuggestion = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageRbmSuggestion', 1, repeated=True)
+  text = _messages.StringField(2)
 
 
 class GoogleCloudDialogflowV2beta1IntentMessageSelectItemInfo(_messages.Message):
@@ -3825,9 +4192,13 @@ class GoogleCloudDialogflowV2beta1QueryResult(_messages.Message):
       fields are filled in this message, including but not limited to: `name`,
       `display_name` and `webhook_state`.
     intentDetectionConfidence: The intent detection confidence. Values range
-      from 0.0 (completely uncertain) to 1.0 (completely certain). If there
-      are `multiple knowledge_answers` messages, this value is set to the
-      greatest `knowledgeAnswers.match_confidence` value in the list.
+      from 0.0 (completely uncertain) to 1.0 (completely certain). This value
+      is for informational purpose only and is only used to help match the
+      best intent within the classification threshold. This value may change
+      for the same end-user expression at any time due to a model retraining
+      or change in implementation. If there are `multiple knowledge_answers`
+      messages, this value is set to the greatest
+      `knowledgeAnswers.match_confidence` value in the list.
     knowledgeAnswers: The result from Knowledge Connector (if any), ordered by
       decreasing `KnowledgeAnswers.match_confidence`.
     languageCode: The language that was triggered during intent detection. See
@@ -4099,6 +4470,19 @@ class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
   outputContexts = _messages.MessageField('GoogleCloudDialogflowV2beta1Context', 5, repeated=True)
   payload = _messages.MessageField('PayloadValue', 6)
   source = _messages.StringField(7)
+
+
+class GoogleLongrunningListOperationsResponse(_messages.Message):
+  r"""The response message for Operations.ListOperations.
+
+  Fields:
+    nextPageToken: The standard List next-page token.
+    operations: A list of operations that matches the specified filter in the
+      request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  operations = _messages.MessageField('GoogleLongrunningOperation', 2, repeated=True)
 
 
 class GoogleLongrunningOperation(_messages.Message):

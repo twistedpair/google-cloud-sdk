@@ -23,7 +23,6 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
-from googlecloudsdk.command_lib.filestore import locations_util
 from googlecloudsdk.command_lib.filestore.snapshots import util as snapshot_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -328,8 +327,7 @@ class AlphaFilestoreAdapter(object):
       source_snapshot = None
       if 'source-snapshot' in file_share:
         project = properties.VALUES.core.project.Get(required=True)
-        location = (file_share.get('source-snapshot-region') or
-                    locations_util.GetRegionFromZone(instance_zone))
+        location = (file_share.get('source-snapshot-region') or instance_zone)
         source_snapshot = snapshot_util.SNAPSHOT_NAME_TEMPLATE.format(
             project, location, file_share.get('source-snapshot'))
       file_share_config = self.messages.FileShareConfig(

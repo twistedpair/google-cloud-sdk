@@ -35,107 +35,14 @@ class DataprocV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.projects_locations_autoscalingPolicies = self.ProjectsLocationsAutoscalingPoliciesService(self)
     self.projects_locations_workflowTemplates = self.ProjectsLocationsWorkflowTemplatesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
-    self.projects_regions_autoscalingPolicies = self.ProjectsRegionsAutoscalingPoliciesService(self)
     self.projects_regions_clusters = self.ProjectsRegionsClustersService(self)
     self.projects_regions_jobs = self.ProjectsRegionsJobsService(self)
     self.projects_regions_operations = self.ProjectsRegionsOperationsService(self)
     self.projects_regions_workflowTemplates = self.ProjectsRegionsWorkflowTemplatesService(self)
     self.projects_regions = self.ProjectsRegionsService(self)
     self.projects = self.ProjectsService(self)
-
-  class ProjectsLocationsAutoscalingPoliciesService(base_api.BaseApiService):
-    """Service class for the projects_locations_autoscalingPolicies resource."""
-
-    _NAME = u'projects_locations_autoscalingPolicies'
-
-    def __init__(self, client):
-      super(DataprocV1.ProjectsLocationsAutoscalingPoliciesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
-
-      Args:
-        request: (DataprocProjectsLocationsAutoscalingPoliciesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies/{autoscalingPoliciesId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.locations.autoscalingPolicies.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'DataprocProjectsLocationsAutoscalingPoliciesGetIamPolicyRequest',
-        response_type_name=u'Policy',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (DataprocProjectsLocationsAutoscalingPoliciesSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies/{autoscalingPoliciesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.locations.autoscalingPolicies.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'DataprocProjectsLocationsAutoscalingPoliciesSetIamPolicyRequest',
-        response_type_name=u'Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
-
-      Args:
-        request: (DataprocProjectsLocationsAutoscalingPoliciesTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies/{autoscalingPoliciesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.locations.autoscalingPolicies.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'DataprocProjectsLocationsAutoscalingPoliciesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
-        supports_download=False,
-    )
 
   class ProjectsLocationsWorkflowTemplatesService(base_api.BaseApiService):
     """Service class for the projects_locations_workflowTemplates resource."""
@@ -256,7 +163,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def Instantiate(self, request, global_params=None):
-      r"""Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata.On successful completion, Operation.response will be Empty.
+      r"""Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata. Also see Using WorkflowMetadata.On successful completion, Operation.response will be Empty.
 
       Args:
         request: (DataprocProjectsLocationsWorkflowTemplatesInstantiateRequest) input message
@@ -283,7 +190,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def InstantiateInline(self, request, global_params=None):
-      r"""Instantiates a template and begins execution.This method is equivalent to executing the sequence CreateWorkflowTemplate, InstantiateWorkflowTemplate, DeleteWorkflowTemplate.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata.On successful completion, Operation.response will be Empty.
+      r"""Instantiates a template and begins execution.This method is equivalent to executing the sequence CreateWorkflowTemplate, InstantiateWorkflowTemplate, DeleteWorkflowTemplate.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata. Also see Using WorkflowMetadata.On successful completion, Operation.response will be Empty.
 
       Args:
         request: (DataprocProjectsLocationsWorkflowTemplatesInstantiateInlineRequest) input message
@@ -426,97 +333,6 @@ class DataprocV1(base_api.BaseApiClient):
       super(DataprocV1.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
-
-  class ProjectsRegionsAutoscalingPoliciesService(base_api.BaseApiService):
-    """Service class for the projects_regions_autoscalingPolicies resource."""
-
-    _NAME = u'projects_regions_autoscalingPolicies'
-
-    def __init__(self, client):
-      super(DataprocV1.ProjectsRegionsAutoscalingPoliciesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
-
-      Args:
-        request: (DataprocProjectsRegionsAutoscalingPoliciesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies/{autoscalingPoliciesId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.autoscalingPolicies.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'DataprocProjectsRegionsAutoscalingPoliciesGetIamPolicyRequest',
-        response_type_name=u'Policy',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (DataprocProjectsRegionsAutoscalingPoliciesSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies/{autoscalingPoliciesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.autoscalingPolicies.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'DataprocProjectsRegionsAutoscalingPoliciesSetIamPolicyRequest',
-        response_type_name=u'Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
-
-      Args:
-        request: (DataprocProjectsRegionsAutoscalingPoliciesTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies/{autoscalingPoliciesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'dataproc.projects.regions.autoscalingPolicies.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'DataprocProjectsRegionsAutoscalingPoliciesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
-        supports_download=False,
-    )
 
   class ProjectsRegionsClustersService(base_api.BaseApiService):
     """Service class for the projects_regions_clusters resource."""
@@ -1330,7 +1146,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def Instantiate(self, request, global_params=None):
-      r"""Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata.On successful completion, Operation.response will be Empty.
+      r"""Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata. Also see Using WorkflowMetadata.On successful completion, Operation.response will be Empty.
 
       Args:
         request: (DataprocProjectsRegionsWorkflowTemplatesInstantiateRequest) input message
@@ -1357,7 +1173,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def InstantiateInline(self, request, global_params=None):
-      r"""Instantiates a template and begins execution.This method is equivalent to executing the sequence CreateWorkflowTemplate, InstantiateWorkflowTemplate, DeleteWorkflowTemplate.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata.On successful completion, Operation.response will be Empty.
+      r"""Instantiates a template and begins execution.This method is equivalent to executing the sequence CreateWorkflowTemplate, InstantiateWorkflowTemplate, DeleteWorkflowTemplate.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata. Also see Using WorkflowMetadata.On successful completion, Operation.response will be Empty.
 
       Args:
         request: (DataprocProjectsRegionsWorkflowTemplatesInstantiateInlineRequest) input message

@@ -869,7 +869,7 @@ class CommandBuilder(object):
     if args.async:
       log.status.Print(self._Format(
           'Check operation [{{{}}}] for status.'
-          .format(yaml_command_schema.NAME_FORMAT_KEY), operation_ref))
+          .format(yaml_command_schema.REL_NAME_FORMAT_KEY), operation_ref))
       return operation
 
     return self._WaitForOperation(
@@ -881,7 +881,7 @@ class CommandBuilder(object):
         self.spec, resource_ref if extract_resource_result else None, args)
     progress_string = self._Format(
         'Waiting for operation [{{{}}}] to complete'.format(
-            yaml_command_schema.NAME_FORMAT_KEY),
+            yaml_command_schema.REL_NAME_FORMAT_KEY),
         operation_ref)
     return waiter.WaitFor(
         poller, operation_ref, self._Format(

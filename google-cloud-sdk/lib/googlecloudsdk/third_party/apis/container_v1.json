@@ -958,6 +958,10 @@
         "subnetwork": {
           "description": "Output only. The relative name of the Google Compute Engine\n[subnetwork](\/compute\/docs\/vpc) to which the cluster is connected.\nExample: projects\/my-project\/regions\/us-central1\/subnetworks\/my-subnet",
           "type": "string"
+        },
+        "enableIntraNodeVisibility": {
+          "description": "Whether Intra-node visibility is enabled for this cluster.\nThis makes same node pod to pod traffic visible for VPC network.",
+          "type": "boolean"
         }
       }
     },
@@ -1252,9 +1256,24 @@
           "description": "The desired configuration for exporting resource usage.",
           "$ref": "ResourceUsageExportConfig"
         },
+        "desiredIntraNodeVisibilityConfig": {
+          "description": "The desired config of Intra-node visibility.",
+          "$ref": "IntraNodeVisibilityConfig"
+        },
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to.\n\nUsers may specify either explicit versions offered by\nKubernetes Engine or version aliases, which have the following behavior:\n\n- \"latest\": picks the highest valid Kubernetes version\n- \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version\n- \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version\n- \"1.X.Y-gke.N\": picks an explicit Kubernetes version\n- \"-\": picks the default Kubernetes version",
           "type": "string"
+        }
+      }
+    },
+    "IntraNodeVisibilityConfig": {
+      "id": "IntraNodeVisibilityConfig",
+      "description": "IntraNodeVisibilityConfig contains the desired config of the intra-node\nvisibility on this cluster.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enables intra node visibility for this cluster.",
+          "type": "boolean"
         }
       }
     },

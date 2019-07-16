@@ -19,9 +19,44 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
+
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import properties
+from googlecloudsdk.core import yaml
+
+
+PARENT_TEMPLATE = 'projects/{}/locations/{}'
+LOCATION_WILDCARD = '-'
+
+
+class InvalidSpecFileError(exceptions.Error):
+  """Error if a spec file is not valid JSON or YAML."""
 
 
 def FlattenedArgDict(value):
   dict_value = arg_parsers.ArgDict()(value)
   return [{'key': key, 'value': value} for key, value in dict_value.items()]
+
+
+def ProcessSpecFile(spec_file):
+  """Reads a JSON/YAML spec_file and returns JSON format of it."""
+
+  try:
+    spec = json.loads(spec_file)
+  except ValueError as e:
+    try:
+      spec = yaml.load(spec_file)
+    except yaml.YAMLParseError as e:
+      raise InvalidSpecFileError('Error parsing spec file: [{}]'.format(e))
+  return json.dumps(spec)
+
+
+def AddDefaultLocationToListRequest(ref, args, req):
+  """Python hook for yaml commands to wildcard the location in list requests."""
+  del ref
+  project = properties.VALUES.core.project.Get(required=True)
+  location = args.location or LOCATION_WILDCARD
+  req.parent = PARENT_TEMPLATE.format(project, location)
+  return req

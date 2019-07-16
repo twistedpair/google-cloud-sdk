@@ -153,7 +153,7 @@ class LinterRenderer(text_renderer.TextRenderer):
     if not warnings:
       self.json_object["# NAME_PRONOUN_CHECK SUCCESS"] = ""
     self.command_name = section.strip().split(" -")[0]
-    if len(section.strip().split(" - ")) == 1:
+    if len(section.replace("\n", " ").strip().split(" - ")) == 1:
       self.name_section = ""
       value_object = "Please add an explanation for the command."
       self.json_object["# NAME_DESCRIPTION_CHECK FAILED"] = value_object

@@ -143,7 +143,7 @@ class Binding(_messages.Message):
       without a Google account. allAuthenticatedUsers: A special identifier
       that represents anyone  who is authenticated with a Google account or a
       service account. user:{emailid}: An email address that represents a
-      specific Google  account. For example, alice@gmail.com .
+      specific Google  account. For example, alice@example.com .
       serviceAccount:{emailid}: An email address that represents a service
       account. For example, my-other-app@appspot.gserviceaccount.com.
       group:{emailid}: An email address that represents a Google group.  For
@@ -593,12 +593,16 @@ class DataprocProjectsLocationsAutoscalingPoliciesGetIamPolicyRequest(_messages.
   object.
 
   Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Acceptable values are 0 and 1. If the value is 0, or the field
+      is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
   """
 
-  resource = _messages.StringField(1, required=True)
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class DataprocProjectsLocationsAutoscalingPoliciesGetRequest(_messages.Message):
@@ -699,12 +703,16 @@ class DataprocProjectsLocationsWorkflowTemplatesGetIamPolicyRequest(_messages.Me
   r"""A DataprocProjectsLocationsWorkflowTemplatesGetIamPolicyRequest object.
 
   Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Acceptable values are 0 and 1. If the value is 0, or the field
+      is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
   """
 
-  resource = _messages.StringField(1, required=True)
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class DataprocProjectsLocationsWorkflowTemplatesGetRequest(_messages.Message):
@@ -845,12 +853,16 @@ class DataprocProjectsRegionsAutoscalingPoliciesGetIamPolicyRequest(_messages.Me
   r"""A DataprocProjectsRegionsAutoscalingPoliciesGetIamPolicyRequest object.
 
   Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Acceptable values are 0 and 1. If the value is 0, or the field
+      is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
   """
 
-  resource = _messages.StringField(1, required=True)
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class DataprocProjectsRegionsAutoscalingPoliciesGetRequest(_messages.Message):
@@ -992,12 +1004,16 @@ class DataprocProjectsRegionsClustersGetIamPolicyRequest(_messages.Message):
   r"""A DataprocProjectsRegionsClustersGetIamPolicyRequest object.
 
   Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Acceptable values are 0 and 1. If the value is 0, or the field
+      is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
   """
 
-  resource = _messages.StringField(1, required=True)
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class DataprocProjectsRegionsClustersGetRequest(_messages.Message):
@@ -1178,12 +1194,16 @@ class DataprocProjectsRegionsJobsGetIamPolicyRequest(_messages.Message):
   r"""A DataprocProjectsRegionsJobsGetIamPolicyRequest object.
 
   Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Acceptable values are 0 and 1. If the value is 0, or the field
+      is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
   """
 
-  resource = _messages.StringField(1, required=True)
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class DataprocProjectsRegionsJobsGetRequest(_messages.Message):
@@ -1351,12 +1371,16 @@ class DataprocProjectsRegionsOperationsGetIamPolicyRequest(_messages.Message):
   r"""A DataprocProjectsRegionsOperationsGetIamPolicyRequest object.
 
   Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Acceptable values are 0 and 1. If the value is 0, or the field
+      is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
   """
 
-  resource = _messages.StringField(1, required=True)
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class DataprocProjectsRegionsOperationsGetRequest(_messages.Message):
@@ -1450,12 +1474,16 @@ class DataprocProjectsRegionsWorkflowTemplatesGetIamPolicyRequest(_messages.Mess
   r"""A DataprocProjectsRegionsWorkflowTemplatesGetIamPolicyRequest object.
 
   Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Acceptable values are 0 and 1. If the value is 0, or the field
+      is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
   """
 
-  resource = _messages.StringField(1, required=True)
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class DataprocProjectsRegionsWorkflowTemplatesGetRequest(_messages.Message):
@@ -1795,7 +1823,26 @@ class GceClusterConfig(_messages.Message):
 
 
 class GetIamPolicyRequest(_messages.Message):
-  r"""Request message for GetIamPolicy method."""
+  r"""Request message for GetIamPolicy method.
+
+  Fields:
+    options: OPTIONAL: A GetPolicyOptions object for specifying options to
+      GetIamPolicy. This field is only used by Cloud IAM.
+  """
+
+  options = _messages.MessageField('GetPolicyOptions', 1)
+
+
+class GetPolicyOptions(_messages.Message):
+  r"""Encapsulates settings provided to GetIamPolicy.
+
+  Fields:
+    requestedPolicyVersion: Optional. The policy format version to be
+      returned. Acceptable values are 0 and 1. If the value is 0, or the field
+      is omitted, policy format version 1 will be returned.
+  """
+
+  requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class HadoopJob(_messages.Message):
@@ -2959,7 +3006,7 @@ class Policy(_messages.Message):
       systems are expected to put that etag in the request to setIamPolicy to
       ensure that their change will be applied to the same version of the
       policy.If no etag is provided in the call to setIamPolicy, then the
-      existing policy is overwritten blindly.
+      existing policy is overwritten.
     version: Deprecated.
   """
 

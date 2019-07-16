@@ -43,12 +43,12 @@ import ipaddress
 import six
 
 ZONE_PROPERTY_EXPLANATION = """\
-If not specified, you may be prompted to select a zone. `gcloud` will attempt
-to identify the zone by searching for resources in your project. If the zone
-cannot be determined, you will then be prompted with all Google Cloud
-Platform zones.
+If not specified, the user may be prompted to select a zone. `gcloud` will
+attempt to identify the zone by searching for resources in the user's project.
+If the zone cannot be determined, the user will then be prompted with all Google
+Cloud Platform zones.
 
-To avoid prompting when this flag is omitted, you can set the
+To avoid prompting when this flag is omitted, the user can set the
 ``compute/zone'' property:
 
   $ gcloud config set compute/zone ZONE
@@ -420,7 +420,7 @@ def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False,
       unit of ``KB'' for kilobyte, ``MB'' for megabyte, ``GB'' for gigabyte,
       or ``TB'' for terabyte. For example, ``10GB'' will produce a 10 gigabyte
       disk. The minimum size a boot disk can have is 10 GB. Disk size must be a
-      multiple of 1 GB. Limit your boot disk size to 2TB to account for MBR
+      multiple of 1 GB. Limit boot disk size to 2TB to account for MBR
       partition table limitations.
       """)
 
@@ -626,10 +626,9 @@ def AddCreateDiskArgs(parser, enable_kms=False, enable_snapshots=False,
   if resource_policy:
     disk_help += """
       *disk-resource-policy*::: Resource policy that will be applied to created
-      disk. You can provide full or partial URL. See
+      disk. You can provide full or partial URL. For more details see
         * https://cloud.google.com/sdk/gcloud/reference/beta/compute/resource-policies/
         * https://cloud.google.com/compute/docs/disks/scheduled-snapshots
-      for more details about resource-policies.
       """
     spec['disk-resource-policy'] = arg_parsers.ArgList(max_length=1)
 
@@ -1508,10 +1507,10 @@ def AddKonletArgs(parser):
       Each argument must have a separate flag. Arguments are appended in the
       order of flags. Example:
 
-      Assuming the default entry point of your container (or an entry point
+      Assuming the default entry point of the container (or an entry point
       overridden with --container-command flag) is a Bourne shell-compatible
       executable, in order to execute 'ls -l' command in the container,
-      you could use:
+      the user could use:
 
       `--container-arg="-c" --container-arg="ls -l"`
 

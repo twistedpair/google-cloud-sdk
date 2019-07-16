@@ -169,6 +169,14 @@ MAP = {
             default_version=True
         ),
     },
+    'buildartifacts': {
+        'v1alpha2': APIDef(
+            class_path='googlecloudsdk.third_party.apis.buildartifacts.v1alpha2',
+            client_classpath='buildartifacts_v1alpha2_client.BuildartifactsV1alpha2',
+            messages_modulepath='buildartifacts_v1alpha2_messages',
+            default_version=True
+        ),
+    },
     'cloudasset': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.cloudasset.v1',
@@ -535,6 +543,12 @@ MAP = {
             client_classpath='dns_v1_client.DnsV1',
             messages_modulepath='dns_v1_messages',
             default_version=True
+        ),
+        'v1alpha2': APIDef(
+            class_path='googlecloudsdk.third_party.apis.dns.v1alpha2',
+            client_classpath='dns_v1alpha2_client.DnsV1alpha2',
+            messages_modulepath='dns_v1alpha2_messages',
+            default_version=False
         ),
         'v1beta2': APIDef(
             class_path='googlecloudsdk.third_party.apis.dns.v1beta2',

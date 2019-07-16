@@ -302,7 +302,8 @@ the resource does not exist. Returns an empty policy if the resource exists
 but does not have a policy set.
 
 Authorization requires the Google IAM permission
-`healthcare.AnnotationStores.getIamPolicy` on the specified resource
+`healthcare.AnnotationStores.getIamPolicy` on the specified
+resource
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsAnnotationStoresGetIamPolicyRequest) input message
@@ -388,7 +389,8 @@ Sets the access control policy for a resource. Replaces any existing
 policy.
 
 Authorization requires the Google IAM permission
-'healthcare.annotationStores.setIamPolicy' on the specified resource
+`healthcare.annotationStores.setIamPolicy` on the specified
+resource
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsAnnotationStoresSetIamPolicyRequest) input message
@@ -1211,7 +1213,7 @@ set.
         method_id=u'healthcare.projects.locations.datasets.dicomStores.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1alpha2/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresGetIamPolicyRequest',
@@ -2096,8 +2098,8 @@ FHIR store. Returns NOT_FOUND error if the resource does not exist. Returns
 an empty policy if the resource exists but does not have a policy set.
 
 Authorization requires the Google IAM permission
-'healthcare.fhirStores.getIamPolicy' for a FHIR store or
-'healthcare.securityLabels.getIamPolicy' for a security label
+`healthcare.fhirStores.getIamPolicy` for a FHIR store or
+`healthcare.securityLabels.getIamPolicy` for a security label
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresSecurityLabelsGetIamPolicyRequest) input message
@@ -2115,7 +2117,7 @@ Authorization requires the Google IAM permission
         method_id=u'healthcare.projects.locations.datasets.fhirStores.securityLabels.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1alpha2/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresSecurityLabelsGetIamPolicyRequest',
@@ -2128,8 +2130,8 @@ Authorization requires the Google IAM permission
 FHIR store. Replaces any existing policy.
 
 Authorization requires the Google IAM permission
-'healthcare.fhirStores.setIamPolicy' for a FHIR store or
-'healthcare.securityLabels.setIamPolicy' for a security label
+`healthcare.fhirStores.setIamPolicy` for a FHIR store or
+`healthcare.securityLabels.setIamPolicy` for a security label
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresSecurityLabelsSetIamPolicyRequest) input message
@@ -2327,8 +2329,8 @@ FHIR store. Returns NOT_FOUND error if the resource does not exist. Returns
 an empty policy if the resource exists but does not have a policy set.
 
 Authorization requires the Google IAM permission
-'healthcare.fhirStores.getIamPolicy' for a FHIR store or
-'healthcare.securityLabels.getIamPolicy' for a security label
+`healthcare.fhirStores.getIamPolicy` for a FHIR store or
+`healthcare.securityLabels.getIamPolicy` for a security label
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresGetIamPolicyRequest) input message
@@ -2346,7 +2348,7 @@ Authorization requires the Google IAM permission
         method_id=u'healthcare.projects.locations.datasets.fhirStores.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1alpha2/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresGetIamPolicyRequest',
@@ -2467,8 +2469,8 @@ operation is OperationMetadata.
 FHIR store. Replaces any existing policy.
 
 Authorization requires the Google IAM permission
-'healthcare.fhirStores.setIamPolicy' for a FHIR store or
-'healthcare.securityLabels.setIamPolicy' for a security label
+`healthcare.fhirStores.setIamPolicy` for a FHIR store or
+`healthcare.securityLabels.setIamPolicy` for a security label
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresSetIamPolicyRequest) input message
@@ -2819,7 +2821,7 @@ set.
         method_id=u'healthcare.projects.locations.datasets.hl7V2Stores.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1alpha2/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'HealthcareProjectsLocationsDatasetsHl7V2StoresGetIamPolicyRequest',
@@ -3172,7 +3174,7 @@ set.
         method_id=u'healthcare.projects.locations.datasets.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1alpha2/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'HealthcareProjectsLocationsDatasetsGetIamPolicyRequest',

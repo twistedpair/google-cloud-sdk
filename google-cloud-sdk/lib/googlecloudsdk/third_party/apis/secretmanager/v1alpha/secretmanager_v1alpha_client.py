@@ -409,7 +409,7 @@ Returns empty policy if the secret exists and does not have a policy set.
         method_id=u'secretmanager.projects.secrets.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1alpha/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'SecretmanagerProjectsSecretsGetIamPolicyRequest',

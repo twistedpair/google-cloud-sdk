@@ -298,6 +298,8 @@ class FileShareConfig(_messages.Message):
       set to RFC1918 Internal IP ranges (10.0.0.0/8, 172.16.0.0/12,
       192.168.0.0/16)
     name: The name of the file share (must be 16 characters or less).
+    nfsExportOptions: Nfs Export Options. There is a limit of 10 export
+      options per file share.
     sourceSnapshot: The resource name of the snapshot, in the format
       projects/{project_id}/locations/{location_id}/snapshots/{snapshot_id},
       that this file share has been restored from. Empty, if the file share is
@@ -307,7 +309,8 @@ class FileShareConfig(_messages.Message):
   capacityGb = _messages.IntegerField(1)
   exports = _messages.MessageField('ExportConfig', 2, repeated=True)
   name = _messages.StringField(3)
-  sourceSnapshot = _messages.StringField(4)
+  nfsExportOptions = _messages.MessageField('NfsExportOptions', 4, repeated=True)
+  sourceSnapshot = _messages.StringField(5)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message):
@@ -337,8 +340,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
   "csa_rollout": {        "start_time": {           "seconds": 1526406431,
   },        "end_time": {           "seconds": 1535406431,        },     },
   "ncsa_rollout": {        "start_time": {           "seconds": 1526406431,
-  },        "end_time": {           "seconds": 1535406431,        },     }   }
-  } ```
+  },        "end_time": {           "seconds": 1535406431,        },     }
+  },   "consumer_defined_name": "my-sql-instance1", } ```
 
   Enums:
     StateValueValuesEnum: Output only. Current lifecycle state of the resource
@@ -368,6 +371,11 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       instance. This can be mutated by rollout services.
 
   Fields:
+    consumerDefinedName: consumer_defined_name is the name that is set by the
+      consumer. On the other hand Name field represents system-assigned id of
+      an instance so consumers are not necessarily aware of it.
+      consumer_defined_name is used for notification/UI purposes for consumer
+      to recognize their instances.
     createTime: Output only. Timestamp when the resource was created.
     labels: Optional. Resource labels to represent user provided metadata.
       Each label is a key-value pair, where both the key and the value are
@@ -595,19 +603,20 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  maintenancePolicyNames = _messages.MessageField('MaintenancePolicyNamesValue', 3)
-  maintenanceSchedules = _messages.MessageField('MaintenanceSchedulesValue', 4)
-  name = _messages.StringField(5)
-  producerMetadata = _messages.MessageField('ProducerMetadataValue', 6)
-  provisionedResources = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource', 7, repeated=True)
-  rolloutMetadata = _messages.MessageField('RolloutMetadataValue', 8)
-  sloMetadata = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata', 9)
-  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  tenantProjectId = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  consumerDefinedName = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  maintenancePolicyNames = _messages.MessageField('MaintenancePolicyNamesValue', 4)
+  maintenanceSchedules = _messages.MessageField('MaintenanceSchedulesValue', 5)
+  name = _messages.StringField(6)
+  producerMetadata = _messages.MessageField('ProducerMetadataValue', 7)
+  provisionedResources = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource', 8, repeated=True)
+  rolloutMetadata = _messages.MessageField('RolloutMetadataValue', 9)
+  sloMetadata = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata', 10)
+  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  tenantProjectId = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messages.Message):
@@ -1042,6 +1051,76 @@ class NetworkConfig(_messages.Message):
   modes = _messages.EnumField('ModesValueListEntryValuesEnum', 2, repeated=True)
   network = _messages.StringField(3)
   reservedIpRange = _messages.StringField(4)
+
+
+class NfsExportOptions(_messages.Message):
+  r"""NFS export options specifications.
+
+  Enums:
+    AccessModeValueValuesEnum: Either READ_ONLY, for allowing only read
+      requests on the exported directory, or READ_WRITE, for allowing both
+      read and write requests. The default is READ_WRITE.
+    SquashModeValueValuesEnum: Either NO_ROOT_SQUASH, for allowing root access
+      on the exported directory, or ROOT_SQUASH, for not allowing root access.
+      The default is NO_ROOT_SQUASH.
+
+  Fields:
+    accessMode: Either READ_ONLY, for allowing only read requests on the
+      exported directory, or READ_WRITE, for allowing both read and write
+      requests. The default is READ_WRITE.
+    anongid: An integer representing the anonymous group id with a default
+      value of 65534. Anongid may only be set with squash_mode of ROOT_SQUASH.
+      An error will be returned if this field is specified for other
+      squash_mode settings.
+    anonuid: An integer representing the anonymous user id with a default
+      value of 65534. Anonuid may only be set with squash_mode of ROOT_SQUASH.
+      An error will be returned if this field is specified for other
+      squash_mode settings.
+    ipRanges: List of either an IPv4 addresses in the format {octet 1}.{octet
+      2}.{octet 3}.{octet 4} or CIDR ranges in the format {octet 1}.{octet
+      2}.{octet 3}.{octet 4}/{mask size} which may mount the file share.
+      Overlapping IP ranges are not allowed, both within and across
+      NfsExportOptions. An error will be returned. The limit is 128 IP
+      ranges/addresses for each FileShareConfig among all NfsExportOptions.
+    squashMode: Either NO_ROOT_SQUASH, for allowing root access on the
+      exported directory, or ROOT_SQUASH, for not allowing root access. The
+      default is NO_ROOT_SQUASH.
+  """
+
+  class AccessModeValueValuesEnum(_messages.Enum):
+    r"""Either READ_ONLY, for allowing only read requests on the exported
+    directory, or READ_WRITE, for allowing both read and write requests. The
+    default is READ_WRITE.
+
+    Values:
+      ACCESS_MODE_UNSPECIFIED: AccessMode not set.
+      READ_ONLY: The client can only read the file share.
+      READ_WRITE: The client can read and write the file share (default).
+    """
+    ACCESS_MODE_UNSPECIFIED = 0
+    READ_ONLY = 1
+    READ_WRITE = 2
+
+  class SquashModeValueValuesEnum(_messages.Enum):
+    r"""Either NO_ROOT_SQUASH, for allowing root access on the exported
+    directory, or ROOT_SQUASH, for not allowing root access. The default is
+    NO_ROOT_SQUASH.
+
+    Values:
+      SQUASH_MODE_UNSPECIFIED: SquashMode not set.
+      NO_ROOT_SQUASH: The Root user has root access to the file share
+        (default).
+      ROOT_SQUASH: The Root user has squashed access to the anonymous uid/gid.
+    """
+    SQUASH_MODE_UNSPECIFIED = 0
+    NO_ROOT_SQUASH = 1
+    ROOT_SQUASH = 2
+
+  accessMode = _messages.EnumField('AccessModeValueValuesEnum', 1)
+  anongid = _messages.IntegerField(2)
+  anonuid = _messages.IntegerField(3)
+  ipRanges = _messages.StringField(4, repeated=True)
+  squashMode = _messages.EnumField('SquashModeValueValuesEnum', 5)
 
 
 class Operation(_messages.Message):

@@ -249,13 +249,24 @@ def AddCommonArgs(parser):
         """),
   )
   parser.add_argument(
-      '--kubeconfig-file',
+      '--kubeconfig',
       type=str,
       help=textwrap.dedent("""\
           The kubeconfig file containing an entry for the cluster. Defaults to
           $KUBECONFIG if it is set in the environment, otherwise defaults to
           to $HOME/.kube/config.
         """),
+  )
+  parser.add_argument(
+      '--kubeconfig-file',
+      type=str,
+      hidden=True,
+      help=textwrap.dedent("""\
+          The kubeconfig file containing an entry for the cluster. Defaults to
+          $KUBECONFIG if it is set in the environment, otherwise defaults to
+          to $HOME/.kube/config.
+        """),
+      dest='kubeconfig',
   )
 
 
@@ -269,16 +280,25 @@ def UserAccessibleProjectIDSet():
 
 
 def _MembershipClient():
-  return core_apis.GetClientInstance('gkehub', 'v1beta1')
+  api_version = core_apis.ResolveVersion('gkehub')
+  return core_apis.GetClientInstance('gkehub', api_version)
 
 
-def CreateMembership(project, membership_id, description):
+def _ComputeClient():
+  api_version = core_apis.ResolveVersion('compute')
+  return core_apis.GetClientInstance('compute', api_version)
+
+
+def CreateMembership(project, membership_id, description,
+                     gke_cluster_self_link):
   """Creates a Membership resource in the GKE Hub API.
 
   Args:
     project: the project in which to create the membership
     membership_id: the value to use for the membership_id
     description: the value to put in the description field
+    gke_cluster_self_link: the selfLink for the cluster if it is a GKE cluster,
+      or None if it is not
 
   Returns:
     the created Membership resource.
@@ -288,11 +308,17 @@ def CreateMembership(project, membership_id, description):
     - exceptions raised by waiter.WaitFor()
   """
   client = _MembershipClient()
-  request = client.MESSAGES_MODULE.GkehubProjectsLocationsGlobalMembershipsCreateRequest(
-      membership=client.MESSAGES_MODULE.Membership(description=description),
+  messages = client.MESSAGES_MODULE
+  request = messages.GkehubProjectsLocationsGlobalMembershipsCreateRequest(
+      membership=messages.Membership(description=description),
       parent='projects/{}/locations/global'.format(project),
       membershipId=membership_id,
   )
+  if gke_cluster_self_link:
+    endpoint = messages.MembershipEndpoint(
+        gkeCluster=messages.GkeCluster(resourceLink=gke_cluster_self_link))
+    request.membership.endpoint = endpoint
+
   op = client.projects_locations_global_memberships.Create(request)
   op_resource = resources.REGISTRY.ParseRelativeName(
       op.name, collection='gkehub.projects.locations.operations')
@@ -368,8 +394,8 @@ def _ClusterUUIDForMembershipName(membership_name):
   matches = re.compile(match_membership).findall(membership_name)
   if len(matches) != 1:
     # This should never happen.
-    raise exceptions.Error('unable to parse membership {}'
-                           .format(membership_name))
+    raise exceptions.Error(
+        'unable to parse membership {}'.format(membership_name))
   return matches[0]
 
 
@@ -879,22 +905,21 @@ class KubernetesClient(object):
     return err
 
   def GetResourceField(self, namespace, resource, json_path):
-    """Returns the value of a field on a Kubernetes object.
+    """Returns the value of a field on a Kubernetes resource.
 
     Args:
-      namespace: the namespace of the resource
+      namespace: the namespace of the resource, or None if this resource is
+        cluster-scoped
       resource: the resource, in the format <resourceType>/<name>; e.g.,
-        'configmap/foo'
+        'configmap/foo', or <resourceType> for a list of resources
       json_path: the JSONPath expression to filter with
 
     Returns:
       The field value (which could be empty if there is no such field), or
       the error printed by the command if there is an error.
     """
-    cmd = [
-        'get', '-n', namespace, resource, '-o',
-        'jsonpath={{{}}}'.format(json_path)
-    ]
+    cmd = ['-n', namespace] if namespace else []
+    cmd.extend(['get', resource, '-o', 'jsonpath={{{}}}'.format(json_path)])
     return self._RunKubectl(cmd)
 
   def Apply(self, manifest):
@@ -963,7 +988,7 @@ class KubeconfigProcessor(object):
 
     Args:
       flags: the flags passed to the enclosing command. It must include
-        kubeconfig_file and context.
+        kubeconfig and context.
 
     Returns:
       the kubeconfig filepath and context name
@@ -975,11 +1000,11 @@ class KubeconfigProcessor(object):
         file
     """
     kubeconfig_file = (
-        flags.kubeconfig_file or os.getenv('KUBECONFIG') or '~/.kube/config')
+        flags.kubeconfig or os.getenv('KUBECONFIG') or '~/.kube/config')
     kubeconfig = files.ExpandHomeDir(kubeconfig_file)
     if not kubeconfig:
       raise calliope_exceptions.MinimumArgumentException(
-          ['--kubeconfig-file'],
+          ['--kubeconfig'],
           'Please specify --kubeconfig, set the $KUBECONFIG environment '
           'variable, or ensure that $HOME/.kube/config exists')
     kc = kconfig.Kubeconfig.LoadFromFile(kubeconfig)
@@ -1136,3 +1161,95 @@ def ReleaseTrackCommandPrefix(release_track):
 
   prefix = release_track.prefix
   return prefix + ' ' if prefix else ''
+
+
+def GKEClusterSelfLink(args):
+  """Returns the selfLink of a cluster, if it is a GKE cluster.
+
+  There is no straightforward way to obtain this information from the cluster
+  API server directly. This method uses metadata on the Kubernetes nodes to
+  determine the instance ID and project ID of a GCE VM, whose metadata is used
+  to find the location of the cluster and its name.
+
+  Args:
+    args: an argparse namespace. All arguments that were provided to the command
+      invocation.
+
+  Returns:
+    the full OnePlatform resource path of a GKE cluster, e.g.,
+    //container.googleapis.com/project/p/location/l/cluster/c. If the cluster is
+    not a GKE cluster, returns None.
+
+  Raises:
+    exceptions.Error: if there is an error fetching metadata from the cluster
+      nodes
+    calliope_exceptions.MinimumArgumentException: if a kubeconfig file
+      cannot be deduced from the command line flags or environment
+    <others?>
+  """
+
+  kube_client = KubernetesClient(args)
+
+  # Get the instance ID and provider ID of some VM. Since all of the VMs should
+  # have the same cluster name, arbitrarily choose the first one that is
+  # returned from kubectl.
+
+  # The instance ID field is unique to GKE clusters: Kubernetes-on-GCE clusters
+  # do not have this field.
+  vm_instance_id, err = kube_client.GetResourceField(
+      None, 'nodes',
+      '.items[0].metadata.annotations.container\\.googleapis\\.com/instance_id')
+  if err:
+    raise exceptions.Error(
+        'Error retrieving instance ID for cluster node: {}'.format(err))
+  if not vm_instance_id:
+    return None
+
+  # The provider ID field exists on both GKE-on-GCP and Kubernetes-on-GCP
+  # clusters. Therefore, even though it contains all of the necessary
+  # information, it's presence does not guarantee that this is a GKE cluster.
+  vm_provider_id, err = kube_client.GetResourceField(
+      None, 'nodes', '.items[0].spec.providerID')
+  if err or not vm_provider_id:
+    raise exceptions.Error(
+        'Error retrieving VM provider ID for cluster node: {}'.format(
+            err or 'field does not exist on object'))
+
+  # Parse the providerID to determine the project ID and VM zone.
+  matches = re.match(r'^gce://([^/]+?)/([^/]+?)/.+', vm_provider_id)
+  if not matches or matches.lastindex != 2:
+    raise exceptions.Error(
+        'Error parsing project ID and VM zone from provider ID: unexpected format "{}" for provider ID'
+        .format(vm_provider_id))
+  project_id = matches.group(1)
+  vm_zone = matches.group(2)
+
+  # Call the compute API to get the VM instance with this instance ID.
+  compute_client = _ComputeClient()
+  request = compute_client.MESSAGES_MODULE.ComputeInstancesGetRequest(
+      instance=vm_instance_id, project=project_id, zone=vm_zone)
+  instance = compute_client.instances.Get(request)
+  if not instance:
+    raise exceptions.Error('Empty GCE instance returned from compute API.')
+  if not instance.metadata:
+    raise exceptions.Error(
+        'GCE instance with empty metadata returned from compute API.')
+
+  # Read the cluster name and location from the VM instance's metadata.
+
+  # Convert the metadata message to a Python dict.
+  metadata = {}
+  for item in instance.metadata.items:
+    metadata[item.key] = item.value
+
+  cluster_name = metadata.get('cluster-name')
+  cluster_location = metadata.get('cluster-location')
+
+  if not cluster_name:
+    raise exceptions.Error('Could not determine cluster name from instance.')
+  if not cluster_location:
+    raise exceptions.Error(
+        'Could not determine cluster location from instance.')
+
+  return '//container.googleapis.com/projects/{}/locations/{}/clusters/{}'.format(
+      project_id, cluster_location, cluster_name)

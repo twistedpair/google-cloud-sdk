@@ -81,6 +81,10 @@ class ResourceNotFoundException(Error):
   """The user tries to get/use/update resource which does not exist."""
 
 
+class InvalidArgumentError(exceptions.Error):
+  """The user provides invalid arguments."""
+
+
 class ResourceAlreadyExistsException(Error):
   """The user tries to create resource which already exists."""
 
@@ -95,7 +99,7 @@ def ArgsSupportQueueScaling(args):
 
 def AddAutoscalerArgs(
     parser, queue_scaling_enabled=False, autoscaling_file_enabled=False,
-    stackdriver_metrics_flags=False, mode_enabled=False):
+    stackdriver_metrics_flags=False, mode_enabled=False, scale_down=False):
   """Adds commandline arguments to parser."""
   parser.add_argument(
       '--cool-down-period',
@@ -253,6 +257,9 @@ Mutually exclusive with `--update-stackdriver-metric`.
   if mode_enabled:
     GetModeFlag().AddToParser(parser)
 
+  if scale_down:
+    AddScaleDownControlFlag(parser)
+
 
 def GetModeFlag():
   # Can't use a ChoiceEnumMapper because we don't have access to the "messages"
@@ -276,6 +283,40 @@ def GetModeFlag():
           activities pick it up when they are turned on again or when the
           restrictions are lifted.
       """)
+
+
+def AddScaleDownControlFlag(parser):
+  parser.add_argument(
+      '--scale-down-control',
+      type=arg_parsers.ArgDict(
+          spec={
+              'max-scaled-down-replicas': str,
+              'max-scaled-down-replicas-percent': str,
+              'time-window': int,
+          },
+      ),
+      help="""\
+        Configuration that allows slower scale down so that even if Autoscaler
+        recommends an abrupt scale down of a managed instance group, it will be
+        throttled as specified by the parameters.
+
+        *max-scaled-down-replicas*::: Maximum allowed number of VMs that can be
+        deducted from the peak recommendation during the window. Possibly all
+        these VMs can be deleted at once so user service needs to be prepared
+        to lose that many VMs in one step. Mutually exclusive with
+        'max-scaled-down-replicas-percent'.
+
+        *max-scaled-down-replicas-percent*::: Maximum allowed percent of VMs
+        that can be deducted from the peak recommendation during the window.
+        Possibly all these VMs can be deleted at once so user service needs
+        to be prepared to lose that many VMs in one step. Mutually exclusive
+        with  'max-scaled-down-replicas'.
+
+        *time-window*::: How long back autoscaling should look when computing
+        recommendations to include directives regarding slower scale down.
+        Measured in seconds.
+        """
+  )
 
 
 def _ValidateCloudPubSubResource(pubsub_spec_dict, expected_resource_type):
@@ -869,7 +910,51 @@ def _BuildMode(args, messages, original):
   return ParseModeString(args.mode, messages)
 
 
-def _BuildAutoscalerPolicy(args, messages, original, mode_enabled=False):
+def BuildScaleDown(args, messages):
+  """Builds AutoscalingPolicyScaleDownControl.
+
+  Args:
+    args: command line arguments.
+    messages: module containing message classes.
+  Returns:
+    AutoscalingPolicyScaleDownControl message object.
+
+  if args.IsSpecified('scale_down_control'):
+    replicas_arg = args.scale_down_control.get('max-scaled-down-replicas')
+
+    if replicas_arg.endswith('%'):
+      max_replicas = messages.FixedOrPercent(
+          percent=int(replicas_arg[:-1]))
+    else:
+      max_replicas = messages.FixedOrPercent(fixed=int(replicas_arg))
+
+    return messages.AutoscalingPolicyScaleDownControl(
+        maxScaledDownReplicas=max_replicas,
+        timeWindowSec=args.scale_down_control.get('time-window'))
+  Raises:
+    InvalidArgumentError:  if both max-scaled-down-replicas and
+      max-scaled-down-replicas-percent are specified.
+  """
+  if args.IsSpecified('scale_down_control'):
+    replicas_arg = args.scale_down_control.get('max-scaled-down-replicas')
+    replicas_arg_percent = args.scale_down_control.get(
+        'max-scaled-down-replicas-percent')
+    if replicas_arg and replicas_arg_percent:
+      raise InvalidArgumentError(
+          'max-scaled-down-replicas and max-scaled-down-replicas-percent'
+          'are mutually exclusive, you can\'t specify both')
+    elif replicas_arg_percent:
+      max_replicas = messages.FixedOrPercent(percent=int(replicas_arg_percent))
+    else:
+      max_replicas = messages.FixedOrPercent(fixed=int(replicas_arg))
+
+    return messages.AutoscalingPolicyScaleDownControl(
+        maxScaledDownReplicas=max_replicas,
+        timeWindowSec=args.scale_down_control.get('time-window'))
+
+
+def _BuildAutoscalerPolicy(args, messages, original, mode_enabled=False,
+                           scale_down=False):
   """Builds AutoscalingPolicy from args.
 
   Args:
@@ -878,6 +963,8 @@ def _BuildAutoscalerPolicy(args, messages, original, mode_enabled=False):
     original: original autoscaler message.
     mode_enabled: bool, whether to include the 'autoscalingPolicy.mode' field in
       the message.
+    scale_down: bool, whether to include the
+    'autoscalingPolicy.scaleDownControl' field in the message
   Returns:
     AutoscalingPolicy message object.
   """
@@ -894,6 +981,9 @@ def _BuildAutoscalerPolicy(args, messages, original, mode_enabled=False):
   }
   if mode_enabled:
     policy_dict['mode'] = _BuildMode(args, messages, original)
+  if scale_down:
+    policy_dict['scaleDownControl'] = BuildScaleDown(args, messages)
+
   return messages.AutoscalingPolicy(
       **dict((key, value) for key, value in six.iteritems(policy_dict)
              if value is not None))  # Filter out None values.
@@ -925,11 +1015,12 @@ def AdjustAutoscalerNameForCreation(autoscaler_resource, igm_ref):
 
 
 def BuildAutoscaler(args, messages, igm_ref, name, original,
-                    mode_enabled=False):
+                    mode_enabled=False, scale_down=False):
   """Builds autoscaler message protocol buffer."""
   autoscaler = messages.Autoscaler(
       autoscalingPolicy=_BuildAutoscalerPolicy(args, messages, original,
-                                               mode_enabled=mode_enabled),
+                                               mode_enabled=mode_enabled,
+                                               scale_down=scale_down),
       description=args.description,
       name=name,
       target=igm_ref.SelfLink(),

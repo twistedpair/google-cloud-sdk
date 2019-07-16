@@ -1290,6 +1290,10 @@
         "deidentifyTemplateName": {
           "description": "Optional template to use. Any configuration directly specified in\ndeidentify_config will override those set in the template. Singular fields\nthat are set in this request will replace their corresponding fields in the\ntemplate. Repeated fields are appended. Singular sub-messages and groups\nare recursively merged.",
           "type": "string"
+        },
+        "location": {
+          "description": "The geographic location to process de-identification. Reserved for future\nextensions.",
+          "type": "string"
         }
       }
     },
@@ -2551,6 +2555,10 @@
           "description": "Publish summary to Cloud Security Command Center (Alpha).",
           "$ref": "GooglePrivacyDlpV2PublishSummaryToCscc"
         },
+        "publishFindingsToCloudDataCatalog": {
+          "description": "Publish findings to Cloud Datahub.",
+          "$ref": "GooglePrivacyDlpV2PublishFindingsToCloudDataCatalog"
+        },
         "jobNotificationEmails": {
           "description": "Enable email notification to project owners and editors on job's\ncompletion\/failure.",
           "$ref": "GooglePrivacyDlpV2JobNotificationEmails"
@@ -2612,6 +2620,13 @@
     "GooglePrivacyDlpV2PublishSummaryToCscc": {
       "id": "GooglePrivacyDlpV2PublishSummaryToCscc",
       "description": "Publish the result summary of a DlpJob to the Cloud Security\nCommand Center (CSCC Alpha).\nThis action is only available for projects which are parts of\nan organization and whitelisted for the alpha Cloud Security Command\nCenter.\nThe action will publish count of finding instances and their info types.\nThe summary of findings will be persisted in CSCC and are governed by CSCC\nservice-specific policy, see https:\/\/cloud.google.com\/terms\/service-terms\nOnly a single instance of this action can be specified.\nCompatible with: Inspect",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GooglePrivacyDlpV2PublishFindingsToCloudDataCatalog": {
+      "id": "GooglePrivacyDlpV2PublishFindingsToCloudDataCatalog",
+      "description": "Publish findings of a DlpJob to Cloud Data Catalog. Labels summarizing the\nresults of the DlpJob will be applied to the entry for the resource scanned\nin Cloud Data Catalog. Any labels previously written by another DlpJob will\nbe deleted. InfoType naming patterns are strictly enforced when using this\nfeature. Note that the findings will be persisted in Cloud Data Catalog\nstorage and are governed by Data Catalog service-specific policy, see\nhttps:\/\/cloud.google.com\/terms\/service-terms\nOnly a single instance of this action can be specified and only allowed if\nall resources being scanned are BigQuery tables.\nCompatible with: Inspect",
       "type": "object",
       "properties": {
       }
@@ -3922,6 +3937,49 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Redacts potentially sensitive info from an image.\nThis method has limits on input size, processing time, and output size.\nSee https:\/\/cloud.google.com\/dlp\/docs\/redacting-sensitive-data-images to\nlearn more.\n\nWhen no InfoTypes or CustomInfoTypes are specified in this request, the\nsystem will automatically choose what detectors to run. By default this may\nbe all types, but may change over time as detectors are updated."
+            }
+          }
+        },
+        "locations": {
+          "resources": {
+            "content": {
+              "methods": {
+                "deidentify": {
+                  "id": "dlp.projects.locations.content.deidentify",
+                  "path": "v2/{+parent}/locations/{location}/content:deidentify",
+                  "flatPath": "v2/projects/{projectsId}/locations/{location}/content:deidentify",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "The parent resource name, for example projects\/my-project-id.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "location": {
+                      "description": "The geographic location to process de-identification. Reserved for future\nextensions.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent",
+                    "location"
+                  ],
+                  "request": {
+                    "$ref": "GooglePrivacyDlpV2DeidentifyContentRequest"
+                  },
+                  "response": {
+                    "$ref": "GooglePrivacyDlpV2DeidentifyContentResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "De-identifies potentially sensitive info from a ContentItem.\nThis method has limits on input size and output size.\nSee https:\/\/cloud.google.com\/dlp\/docs\/deidentify-sensitive-data to\nlearn more.\n\nWhen no InfoTypes or CustomInfoTypes are specified in this request, the\nsystem will automatically choose what detectors to run. By default this may\nbe all types, but may change over time as detectors are updated."
+                }
+              }
             }
           }
         },

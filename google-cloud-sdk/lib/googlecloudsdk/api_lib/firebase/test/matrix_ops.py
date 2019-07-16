@@ -310,13 +310,16 @@ class MatrixMonitor(object):
 
 def _FormatInvalidDimension(environment):
   """Return a human-readable string representing an invalid matrix dimension."""
-  if hasattr(environment, 'androidDevice'):
+  if getattr(environment, 'androidDevice', None) is not None:
     device = environment.androidDevice
     return ('[OS-version {vers} on {model}]'
             .format(model=device.androidModelId, vers=device.androidVersionId))
-  else:
-    # Handle any new device environments here.
-    return '[unknown-environment]'
+  if getattr(environment, 'iosDevice', None) is not None:
+    device = environment.iosDevice
+    return ('[OS-version {vers} on {model}]'.format(
+        model=device.iosModelId, vers=device.iosVersionId))
+  # Handle any new device environments here.
+  return '[unknown-environment]'
 
 
 def ReformatDuration(duration):

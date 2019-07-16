@@ -216,7 +216,7 @@ PACKAGES = base.Argument(
 Path to Python archives used for training. These can be local paths
 (absolute or relative), in which case they will be uploaded to the Cloud
 Storage bucket given by `--staging-bucket`, or Cloud Storage URLs
-(`gs://bucket-name/path/to/package.tar.gz`).
+('gs://bucket-name/path/to/package.tar.gz').
 """)
 
 
@@ -330,13 +330,13 @@ FRAMEWORK_MAPPER = arg_utils.ChoiceEnumMapper(
      GoogleCloudMlV1Version.FrameworkValueValuesEnum),
     custom_mappings=_FRAMEWORK_CHOICES,
     help_str=('The ML framework used to train this version of the model. '
-              'If not specified, defaults to `tensorflow`'))
+              'If not specified, defaults to \'tensorflow\''))
 
 
 def AddPythonVersionFlag(parser, context):
   help_str = (
       'Version of Python used {context}. If not set, the default '
-      'version is 2.7. Python 3.5 is available when `runtime_version` is '
+      'version is 2.7. Python 3.5 is available when `--runtime-version` is '
       'set to 1.4 and above. Python 2.7 works with all supported runtime '
       'versions.').format(context=context)
   version = base.Argument(
@@ -481,14 +481,14 @@ def AddUserCodeArgs(parser):
           The fully-qualified name of the custom prediction class in the package
           provided for custom prediction.
 
-          For example, `--prediction-class my_package.SequenceModel`.
+          For example, `--prediction-class=my_package.SequenceModel`.
           """))
   user_code_group.AddArgument(base.Argument(
       '--package-uris',
       type=arg_parsers.ArgList(),
       metavar='PACKAGE_URI',
       help="""\
-          Comma-separated list of Google Cloud Storage URIs (`gs://...`) for
+          Comma-separated list of Google Cloud Storage URIs ('gs://...') for
           user-supplied Python packages to use.
           """))
   user_code_group.AddToParser(parser)
@@ -608,7 +608,7 @@ def GetMasterMachineType():
   help_text = """\
   Specifies the type of virtual machine to use for training job's master worker.
 
-  You must set this value when `scaleTier` is set to `CUSTOM`.
+  You must set this value when `--scale-tier` is set to `CUSTOM`.
   """
   return base.Argument(
       '--master-machine-type', required=False, help=help_text)
@@ -628,7 +628,7 @@ def GetMasterImageUri():
       required=False,
       help=('Docker image to run on each master worker. '
             'This image must be in Google Container Registry. Only one of '
-            '`master-image-uri` and `runtimeVersion` must be specified.'))
+            '`--master-image-uri` and `--runtime-version` must be specified.'))
 
 
 def GetParameterServerMachineTypeConfig():
@@ -636,7 +636,7 @@ def GetParameterServerMachineTypeConfig():
   machine_type = base.Argument(
       '--parameter-server-machine-type',
       required=True,
-      help=('Type of virtual machine to use for training job\'s'
+      help=('Type of virtual machine to use for training job\'s '
             'parameter servers. This flag must be specified if any of the '
             'other arguments in this group are specified machine to use for '
             'training job\'s parameter servers.'))
@@ -669,7 +669,7 @@ def GetParameterServerImageUri():
       required=False,
       help=('Docker image to run on each parameter server. '
             'This image must be in Google Container Registry. If not '
-            'specified, the value of `master-image-uri` is used.'))
+            'specified, the value of `--master-image-uri` is used.'))
 
 
 def GetWorkerMachineConfig():
@@ -709,7 +709,7 @@ def GetWorkerImageUri():
       required=False,
       help=('Docker image to run on each worker node. '
             'This image must be in Google Container Registry. If not '
-            'specified, the value of `master-image-uri` is used.'))
+            'specified, the value of `--master-image-uri` is used.'))
 
 
 def AddMachineTypeFlagToParser(parser):

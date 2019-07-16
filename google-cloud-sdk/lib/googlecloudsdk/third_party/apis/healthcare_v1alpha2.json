@@ -202,7 +202,7 @@
           }
         },
         "etag": {
-          "description": "`etag` is used for optimistic concurrency control as a way to help\nprevent simultaneous updates of a policy from overwriting each other.\nIt is strongly suggested that systems make use of the `etag` in the\nread-modify-write cycle to perform policy updates in order to avoid race\nconditions: An `etag` is returned in the response to `getIamPolicy`, and\nsystems are expected to put that etag in the request to `setIamPolicy` to\nensure that their change will be applied to the same version of the policy.\n\nIf no `etag` is provided in the call to `setIamPolicy`, then the existing\npolicy is overwritten blindly.",
+          "description": "`etag` is used for optimistic concurrency control as a way to help\nprevent simultaneous updates of a policy from overwriting each other.\nIt is strongly suggested that systems make use of the `etag` in the\nread-modify-write cycle to perform policy updates in order to avoid race\nconditions: An `etag` is returned in the response to `getIamPolicy`, and\nsystems are expected to put that etag in the request to `setIamPolicy` to\nensure that their change will be applied to the same version of the policy.\n\nIf no `etag` is provided in the call to `setIamPolicy`, then the existing\npolicy is overwritten.",
           "type": "string",
           "format": "byte"
         }
@@ -218,7 +218,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -255,7 +255,7 @@
     },
     "AuditConfig": {
       "id": "AuditConfig",
-      "description": "Specifies the audit configuration for a service.\nThe configuration determines which permission types are logged, and what\nidentities, if any, are exempted from logging.\nAn AuditConfig must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditLogConfig are exempted.\n\nExample Policy with multiple AuditConfigs:\n\n    {\n      \"audit_configs\": [\n        {\n          \"service\": \"allServices\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n              \"exempted_members\": [\n                \"user:foo@gmail.com\"\n              ]\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n            },\n            {\n              \"log_type\": \"ADMIN_READ\",\n            }\n          ]\n        },\n        {\n          \"service\": \"fooservice.googleapis.com\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n              \"exempted_members\": [\n                \"user:bar@gmail.com\"\n              ]\n            }\n          ]\n        }\n      ]\n    }\n\nFor fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts foo@gmail.com from DATA_READ logging, and\nbar@gmail.com from DATA_WRITE logging.",
+      "description": "Specifies the audit configuration for a service.\nThe configuration determines which permission types are logged, and what\nidentities, if any, are exempted from logging.\nAn AuditConfig must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditLogConfig are exempted.\n\nExample Policy with multiple AuditConfigs:\n\n    {\n      \"audit_configs\": [\n        {\n          \"service\": \"allServices\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n              \"exempted_members\": [\n                \"user:jose@example.com\"\n              ]\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n            },\n            {\n              \"log_type\": \"ADMIN_READ\",\n            }\n          ]\n        },\n        {\n          \"service\": \"sampleservice.googleapis.com\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n              \"exempted_members\": [\n                \"user:aliya@example.com\"\n              ]\n            }\n          ]\n        }\n      ]\n    }\n\nFor sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts jose@example.com from DATA_READ logging, and\naliya@example.com from DATA_WRITE logging.",
       "type": "object",
       "properties": {
         "service": {
@@ -273,7 +273,7 @@
     },
     "AuditLogConfig": {
       "id": "AuditLogConfig",
-      "description": "Provides the configuration for logging a type of permissions.\nExample:\n\n    {\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n          \"exempted_members\": [\n            \"user:foo@gmail.com\"\n          ]\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n        }\n      ]\n    }\n\nThis enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting\nfoo@gmail.com from DATA_READ logging.",
+      "description": "Provides the configuration for logging a type of permissions.\nExample:\n\n    {\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n          \"exempted_members\": [\n            \"user:jose@example.com\"\n          ]\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n        }\n      ]\n    }\n\nThis enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting\njose@example.com from DATA_READ logging.",
       "type": "object",
       "properties": {
         "logType": {
@@ -298,6 +298,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "ignoreChildExemptions": {
+          "description": "Specifies whether principals can be exempted for the same LogType in\nlower-level resource policies. If true, any lower-level exemptions will\nbe ignored.",
+          "type": "boolean"
         }
       }
     },
@@ -474,7 +478,7 @@
           "$ref": "ImageAnnotation"
         },
         "textAnnotation": {
-          "description": "Annotations for sentitive texts, e.g., range of such texts.",
+          "description": "Annotations for sensitive texts, e.g., range of such texts.",
           "$ref": "SensitiveTextAnnotation"
         }
       }
@@ -628,6 +632,22 @@
       "description": "Request message for `GetIamPolicy` method.",
       "type": "object",
       "properties": {
+        "options": {
+          "description": "OPTIONAL: A `GetPolicyOptions` object for specifying options to\n`GetIamPolicy`. This field is only used by Cloud IAM.",
+          "$ref": "GetPolicyOptions"
+        }
+      }
+    },
+    "GetPolicyOptions": {
+      "id": "GetPolicyOptions",
+      "description": "Encapsulates settings provided to GetIamPolicy.",
+      "type": "object",
+      "properties": {
+        "requestedPolicyVersion": {
+          "description": "Optional. The policy format version to be returned.\nAcceptable values are 0 and 1.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+          "type": "integer",
+          "format": "int32"
+        }
       }
     },
     "Dataset": {
@@ -1443,6 +1463,10 @@
             "type": "string"
           }
         },
+        "subscriptionConfig": {
+          "description": "Configuration of FHIR Subscription:\nhttps:\/\/www.hl7.org\/fhir\/subscription.html.",
+          "$ref": "SubscriptionConfig"
+        },
         "streamConfigs": {
           "description": "A list of streaming configs that configure the destinations of streaming\nexport for every resource mutation in this FHIR store. Each store is\nallowed to have up to 10 streaming configs.\nAfter a new config is added, the next resource mutation will be streamed to\nthe new location in addition to the existing ones.\nWhen a location is removed from the list, the server will simply stop\nstreaming to that location. Before adding a new config, you must add the\nrequired\n[`bigquery.dataEditor`](https:\/\/cloud.google.com\/bigquery\/docs\/access-control#bigquery.dataEditor)\nrole to your project's **Cloud Healthcare Service Agent**\n[service account](https:\/\/cloud.google.com\/iam\/docs\/service-accounts).\nSome lag (typically on the order of dozens of seconds) is expected before\nthe results show up in the streaming destination.",
           "type": "array",
@@ -1452,6 +1476,39 @@
         },
         "enableHistoryImport": {
           "description": "Whether to allow the bulk import API to accept history bundles and directly\ninsert historical resource versions into the FHIR store. Importing resource\nhistories creates resource interactions that appear to have occurred in the\npast, which clients may not want to allow. If set to false, history bundles\nwithin an import will fail with an error.",
+          "type": "boolean"
+        },
+        "validationConfig": {
+          "description": "Configuration for how incoming FHIR resources will be validated against\nconfigured profiles.",
+          "$ref": "ValidationConfig"
+        }
+      }
+    },
+    "SubscriptionConfig": {
+      "id": "SubscriptionConfig",
+      "description": "Configuration of FHIR Subscription:\nhttps:\/\/www.hl7.org\/fhir\/subscription.html.",
+      "type": "object",
+      "properties": {
+        "allowedRestHookEndpoints": {
+          "description": "REST hook endpoints that are allowed to receive subscription notifications.\nThe create or update operation on a FHIR Subscription resource will fail if\nthe FHIR Subscription resource contains a REST hook endpoint that is not in\nthis list.\nA subscription notification push will fail if the FHIR Subscription\nresource contains a REST hook endpoint that is not in this list.\nThe REST hook endpoint in a subscription resource will be compared with the\nendpoints in this list by exact matching.\nUsers must verify their ownership of the domain of an endpoint before\nadding it to this list. To verify domain ownership, go to\nhttps:\/\/search.google.com\/search-console\/welcome.",
+          "type": "array",
+          "items": {
+            "$ref": "SubscriptionRestHookEndpoint"
+          }
+        }
+      }
+    },
+    "SubscriptionRestHookEndpoint": {
+      "id": "SubscriptionRestHookEndpoint",
+      "description": "REST hook endpoint of FHIR Subscription.",
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "description": "Address of the REST hook endpoint. It must be a valid HTTPS URL with TLS\ncertificate.",
+          "type": "string"
+        },
+        "allowResourcePayload": {
+          "description": "Whether this endpoint is allowed to receive full resource payloads. If set\nto false, the subscription notificiation sending to this endpoint with full\nresource payload will be blocked.",
           "type": "boolean"
         }
       }
@@ -1471,6 +1528,24 @@
         "bigqueryDestination": {
           "description": "The destination BigQuery structure that contains both the dataset\nlocation and corresponding schema config.\nThe output will be organized in one table per resource type.\nThe server will inspect and potentially create new tables (if they\ndon't exist) in the given BigQuery dataset.\nResults will be appended to the corresponding BigQuery tables.\nThe views of the latest snapshot will also be automatically created in\nthe dataset.",
           "$ref": "GoogleCloudHealthcareV1alpha2FhirBigQueryDestination"
+        }
+      }
+    },
+    "ValidationConfig": {
+      "id": "ValidationConfig",
+      "description": "This structure contains the configuration for FHIR profiles and validation.",
+      "type": "object",
+      "properties": {
+        "disableProfileValidation": {
+          "description": "Whether profile validation should be disabled for this FHIR store. Set\nthis to true to disable checking incoming resources for conformance\nagainst StructureDefinitions in this FHIR store.",
+          "type": "boolean"
+        },
+        "enabledImplementationGuides": {
+          "description": "A list of ImplementationGuide IDs in this FHIR store that will be used to\nconfigure which profiles are used for validation. For example, to enable\nan implementation guide with ID 1 set `enabled_implementation_guides` to\n`[\"1\"]`. If `enabled_implementation_guides` is empty or omitted then\nincoming resources will only be required to conform to the base FHIR\nprofiles. Otherwise, a resource must conform to at least one profile\nlisted in the `global` property of one of the enabled\nImplementationGuides.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1577,6 +1652,11 @@
         },
         "successResourceCount": {
           "description": "Number of resources successfully processed.",
+          "type": "string",
+          "format": "int64"
+        },
+        "failureResourceCount": {
+          "description": "Number of resources that processing failed for.",
           "type": "string",
           "format": "int64"
         }
@@ -1786,6 +1866,12 @@
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
                       "type": "string"
+                    },
+                    "options.requestedPolicyVersion": {
+                      "description": "Optional. The policy format version to be returned.\nAcceptable values are 0 and 1.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
                     }
                   },
                   "parameterOrder": [
@@ -2053,6 +2139,12 @@
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                           "type": "string"
+                        },
+                        "options.requestedPolicyVersion": {
+                          "description": "Optional. The policy format version to be returned.\nAcceptable values are 0 and 1.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
                         }
                       },
                       "parameterOrder": [
@@ -3053,6 +3145,12 @@
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/hl7V2Stores\/[^\/]+$",
                           "type": "string"
+                        },
+                        "options.requestedPolicyVersion": {
+                          "description": "Optional. The policy format version to be returned.\nAcceptable values are 0 and 1.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
                         }
                       },
                       "parameterOrder": [
@@ -3399,7 +3497,7 @@
                               "type": "string"
                             },
                             "filter": {
-                              "description": "Restricts messages returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\n\nFields\/functions available for filtering are:\n\n*  `message_type`, from the MSH-9 segment; for example\n`NOT message_type = \"ADT\"`\n*  `send_date` or `sendDate`, the YYYY-MM-DD date the message was sent in\nthe dataset's time_zone, from the MSH-7 segment; for example\n`send_date < \"2017-01-02\"`\n*  `send_time`, the timestamp of when the message was sent, using the\nRFC3339 time format for comparisons, from the MSH-7 segment; for example\n`send_time < \"2017-01-02T00:00:00-05:00\"`\n*  `send_facility`, the care center that the message came from, from the\nMSH-4 segment; for example `send_facility = \"ABC\"`\n*  `HL7RegExp(expr)`, which does regular expression matching of `expr`\nagainst the message payload using re2 (http:\/\/code.google.com\/p\/re2\/)\nsyntax; for example `HL7RegExp(\"^.*\\|.*\\|EMERG\")`\n*  `PatientId(value, type)`, which matches if the message lists a patient\nhaving an ID of the given value and type in the PID-2, PID-3, or PID-4\nsegments; for example `PatientId(\"123456\", \"MRN\")`\n*  `labels.x`, a string value of the label with key `x` as set using the\nMessage.labels\nmap, for example `labels.\"priority\"=\"high\"`. The operator `:*` can be used\nto assert the existence of a label, for example `labels.\"priority\":*`.\n\nLimitations on conjunctions:\n\n*  Negation on the patient ID function or the labels field is not\nsupported, for example these queries are invalid:\n`NOT PatientId(\"123456\", \"MRN\")`, `NOT labels.\"tag1\":*`,\n`NOT labels.\"tag2\"=\"val2\"`.\n*  Conjunction of multiple patient ID functions is not supported, for\nexample this query is invalid:\n`PatientId(\"123456\", \"MRN\") AND PatientId(\"456789\", \"MRN\")`.\n*  Conjunction of multiple labels fields is also not supported, for\nexample this query is invalid: `labels.\"tag1\":* AND labels.\"tag2\"=\"val2\"`.\n*  Conjunction of one patient ID function, one labels field and conditions\non other fields is supported, for example this query is valid:\n`PatientId(\"123456\", \"MRN\") AND labels.\"tag1\":* AND message_type = \"ADT\"`.\n\nThe HasLabel(x) and Label(x) syntax from previous API versions are\ndeprecated; replaced by the `labels.x` syntax.",
+                              "description": "Restricts messages returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\n\nFields\/functions available for filtering are:\n\n*  `message_type`, from the MSH-9 segment; for example\n`NOT message_type = \"ADT\"`\n*  `send_date` or `sendDate`, the YYYY-MM-DD date the message was sent in\nthe dataset's time_zone, from the MSH-7 segment; for example\n`send_date < \"2017-01-02\"`\n*  `send_time`, the timestamp when the message was sent, using the\nRFC3339 time format for comparisons, from the MSH-7 segment; for example\n`send_time < \"2017-01-02T00:00:00-05:00\"`\n*  `send_facility`, the care center that the message came from, from the\nMSH-4 segment; for example `send_facility = \"ABC\"`\n*  `HL7RegExp(expr)`, which does regular expression matching of `expr`\nagainst the message payload using re2 (http:\/\/code.google.com\/p\/re2\/)\nsyntax; for example `HL7RegExp(\"^.*\\|.*\\|EMERG\")`\n*  `PatientId(value, type)`, which matches if the message lists a patient\nhaving an ID of the given value and type in the PID-2, PID-3, or PID-4\nsegments; for example `PatientId(\"123456\", \"MRN\")`\n*  `labels.x`, a string value of the label with key `x` as set using the\nMessage.labels\nmap, for example `labels.\"priority\"=\"high\"`. The operator `:*` can be used\nto assert the existence of a label, for example `labels.\"priority\":*`.\n\nLimitations on conjunctions:\n\n*  Negation on the patient ID function or the labels field is not\nsupported, for example these queries are invalid:\n`NOT PatientId(\"123456\", \"MRN\")`, `NOT labels.\"tag1\":*`,\n`NOT labels.\"tag2\"=\"val2\"`.\n*  Conjunction of multiple patient ID functions is not supported, for\nexample this query is invalid:\n`PatientId(\"123456\", \"MRN\") AND PatientId(\"456789\", \"MRN\")`.\n*  Conjunction of multiple labels fields is also not supported, for\nexample this query is invalid: `labels.\"tag1\":* AND labels.\"tag2\"=\"val2\"`.\n*  Conjunction of one patient ID function, one labels field and conditions\non other fields is supported, for example this query is valid:\n`PatientId(\"123456\", \"MRN\") AND labels.\"tag1\":* AND message_type = \"ADT\"`.\n\nThe HasLabel(x) and Label(x) syntax from previous API versions are\ndeprecated; replaced by the `labels.x` syntax.",
                               "location": "query",
                               "type": "string"
                             },
@@ -3714,7 +3812,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "POLICIES\nSets the access control policy for a resource. Replaces any existing\npolicy.\n\nAuthorization requires the Google IAM permission\n'healthcare.annotationStores.setIamPolicy' on the specified resource"
+                      "description": "POLICIES\nSets the access control policy for a resource. Replaces any existing\npolicy.\n\nAuthorization requires the Google IAM permission\n`healthcare.annotationStores.setIamPolicy` on the specified\nresource"
                     },
                     "getIamPolicy": {
                       "id": "healthcare.projects.locations.datasets.annotationStores.getIamPolicy",
@@ -3742,7 +3840,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets the access control policy for a resource. Returns NOT_FOUND error if\nthe resource does not exist. Returns an empty policy if the resource exists\nbut does not have a policy set.\n\nAuthorization requires the Google IAM permission\n`healthcare.AnnotationStores.getIamPolicy` on the specified resource"
+                      "description": "Gets the access control policy for a resource. Returns NOT_FOUND error if\nthe resource does not exist. Returns an empty policy if the resource exists\nbut does not have a policy set.\n\nAuthorization requires the Google IAM permission\n`healthcare.AnnotationStores.getIamPolicy` on the specified\nresource"
                     },
                     "testIamPermissions": {
                       "id": "healthcare.projects.locations.datasets.annotationStores.testIamPermissions",
@@ -4201,7 +4299,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Sets the access control policy for a FHIR store or security label within a\nFHIR store. Replaces any existing policy.\n\nAuthorization requires the Google IAM permission\n'healthcare.fhirStores.setIamPolicy' for a FHIR store or\n'healthcare.securityLabels.setIamPolicy' for a security label"
+                      "description": "Sets the access control policy for a FHIR store or security label within a\nFHIR store. Replaces any existing policy.\n\nAuthorization requires the Google IAM permission\n`healthcare.fhirStores.setIamPolicy` for a FHIR store or\n`healthcare.securityLabels.setIamPolicy` for a security label"
                     },
                     "getIamPolicy": {
                       "id": "healthcare.projects.locations.datasets.fhirStores.getIamPolicy",
@@ -4215,6 +4313,12 @@
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+$",
                           "type": "string"
+                        },
+                        "options.requestedPolicyVersion": {
+                          "description": "Optional. The policy format version to be returned.\nAcceptable values are 0 and 1.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
                         }
                       },
                       "parameterOrder": [
@@ -4226,7 +4330,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets the access control policy for a FHIR store or security label within a\nFHIR store. Returns NOT_FOUND error if the resource does not exist. Returns\nan empty policy if the resource exists but does not have a policy set.\n\nAuthorization requires the Google IAM permission\n'healthcare.fhirStores.getIamPolicy' for a FHIR store or\n'healthcare.securityLabels.getIamPolicy' for a security label"
+                      "description": "Gets the access control policy for a FHIR store or security label within a\nFHIR store. Returns NOT_FOUND error if the resource does not exist. Returns\nan empty policy if the resource exists but does not have a policy set.\n\nAuthorization requires the Google IAM permission\n`healthcare.fhirStores.getIamPolicy` for a FHIR store or\n`healthcare.securityLabels.getIamPolicy` for a security label"
                     },
                     "testIamPermissions": {
                       "id": "healthcare.projects.locations.datasets.fhirStores.testIamPermissions",
@@ -4843,7 +4947,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Sets the access control policy for a FHIR store or security label within a\nFHIR store. Replaces any existing policy.\n\nAuthorization requires the Google IAM permission\n'healthcare.fhirStores.setIamPolicy' for a FHIR store or\n'healthcare.securityLabels.setIamPolicy' for a security label"
+                          "description": "Sets the access control policy for a FHIR store or security label within a\nFHIR store. Replaces any existing policy.\n\nAuthorization requires the Google IAM permission\n`healthcare.fhirStores.setIamPolicy` for a FHIR store or\n`healthcare.securityLabels.setIamPolicy` for a security label"
                         },
                         "getIamPolicy": {
                           "id": "healthcare.projects.locations.datasets.fhirStores.securityLabels.getIamPolicy",
@@ -4857,6 +4961,12 @@
                               "required": true,
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+\/securityLabels\/[^\/]+$",
                               "type": "string"
+                            },
+                            "options.requestedPolicyVersion": {
+                              "description": "Optional. The policy format version to be returned.\nAcceptable values are 0 and 1.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
                             }
                           },
                           "parameterOrder": [
@@ -4868,7 +4978,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Gets the access control policy for a FHIR store or security label within a\nFHIR store. Returns NOT_FOUND error if the resource does not exist. Returns\nan empty policy if the resource exists but does not have a policy set.\n\nAuthorization requires the Google IAM permission\n'healthcare.fhirStores.getIamPolicy' for a FHIR store or\n'healthcare.securityLabels.getIamPolicy' for a security label"
+                          "description": "Gets the access control policy for a FHIR store or security label within a\nFHIR store. Returns NOT_FOUND error if the resource does not exist. Returns\nan empty policy if the resource exists but does not have a policy set.\n\nAuthorization requires the Google IAM permission\n`healthcare.fhirStores.getIamPolicy` for a FHIR store or\n`healthcare.securityLabels.getIamPolicy` for a security label"
                         }
                       }
                     }

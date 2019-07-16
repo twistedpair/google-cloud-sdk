@@ -60,10 +60,8 @@ class GoogleCloudRecommenderV1beta1ListRecommendationsResponse(_messages.Message
   r"""Response to the `ListRecommendations` method.
 
   Fields:
-    nextPageToken: If there might be more results than those appearing in this
-      response, then `next_page_token` is included. To get the next set of
-      results, call this method again using the value of `next_page_token` as
-      `page_token`.
+    nextPageToken: A token that can be used to request the next page of
+      results. This field is empty if there are no additional results.
     recommendations: The set of recommendations for the `parent` resource.
   """
 
@@ -72,22 +70,22 @@ class GoogleCloudRecommenderV1beta1ListRecommendationsResponse(_messages.Message
 
 
 class GoogleCloudRecommenderV1beta1MarkRecommendationClaimedRequest(_messages.Message):
-  r"""Request for the `MarkClaimed` Method.
+  r"""Request for the `MarkRecommendationClaimed` Method.
 
   Messages:
-    StateMetadataValue: State properties user wish to include with this state.
-      Full replace of the current state_metadata.
+    StateMetadataValue: State properties to include with this state.
+      Overwrites any existing `state_metadata`.
 
   Fields:
     etag: Fingerprint of the Recommendation. Provides optimistic locking.
-    stateMetadata: State properties user wish to include with this state.
-      Full replace of the current state_metadata.
+    stateMetadata: State properties to include with this state. Overwrites any
+      existing `state_metadata`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class StateMetadataValue(_messages.Message):
-    r"""State properties user wish to include with this state.  Full replace
-    of the current state_metadata.
+    r"""State properties to include with this state. Overwrites any existing
+    `state_metadata`.
 
     Messages:
       AdditionalProperty: An additional property for a StateMetadataValue
@@ -115,22 +113,22 @@ class GoogleCloudRecommenderV1beta1MarkRecommendationClaimedRequest(_messages.Me
 
 
 class GoogleCloudRecommenderV1beta1MarkRecommendationFailedRequest(_messages.Message):
-  r"""Request for the `MarkFailed` Method.
+  r"""Request for the `MarkRecommendationFailed` Method.
 
   Messages:
-    StateMetadataValue: State properties user wish to include with this state.
-      Full replace of the current state_metadata.
+    StateMetadataValue: State properties to include with this state.
+      Overwrites any existing `state_metadata`.
 
   Fields:
-    etag: Fingerprint of the Recommendation. Provides optimistics locking.
-    stateMetadata: State properties user wish to include with this state.
-      Full replace of the current state_metadata.
+    etag: Fingerprint of the Recommendation. Provides optimistic locking.
+    stateMetadata: State properties to include with this state. Overwrites any
+      existing `state_metadata`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class StateMetadataValue(_messages.Message):
-    r"""State properties user wish to include with this state.  Full replace
-    of the current state_metadata.
+    r"""State properties to include with this state. Overwrites any existing
+    `state_metadata`.
 
     Messages:
       AdditionalProperty: An additional property for a StateMetadataValue
@@ -158,22 +156,22 @@ class GoogleCloudRecommenderV1beta1MarkRecommendationFailedRequest(_messages.Mes
 
 
 class GoogleCloudRecommenderV1beta1MarkRecommendationSucceededRequest(_messages.Message):
-  r"""Request for the `MarkSucceeded` Method.
+  r"""Request for the `MarkRecommendationSucceeded` Method.
 
   Messages:
-    StateMetadataValue: State properties user wish to include with this state.
-      Full replace of the current state_metadata.
+    StateMetadataValue: State properties to include with this state.
+      Overwrites any existing `state_metadata`.
 
   Fields:
     etag: Fingerprint of the Recommendation. Provides optimistic locking.
-    stateMetadata: State properties user wish to include with this state.
-      Full replace of the current state_metadata.
+    stateMetadata: State properties to include with this state. Overwrites any
+      existing `state_metadata`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class StateMetadataValue(_messages.Message):
-    r"""State properties user wish to include with this state.  Full replace
-    of the current state_metadata.
+    r"""State properties to include with this state. Overwrites any existing
+    `state_metadata`.
 
     Messages:
       AdditionalProperty: An additional property for a StateMetadataValue
@@ -306,36 +304,31 @@ class GoogleCloudRecommenderV1beta1OperationGroup(_messages.Message):
 
 class GoogleCloudRecommenderV1beta1Recommendation(_messages.Message):
   r"""A recommendation along with a suggested action. E.g., a rightsizing
-  recommendation for an underutilized VM, next product suggestion for billing
-  account.
+  recommendation for an underutilized VM, IAM role recommendations, etc
 
   Fields:
     additionalImpact: Optional set of additional impact that this
       recommendation may have when trying to optimize for the primary
       category. These may be positive or negative.
-    content: Content of the recommendation describing why a recommendation was
-      generated and what the changes are.
+    content: Content of the recommendation describing recommended changes to
+      resources.
     description: Free-form human readable summary in English. The maximum
       length is 500 characters.
-    etag: Fingerprint of the Recommendation. Provides optimistics locking when
+    etag: Fingerprint of the Recommendation. Provides optimistic locking when
       updating states.
     lastRefreshTime: Last time this recommendation was refreshed by the system
       that created it in the first place.
-    name: Name of recommendation.  * A project recommendation is represented
-      as   projects/[PROJECT_NUMBER]/locations/[LOCATION]/recommenders/[RECOMM
-      ENDER_ID]/recommendations/[RECOMMENDATION_ID]
+    name: Name of recommendation.  A project recommendation is represented as
+      projects/[PROJECT_NUMBER]/locations/[LOCATION]/recommenders/[RECOMMENDER
+      _ID]/recommendations/[RECOMMENDATION_ID]
     primaryImpact: The primary impact that this recommendation can have while
       trying to optimize for one category.
-    recommenderVariant: Contains an identifier for a variant of
-      recommendations produced for the same recommender. Variant is a function
-      of content and impact, meaning a new variant will be added when either
-      content or primary impact category changes. The schema of the
-      recommendation will be constant for a given recommender + variant.
-      Examples:   For recommender =
-      "google.compute.instance.MachineTypeRecommender",   recommender_variant
-      can be one of "DOWNSIZE"/"UPSIZE"    For recommender =
-      "google.iam.policy.RoleRecommender",   recommender_variant can be one of
-      "REMOVE_ROLE"/"REPLACE_ROLE"
+    recommenderSubtype: Contains an identifier for a subtype of
+      recommendations produced for the same recommender. Subtype is a function
+      of content and impact, meaning a new subtype will be added when either
+      content or primary impact category changes.  Examples:   For recommender
+      = "google.iam.policy.RoleRecommender",   recommender_subtype can be one
+      of "REMOVE_ROLE"/"REPLACE_ROLE"
     stateInfo: Information for state. Contains state and metadata.
   """
 
@@ -346,13 +339,12 @@ class GoogleCloudRecommenderV1beta1Recommendation(_messages.Message):
   lastRefreshTime = _messages.StringField(5)
   name = _messages.StringField(6)
   primaryImpact = _messages.MessageField('GoogleCloudRecommenderV1beta1Impact', 7)
-  recommenderVariant = _messages.StringField(8)
+  recommenderSubtype = _messages.StringField(8)
   stateInfo = _messages.MessageField('GoogleCloudRecommenderV1beta1RecommendationStateInfo', 9)
 
 
 class GoogleCloudRecommenderV1beta1RecommendationContent(_messages.Message):
-  r"""Contains reasoning around why a recommendation is generated, what
-  resources are changing and how they are changing.
+  r"""Contains what resources are changing and how they are changing.
 
   Fields:
     operationGroups: Operations to one or more Google Cloud resources grouped
@@ -397,8 +389,9 @@ class GoogleCloudRecommenderV1beta1RecommendationStateInfo(_messages.Message):
       FAILED: Recommendation is in failed state. Recommendations content is
         immutable and cannot be updated by Google.  FAILED recommendations can
         be marked as SUCCEEDED, or FAILED.
-      DISMISSED: Recommendation is in dismissed state.  DISMISSED
-        recommendations can be marked as ACTIVE.
+      DISMISSED: Recommendation is in dismissed state. Recommendation content
+        can be updated by Google.  DISMISSED recommendations can be marked as
+        ACTIVE.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -477,13 +470,12 @@ class RecommenderProjectsLocationsRecommendersRecommendationsListRequest(_messag
       Supported filter fields: state_info.state Eg:
       `state_info.state:"DISMISSED" or state_info.state:"FAILED"
     pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored. The presence of
-      `next_page_token` in the response indicates that more results might be
-      available. If not specified, the default page_size is 50.
+      request. Non-positive values are ignored. If not specified, the server
+      will determine the number of results to return.
     pageToken: Optional. If present, retrieves the next batch of results from
       the preceding call to this method. `page_token` must be the value of
       `next_page_token` from the previous response. The values of other method
-      parameters should be identical to those in the previous call.
+      parameters must be identical to those in the previous call.
     parent: Required. The container resource on which to execute the request.
       Acceptable formats:  1. "projects/[PROJECT_NUMBER]/locations/[LOCATION]/
       recommenders/[RECOMMENDER_ID]",  LOCATION here refers to GCP Locations:

@@ -452,6 +452,10 @@ class Documentation(_messages.Message):
     rules: A list of documentation rules that apply to individual API
       elements.  **NOTE:** All service configuration rules follow "last one
       wins" order.
+    serviceRootUrl: Specifies the service root url if the default one (the
+      service name from the yaml file) is not suitable. This can be seen in
+      any fully specified service urls as well as sections that show a base
+      that other urls are relative to.
     summary: A short summary of what the service does. Can only be provided by
       plain text.
   """
@@ -460,7 +464,8 @@ class Documentation(_messages.Message):
   overview = _messages.StringField(2)
   pages = _messages.MessageField('Page', 3, repeated=True)
   rules = _messages.MessageField('DocumentationRule', 4, repeated=True)
-  summary = _messages.StringField(5)
+  serviceRootUrl = _messages.StringField(5)
+  summary = _messages.StringField(6)
 
 
 class DocumentationRule(_messages.Message):

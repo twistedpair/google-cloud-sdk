@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://gameservices.googleapis.com/v1alpha/'
-DOCS_URL = ''
+DOCS_URL = 'https://cloud.google.com/solutions/gaming/'
 
 
 class Collections(enum.Enum):

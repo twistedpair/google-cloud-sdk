@@ -385,6 +385,8 @@ class ClusterUpdate(_messages.Message):
       Set the "desired_node_pool" field as well.
     desiredImageType: The desired image type for the node pool. NOTE: Set the
       "desired_node_pool" field as well.
+    desiredIntraNodeVisibilityConfig: The desired config of Intra-node
+      visibility.
     desiredLocations: The desired list of Google Compute Engine
       [zones](/compute/docs/zones#available) in which the cluster's nodes
       should be located. Changing the locations a cluster is in will result in
@@ -436,15 +438,16 @@ class ClusterUpdate(_messages.Message):
   desiredImage = _messages.StringField(2)
   desiredImageProject = _messages.StringField(3)
   desiredImageType = _messages.StringField(4)
-  desiredLocations = _messages.StringField(5, repeated=True)
-  desiredLoggingService = _messages.StringField(6)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 7)
-  desiredMasterVersion = _messages.StringField(8)
-  desiredMonitoringService = _messages.StringField(9)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 10)
-  desiredNodePoolId = _messages.StringField(11)
-  desiredNodeVersion = _messages.StringField(12)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 13)
+  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 5)
+  desiredLocations = _messages.StringField(6, repeated=True)
+  desiredLoggingService = _messages.StringField(7)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 8)
+  desiredMasterVersion = _messages.StringField(9)
+  desiredMonitoringService = _messages.StringField(10)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 11)
+  desiredNodePoolId = _messages.StringField(12)
+  desiredNodeVersion = _messages.StringField(13)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 14)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1191,6 +1194,17 @@ class IPAllocationPolicy(_messages.Message):
   useIpAliases = _messages.BooleanField(12)
 
 
+class IntraNodeVisibilityConfig(_messages.Message):
+  r"""IntraNodeVisibilityConfig contains the desired config of the intra-node
+  visibility on this cluster.
+
+  Fields:
+    enabled: Enables intra node visibility for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class Jwk(_messages.Message):
   r"""Jwk is a JSON Web Key as specified in RFC 7517
 
@@ -1383,6 +1397,9 @@ class NetworkConfig(_messages.Message):
   r"""NetworkConfig reports the relative names of network & subnetwork.
 
   Fields:
+    enableIntraNodeVisibility: Whether Intra-node visibility is enabled for
+      this cluster. This makes same node pod to pod traffic visible for VPC
+      network.
     network: Output only. The relative name of the Google Compute Engine
       network(/compute/docs/networks-and-firewalls#networks) to which the
       cluster is connected. Example: projects/my-project/global/networks/my-
@@ -1392,8 +1409,9 @@ class NetworkConfig(_messages.Message):
       Example: projects/my-project/regions/us-central1/subnetworks/my-subnet
   """
 
-  network = _messages.StringField(1)
-  subnetwork = _messages.StringField(2)
+  enableIntraNodeVisibility = _messages.BooleanField(1)
+  network = _messages.StringField(2)
+  subnetwork = _messages.StringField(3)
 
 
 class NetworkPolicy(_messages.Message):

@@ -99,6 +99,10 @@ apis:
     v1:
       discovery_doc: bio_v1.json
       default: true
+  buildartifacts:
+    v1alpha2:
+      discovery_doc: buildartifacts_v1alpha2.json
+      default: true
   cloudasset:
     v1beta1:
       default: true
@@ -114,7 +118,7 @@ apis:
     v1:
       discovery_doc: cloudbilling_v1.json
       unelidable_request_methods:
-      - cloudbilling.projects.updateBillingInfo
+        - cloudbilling.projects.updateBillingInfo
       resources:
         projects:
           path: projects/{projectsId}
@@ -125,7 +129,7 @@ apis:
       # The following stanza is a workaround for b/24867445. It prevents elision
       # of a request containing (project_id + xyz) into just an Xyz object.
       unelidable_request_methods:
-      - cloudbuild.projects.builds.create
+        - cloudbuild.projects.builds.create
     v1alpha1:
       discovery_doc: cloudbuild_v1alpha1.json
       resources:
@@ -134,8 +138,8 @@ apis:
       # The following stanza is a workaround for b/24867445. It prevents elision
       # of a request containing (project_id + xyz) into just an Xyz object.
       unelidable_request_methods:
-      - cloudbuild.projects.builds.create
-      - cloudbuild.projects.workerPools.patch
+        - cloudbuild.projects.builds.create
+        - cloudbuild.projects.workerPools.patch
   clouddebugger:
     v2:
       discovery_doc: clouddebugger_v2.json
@@ -231,7 +235,7 @@ apis:
     beta:
       discovery_doc: compute_beta.json
       unelidable_request_methods:
-      - compute.disks.resize
+        - compute.disks.resize
       resources:
         nextHopGateways:
           path: projects/{project}/global/gateways/{nextHopGateway}
@@ -343,6 +347,8 @@ apis:
       default: true
     v1beta2:
       discovery_doc: dns_v1beta2.json
+    v1alpha2:
+      discovery_doc: dns_v1alpha2.json
   domains:
     v1alpha1:
       discovery_doc: domains_v1alpha1.json
@@ -472,8 +478,8 @@ apis:
         projects.alertPolicies.conditions:
           path: projects/{projectsId}/alertPolicies/{alertPoliciesId}/conditions/{conditionsId}
       unelidable_request_methods:
-      - monitoring.projects.alertPolicies.create
-      - monitoring.projects.notificationChannels.create
+        - monitoring.projects.alertPolicies.create
+        - monitoring.projects.notificationChannels.create
   pubsub:
     v1:
       discovery_doc: pubsub_v1.json
@@ -579,7 +585,7 @@ apis:
       # url and the value in the request body should be different and the
       # request message is still needed.
       unelidable_request_methods:
-      - testing.projects.testMatrices.create
+        - testing.projects.testMatrices.create
   toolresults:
     v1beta3:
       discovery_doc: toolresults_v1beta3.json

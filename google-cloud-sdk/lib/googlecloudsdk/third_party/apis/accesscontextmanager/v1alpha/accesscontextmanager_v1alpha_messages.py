@@ -261,7 +261,7 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsPatchRequest(_messages.Messa
     name: Required. Resource name for the Access Level. The `short_name`
       component must begin with a letter and only include alphanumeric and
       '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`
-    updateMask: Required.  Mask to control which fields get updated. Must be
+    updateMask: Required. Mask to control which fields get updated. Must be
       non-empty.
   """
 

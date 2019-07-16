@@ -227,7 +227,7 @@ class CloudschedulerProjectsLocationsJobsCreateRequest(_messages.Message):
 
   Fields:
     job: A Job resource to be passed as the request body.
-    parent: Required.  The location name. For example:
+    parent: Required. The location name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID`.
   """
 
@@ -239,7 +239,7 @@ class CloudschedulerProjectsLocationsJobsDeleteRequest(_messages.Message):
   r"""A CloudschedulerProjectsLocationsJobsDeleteRequest object.
 
   Fields:
-    name: Required.  The job name. For example:
+    name: Required. The job name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/jobs/JOB_ID`.
   """
 
@@ -250,7 +250,7 @@ class CloudschedulerProjectsLocationsJobsGetRequest(_messages.Message):
   r"""A CloudschedulerProjectsLocationsJobsGetRequest object.
 
   Fields:
-    name: Required.  The job name. For example:
+    name: Required. The job name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/jobs/JOB_ID`.
   """
 
@@ -271,7 +271,7 @@ class CloudschedulerProjectsLocationsJobsListRequest(_messages.Message):
       next_page_token returned from the previous call to ListJobs. It is an
       error to switch the value of filter or order_by while iterating through
       pages.
-    parent: Required.  The location name. For example:
+    parent: Required. The location name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID`.
   """
 
@@ -310,7 +310,7 @@ class CloudschedulerProjectsLocationsJobsPauseRequest(_messages.Message):
   r"""A CloudschedulerProjectsLocationsJobsPauseRequest object.
 
   Fields:
-    name: Required.  The job name. For example:
+    name: Required. The job name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/jobs/JOB_ID`.
     pauseJobRequest: A PauseJobRequest resource to be passed as the request
       body.
@@ -324,7 +324,7 @@ class CloudschedulerProjectsLocationsJobsResumeRequest(_messages.Message):
   r"""A CloudschedulerProjectsLocationsJobsResumeRequest object.
 
   Fields:
-    name: Required.  The job name. For example:
+    name: Required. The job name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/jobs/JOB_ID`.
     resumeJobRequest: A ResumeJobRequest resource to be passed as the request
       body.
@@ -338,7 +338,7 @@ class CloudschedulerProjectsLocationsJobsRunRequest(_messages.Message):
   r"""A CloudschedulerProjectsLocationsJobsRunRequest object.
 
   Fields:
-    name: Required.  The job name. For example:
+    name: Required. The job name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/jobs/JOB_ID`.
     runJobRequest: A RunJobRequest resource to be passed as the request body.
   """
@@ -426,7 +426,7 @@ class HttpTarget(_messages.Message):
       HTTP request.  This type of authorization can be used for many
       scenarios, including calling Cloud Run, or endpoints where you intend to
       validate the token yourself.
-    uri: Required.  The full URI path that the request will be sent to. This
+    uri: Required. The full URI path that the request will be sent to. This
       string must begin with either "http://" or "https://". Some examples of
       valid values for uri are: `http://acme.com` and
       `https://acme.com/sales:8080`. Cloud Scheduler will encode some
@@ -825,12 +825,12 @@ class PubsubTarget(_messages.Message):
       either non-empty data, or at least one attribute.
     data: The message payload for PubsubMessage.  Pubsub message must contain
       either non-empty data, or at least one attribute.
-    topicName: Required.  The name of the Cloud Pub/Sub topic to which
-      messages will be published when a job is delivered. The topic name must
-      be in the same format as required by PubSub's [PublishRequest.name](http
-      s://cloud.google.com/pubsub/docs/reference/rpc/google.pubsub.v1#publishr
-      equest), for example `projects/PROJECT_ID/topics/TOPIC_ID`.  The topic
-      must be in the same project as the Cloud Scheduler job.
+    topicName: Required. The name of the Cloud Pub/Sub topic to which messages
+      will be published when a job is delivered. The topic name must be in the
+      same format as required by PubSub's [PublishRequest.name](https://cloud.
+      google.com/pubsub/docs/reference/rpc/google.pubsub.v1#publishrequest),
+      for example `projects/PROJECT_ID/topics/TOPIC_ID`.  The topic must be in
+      the same project as the Cloud Scheduler job.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')

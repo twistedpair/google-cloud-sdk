@@ -221,8 +221,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
   "csa_rollout": {        "start_time": {           "seconds": 1526406431,
   },        "end_time": {           "seconds": 1535406431,        },     },
   "ncsa_rollout": {        "start_time": {           "seconds": 1526406431,
-  },        "end_time": {           "seconds": 1535406431,        },     }   }
-  } ```
+  },        "end_time": {           "seconds": 1535406431,        },     }
+  },   "consumer_defined_name": "my-sql-instance1", } ```
 
   Enums:
     StateValueValuesEnum: Output only. Current lifecycle state of the resource
@@ -252,6 +252,11 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       instance. This can be mutated by rollout services.
 
   Fields:
+    consumerDefinedName: consumer_defined_name is the name that is set by the
+      consumer. On the other hand Name field represents system-assigned id of
+      an instance so consumers are not necessarily aware of it.
+      consumer_defined_name is used for notification/UI purposes for consumer
+      to recognize their instances.
     createTime: Output only. Timestamp when the resource was created.
     labels: Optional. Resource labels to represent user provided metadata.
       Each label is a key-value pair, where both the key and the value are
@@ -479,19 +484,20 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  maintenancePolicyNames = _messages.MessageField('MaintenancePolicyNamesValue', 3)
-  maintenanceSchedules = _messages.MessageField('MaintenanceSchedulesValue', 4)
-  name = _messages.StringField(5)
-  producerMetadata = _messages.MessageField('ProducerMetadataValue', 6)
-  provisionedResources = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource', 7, repeated=True)
-  rolloutMetadata = _messages.MessageField('RolloutMetadataValue', 8)
-  sloMetadata = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata', 9)
-  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  tenantProjectId = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  consumerDefinedName = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  maintenancePolicyNames = _messages.MessageField('MaintenancePolicyNamesValue', 4)
+  maintenanceSchedules = _messages.MessageField('MaintenanceSchedulesValue', 5)
+  name = _messages.StringField(6)
+  producerMetadata = _messages.MessageField('ProducerMetadataValue', 7)
+  provisionedResources = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource', 8, repeated=True)
+  rolloutMetadata = _messages.MessageField('RolloutMetadataValue', 9)
+  sloMetadata = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata', 10)
+  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  tenantProjectId = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messages.Message):

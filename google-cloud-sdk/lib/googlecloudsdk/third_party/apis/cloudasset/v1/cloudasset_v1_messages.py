@@ -17,6 +17,9 @@ class Asset(_messages.Message):
   IAM policies, and other non-GCP assets.
 
   Fields:
+    accessLevel: A GoogleIdentityAccesscontextmanagerV1AccessLevel attribute.
+    accessPolicy: A GoogleIdentityAccesscontextmanagerV1AccessPolicy
+      attribute.
     assetType: Type of the asset. Example: "compute.googleapis.com/Disk".
     iamPolicy: Representation of the actual Cloud IAM policy set on a cloud
       resource. For each resource, there must be at most one Cloud IAM policy
@@ -25,13 +28,22 @@ class Asset(_messages.Message):
       rojects/my_project_123/zones/zone1/instances/instance1`. See [Resource N
       ames](https://cloud.google.com/apis/design/resource_names#full_resource_
       name) for more information.
+    orgPolicy: Representation of the Cloud Organization Policy set on an
+      asset. For each asset, there could be multiple Organization policies
+      with different constraints.
     resource: Representation of the resource.
+    servicePerimeter: A GoogleIdentityAccesscontextmanagerV1ServicePerimeter
+      attribute.
   """
 
-  assetType = _messages.StringField(1)
-  iamPolicy = _messages.MessageField('Policy', 2)
-  name = _messages.StringField(3)
-  resource = _messages.MessageField('Resource', 4)
+  accessLevel = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1AccessLevel', 1)
+  accessPolicy = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1AccessPolicy', 2)
+  assetType = _messages.StringField(3)
+  iamPolicy = _messages.MessageField('Policy', 4)
+  name = _messages.StringField(5)
+  orgPolicy = _messages.MessageField('GoogleCloudOrgpolicyV1Policy', 6, repeated=True)
+  resource = _messages.MessageField('Resource', 7)
+  servicePerimeter = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeter', 8)
 
 
 class AuditConfig(_messages.Message):
@@ -45,16 +57,16 @@ class AuditConfig(_messages.Message):
   multiple AuditConfigs:      {       "audit_configs": [         {
   "service": "allServices"           "audit_log_configs": [             {
   "log_type": "DATA_READ",               "exempted_members": [
-  "user:foo@gmail.com"               ]             },             {
+  "user:jose@example.com"               ]             },             {
   "log_type": "DATA_WRITE",             },             {
   "log_type": "ADMIN_READ",             }           ]         },         {
-  "service": "fooservice.googleapis.com"           "audit_log_configs": [
+  "service": "sampleservice.googleapis.com"           "audit_log_configs": [
   {               "log_type": "DATA_READ",             },             {
   "log_type": "DATA_WRITE",               "exempted_members": [
-  "user:bar@gmail.com"               ]             }           ]         }
-  ]     }  For fooservice, this policy enables DATA_READ, DATA_WRITE and
-  ADMIN_READ logging. It also exempts foo@gmail.com from DATA_READ logging,
-  and bar@gmail.com from DATA_WRITE logging.
+  "user:aliya@example.com"               ]             }           ]         }
+  ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
+  ADMIN_READ logging. It also exempts jose@example.com from DATA_READ logging,
+  and aliya@example.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -70,10 +82,10 @@ class AuditConfig(_messages.Message):
 class AuditLogConfig(_messages.Message):
   r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
-  "exempted_members": [             "user:foo@gmail.com"           ]
+  "exempted_members": [             "user:jose@example.com"           ]
   },         {           "log_type": "DATA_WRITE",         }       ]     }
   This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
-  foo@gmail.com from DATA_READ logging.
+  jose@example.com from DATA_READ logging.
 
   Enums:
     LogTypeValueValuesEnum: The log type that this config enables.
@@ -81,6 +93,9 @@ class AuditLogConfig(_messages.Message):
   Fields:
     exemptedMembers: Specifies the identities that do not cause logging for
       this type of permission. Follows the same format of Binding.members.
+    ignoreChildExemptions: Specifies whether principals can be exempted for
+      the same LogType in lower-level resource policies. If true, any lower-
+      level exemptions will be ignored.
     logType: The log type that this config enables.
   """
 
@@ -99,7 +114,8 @@ class AuditLogConfig(_messages.Message):
     DATA_READ = 3
 
   exemptedMembers = _messages.StringField(1, repeated=True)
-  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+  ignoreChildExemptions = _messages.BooleanField(2)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
 
 
 class BatchGetAssetsHistoryResponse(_messages.Message):
@@ -126,9 +142,9 @@ class Binding(_messages.Message):
       with or without a Google account.  * `allAuthenticatedUsers`: A special
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
-      represents a specific Google    account. For example, `alice@gmail.com`
-      .   * `serviceAccount:{emailid}`: An email address that represents a
-      service    account. For example, `my-other-
+      represents a specific Google    account. For example,
+      `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
+      that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
       * `domain:{domain}`: The G Suite domain (primary) that represents all
@@ -174,10 +190,14 @@ class CloudassetBatchGetAssetsHistoryRequest(_messages.Message):
       CONTENT_TYPE_UNSPECIFIED: <no description>
       RESOURCE: <no description>
       IAM_POLICY: <no description>
+      ORG_POLICY: <no description>
+      ACCESS_POLICY: <no description>
     """
     CONTENT_TYPE_UNSPECIFIED = 0
     RESOURCE = 1
     IAM_POLICY = 2
+    ORG_POLICY = 3
+    ACCESS_POLICY = 4
 
   assetNames = _messages.StringField(1, repeated=True)
   contentType = _messages.EnumField('ContentTypeValueValuesEnum', 2)
@@ -244,10 +264,14 @@ class ExportAssetsRequest(_messages.Message):
       CONTENT_TYPE_UNSPECIFIED: Unspecified content type.
       RESOURCE: Resource metadata.
       IAM_POLICY: The actual IAM policy set on a resource.
+      ORG_POLICY: The Cloud Organization Policy set on an asset.
+      ACCESS_POLICY: The Cloud Access context mananger Policy set on an asset.
     """
     CONTENT_TYPE_UNSPECIFIED = 0
     RESOURCE = 1
     IAM_POLICY = 2
+    ORG_POLICY = 3
+    ACCESS_POLICY = 4
 
   assetTypes = _messages.StringField(1, repeated=True)
   contentType = _messages.EnumField('ContentTypeValueValuesEnum', 2)
@@ -301,6 +325,541 @@ class GcsDestination(_messages.Message):
 
   uri = _messages.StringField(1)
   uriPrefix = _messages.StringField(2)
+
+
+class GoogleCloudOrgpolicyV1BooleanPolicy(_messages.Message):
+  r"""Used in `policy_type` to specify how `boolean_policy` will behave at
+  this resource.
+
+  Fields:
+    enforced: If `true`, then the `Policy` is enforced. If `false`, then any
+      configuration is acceptable.  Suppose you have a `Constraint`
+      `constraints/compute.disableSerialPortAccess` with `constraint_default`
+      set to `ALLOW`. A `Policy` for that `Constraint` exhibits the following
+      behavior:   - If the `Policy` at this resource has enforced set to
+      `false`, serial     port connection attempts will be allowed.   - If the
+      `Policy` at this resource has enforced set to `true`, serial     port
+      connection attempts will be refused.   - If the `Policy` at this
+      resource is `RestoreDefault`, serial port     connection attempts will
+      be allowed.   - If no `Policy` is set at this resource or anywhere
+      higher in the     resource hierarchy, serial port connection attempts
+      will be allowed.   - If no `Policy` is set at this resource, but one
+      exists higher in the     resource hierarchy, the behavior is as if
+      the`Policy` were set at     this resource.  The following examples
+      demonstrate the different possible layerings:  Example 1 (nearest
+      `Constraint` wins):   `organizations/foo` has a `Policy` with:
+      {enforced: false}   `projects/bar` has no `Policy` set. The constraint
+      at `projects/bar` and `organizations/foo` will not be enforced.  Example
+      2 (enforcement gets replaced):   `organizations/foo` has a `Policy`
+      with:     {enforced: false}   `projects/bar` has a `Policy` with:
+      {enforced: true} The constraint at `organizations/foo` is not enforced.
+      The constraint at `projects/bar` is enforced.  Example 3
+      (RestoreDefault):   `organizations/foo` has a `Policy` with:
+      {enforced: true}   `projects/bar` has a `Policy` with:
+      {RestoreDefault: {}} The constraint at `organizations/foo` is enforced.
+      The constraint at `projects/bar` is not enforced, because
+      `constraint_default` for the `Constraint` is `ALLOW`.
+  """
+
+  enforced = _messages.BooleanField(1)
+
+
+class GoogleCloudOrgpolicyV1ListPolicy(_messages.Message):
+  r"""Used in `policy_type` to specify how `list_policy` behaves at this
+  resource.  `ListPolicy` can define specific values and subtrees of Cloud
+  Resource Manager resource hierarchy (`Organizations`, `Folders`, `Projects`)
+  that are allowed or denied by setting the `allowed_values` and
+  `denied_values` fields. This is achieved by using the `under:` and optional
+  `is:` prefixes. The `under:` prefix is used to denote resource subtree
+  values. The `is:` prefix is used to denote specific values, and is required
+  only if the value contains a ":". Values prefixed with "is:" are treated the
+  same as values with no prefix. Ancestry subtrees must be in one of the
+  following formats:     - "projects/<project-id>", e.g. "projects/tokyo-
+  rain-123"     - "folders/<folder-id>", e.g. "folders/1234"     -
+  "organizations/<organization-id>", e.g. "organizations/1234" The
+  `supports_under` field of the associated `Constraint`  defines whether
+  ancestry prefixes can be used. You can set `allowed_values` and
+  `denied_values` in the same `Policy` if `all_values` is
+  `ALL_VALUES_UNSPECIFIED`. `ALLOW` or `DENY` are used to allow or deny all
+  values. If `all_values` is set to either `ALLOW` or `DENY`, `allowed_values`
+  and `denied_values` must be unset.
+
+  Enums:
+    AllValuesValueValuesEnum: The policy all_values state.
+
+  Fields:
+    allValues: The policy all_values state.
+    allowedValues: List of values allowed  at this resource. Can only be set
+      if `all_values` is set to `ALL_VALUES_UNSPECIFIED`.
+    deniedValues: List of values denied at this resource. Can only be set if
+      `all_values` is set to `ALL_VALUES_UNSPECIFIED`.
+    inheritFromParent: Determines the inheritance behavior for this `Policy`.
+      By default, a `ListPolicy` set at a resource supercedes any `Policy` set
+      anywhere up the resource hierarchy. However, if `inherit_from_parent` is
+      set to `true`, then the values from the effective `Policy` of the parent
+      resource are inherited, meaning the values set in this `Policy` are
+      added to the values inherited up the hierarchy.  Setting `Policy`
+      hierarchies that inherit both allowed values and denied values isn't
+      recommended in most circumstances to keep the configuration simple and
+      understandable. However, it is possible to set a `Policy` with
+      `allowed_values` set that inherits a `Policy` with `denied_values` set.
+      In this case, the values that are allowed must be in `allowed_values`
+      and not present in `denied_values`.  For example, suppose you have a
+      `Constraint` `constraints/serviceuser.services`, which has a
+      `constraint_type` of `list_constraint`, and with `constraint_default`
+      set to `ALLOW`. Suppose that at the Organization level, a `Policy` is
+      applied that restricts the allowed API activations to {`E1`, `E2`}.
+      Then, if a `Policy` is applied to a project below the Organization that
+      has `inherit_from_parent` set to `false` and field all_values set to
+      DENY, then an attempt to activate any API will be denied.  The following
+      examples demonstrate different possible layerings for `projects/bar`
+      parented by `organizations/foo`:  Example 1 (no inherited values):
+      `organizations/foo` has a `Policy` with values:     {allowed_values:
+      "E1" allowed_values:"E2"}   `projects/bar` has `inherit_from_parent`
+      `false` and values:     {allowed_values: "E3" allowed_values: "E4"} The
+      accepted values at `organizations/foo` are `E1`, `E2`. The accepted
+      values at `projects/bar` are `E3`, and `E4`.  Example 2 (inherited
+      values):   `organizations/foo` has a `Policy` with values:
+      {allowed_values: "E1" allowed_values:"E2"}   `projects/bar` has a
+      `Policy` with values:     {value: "E3" value: "E4" inherit_from_parent:
+      true} The accepted values at `organizations/foo` are `E1`, `E2`. The
+      accepted values at `projects/bar` are `E1`, `E2`, `E3`, and `E4`.
+      Example 3 (inheriting both allowed and denied values):
+      `organizations/foo` has a `Policy` with values:     {allowed_values:
+      "E1" allowed_values: "E2"}   `projects/bar` has a `Policy` with:
+      {denied_values: "E1"} The accepted values at `organizations/foo` are
+      `E1`, `E2`. The value accepted at `projects/bar` is `E2`.  Example 4
+      (RestoreDefault):   `organizations/foo` has a `Policy` with values:
+      {allowed_values: "E1" allowed_values:"E2"}   `projects/bar` has a
+      `Policy` with values:     {RestoreDefault: {}} The accepted values at
+      `organizations/foo` are `E1`, `E2`. The accepted values at
+      `projects/bar` are either all or none depending on the value of
+      `constraint_default` (if `ALLOW`, all; if `DENY`, none).  Example 5 (no
+      policy inherits parent policy):   `organizations/foo` has no `Policy`
+      set.   `projects/bar` has no `Policy` set. The accepted values at both
+      levels are either all or none depending on the value of
+      `constraint_default` (if `ALLOW`, all; if `DENY`, none).  Example 6
+      (ListConstraint allowing all):   `organizations/foo` has a `Policy` with
+      values:     {allowed_values: "E1" allowed_values: "E2"}   `projects/bar`
+      has a `Policy` with:     {all: ALLOW} The accepted values at
+      `organizations/foo` are `E1`, E2`. Any value is accepted at
+      `projects/bar`.  Example 7 (ListConstraint allowing none):
+      `organizations/foo` has a `Policy` with values:     {allowed_values:
+      "E1" allowed_values: "E2"}   `projects/bar` has a `Policy` with:
+      {all: DENY} The accepted values at `organizations/foo` are `E1`, E2`. No
+      value is accepted at `projects/bar`.  Example 10 (allowed and denied
+      subtrees of Resource Manager hierarchy): Given the following resource
+      hierarchy   O1->{F1, F2}; F1->{P1}; F2->{P2, P3},   `organizations/foo`
+      has a `Policy` with values:     {allowed_values:
+      "under:organizations/O1"}   `projects/bar` has a `Policy` with:
+      {allowed_values: "under:projects/P3"}     {denied_values:
+      "under:folders/F2"} The accepted values at `organizations/foo` are
+      `organizations/O1`,   `folders/F1`, `folders/F2`, `projects/P1`,
+      `projects/P2`,   `projects/P3`. The accepted values at `projects/bar`
+      are `organizations/O1`,   `folders/F1`, `projects/P1`.
+    suggestedValue: Optional. The Google Cloud Console will try to default to
+      a configuration that matches the value specified in this `Policy`. If
+      `suggested_value` is not set, it will inherit the value specified higher
+      in the hierarchy, unless `inherit_from_parent` is `false`.
+  """
+
+  class AllValuesValueValuesEnum(_messages.Enum):
+    r"""The policy all_values state.
+
+    Values:
+      ALL_VALUES_UNSPECIFIED: Indicates that allowed_values or denied_values
+        must be set.
+      ALLOW: A policy with this set allows all values.
+      DENY: A policy with this set denies all values.
+    """
+    ALL_VALUES_UNSPECIFIED = 0
+    ALLOW = 1
+    DENY = 2
+
+  allValues = _messages.EnumField('AllValuesValueValuesEnum', 1)
+  allowedValues = _messages.StringField(2, repeated=True)
+  deniedValues = _messages.StringField(3, repeated=True)
+  inheritFromParent = _messages.BooleanField(4)
+  suggestedValue = _messages.StringField(5)
+
+
+class GoogleCloudOrgpolicyV1Policy(_messages.Message):
+  r"""Defines a Cloud Organization `Policy` which is used to specify
+  `Constraints` for configurations of Cloud Platform resources.
+
+  Fields:
+    booleanPolicy: For boolean `Constraints`, whether to enforce the
+      `Constraint` or not.
+    constraint: The name of the `Constraint` the `Policy` is configuring, for
+      example, `constraints/serviceuser.services`.  Immutable after creation.
+    etag: An opaque tag indicating the current version of the `Policy`, used
+      for concurrency control.  When the `Policy` is returned from either a
+      `GetPolicy` or a `ListOrgPolicy` request, this `etag` indicates the
+      version of the current `Policy` to use when executing a read-modify-
+      write loop.  When the `Policy` is returned from a `GetEffectivePolicy`
+      request, the `etag` will be unset.  When the `Policy` is used in a
+      `SetOrgPolicy` method, use the `etag` value that was returned from a
+      `GetOrgPolicy` request as part of a read-modify-write loop for
+      concurrency control. Not setting the `etag`in a `SetOrgPolicy` request
+      will result in an unconditional write of the `Policy`.
+    listPolicy: List of values either allowed or disallowed.
+    restoreDefault: Restores the default behavior of the constraint;
+      independent of `Constraint` type.
+    updateTime: The time stamp the `Policy` was previously updated. This is
+      set by the server, not specified by the caller, and represents the last
+      time a call to `SetOrgPolicy` was made for that `Policy`. Any value set
+      by the client will be ignored.
+    version: Version of the `Policy`. Default version is 0;
+  """
+
+  booleanPolicy = _messages.MessageField('GoogleCloudOrgpolicyV1BooleanPolicy', 1)
+  constraint = _messages.StringField(2)
+  etag = _messages.BytesField(3)
+  listPolicy = _messages.MessageField('GoogleCloudOrgpolicyV1ListPolicy', 4)
+  restoreDefault = _messages.MessageField('GoogleCloudOrgpolicyV1RestoreDefault', 5)
+  updateTime = _messages.StringField(6)
+  version = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudOrgpolicyV1RestoreDefault(_messages.Message):
+  r"""Ignores policies set above this resource and restores the
+  `constraint_default` enforcement behavior of the specific `Constraint` at
+  this resource.  Suppose that `constraint_default` is set to `ALLOW` for the
+  `Constraint` `constraints/serviceuser.services`. Suppose that organization
+  foo.com sets a `Policy` at their Organization resource node that restricts
+  the allowed service activations to deny all service activations. They could
+  then set a `Policy` with the `policy_type` `restore_default` on several
+  experimental projects, restoring the `constraint_default` enforcement of the
+  `Constraint` for only those projects, allowing those projects to have all
+  services activated.
+  """
+
+
+
+class GoogleIdentityAccesscontextmanagerV1AccessLevel(_messages.Message):
+  r"""An `AccessLevel` is a label that can be applied to requests to GCP
+  services, along with a list of requirements necessary for the label to be
+  applied.
+
+  Fields:
+    basic: A `BasicLevel` composed of `Conditions`.
+    createTime: Output only. Time the `AccessLevel` was created in UTC.
+    description: Description of the `AccessLevel` and its use. Does not affect
+      behavior.
+    name: Required. Resource name for the Access Level. The `short_name`
+      component must begin with a letter and only include alphanumeric and
+      '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`
+    title: Human readable title. Must be unique within the Policy.
+    updateTime: Output only. Time the `AccessLevel` was updated in UTC.
+  """
+
+  basic = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1BasicLevel', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  name = _messages.StringField(4)
+  title = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+
+
+class GoogleIdentityAccesscontextmanagerV1AccessPolicy(_messages.Message):
+  r"""`AccessPolicy` is a container for `AccessLevels` (which define the
+  necessary attributes to use GCP services) and `ServicePerimeters` (which
+  define regions of services able to freely pass data within a perimeter). An
+  access policy is globally visible within an organization, and the
+  restrictions it specifies apply to all projects within an organization.
+
+  Fields:
+    createTime: Output only. Time the `AccessPolicy` was created in UTC.
+    name: Output only. Resource name of the `AccessPolicy`. Format:
+      `accessPolicies/{policy_id}`
+    parent: Required. The parent of this `AccessPolicy` in the Cloud Resource
+      Hierarchy. Currently immutable once created. Format:
+      `organizations/{organization_id}`
+    title: Required. Human readable title. Does not affect behavior.
+    updateTime: Output only. Time the `AccessPolicy` was updated in UTC.
+  """
+
+  createTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  parent = _messages.StringField(3)
+  title = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
+
+
+class GoogleIdentityAccesscontextmanagerV1BasicLevel(_messages.Message):
+  r"""`BasicLevel` is an `AccessLevel` using a set of recommended features.
+
+  Enums:
+    CombiningFunctionValueValuesEnum: How the `conditions` list should be
+      combined to determine if a request is granted this `AccessLevel`. If AND
+      is used, each `Condition` in `conditions` must be satisfied for the
+      `AccessLevel` to be applied. If OR is used, at least one `Condition` in
+      `conditions` must be satisfied for the `AccessLevel` to be applied.
+      Default behavior is AND.
+
+  Fields:
+    combiningFunction: How the `conditions` list should be combined to
+      determine if a request is granted this `AccessLevel`. If AND is used,
+      each `Condition` in `conditions` must be satisfied for the `AccessLevel`
+      to be applied. If OR is used, at least one `Condition` in `conditions`
+      must be satisfied for the `AccessLevel` to be applied. Default behavior
+      is AND.
+    conditions: Required. A list of requirements for the `AccessLevel` to be
+      granted.
+  """
+
+  class CombiningFunctionValueValuesEnum(_messages.Enum):
+    r"""How the `conditions` list should be combined to determine if a request
+    is granted this `AccessLevel`. If AND is used, each `Condition` in
+    `conditions` must be satisfied for the `AccessLevel` to be applied. If OR
+    is used, at least one `Condition` in `conditions` must be satisfied for
+    the `AccessLevel` to be applied. Default behavior is AND.
+
+    Values:
+      AND: All `Conditions` must be true for the `BasicLevel` to be true.
+      OR: If at least one `Condition` is true, then the `BasicLevel` is true.
+    """
+    AND = 0
+    OR = 1
+
+  combiningFunction = _messages.EnumField('CombiningFunctionValueValuesEnum', 1)
+  conditions = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1Condition', 2, repeated=True)
+
+
+class GoogleIdentityAccesscontextmanagerV1Condition(_messages.Message):
+  r"""A condition necessary for an `AccessLevel` to be granted. The Condition
+  is an AND over its fields. So a Condition is true if: 1) the request IP is
+  from one of the listed subnetworks AND 2) the originating device complies
+  with the listed device policy AND 3) all listed access levels are granted
+  AND 4) the request was sent at a time allowed by the DateTimeRestriction.
+
+  Fields:
+    devicePolicy: Device specific restrictions, all restrictions must hold for
+      the Condition to be true. If not specified, all devices are allowed.
+    ipSubnetworks: CIDR block IP subnetwork specification. May be IPv4 or
+      IPv6. Note that for a CIDR IP address block, the specified IP address
+      portion must be properly truncated (i.e. all the host bits must be zero)
+      or the input is considered malformed. For example, "192.0.2.0/24" is
+      accepted but "192.0.2.1/24" is not. Similarly, for IPv6, "2001:db8::/32"
+      is accepted whereas "2001:db8::1/32" is not. The originating IP of a
+      request must be in one of the listed subnets in order for this Condition
+      to be true. If empty, all IP addresses are allowed.
+    members: The request must be made by one of the provided user or service
+      accounts. Groups are not supported. Syntax: `user:{emailid}`
+      `serviceAccount:{emailid}` If not specified, a request may come from any
+      user.
+    negate: Whether to negate the Condition. If true, the Condition becomes a
+      NAND over its non-empty fields, each field must be false for the
+      Condition overall to be satisfied. Defaults to false.
+    regions: The request must originate from one of the provided
+      countries/regions. Must be valid ISO 3166-1 alpha-2 codes.
+    requiredAccessLevels: A list of other access levels defined in the same
+      `Policy`, referenced by resource name. Referencing an `AccessLevel`
+      which does not exist is an error. All access levels listed must be
+      granted for the Condition to be true. Example:
+      "`accessPolicies/MY_POLICY/accessLevels/LEVEL_NAME"`
+  """
+
+  devicePolicy = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1DevicePolicy', 1)
+  ipSubnetworks = _messages.StringField(2, repeated=True)
+  members = _messages.StringField(3, repeated=True)
+  negate = _messages.BooleanField(4)
+  regions = _messages.StringField(5, repeated=True)
+  requiredAccessLevels = _messages.StringField(6, repeated=True)
+
+
+class GoogleIdentityAccesscontextmanagerV1DevicePolicy(_messages.Message):
+  r"""`DevicePolicy` specifies device specific restrictions necessary to
+  acquire a given access level. A `DevicePolicy` specifies requirements for
+  requests from devices to be granted access levels, it does not do any
+  enforcement on the device. `DevicePolicy` acts as an AND over all specified
+  fields, and each repeated field is an OR over its elements. Any unset fields
+  are ignored. For example, if the proto is { os_type : DESKTOP_WINDOWS,
+  os_type : DESKTOP_LINUX, encryption_status: ENCRYPTED}, then the
+  DevicePolicy will be true for requests originating from encrypted Linux
+  desktops and encrypted Windows desktops.
+
+  Enums:
+    AllowedDeviceManagementLevelsValueListEntryValuesEnum:
+    AllowedEncryptionStatusesValueListEntryValuesEnum:
+
+  Fields:
+    allowedDeviceManagementLevels: Allowed device management levels, an empty
+      list allows all management levels.
+    allowedEncryptionStatuses: Allowed encryptions statuses, an empty list
+      allows all statuses.
+    osConstraints: Allowed OS versions, an empty list allows all types and all
+      versions.
+    requireAdminApproval: Whether the device needs to be approved by the
+      customer admin.
+    requireCorpOwned: Whether the device needs to be corp owned.
+    requireScreenlock: Whether or not screenlock is required for the
+      DevicePolicy to be true. Defaults to `false`.
+  """
+
+  class AllowedDeviceManagementLevelsValueListEntryValuesEnum(_messages.Enum):
+    r"""AllowedDeviceManagementLevelsValueListEntryValuesEnum enum type.
+
+    Values:
+      MANAGEMENT_UNSPECIFIED: <no description>
+      NONE: <no description>
+      BASIC: <no description>
+      COMPLETE: <no description>
+    """
+    MANAGEMENT_UNSPECIFIED = 0
+    NONE = 1
+    BASIC = 2
+    COMPLETE = 3
+
+  class AllowedEncryptionStatusesValueListEntryValuesEnum(_messages.Enum):
+    r"""AllowedEncryptionStatusesValueListEntryValuesEnum enum type.
+
+    Values:
+      ENCRYPTION_UNSPECIFIED: <no description>
+      ENCRYPTION_UNSUPPORTED: <no description>
+      UNENCRYPTED: <no description>
+      ENCRYPTED: <no description>
+    """
+    ENCRYPTION_UNSPECIFIED = 0
+    ENCRYPTION_UNSUPPORTED = 1
+    UNENCRYPTED = 2
+    ENCRYPTED = 3
+
+  allowedDeviceManagementLevels = _messages.EnumField('AllowedDeviceManagementLevelsValueListEntryValuesEnum', 1, repeated=True)
+  allowedEncryptionStatuses = _messages.EnumField('AllowedEncryptionStatusesValueListEntryValuesEnum', 2, repeated=True)
+  osConstraints = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1OsConstraint', 3, repeated=True)
+  requireAdminApproval = _messages.BooleanField(4)
+  requireCorpOwned = _messages.BooleanField(5)
+  requireScreenlock = _messages.BooleanField(6)
+
+
+class GoogleIdentityAccesscontextmanagerV1OsConstraint(_messages.Message):
+  r"""A restriction on the OS type and version of devices making requests.
+
+  Enums:
+    OsTypeValueValuesEnum: Required. The allowed OS type.
+
+  Fields:
+    minimumVersion: The minimum allowed OS version. If not set, any version of
+      this OS satisfies the constraint. Format: `"major.minor.patch"`.
+      Examples: `"10.5.301"`, `"9.2.1"`.
+    osType: Required. The allowed OS type.
+    requireVerifiedChromeOs: Only allows requests from devices with a verified
+      Chrome OS. Verifications includes requirements that the device is
+      enterprise-managed, conformant to Dasher domain policies, and the caller
+      has permission to call the API targeted by the request.
+  """
+
+  class OsTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The allowed OS type.
+
+    Values:
+      OS_UNSPECIFIED: The operating system of the device is not specified or
+        not known.
+      DESKTOP_MAC: A desktop Mac operating system.
+      DESKTOP_WINDOWS: A desktop Windows operating system.
+      DESKTOP_LINUX: A desktop Linux operating system.
+      DESKTOP_CHROME_OS: A desktop ChromeOS operating system.
+    """
+    OS_UNSPECIFIED = 0
+    DESKTOP_MAC = 1
+    DESKTOP_WINDOWS = 2
+    DESKTOP_LINUX = 3
+    DESKTOP_CHROME_OS = 4
+
+  minimumVersion = _messages.StringField(1)
+  osType = _messages.EnumField('OsTypeValueValuesEnum', 2)
+  requireVerifiedChromeOs = _messages.BooleanField(3)
+
+
+class GoogleIdentityAccesscontextmanagerV1ServicePerimeter(_messages.Message):
+  r"""`ServicePerimeter` describes a set of GCP resources which can freely
+  import and export data amongst themselves, but not export outside of the
+  `ServicePerimeter`. If a request with a source within this
+  `ServicePerimeter` has a target outside of the `ServicePerimeter`, the
+  request will be blocked. Otherwise the request is allowed. There are two
+  types of Service Perimeter - Regular and Bridge. Regular Service Perimeters
+  cannot overlap, a single GCP project can only belong to a single regular
+  Service Perimeter. Service Perimeter Bridges can contain only GCP projects
+  as members, a single GCP project may belong to multiple Service Perimeter
+  Bridges.
+
+  Enums:
+    PerimeterTypeValueValuesEnum: Perimeter type indicator. A single project
+      is allowed to be a member of single regular perimeter, but multiple
+      service perimeter bridges. A project cannot be a included in a perimeter
+      bridge without being included in regular perimeter. For perimeter
+      bridges, the restricted service list as well as access level lists must
+      be empty.
+
+  Fields:
+    createTime: Output only. Time the `ServicePerimeter` was created in UTC.
+    description: Description of the `ServicePerimeter` and its use. Does not
+      affect behavior.
+    name: Required. Resource name for the ServicePerimeter.  The `short_name`
+      component must begin with a letter and only include alphanumeric and
+      '_'. Format: `accessPolicies/{policy_id}/servicePerimeters/{short_name}`
+    perimeterType: Perimeter type indicator. A single project is allowed to be
+      a member of single regular perimeter, but multiple service perimeter
+      bridges. A project cannot be a included in a perimeter bridge without
+      being included in regular perimeter. For perimeter bridges, the
+      restricted service list as well as access level lists must be empty.
+    status: Current ServicePerimeter configuration. Specifies sets of
+      resources, restricted services and access levels that determine
+      perimeter content and boundaries.
+    title: Human readable title. Must be unique within the Policy.
+    updateTime: Output only. Time the `ServicePerimeter` was updated in UTC.
+  """
+
+  class PerimeterTypeValueValuesEnum(_messages.Enum):
+    r"""Perimeter type indicator. A single project is allowed to be a member
+    of single regular perimeter, but multiple service perimeter bridges. A
+    project cannot be a included in a perimeter bridge without being included
+    in regular perimeter. For perimeter bridges, the restricted service list
+    as well as access level lists must be empty.
+
+    Values:
+      PERIMETER_TYPE_REGULAR: Regular Perimeter.
+      PERIMETER_TYPE_BRIDGE: Perimeter Bridge.
+    """
+    PERIMETER_TYPE_REGULAR = 0
+    PERIMETER_TYPE_BRIDGE = 1
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  name = _messages.StringField(3)
+  perimeterType = _messages.EnumField('PerimeterTypeValueValuesEnum', 4)
+  status = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig', 5)
+  title = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
+
+
+class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig(_messages.Message):
+  r"""`ServicePerimeterConfig` specifies a set of GCP resources that describe
+  specific Service Perimeter configuration.
+
+  Fields:
+    accessLevels: A list of `AccessLevel` resource names that allow resources
+      within the `ServicePerimeter` to be accessed from the internet.
+      `AccessLevels` listed must be in the same policy as this
+      `ServicePerimeter`. Referencing a nonexistent `AccessLevel` is a syntax
+      error. If no `AccessLevel` names are listed, resources within the
+      perimeter can only be accessed via GCP calls with request origins within
+      the perimeter. Example:
+      `"accessPolicies/MY_POLICY/accessLevels/MY_LEVEL"`. For Service
+      Perimeter Bridge, must be empty.
+    resources: A list of GCP resources that are inside of the service
+      perimeter. Currently only projects are allowed. Format:
+      `projects/{project_number}`
+    restrictedServices: GCP services that are subject to the Service Perimeter
+      restrictions. For example, if `storage.googleapis.com` is specified,
+      access to the storage buckets inside the perimeter must meet the
+      perimeter's access restrictions.
+  """
+
+  accessLevels = _messages.StringField(1, repeated=True)
+  resources = _messages.StringField(2, repeated=True)
+  restrictedServices = _messages.StringField(3, repeated=True)
 
 
 class Operation(_messages.Message):
@@ -453,7 +1012,7 @@ class Policy(_messages.Message):
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten blindly.
+      the existing policy is overwritten.
     version: Deprecated.
   """
 

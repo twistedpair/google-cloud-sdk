@@ -17,7 +17,7 @@
 import enum
 
 
-BASE_URL = 'https://www.googleapis.com/dns/v1/'
+BASE_URL = 'https://dns.googleapis.com/dns/v1/'
 DOCS_URL = 'https://developers.google.com/cloud-dns'
 
 

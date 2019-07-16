@@ -2822,36 +2822,6 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
-class VideointelligenceOperationsCancelRequest(_messages.Message):
-  r"""A VideointelligenceOperationsCancelRequest object.
-
-  Fields:
-    name: The name of the operation resource to be cancelled.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class VideointelligenceOperationsDeleteRequest(_messages.Message):
-  r"""A VideointelligenceOperationsDeleteRequest object.
-
-  Fields:
-    name: The name of the operation resource to be deleted.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class VideointelligenceOperationsGetRequest(_messages.Message):
-  r"""A VideointelligenceOperationsGetRequest object.
-
-  Fields:
-    name: The name of the operation resource.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class VideointelligenceOperationsProjectsLocationsOperationsCancelRequest(_messages.Message):
   r"""A VideointelligenceOperationsProjectsLocationsOperationsCancelRequest
   object.

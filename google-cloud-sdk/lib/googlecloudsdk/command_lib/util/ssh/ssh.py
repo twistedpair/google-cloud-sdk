@@ -771,8 +771,8 @@ def CheckForOsloginAndGetUser(instance, project, requested_user, public_key,
     elif pa.primary:
       oslogin_user = pa.username
 
-  log.out.Print('Using OS Login user [{0}] instead of default user [{1}]'
-                .format(oslogin_user, requested_user))
+  log.info('Using OS Login user [{0}] instead of default user [{1}]'.format(
+      oslogin_user, requested_user))
   return oslogin_user, use_oslogin
 
 

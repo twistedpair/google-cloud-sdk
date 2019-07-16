@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1",
-  "revision": "20190621",
+  "revision": "20190709",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development.\n",
   "ownerDomain": "google.com",
@@ -264,7 +264,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only.\nA server defined name for this index.\nThe form of this name for composite indexes will be:\n`projects\/{project_id}\/databases\/{database_id}\/collectionGroups\/{collection_id}\/indexes\/{composite_index_id}`\nFor single field indexes, this field will be empty.",
+          "description": "Output only. A server defined name for this index.\nThe form of this name for composite indexes will be:\n`projects\/{project_id}\/databases\/{database_id}\/collectionGroups\/{collection_id}\/indexes\/{composite_index_id}`\nFor single field indexes, this field will be empty.",
           "type": "string"
         },
         "queryScope": {
@@ -289,7 +289,7 @@
           }
         },
         "state": {
-          "description": "Output only.\nThe serving state of the index.",
+          "description": "Output only. The serving state of the index.",
           "enumDescriptions": [
             "The state is unspecified.",
             "The index is being created.\nThere is an active long-running operation for the index.\nThe index is updated when writing a document.\nSome index data may exist.",
@@ -389,11 +389,11 @@
           }
         },
         "usesAncestorConfig": {
-          "description": "Output only.\nWhen true, the `Field`'s index configuration is set from the\nconfiguration specified by the `ancestor_field`.\nWhen false, the `Field`'s index configuration is defined explicitly.",
+          "description": "Output only. When true, the `Field`'s index configuration is set from the\nconfiguration specified by the `ancestor_field`.\nWhen false, the `Field`'s index configuration is defined explicitly.",
           "type": "boolean"
         },
         "ancestorField": {
-          "description": "Output only.\nSpecifies the resource name of the `Field` from which this field's\nindex configuration is set (when `uses_ancestor_config` is true),\nor from which it *would* be set if this field had no index configuration\n(when `uses_ancestor_config` is false).",
+          "description": "Output only. Specifies the resource name of the `Field` from which this field's\nindex configuration is set (when `uses_ancestor_config` is true),\nor from which it *would* be set if this field had no index configuration\n(when `uses_ancestor_config` is false).",
           "type": "string"
         },
         "reverting": {
@@ -1306,7 +1306,7 @@
           "format": "google-datetime"
         },
         "targetId": {
-          "description": "A client provided target ID.\n\nIf not set, the server will assign an ID for the target.\n\nUsed for resuming a target without changing IDs. The IDs can either be\nclient-assigned or be server-assigned in a previous stream. All targets\nwith client provided IDs must be added before adding a target that needs\na server-assigned id.",
+          "description": "The target ID that identifies the target on the stream. Must be a positive\nnumber and non-zero.",
           "type": "integer",
           "format": "int32"
         },
@@ -1396,7 +1396,7 @@
           ]
         },
         "targetIds": {
-          "description": "The target IDs of targets that have changed.\n\nIf empty, the change applies to all targets.\n\nFor `target_change_type=ADD`, the order of the target IDs matches the order\nof the requests to add the targets. This allows clients to unambiguously\nassociate server-assigned target IDs with added targets.\n\nFor other states, the order of the target IDs is not defined.",
+          "description": "The target IDs of targets that have changed.\n\nIf empty, the change applies to all targets.\n\nThe order of the target IDs is not defined.",
           "type": "array",
           "items": {
             "type": "integer",

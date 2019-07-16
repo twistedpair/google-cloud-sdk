@@ -72,6 +72,8 @@ def ContentTypeTranslation(content_type):
     return 'RESOURCE'
   if content_type == 'iam-policy':
     return 'IAM_POLICY'
+  if content_type == 'org-policy':
+    return 'ORG_POLICY'
   return 'CONTENT_TYPE_UNSPECIFIED'
 
 
@@ -129,20 +131,9 @@ class AssetExportClient(object):
     content_type = getattr(
         self.message_module.ExportAssetsRequest.ContentTypeValueValuesEnum,
         content_type)
-    # TODO(b/131354776): After flag --output_path_prefix is rolled out to GA, we
-    # can replace this if-else block with GcsDestination(uri=args.output_path,
-    # uriPrefix=args.output_path_prefix). Before that,
-    # GcsDestination(uri=args.output_path, uriPrefix=args.output_path_prefix)
-    # would break the GA track command since flag --output_path_prefix is not
-    # registered for GA track.
-    if args.output_path:
-      output_config = self.message_module.OutputConfig(
-          gcsDestination=self.message_module.GcsDestination(
-              uri=args.output_path))
-    else:
-      output_config = self.message_module.OutputConfig(
-          gcsDestination=self.message_module.GcsDestination(
-              uriPrefix=args.output_path_prefix))
+    output_config = self.message_module.OutputConfig(
+        gcsDestination=self.message_module.GcsDestination(
+            uri=args.output_path, uriPrefix=args.output_path_prefix))
     snapshot_time = None
     if args.snapshot_time:
       snapshot_time = times.FormatDateTime(args.snapshot_time)

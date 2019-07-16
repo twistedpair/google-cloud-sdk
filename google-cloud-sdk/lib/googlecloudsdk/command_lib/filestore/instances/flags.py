@@ -156,7 +156,8 @@ def AddFileShareArg(parser, include_snapshot_flags=False, required=True):
       *source-snapshot*::: The name of the snapshot to restore from.
 
       *source-snapshot-region*::: The region of the source snapshot. If
-      unspecified, the region of the instance will be used.
+      unspecified, it is assumed that the Filestore snapshot is local and
+      instance-zone will be used.
       """
   parser.add_argument(
       '--file-share',

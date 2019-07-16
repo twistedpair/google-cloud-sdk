@@ -24,7 +24,7 @@ import re
 
 from googlecloudsdk.api_lib.container import kubeconfig
 from googlecloudsdk.api_lib.run import global_methods
-from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.functions.deploy import env_vars_util
@@ -102,6 +102,48 @@ def _AddImageArg(parser):
       '`gcr.io/cloudrun/hello:latest`).')
 
 
+_ARG_GROUP_HELP_TEXT = ('Only applicable if connecting to {platform_desc}. '
+                        'Specify {platform} to use:')
+
+
+def _GetOrAddArgGroup(parser, help_text):
+  """Create a new arg group or return existing group with given help text."""
+  for arg in parser.arguments:
+    if arg.is_group and arg.help == help_text:
+      return arg
+  return parser.add_argument_group(help_text)
+
+
+def GetManagedArgGroup(parser):
+  """Get an arg group for managed CR-only flags."""
+  return _GetOrAddArgGroup(parser, _ARG_GROUP_HELP_TEXT.format(
+      platform='\'--platform=managed\'',
+      platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['managed']))
+
+
+def GetGkeArgGroup(parser):
+  """Get an arg group for CRoGKE-only flags."""
+  return _GetOrAddArgGroup(parser, _ARG_GROUP_HELP_TEXT.format(
+      platform='\'--platform=gke\'',
+      platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['gke']))
+
+
+def GetKubernetesArgGroup(parser):
+  """Get an arg group for --platform=kubernetes only flags."""
+  return _GetOrAddArgGroup(parser, _ARG_GROUP_HELP_TEXT.format(
+      platform='\'--platform=kubernetes\'',
+      platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['kubernetes']))
+
+
+def GetClusterArgGroup(parser):
+  """Get an arg group for any generic cluster flags."""
+  return _GetOrAddArgGroup(parser, _ARG_GROUP_HELP_TEXT.format(
+      platform='\'--platform=gke\' or \'--platform=kubernetes\'',
+      platform_desc='{} or {}'.format(
+          _PLATFORM_SHORT_DESCRIPTIONS['gke'],
+          _PLATFORM_SHORT_DESCRIPTIONS['kubernetes'])))
+
+
 def AddAllowUnauthenticatedFlag(parser):
   """Add the --allow-unauthenticated flag."""
   parser.add_argument(
@@ -124,7 +166,7 @@ def AddEndpointVisibilityEnum(parser):
       choices=_VISIBILITY_MODES,
       help=('Defaults to \'external\'. If \'external\', the service can be '
             'invoked through the internet, in addition to through the cluster '
-            'network. Only applicable to Cloud Run on Kubernetes Engine.'))
+            'network.'))
 
 
 def AddServiceFlag(parser):
@@ -186,16 +228,22 @@ def AddCloudSQLFlags(parser):
       <project>:<region>:<instance> for the instance.""")
 
 
-def AddMutexEnvVarsFlags(parser):
-  """Add flags for creating updating and deleting env vars."""
-  # TODO(b/119837621): Use env_vars_util.AddUpdateEnvVarsFlags when
-  # `gcloud run` supports an env var file.
-  key_type = env_vars_util.EnvVarKeyType
-  value_type = env_vars_util.EnvVarValueType
-  flag_name = 'env-vars'
-  long_name = 'environment variables'
+def AddMapFlagsNoFile(parser, flag_name, group_help='', long_name=None,
+                      key_type=None, value_type=None):
+  """Add flags like map_util.AddUpdateMapFlags but without the file one.
 
-  group = parser.add_mutually_exclusive_group()
+  Args:
+    parser: The argument parser
+    flag_name: The name for the property to be used in flag names
+    group_help: Help text for the group of flags
+    long_name: The name for the property to be used in help text
+    key_type: A function to apply to map keys.
+    value_type: A function to apply to map values.
+  """
+  if not long_name:
+    long_name = flag_name
+
+  group = parser.add_mutually_exclusive_group(group_help)
   update_remove_group = group.add_argument_group(
       help=('Only --update-{0} and --remove-{0} can be used together. If both '
             'are specified, --remove-{0} will be applied first.'
@@ -207,6 +255,17 @@ def AddMutexEnvVarsFlags(parser):
   map_util.AddMapClearFlag(group, flag_name, long_name)
   map_util.AddMapSetFlag(group, flag_name, long_name, key_type=key_type,
                          value_type=value_type)
+
+
+def AddMutexEnvVarsFlags(parser):
+  """Add flags for creating updating and deleting env vars."""
+  # TODO(b/119837621): Use env_vars_util.AddUpdateEnvVarsFlags when
+  # `gcloud run` supports an env var file.
+  AddMapFlagsNoFile(parser,
+                    flag_name='env-vars',
+                    long_name='environment variables',
+                    key_type=env_vars_util.EnvVarKeyType,
+                    value_type=env_vars_util.EnvVarValueType)
 
 
 def AddMemoryFlag(parser):
@@ -299,33 +358,81 @@ def AddVpcConnectorArg(parser):
       '--vpc-connector', help='Set a VPC connector for this Service.')
   parser.add_argument(
       '--clear-vpc-connector',
+      action='store_true',
       help='Remove the VPC connector for this Service.')
+
+
+def AddSecretsFlags(parser):
+  """Add flags for creating, updating, and deleting secrets."""
+  AddMapFlagsNoFile(parser,
+                    group_help='Specify where to mount which secrets. '
+                    'Mount paths map to a secret name. '
+                    'Optionally, add an additional parameter to specify a '
+                    'volume name for the secret. For example, '
+                    '\'--update-secrets=/my/path=mysecret:secretvol\' will '
+                    'create a volume named \'secretvol\' with a secret '
+                    'named \'mysecret\' and mount that volume at \'/my/path\'. '
+                    'If a volume name is not provided, the secret name '
+                    'will be used.',
+                    flag_name='secrets',
+                    long_name='secret mount paths')
+
+
+def AddConfigMapsFlags(parser):
+  """Add flags for creating, updating, and deleting config maps."""
+  AddMapFlagsNoFile(parser,
+                    group_help='Specify where to mount which config maps. '
+                    'Mount paths map to a config map name. '
+                    'Optionally, add an additional parameter to specify a '
+                    'volume name for the config map. For example, '
+                    '\'--update-config-maps=/my/path=myconfig:configvol\' will '
+                    'create a volume named \'configvol\' with a config map '
+                    'named \'myconfig\' and mount that volume at \'/my/path\'. '
+                    'If a volume name is not provided, the config map name '
+                    'will be used.',
+                    flag_name='config-maps',
+                    long_name='config map mount paths')
+
+
+def _HasChanges(args, flags):
+  """True iff any of the passed flags are set."""
+  # hasattr check is to allow the same code to work for release tracks that
+  # don't have the args at all yet.
+  return any(hasattr(args, flag) and args.IsSpecified(flag) for flag in flags)
 
 
 def _HasEnvChanges(args):
   """True iff any of the env var flags are set."""
   env_flags = ['update_env_vars', 'set_env_vars',
                'remove_env_vars', 'clear_env_vars']
-  return any(args.IsSpecified(flag) for flag in env_flags)
+  return _HasChanges(args, env_flags)
 
 
 def _HasCloudSQLChanges(args):
   """True iff any of the cloudsql flags are set."""
   instances_flags = ['add_cloudsql_instances', 'set_cloudsql_instances',
                      'remove_cloudsql_instances', 'clear_cloudsql_instances']
-  # hasattr check is to allow the same code to work for release tracks that
-  # don't have the args at all yet.
-  return any(hasattr(args, flag) and args.IsSpecified(flag)
-             for flag in instances_flags)
+  return _HasChanges(args, instances_flags)
 
 
 def _HasLabelChanges(args):
   """True iff any of the label flags are set."""
-  label_flags = ['update_labels', 'clear_labels', 'remove_labels']
-  # hasattr check is to allow the same code to work for release tracks that
-  # don't have the args at all yet.
-  return any(hasattr(args, flag) and args.IsSpecified(flag)
-             for flag in label_flags)
+  label_flags = ['labels', 'update_labels', 'clear_labels', 'remove_labels']
+  return _HasChanges(args, label_flags)
+
+
+def _HasSecretsChanges(args):
+  """True iff any of the secret flags are set."""
+  secret_flags = ['update_secrets', 'set_secrets',
+                  'remove_secrets', 'clear_secrets']
+  return _HasChanges(args, secret_flags)
+
+
+def _HasConfigMapsChanges(args):
+  """True iff any of the config maps flags are set."""
+  config_maps_flags = ['update_config_maps', 'set_config_maps',
+                       'remove_config_maps', 'clear_config_maps']
+  return _HasChanges(args, config_maps_flags)
 
 
 def _GetEnvChanges(args):
@@ -346,6 +453,64 @@ def _GetEnvChanges(args):
   return config_changes.EnvVarChanges(**kwargs)
 
 
+def _GetSecretsChanges(args):
+  """Return config_changes.VolumeChanges for given args."""
+  kwargs = {}
+
+  update = args.update_secrets or args.set_secrets
+  if update:
+    kwargs['mounts_to_update'] = update
+
+  remove = args.remove_secrets
+  if remove:
+    kwargs['mounts_to_remove'] = remove
+
+  if args.set_secrets or args.clear_secrets:
+    kwargs['clear_others'] = True
+
+  return config_changes.VolumeChanges('secrets', **kwargs)
+
+
+def _GetConfigMapsChanges(args):
+  """Return config_changes.VolumeChanges for given args."""
+  kwargs = {}
+
+  update = args.update_config_maps or args.set_config_maps
+  if update:
+    kwargs['mounts_to_update'] = update
+
+  remove = args.remove_config_maps
+  if remove:
+    kwargs['mounts_to_remove'] = remove
+
+  if args.set_config_maps or args.clear_config_maps:
+    kwargs['clear_others'] = True
+
+  return config_changes.VolumeChanges('config_maps', **kwargs)
+
+
+def PromptToEnableApi(service_name):
+  """Prompts to enable the API and throws if the answer is no.
+
+  Args:
+    service_name: str, The service token of the API to prompt for.
+  """
+  if not properties.VALUES.core.should_prompt_to_enable_api.GetBool():
+    return
+
+  project = properties.VALUES.core.project.Get(required=True)
+  # Don't prompt to enable an already enabled API
+  if not enable_api.IsServiceEnabled(project, service_name):
+    if console_io.PromptContinue(
+        default=False,
+        cancel_on_no=True,
+        prompt_string=('API [{}] not enabled on project [{}]. '
+                       'Would you like to enable and retry (this will take a '
+                       'few minutes)?')
+        .format(service_name, project)):
+      enable_api.EnableService(project, service_name)
+
+
 _CLOUD_SQL_API_SERVICE_TOKEN = 'sql-component.googleapis.com'
 _CLOUD_SQL_ADMIN_API_SERVICE_TOKEN = 'sqladmin.googleapis.com'
 
@@ -353,15 +518,8 @@ _CLOUD_SQL_ADMIN_API_SERVICE_TOKEN = 'sqladmin.googleapis.com'
 def _CheckCloudSQLApiEnablement():
   if not properties.VALUES.core.should_prompt_to_enable_api.GetBool():
     return
-  project = properties.VALUES.core.project.Get(required=True)
-  apis.PromptToEnableApi(
-      project, _CLOUD_SQL_API_SERVICE_TOKEN,
-      serverless_exceptions.CloudSQLError(
-          'Cloud SQL API could not be enabled.'))
-  apis.PromptToEnableApi(
-      project, _CLOUD_SQL_ADMIN_API_SERVICE_TOKEN,
-      serverless_exceptions.CloudSQLError(
-          'Cloud SQL Admin API could not be enabled.'))
+  PromptToEnableApi(_CLOUD_SQL_API_SERVICE_TOKEN)
+  PromptToEnableApi(_CLOUD_SQL_ADMIN_API_SERVICE_TOKEN)
 
 
 def GetConfigurationChanges(args):
@@ -376,6 +534,12 @@ def GetConfigurationChanges(args):
                properties.VALUES.core.project.Get(required=True))
     _CheckCloudSQLApiEnablement()
     changes.append(config_changes.CloudSQLChanges(project, region, args))
+
+  if _HasSecretsChanges(args):
+    changes.append(_GetSecretsChanges(args))
+
+  if _HasConfigMapsChanges(args):
+    changes.append(_GetConfigMapsChanges(args))
 
   if 'cpu' in args and args.cpu:
     changes.append(config_changes.ResourceChanges(cpu=args.cpu))
@@ -406,7 +570,10 @@ def GetConfigurationChanges(args):
         config_changes.ServiceAccountChanges(
             service_account=args.service_account))
   if _HasLabelChanges(args):
-    diff = labels_util.Diff.FromUpdateArgs(args)
+    diff = labels_util.Diff(
+        additions=labels_util.GetUpdateLabelsDictFromArgs(args),
+        subtractions=args.remove_labels,
+        clear=args.clear_labels)
     if diff.MayHaveUpdates():
       changes.append(config_changes.LabelChanges(diff))
   if 'revision_suffix' in args and args.revision_suffix:
@@ -621,6 +788,13 @@ def VerifyOnePlatformFlags(args):
             platform='gke',
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['gke']))
 
+  if _FlagIsExplicitlySet(args, 'namespace'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--namespace',
+            platform='gke',
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['gke']))
+
   if _FlagIsExplicitlySet(args, 'cluster'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
@@ -684,6 +858,20 @@ def VerifyGKEFlags(args):
             platform='managed',
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['managed']))
 
+  if _FlagIsExplicitlySet(args, 'vpc_connector'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--vpc-connector',
+            platform='managed',
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['managed']))
+
+  if _FlagIsExplicitlySet(args, 'clear_vpc_connector'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--clear-vpc-connector',
+            platform='managed',
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['managed']))
+
   if _FlagIsExplicitlySet(args, 'kubeconfig'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
@@ -731,6 +919,20 @@ def VerifyKubernetesFlags(args):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--revision-suffix',
+            platform='managed',
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['managed']))
+
+  if _FlagIsExplicitlySet(args, 'vpc_connector'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--vpc-connector',
+            platform='managed',
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['managed']))
+
+  if _FlagIsExplicitlySet(args, 'clear_vpc_connector'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--clear-vpc-connector',
             platform='managed',
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['managed']))
 

@@ -103,16 +103,16 @@ class AuditConfig(_messages.Message):
   multiple AuditConfigs:      {       "audit_configs": [         {
   "service": "allServices"           "audit_log_configs": [             {
   "log_type": "DATA_READ",               "exempted_members": [
-  "user:foo@gmail.com"               ]             },             {
+  "user:jose@example.com"               ]             },             {
   "log_type": "DATA_WRITE",             },             {
   "log_type": "ADMIN_READ",             }           ]         },         {
-  "service": "fooservice.googleapis.com"           "audit_log_configs": [
+  "service": "sampleservice.googleapis.com"           "audit_log_configs": [
   {               "log_type": "DATA_READ",             },             {
   "log_type": "DATA_WRITE",               "exempted_members": [
-  "user:bar@gmail.com"               ]             }           ]         }
-  ]     }  For fooservice, this policy enables DATA_READ, DATA_WRITE and
-  ADMIN_READ logging. It also exempts foo@gmail.com from DATA_READ logging,
-  and bar@gmail.com from DATA_WRITE logging.
+  "user:aliya@example.com"               ]             }           ]         }
+  ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
+  ADMIN_READ logging. It also exempts jose@example.com from DATA_READ logging,
+  and aliya@example.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -128,10 +128,10 @@ class AuditConfig(_messages.Message):
 class AuditLogConfig(_messages.Message):
   r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
-  "exempted_members": [             "user:foo@gmail.com"           ]
+  "exempted_members": [             "user:jose@example.com"           ]
   },         {           "log_type": "DATA_WRITE",         }       ]     }
   This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
-  foo@gmail.com from DATA_READ logging.
+  jose@example.com from DATA_READ logging.
 
   Enums:
     LogTypeValueValuesEnum: The log type that this config enables.
@@ -139,6 +139,9 @@ class AuditLogConfig(_messages.Message):
   Fields:
     exemptedMembers: Specifies the identities that do not cause logging for
       this type of permission. Follows the same format of Binding.members.
+    ignoreChildExemptions: Specifies whether principals can be exempted for
+      the same LogType in lower-level resource policies. If true, any lower-
+      level exemptions will be ignored.
     logType: The log type that this config enables.
   """
 
@@ -157,7 +160,8 @@ class AuditLogConfig(_messages.Message):
     DATA_READ = 3
 
   exemptedMembers = _messages.StringField(1, repeated=True)
-  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+  ignoreChildExemptions = _messages.BooleanField(2)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
 
 
 class Basis(_messages.Message):
@@ -190,9 +194,9 @@ class Binding(_messages.Message):
       with or without a Google account.  * `allAuthenticatedUsers`: A special
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
-      represents a specific Google    account. For example, `alice@gmail.com`
-      .   * `serviceAccount:{emailid}`: An email address that represents a
-      service    account. For example, `my-other-
+      represents a specific Google    account. For example,
+      `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
+      that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
       * `domain:{domain}`: The G Suite domain (primary) that represents all
@@ -625,6 +629,7 @@ class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
       DEPLOYABLE: <no description>
       DISCOVERY: <no description>
       ATTESTATION_AUTHORITY: <no description>
+      UPGRADE: <no description>
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -634,6 +639,7 @@ class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
     DEPLOYABLE = 5
     DISCOVERY = 6
     ATTESTATION_AUTHORITY = 7
+    UPGRADE = 8
 
   filter = _messages.StringField(1)
   kind = _messages.EnumField('KindValueValuesEnum', 2)
@@ -1101,6 +1107,7 @@ class Discovery(_messages.Message):
         a resource.
       ATTESTATION_AUTHORITY: This represents a logical "role" that can attest
         to artifacts.
+      UPGRADE: This represents an available software upgrade.
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -1110,6 +1117,7 @@ class Discovery(_messages.Message):
     DEPLOYABLE = 5
     DISCOVERY = 6
     ATTESTATION_AUTHORITY = 7
+    UPGRADE = 8
 
   analysisKind = _messages.EnumField('AnalysisKindValueValuesEnum', 1)
 
@@ -1220,7 +1228,26 @@ class Fingerprint(_messages.Message):
 
 
 class GetIamPolicyRequest(_messages.Message):
-  r"""Request message for `GetIamPolicy` method."""
+  r"""Request message for `GetIamPolicy` method.
+
+  Fields:
+    options: OPTIONAL: A `GetPolicyOptions` object for specifying options to
+      `GetIamPolicy`. This field is only used by Cloud IAM.
+  """
+
+  options = _messages.MessageField('GetPolicyOptions', 1)
+
+
+class GetPolicyOptions(_messages.Message):
+  r"""Encapsulates settings provided to GetIamPolicy.
+
+  Fields:
+    requestedPolicyVersion: Optional. The policy format version to be
+      returned. Acceptable values are 0 and 1. If the value is 0, or the field
+      is omitted, policy format version 1 will be returned.
+  """
+
+  requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class GetVulnzOccurrencesSummaryResponse(_messages.Message):
@@ -1589,6 +1616,7 @@ class Note(_messages.Message):
     shortDescription: A one sentence description of this `Note`.
     updateTime: Output only. The time this note was last updated. This field
       can be used as a filter in list requests.
+    upgrade: A note describing an upgrade.
     vulnerabilityType: A package vulnerability type of note.
   """
 
@@ -1609,6 +1637,7 @@ class Note(_messages.Message):
         a resource.
       ATTESTATION_AUTHORITY: This represents a logical "role" that can attest
         to artifacts.
+      UPGRADE: This represents an available software upgrade.
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -1618,6 +1647,7 @@ class Note(_messages.Message):
     DEPLOYABLE = 5
     DISCOVERY = 6
     ATTESTATION_AUTHORITY = 7
+    UPGRADE = 8
 
   attestationAuthority = _messages.MessageField('AttestationAuthority', 1)
   baseImage = _messages.MessageField('Basis', 2)
@@ -1633,7 +1663,8 @@ class Note(_messages.Message):
   relatedUrl = _messages.MessageField('RelatedUrl', 12, repeated=True)
   shortDescription = _messages.StringField(13)
   updateTime = _messages.StringField(14)
-  vulnerabilityType = _messages.MessageField('VulnerabilityType', 15)
+  upgrade = _messages.MessageField('UpgradeNote', 15)
+  vulnerabilityType = _messages.MessageField('VulnerabilityType', 16)
 
 
 class Occurrence(_messages.Message):
@@ -1671,6 +1702,7 @@ class Occurrence(_messages.Message):
       https://gcr.io/project/image@sha256:foo This field can be used as a
       filter in list requests.
     updateTime: Output only. The time this `Occurrence` was last updated.
+    upgrade: Describes an upgrade.
     vulnerabilityDetails: Details of a security vulnerability note.
   """
 
@@ -1691,6 +1723,7 @@ class Occurrence(_messages.Message):
         a resource.
       ATTESTATION_AUTHORITY: This represents a logical "role" that can attest
         to artifacts.
+      UPGRADE: This represents an available software upgrade.
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -1700,6 +1733,7 @@ class Occurrence(_messages.Message):
     DEPLOYABLE = 5
     DISCOVERY = 6
     ATTESTATION_AUTHORITY = 7
+    UPGRADE = 8
 
   attestation = _messages.MessageField('Attestation', 1)
   buildDetails = _messages.MessageField('BuildDetails', 2)
@@ -1715,7 +1749,8 @@ class Occurrence(_messages.Message):
   resource = _messages.MessageField('Resource', 12)
   resourceUrl = _messages.StringField(13)
   updateTime = _messages.StringField(14)
-  vulnerabilityDetails = _messages.MessageField('VulnerabilityDetails', 15)
+  upgrade = _messages.MessageField('UpgradeOccurrence', 15)
+  vulnerabilityDetails = _messages.MessageField('VulnerabilityDetails', 16)
 
 
 class Operation(_messages.Message):
@@ -1949,7 +1984,7 @@ class Policy(_messages.Message):
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten blindly.
+      the existing policy is overwritten.
     version: Deprecated.
   """
 
@@ -2310,6 +2345,64 @@ class UpdateOperationRequest(_messages.Message):
 
   operation = _messages.MessageField('Operation', 1)
   updateMask = _messages.StringField(2)
+
+
+class UpgradeDistribution(_messages.Message):
+  r"""The Upgrade Distribution represents metadata about the Upgrade for each
+  operating system (CPE). Some distributions have additional metadata around
+  updates, classifying them into various categories and severities.
+
+  Fields:
+    classification: The operating system classification of this Upgrade, as
+      specified by the upstream operating system upgrade feed.
+    cpeUri: Required - The specific operating system this metadata applies to.
+      See https://cpe.mitre.org/specification/.
+    cve: The cve that would be resolved by this upgrade.
+    severity: The severity as specified by the upstream operating system.
+  """
+
+  classification = _messages.StringField(1)
+  cpeUri = _messages.StringField(2)
+  cve = _messages.StringField(3, repeated=True)
+  severity = _messages.StringField(4)
+
+
+class UpgradeNote(_messages.Message):
+  r"""An Upgrade Note represents a potential upgrade of a package to a given
+  version. For each package version combination (i.e. bash 4.0, bash 4.1, bash
+  4.1.2), there will be a Upgrade Note.
+
+  Fields:
+    distributions: Metadata about the upgrade for each specific operating
+      system.
+    package: Required - The package this Upgrade is for.
+    version: Required - The version of the package in machine + human readable
+      form.
+  """
+
+  distributions = _messages.MessageField('UpgradeDistribution', 1, repeated=True)
+  package = _messages.StringField(2)
+  version = _messages.MessageField('Version', 3)
+
+
+class UpgradeOccurrence(_messages.Message):
+  r"""An Upgrade Occurrence represents that a specific resource_url could
+  install a specific upgrade. This presence is supplied via local sources
+  (i.e. it is present in the mirror and the running system has noticed its
+  availability).
+
+  Fields:
+    distribution: Metadata about the upgrade for available for the specific
+      operating system for the resource_url. This allows efficient filtering,
+      as well as making it easier to use the occurrence.
+    package: Required - The package this Upgrade is for.
+    parsedVersion: Required - The version of the package in a machine + human
+      readable form.
+  """
+
+  distribution = _messages.MessageField('UpgradeDistribution', 1)
+  package = _messages.StringField(2)
+  parsedVersion = _messages.MessageField('Version', 3)
 
 
 class Version(_messages.Message):

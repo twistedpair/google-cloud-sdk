@@ -226,16 +226,13 @@ def GetDnsPeeringArgs():
   return peering_group
 
 
-def GetForwardingTargetsGroupArg(parser):
-  parent_group = parser.add_group(
-      'Managed Zone Resolving.', mutex=True)
-  forwarding_group = parent_group.add_group('Target name servers group.')
-  forwarding_group.add_argument(
+def GetForwardingTargetsArg():
+  return base.Argument(
       '--forwarding-targets',
       type=arg_parsers.ArgList(),
       metavar='IP_ADDRESSES',
       help=('List of IPv4 addresses of target name servers that the zone '
-            'will forward queries to. Ignored for `public` visibility. '
+            'will forward queries to. Ignored for `public` visibility.'
             'Non-RFC1918 addresses will forward to the target through the '
             'Internet. RFC1918 addresses will forward through the VPC.'))
 

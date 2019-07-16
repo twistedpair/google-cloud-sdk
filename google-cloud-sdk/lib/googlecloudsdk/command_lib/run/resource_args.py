@@ -108,7 +108,7 @@ class DefaultFallthrough(deps.Fallthrough):
         'Otherwise, defaults to project ID.')
 
   def _Call(self, parsed_args):
-    if flags.IsGKE(parsed_args):
+    if flags.IsGKE(parsed_args) or flags.IsKubernetes(parsed_args):
       return 'default'
     elif not (getattr(parsed_args, 'project', None) or
               properties.VALUES.core.project.Get()):
@@ -124,8 +124,8 @@ class DefaultFallthrough(deps.Fallthrough):
 def NamespaceAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='namespace',
-      help_text='Specific to Cloud Run on Kubernetes Engine: '
-      'Kubernetes namespace for the {resource}',
+      help_text='Specific to Cloud Run on GKE: '
+      'Kubernetes namespace for the {resource}.',
       fallthroughs=[
           deps.PropertyFallthrough(properties.VALUES.run.namespace),
           DefaultFallthrough(),
@@ -238,9 +238,8 @@ class ClusterPromptFallthrough(PromptFallthrough):
 def ClusterAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='cluster',
-      help_text='Specific to Cloud Run on Kubernetes Engine: '
-      'Name of the Kubernetes Engine cluster to use. Alternatively, set the'
-      ' property [run/cluster].',
+      help_text='Name of the Kubernetes Engine cluster to use. '
+      'Alternatively, set the property [run/cluster].',
       fallthroughs=[
           deps.PropertyFallthrough(properties.VALUES.run.cluster),
           ClusterPromptFallthrough()
@@ -294,9 +293,8 @@ class ClusterLocationPromptFallthrough(PromptFallthrough):
 def ClusterLocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='location',
-      help_text='Specific to Cloud Run on Kubernetes Engine: '
-      'Zone in which the {resource} is located. Alternatively, set the '
-      'property [run/cluster_location].',
+      help_text='Zone in which the {resource} is located. '
+      'Alternatively, set the property [run/cluster_location].',
       fallthroughs=[
           deps.PropertyFallthrough(properties.VALUES.run.cluster_location),
           ClusterLocationPromptFallthrough()
@@ -395,7 +393,6 @@ CLOUD_RUN_LOCATION_PRESENTATION = presentation_specs.ResourcePresentationSpec(
 CLUSTER_PRESENTATION = presentation_specs.ResourcePresentationSpec(
     '--cluster',
     GetClusterResourceSpec(),
-    'Specific to Cloud Run on Kubernetes Engine: '
     'Kubernetes Engine cluster to connect to.',
     required=False,
     prefixes=True)

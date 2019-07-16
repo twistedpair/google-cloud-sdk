@@ -32,7 +32,6 @@ import sys
 import textwrap
 
 from googlecloudsdk.api_lib.storage import storage_util
-from googlecloudsdk.command_lib.ml_engine import flags
 from googlecloudsdk.command_lib.ml_engine import uploads
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
@@ -48,11 +47,6 @@ from setuptools import setup
 if __name__ == '__main__':
     setup(name='{package_name}', packages=['{package_name}'])
 """
-
-
-_NO_PACKAGES_ERROR_MSG = (
-    'If `--package-path` is not specified, at least one Python package '
-    'must be specified via `--packages`.')
 
 
 class UploadFailureError(exceptions.Error):
@@ -482,8 +476,7 @@ def _UploadFilesByPath(paths, staging_location):
                              staging_location.name)
 
 
-def UploadPythonPackages(packages=(), package_path=None, staging_location=None,
-                         supports_container_training=False):
+def UploadPythonPackages(packages=(), package_path=None, staging_location=None):
   """Uploads Python packages (if necessary), building them as-specified.
 
   An AI Platform job needs one or more Python packages to run. These Python
@@ -523,9 +516,6 @@ def UploadPythonPackages(packages=(), package_path=None, staging_location=None,
     staging_location: storage_util.ObjectReference. Cloud Storage prefix to
       which archives are uploaded. Not necessary if only remote packages are
       given.
-    supports_container_training: bool, if this release track supports container
-      training. If containiner training is requested then uploads are not
-      required.
 
   Returns:
     list of str. Fully qualified Cloud Storage URLs (`gs://..`) from uploaded
@@ -559,9 +549,6 @@ def UploadPythonPackages(packages=(), package_path=None, staging_location=None,
     # directory to still be around
     remote_paths.extend(_UploadFilesByPath(local_paths, staging_location))
 
-  # For custom container training, uploads are not required.
-  if not remote_paths and not supports_container_training:
-    raise flags.ArgumentError(_NO_PACKAGES_ERROR_MSG)
   return remote_paths
 
 

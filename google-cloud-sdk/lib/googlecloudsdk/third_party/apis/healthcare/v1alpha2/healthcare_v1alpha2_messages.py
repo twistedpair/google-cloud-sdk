@@ -22,7 +22,7 @@ class Annotation(_messages.Message):
       {project_id}/locations/{location_id}/datasets/{dataset_id}/annotationSto
       res/{annotation_store_id}/annotations/{annotation_id}`.
     resourceAnnotation: Annotations for resource, e.g., classification tags.
-    textAnnotation: Annotations for sentitive texts, e.g., range of such
+    textAnnotation: Annotations for sensitive texts, e.g., range of such
       texts.
   """
 
@@ -117,16 +117,16 @@ class AuditConfig(_messages.Message):
   multiple AuditConfigs:      {       "audit_configs": [         {
   "service": "allServices"           "audit_log_configs": [             {
   "log_type": "DATA_READ",               "exempted_members": [
-  "user:foo@gmail.com"               ]             },             {
+  "user:jose@example.com"               ]             },             {
   "log_type": "DATA_WRITE",             },             {
   "log_type": "ADMIN_READ",             }           ]         },         {
-  "service": "fooservice.googleapis.com"           "audit_log_configs": [
+  "service": "sampleservice.googleapis.com"           "audit_log_configs": [
   {               "log_type": "DATA_READ",             },             {
   "log_type": "DATA_WRITE",               "exempted_members": [
-  "user:bar@gmail.com"               ]             }           ]         }
-  ]     }  For fooservice, this policy enables DATA_READ, DATA_WRITE and
-  ADMIN_READ logging. It also exempts foo@gmail.com from DATA_READ logging,
-  and bar@gmail.com from DATA_WRITE logging.
+  "user:aliya@example.com"               ]             }           ]         }
+  ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
+  ADMIN_READ logging. It also exempts jose@example.com from DATA_READ logging,
+  and aliya@example.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -142,10 +142,10 @@ class AuditConfig(_messages.Message):
 class AuditLogConfig(_messages.Message):
   r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
-  "exempted_members": [             "user:foo@gmail.com"           ]
+  "exempted_members": [             "user:jose@example.com"           ]
   },         {           "log_type": "DATA_WRITE",         }       ]     }
   This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
-  foo@gmail.com from DATA_READ logging.
+  jose@example.com from DATA_READ logging.
 
   Enums:
     LogTypeValueValuesEnum: The log type that this config enables.
@@ -153,6 +153,9 @@ class AuditLogConfig(_messages.Message):
   Fields:
     exemptedMembers: Specifies the identities that do not cause logging for
       this type of permission. Follows the same format of Binding.members.
+    ignoreChildExemptions: Specifies whether principals can be exempted for
+      the same LogType in lower-level resource policies. If true, any lower-
+      level exemptions will be ignored.
     logType: The log type that this config enables.
   """
 
@@ -171,7 +174,8 @@ class AuditLogConfig(_messages.Message):
     DATA_READ = 3
 
   exemptedMembers = _messages.StringField(1, repeated=True)
-  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+  ignoreChildExemptions = _messages.BooleanField(2)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
 
 
 class Binding(_messages.Message):
@@ -188,9 +192,9 @@ class Binding(_messages.Message):
       with or without a Google account.  * `allAuthenticatedUsers`: A special
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
-      represents a specific Google    account. For example, `alice@gmail.com`
-      .   * `serviceAccount:{emailid}`: An email address that represents a
-      service    account. For example, `my-other-
+      represents a specific Google    account. For example,
+      `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
+      that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
       * `domain:{domain}`: The G Suite domain (primary) that represents all
@@ -351,12 +355,14 @@ class DeidentifySummary(_messages.Message):
   r"""Contains a detailed summary of the Deidentify operation.
 
   Fields:
+    failureResourceCount: Number of resources that processing failed for.
     successResourceCount: Number of resources successfully processed.
     successStoreCount: Number of stores successfully processed.
   """
 
-  successResourceCount = _messages.IntegerField(1)
-  successStoreCount = _messages.IntegerField(2)
+  failureResourceCount = _messages.IntegerField(1)
+  successResourceCount = _messages.IntegerField(2)
+  successStoreCount = _messages.IntegerField(3)
 
 
 class Detail(_messages.Message):
@@ -653,6 +659,10 @@ class FhirStore(_messages.Message):
       /service-accounts). Some lag (typically on the order of dozens of
       seconds) is expected before the results show up in the streaming
       destination.
+    subscriptionConfig: Configuration of FHIR Subscription:
+      https://www.hl7.org/fhir/subscription.html.
+    validationConfig: Configuration for how incoming FHIR resources will be
+      validated against configured profiles.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -694,6 +704,8 @@ class FhirStore(_messages.Message):
   name = _messages.StringField(6)
   notificationConfig = _messages.MessageField('NotificationConfig', 7)
   streamConfigs = _messages.MessageField('StreamConfig', 8, repeated=True)
+  subscriptionConfig = _messages.MessageField('SubscriptionConfig', 9)
+  validationConfig = _messages.MessageField('ValidationConfig', 10)
 
 
 class FieldMetadata(_messages.Message):
@@ -751,7 +763,26 @@ class Finding(_messages.Message):
 
 
 class GetIamPolicyRequest(_messages.Message):
-  r"""Request message for `GetIamPolicy` method."""
+  r"""Request message for `GetIamPolicy` method.
+
+  Fields:
+    options: OPTIONAL: A `GetPolicyOptions` object for specifying options to
+      `GetIamPolicy`. This field is only used by Cloud IAM.
+  """
+
+  options = _messages.MessageField('GetPolicyOptions', 1)
+
+
+class GetPolicyOptions(_messages.Message):
+  r"""Encapsulates settings provided to GetIamPolicy.
+
+  Fields:
+    requestedPolicyVersion: Optional. The policy format version to be
+      returned. Acceptable values are 0 and 1. If the value is 0, or the field
+      is omitted, policy format version 1 will be returned.
+  """
+
+  requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudHealthcareV1alpha2DicomBigQueryDestination(_messages.Message):
@@ -1565,12 +1596,16 @@ class HealthcareProjectsLocationsDatasetsDicomStoresGetIamPolicyRequest(_message
   object.
 
   Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Acceptable values are 0 and 1. If the value is 0, or the field
+      is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
   """
 
-  resource = _messages.StringField(1, required=True)
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsDicomStoresGetRequest(_messages.Message):
@@ -1960,12 +1995,16 @@ class HealthcareProjectsLocationsDatasetsFhirStoresGetIamPolicyRequest(_messages
   object.
 
   Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Acceptable values are 0 and 1. If the value is 0, or the field
+      is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
   """
 
-  resource = _messages.StringField(1, required=True)
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresGetRequest(_messages.Message):
@@ -2036,12 +2075,16 @@ class HealthcareProjectsLocationsDatasetsFhirStoresSecurityLabelsGetIamPolicyReq
   yRequest object.
 
   Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Acceptable values are 0 and 1. If the value is 0, or the field
+      is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
   """
 
-  resource = _messages.StringField(1, required=True)
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresSecurityLabelsSetIamPolicyRequest(_messages.Message):
@@ -2096,12 +2139,16 @@ class HealthcareProjectsLocationsDatasetsGetIamPolicyRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsGetIamPolicyRequest object.
 
   Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Acceptable values are 0 and 1. If the value is 0, or the field
+      is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
   """
 
-  resource = _messages.StringField(1, required=True)
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsGetRequest(_messages.Message):
@@ -2145,12 +2192,16 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresGetIamPolicyRequest(_message
   object.
 
   Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Acceptable values are 0 and 1. If the value is 0, or the field
+      is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
   """
 
-  resource = _messages.StringField(1, required=True)
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsHl7V2StoresGetRequest(_messages.Message):
@@ -2266,9 +2317,9 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesListRequest(_message
       from the MSH-9 segment; for example `NOT message_type = "ADT"` *
       `send_date` or `sendDate`, the YYYY-MM-DD date the message was sent in
       the dataset's time_zone, from the MSH-7 segment; for example `send_date
-      < "2017-01-02"` *  `send_time`, the timestamp of when the message was
-      sent, using the RFC3339 time format for comparisons, from the MSH-7
-      segment; for example `send_time < "2017-01-02T00:00:00-05:00"` *
+      < "2017-01-02"` *  `send_time`, the timestamp when the message was sent,
+      using the RFC3339 time format for comparisons, from the MSH-7 segment;
+      for example `send_time < "2017-01-02T00:00:00-05:00"` *
       `send_facility`, the care center that the message came from, from the
       MSH-4 segment; for example `send_facility = "ABC"` *  `HL7RegExp(expr)`,
       which does regular expression matching of `expr` against the message
@@ -3291,7 +3342,7 @@ class Policy(_messages.Message):
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten blindly.
+      the existing policy is overwritten.
     version: Deprecated.
   """
 
@@ -3654,6 +3705,41 @@ class StreamConfig(_messages.Message):
   resourceTypes = _messages.StringField(2, repeated=True)
 
 
+class SubscriptionConfig(_messages.Message):
+  r"""Configuration of FHIR Subscription:
+  https://www.hl7.org/fhir/subscription.html.
+
+  Fields:
+    allowedRestHookEndpoints: REST hook endpoints that are allowed to receive
+      subscription notifications. The create or update operation on a FHIR
+      Subscription resource will fail if the FHIR Subscription resource
+      contains a REST hook endpoint that is not in this list. A subscription
+      notification push will fail if the FHIR Subscription resource contains a
+      REST hook endpoint that is not in this list. The REST hook endpoint in a
+      subscription resource will be compared with the endpoints in this list
+      by exact matching. Users must verify their ownership of the domain of an
+      endpoint before adding it to this list. To verify domain ownership, go
+      to https://search.google.com/search-console/welcome.
+  """
+
+  allowedRestHookEndpoints = _messages.MessageField('SubscriptionRestHookEndpoint', 1, repeated=True)
+
+
+class SubscriptionRestHookEndpoint(_messages.Message):
+  r"""REST hook endpoint of FHIR Subscription.
+
+  Fields:
+    allowResourcePayload: Whether this endpoint is allowed to receive full
+      resource payloads. If set to false, the subscription notificiation
+      sending to this endpoint with full resource payload will be blocked.
+    endpoint: Address of the REST hook endpoint. It must be a valid HTTPS URL
+      with TLS certificate.
+  """
+
+  allowResourcePayload = _messages.BooleanField(1)
+  endpoint = _messages.StringField(2)
+
+
 class TagFilterList(_messages.Message):
   r"""List of tags to be filtered.
 
@@ -3704,6 +3790,29 @@ class TextConfig(_messages.Message):
 
   experimentalConfig = _messages.StringField(1)
   transformations = _messages.MessageField('InfoTypeTransformation', 2, repeated=True)
+
+
+class ValidationConfig(_messages.Message):
+  r"""This structure contains the configuration for FHIR profiles and
+  validation.
+
+  Fields:
+    disableProfileValidation: Whether profile validation should be disabled
+      for this FHIR store. Set this to true to disable checking incoming
+      resources for conformance against StructureDefinitions in this FHIR
+      store.
+    enabledImplementationGuides: A list of ImplementationGuide IDs in this
+      FHIR store that will be used to configure which profiles are used for
+      validation. For example, to enable an implementation guide with ID 1 set
+      `enabled_implementation_guides` to `["1"]`. If
+      `enabled_implementation_guides` is empty or omitted then incoming
+      resources will only be required to conform to the base FHIR profiles.
+      Otherwise, a resource must conform to at least one profile listed in the
+      `global` property of one of the enabled ImplementationGuides.
+  """
+
+  disableProfileValidation = _messages.BooleanField(1)
+  enabledImplementationGuides = _messages.StringField(2, repeated=True)
 
 
 class Vertex(_messages.Message):

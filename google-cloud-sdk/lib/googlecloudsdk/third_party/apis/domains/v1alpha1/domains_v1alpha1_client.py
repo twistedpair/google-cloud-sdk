@@ -36,6 +36,7 @@ class DomainsV1alpha1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_registrations_authorizationCode = self.ProjectsLocationsRegistrationsAuthorizationCodeService(self)
     self.projects_locations_registrations = self.ProjectsLocationsRegistrationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -115,6 +116,44 @@ is the parent resource, without the operations collection id.
         supports_download=False,
     )
 
+  class ProjectsLocationsRegistrationsAuthorizationCodeService(base_api.BaseApiService):
+    """Service class for the projects_locations_registrations_authorizationCode resource."""
+
+    _NAME = u'projects_locations_registrations_authorizationCode'
+
+    def __init__(self, client):
+      super(DomainsV1alpha1.ProjectsLocationsRegistrationsAuthorizationCodeService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Reset(self, request, global_params=None):
+      r"""Resets the Authorization Code of the registration.
+Can only be called after 60 days have elapsed since initial registration.
+
+      Args:
+        request: (DomainsProjectsLocationsRegistrationsAuthorizationCodeResetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AuthorizationCode) The response message.
+      """
+      config = self.GetMethodConfig('Reset')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Reset.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}/authorizationCode:reset',
+        http_method=u'POST',
+        method_id=u'domains.projects.locations.registrations.authorizationCode.reset',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}/authorizationCode:reset',
+        request_field=u'resetAuthorizationCodeRequest',
+        request_type_name=u'DomainsProjectsLocationsRegistrationsAuthorizationCodeResetRequest',
+        response_type_name=u'AuthorizationCode',
+        supports_download=False,
+    )
+
   class ProjectsLocationsRegistrationsService(base_api.BaseApiService):
     """Service class for the projects_locations_registrations resource."""
 
@@ -126,7 +165,7 @@ is the parent resource, without the operations collection id.
           }
 
     def CheckAvailability(self, request, global_params=None):
-      r"""Checks for availability of the given domain_name.
+      r"""Checks for availability of the given domain name.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsCheckAvailabilityRequest) input message
@@ -153,7 +192,8 @@ is the parent resource, without the operations collection id.
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Registration in a given project and location.
+      r"""Creates a new Registration, i.e. attempts to register the domain, in a.
+given project and location
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsCreateRequest) input message
@@ -181,7 +221,7 @@ is the parent resource, without the operations collection id.
 
     def Delete(self, request, global_params=None):
       r"""Deletes a single Registration.
-Can only be called on Registrations in state TRANSFERRED with expire_time
+Can only be called on Registrations in state DETACHED with expire_time
 in the past.
 
       Args:
@@ -209,7 +249,8 @@ in the past.
     )
 
     def Detach(self, request, global_params=None):
-      r"""Detach a Registration from Cloud Domains management.
+      r"""Detach a Registration from Cloud Domains management, leaving it registered.
+at Google Domains registrar.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsDetachRequest) input message
@@ -264,6 +305,7 @@ in the past.
 
     def GetAuthorizationCode(self, request, global_params=None):
       r"""Gets Authorization Code of a Registration.
+Can only be called after 60 days have elapsed since initial registration.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsGetAuthorizationCodeRequest) input message
@@ -310,7 +352,7 @@ set.
         method_id=u'domains.projects.locations.registrations.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1alpha1/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'DomainsProjectsLocationsRegistrationsGetIamPolicyRequest',

@@ -58,8 +58,7 @@ class RegistrationsClient(object):
              name_servers,
              registrant_contact,
              whois_privacy,
-             registration_price,
-             renewal_price,
+             yearly_price,
              hsts_notice_accepted=False,
              labels=None,
              validate_only=False):
@@ -73,8 +72,8 @@ class RegistrationsClient(object):
       registrant_contact: WhoisContact that specifies registrant contact
         information.
       whois_privacy: WhoisPrivacyEnum that specifies Whois privacy setting.
-      registration_price: price for the domain registration for the first year.
-      renewal_price: price for the domain registration for subsequent years.
+      yearly_price: price for the domain registration and its cost for the
+      following years.
       hsts_notice_accepted: bool, Whether HSTS notice was presented & accepted.
       labels: Unified GCP Labels for the resource.
       validate_only: If set to true, performs only validation, without creating.
@@ -104,8 +103,7 @@ class RegistrationsClient(object):
             domainName=domain,
             dnsConfig=dns_config,
             whoisConfig=whois_config,
-            registrationPrice=registration_price,
-            renewalPrice=renewal_price,
+            yearlyPrice=yearly_price,
             notices=notices,
             labels=labels))
 

@@ -30,8 +30,8 @@ table(
 _LOCATION_URI_FUNC = lambda r: secrets_args.ParseLocationRef(r.name).SelfLink()
 
 _SECRET_DATA = """
-table(
-  payload.data.decode(base64).decode(utf8):label=DATA
+value(
+  payload.data.decode(base64).decode(utf8)
 )
 """
 
