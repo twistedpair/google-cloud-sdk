@@ -704,7 +704,8 @@ set.
       r"""Imports data into the DICOM store by copying it from the specified source.
 For errors, the Operation will be populated with error details (in the form
 of ImportDicomDataErrorDetails in error.details), which will hold
-finer-grained error information.
+finer-grained error information. Errors are also logged to Stackdriver
+(see [Viewing logs](/healthcare/docs/how-tos/stackdriver-logging)).
 The metadata field type is
 OperationMetadata.
 

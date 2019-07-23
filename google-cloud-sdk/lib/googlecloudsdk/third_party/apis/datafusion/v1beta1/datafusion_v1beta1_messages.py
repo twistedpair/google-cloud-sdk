@@ -667,7 +667,7 @@ class Instance(_messages.Message):
       of this Data Fusion instance if available.
     type: Required. Instance type.
     updateTime: Output only. The time the instance was last updated.
-    version: Output only. Current version of the Data Fusion.
+    version: Current version of the Data Fusion. Only specifiable in Update.
     zone: Name of the zone in which the Data Fusion instance will be created.
   """
 
@@ -929,7 +929,10 @@ class NetworkConfig(_messages.Message):
       Fusion instance nodes. This range must not overlap with any other ranges
       used in the Data Fusion instance network.
     network: Name of the network in the customer project with which the Tenant
-      Project will be peered for executing pipelines.
+      Project will be peered for executing pipelines. In case of shared VPC
+      where the network resides in another host project the network should
+      specified in the form of projects/{host-project-
+      id}/global/networks/{network}
   """
 
   ipAllocation = _messages.StringField(1)

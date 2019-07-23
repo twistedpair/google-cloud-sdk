@@ -1083,7 +1083,7 @@
         "contentStructure": {
           "description": "The content structure in the source location. If not specified, the server\ntreats the input source files as BUNDLE.",
           "enumDescriptions": [
-            "",
+            "Content structure is not specified; defaults to BUNDLE.",
             "The source file contains one or more lines of newline-delimited JSON\n(ndjson). Each line is a bundle, which contains one or more resources.\nSet the bundle type to `history` to import resource versions.",
             "The source file contains one or more lines of newline-delimited JSON\n(ndjson). Each line is a single resource."
           ],
@@ -2032,7 +2032,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Imports data into the DICOM store by copying it from the specified source.\nFor errors, the Operation will be populated with error details (in the form\nof ImportDicomDataErrorDetails in error.details), which will hold\nfiner-grained error information.\nThe metadata field type is\nOperationMetadata."
+                      "description": "Imports data into the DICOM store by copying it from the specified source.\nFor errors, the Operation will be populated with error details (in the form\nof ImportDicomDataErrorDetails in error.details), which will hold\nfiner-grained error information. Errors are also logged to Stackdriver\n(see [Viewing logs](\/healthcare\/docs\/how-tos\/stackdriver-logging)).\nThe metadata field type is\nOperationMetadata."
                     },
                     "export": {
                       "id": "healthcare.projects.locations.datasets.dicomStores.export",

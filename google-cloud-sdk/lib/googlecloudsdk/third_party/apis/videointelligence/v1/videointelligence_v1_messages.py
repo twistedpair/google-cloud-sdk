@@ -613,6 +613,7 @@ class GoogleCloudVideointelligenceV1VideoAnnotationResults(_messages.Message):
       Storage](https://cloud.google.com/storage/).
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
+    segment: Video segment on which the annotation is run.
     segmentLabelAnnotations: Topical label annotations on video level or user
       specified segment level. There is exactly one element for each unique
       label.
@@ -631,11 +632,12 @@ class GoogleCloudVideointelligenceV1VideoAnnotationResults(_messages.Message):
   frameLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 3, repeated=True)
   inputUri = _messages.StringField(4)
   objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1ObjectTrackingAnnotation', 5, repeated=True)
-  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 6, repeated=True)
-  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 7, repeated=True)
-  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 8, repeated=True)
-  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1SpeechTranscription', 9, repeated=True)
-  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1TextAnnotation', 10, repeated=True)
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 6)
+  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 7, repeated=True)
+  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 8, repeated=True)
+  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 9, repeated=True)
+  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1SpeechTranscription', 10, repeated=True)
+  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1TextAnnotation', 11, repeated=True)
 
 
 class GoogleCloudVideointelligenceV1VideoContext(_messages.Message):
@@ -1074,6 +1076,7 @@ class GoogleCloudVideointelligenceV1beta2VideoAnnotationResults(_messages.Messag
       Storage](https://cloud.google.com/storage/).
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
+    segment: Video segment on which the annotation is run.
     segmentLabelAnnotations: Topical label annotations on video level or user
       specified segment level. There is exactly one element for each unique
       label.
@@ -1092,11 +1095,12 @@ class GoogleCloudVideointelligenceV1beta2VideoAnnotationResults(_messages.Messag
   frameLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 3, repeated=True)
   inputUri = _messages.StringField(4)
   objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2ObjectTrackingAnnotation', 5, repeated=True)
-  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 6, repeated=True)
-  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2VideoSegment', 7, repeated=True)
-  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 8, repeated=True)
-  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1beta2SpeechTranscription', 9, repeated=True)
-  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2TextAnnotation', 10, repeated=True)
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1beta2VideoSegment', 6)
+  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 7, repeated=True)
+  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2VideoSegment', 8, repeated=True)
+  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 9, repeated=True)
+  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1beta2SpeechTranscription', 10, repeated=True)
+  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2TextAnnotation', 11, repeated=True)
 
 
 class GoogleCloudVideointelligenceV1beta2VideoSegment(_messages.Message):
@@ -1511,6 +1515,7 @@ class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationResults(_messages.Mess
       Storage](https://cloud.google.com/storage/).
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
+    segment: Video segment on which the annotation is run.
     segmentLabelAnnotations: Topical label annotations on video level or user
       specified segment level. There is exactly one element for each unique
       label.
@@ -1529,11 +1534,12 @@ class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationResults(_messages.Mess
   frameLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 3, repeated=True)
   inputUri = _messages.StringField(4)
   objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1ObjectTrackingAnnotation', 5, repeated=True)
-  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 6, repeated=True)
-  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoSegment', 7, repeated=True)
-  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 8, repeated=True)
-  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1SpeechTranscription', 9, repeated=True)
-  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1TextAnnotation', 10, repeated=True)
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoSegment', 6)
+  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 7, repeated=True)
+  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoSegment', 8, repeated=True)
+  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 9, repeated=True)
+  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1SpeechTranscription', 10, repeated=True)
+  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1TextAnnotation', 11, repeated=True)
 
 
 class GoogleCloudVideointelligenceV1p1beta1VideoSegment(_messages.Message):
@@ -1948,6 +1954,7 @@ class GoogleCloudVideointelligenceV1p2beta1VideoAnnotationResults(_messages.Mess
       Storage](https://cloud.google.com/storage/).
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
+    segment: Video segment on which the annotation is run.
     segmentLabelAnnotations: Topical label annotations on video level or user
       specified segment level. There is exactly one element for each unique
       label.
@@ -1966,11 +1973,12 @@ class GoogleCloudVideointelligenceV1p2beta1VideoAnnotationResults(_messages.Mess
   frameLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 3, repeated=True)
   inputUri = _messages.StringField(4)
   objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1ObjectTrackingAnnotation', 5, repeated=True)
-  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 6, repeated=True)
-  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoSegment', 7, repeated=True)
-  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 8, repeated=True)
-  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1SpeechTranscription', 9, repeated=True)
-  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1TextAnnotation', 10, repeated=True)
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoSegment', 6)
+  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 7, repeated=True)
+  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoSegment', 8, repeated=True)
+  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 9, repeated=True)
+  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1SpeechTranscription', 10, repeated=True)
+  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1TextAnnotation', 11, repeated=True)
 
 
 class GoogleCloudVideointelligenceV1p2beta1VideoSegment(_messages.Message):
@@ -2498,6 +2506,7 @@ class GoogleCloudVideointelligenceV1p3beta1VideoAnnotationResults(_messages.Mess
       tracked and recognized in video.
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
+    segment: Video segment on which the annotation is run.
     segmentLabelAnnotations: Topical label annotations on video level or user
       specified segment level. There is exactly one element for each unique
       label.
@@ -2517,11 +2526,12 @@ class GoogleCloudVideointelligenceV1p3beta1VideoAnnotationResults(_messages.Mess
   inputUri = _messages.StringField(4)
   logoRecognitionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1LogoRecognitionAnnotation', 5, repeated=True)
   objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1ObjectTrackingAnnotation', 6, repeated=True)
-  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1LabelAnnotation', 7, repeated=True)
-  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1VideoSegment', 8, repeated=True)
-  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1LabelAnnotation', 9, repeated=True)
-  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1SpeechTranscription', 10, repeated=True)
-  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1TextAnnotation', 11, repeated=True)
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1VideoSegment', 7)
+  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1LabelAnnotation', 8, repeated=True)
+  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1VideoSegment', 9, repeated=True)
+  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1LabelAnnotation', 10, repeated=True)
+  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1SpeechTranscription', 11, repeated=True)
+  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1TextAnnotation', 12, repeated=True)
 
 
 class GoogleCloudVideointelligenceV1p3beta1VideoSegment(_messages.Message):

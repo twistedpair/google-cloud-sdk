@@ -658,6 +658,12 @@ MAP = {
         ),
     },
     'gkehub': {
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.gkehub.v1alpha1',
+            client_classpath='gkehub_v1alpha1_client.GkehubV1alpha1',
+            messages_modulepath='gkehub_v1alpha1_messages',
+            default_version=False
+        ),
         'v1beta1': APIDef(
             class_path='googlecloudsdk.third_party.apis.gkehub.v1beta1',
             client_classpath='gkehub_v1beta1_client.GkehubV1beta1',
@@ -715,6 +721,14 @@ MAP = {
             client_classpath='language_v1beta2_client.LanguageV1beta2',
             messages_modulepath='language_v1beta2_messages',
             default_version=False
+        ),
+    },
+    'lifesciences': {
+        'v2beta': APIDef(
+            class_path='googlecloudsdk.third_party.apis.lifesciences.v2beta',
+            client_classpath='lifesciences_v2beta_client.LifesciencesV2beta',
+            messages_modulepath='lifesciences_v2beta_messages',
+            default_version=True
         ),
     },
     'logging': {

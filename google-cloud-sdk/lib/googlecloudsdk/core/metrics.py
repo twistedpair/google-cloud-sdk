@@ -375,6 +375,7 @@ class _MetricsCollector(object):
     self._clearcut_concord_event_params = {
         'release_version': cloud_sdk_version,
         'console_type': 'CloudSDK',
+        'client_install_id': cid,
     }
     self._clearcut_concord_event_metadata = [
         {'key': param[1], 'value': str(param[2])} for param in common_params]

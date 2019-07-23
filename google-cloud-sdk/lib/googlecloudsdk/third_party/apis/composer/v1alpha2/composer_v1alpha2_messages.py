@@ -490,8 +490,10 @@ class NodeConfig(_messages.Message):
       corresponding to the Cloud Composer location, and propagate that choice
       to both fields. If exactly one of this field and `nodeConfig.location`
       is specified, the location information from the specified field will be
-      propagated to the unspecified field.  If this field is unspecified, the
-      `machineTypeId` defaults to "n1-standard-1".
+      propagated to the unspecified field.  The `machineTypeId` must not be a
+      [shared-core machine type](/compute/docs/machine-types#sharedcore).  If
+      this field is unspecified, the `machineTypeId` defaults to
+      "n1-standard-1".
     network: Optional. The Compute Engine network to be used for machine
       communications, specified as a [relative resource
       name](/apis/design/resource_names#relative_resource_name). For example:

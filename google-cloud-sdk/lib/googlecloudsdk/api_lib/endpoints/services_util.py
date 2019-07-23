@@ -69,10 +69,6 @@ def GetClientInstance():
   return apis.GetClientInstance('servicemanagement', 'v1')
 
 
-def GetEndpointsServiceName():
-  return 'endpoints.googleapis.com'
-
-
 def GetServiceManagementServiceName():
   return 'servicemanagement.googleapis.com'
 

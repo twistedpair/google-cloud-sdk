@@ -375,8 +375,9 @@ class ListLogsResponse(_messages.Message):
   r"""Result returned from ListLogs.
 
   Fields:
-    logNames: A list of log names. For example, "projects/my-project/syslog"
-      or "organizations/123/cloudresourcemanager.googleapis.com%2Factivity".
+    logNames: A list of log names. For example, "projects/my-
+      project/logs/syslog" or
+      "organizations/123/logs/cloudresourcemanager.googleapis.com%2Factivity".
     nextPageToken: If there might be more results than those appearing in this
       response, then nextPageToken is included. To get the next set of
       results, call this method again using the value of nextPageToken as

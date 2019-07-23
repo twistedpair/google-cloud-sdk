@@ -1996,6 +1996,8 @@ class KerberosConfig(_messages.Message):
       certificate.
     kmsKeyUri: Required. The uri of the KMS key used to encrypt various
       sensitive files.
+    realm: Optional. The name of the on-cluster Kerberos realm. If not
+      specified, the uppercased domain of hostnames will be the realm.
     rootPrincipalPasswordUri: Required. The Cloud Storage URI of a KMS
       encrypted file containing the root principal password.
     tgtLifetimeHours: Optional. The lifetime of the ticket granting ticket, in
@@ -2019,10 +2021,11 @@ class KerberosConfig(_messages.Message):
   keystorePasswordUri = _messages.StringField(8)
   keystoreUri = _messages.StringField(9)
   kmsKeyUri = _messages.StringField(10)
-  rootPrincipalPasswordUri = _messages.StringField(11)
-  tgtLifetimeHours = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  truststorePasswordUri = _messages.StringField(13)
-  truststoreUri = _messages.StringField(14)
+  realm = _messages.StringField(11)
+  rootPrincipalPasswordUri = _messages.StringField(12)
+  tgtLifetimeHours = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  truststorePasswordUri = _messages.StringField(14)
+  truststoreUri = _messages.StringField(15)
 
 
 class LifecycleConfig(_messages.Message):

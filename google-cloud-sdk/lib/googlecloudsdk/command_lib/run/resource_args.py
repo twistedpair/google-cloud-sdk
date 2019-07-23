@@ -180,8 +180,7 @@ class ClusterPromptFallthrough(PromptFallthrough):
   def _Prompt(self, parsed_args):
     """Fallthrough to reading the cluster name from an interactive prompt.
 
-    Only prompt for cluster name if cluster location is already defined or we
-    know the intended platform is GKE.
+    Only prompt for cluster name if the user-specified platform is GKE.
 
     Args:
       parsed_args: Namespace, the args namespace.
@@ -189,10 +188,10 @@ class ClusterPromptFallthrough(PromptFallthrough):
     Returns:
       A cluster name string
     """
-    cluster_location = (
-        getattr(parsed_args, 'cluster_location', None) or
-        properties.VALUES.run.cluster_location.Get())
-    if flags.IsGKE(parsed_args) or cluster_location:
+    if flags.IsGKE(parsed_args):
+      cluster_location = (
+          getattr(parsed_args, 'cluster_location', None) or
+          properties.VALUES.run.cluster_location.Get())
       cluster_location_msg = ' in [{}]'.format(
           cluster_location) if cluster_location else ''
 
@@ -256,8 +255,8 @@ class ClusterLocationPromptFallthrough(PromptFallthrough):
   def _Prompt(self, parsed_args):
     """Fallthrough to reading the cluster location from an interactive prompt.
 
-    Only prompt for cluster location name if cluster name is already defined or
-    we know the intended platform is GKE.
+    Only prompt for cluster location if the user-specified platform is GKE
+    and if cluster name is already defined.
 
     Args:
       parsed_args: Namespace, the args namespace.
@@ -268,7 +267,7 @@ class ClusterLocationPromptFallthrough(PromptFallthrough):
     cluster_name = (
         getattr(parsed_args, 'cluster', None) or
         properties.VALUES.run.cluster.Get())
-    if flags.IsGKE(parsed_args) or cluster_name:
+    if flags.IsGKE(parsed_args) and cluster_name:
       clusters = [
           c for c in global_methods.ListClusters() if c.name == cluster_name
       ]

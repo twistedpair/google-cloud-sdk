@@ -23,14 +23,18 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
-def MakeNetworkEndpointGroupsArg():
+def MakeNetworkEndpointGroupsArg(support_global_scope=False):
   return compute_flags.ResourceArgument(
       resource_name='network endpoint group',
       zonal_collection='compute.networkEndpointGroups',
+      global_collection='compute.globalNetworkEndpointGroups'
+      if support_global_scope else None,
       zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
 
 
-def AddCreateNegArgsToParser(parser, support_neg_type):
+def AddCreateNegArgsToParser(parser,
+                             support_neg_type,
+                             support_global_scope=False):
   """Adds flags for creating a network endpoint group to the parser."""
   if support_neg_type:
     base.ChoiceArgument(
@@ -40,13 +44,20 @@ def AddCreateNegArgsToParser(parser, support_neg_type):
         default='load-balancing',
         help_str='The type of network endpoint group to create.'
     ).AddToParser(parser)
+
+  endpoint_type_choices = ['gce-vm-ip-port']
+  endpoint_type_hidden = True
+  if support_global_scope:
+    endpoint_type_choices.append('internet-ip-port')
+    endpoint_type_choices.append('internet-fqdn-port')
+    endpoint_type_hidden = False
+
   base.ChoiceArgument(
       '--network-endpoint-type',
-      hidden=True,
-      choices=['gce-vm-ip-port'],
+      hidden=endpoint_type_hidden,
+      choices=endpoint_type_choices,
       default='gce-vm-ip-port',
-      help_str='The network endpoint type.'
-  ).AddToParser(parser)
+      help_str='The network endpoint type.').AddToParser(parser)
   parser.add_argument(
       '--network',
       help='Name of the network in which the NEG is created. `default` project '
@@ -67,23 +78,7 @@ def AddCreateNegArgsToParser(parser, support_neg_type):
       endpoint group must have a port specified.
       """)
 
-
-def AddUpdateNegArgsToParser(parser):
-  """Adds flags for updating a network endpoint group to the parser."""
-  endpoint_group = parser.add_group(
-      mutex=True,
-      help='These flags can be specified multiple times to add/remove '
-           'multiple endpoints.')
-  endpoint_spec = {
-      'instance': str,
-      'ip': str,
-      'port': int
-  }
-  endpoint_group.add_argument(
-      '--add-endpoint',
-      action='append',
-      type=arg_parsers.ArgDict(spec=endpoint_spec, required_keys=['instance']),
-      help="""\
+ADD_ENDPOINT_HELP_TEXT = """\
           The network endpoint to add to the network endpoint group. Allowed
           keys are:
 
@@ -107,13 +102,51 @@ def AddUpdateNegArgsToParser(parser):
             Optional port for the network endpoint. If not specified and the
             networkEndpointType is `GCE_VM_IP_PORT`, the defaultPort for the
             network endpoint group will be used.
-        """)
+        """
 
-  endpoint_group.add_argument(
-      '--remove-endpoint',
-      action='append',
-      type=arg_parsers.ArgDict(spec=endpoint_spec, required_keys=['instance']),
-      help="""\
+ADD_ENDPOINT_HELP_TEXT_WITH_GLOBAL = """\
+          The network endpoint to add to the network endpoint group. Keys used
+          depend on the endpoint type of the NEG.
+
+          * `GCE_VM_IP_PORT`
+              * instance - Name of instance in same zone as the network endpoint
+                group.
+
+                The VM instance must belong to the network / subnetwork
+                associated with the network endpoint group. If the VM instance
+                is deleted, then any network endpoint group that has a reference
+                to it is updated.
+
+              * ip - Optional IP address of the network endpoint. the IP address
+                must belong to a VM in compute engine (either the primary IP or
+                as part of an aliased IP range). If the IP address is not
+                specified, then the primary IP address for the VM instance in
+                the network that the network endpoint group belongs to will be
+                used.
+
+              * port - Required endpoint port unless NEG default port is set.
+
+          * `INTERNET_IP_PORT`
+              * ip - Required IP address of the endpoint to attach. Must be
+                publicly routable.
+
+              * port - Optional port of the endpoint to attach. If unspecified
+                then NEG default port is set. If no default port is set, the
+                well known port for the backend protocol will be used instead
+                (80 for http, 443 for https).
+
+          * `INTERNET_FQDN_PORT`
+              * fqdn - Required fully qualified domain name to use to look up an
+                external endpoint. Must be resolvable to a public IP address via
+                public DNS.
+
+              * port - Optional port of the endpoint to attach. If unspecified
+                then NEG default port is set. If no default port is set, the
+                well known port for the backend protocol will be used instead
+                (80 for http, 443 for https or http2).
+         """
+
+RM_ENDPOINT_HELP_TEXT = """\
           The network endpoint to detach from the network endpoint group.
           Allowed keys are:
 
@@ -127,4 +160,63 @@ def AddUpdateNegArgsToParser(parser):
 
           * port - Optional port for the network endpoint. Required if the
             network endpoint type is `GCE_VM_IP_PORT`.
-      """)
+      """
+
+RM_ENDPOINT_HELP_TEXT_WITH_GLOBAL = """\
+            The network endpoint to detach from the network endpoint group. Keys
+            used depend on the endpoint type of the NEG.
+
+            * `GCE_VM_IP_PORT`
+
+                * instance - Required name of instance whose endpoint(s) to
+                  detach. If IP address is unset then all endpoints for the
+                  instance in the NEG will be detached.
+
+                * ip - Optional IP address of the network endpoint to detach.
+                  If specified port must be provided as well.
+
+                * port - Optional port of the network endpoint to detach.
+
+            * `INTERNET_IP_PORT`
+
+                * ip - Required IP address of the network endpoint to detach.
+
+                * port - Optional port of the network endpoint to detach if the
+                  endpoint has a port specified.
+
+            * `INTERNET_FQDN_PORT`
+
+                * fqdn - Required fully qualified domain name of the endpoint to
+                  detach.
+
+                * port - Optional port of the network endpoint to detach if the
+                  endpoint has a port specified.
+      """
+
+
+def AddUpdateNegArgsToParser(parser, support_global_scope=False):
+  """Adds flags for updating a network endpoint group to the parser."""
+  endpoint_group = parser.add_group(
+      mutex=True,
+      required=True,
+      help='These flags can be specified multiple times to add/remove '
+      'multiple endpoints.')
+  endpoint_spec = {'instance': str, 'ip': str, 'port': int}
+
+  if support_global_scope:
+    endpoint_spec['fqdn'] = str
+
+  required_keys = [] if support_global_scope else ['instance']
+  endpoint_group.add_argument(
+      '--add-endpoint',
+      action='append',
+      type=arg_parsers.ArgDict(spec=endpoint_spec, required_keys=required_keys),
+      help=ADD_ENDPOINT_HELP_TEXT_WITH_GLOBAL
+      if support_global_scope else ADD_ENDPOINT_HELP_TEXT)
+
+  endpoint_group.add_argument(
+      '--remove-endpoint',
+      action='append',
+      type=arg_parsers.ArgDict(spec=endpoint_spec, required_keys=required_keys),
+      help=RM_ENDPOINT_HELP_TEXT_WITH_GLOBAL
+      if support_global_scope else RM_ENDPOINT_HELP_TEXT)

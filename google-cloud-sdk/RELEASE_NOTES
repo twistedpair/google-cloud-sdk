@@ -5,6 +5,45 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 255.0.0 (2019-07-23)
+
+### Breaking Changes
+
+*   **(Cloud Run)** Changed `--platform` flag and its respective `run/platform` property to be
+  required in all `gcloud beta run` commands. If not specified, you will be
+  prompted to choose a platform.
+
+
+### Cloud Asset Inventory
+
+* Added new content type `access-policy` to `gcloud asset export` and `gcloud asset get-history`.
+
+### Cloud Storage
+
+* 
+* Updated gsutil component to 4.41.
+
+### Compute Engine
+
+* Removed deprecation notice for `--zones` in `gcloud compute`.  `--zones` is no longer deprecated and will continue to be supported.
+* Added `gcloud compute diagnose` command group.
+* Added `gcloud beta compute diagnose` command group.
+* Fixed bug where `gcloud compute network-endpoint-groups update` did not
+  require either `--add-endpoint` or `--remove-endpoint` flag to be specified.
+
+### Firebase Test Lab
+
+* Fixed a bug where the files specified using `--other-files` were not correctly
+pushed to an Android device before the test starts.
+
+### Kubernetes Engine
+
+*   Promoted `gcloud beta container binauthz` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 254.0.0 (2019-07-16)
 
 ### AI Platform
@@ -57,7 +96,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Storage
 
-* 
 * Updated gsutil component to 4.40.
 
 ### Compute Engine
@@ -91,7 +129,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### App Engine
 
-* 
 * Updated the Java SDK to version 1.9.76.
   Please visit the following release notes for details:
   <https://cloud.google.com/appengine/docs/java/release-notes>
@@ -206,7 +243,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Storage
 
-* 
 * Updated gsutil component to 4.39.
 
 ### Compute Engine

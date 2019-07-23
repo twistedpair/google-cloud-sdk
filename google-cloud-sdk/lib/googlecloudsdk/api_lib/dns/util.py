@@ -17,6 +17,7 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
+from googlecloudsdk.calliope import base
 
 from googlecloudsdk.core import resources
 
@@ -29,3 +30,10 @@ def GetRegistry(version):
   registry = resources.REGISTRY.Clone()
   registry.RegisterApiByName('dns', version)
   return registry
+
+
+def GetApiFromTrack(track):
+  if track == base.ReleaseTrack.BETA:
+    return 'v1beta2'
+  if track == base.ReleaseTrack.ALPHA:
+    return 'v1alpha2'

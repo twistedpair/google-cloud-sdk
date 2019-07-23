@@ -50,6 +50,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.globalNetworkEndpointGroups = self.GlobalNetworkEndpointGroupsService(self)
     self.globalOperations = self.GlobalOperationsService(self)
     self.globalOrganizationOperations = self.GlobalOrganizationOperationsService(self)
+    self.globalPublicDelegatedPrefixes = self.GlobalPublicDelegatedPrefixesService(self)
     self.healthChecks = self.HealthChecksService(self)
     self.httpHealthChecks = self.HttpHealthChecksService(self)
     self.httpsHealthChecks = self.HttpsHealthChecksService(self)
@@ -73,6 +74,8 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.organizationSecurityPolicies = self.OrganizationSecurityPoliciesService(self)
     self.packetMirrorings = self.PacketMirroringsService(self)
     self.projects = self.ProjectsService(self)
+    self.publicAdvertisedPrefixes = self.PublicAdvertisedPrefixesService(self)
+    self.publicDelegatedPrefixes = self.PublicDelegatedPrefixesService(self)
     self.regionAutoscalers = self.RegionAutoscalersService(self)
     self.regionBackendServices = self.RegionBackendServicesService(self)
     self.regionCommitments = self.RegionCommitmentsService(self)
@@ -3091,6 +3094,146 @@ class ComputeAlpha(base_api.BaseApiClient):
         relative_path=u'projects/locations/global/operations/{operation}/wait',
         request_field='',
         request_type_name=u'ComputeGlobalOrganizationOperationsWaitRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class GlobalPublicDelegatedPrefixesService(base_api.BaseApiService):
+    """Service class for the globalPublicDelegatedPrefixes resource."""
+
+    _NAME = u'globalPublicDelegatedPrefixes'
+
+    def __init__(self, client):
+      super(ComputeAlpha.GlobalPublicDelegatedPrefixesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified global PublicDelegatedPrefix.
+
+      Args:
+        request: (ComputeGlobalPublicDelegatedPrefixesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.globalPublicDelegatedPrefixes.delete',
+        ordered_params=[u'project', u'publicDelegatedPrefix'],
+        path_params=[u'project', u'publicDelegatedPrefix'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/publicDelegatedPrefixes/{publicDelegatedPrefix}',
+        request_field='',
+        request_type_name=u'ComputeGlobalPublicDelegatedPrefixesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified global PublicDelegatedPrefix resource.
+
+      Args:
+        request: (ComputeGlobalPublicDelegatedPrefixesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PublicDelegatedPrefix) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.globalPublicDelegatedPrefixes.get',
+        ordered_params=[u'project', u'publicDelegatedPrefix'],
+        path_params=[u'project', u'publicDelegatedPrefix'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/publicDelegatedPrefixes/{publicDelegatedPrefix}',
+        request_field='',
+        request_type_name=u'ComputeGlobalPublicDelegatedPrefixesGetRequest',
+        response_type_name=u'PublicDelegatedPrefix',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a global PublicDelegatedPrefix in the specified project using the parameters that are included in the request.
+
+      Args:
+        request: (ComputeGlobalPublicDelegatedPrefixesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.globalPublicDelegatedPrefixes.insert',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/publicDelegatedPrefixes',
+        request_field=u'publicDelegatedPrefix',
+        request_type_name=u'ComputeGlobalPublicDelegatedPrefixesInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the global PublicDelegatedPrefixes for a project.
+
+      Args:
+        request: (ComputeGlobalPublicDelegatedPrefixesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PublicDelegatedPrefixList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.globalPublicDelegatedPrefixes.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/publicDelegatedPrefixes',
+        request_field='',
+        request_type_name=u'ComputeGlobalPublicDelegatedPrefixesListRequest',
+        response_type_name=u'PublicDelegatedPrefixList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patches the specified global PublicDelegatedPrefix resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+
+      Args:
+        request: (ComputeGlobalPublicDelegatedPrefixesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.globalPublicDelegatedPrefixes.patch',
+        ordered_params=[u'project', u'publicDelegatedPrefix'],
+        path_params=[u'project', u'publicDelegatedPrefix'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/publicDelegatedPrefixes/{publicDelegatedPrefix}',
+        request_field=u'publicDelegatedPrefixResource',
+        request_type_name=u'ComputeGlobalPublicDelegatedPrefixesPatchRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -9725,6 +9868,312 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+  class PublicAdvertisedPrefixesService(base_api.BaseApiService):
+    """Service class for the publicAdvertisedPrefixes resource."""
+
+    _NAME = u'publicAdvertisedPrefixes'
+
+    def __init__(self, client):
+      super(ComputeAlpha.PublicAdvertisedPrefixesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified PublicAdvertisedPrefix.
+
+      Args:
+        request: (ComputePublicAdvertisedPrefixesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.publicAdvertisedPrefixes.delete',
+        ordered_params=[u'project', u'publicAdvertisedPrefix'],
+        path_params=[u'project', u'publicAdvertisedPrefix'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/publicAdvertisedPrefixes/{publicAdvertisedPrefix}',
+        request_field='',
+        request_type_name=u'ComputePublicAdvertisedPrefixesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified PublicAdvertisedPrefix resource.
+
+      Args:
+        request: (ComputePublicAdvertisedPrefixesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PublicAdvertisedPrefix) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.publicAdvertisedPrefixes.get',
+        ordered_params=[u'project', u'publicAdvertisedPrefix'],
+        path_params=[u'project', u'publicAdvertisedPrefix'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/publicAdvertisedPrefixes/{publicAdvertisedPrefix}',
+        request_field='',
+        request_type_name=u'ComputePublicAdvertisedPrefixesGetRequest',
+        response_type_name=u'PublicAdvertisedPrefix',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a PublicAdvertisedPrefix in the specified project using the parameters that are included in the request.
+
+      Args:
+        request: (ComputePublicAdvertisedPrefixesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.publicAdvertisedPrefixes.insert',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/publicAdvertisedPrefixes',
+        request_field=u'publicAdvertisedPrefix',
+        request_type_name=u'ComputePublicAdvertisedPrefixesInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the PublicAdvertisedPrefixes for a project.
+
+      Args:
+        request: (ComputePublicAdvertisedPrefixesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PublicAdvertisedPrefixList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.publicAdvertisedPrefixes.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/publicAdvertisedPrefixes',
+        request_field='',
+        request_type_name=u'ComputePublicAdvertisedPrefixesListRequest',
+        response_type_name=u'PublicAdvertisedPrefixList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+
+      Args:
+        request: (ComputePublicAdvertisedPrefixesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.publicAdvertisedPrefixes.patch',
+        ordered_params=[u'project', u'publicAdvertisedPrefix'],
+        path_params=[u'project', u'publicAdvertisedPrefix'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/publicAdvertisedPrefixes/{publicAdvertisedPrefix}',
+        request_field=u'publicAdvertisedPrefixResource',
+        request_type_name=u'ComputePublicAdvertisedPrefixesPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class PublicDelegatedPrefixesService(base_api.BaseApiService):
+    """Service class for the publicDelegatedPrefixes resource."""
+
+    _NAME = u'publicDelegatedPrefixes'
+
+    def __init__(self, client):
+      super(ComputeAlpha.PublicDelegatedPrefixesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Lists all PublicDelegatedPrefix resources owned by the specific project across all scopes.
+
+      Args:
+        request: (ComputePublicDelegatedPrefixesAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PublicDelegatedPrefixAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.publicDelegatedPrefixes.aggregatedList',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/aggregated/publicDelegatedPrefixes',
+        request_field='',
+        request_type_name=u'ComputePublicDelegatedPrefixesAggregatedListRequest',
+        response_type_name=u'PublicDelegatedPrefixAggregatedList',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified PublicDelegatedPrefix in the given region.
+
+      Args:
+        request: (ComputePublicDelegatedPrefixesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.publicDelegatedPrefixes.delete',
+        ordered_params=[u'project', u'region', u'publicDelegatedPrefix'],
+        path_params=[u'project', u'publicDelegatedPrefix', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/publicDelegatedPrefixes/{publicDelegatedPrefix}',
+        request_field='',
+        request_type_name=u'ComputePublicDelegatedPrefixesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified PublicDelegatedPrefix resource in the given region.
+
+      Args:
+        request: (ComputePublicDelegatedPrefixesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PublicDelegatedPrefix) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.publicDelegatedPrefixes.get',
+        ordered_params=[u'project', u'region', u'publicDelegatedPrefix'],
+        path_params=[u'project', u'publicDelegatedPrefix', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/publicDelegatedPrefixes/{publicDelegatedPrefix}',
+        request_field='',
+        request_type_name=u'ComputePublicDelegatedPrefixesGetRequest',
+        response_type_name=u'PublicDelegatedPrefix',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a PublicDelegatedPrefix in the specified project in the given region using the parameters that are included in the request.
+
+      Args:
+        request: (ComputePublicDelegatedPrefixesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.publicDelegatedPrefixes.insert',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/publicDelegatedPrefixes',
+        request_field=u'publicDelegatedPrefix',
+        request_type_name=u'ComputePublicDelegatedPrefixesInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the PublicDelegatedPrefixes for a project in the given region.
+
+      Args:
+        request: (ComputePublicDelegatedPrefixesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PublicDelegatedPrefixList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.publicDelegatedPrefixes.list',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/regions/{region}/publicDelegatedPrefixes',
+        request_field='',
+        request_type_name=u'ComputePublicDelegatedPrefixesListRequest',
+        response_type_name=u'PublicDelegatedPrefixList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patches the specified PublicDelegatedPrefix resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+
+      Args:
+        request: (ComputePublicDelegatedPrefixesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.publicDelegatedPrefixes.patch',
+        ordered_params=[u'project', u'region', u'publicDelegatedPrefix'],
+        path_params=[u'project', u'publicDelegatedPrefix', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/publicDelegatedPrefixes/{publicDelegatedPrefix}',
+        request_field=u'publicDelegatedPrefixResource',
+        request_type_name=u'ComputePublicDelegatedPrefixesPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class RegionAutoscalersService(base_api.BaseApiService):
     """Service class for the regionAutoscalers resource."""
 
@@ -12878,7 +13327,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves all information of the specified reservation.
+      r"""Retrieves information about the specified reservation.
 
       Args:
         request: (ComputeReservationsGetRequest) input message
@@ -12956,7 +13405,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""A list all the reservations that have been configured for the specified project in specified zone.
+      r"""A list of all the reservations that have been configured for the specified project in specified zone.
 
       Args:
         request: (ComputeReservationsListRequest) input message
@@ -12982,7 +13431,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Resize(self, request, global_params=None):
-      r"""Resizes the reservation (applicable to standalone reservations only).
+      r"""Resizes the reservation (applicable to standalone reservations only). For more information, read Modifying reservations.
 
       Args:
         request: (ComputeReservationsResizeRequest) input message
@@ -14780,7 +15229,7 @@ For more information, see Deleting snapshots.
     )
 
     def ListUsable(self, request, global_params=None):
-      r"""Retrieves an aggregated list of usable subnetworks.
+      r"""Retrieves an aggregated list of all usable subnetworks in the project. The list contains all of the subnetworks in the project and the subnetworks that were shared by a Shared VPC host project.
 
       Args:
         request: (ComputeSubnetworksListUsableRequest) input message

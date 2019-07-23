@@ -35,12 +35,113 @@ class GkehubV1alpha1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_features = self.ProjectsLocationsFeaturesService(self)
     self.projects_locations_global_connectAgents = self.ProjectsLocationsGlobalConnectAgentsService(self)
+    self.projects_locations_global_features = self.ProjectsLocationsGlobalFeaturesService(self)
     self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
-    self.projects_locations_memberships = self.ProjectsLocationsMembershipsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsFeaturesService(base_api.BaseApiService):
+    """Service class for the projects_locations_features resource."""
+
+    _NAME = u'projects_locations_features'
+
+    def __init__(self, client):
+      super(GkehubV1alpha1.ProjectsLocationsFeaturesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource.
+Returns an empty policy if the resource exists and does not have a policy
+set.
+
+      Args:
+        request: (GkehubProjectsLocationsFeaturesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/features/{featuresId}:getIamPolicy',
+        http_method=u'GET',
+        method_id=u'gkehub.projects.locations.features.getIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[u'options_requestedPolicyVersion'],
+        relative_path=u'v1alpha1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name=u'GkehubProjectsLocationsFeaturesGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any.
+existing policy.
+
+      Args:
+        request: (GkehubProjectsLocationsFeaturesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/features/{featuresId}:setIamPolicy',
+        http_method=u'POST',
+        method_id=u'gkehub.projects.locations.features.setIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+resource}:setIamPolicy',
+        request_field=u'setIamPolicyRequest',
+        request_type_name=u'GkehubProjectsLocationsFeaturesSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+If the resource does not exist, this will return an empty set of
+permissions, not a NOT_FOUND error.
+
+Note: This operation is designed to be used for building permission-aware
+UIs and command-line tools, not for authorization checking. This operation
+may "fail open" without warning.
+
+      Args:
+        request: (GkehubProjectsLocationsFeaturesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/features/{featuresId}:testIamPermissions',
+        http_method=u'POST',
+        method_id=u'gkehub.projects.locations.features.testIamPermissions',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+resource}:testIamPermissions',
+        request_field=u'testIamPermissionsRequest',
+        request_type_name=u'GkehubProjectsLocationsFeaturesTestIamPermissionsRequest',
+        response_type_name=u'TestIamPermissionsResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsGlobalConnectAgentsService(base_api.BaseApiService):
     """Service class for the projects_locations_global_connectAgents resource."""
@@ -79,6 +180,151 @@ class GkehubV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsGlobalFeaturesService(base_api.BaseApiService):
+    """Service class for the projects_locations_global_features resource."""
+
+    _NAME = u'projects_locations_global_features'
+
+    def __init__(self, client):
+      super(GkehubV1alpha1.ProjectsLocationsGlobalFeaturesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Adds a new Feature.
+
+      Args:
+        request: (GkehubProjectsLocationsGlobalFeaturesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/global/features',
+        http_method=u'POST',
+        method_id=u'gkehub.projects.locations.global.features.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'featureId'],
+        relative_path=u'v1alpha1/{+parent}/features',
+        request_field=u'feature',
+        request_type_name=u'GkehubProjectsLocationsGlobalFeaturesCreateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Removes a single Feature.
+
+      Args:
+        request: (GkehubProjectsLocationsGlobalFeaturesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/global/features/{featuresId}',
+        http_method=u'DELETE',
+        method_id=u'gkehub.projects.locations.global.features.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'GkehubProjectsLocationsGlobalFeaturesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Feature.
+
+      Args:
+        request: (GkehubProjectsLocationsGlobalFeaturesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Feature) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/global/features/{featuresId}',
+        http_method=u'GET',
+        method_id=u'gkehub.projects.locations.global.features.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'GkehubProjectsLocationsGlobalFeaturesGetRequest',
+        response_type_name=u'Feature',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Features in a given project and location.
+
+      Args:
+        request: (GkehubProjectsLocationsGlobalFeaturesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListFeaturesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/global/features',
+        http_method=u'GET',
+        method_id=u'gkehub.projects.locations.global.features.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
+        relative_path=u'v1alpha1/{+parent}/features',
+        request_field='',
+        request_type_name=u'GkehubProjectsLocationsGlobalFeaturesListRequest',
+        response_type_name=u'ListFeaturesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing Feature.
+
+      Args:
+        request: (GkehubProjectsLocationsGlobalFeaturesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/global/features/{featuresId}',
+        http_method=u'PATCH',
+        method_id=u'gkehub.projects.locations.global.features.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1alpha1/{+name}',
+        request_field=u'feature',
+        request_type_name=u'GkehubProjectsLocationsGlobalFeaturesPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsGlobalService(base_api.BaseApiService):
     """Service class for the projects_locations_global resource."""
 
@@ -88,106 +334,6 @@ class GkehubV1alpha1(base_api.BaseApiClient):
       super(GkehubV1alpha1.ProjectsLocationsGlobalService, self).__init__(client)
       self._upload_configs = {
           }
-
-  class ProjectsLocationsMembershipsService(base_api.BaseApiService):
-    """Service class for the projects_locations_memberships resource."""
-
-    _NAME = u'projects_locations_memberships'
-
-    def __init__(self, client):
-      super(GkehubV1alpha1.ProjectsLocationsMembershipsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource.
-Returns an empty policy if the resource exists and does not have a policy
-set.
-
-      Args:
-        request: (GkehubProjectsLocationsMembershipsGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:getIamPolicy',
-        http_method=u'GET',
-        method_id=u'gkehub.projects.locations.memberships.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1alpha1/{+resource}:getIamPolicy',
-        request_field='',
-        request_type_name=u'GkehubProjectsLocationsMembershipsGetIamPolicyRequest',
-        response_type_name=u'Policy',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any.
-existing policy.
-
-      Args:
-        request: (GkehubProjectsLocationsMembershipsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'gkehub.projects.locations.memberships.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1alpha1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'GkehubProjectsLocationsMembershipsSetIamPolicyRequest',
-        response_type_name=u'Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this will return an empty set of
-permissions, not a NOT_FOUND error.
-
-Note: This operation is designed to be used for building permission-aware
-UIs and command-line tools, not for authorization checking. This operation
-may "fail open" without warning.
-
-      Args:
-        request: (GkehubProjectsLocationsMembershipsTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'gkehub.projects.locations.memberships.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1alpha1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'GkehubProjectsLocationsMembershipsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
-        supports_download=False,
-    )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""

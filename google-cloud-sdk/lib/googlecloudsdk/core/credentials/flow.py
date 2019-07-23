@@ -23,7 +23,6 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import pkg_resources
-from googlecloudsdk.core.util import platforms
 
 from oauth2client import client
 from oauth2client import tools
@@ -130,18 +129,6 @@ def Run(flow, launch_browser=True, http=None,
       flow.redirect_uri = ('http://%s:%s/' % (auth_host_name, port_number))
 
       authorize_url = flow.step1_get_authorize_url()
-      # Without this, Chrome on MacOS will not launch unless Chrome
-      # is already open. This is due to an bug in webbbrowser.py that tries to
-      # open web browsers by app name using i.e. 'Chrome' but the actual app
-      # name is 'Google Chrome' on Mac.
-      if platforms.OperatingSystem.MACOSX == platforms.OperatingSystem.Current(
-      ):
-        try:
-          webbrowser.register('Google Chrome', None,
-                              webbrowser.MacOSXOSAScript('Google Chrome'), -1)
-        except AttributeError:  # If MacOSXOSAScript not defined on module,
-          pass                  # proceed with default behavior
-
       webbrowser.open(authorize_url, new=1, autoraise=True)
       message = 'Your browser has been opened to visit:'
       log.err.Print('{message}\n\n    {url}\n\n'.format(

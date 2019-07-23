@@ -26,6 +26,7 @@ from googlecloudsdk.api_lib.scc import securitycenter_client as sc_client
 from googlecloudsdk.command_lib.scc.hooks import CleanUpUserInput
 from googlecloudsdk.command_lib.scc.hooks import GetOrganization
 from googlecloudsdk.command_lib.scc.hooks import GetSourceFromResourceName
+from googlecloudsdk.core import properties
 
 
 def CreateFindingsReqHook(ref, args, req):
@@ -52,8 +53,12 @@ def ListFindingsReqHook(ref, args, req):
     req.fieldMask = CleanUpUserInput(req.fieldMask)
   args.filter = ""
   resource_pattern = re.compile("organizations/[0-9]+/sources/[0-9-]+")
-  if resource_pattern.match(args.organization):
-    args.source = args.organization
+  if not args.organization:
+    organization = properties.VALUES.scc.organization.Get()
+  else:
+    organization = args.organization
+  if resource_pattern.match(organization):
+    args.source = organization
   return req
 
 
@@ -77,8 +82,12 @@ def GroupFindingsReqHook(ref, args, req):
   req.groupFindingsRequest.filter = args.filter
   args.filter = ""
   resource_pattern = re.compile("organizations/[0-9]+/sources/[0-9-]+")
-  if resource_pattern.match(args.organization):
-    args.source = args.organization
+  if not args.organization:
+    organization = properties.VALUES.scc.organization.Get()
+  else:
+    organization = args.organization
+  if resource_pattern.match(organization):
+    args.source = organization
   req.parent = _GetSourceName(args)
   return req
 

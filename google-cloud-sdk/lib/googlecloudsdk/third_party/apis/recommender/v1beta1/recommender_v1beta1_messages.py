@@ -327,8 +327,8 @@ class GoogleCloudRecommenderV1beta1Recommendation(_messages.Message):
       recommendations produced for the same recommender. Subtype is a function
       of content and impact, meaning a new subtype will be added when either
       content or primary impact category changes.  Examples:   For recommender
-      = "google.iam.policy.RoleRecommender",   recommender_subtype can be one
-      of "REMOVE_ROLE"/"REPLACE_ROLE"
+      = "google.iam.policy.Recommender",   recommender_subtype can be one of
+      "REMOVE_ROLE"/"REPLACE_ROLE"
     stateInfo: Information for state. Contains state and metadata.
   """
 

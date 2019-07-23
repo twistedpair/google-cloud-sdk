@@ -2070,39 +2070,6 @@ class HealthcareProjectsLocationsDatasetsFhirStoresPatchRequest(_messages.Messag
   updateMask = _messages.StringField(3)
 
 
-class HealthcareProjectsLocationsDatasetsFhirStoresSecurityLabelsGetIamPolicyRequest(_messages.Message):
-  r"""A HealthcareProjectsLocationsDatasetsFhirStoresSecurityLabelsGetIamPolic
-  yRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class HealthcareProjectsLocationsDatasetsFhirStoresSecurityLabelsSetIamPolicyRequest(_messages.Message):
-  r"""A HealthcareProjectsLocationsDatasetsFhirStoresSecurityLabelsSetIamPolic
-  yRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
 class HealthcareProjectsLocationsDatasetsFhirStoresSetIamPolicyRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresSetIamPolicyRequest
   object.
@@ -2775,7 +2742,8 @@ class ImportResourcesRequest(_messages.Message):
     server treats the input source files as BUNDLE.
 
     Values:
-      CONTENT_STRUCTURE_UNSPECIFIED: <no description>
+      CONTENT_STRUCTURE_UNSPECIFIED: Content structure is not specified;
+        defaults to BUNDLE.
       BUNDLE: The source file contains one or more lines of newline-delimited
         JSON (ndjson). Each line is a bundle, which contains one or more
         resources. Set the bundle type to `history` to import resource

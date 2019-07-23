@@ -74,6 +74,8 @@ def ContentTypeTranslation(content_type):
     return 'IAM_POLICY'
   if content_type == 'org-policy':
     return 'ORG_POLICY'
+  if content_type == 'access-policy':
+    return 'ACCESS_POLICY'
   return 'CONTENT_TYPE_UNSPECIFIED'
 
 

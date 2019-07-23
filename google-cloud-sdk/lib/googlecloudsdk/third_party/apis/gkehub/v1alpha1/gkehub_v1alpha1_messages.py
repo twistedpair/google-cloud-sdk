@@ -22,16 +22,16 @@ class AuditConfig(_messages.Message):
   multiple AuditConfigs:      {       "audit_configs": [         {
   "service": "allServices"           "audit_log_configs": [             {
   "log_type": "DATA_READ",               "exempted_members": [
-  "user:foo@gmail.com"               ]             },             {
+  "user:jose@example.com"               ]             },             {
   "log_type": "DATA_WRITE",             },             {
   "log_type": "ADMIN_READ",             }           ]         },         {
-  "service": "fooservice.googleapis.com"           "audit_log_configs": [
+  "service": "sampleservice.googleapis.com"           "audit_log_configs": [
   {               "log_type": "DATA_READ",             },             {
   "log_type": "DATA_WRITE",               "exempted_members": [
-  "user:bar@gmail.com"               ]             }           ]         }
-  ]     }  For fooservice, this policy enables DATA_READ, DATA_WRITE and
-  ADMIN_READ logging. It also exempts foo@gmail.com from DATA_READ logging,
-  and bar@gmail.com from DATA_WRITE logging.
+  "user:aliya@example.com"               ]             }           ]         }
+  ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
+  ADMIN_READ logging. It also exempts jose@example.com from DATA_READ logging,
+  and aliya@example.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -49,10 +49,10 @@ class AuditConfig(_messages.Message):
 class AuditLogConfig(_messages.Message):
   r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
-  "exempted_members": [             "user:foo@gmail.com"           ]
+  "exempted_members": [             "user:jose@example.com"           ]
   },         {           "log_type": "DATA_WRITE",         }       ]     }
   This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
-  foo@gmail.com from DATA_READ logging.
+  jose@example.com from DATA_READ logging.
 
   Enums:
     LogTypeValueValuesEnum: The log type that this config enables.
@@ -60,6 +60,9 @@ class AuditLogConfig(_messages.Message):
   Fields:
     exemptedMembers: Specifies the identities that do not cause logging for
       this type of permission. Follows the same format of Binding.members.
+    ignoreChildExemptions: Specifies whether principals can be exempted for
+      the same LogType in lower-level resource policies. If true, any lower-
+      level exemptions will be ignored.
     logType: The log type that this config enables.
   """
 
@@ -78,7 +81,8 @@ class AuditLogConfig(_messages.Message):
     DATA_READ = 3
 
   exemptedMembers = _messages.StringField(1, repeated=True)
-  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+  ignoreChildExemptions = _messages.BooleanField(2)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
 
 
 class AuthorizationLoggingOptions(_messages.Message):
@@ -115,23 +119,23 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: Unimplemented. The condition that is associated with this
-      binding. NOTE: an unsatisfied condition will not allow user access via
-      current binding. Different bindings, including their conditions, are
-      examined independently.
+    condition: The condition that is associated with this binding. NOTE: An
+      unsatisfied condition will not allow user access via current binding.
+      Different bindings, including their conditions, are examined
+      independently.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
       with or without a Google account.  * `allAuthenticatedUsers`: A special
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
-      represents a specific Google    account. For example, `alice@gmail.com`
-      .   * `serviceAccount:{emailid}`: An email address that represents a
-      service    account. For example, `my-other-
+      represents a specific Google    account. For example,
+      `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
+      that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: A Google Apps domain name that represents all the
-      users of that domain. For example, `google.com` or `example.com`.
+      * `domain:{domain}`: The G Suite domain (primary) that represents all
+      the    users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -219,11 +223,12 @@ class Condition(_messages.Message):
         context (e.g. ALLOW/IN or DENY/NOT_IN).
       JUSTIFICATION_TYPE: What types of justifications have been supplied with
         this request. String values should match enum names from
-        tech.iam.JustificationType, e.g. "MANUAL_STRING". It is not permitted
-        to grant access based on the *absence* of a justification, so
-        justification conditions can only be used in a "positive" context
-        (e.g., ALLOW/IN or DENY/NOT_IN).  Multiple justifications, e.g., a
-        Buganizer ID and a manually-entered reason, are normal and supported.
+        security.credentials.JustificationType, e.g. "MANUAL_STRING". It is
+        not permitted to grant access based on the *absence* of a
+        justification, so justification conditions can only be used in a
+        "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).  Multiple
+        justifications, e.g., a Buganizer ID and a manually-entered reason,
+        are normal and supported.
       CREDENTIALS_TYPE: What type of credentials have been supplied with this
         request. String values should match enum names from
         security_loas_l2.CredentialsType - currently, only
@@ -316,29 +321,16 @@ class DataAccessOptions(_messages.Message):
   Enums:
     LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
       manner at the caller. This is relevant only in the LocalIAM
-      implementation, for now.  NOTE: Logging to Gin in a fail-closed manner
-      is currently unsupported while work is being done to satisfy the
-      requirements of go/345. Currently, setting LOG_FAIL_CLOSED mode will
-      have no effect, but still exists because there is active work being done
-      to support it (b/115874152).
+      implementation, for now.
 
   Fields:
     logMode: Whether Gin logging should happen in a fail-closed manner at the
       caller. This is relevant only in the LocalIAM implementation, for now.
-      NOTE: Logging to Gin in a fail-closed manner is currently unsupported
-      while work is being done to satisfy the requirements of go/345.
-      Currently, setting LOG_FAIL_CLOSED mode will have no effect, but still
-      exists because there is active work being done to support it
-      (b/115874152).
   """
 
   class LogModeValueValuesEnum(_messages.Enum):
     r"""Whether Gin logging should happen in a fail-closed manner at the
     caller. This is relevant only in the LocalIAM implementation, for now.
-    NOTE: Logging to Gin in a fail-closed manner is currently unsupported
-    while work is being done to satisfy the requirements of go/345. Currently,
-    setting LOG_FAIL_CLOSED mode will have no effect, but still exists because
-    there is active work being done to support it (b/115874152).
 
     Values:
       LOG_MODE_UNSPECIFIED: Client is not required to write a partial Gin log
@@ -353,10 +345,7 @@ class DataAccessOptions(_messages.Message):
         if it succeeds.  If a matching Rule has this directive, but the client
         has not indicated that it will honor such requirements, then the IAM
         check will result in authorization failure by setting
-        CheckPolicyResponse.success=false.  NOTE: This is currently
-        unsupported. See the note on LogMode below. LOG_FAIL_CLOSED shouldn't
-        be used unless the application wants fail-closed logging to be turned
-        on implicitly when b/115874152 is resolved.
+        CheckPolicyResponse.success=false.
     """
     LOG_MODE_UNSPECIFIED = 0
     LOG_FAIL_CLOSED = 1
@@ -398,6 +387,186 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class Feature(_messages.Message):
+  r"""Feature represents the settings and status of any feature.
+
+  Messages:
+    LabelsValue: GCP labels for this feature.
+
+  Fields:
+    createTime: Output only. Timestamp for when the Feature was created.
+    deleteTime: Output only. Timestamp for when the Feature was deleted.
+    description: An optional description of the feature, limited to 2048
+      characters.
+    featureState: Output only. State of the resource itself.
+    helloworldFeatureSpec: A hello world feature to act as an example and test
+      our feature lifecycle code.
+    labels: GCP labels for this feature.
+    metadataFeatureSpec: A MetadataFeatureSpec attribute.
+    meteringFeatureSpec: A MeteringFeatureSpec attribute.
+    multiclusteringressFeatureSpec: A MultiClusterIngressFeatureSpec
+      attribute.
+    name: Output only. The unique name of this feature resource in the format:
+      `projects/[project_id]/locations/global/features/[feature_id]`.
+    servicemeshFeatureSpec: A ServiceMeshFeatureSpec attribute.
+    updateTime: Output only. Timestamp for when the Feature was last updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""GCP labels for this feature.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  deleteTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  featureState = _messages.MessageField('FeatureState', 4)
+  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  metadataFeatureSpec = _messages.MessageField('MetadataFeatureSpec', 7)
+  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 8)
+  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 9)
+  name = _messages.StringField(10)
+  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 11)
+  updateTime = _messages.StringField(12)
+
+
+class FeatureState(_messages.Message):
+  r"""FeatureState describes the status of any feature.
+
+  Enums:
+    LifecycleStateValueValuesEnum:
+
+  Messages:
+    DetailsByMembershipValue: Messages pertaining to the current status of the
+      feature for a given member, keyed by the fully-qualified member name.
+      Example member name looks like `projects/foo-
+      proj/locations/global/memberships/bar`. This is scoped to feature-level
+      messages (e.g. CSM state on clusters)
+
+  Fields:
+    details: Aggregate status message of the feature.
+    detailsByMembership: Messages pertaining to the current status of the
+      feature for a given member, keyed by the fully-qualified member name.
+      Example member name looks like `projects/foo-
+      proj/locations/global/memberships/bar`. This is scoped to feature-level
+      messages (e.g. CSM state on clusters)
+    lifecycleState: A LifecycleStateValueValuesEnum attribute.
+  """
+
+  class LifecycleStateValueValuesEnum(_messages.Enum):
+    r"""LifecycleStateValueValuesEnum enum type.
+
+    Values:
+      LIFECYCLE_STATE_UNSPECIFIED: <no description>
+      ENABLING: <no description>
+      ENABLED: <no description>
+      DISABLING: <no description>
+      UPDATING: <no description>
+    """
+    LIFECYCLE_STATE_UNSPECIFIED = 0
+    ENABLING = 1
+    ENABLED = 2
+    DISABLING = 3
+    UPDATING = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsByMembershipValue(_messages.Message):
+    r"""Messages pertaining to the current status of the feature for a given
+    member, keyed by the fully-qualified member name. Example member name
+    looks like `projects/foo-proj/locations/global/memberships/bar`. This is
+    scoped to feature-level messages (e.g. CSM state on clusters)
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        DetailsByMembershipValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        DetailsByMembershipValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsByMembershipValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A FeatureStateDetails attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('FeatureStateDetails', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  details = _messages.MessageField('FeatureStateDetails', 1)
+  detailsByMembership = _messages.MessageField('DetailsByMembershipValue', 2)
+  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 3)
+
+
+class FeatureStateDetails(_messages.Message):
+  r"""FeatureStateDetails is a semi-structured status message for a
+  declarative resource in the API.
+
+  Enums:
+    CodeValueValuesEnum: The code indicates machine-interpretable status code
+      of the feature. It also allows for an interpretation of the details.
+
+  Fields:
+    code: The code indicates machine-interpretable status code of the feature.
+      It also allows for an interpretation of the details.
+    description: Human readable description of the issue.
+    helloworldFeatureState: A HelloWorldFeatureState attribute.
+    metadataFeatureState: A MetadataFeatureState attribute.
+    meteringFeatureState: A MeteringFeatureState attribute.
+    multiclusteringressFeatureState: A MultiClusterIngressFeatureState
+      attribute.
+    servicemeshFeatureState: A ServiceMeshFeatureState attribute.
+    updateTime: The last update time of this status by the controllers
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""The code indicates machine-interpretable status code of the feature.
+    It also allows for an interpretation of the details.
+
+    Values:
+      CODE_UNSPECIFIED: Not set.
+      OK: <no description>
+      FAILED: <no description>
+    """
+    CODE_UNSPECIFIED = 0
+    OK = 1
+    FAILED = 2
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  description = _messages.StringField(2)
+  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 3)
+  metadataFeatureState = _messages.MessageField('MetadataFeatureState', 4)
+  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 5)
+  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 6)
+  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 7)
+  updateTime = _messages.StringField(8)
+
+
 class GenerateConnectAgentManifestResponse(_messages.Message):
   r"""Response message for `GkeHubService.GenerateConnectAgentManifest`
   method.
@@ -409,6 +578,52 @@ class GenerateConnectAgentManifestResponse(_messages.Message):
   """
 
   manifest = _messages.StringField(1)
+
+
+class GkehubProjectsLocationsFeaturesGetIamPolicyRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFeaturesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Acceptable values are 0 and 1. If the value is 0, or the field
+      is omitted, policy format version 1 will be returned.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class GkehubProjectsLocationsFeaturesSetIamPolicyRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFeaturesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class GkehubProjectsLocationsFeaturesTestIamPermissionsRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFeaturesTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class GkehubProjectsLocationsGetRequest(_messages.Message):
@@ -458,6 +673,93 @@ class GkehubProjectsLocationsGlobalConnectAgentsGenerateManifestRequest(_message
   parent = _messages.StringField(8, required=True)
 
 
+class GkehubProjectsLocationsGlobalFeaturesCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsGlobalFeaturesCreateRequest object.
+
+  Fields:
+    feature: A Feature resource to be passed as the request body.
+    featureId: The ID of one of the supported features.
+    parent: The parent in whose context the feature is created. The parent
+      value is in the format: `projects/[project_id]/locations/global`.
+  """
+
+  feature = _messages.MessageField('Feature', 1)
+  featureId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsGlobalFeaturesDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsGlobalFeaturesDeleteRequest object.
+
+  Fields:
+    name: The feature resource name in the format:
+      `projects/[project_id]/locations/global/features/[feature_id]`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsGlobalFeaturesGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsGlobalFeaturesGetRequest object.
+
+  Fields:
+    name: The Feature resource name in the format:
+      `projects/[project_id]/locations/global/features/[feature_id]`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsGlobalFeaturesListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsGlobalFeaturesListRequest object.
+
+  Fields:
+    filter: Lists the Features that match the filter expression. A filter
+      expression filters the resources listed in the response. The expression
+      must be of the form `<field> <operator> <value>` where operators: `<`,
+      `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents a
+      HAS operator which is roughly synonymous with equality). <field> can
+      refer to a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case.  Examples: - Filter by name:   name = "projects
+      /foo-proj/locations/global/features/servicemesh  - Filter by labels:   -
+      Resources that have a key called `foo`     labels.foo:*   - Resources
+      that have a key called `foo` whose value is `bar`     labels.foo = bar
+      - Filter by spec:   - ServiceMesh feature with mtls set.
+      servicemesh_feature_spec.mtls = true
+    orderBy: Field to use to sort the list.
+    pageSize: When requesting a 'page' of resources, `page_size` specifies
+      number of resources to return. If unspecified or set to 0, it defaults
+      to 500.
+    pageToken: Token returned by previous call to `ListFeatures` which
+      specifies the position in the list from where to continue listing the
+      resources.
+    parent: The parent in whose context the features are listed. The parent
+      value is in the format: `projects/[project_id]/locations/global`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class GkehubProjectsLocationsGlobalFeaturesPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsGlobalFeaturesPatchRequest object.
+
+  Fields:
+    feature: A Feature resource to be passed as the request body.
+    name: The feature resource name in the format:
+      `projects/[project_id]/locations/global/features/[feature_id]`
+    updateMask: Mask of fields to update. At least one field path must be
+      specified in this mask.
+  """
+
+  feature = _messages.MessageField('Feature', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class GkehubProjectsLocationsListRequest(_messages.Message):
   r"""A GkehubProjectsLocationsListRequest object.
 
@@ -472,48 +774,6 @@ class GkehubProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
-
-
-class GkehubProjectsLocationsMembershipsGetIamPolicyRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsMembershipsGetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  resource = _messages.StringField(1, required=True)
-
-
-class GkehubProjectsLocationsMembershipsSetIamPolicyRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsMembershipsSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class GkehubProjectsLocationsMembershipsTestIamPermissionsRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsMembershipsTestIamPermissionsRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class GkehubProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -568,37 +828,10 @@ class GkehubProjectsLocationsOperationsListRequest(_messages.Message):
 class GoogleRpcStatus(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
-  used by [gRPC](https://github.com/grpc). The error model is designed to be:
-  - Simple to use and understand for most users - Flexible enough to meet
-  unexpected needs  # Overview  The `Status` message contains three pieces of
-  data: error code, error message, and error details. The error code should be
-  an enum value of google.rpc.Code, but it may accept additional error codes
-  if needed.  The error message should be a developer-facing English message
-  that helps developers *understand* and *resolve* the error. If a localized
-  user-facing error message is needed, put the localized message in the error
-  details or localize it in the client. The optional error details may contain
-  arbitrary information about the error. There is a predefined set of error
-  detail types in the package `google.rpc` that can be used for common error
-  conditions.  # Language mapping  The `Status` message is the logical
-  representation of the error model, but it is not necessarily the actual wire
-  format. When the `Status` message is exposed in different client libraries
-  and different wire protocols, it can be mapped differently. For example, it
-  will likely be mapped to some exceptions in Java, but more likely mapped to
-  some error codes in C.  # Other uses  The error model and the `Status`
-  message can be used in a variety of environments, either with or without
-  APIs, to provide a consistent developer experience across different
-  environments.  Example uses of this error model include:  - Partial errors.
-  If a service needs to return partial errors to the client,     it may embed
-  the `Status` in the normal response to indicate the partial     errors.  -
-  Workflow errors. A typical workflow has multiple steps. Each step may
-  have a `Status` message for error reporting.  - Batch operations. If a
-  client uses batch request and batch response, the     `Status` message
-  should be used directly inside batch response, one for     each error sub-
-  response.  - Asynchronous operations. If an API call embeds asynchronous
-  operation     results in its response, the status of those operations should
-  be     represented directly using the `Status` message.  - Logging. If some
-  API errors are stored in logs, the message `Status` could     be used
-  directly after any stripping needed for security/privacy reasons.
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details.  You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
 
   Messages:
     DetailsValueListEntry: A DetailsValueListEntry object.
@@ -641,6 +874,35 @@ class GoogleRpcStatus(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class HelloWorldFeatureSpec(_messages.Message):
+  r"""An empty spec for hello world feature. This is required since Feature
+  proto requires a spec.
+  """
+
+
+
+class HelloWorldFeatureState(_messages.Message):
+  r"""An empty state for hello world feature. This is required since
+  FeatureStateDetails requires a state.
+  """
+
+
+
+class ListFeaturesResponse(_messages.Message):
+  r"""Response message for the `GkeHubDomainFeatureService.ListFeatures`
+  method.
+
+  Fields:
+    nextPageToken: A token to request the next page of resources from the
+      `ListFeatures` method. The value of an empty string means that there are
+      no more resources to return.
+    resources: The list of Features contained within the parent.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  resources = _messages.MessageField('Feature', 2, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -763,6 +1025,67 @@ class LogConfig(_messages.Message):
   dataAccess = _messages.MessageField('DataAccessOptions', 3)
 
 
+class MetadataFeatureSpec(_messages.Message):
+  r"""There is no spec for metadata, but the Feature proto requires a spec."""
+
+
+class MetadataFeatureState(_messages.Message):
+  r"""Represents metadata about a Membership (e.g., the version of its API
+  server, the number of nodes).
+
+  Fields:
+    createTime: Output only. Timestamp for when the Metadata was created.
+    healthStatus: Output only. The response from the /healthz endpoint on the
+      API server. This is the source of `code` in the FeatureStateDetails
+      proto.
+    updateTime: Output only. Timestamp for when the Metadata was last updated.
+    version: Output only. The version of the Kubernetes (or Kubernetes-style)
+      API server.
+  """
+
+  createTime = _messages.StringField(1)
+  healthStatus = _messages.StringField(2)
+  updateTime = _messages.StringField(3)
+  version = _messages.StringField(4)
+
+
+class MeteringFeatureSpec(_messages.Message):
+  r"""An empty spec for metering feature. This is required since Feature proto
+  requires a spec.
+  """
+
+
+
+class MeteringFeatureState(_messages.Message):
+  r"""An empty state for metering feature. This is required since
+  FeatureStateDetails requires a state.
+  """
+
+
+
+class MultiClusterIngressFeatureSpec(_messages.Message):
+  r"""MultiClusterIngressFeatureSpec contains the input for the
+  MultiClusterIngress feature. This spec is a placeholder and is subject to
+  change.
+
+  Fields:
+    configMembership: Fully-qualified member name which hosts the
+      MultiClusterIngress CRD. Example member name: `projects/foo-
+      proj/locations/global/memberships/bar`
+  """
+
+  configMembership = _messages.StringField(1)
+
+
+class MultiClusterIngressFeatureState(_messages.Message):
+  r"""MultiClusterIngressFeatureState contains the status fields specific to
+  the MultiClusterIngress feature. This is just a placeholder and more fields
+  will be added when we have more state information to report for this
+  feature.
+  """
+
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -794,7 +1117,8 @@ class Operation(_messages.Message):
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
-      the `name` should have the format of `operations/some/unique/name`.
+      the `name` should be a resource name ending with
+      `operations/{unique_id}`.
     response: The normal response of the operation in case of success.  If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`.  If the original method is standard
@@ -902,7 +1226,7 @@ class Policy(_messages.Message):
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten blindly.
+      the existing policy is overwritten.
     iamOwned: A boolean attribute.
     rules: If more than one rule is specified, the rules are applied in the
       following manner: - All matching LOG rules are always applied. - If any
@@ -974,6 +1298,35 @@ class Rule(_messages.Message):
   logConfig = _messages.MessageField('LogConfig', 5, repeated=True)
   notIn = _messages.StringField(6, repeated=True)
   permissions = _messages.StringField(7, repeated=True)
+
+
+class ServiceMeshFeatureSpec(_messages.Message):
+  r"""ServiceMeshFeatureSpec contains the input for the service mesh feature.
+  Only those fields that qualify as user inputs are eligible to be in a
+  feature spec. These feature spec messages are per-feature, meaning each
+  feature is expected to have its own set of fields. Auto-filled fields and
+  statues do not belong to a spec and must be included in the details field of
+  the feature's status. Spec fields could be of any type: primitive or non-
+  primitive types. These types could be simple or complex types and complex
+  types could be nested. There is no restriction on nesting depth.
+
+  Fields:
+    mtls: Mesh should have mtls enabled.
+  """
+
+  mtls = _messages.BooleanField(1)
+
+
+class ServiceMeshFeatureState(_messages.Message):
+  r"""ServiceMeshFeatureState contains the status fields specific to the
+  service mesh feature. Only those fields that reflect the state of the
+  feature are eligible to be in a feature's state message. These fields are
+  expected to be updated only by the automation and that's usually the
+  controllers operating on this feature.  This is currently just a placeholder
+  and more fields will be added when we have more state information to report
+  for this feature.
+  """
+
 
 
 class SetIamPolicyRequest(_messages.Message):

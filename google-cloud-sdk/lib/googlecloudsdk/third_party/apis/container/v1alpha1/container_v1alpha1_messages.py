@@ -375,6 +375,7 @@ class Cluster(_messages.Message):
     subnetwork: The name of the Google Compute Engine
       [subnetwork](/compute/docs/subnetworks) to which the cluster is
       connected. On output this shows the subnetwork ID instead of the name.
+    tierSettings: Cluster tier settings.
     tpuIpv4CidrBlock: [Output only] The IP address range of the Cloud TPUs in
       this cluster, in [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
       Domain_Routing) notation (e.g. `1.2.3.4/29`).
@@ -510,10 +511,11 @@ class Cluster(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 53)
   statusMessage = _messages.StringField(54)
   subnetwork = _messages.StringField(55)
-  tpuIpv4CidrBlock = _messages.StringField(56)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 57)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 58)
-  zone = _messages.StringField(59)
+  tierSettings = _messages.MessageField('TierSettings', 56)
+  tpuIpv4CidrBlock = _messages.StringField(57)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 58)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 59)
+  zone = _messages.StringField(60)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -1382,6 +1384,60 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class FeatureConfig(_messages.Message):
+  r"""FeatureConfig is the configuration for a specific feature including the
+  definition of the feature as well as the tier in which it resides.
+
+  Enums:
+    FeatureValueValuesEnum: The feature that is being configured with this
+      value.
+    TierValueValuesEnum: The tier in which the configured feature resides.
+
+  Fields:
+    feature: The feature that is being configured with this value.
+    tier: The tier in which the configured feature resides.
+  """
+
+  class FeatureValueValuesEnum(_messages.Enum):
+    r"""The feature that is being configured with this value.
+
+    Values:
+      DEFAULT_FEATURE: DEFAULT_FEATURE is the default zero value of the
+        Feature.  This value is valid.
+      VERTICAL_POD_AUTOSCALER: The vertical pod autoscaling feature.
+      NODE_AUTO_PROVISIONING: The node auto provisioning feature.
+      BINARY_AUTHORIZATION: The binary authorization feature.
+      RESOURCE_LABELS: The resource labels feature.
+      USAGE_METERING: The GKE usage metering feature.
+      CLOUD_RUN_ON_GKE: The Cloud Run on GKE feature.
+    """
+    DEFAULT_FEATURE = 0
+    VERTICAL_POD_AUTOSCALER = 1
+    NODE_AUTO_PROVISIONING = 2
+    BINARY_AUTHORIZATION = 3
+    RESOURCE_LABELS = 4
+    USAGE_METERING = 5
+    CLOUD_RUN_ON_GKE = 6
+
+  class TierValueValuesEnum(_messages.Enum):
+    r"""The tier in which the configured feature resides.
+
+    Values:
+      TIER_UNSPECIFIED: TIER_UNSPECIFIED is the default value. If this value
+        is set during create or update, it defaults to the project level tier
+        setting.
+      STANDARD: Represents the standard tier or base Google Kubernetes Engine
+        offering.
+      ADVANCED: Represents the advanced tier.
+    """
+    TIER_UNSPECIFIED = 0
+    STANDARD = 1
+    ADVANCED = 2
+
+  feature = _messages.EnumField('FeatureValueValuesEnum', 1)
+  tier = _messages.EnumField('TierValueValuesEnum', 2)
 
 
 class GcePersistentDiskCsiDriverConfig(_messages.Message):
@@ -2698,6 +2754,18 @@ class PodSecurityPolicyConfig(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
+class PremiumConfig(_messages.Message):
+  r"""PremiumConfig is the configuration for all premium features and tiers.
+
+  Fields:
+    features: The features that GKE provides.
+    tiers: The tiers that are part of the premium offering.
+  """
+
+  features = _messages.MessageField('FeatureConfig', 1, repeated=True)
+  tiers = _messages.MessageField('TierConfig', 2, repeated=True)
+
+
 class PrivateClusterConfig(_messages.Message):
   r"""Configuration options for private clusters.
 
@@ -2743,34 +2811,86 @@ class PrivateIPv6Status(_messages.Message):
 
 class ReleaseChannel(_messages.Message):
   r"""ReleaseChannel indicates which release channel a cluster is subscribed
-  to. Release channels are arranged in order of risk and frequency of updates;
-  RAPID channel clusters are the first to receive the latest releases of
-  Kubernetes and other components.  When a cluster is subscribed to a release
-  channel, Google maintains both the master version and the node version. Node
-  auto-upgrade defaults to true and cannot be disabled. Updates to version
-  related fields (e.g. current_master_version) return an error.
+  to. Release channels are arranged in order of risk and frequency of updates.
+  When a cluster is subscribed to a release channel, Google maintains both the
+  master version and the node version. Node auto-upgrade defaults to true and
+  cannot be disabled. Updates to version related fields (e.g.
+  current_master_version) return an error.
 
   Enums:
-    ChannelValueValuesEnum: channel specified which release channel the
+    ChannelValueValuesEnum: channel specifies which release channel the
       cluster is subscribed to.
 
   Fields:
-    channel: channel specified which release channel the cluster is subscribed
+    channel: channel specifies which release channel the cluster is subscribed
       to.
   """
 
   class ChannelValueValuesEnum(_messages.Enum):
-    r"""channel specified which release channel the cluster is subscribed to.
+    r"""channel specifies which release channel the cluster is subscribed to.
 
     Values:
       UNSPECIFIED: No channel specified.
       RAPID: Clusters subscribed to RAPID receive the latest qualified
-        components, before any other channel.
+        components, before any other channel. RAPID is intended for early
+        testers and developers who require new features. New upgrades will
+        occur roughly weekly.
+      REGULAR: Clusters subscribed to REGULAR receive versions that are
+        considered GA quality. REGULAR is intended for production users who
+        want to take advantage of new features. New upgrades will occur
+        roughly every few weeks.
+      STABLE: Clusters subscribed to STABLE receive versions that are known to
+        be stable and reliable in production. STABLE is intended for
+        production users who need stability above all else, or for whom
+        frequent upgrades are too risky. New upgrades will occur roughly every
+        few months.
     """
     UNSPECIFIED = 0
     RAPID = 1
+    REGULAR = 2
+    STABLE = 3
 
   channel = _messages.EnumField('ChannelValueValuesEnum', 1)
+
+
+class ReleaseChannelConfig(_messages.Message):
+  r"""ReleaseChannelConfig exposes configuration for a release channel.
+
+  Enums:
+    ChannelValueValuesEnum: The release channel this configuration applies to.
+
+  Fields:
+    channel: The release channel this configuration applies to.
+    defaultVersion: The default version for newly created clusters on the
+      channel.
+  """
+
+  class ChannelValueValuesEnum(_messages.Enum):
+    r"""The release channel this configuration applies to.
+
+    Values:
+      UNSPECIFIED: No channel specified.
+      RAPID: Clusters subscribed to RAPID receive the latest qualified
+        components, before any other channel. RAPID is intended for early
+        testers and developers who require new features. New upgrades will
+        occur roughly weekly.
+      REGULAR: Clusters subscribed to REGULAR receive versions that are
+        considered GA quality. REGULAR is intended for production users who
+        want to take advantage of new features. New upgrades will occur
+        roughly every few weeks.
+      STABLE: Clusters subscribed to STABLE receive versions that are known to
+        be stable and reliable in production. STABLE is intended for
+        production users who need stability above all else, or for whom
+        frequent upgrades are too risky. New upgrades will occur roughly every
+        few months.
+    """
+    UNSPECIFIED = 0
+    RAPID = 1
+    REGULAR = 2
+    STABLE = 3
+
+  channel = _messages.EnumField('ChannelValueValuesEnum', 1)
+  defaultVersion = _messages.StringField(2)
 
 
 class ReservationAffinity(_messages.Message):
@@ -2901,19 +3021,23 @@ class ServerConfig(_messages.Message):
   r"""Kubernetes Engine service configuration.
 
   Fields:
+    channels: List of release channel configurations.
     defaultClusterVersion: Version of Kubernetes the service deploys by
       default.
     defaultImageType: Default image type.
+    premiumConfig: Premium configuration for the service.
     validImageTypes: List of valid image types.
     validMasterVersions: List of valid master versions.
     validNodeVersions: List of valid node upgrade target versions.
   """
 
-  defaultClusterVersion = _messages.StringField(1)
-  defaultImageType = _messages.StringField(2)
-  validImageTypes = _messages.StringField(3, repeated=True)
-  validMasterVersions = _messages.StringField(4, repeated=True)
-  validNodeVersions = _messages.StringField(5, repeated=True)
+  channels = _messages.MessageField('ReleaseChannelConfig', 1, repeated=True)
+  defaultClusterVersion = _messages.StringField(2)
+  defaultImageType = _messages.StringField(3)
+  premiumConfig = _messages.MessageField('PremiumConfig', 4)
+  validImageTypes = _messages.StringField(5, repeated=True)
+  validMasterVersions = _messages.StringField(6, repeated=True)
+  validNodeVersions = _messages.StringField(7, repeated=True)
 
 
 class SetAddonsConfigRequest(_messages.Message):
@@ -3438,6 +3562,86 @@ class StatusCondition(_messages.Message):
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
+
+
+class TierConfig(_messages.Message):
+  r"""TierConfig is the configuration for a tier offering.  For example the
+  GKE standard or advanced offerings which contain different levels of
+  functionality and possibly cost.
+
+  Enums:
+    ParentValueValuesEnum: The tier from which the tier being configured
+      inherits.  The configured tier will inherit all the features from its
+      parent tier.
+    TierValueValuesEnum: The tier that is being configured with this value.
+
+  Fields:
+    parent: The tier from which the tier being configured inherits.  The
+      configured tier will inherit all the features from its parent tier.
+    tier: The tier that is being configured with this value.
+  """
+
+  class ParentValueValuesEnum(_messages.Enum):
+    r"""The tier from which the tier being configured inherits.  The
+    configured tier will inherit all the features from its parent tier.
+
+    Values:
+      TIER_UNSPECIFIED: TIER_UNSPECIFIED is the default value. If this value
+        is set during create or update, it defaults to the project level tier
+        setting.
+      STANDARD: Represents the standard tier or base Google Kubernetes Engine
+        offering.
+      ADVANCED: Represents the advanced tier.
+    """
+    TIER_UNSPECIFIED = 0
+    STANDARD = 1
+    ADVANCED = 2
+
+  class TierValueValuesEnum(_messages.Enum):
+    r"""The tier that is being configured with this value.
+
+    Values:
+      TIER_UNSPECIFIED: TIER_UNSPECIFIED is the default value. If this value
+        is set during create or update, it defaults to the project level tier
+        setting.
+      STANDARD: Represents the standard tier or base Google Kubernetes Engine
+        offering.
+      ADVANCED: Represents the advanced tier.
+    """
+    TIER_UNSPECIFIED = 0
+    STANDARD = 1
+    ADVANCED = 2
+
+  parent = _messages.EnumField('ParentValueValuesEnum', 1)
+  tier = _messages.EnumField('TierValueValuesEnum', 2)
+
+
+class TierSettings(_messages.Message):
+  r"""Cluster tier settings.
+
+  Enums:
+    TierValueValuesEnum: Cluster tier.
+
+  Fields:
+    tier: Cluster tier.
+  """
+
+  class TierValueValuesEnum(_messages.Enum):
+    r"""Cluster tier.
+
+    Values:
+      TIER_UNSPECIFIED: TIER_UNSPECIFIED is the default value. If this value
+        is set during create or update, it defaults to the project level tier
+        setting.
+      STANDARD: Represents the standard tier or base Google Kubernetes Engine
+        offering.
+      ADVANCED: Represents the advanced tier.
+    """
+    TIER_UNSPECIFIED = 0
+    STANDARD = 1
+    ADVANCED = 2
+
+  tier = _messages.EnumField('TierValueValuesEnum', 1)
 
 
 class UpdateClusterRequest(_messages.Message):

@@ -66,7 +66,8 @@ SCHEMA = s.Message(
             'target_read_bytes_per_sec'),
         target_disk_read_ops_per_sec=s.Value(
             'target_read_ops_per_sec'),
-        target_request_count_per_sec=s.Value(),
+        target_request_count_per_sec=s.Value(
+            'target_request_count_per_second'),
         target_concurrent_requests=s.Value(),
         custom_metrics=s.RepeatedField(element=s.Message(
             metric_name=s.Value(converter=c.ToJsonString),

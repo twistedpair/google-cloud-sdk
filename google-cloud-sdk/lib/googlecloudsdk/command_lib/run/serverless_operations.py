@@ -527,15 +527,6 @@ class ServerlessOperations(object):
       raise serverless_exceptions.ConfigurationError(
           conditions.DescriptiveMessage())
 
-  def GetServiceUrl(self, service_ref):
-    """Return the main URL for the service."""
-    serv = self.GetService(service_ref)
-    if serv.domain:
-      return serv.domain
-    # Older versions of knative don't populate domain on Service, only Route.
-    serv_route = self._GetRoute(service_ref)
-    return serv_route.domain
-
   def GetActiveRevisions(self, service_ref):
     """Return the actively serving revisions.
 

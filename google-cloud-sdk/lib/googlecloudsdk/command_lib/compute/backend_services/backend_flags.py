@@ -121,6 +121,14 @@ def _GetBalancingModes():
   return balancing_modes
 
 
+def _GetInternetDisallowedClause(support_global_neg):
+  return """\
+
+     This cannot be used when the endpoint type of an attached NEG is
+     INTERNET_IP_PORT or INTERNET_FQDN_PORT.
+     """ if support_global_neg else ''
+
+
 def AddBalancingMode(parser):
   """Add balancing mode arguments."""
   parser.add_argument(
@@ -131,10 +139,11 @@ def AddBalancingMode(parser):
       Defines the strategy for balancing load.""")
 
 
-def AddCapacityLimits(parser):
+def AddCapacityLimits(parser, support_global_neg=False):
   """Add capacity thresholds arguments."""
   AddMaxUtilization(parser)
   capacity_group = parser.add_group(mutex=True)
+  internet_disallowed_clause = _GetInternetDisallowedClause(support_global_neg)
   capacity_group.add_argument(
       '--max-rate-per-endpoint',
       type=float,
@@ -145,7 +154,7 @@ def AddCapacityLimits(parser):
       maximum rate per healthy endpoint is calculated by multiplying
       MAX_RATE_PER_ENDPOINT by the number of endpoints in the network
       endpoint group, then dividing by the number of healthy endpoints.
-      """)
+      """ + internet_disallowed_clause)
   capacity_group.add_argument(
       '--max-connections-per-endpoint',
       type=int,
@@ -156,7 +165,7 @@ def AddCapacityLimits(parser):
       connections per healthy endpoint is calculated by multiplying
       MAX_CONNECTIONS_PER_ENDPOINT by the number of endpoints in the network
       endpoint group, then dividing by the number of healthy endpoints.
-      """)
+      """ + internet_disallowed_clause)
 
   capacity_group.add_argument(
       '--max-rate',
@@ -166,7 +175,7 @@ def AddCapacityLimits(parser):
       handle. Valid for instance group and network endpoint group backends.
       Must not be defined if the backend is a managed instance group using
       autoscaling based on load balancing.
-      """)
+      """ + internet_disallowed_clause)
   capacity_group.add_argument(
       '--max-rate-per-instance',
       type=float,
@@ -186,7 +195,7 @@ def AddCapacityLimits(parser):
       help="""\
       Maximum concurrent connections that the backend can handle.
       Valid for instance group and network endpoint group backends.
-      """)
+      """ + internet_disallowed_clause)
   capacity_group.add_argument(
       '--max-connections-per-instance',
       type=int,
@@ -244,7 +253,7 @@ def AddMaxUtilization(parser):
       maximum utilization or the maximum rate is reached.""")
 
 
-def AddCapacityScalar(parser):
+def AddCapacityScalar(parser, support_global_neg=False):
   parser.add_argument(
       '--capacity-scaler',
       type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
@@ -255,7 +264,8 @@ def AddCapacityScalar(parser):
       value to `0.0` (0%) drains the backend service. Note that draining a
       backend service only prevents new connections to instances in the group.
       All existing connections are allowed to continue until they close by
-      normal means. This cannot be used for internal load balancing.""")
+      normal means. This cannot be used for internal load balancing.
+      """ + _GetInternetDisallowedClause(support_global_neg))
 
 
 def AddFailover(parser, default):

@@ -17,7 +17,7 @@
 import enum
 
 
-BASE_URL = 'https://bigquery.googleapis.com/bigquery/v2/'
+BASE_URL = 'https://www.googleapis.com/bigquery/v2/'
 DOCS_URL = 'https://cloud.google.com/bigquery/'
 
 

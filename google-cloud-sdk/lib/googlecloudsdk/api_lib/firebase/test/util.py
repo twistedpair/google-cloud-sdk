@@ -203,23 +203,6 @@ def _GetCatalog(client, messages, environment_type):
   try:
     return client.testEnvironmentCatalog.Get(request)
   except apitools_exceptions.HttpError as error:
-    # During alpha, the iOS Testing API is under access control via a whitelist.
-    # TODO(b/77573927): remove custom 400 error handling when iOS leaves alpha.
-    # Also add a unit test for this error.
-    env_ios = (
-        messages.TestingTestEnvironmentCatalogGetRequest.
-        EnvironmentTypeValueValuesEnum.IOS)
-    if GetErrorCodeAndMessage(error)[0] == 400 and environment_type == env_ios:
-      project_id = project_id or 'CURRENT_PROJECT'
-      raise exceptions.RestrictedServiceError(
-          'Unable to access the test environment catalog. Firebase Test Lab '
-          'for iOS is currently in beta. Request access for your project via '
-          'the following form:\n  https://goo.gl/forms/wAxbiNEP2pxeIRG82 \n\n'
-          'If this project has already been granted access, please make sure '
-          'you are using a project on the Blaze or Flame billing plans, and '
-          'that you have run\n`gcloud config set billing/quota_project {p}`\n'
-          '\nIf you are still having issues, please email '
-          'ftl-ios-feedback@google.com for support.'.format(p=project_id))
     raise calliope_exceptions.HttpException(
         'Unable to access the test environment catalog: ' + GetError(error))
   except:

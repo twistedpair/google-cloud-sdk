@@ -100,6 +100,11 @@ def ValidateUpdateFieldMask(ref, unused_args, request):
 
 
 def CreateFullServiceAccountNameFromId(account_id):
+  if not account_id.isdigit():
+    raise gcloud_exceptions.InvalidArgumentException(
+        'account_id',
+        'Account unique ID should be a number. Please double check your input and try again.'
+    )
   return 'projects/-/serviceAccounts/' + account_id
 
 

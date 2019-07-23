@@ -9,6 +9,10 @@ organization:
       (Optional) If the full resource name isn't provided e.g. organizations/123, then provide the
       organization id which is the suffix of the organization. Example: organizations/123, the id is
       123.
+    fallthroughs:
+    - hook: googlecloudsdk.command_lib.scc.hooks:GetDefaultOrganization
+      hint: Set the organization property in configuration using `gcloud config set scc/organization`
+        if it is not specified in command line.
   disable_auto_completers: false
 
 asset:

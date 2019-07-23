@@ -129,6 +129,14 @@ class Collections(enum.Enum):
       [u'operation'],
       True
   )
+  GLOBALPUBLICDELEGATEDPREFIXES = (
+      'globalPublicDelegatedPrefixes',
+      'projects/{project}/global/publicDelegatedPrefixes/'
+      '{publicDelegatedPrefix}',
+      {},
+      [u'project', u'publicDelegatedPrefix'],
+      True
+  )
   HEALTHCHECKS = (
       'healthChecks',
       'projects/{project}/global/healthChecks/{healthCheck}',
@@ -298,6 +306,22 @@ class Collections(enum.Enum):
       'projects/{project}',
       {},
       [u'project'],
+      True
+  )
+  PUBLICADVERTISEDPREFIXES = (
+      'publicAdvertisedPrefixes',
+      'projects/{project}/global/publicAdvertisedPrefixes/'
+      '{publicAdvertisedPrefix}',
+      {},
+      [u'project', u'publicAdvertisedPrefix'],
+      True
+  )
+  PUBLICDELEGATEDPREFIXES = (
+      'publicDelegatedPrefixes',
+      'projects/{project}/regions/{region}/publicDelegatedPrefixes/'
+      '{publicDelegatedPrefix}',
+      {},
+      [u'project', u'region', u'publicDelegatedPrefix'],
       True
   )
   REGIONAUTOSCALERS = (

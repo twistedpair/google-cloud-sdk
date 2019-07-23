@@ -10435,7 +10435,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves all information of the specified reservation.
+      r"""Retrieves information about the specified reservation.
 
       Args:
         request: (ComputeReservationsGetRequest) input message
@@ -10513,7 +10513,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""A list all the reservations that have been configured for the specified project in specified zone.
+      r"""A list of all the reservations that have been configured for the specified project in specified zone.
 
       Args:
         request: (ComputeReservationsListRequest) input message
@@ -10539,7 +10539,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Resize(self, request, global_params=None):
-      r"""Resizes the reservation (applicable to standalone reservations only).
+      r"""Resizes the reservation (applicable to standalone reservations only). For more information, read Modifying reservations.
 
       Args:
         request: (ComputeReservationsResizeRequest) input message
@@ -10940,7 +10940,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id=u'compute.routers.getNatMappingInfo',
         ordered_params=[u'project', u'region', u'router'],
         path_params=[u'project', u'region', u'router'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        query_params=[u'filter', u'maxResults', u'natName', u'orderBy', u'pageToken'],
         relative_path=u'projects/{project}/regions/{region}/routers/{router}/getNatMappingInfo',
         request_field='',
         request_type_name=u'ComputeRoutersGetNatMappingInfoRequest',
@@ -12337,7 +12337,7 @@ For more information, see Deleting snapshots.
     )
 
     def ListUsable(self, request, global_params=None):
-      r"""Retrieves an aggregated list of usable subnetworks.
+      r"""Retrieves an aggregated list of all usable subnetworks in the project. The list contains all of the subnetworks in the project and the subnetworks that were shared by a Shared VPC host project.
 
       Args:
         request: (ComputeSubnetworksListUsableRequest) input message

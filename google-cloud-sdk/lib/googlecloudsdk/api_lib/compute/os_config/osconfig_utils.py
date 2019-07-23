@@ -18,10 +18,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import encoding
 from enum import Enum
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import yaml
 
 
 class InstanceDetailsStates(Enum):
@@ -50,9 +53,24 @@ _API_CLIENT_NAME = 'osconfig'
 _API_CLIENT_VERSION_MAP = {base.ReleaseTrack.ALPHA: 'v1alpha2'}
 
 
+def GetParentUriPath(parent_name, parent_id):
+  """Return the URI path of a GCP parent resource."""
+  return '/'.join([parent_name, parent_id])
+
+
 def GetProjectUriPath(project):
   """Return the URI path of a GCP project."""
-  return '/'.join(['projects', project])
+  return GetParentUriPath('projects', project)
+
+
+def GetFolderUriPath(folder):
+  """Return the URI path of a GCP folder."""
+  return GetParentUriPath('folders', folder)
+
+
+def GetOrganizationUriPath(organization):
+  """Return the URI path of a GCP organization."""
+  return GetParentUriPath('organizations', organization)
 
 
 def GetPatchJobUriPath(project, patch_job):
@@ -63,6 +81,11 @@ def GetPatchJobUriPath(project, patch_job):
 def GetPatchJobName(patch_job_uri):
   """Return the name of a patch job from its URI."""
   return patch_job_uri.split('/')[3]
+
+
+def GetGuestPolicyRelativePath(parent, guest_policy):
+  """Return the relative path of an osconfig guest policy."""
+  return '/'.join([parent, 'guestPolicies', guest_policy])
 
 
 def GetClientClass(release_track, api_version_override=None):
@@ -113,3 +136,27 @@ class Poller(waiter.OperationPoller):
   def GetResult(self, patch_job):
     """Overrides."""
     return patch_job
+
+
+def AddFolderAndOrgArgs(parser, noun, verb):
+  parent_resource_group = parser.add_group(
+      help='The scope of the {}.'.format(noun), mutex=True)
+  parent_resource_group.add_argument(
+      '--folder', type=str, help='The folder of the {} {}.'.format(noun, verb))
+  parent_resource_group.add_argument(
+      '--organization',
+      type=str,
+      help='The organization of the {} {}.'.format(noun, verb))
+
+
+def GetResourceAndUpdateFieldsFromFile(file_path, resource_message_type):
+  try:
+    resource_to_parse = yaml.load_path(file_path)
+    update_fields = list(resource_to_parse.keys())
+    resource = encoding.PyValueToMessage(resource_message_type,
+                                         resource_to_parse)
+    return (resource, update_fields)
+  except (AttributeError) as e:
+    raise exceptions.BadFileException(
+        'Policy config file [{0}] is not a properly formatted YAML or JSON '
+        'file. {1}'.format(file_path, str(e)))

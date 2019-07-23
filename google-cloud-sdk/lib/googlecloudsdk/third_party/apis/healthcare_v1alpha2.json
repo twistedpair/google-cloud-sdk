@@ -1317,7 +1317,7 @@
         "contentStructure": {
           "description": "The content structure in the source location. If not specified, the server\ntreats the input source files as BUNDLE.",
           "enumDescriptions": [
-            "",
+            "Content structure is not specified; defaults to BUNDLE.",
             "The source file contains one or more lines of newline-delimited JSON\n(ndjson). Each line is a bundle, which contains one or more resources.\nSet the bundle type to `history` to import resource versions.",
             "The source file contains one or more lines of newline-delimited JSON\n(ndjson). Each line is a single resource.",
             "The entire file is one JSON bundle. The JSON can span multiple lines.",
@@ -2370,7 +2370,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Imports data into the DICOM store by copying it from the specified source.\nFor errors, the Operation will be populated with error details (in the form\nof ImportDicomDataErrorDetails in error.details), which will hold\nfiner-grained error information.\nThe metadata field type is\nOperationMetadata."
+                      "description": "Imports data into the DICOM store by copying it from the specified source.\nFor errors, the Operation will be populated with error details (in the form\nof ImportDicomDataErrorDetails in error.details), which will hold\nfiner-grained error information. Errors are also logged to Stackdriver\n(see [Viewing logs](\/healthcare\/docs\/how-tos\/stackdriver-logging)).\nThe metadata field type is\nOperationMetadata."
                     },
                     "export": {
                       "id": "healthcare.projects.locations.datasets.dicomStores.export",
@@ -3556,247 +3556,19 @@
                     }
                   }
                 },
-                "operations": {
+                "fhirStores": {
                   "methods": {
-                    "list": {
-                      "id": "healthcare.projects.locations.datasets.operations.list",
-                      "path": "v1alpha2/{+name}/operations",
-                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/operations",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation's parent resource.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
-                          "type": "string"
-                        },
-                        "filter": {
-                          "description": "The standard list filter.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "The standard list page size.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "description": "The standard list page token.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "ListOperationsResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id."
-                    },
-                    "get": {
-                      "id": "healthcare.projects.locations.datasets.operations.get",
-                      "path": "v1alpha2/{+name}",
-                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/operations/{operationsId}",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation resource.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/operations\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
-                    }
-                  }
-                },
-                "annotationStores": {
-                  "methods": {
-                    "create": {
-                      "id": "healthcare.projects.locations.datasets.annotationStores.create",
-                      "path": "v1alpha2/{+parent}/annotationStores",
-                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "parent": {
-                          "description": "The name of the dataset this Annotation store belongs to.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
-                          "type": "string"
-                        },
-                        "annotationStoreId": {
-                          "description": "The ID of the Annotation store that is being created.\nThe string must match the following regex: `[\\p{L}\\p{N}_\\-\\.]{1,256}`.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "request": {
-                        "$ref": "AnnotationStore"
-                      },
-                      "response": {
-                        "$ref": "AnnotationStore"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Creates a new Annotation store within the parent dataset."
-                    },
-                    "get": {
-                      "id": "healthcare.projects.locations.datasets.annotationStores.get",
-                      "path": "v1alpha2/{+name}",
-                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "The resource name of the Annotation store to get.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "AnnotationStore"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets the specified Annotation store or returns NOT_FOUND if it does not\nexist."
-                    },
-                    "delete": {
-                      "id": "healthcare.projects.locations.datasets.annotationStores.delete",
-                      "path": "v1alpha2/{+name}",
-                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}",
-                      "httpMethod": "DELETE",
-                      "parameters": {
-                        "name": {
-                          "description": "The resource name of the Annotation store to delete.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "Empty"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Deletes the specified Annotation store and removes all annotations that are\ncontained within it."
-                    },
-                    "patch": {
-                      "id": "healthcare.projects.locations.datasets.annotationStores.patch",
-                      "path": "v1alpha2/{+name}",
-                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}",
-                      "httpMethod": "PATCH",
-                      "parameters": {
-                        "name": {
-                          "description": "Output only. Resource name of the Annotation store, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+$",
-                          "type": "string"
-                        },
-                        "updateMask": {
-                          "description": "The update mask applies to the resource. For the `FieldMask` definition,\nsee\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
-                          "location": "query",
-                          "type": "string",
-                          "format": "google-fieldmask"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "request": {
-                        "$ref": "AnnotationStore"
-                      },
-                      "response": {
-                        "$ref": "AnnotationStore"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Updates the specified Annotation store."
-                    },
-                    "list": {
-                      "id": "healthcare.projects.locations.datasets.annotationStores.list",
-                      "path": "v1alpha2/{+parent}/annotationStores",
-                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "parent": {
-                          "description": "Name of the dataset.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "Limit on the number of Annotation stores to return in a single response.\nIf zero the default page size of 100 is used.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "description": "The next_page_token value returned from the previous List request, if any.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "filter": {
-                          "description": "Restricts stores returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\nOnly filtering on labels is supported, for example `labels.key=value`.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "response": {
-                        "$ref": "ListAnnotationStoresResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Lists the Annotation stores in the given dataset for a source store."
-                    },
                     "setIamPolicy": {
-                      "id": "healthcare.projects.locations.datasets.annotationStores.setIamPolicy",
+                      "id": "healthcare.projects.locations.datasets.fhirStores.setIamPolicy",
                       "path": "v1alpha2/{+resource}:setIamPolicy",
-                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:setIamPolicy",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:setIamPolicy",
                       "httpMethod": "POST",
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+$",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3812,47 +3584,50 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "POLICIES\nSets the access control policy for a resource. Replaces any existing\npolicy.\n\nAuthorization requires the Google IAM permission\n`healthcare.annotationStores.setIamPolicy` on the specified\nresource"
+                      "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy."
                     },
                     "getIamPolicy": {
-                      "id": "healthcare.projects.locations.datasets.annotationStores.getIamPolicy",
+                      "id": "healthcare.projects.locations.datasets.fhirStores.getIamPolicy",
                       "path": "v1alpha2/{+resource}:getIamPolicy",
-                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:getIamPolicy",
-                      "httpMethod": "POST",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:getIamPolicy",
+                      "httpMethod": "GET",
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+$",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+$",
                           "type": "string"
+                        },
+                        "options.requestedPolicyVersion": {
+                          "description": "Optional. The policy format version to be returned.\nAcceptable values are 0 and 1.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
                         }
                       },
                       "parameterOrder": [
                         "resource"
                       ],
-                      "request": {
-                        "$ref": "GetIamPolicyRequest"
-                      },
                       "response": {
                         "$ref": "Policy"
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets the access control policy for a resource. Returns NOT_FOUND error if\nthe resource does not exist. Returns an empty policy if the resource exists\nbut does not have a policy set.\n\nAuthorization requires the Google IAM permission\n`healthcare.AnnotationStores.getIamPolicy` on the specified\nresource"
+                      "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset."
                     },
                     "testIamPermissions": {
-                      "id": "healthcare.projects.locations.datasets.annotationStores.testIamPermissions",
+                      "id": "healthcare.projects.locations.datasets.fhirStores.testIamPermissions",
                       "path": "v1alpha2/{+resource}:testIamPermissions",
-                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:testIamPermissions",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:testIamPermissions",
                       "httpMethod": "POST",
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+$",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3868,172 +3643,8 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nThere is no permission required to make this API call."
-                    }
-                  }
-                  ,
-                  "resources": {
-                    "annotations": {
-                      "methods": {
-                        "create": {
-                          "id": "healthcare.projects.locations.datasets.annotationStores.annotations.create",
-                          "path": "v1alpha2/{+parent}/annotations",
-                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}/annotations",
-                          "httpMethod": "POST",
-                          "parameters": {
-                            "parent": {
-                              "description": "The name of the Annotation store this annotation belongs to. For example,\n`projects\/my-project\/locations\/us-central1\/datasets\/mydataset\/annotationStores\/myannotationstore`.",
-                              "location": "path",
-                              "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+$",
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "parent"
-                          ],
-                          "request": {
-                            "$ref": "Annotation"
-                          },
-                          "response": {
-                            "$ref": "Annotation"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Creates a new Annotation record. It is\nvalid to create Annotation objects for the same source more than once since\na unique ID is assigned to each record by this service."
-                        },
-                        "get": {
-                          "id": "healthcare.projects.locations.datasets.annotationStores.annotations.get",
-                          "path": "v1alpha2/{+name}",
-                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}/annotations/{annotationsId}",
-                          "httpMethod": "GET",
-                          "parameters": {
-                            "name": {
-                              "description": "The resource name of the Annotation to retrieve.",
-                              "location": "path",
-                              "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+\/annotations\/[^\/]+$",
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "name"
-                          ],
-                          "response": {
-                            "$ref": "Annotation"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Gets an Annotation."
-                        },
-                        "delete": {
-                          "id": "healthcare.projects.locations.datasets.annotationStores.annotations.delete",
-                          "path": "v1alpha2/{+name}",
-                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}/annotations/{annotationsId}",
-                          "httpMethod": "DELETE",
-                          "parameters": {
-                            "name": {
-                              "description": "The resource name of the Annotation to delete.",
-                              "location": "path",
-                              "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+\/annotations\/[^\/]+$",
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "name"
-                          ],
-                          "response": {
-                            "$ref": "Empty"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Deletes an Annotation or returns\nNOT_FOUND if it does not exist."
-                        },
-                        "patch": {
-                          "id": "healthcare.projects.locations.datasets.annotationStores.annotations.patch",
-                          "path": "v1alpha2/{+name}",
-                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}/annotations/{annotationsId}",
-                          "httpMethod": "PATCH",
-                          "parameters": {
-                            "name": {
-                              "description": "Output only. Resource name of the Annotation, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}\/annotations\/{annotation_id}`.",
-                              "location": "path",
-                              "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+\/annotations\/[^\/]+$",
-                              "type": "string"
-                            },
-                            "updateMask": {
-                              "description": "The update mask applies to the resource. For the `FieldMask` definition,\nsee\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
-                              "location": "query",
-                              "type": "string",
-                              "format": "google-fieldmask"
-                            }
-                          },
-                          "parameterOrder": [
-                            "name"
-                          ],
-                          "request": {
-                            "$ref": "Annotation"
-                          },
-                          "response": {
-                            "$ref": "Annotation"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Updates the Annotation."
-                        },
-                        "list": {
-                          "id": "healthcare.projects.locations.datasets.annotationStores.annotations.list",
-                          "path": "v1alpha2/{+parent}/annotations",
-                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}/annotations",
-                          "httpMethod": "GET",
-                          "parameters": {
-                            "parent": {
-                              "description": "Name of the Annotation store to retrieve Annotations from.",
-                              "location": "path",
-                              "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+$",
-                              "type": "string"
-                            },
-                            "pageSize": {
-                              "description": "Limit on the number of Annotations to return in a single response.\nIf zero the default page size of 100 is used.",
-                              "location": "query",
-                              "type": "integer",
-                              "format": "int32"
-                            },
-                            "pageToken": {
-                              "description": "The next_page_token value returned from the previous List request, if any.",
-                              "location": "query",
-                              "type": "string"
-                            },
-                            "filter": {
-                              "description": "Restricts Annotations returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\nFields\/functions available for filtering are:\n- source_version",
-                              "location": "query",
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "parent"
-                          ],
-                          "response": {
-                            "$ref": "ListAnnotationsResponse"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Lists the Annotations in the given\nAnnotation store for a source\nresource."
-                        }
-                      }
-                    }
-                  }
-                },
-                "fhirStores": {
-                  "methods": {
+                      "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning."
+                    },
                     "capabilities": {
                       "id": "healthcare.projects.locations.datasets.fhirStores.capabilities",
                       "path": "v1alpha2/{+name}/metadata",
@@ -4272,93 +3883,6 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Lists the FHIR stores in the given dataset."
-                    },
-                    "setIamPolicy": {
-                      "id": "healthcare.projects.locations.datasets.fhirStores.setIamPolicy",
-                      "path": "v1alpha2/{+resource}:setIamPolicy",
-                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:setIamPolicy",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "resource": {
-                          "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "resource"
-                      ],
-                      "request": {
-                        "$ref": "SetIamPolicyRequest"
-                      },
-                      "response": {
-                        "$ref": "Policy"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Sets the access control policy for a FHIR store or security label within a\nFHIR store. Replaces any existing policy.\n\nAuthorization requires the Google IAM permission\n`healthcare.fhirStores.setIamPolicy` for a FHIR store or\n`healthcare.securityLabels.setIamPolicy` for a security label"
-                    },
-                    "getIamPolicy": {
-                      "id": "healthcare.projects.locations.datasets.fhirStores.getIamPolicy",
-                      "path": "v1alpha2/{+resource}:getIamPolicy",
-                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:getIamPolicy",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "resource": {
-                          "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+$",
-                          "type": "string"
-                        },
-                        "options.requestedPolicyVersion": {
-                          "description": "Optional. The policy format version to be returned.\nAcceptable values are 0 and 1.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        }
-                      },
-                      "parameterOrder": [
-                        "resource"
-                      ],
-                      "response": {
-                        "$ref": "Policy"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets the access control policy for a FHIR store or security label within a\nFHIR store. Returns NOT_FOUND error if the resource does not exist. Returns\nan empty policy if the resource exists but does not have a policy set.\n\nAuthorization requires the Google IAM permission\n`healthcare.fhirStores.getIamPolicy` for a FHIR store or\n`healthcare.securityLabels.getIamPolicy` for a security label"
-                    },
-                    "testIamPermissions": {
-                      "id": "healthcare.projects.locations.datasets.fhirStores.testIamPermissions",
-                      "path": "v1alpha2/{+resource}:testIamPermissions",
-                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:testIamPermissions",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "resource": {
-                          "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/.+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "resource"
-                      ],
-                      "request": {
-                        "$ref": "TestIamPermissionsRequest"
-                      },
-                      "response": {
-                        "$ref": "TestIamPermissionsResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Returns permissions that a caller has on the specified resource.  If the\nresource does not exist, this will return an empty set of permissions, not\na NOT_FOUND error.\n\nThere is no permission required to make this API call."
                     }
                   }
                   ,
@@ -4918,67 +4442,480 @@
                           "description": "Deletes all the historical versions of a resource (excluding the current\nversion) from the FHIR store. To remove all versions of a resource, first\ndelete the current version and then call this method.\n\nThis is not a FHIR standard operation."
                         }
                       }
+                    }
+                  }
+                },
+                "operations": {
+                  "methods": {
+                    "list": {
+                      "id": "healthcare.projects.locations.datasets.operations.list",
+                      "path": "v1alpha2/{+name}/operations",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/operations",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation's parent resource.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "The standard list filter.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The standard list page size.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The standard list page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "ListOperationsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id."
                     },
-                    "securityLabels": {
+                    "get": {
+                      "id": "healthcare.projects.locations.datasets.operations.get",
+                      "path": "v1alpha2/{+name}",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/operations/{operationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/operations\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+                    }
+                  }
+                },
+                "annotationStores": {
+                  "methods": {
+                    "create": {
+                      "id": "healthcare.projects.locations.datasets.annotationStores.create",
+                      "path": "v1alpha2/{+parent}/annotationStores",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the dataset this Annotation store belongs to.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "annotationStoreId": {
+                          "description": "The ID of the Annotation store that is being created.\nThe string must match the following regex: `[\\p{L}\\p{N}_\\-\\.]{1,256}`.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "AnnotationStore"
+                      },
+                      "response": {
+                        "$ref": "AnnotationStore"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new Annotation store within the parent dataset."
+                    },
+                    "get": {
+                      "id": "healthcare.projects.locations.datasets.annotationStores.get",
+                      "path": "v1alpha2/{+name}",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The resource name of the Annotation store to get.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "AnnotationStore"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the specified Annotation store or returns NOT_FOUND if it does not\nexist."
+                    },
+                    "delete": {
+                      "id": "healthcare.projects.locations.datasets.annotationStores.delete",
+                      "path": "v1alpha2/{+name}",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "The resource name of the Annotation store to delete.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Empty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes the specified Annotation store and removes all annotations that are\ncontained within it."
+                    },
+                    "patch": {
+                      "id": "healthcare.projects.locations.datasets.annotationStores.patch",
+                      "path": "v1alpha2/{+name}",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Output only. Resource name of the Annotation store, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "The update mask applies to the resource. For the `FieldMask` definition,\nsee\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "AnnotationStore"
+                      },
+                      "response": {
+                        "$ref": "AnnotationStore"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates the specified Annotation store."
+                    },
+                    "list": {
+                      "id": "healthcare.projects.locations.datasets.annotationStores.list",
+                      "path": "v1alpha2/{+parent}/annotationStores",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Name of the dataset.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Limit on the number of Annotation stores to return in a single response.\nIf zero the default page size of 100 is used.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The next_page_token value returned from the previous List request, if any.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Restricts stores returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\nOnly filtering on labels is supported, for example `labels.key=value`.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListAnnotationStoresResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists the Annotation stores in the given dataset for a source store."
+                    },
+                    "setIamPolicy": {
+                      "id": "healthcare.projects.locations.datasets.annotationStores.setIamPolicy",
+                      "path": "v1alpha2/{+resource}:setIamPolicy",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:setIamPolicy",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "SetIamPolicyRequest"
+                      },
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "POLICIES\nSets the access control policy for a resource. Replaces any existing\npolicy.\n\nAuthorization requires the Google IAM permission\n`healthcare.annotationStores.setIamPolicy` on the specified\nresource"
+                    },
+                    "getIamPolicy": {
+                      "id": "healthcare.projects.locations.datasets.annotationStores.getIamPolicy",
+                      "path": "v1alpha2/{+resource}:getIamPolicy",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:getIamPolicy",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "GetIamPolicyRequest"
+                      },
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the access control policy for a resource. Returns NOT_FOUND error if\nthe resource does not exist. Returns an empty policy if the resource exists\nbut does not have a policy set.\n\nAuthorization requires the Google IAM permission\n`healthcare.AnnotationStores.getIamPolicy` on the specified\nresource"
+                    },
+                    "testIamPermissions": {
+                      "id": "healthcare.projects.locations.datasets.annotationStores.testIamPermissions",
+                      "path": "v1alpha2/{+resource}:testIamPermissions",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:testIamPermissions",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "TestIamPermissionsRequest"
+                      },
+                      "response": {
+                        "$ref": "TestIamPermissionsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nThere is no permission required to make this API call."
+                    }
+                  }
+                  ,
+                  "resources": {
+                    "annotations": {
                       "methods": {
-                        "setIamPolicy": {
-                          "id": "healthcare.projects.locations.datasets.fhirStores.securityLabels.setIamPolicy",
-                          "path": "v1alpha2/{+resource}:setIamPolicy",
-                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/securityLabels/{securityLabelsId}:setIamPolicy",
+                        "create": {
+                          "id": "healthcare.projects.locations.datasets.annotationStores.annotations.create",
+                          "path": "v1alpha2/{+parent}/annotations",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}/annotations",
                           "httpMethod": "POST",
                           "parameters": {
-                            "resource": {
-                              "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
+                            "parent": {
+                              "description": "The name of the Annotation store this annotation belongs to. For example,\n`projects\/my-project\/locations\/us-central1\/datasets\/mydataset\/annotationStores\/myannotationstore`.",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+\/securityLabels\/[^\/]+$",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+$",
                               "type": "string"
                             }
                           },
                           "parameterOrder": [
-                            "resource"
+                            "parent"
                           ],
                           "request": {
-                            "$ref": "SetIamPolicyRequest"
+                            "$ref": "Annotation"
                           },
                           "response": {
-                            "$ref": "Policy"
+                            "$ref": "Annotation"
                           },
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Sets the access control policy for a FHIR store or security label within a\nFHIR store. Replaces any existing policy.\n\nAuthorization requires the Google IAM permission\n`healthcare.fhirStores.setIamPolicy` for a FHIR store or\n`healthcare.securityLabels.setIamPolicy` for a security label"
+                          "description": "Creates a new Annotation record. It is\nvalid to create Annotation objects for the same source more than once since\na unique ID is assigned to each record by this service."
                         },
-                        "getIamPolicy": {
-                          "id": "healthcare.projects.locations.datasets.fhirStores.securityLabels.getIamPolicy",
-                          "path": "v1alpha2/{+resource}:getIamPolicy",
-                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/securityLabels/{securityLabelsId}:getIamPolicy",
+                        "get": {
+                          "id": "healthcare.projects.locations.datasets.annotationStores.annotations.get",
+                          "path": "v1alpha2/{+name}",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}/annotations/{annotationsId}",
                           "httpMethod": "GET",
                           "parameters": {
-                            "resource": {
-                              "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                            "name": {
+                              "description": "The resource name of the Annotation to retrieve.",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+\/securityLabels\/[^\/]+$",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+\/annotations\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Annotation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets an Annotation."
+                        },
+                        "delete": {
+                          "id": "healthcare.projects.locations.datasets.annotationStores.annotations.delete",
+                          "path": "v1alpha2/{+name}",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}/annotations/{annotationsId}",
+                          "httpMethod": "DELETE",
+                          "parameters": {
+                            "name": {
+                              "description": "The resource name of the Annotation to delete.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+\/annotations\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Empty"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Deletes an Annotation or returns\nNOT_FOUND if it does not exist."
+                        },
+                        "patch": {
+                          "id": "healthcare.projects.locations.datasets.annotationStores.annotations.patch",
+                          "path": "v1alpha2/{+name}",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}/annotations/{annotationsId}",
+                          "httpMethod": "PATCH",
+                          "parameters": {
+                            "name": {
+                              "description": "Output only. Resource name of the Annotation, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}\/annotations\/{annotation_id}`.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+\/annotations\/[^\/]+$",
                               "type": "string"
                             },
-                            "options.requestedPolicyVersion": {
-                              "description": "Optional. The policy format version to be returned.\nAcceptable values are 0 and 1.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+                            "updateMask": {
+                              "description": "The update mask applies to the resource. For the `FieldMask` definition,\nsee\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
+                              "location": "query",
+                              "type": "string",
+                              "format": "google-fieldmask"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "Annotation"
+                          },
+                          "response": {
+                            "$ref": "Annotation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Updates the Annotation."
+                        },
+                        "list": {
+                          "id": "healthcare.projects.locations.datasets.annotationStores.annotations.list",
+                          "path": "v1alpha2/{+parent}/annotations",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}/annotations",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Name of the Annotation store to retrieve Annotations from.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "Limit on the number of Annotations to return in a single response.\nIf zero the default page size of 100 is used.",
                               "location": "query",
                               "type": "integer",
                               "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "The next_page_token value returned from the previous List request, if any.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "filter": {
+                              "description": "Restricts Annotations returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\nFields\/functions available for filtering are:\n- source_version",
+                              "location": "query",
+                              "type": "string"
                             }
                           },
                           "parameterOrder": [
-                            "resource"
+                            "parent"
                           ],
                           "response": {
-                            "$ref": "Policy"
+                            "$ref": "ListAnnotationsResponse"
                           },
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Gets the access control policy for a FHIR store or security label within a\nFHIR store. Returns NOT_FOUND error if the resource does not exist. Returns\nan empty policy if the resource exists but does not have a policy set.\n\nAuthorization requires the Google IAM permission\n`healthcare.fhirStores.getIamPolicy` for a FHIR store or\n`healthcare.securityLabels.getIamPolicy` for a security label"
+                          "description": "Lists the Annotations in the given\nAnnotation store for a source\nresource."
                         }
                       }
                     }

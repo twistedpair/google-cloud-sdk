@@ -32,6 +32,7 @@ class Client(object):
   def __init__(self, api_version=None):
     self.client = apis.GetClientInstance(api_version)
     self.messages = apis.GetMessagesModule(api_version)
+    self.api_version = api_version
 
   def Get(self, attestor_ref):
     """Get the specified attestor."""
@@ -52,6 +53,23 @@ class Client(object):
         field='attestors',
         batch_size_attribute='pageSize')
 
+  def _GetNoteClass(self):
+    return (self.messages.UserOwnedGrafeasNote
+            if self.api_version == apis.V1 else
+            self.messages.UserOwnedDrydockNote)
+
+  def GetNotePropertyName(self):
+    return ('userOwnedGrafeasNote'
+            if self.api_version == apis.V1 else
+            'userOwnedDrydockNote')
+
+  def GetNoteAttr(self, attestor):
+    """Return the Attestor's version-dependent Note attribute."""
+    if self.api_version == apis.V1:
+      return attestor.userOwnedGrafeasNote
+    else:
+      return attestor.userOwnedDrydockNote
+
   def Create(self, attestor_ref, note_ref, description=None):
     """Create an attestors associated with the current project."""
     project_ref = attestor_ref.Parent(util.PROJECTS_COLLECTION)
@@ -60,9 +78,9 @@ class Client(object):
             attestor=self.messages.Attestor(
                 name=attestor_ref.RelativeName(),
                 description=description,
-                userOwnedDrydockNote=self.messages.UserOwnedDrydockNote(
+                **{self.GetNotePropertyName(): self._GetNoteClass()(
                     noteReference=note_ref.RelativeName(),
-                ),
+                )}
             ),
             attestorId=attestor_ref.Name(),
             parent=project_ref.RelativeName(),
@@ -87,7 +105,7 @@ class Client(object):
 
     existing_pub_keys = set(
         public_key.asciiArmoredPgpPublicKey
-        for public_key in attestor.userOwnedDrydockNote.publicKeys)
+        for public_key in self.GetNoteAttr(attestor).publicKeys)
     if pgp_pubkey_content in existing_pub_keys:
       raise exceptions.AlreadyExistsError(
           'Provided public key already present on attestor [{}]'.format(
@@ -95,9 +113,9 @@ class Client(object):
 
     existing_ids = set(
         public_key.id
-        for public_key in attestor.userOwnedDrydockNote.publicKeys)
+        for public_key in self.GetNoteAttr(attestor).publicKeys)
 
-    attestor.userOwnedDrydockNote.publicKeys.append(
+    self.GetNoteAttr(attestor).publicKeys.append(
         self.messages.AttestorPublicKey(
             asciiArmoredPgpPublicKey=pgp_pubkey_content,
             comment=comment))
@@ -106,7 +124,7 @@ class Client(object):
 
     return next(
         public_key
-        for public_key in updated_attestor.userOwnedDrydockNote.publicKeys
+        for public_key in self.GetNoteAttr(updated_attestor).publicKeys
         if public_key.id not in existing_ids)
 
   def AddPkixKey(self, attestor_ref, pkix_pubkey_content, pkix_sig_algorithm,
@@ -132,13 +150,13 @@ class Client(object):
 
     existing_ids = set(
         public_key.id
-        for public_key in attestor.userOwnedDrydockNote.publicKeys)
+        for public_key in self.GetNoteAttr(attestor).publicKeys)
     if id_override is not None and id_override in existing_ids:
       raise exceptions.AlreadyExistsError(
           'Public key with ID [{}] already present on attestor [{}]'.format(
               id_override, attestor.name))
 
-    attestor.userOwnedDrydockNote.publicKeys.append(
+    self.GetNoteAttr(attestor).publicKeys.append(
         self.messages.AttestorPublicKey(
             id=id_override,
             pkixPublicKey=self.messages.PkixPublicKey(
@@ -150,7 +168,7 @@ class Client(object):
 
     return next(
         public_key
-        for public_key in updated_attestor.userOwnedDrydockNote.publicKeys
+        for public_key in self.GetNoteAttr(updated_attestor).publicKeys
         if public_key.id not in existing_ids)
 
   def RemoveKey(self, attestor_ref, pubkey_id):
@@ -167,14 +185,15 @@ class Client(object):
 
     existing_ids = set(
         public_key.id
-        for public_key in attestor.userOwnedDrydockNote.publicKeys)
+        for public_key in self.GetNoteAttr(attestor).publicKeys)
     if pubkey_id not in existing_ids:
       raise exceptions.NotFoundError(
           'No matching public key found on attestor [{}]'.format(
               attestor.name))
 
-    attestor.userOwnedDrydockNote.publicKeys = [
-        public_key for public_key in attestor.userOwnedDrydockNote.publicKeys
+    self.GetNoteAttr(attestor).publicKeys = [
+        public_key
+        for public_key in self.GetNoteAttr(attestor).publicKeys
         if public_key.id != pubkey_id]
 
     self.client.projects_attestors.Update(attestor)
@@ -201,7 +220,7 @@ class Client(object):
 
     existing_keys = [
         public_key
-        for public_key in attestor.userOwnedDrydockNote.publicKeys
+        for public_key in self.GetNoteAttr(attestor).publicKeys
         if public_key.id == pubkey_id]
 
     if not existing_keys:
@@ -226,7 +245,7 @@ class Client(object):
 
     return next(
         public_key
-        for public_key in updated_attestor.userOwnedDrydockNote.publicKeys
+        for public_key in self.GetNoteAttr(updated_attestor).publicKeys
         if public_key.id == pubkey_id)
 
   def Update(self, attestor_ref, description=None):

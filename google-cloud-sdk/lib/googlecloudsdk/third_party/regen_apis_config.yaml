@@ -390,6 +390,8 @@ apis:
     v2alpha1:
       discovery_doc: genomics_v2alpha1.json
   gkehub:
+    v1alpha1:
+      discovery_doc: gkehub_v1alpha1.json
     v1beta1:
       discovery_doc: gkehub_v1beta1.json
       default: true
@@ -458,6 +460,10 @@ apis:
       resources:
         documents:
           path: documents
+  lifesciences:
+    v2beta:
+      discovery_doc: lifesciences_v2beta.json
+      default: true
   managedidentities:
     v1alpha1:
       discovery_doc: managedidentities_v1alpha1.json

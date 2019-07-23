@@ -177,8 +177,26 @@ def AddUpdateArgs(parser, include_alpha_logging, include_beta_logging,
         '--enable-private-ipv6-access',
         action=arg_parsers.StoreTrueFalseAction,
         help=('Enable/disable private IPv6 access for the subnet.'))
+    update_private_ipv6_access_field = updated_field.add_argument_group()
     GetPrivateIpv6GoogleAccessTypeFlagMapper(messages).choice_arg.AddToParser(
-        updated_field)
+        update_private_ipv6_access_field)
+    update_private_ipv6_access_field.add_argument(
+        '--private-ipv6-google-access-service-accounts',
+        default=None,
+        metavar='EMAIL',
+        type=arg_parsers.ArgList(min_length=0),
+        help="""\
+        The service accounts can be used to selectively turn on Private IPv6
+        Google Access only on the VMs primary service account matching the
+        value.
+
+        Setting this will override the existing Private IPv6 Google Access
+        service accounts for the subnetwork.
+        The following will clear the existing Private IPv6 Google Access service
+        accounts:
+
+        $ {command} MY-SUBNET --private-ipv6-google-access-service-accounts ''
+        """)
 
 
 def GetPrivateIpv6GoogleAccessTypeFlagMapper(messages):
@@ -191,7 +209,9 @@ def GetPrivateIpv6GoogleAccessTypeFlagMapper(messages):
           'ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE':
               'enable-bidirectional-access',
           'ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE':
-              'enable-outbound-vm-access'
+              'enable-outbound-vm-access',
+          'ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE_FOR_SERVICE_ACCOUNTS':
+              'enable-outbound-vm-access-for-service-accounts'
       },
       help_str='The private IPv6 google access type for the VMs in this subnet.'
   )

@@ -492,6 +492,10 @@
           "description": "Video file location in\n[Google Cloud Storage](https:\/\/cloud.google.com\/storage\/).",
           "type": "string"
         },
+        "segment": {
+          "description": "Video segment on which the annotation is run.",
+          "$ref": "GoogleCloudVideointelligenceV1beta2_VideoSegment"
+        },
         "segmentLabelAnnotations": {
           "description": "Topical label annotations on video level or user specified segment level.\nThere is exactly one element for each unique label.",
           "type": "array",
@@ -548,6 +552,23 @@
         "error": {
           "description": "If set, indicates an error. Note that for a single `AnnotateVideoRequest`\nsome videos may succeed and some may fail.",
           "$ref": "GoogleRpc_Status"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1beta2_VideoSegment": {
+      "id": "GoogleCloudVideointelligenceV1beta2_VideoSegment",
+      "description": "Video segment.",
+      "type": "object",
+      "properties": {
+        "startTimeOffset": {
+          "description": "Time-offset, relative to the beginning of the video,\ncorresponding to the start of the segment (inclusive).",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "endTimeOffset": {
+          "description": "Time-offset, relative to the beginning of the video,\ncorresponding to the end of the segment (inclusive).",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
@@ -615,23 +636,6 @@
           "description": "Confidence that the label is accurate. Range: [0, 1].",
           "type": "number",
           "format": "float"
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1beta2_VideoSegment": {
-      "id": "GoogleCloudVideointelligenceV1beta2_VideoSegment",
-      "description": "Video segment.",
-      "type": "object",
-      "properties": {
-        "startTimeOffset": {
-          "description": "Time-offset, relative to the beginning of the video,\ncorresponding to the start of the segment (inclusive).",
-          "type": "string",
-          "format": "google-duration"
-        },
-        "endTimeOffset": {
-          "description": "Time-offset, relative to the beginning of the video,\ncorresponding to the end of the segment (inclusive).",
-          "type": "string",
-          "format": "google-duration"
         }
       }
     },
@@ -1021,6 +1025,10 @@
         "inputUri": {
           "description": "Video file location in\n[Google Cloud Storage](https:\/\/cloud.google.com\/storage\/).",
           "type": "string"
+        },
+        "segment": {
+          "description": "Video segment on which the annotation is run.",
+          "$ref": "GoogleCloudVideointelligenceV1_VideoSegment"
         },
         "segmentLabelAnnotations": {
           "description": "Topical label annotations on video level or user specified segment level.\nThere is exactly one element for each unique label.",
@@ -1535,6 +1543,10 @@
           "description": "Video file location in\n[Google Cloud Storage](https:\/\/cloud.google.com\/storage\/).",
           "type": "string"
         },
+        "segment": {
+          "description": "Video segment on which the annotation is run.",
+          "$ref": "GoogleCloudVideointelligenceV1p1beta1_VideoSegment"
+        },
         "segmentLabelAnnotations": {
           "description": "Topical label annotations on video level or user specified segment level.\nThere is exactly one element for each unique label.",
           "type": "array",
@@ -1591,6 +1603,23 @@
         "error": {
           "description": "If set, indicates an error. Note that for a single `AnnotateVideoRequest`\nsome videos may succeed and some may fail.",
           "$ref": "GoogleRpc_Status"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_VideoSegment": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_VideoSegment",
+      "description": "Video segment.",
+      "type": "object",
+      "properties": {
+        "startTimeOffset": {
+          "description": "Time-offset, relative to the beginning of the video,\ncorresponding to the start of the segment (inclusive).",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "endTimeOffset": {
+          "description": "Time-offset, relative to the beginning of the video,\ncorresponding to the end of the segment (inclusive).",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
@@ -1658,23 +1687,6 @@
           "description": "Confidence that the label is accurate. Range: [0, 1].",
           "type": "number",
           "format": "float"
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1p1beta1_VideoSegment": {
-      "id": "GoogleCloudVideointelligenceV1p1beta1_VideoSegment",
-      "description": "Video segment.",
-      "type": "object",
-      "properties": {
-        "startTimeOffset": {
-          "description": "Time-offset, relative to the beginning of the video,\ncorresponding to the start of the segment (inclusive).",
-          "type": "string",
-          "format": "google-duration"
-        },
-        "endTimeOffset": {
-          "description": "Time-offset, relative to the beginning of the video,\ncorresponding to the end of the segment (inclusive).",
-          "type": "string",
-          "format": "google-duration"
         }
       }
     },
@@ -2065,6 +2077,10 @@
           "description": "Video file location in\n[Google Cloud Storage](https:\/\/cloud.google.com\/storage\/).",
           "type": "string"
         },
+        "segment": {
+          "description": "Video segment on which the annotation is run.",
+          "$ref": "GoogleCloudVideointelligenceV1p2beta1_VideoSegment"
+        },
         "segmentLabelAnnotations": {
           "description": "Topical label annotations on video level or user specified segment level.\nThere is exactly one element for each unique label.",
           "type": "array",
@@ -2121,6 +2137,23 @@
         "error": {
           "description": "If set, indicates an error. Note that for a single `AnnotateVideoRequest`\nsome videos may succeed and some may fail.",
           "$ref": "GoogleRpc_Status"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p2beta1_VideoSegment": {
+      "id": "GoogleCloudVideointelligenceV1p2beta1_VideoSegment",
+      "description": "Video segment.",
+      "type": "object",
+      "properties": {
+        "startTimeOffset": {
+          "description": "Time-offset, relative to the beginning of the video,\ncorresponding to the start of the segment (inclusive).",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "endTimeOffset": {
+          "description": "Time-offset, relative to the beginning of the video,\ncorresponding to the end of the segment (inclusive).",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
@@ -2188,23 +2221,6 @@
           "description": "Confidence that the label is accurate. Range: [0, 1].",
           "type": "number",
           "format": "float"
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1p2beta1_VideoSegment": {
-      "id": "GoogleCloudVideointelligenceV1p2beta1_VideoSegment",
-      "description": "Video segment.",
-      "type": "object",
-      "properties": {
-        "startTimeOffset": {
-          "description": "Time-offset, relative to the beginning of the video,\ncorresponding to the start of the segment (inclusive).",
-          "type": "string",
-          "format": "google-duration"
-        },
-        "endTimeOffset": {
-          "description": "Time-offset, relative to the beginning of the video,\ncorresponding to the end of the segment (inclusive).",
-          "type": "string",
-          "format": "google-duration"
         }
       }
     },
@@ -2595,6 +2611,10 @@
           "description": "Video file location in\n[Google Cloud Storage](https:\/\/cloud.google.com\/storage\/).",
           "type": "string"
         },
+        "segment": {
+          "description": "Video segment on which the annotation is run.",
+          "$ref": "GoogleCloudVideointelligenceV1p3beta1_VideoSegment"
+        },
         "segmentLabelAnnotations": {
           "description": "Topical label annotations on video level or user specified segment level.\nThere is exactly one element for each unique label.",
           "type": "array",
@@ -2658,6 +2678,23 @@
         "error": {
           "description": "If set, indicates an error. Note that for a single `AnnotateVideoRequest`\nsome videos may succeed and some may fail.",
           "$ref": "GoogleRpc_Status"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p3beta1_VideoSegment": {
+      "id": "GoogleCloudVideointelligenceV1p3beta1_VideoSegment",
+      "description": "Video segment.",
+      "type": "object",
+      "properties": {
+        "startTimeOffset": {
+          "description": "Time-offset, relative to the beginning of the video,\ncorresponding to the start of the segment (inclusive).",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "endTimeOffset": {
+          "description": "Time-offset, relative to the beginning of the video,\ncorresponding to the end of the segment (inclusive).",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
@@ -2725,23 +2762,6 @@
           "description": "Confidence that the label is accurate. Range: [0, 1].",
           "type": "number",
           "format": "float"
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1p3beta1_VideoSegment": {
-      "id": "GoogleCloudVideointelligenceV1p3beta1_VideoSegment",
-      "description": "Video segment.",
-      "type": "object",
-      "properties": {
-        "startTimeOffset": {
-          "description": "Time-offset, relative to the beginning of the video,\ncorresponding to the start of the segment (inclusive).",
-          "type": "string",
-          "format": "google-duration"
-        },
-        "endTimeOffset": {
-          "description": "Time-offset, relative to the beginning of the video,\ncorresponding to the end of the segment (inclusive).",
-          "type": "string",
-          "format": "google-duration"
         }
       }
     },

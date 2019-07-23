@@ -253,6 +253,7 @@ class _Sections(object):
     container: Section, The section containing container properties for the
       Cloud SDK.
     core: Section, The section containing core properties for the Cloud SDK.
+    scc: Section, The section containing scc properties for the Cloud SDK.
     dataproc: Section, The section containing dataproc properties for the Cloud
       SDK.
     datafusion: Section, The section containing datafusion properties for the
@@ -319,6 +320,7 @@ class _Sections(object):
     self.compute = _SectionCompute()
     self.container = _SectionContainer()
     self.core = _SectionCore()
+    self.scc = _SectionScc()
     self.dataproc = _SectionDataproc()
     self.datafusion = _SectionDatafusion()
     self.deployment_manager = _SectionDeploymentManager()
@@ -359,6 +361,7 @@ class _Sections(object):
         self.compute,
         self.container,
         self.core,
+        self.scc,
         self.dataproc,
         self.datafusion,
         self.deployment_manager,
@@ -696,8 +699,7 @@ class _SectionRun(_Section):
     super(_SectionRun, self).__init__('run', hidden=True)
     self.region = self._Add(
         'region',
-        default='us-central1',
-        help_text='The default region to use when working with Google '
+        help_text='Default region to use when working with Google '
         'Run resources. When a `--region` flag is required '
         'but not provided, the command will fall back to this value, if set. '
         'To see valid choices, run `gcloud run regions list`.')
@@ -1256,6 +1258,16 @@ class _SectionCore(_Section):
                    'ProjectCompleter'))
     self.credentialed_hosted_repo_domains = self._Add(
         'credentialed_hosted_repo_domains', hidden=True)
+
+
+class _SectionScc(_Section):
+  """Contains the properties for the 'scc' section."""
+
+  def __init__(self):
+    super(_SectionScc, self).__init__('scc')
+    self.organization = self._Add(
+        'organization',
+        help_text='Default organization `gcloud` should use for scc surface.')
 
 
 class _SectionAuth(_Section):

@@ -36,8 +36,9 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
   [YAML](http://www.yaml.org), YAML ain't markup language.
 
   Printer attributes:
-    null=string: Display string instead of `null` for null/None values.
+    null="string": Display string instead of `null` for null/None values.
     no-undefined: Does not display resource data items with null values.
+    version=VERSION: Prints using the specified YAML version, default 1.2.
 
   For example:
 
@@ -62,8 +63,21 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
     super(YamlPrinter, self).__init__(*args, retain_none_values=True, **kwargs)
     # pylint:disable=g-import-not-at-top, Delay import for performance.
     from ruamel import yaml
-    self._yaml = yaml
+    self._yaml = yaml.YAML(typ='safe')
+    self._yaml.default_flow_style = False
+    self._yaml.old_indent = resource_printer_base.STRUCTURED_INDENTATION
+    self._yaml.allow_unicode = False
+    # By default, the yaml module uses encoding=utf-8. This is probably
+    # so you can write it directly to stdout and have it work, but since
+    # we put everything through the log module that handles the encoding there,
+    # we want to maintain everything as unicode strings here.
+    self._yaml.encoding = None
+
     null = self.attributes.get('null')
+    version = self.attributes.get('version')
+    # If no version specified, uses ruamel's default (1.2)
+    if version:
+      self._yaml.version = str(version)
 
     def _FloatPresenter(unused_dumper, data):
       return yaml.nodes.ScalarNode(
@@ -88,21 +102,16 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
         return dumper.represent_dict({})
       dumper.represent_undefined(data)
 
-    self._yaml.add_representer(float,
-                               _FloatPresenter,
-                               Dumper=yaml.dumper.SafeDumper)
-    self._yaml.add_representer(YamlPrinter._LiteralLines,
-                               _LiteralLinesPresenter,
-                               Dumper=yaml.dumper.SafeDumper)
-    self._yaml.add_representer(None,
-                               _UndefinedPresenter,
-                               Dumper=yaml.dumper.SafeDumper)
-    self._yaml.add_representer(type(None),
-                               _NullPresenter,
-                               Dumper=yaml.dumper.SafeDumper)
-    self._yaml.add_representer(collections.OrderedDict,
-                               _OrderedDictPresenter,
-                               Dumper=yaml.dumper.SafeDumper)
+    self._yaml.representer.add_representer(float,
+                                           _FloatPresenter)
+    self._yaml.representer.add_representer(YamlPrinter._LiteralLines,
+                                           _LiteralLinesPresenter)
+    self._yaml.representer.add_representer(None,
+                                           _UndefinedPresenter)
+    self._yaml.representer.add_representer(type(None),
+                                           _NullPresenter)
+    self._yaml.representer.add_representer(collections.OrderedDict,
+                                           _OrderedDictPresenter)
 
   class _LiteralLines(six.text_type):
     """A yaml representer hook for literal strings containing newlines."""
@@ -136,15 +145,7 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
       delimit: Prints resource delimiters if True.
     """
     record = self._UpdateTypesForOutput(record)
-    self._yaml.safe_dump(
+    self._yaml.explicit_start = delimit
+    self._yaml.dump(
         record,
-        stream=self._out,
-        default_flow_style=False,
-        indent=resource_printer_base.STRUCTURED_INDENTATION,
-        explicit_start=delimit,
-        # By default, the yaml module uses encoding=None on Py3 and
-        # encoding=utf8 on Py2. This is probably so you can write it directly to
-        # stdout and have it work, but since we put everything through the log
-        # module that handles the encoding there, we want to maintain everything
-        # as unicode strings here.
-        encoding=None)
+        stream=self._out)

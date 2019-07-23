@@ -236,7 +236,7 @@ def CreateOnHostMaintenanceMessage(messages, maintenance_policy):
 
 def CreateSchedulingMessage(
     messages, maintenance_policy, preemptible, restart_on_failure,
-    node_affinities=None):
+    node_affinities=None, min_node_cpus=None):
   """Create scheduling message for VM."""
   # Note: We always specify automaticRestart=False for preemptible VMs. This
   # makes sense, since no-restart-on-failure is defined as "store-true", and
@@ -256,6 +256,8 @@ def CreateSchedulingMessage(
   if node_affinities:
     scheduling.nodeAffinities = node_affinities
 
+  if min_node_cpus is not None:
+    scheduling.minNodeCpus = min_node_cpus
   return scheduling
 
 
@@ -913,12 +915,16 @@ def GetSkipDefaults(source_instance_template):
   return source_instance_template is not None
 
 
-def GetScheduling(args, client, skip_defaults, support_node_affinity=False):
+def GetScheduling(args, client, skip_defaults, support_node_affinity=False,
+                  support_min_node_cpus=False):
   """Generate a Scheduling Message or None based on specified args."""
   node_affinities = None
   if support_node_affinity:
     node_affinities = sole_tenancy_util.GetSchedulingNodeAffinityListFromArgs(
         args, client.messages)
+  min_node_cpus = None
+  if support_min_node_cpus:
+    min_node_cpus = args.min_node_cpus
   if (skip_defaults and
       not IsAnySpecified(
           args, 'maintenance_policy', 'preemptible', 'restart_on_failure') and
@@ -929,7 +935,8 @@ def GetScheduling(args, client, skip_defaults, support_node_affinity=False):
       maintenance_policy=args.maintenance_policy,
       preemptible=args.preemptible,
       restart_on_failure=args.restart_on_failure,
-      node_affinities=node_affinities)
+      node_affinities=node_affinities,
+      min_node_cpus=min_node_cpus)
 
 
 def GetServiceAccounts(args, client, skip_defaults):

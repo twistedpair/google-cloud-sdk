@@ -31,18 +31,22 @@ class NetworkEndpointGroupsClient(object):
     self.client = client
     self.messages = messages
     self.resources = resources
-    self._service = self.client.apitools_client.networkEndpointGroups
+    self._zonal_service = self.client.apitools_client.networkEndpointGroups
+    if hasattr(self.client.apitools_client, 'globalNetworkEndpointGroups'):
+      self._global_service = self.client.apitools_client.globalNetworkEndpointGroups
 
   def Create(self, neg_ref, network_endpoint_type, default_port=None,
              network=None, subnet=None):
     """Creates a network endpoint group."""
+    is_zonal = hasattr(neg_ref, 'zone')
+
     network_uri = None
-    if network:
+    if network and is_zonal:
       network_ref = self.resources.Parse(network, {'project': neg_ref.project},
                                          collection='compute.networks')
       network_uri = network_ref.SelfLink()
     subnet_uri = None
-    if subnet:
+    if subnet and is_zonal:
       region = api_utils.ZoneNameToRegionName(neg_ref.zone)
       subnet_ref = self.resources.Parse(
           subnet,
@@ -59,15 +63,22 @@ class NetworkEndpointGroupsClient(object):
         defaultPort=default_port,
         network=network_uri,
         subnetwork=subnet_uri)
-    request = self.messages.ComputeNetworkEndpointGroupsInsertRequest(
-        networkEndpointGroup=network_endpoint_group,
-        project=neg_ref.project,
-        zone=neg_ref.zone)
 
-    return self.client.MakeRequests([(self._service, 'Insert', request)])[0]
+    if is_zonal:
+      request = self.messages.ComputeNetworkEndpointGroupsInsertRequest(
+          networkEndpointGroup=network_endpoint_group,
+          project=neg_ref.project,
+          zone=neg_ref.zone)
+      return self.client.MakeRequests([(self._zonal_service, 'Insert', request)
+                                      ])[0]
+    else:
+      request = self.messages.ComputeGlobalNetworkEndpointGroupsInsertRequest(
+          networkEndpointGroup=network_endpoint_group, project=neg_ref.project)
+      return self.client.MakeRequests([(self._global_service, 'Insert', request)
+                                      ])[0]
 
-  def AttachEndpoints(self, neg_ref, endpoints):
-    """Attaches network endpoints to a network endpoint group."""
+  def _AttachZonalEndpoints(self, neg_ref, endpoints):
+    """Attaches network endpoints to a zonal network endpoint group."""
     request_class = (
         self.messages.ComputeNetworkEndpointGroupsAttachNetworkEndpointsRequest)
     nested_request_class = (
@@ -78,10 +89,10 @@ class NetworkEndpointGroupsClient(object):
         zone=neg_ref.zone,
         networkEndpointGroupsAttachEndpointsRequest=nested_request_class(
             networkEndpoints=self._GetEndpointMessageList(endpoints)))
-    return self._service.AttachNetworkEndpoints(request)
+    return self._zonal_service.AttachNetworkEndpoints(request)
 
-  def DetachEndpoints(self, neg_ref, endpoints):
-    """Detaches network endpoints to a network endpoint group."""
+  def _DetachZonalEndpoints(self, neg_ref, endpoints):
+    """Detaches network endpoints from a zonal network endpoint group."""
     request_class = (
         self.messages.ComputeNetworkEndpointGroupsDetachNetworkEndpointsRequest)
     nested_request_class = (
@@ -92,19 +103,60 @@ class NetworkEndpointGroupsClient(object):
         zone=neg_ref.zone,
         networkEndpointGroupsDetachEndpointsRequest=nested_request_class(
             networkEndpoints=self._GetEndpointMessageList(endpoints)))
-    return self._service.DetachNetworkEndpoints(request)
+    return self._zonal_service.DetachNetworkEndpoints(request)
+
+  def _AttachGlobalEndpoints(self, neg_ref, endpoints):
+    """Attaches network endpoints to a global network endpoint group."""
+    request_class = (
+        self.messages
+        .ComputeGlobalNetworkEndpointGroupsAttachNetworkEndpointsRequest)
+    nested_request_class = (
+        self.messages.GlobalNetworkEndpointGroupsAttachEndpointsRequest)
+    request = request_class(
+        networkEndpointGroup=neg_ref.Name(),
+        project=neg_ref.project,
+        globalNetworkEndpointGroupsAttachEndpointsRequest=nested_request_class(
+            networkEndpoints=self._GetEndpointMessageList(endpoints)))
+    return self._global_service.AttachNetworkEndpoints(request)
+
+  def _DetachGlobalEndpoints(self, neg_ref, endpoints):
+    """Detaches network endpoints from a global network endpoint group."""
+    request_class = (
+        self.messages
+        .ComputeGlobalNetworkEndpointGroupsDetachNetworkEndpointsRequest)
+    nested_request_class = (
+        self.messages.GlobalNetworkEndpointGroupsDetachEndpointsRequest)
+    request = request_class(
+        networkEndpointGroup=neg_ref.Name(),
+        project=neg_ref.project,
+        globalNetworkEndpointGroupsDetachEndpointsRequest=nested_request_class(
+            networkEndpoints=self._GetEndpointMessageList(endpoints)))
+    return self._global_service.DetachNetworkEndpoints(request)
 
   def _GetEndpointMessageList(self, endpoints):
-    return [
-        self.messages.NetworkEndpoint(
-            instance=endpoint['instance'],
-            ipAddress=endpoint['ip'] if 'ip' in endpoint else None,
-            port=endpoint['port'] if 'port' in endpoint else None)
-        for endpoint in endpoints]
+    """Convert endpoints to a list which can be passed in a request."""
+    output_list = []
+    for arg_endpoint in endpoints:
+      message_endpoint = self.messages.NetworkEndpoint()
+      if 'instance' in arg_endpoint:
+        message_endpoint.instance = arg_endpoint.get('instance')
+      if 'ip' in arg_endpoint:
+        message_endpoint.ipAddress = arg_endpoint.get('ip')
+      if 'port' in arg_endpoint:
+        message_endpoint.port = arg_endpoint.get('port')
+      if 'fqdn' in arg_endpoint:
+        message_endpoint.fqdn = arg_endpoint.get('fqdn')
+      output_list.append(message_endpoint)
+
+    return output_list
 
   def _GetOperationsRef(self, operation):
     return self.resources.Parse(operation.selfLink,
                                 collection='compute.zoneOperations')
+
+  def _GetGlobalOperationsRef(self, operation):
+    return self.resources.Parse(
+        operation.selfLink, collection='compute.globalOperations')
 
   def _WaitForResult(self, operation_poller, operation_ref, message):
     if operation_ref:
@@ -115,17 +167,26 @@ class NetworkEndpointGroupsClient(object):
     """Updates a Compute Network Endpoint Group."""
     attach_endpoints_ref = None
     detach_endpoints_ref = None
+    operation_poller = None
 
-    if add_endpoints:
-      operation = self.AttachEndpoints(neg_ref, add_endpoints)
-      attach_endpoints_ref = self._GetOperationsRef(operation)
-
-    if remove_endpoints:
-      operation = self.DetachEndpoints(neg_ref, remove_endpoints)
-      detach_endpoints_ref = self._GetOperationsRef(operation)
+    if hasattr(neg_ref, 'zone'):
+      operation_poller = poller.Poller(self._zonal_service)
+      if add_endpoints:
+        operation = self._AttachZonalEndpoints(neg_ref, add_endpoints)
+        attach_endpoints_ref = self._GetOperationsRef(operation)
+      if remove_endpoints:
+        operation = self._DetachZonalEndpoints(neg_ref, remove_endpoints)
+        detach_endpoints_ref = self._GetOperationsRef(operation)
+    else:
+      operation_poller = poller.Poller(self._global_service)
+      if add_endpoints:
+        operation = self._AttachGlobalEndpoints(neg_ref, add_endpoints)
+        attach_endpoints_ref = self._GetGlobalOperationsRef(operation)
+      if remove_endpoints:
+        operation = self._DetachGlobalEndpoints(neg_ref, remove_endpoints)
+        detach_endpoints_ref = self._GetGlobalOperationsRef(operation)
 
     neg_name = neg_ref.Name()
-    operation_poller = poller.Poller(self._service)
     result = None
     result = self._WaitForResult(
         operation_poller, attach_endpoints_ref,

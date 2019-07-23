@@ -292,7 +292,7 @@ class StorageV1(base_api.BaseApiClient):
         method_id=u'storage.buckets.getIamPolicy',
         ordered_params=[u'bucket'],
         path_params=[u'bucket'],
-        query_params=[u'provisionalUserProject', u'userProject'],
+        query_params=[u'optionsRequestedPolicyVersion', u'provisionalUserProject', u'userProject'],
         relative_path=u'b/{bucket}/iam',
         request_field='',
         request_type_name=u'StorageBucketsGetIamPolicyRequest',

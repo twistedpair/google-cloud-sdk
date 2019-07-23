@@ -1243,10 +1243,9 @@ class AllocationSpecificSKUReservation(_messages.Message):
   configuration.
 
   Fields:
-    count: Specifies number of resources that are allocated.
-    inUseCount: [OutputOnly] Indicates how many resource are in use.
-    instanceProperties: The instance properties for this specific sku
-      reservation.
+    count: Specifies the number of resources that are allocated.
+    inUseCount: [OutputOnly] Indicates how many instances are in use.
+    instanceProperties: The instance properties for the reservation.
   """
 
   count = _messages.IntegerField(1)
@@ -1506,13 +1505,13 @@ class AuditConfig(_messages.Message):
   exempted_members in each AuditLogConfig are exempted.  Example Policy with
   multiple AuditConfigs:  { "audit_configs": [ { "service": "allServices"
   "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
-  "user:foo@gmail.com" ] }, { "log_type": "DATA_WRITE", }, { "log_type":
-  "ADMIN_READ", } ] }, { "service": "fooservice.googleapis.com"
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE", }, { "log_type":
+  "ADMIN_READ", } ] }, { "service": "sampleservice.googleapis.com"
   "audit_log_configs": [ { "log_type": "DATA_READ", }, { "log_type":
-  "DATA_WRITE", "exempted_members": [ "user:bar@gmail.com" ] } ] } ] }  For
-  fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
-  logging. It also exempts foo@gmail.com from DATA_READ logging, and
-  bar@gmail.com from DATA_WRITE logging.
+  "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] }
+  For sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
+  logging. It also exempts jose@example.com from DATA_READ logging, and
+  aliya@example.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -1530,8 +1529,8 @@ class AuditConfig(_messages.Message):
 class AuditLogConfig(_messages.Message):
   r"""Provides the configuration for logging a type of permissions. Example:
   { "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
-  "user:foo@gmail.com" ] }, { "log_type": "DATA_WRITE", } ] }  This enables
-  'DATA_READ' and 'DATA_WRITE' logging, while exempting foo@gmail.com from
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE", } ] }  This enables
+  'DATA_READ' and 'DATA_WRITE' logging, while exempting jose@example.com from
   DATA_READ logging.
 
   Enums:
@@ -1540,6 +1539,9 @@ class AuditLogConfig(_messages.Message):
   Fields:
     exemptedMembers: Specifies the identities that do not cause logging for
       this type of permission. Follows the same format of [Binding.members][].
+    ignoreChildExemptions: Specifies whether principals can be exempted for
+      the same LogType in lower-level resource policies. If true, any lower-
+      level exemptions will be ignored.
     logType: The log type that this config enables.
   """
 
@@ -1558,7 +1560,8 @@ class AuditLogConfig(_messages.Message):
     LOG_TYPE_UNSPECIFIED = 3
 
   exemptedMembers = _messages.StringField(1, repeated=True)
-  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+  ignoreChildExemptions = _messages.BooleanField(2)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
 
 
 class AuthorizationLoggingOptions(_messages.Message):
@@ -1965,6 +1968,8 @@ class AutoscalerStatusDetails(_messages.Message):
       MIN_EQUALS_MAX: <no description>
       MISSING_CUSTOM_METRIC_DATA_POINTS: <no description>
       MISSING_LOAD_BALANCING_DATA_POINTS: <no description>
+      MODE_OFF: <no description>
+      MODE_ONLY_UP: <no description>
       MORE_THAN_ONE_BACKEND_SERVICE: <no description>
       NOT_ENOUGH_QUOTA_AVAILABLE: <no description>
       REGION_RESOURCE_STOCKOUT: <no description>
@@ -1981,13 +1986,15 @@ class AutoscalerStatusDetails(_messages.Message):
     MIN_EQUALS_MAX = 5
     MISSING_CUSTOM_METRIC_DATA_POINTS = 6
     MISSING_LOAD_BALANCING_DATA_POINTS = 7
-    MORE_THAN_ONE_BACKEND_SERVICE = 8
-    NOT_ENOUGH_QUOTA_AVAILABLE = 9
-    REGION_RESOURCE_STOCKOUT = 10
-    SCALING_TARGET_DOES_NOT_EXIST = 11
-    UNKNOWN = 12
-    UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION = 13
-    ZONE_RESOURCE_STOCKOUT = 14
+    MODE_OFF = 8
+    MODE_ONLY_UP = 9
+    MORE_THAN_ONE_BACKEND_SERVICE = 10
+    NOT_ENOUGH_QUOTA_AVAILABLE = 11
+    REGION_RESOURCE_STOCKOUT = 12
+    SCALING_TARGET_DOES_NOT_EXIST = 13
+    UNKNOWN = 14
+    UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION = 15
+    ZONE_RESOURCE_STOCKOUT = 16
 
   message = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -2758,6 +2765,9 @@ class BackendService(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    network: The URL of the network to which this backend service belongs.
+      This field can only be spcified when the load balancing scheme is set to
+      INTERNAL.
     outlierDetection: Settings controlling eviction of unhealthy hosts from
       the load balancing pool. This field is applicable to either:   - A
       regional backend service with the service_protocol set to HTTP, HTTPS,
@@ -2927,15 +2937,16 @@ class BackendService(_messages.Message):
   localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 18)
   logConfig = _messages.MessageField('BackendServiceLogConfig', 19)
   name = _messages.StringField(20)
-  outlierDetection = _messages.MessageField('OutlierDetection', 21)
-  port = _messages.IntegerField(22, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(23)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 24)
-  region = _messages.StringField(25)
-  securityPolicy = _messages.StringField(26)
-  selfLink = _messages.StringField(27)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 28)
-  timeoutSec = _messages.IntegerField(29, variant=_messages.Variant.INT32)
+  network = _messages.StringField(21)
+  outlierDetection = _messages.MessageField('OutlierDetection', 22)
+  port = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(24)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 25)
+  region = _messages.StringField(26)
+  securityPolicy = _messages.StringField(27)
+  selfLink = _messages.StringField(28)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 29)
+  timeoutSec = _messages.IntegerField(30, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -3433,6 +3444,267 @@ class BackendServicesScopedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 2)
 
 
+class BfdPacket(_messages.Message):
+  r"""BfdPacket message type.
+
+  Enums:
+    DiagnosticValueValuesEnum: The diagnostic code specifies the local
+      system's reason for the last change in session state. This allows remote
+      systems to determine the reason that the previous session failed, for
+      example. These diagnostic codes are specified in section 4.1 of RFC5880
+    StateValueValuesEnum: The current BFD session state as seen by the
+      transmitting system. These states are specified in section 4.1 of
+      RFC5880
+
+  Fields:
+    authenticationPresent: The Authentication Present bit of the BFD packet.
+      This is specified in section 4.1 of RFC5880
+    controlPlaneIndependent: The Control Plane Independent bit of the BFD
+      packet. This is specified in section 4.1 of RFC5880
+    demand: The demand bit of the BFD packet. This is specified in section 4.1
+      of RFC5880
+    diagnostic: The diagnostic code specifies the local system's reason for
+      the last change in session state. This allows remote systems to
+      determine the reason that the previous session failed, for example.
+      These diagnostic codes are specified in section 4.1 of RFC5880
+    final: The Final bit of the BFD packet. This is specified in section 4.1
+      of RFC5880
+    length: The length of the BFD Control packet in bytes. This is specified
+      in section 4.1 of RFC5880
+    minEchoRxIntervalMs: The Required Min Echo RX Interval value in the BFD
+      packet. This is specified in section 4.1 of RFC5880
+    minRxIntervalMs: The Required Min RX Interval value in the BFD packet.
+      This is specified in section 4.1 of RFC5880
+    minTxIntervalMs: The Desired Min TX Interval value in the BFD packet. This
+      is specified in section 4.1 of RFC5880
+    multiplier: The detection time multiplier of the BFD packet. This is
+      specified in section 4.1 of RFC5880
+    multipoint: The multipoint bit of the BFD packet. This is specified in
+      section 4.1 of RFC5880
+    myDiscriminator: The My Discriminator value in the BFD packet. This is
+      specified in section 4.1 of RFC5880
+    poll: The Poll bit of the BFD packet. This is specified in section 4.1 of
+      RFC5880
+    state: The current BFD session state as seen by the transmitting system.
+      These states are specified in section 4.1 of RFC5880
+    version: The version number of the BFD protocol, as specified in section
+      4.1 of RFC5880.
+    yourDiscriminator: The Your Discriminator value in the BFD packet. This is
+      specified in section 4.1 of RFC5880
+  """
+
+  class DiagnosticValueValuesEnum(_messages.Enum):
+    r"""The diagnostic code specifies the local system's reason for the last
+    change in session state. This allows remote systems to determine the
+    reason that the previous session failed, for example. These diagnostic
+    codes are specified in section 4.1 of RFC5880
+
+    Values:
+      ADMINISTRATIVELY_DOWN: <no description>
+      CONCATENATED_PATH_DOWN: <no description>
+      CONTROL_DETECTION_TIME_EXPIRED: <no description>
+      DIAGNOSTIC_UNSPECIFIED: <no description>
+      ECHO_FUNCTION_FAILED: <no description>
+      FORWARDING_PLANE_RESET: <no description>
+      NEIGHBOR_SIGNALED_SESSION_DOWN: <no description>
+      NO_DIAGNOSTIC: <no description>
+      PATH_DOWN: <no description>
+      REVERSE_CONCATENATED_PATH_DOWN: <no description>
+    """
+    ADMINISTRATIVELY_DOWN = 0
+    CONCATENATED_PATH_DOWN = 1
+    CONTROL_DETECTION_TIME_EXPIRED = 2
+    DIAGNOSTIC_UNSPECIFIED = 3
+    ECHO_FUNCTION_FAILED = 4
+    FORWARDING_PLANE_RESET = 5
+    NEIGHBOR_SIGNALED_SESSION_DOWN = 6
+    NO_DIAGNOSTIC = 7
+    PATH_DOWN = 8
+    REVERSE_CONCATENATED_PATH_DOWN = 9
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The current BFD session state as seen by the transmitting system.
+    These states are specified in section 4.1 of RFC5880
+
+    Values:
+      ADMIN_DOWN: <no description>
+      DOWN: <no description>
+      INIT: <no description>
+      STATE_UNSPECIFIED: <no description>
+      UP: <no description>
+    """
+    ADMIN_DOWN = 0
+    DOWN = 1
+    INIT = 2
+    STATE_UNSPECIFIED = 3
+    UP = 4
+
+  authenticationPresent = _messages.BooleanField(1)
+  controlPlaneIndependent = _messages.BooleanField(2)
+  demand = _messages.BooleanField(3)
+  diagnostic = _messages.EnumField('DiagnosticValueValuesEnum', 4)
+  final = _messages.BooleanField(5)
+  length = _messages.IntegerField(6, variant=_messages.Variant.UINT32)
+  minEchoRxIntervalMs = _messages.IntegerField(7, variant=_messages.Variant.UINT32)
+  minRxIntervalMs = _messages.IntegerField(8, variant=_messages.Variant.UINT32)
+  minTxIntervalMs = _messages.IntegerField(9, variant=_messages.Variant.UINT32)
+  multiplier = _messages.IntegerField(10, variant=_messages.Variant.UINT32)
+  multipoint = _messages.BooleanField(11)
+  myDiscriminator = _messages.IntegerField(12, variant=_messages.Variant.UINT32)
+  poll = _messages.BooleanField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  version = _messages.IntegerField(15, variant=_messages.Variant.UINT32)
+  yourDiscriminator = _messages.IntegerField(16, variant=_messages.Variant.UINT32)
+
+
+class BfdStatus(_messages.Message):
+  r"""Next free: 15
+
+  Enums:
+    BfdSessionInitializationModeValueValuesEnum: The BFD session
+      initialization mode for this BGP peer. If set to ACTIVE, the Cloud
+      Router will initiate the BFD session for this BGP peer. If set to
+      PASSIVE, the Cloud Router will wait for the peer router to initiate the
+      BFD session for this BGP peer. If set to DISABLED, BFD is disabled for
+      this BGP peer.
+    LocalDiagnosticValueValuesEnum: The diagnostic code specifies the local
+      system's reason for the last change in session state. This allows remote
+      systems to determine the reason that the previous session failed, for
+      example. These diagnostic codes are specified in section 4.1 of RFC5880
+    LocalStateValueValuesEnum: The current BFD session state as seen by the
+      transmitting system. These states are specified in section 4.1 of
+      RFC5880
+
+  Fields:
+    bfdSessionInitializationMode: The BFD session initialization mode for this
+      BGP peer. If set to ACTIVE, the Cloud Router will initiate the BFD
+      session for this BGP peer. If set to PASSIVE, the Cloud Router will wait
+      for the peer router to initiate the BFD session for this BGP peer. If
+      set to DISABLED, BFD is disabled for this BGP peer.
+    configUpdateTimestampMicros: Unix timestamp of the most recent config
+      update.
+    controlPacketCounts: Control packet counts for the current BFD session.
+    controlPacketIntervals: Inter-packet time interval statistics for control
+      packets.
+    echoPacketCounts: Echo packet counts for the current BFD session.
+    echoPacketIntervals: Inter-packet time interval statistics for echo
+      packets.
+    localDiagnostic: The diagnostic code specifies the local system's reason
+      for the last change in session state. This allows remote systems to
+      determine the reason that the previous session failed, for example.
+      These diagnostic codes are specified in section 4.1 of RFC5880
+    localState: The current BFD session state as seen by the transmitting
+      system. These states are specified in section 4.1 of RFC5880
+    negotiatedLocalControlTxIntervalMs: Negotiated transmit interval for
+      control packets. When echo mode is enabled this will reflect the
+      negotiated slow timer interval.
+    negotiatedLocalEchoTxIntervalMs: Negotiated transmit interval for echo
+      packets.
+    rxPacket: The most recent Rx control packet for this BFD session.
+    txPacket: The most recent Tx control packet for this BFD session.
+    uptimeMs: Session uptime in milliseconds. Value will be 0 if session is
+      not up.
+    usingEchoMode: Indicates if echo mode is currently being used.
+  """
+
+  class BfdSessionInitializationModeValueValuesEnum(_messages.Enum):
+    r"""The BFD session initialization mode for this BGP peer. If set to
+    ACTIVE, the Cloud Router will initiate the BFD session for this BGP peer.
+    If set to PASSIVE, the Cloud Router will wait for the peer router to
+    initiate the BFD session for this BGP peer. If set to DISABLED, BFD is
+    disabled for this BGP peer.
+
+    Values:
+      ACTIVE: <no description>
+      DISABLED: <no description>
+      PASSIVE: <no description>
+    """
+    ACTIVE = 0
+    DISABLED = 1
+    PASSIVE = 2
+
+  class LocalDiagnosticValueValuesEnum(_messages.Enum):
+    r"""The diagnostic code specifies the local system's reason for the last
+    change in session state. This allows remote systems to determine the
+    reason that the previous session failed, for example. These diagnostic
+    codes are specified in section 4.1 of RFC5880
+
+    Values:
+      ADMINISTRATIVELY_DOWN: <no description>
+      CONCATENATED_PATH_DOWN: <no description>
+      CONTROL_DETECTION_TIME_EXPIRED: <no description>
+      DIAGNOSTIC_UNSPECIFIED: <no description>
+      ECHO_FUNCTION_FAILED: <no description>
+      FORWARDING_PLANE_RESET: <no description>
+      NEIGHBOR_SIGNALED_SESSION_DOWN: <no description>
+      NO_DIAGNOSTIC: <no description>
+      PATH_DOWN: <no description>
+      REVERSE_CONCATENATED_PATH_DOWN: <no description>
+    """
+    ADMINISTRATIVELY_DOWN = 0
+    CONCATENATED_PATH_DOWN = 1
+    CONTROL_DETECTION_TIME_EXPIRED = 2
+    DIAGNOSTIC_UNSPECIFIED = 3
+    ECHO_FUNCTION_FAILED = 4
+    FORWARDING_PLANE_RESET = 5
+    NEIGHBOR_SIGNALED_SESSION_DOWN = 6
+    NO_DIAGNOSTIC = 7
+    PATH_DOWN = 8
+    REVERSE_CONCATENATED_PATH_DOWN = 9
+
+  class LocalStateValueValuesEnum(_messages.Enum):
+    r"""The current BFD session state as seen by the transmitting system.
+    These states are specified in section 4.1 of RFC5880
+
+    Values:
+      ADMIN_DOWN: <no description>
+      DOWN: <no description>
+      INIT: <no description>
+      STATE_UNSPECIFIED: <no description>
+      UP: <no description>
+    """
+    ADMIN_DOWN = 0
+    DOWN = 1
+    INIT = 2
+    STATE_UNSPECIFIED = 3
+    UP = 4
+
+  bfdSessionInitializationMode = _messages.EnumField('BfdSessionInitializationModeValueValuesEnum', 1)
+  configUpdateTimestampMicros = _messages.IntegerField(2)
+  controlPacketCounts = _messages.MessageField('BfdStatusPacketCounts', 3)
+  controlPacketIntervals = _messages.MessageField('PacketIntervals', 4, repeated=True)
+  echoPacketCounts = _messages.MessageField('BfdStatusPacketCounts', 5)
+  echoPacketIntervals = _messages.MessageField('PacketIntervals', 6, repeated=True)
+  localDiagnostic = _messages.EnumField('LocalDiagnosticValueValuesEnum', 7)
+  localState = _messages.EnumField('LocalStateValueValuesEnum', 8)
+  negotiatedLocalControlTxIntervalMs = _messages.IntegerField(9, variant=_messages.Variant.UINT32)
+  negotiatedLocalEchoTxIntervalMs = _messages.IntegerField(10, variant=_messages.Variant.UINT32)
+  rxPacket = _messages.MessageField('BfdPacket', 11)
+  txPacket = _messages.MessageField('BfdPacket', 12)
+  uptimeMs = _messages.IntegerField(13)
+  usingEchoMode = _messages.BooleanField(14)
+
+
+class BfdStatusPacketCounts(_messages.Message):
+  r"""A BfdStatusPacketCounts object.
+
+  Fields:
+    numRx: Number of packets received since the beginning of the current BFD
+      session.
+    numRxRejected: Number of packets received that were rejected because of
+      errors since the beginning of the current BFD session.
+    numRxSuccessful: Number of packets received that were successfully
+      processed since the beginning of the current BFD session.
+    numTx: Number of packets transmitted since the beginning of the current
+      BFD session.
+  """
+
+  numRx = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  numRxRejected = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
+  numRxSuccessful = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
+  numTx = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
+
+
 class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
@@ -3447,7 +3719,7 @@ class Binding(_messages.Message):
       or without a Google account.  * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@gmail.com` .
+      represents a specific Google account. For example, `alice@example.com` .
       * `serviceAccount:{emailid}`: An email address that represents a service
       account. For example, `my-other-app@appspot.gserviceaccount.com`.  *
       `group:{emailid}`: An email address that represents a Google group. For
@@ -3573,7 +3845,7 @@ class Commitment(_messages.Message):
       rate. The currently supported plans are TWELVE_MONTH (1 year), and
       THIRTY_SIX_MONTH (3 years).
     region: [Output Only] URL of the region where this commitment may be used.
-    reservations: List of reservations for this commitment.
+    reservations: List of reservations in this commitment.
     resources: A list of commitment amounts for particular resources. Note
       that VCPU and MEMORY resource commitments must occur together.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -12276,8 +12548,8 @@ class ComputeRegionCommitmentsUpdateReservationsRequest(_messages.Message):
   r"""A ComputeRegionCommitmentsUpdateReservationsRequest object.
 
   Fields:
-    commitment: Name of the commitment of which the reservation's capacities
-      are being updated.
+    commitment: Name of the commitment for which the reservation is being
+      updated.
     project: Project ID for this request.
     region: Name of the region for this request.
     regionCommitmentsUpdateReservationsRequest: A
@@ -14730,6 +15002,9 @@ class ComputeRoutersGetNatMappingInfoRequest(_messages.Message):
       Compute Engine returns a nextPageToken that can be used to get the next
       page of results in subsequent list requests. Acceptable values are 0 to
       500, inclusive. (Default: 500)
+    natName: Name of the nat service to filter the Nat Mapping information. If
+      it is omitted, all nats for this router will be returned. Name should
+      conform to RFC1035.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -14749,11 +15024,12 @@ class ComputeRoutersGetNatMappingInfoRequest(_messages.Message):
 
   filter = _messages.StringField(1)
   maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
-  region = _messages.StringField(6, required=True)
-  router = _messages.StringField(7, required=True)
+  natName = _messages.StringField(3)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  region = _messages.StringField(7, required=True)
+  router = _messages.StringField(8, required=True)
 
 
 class ComputeRoutersGetRequest(_messages.Message):
@@ -18837,6 +19113,9 @@ class Disk(_messages.Message):
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of disk creation.
+      CREATING: Disk is provisioning. RESTORING: Source data is being copied
+      into the disk. FAILED: Disk creation failed. READY: Disk is ready for
+      use. DELETING: Disk is deleting.
     StorageTypeValueValuesEnum: [Deprecated] Storage type of the persistent
       disk.
 
@@ -18945,7 +19224,10 @@ class Disk(_messages.Message):
       persistent disk from a snapshot that was later deleted and recreated
       under the same name, the source snapshot ID would identify the exact
       version of the snapshot that was used.
-    status: [Output Only] The status of disk creation.
+    status: [Output Only] The status of disk creation. CREATING: Disk is
+      provisioning. RESTORING: Source data is being copied into the disk.
+      FAILED: Disk creation failed. READY: Disk is ready for use. DELETING:
+      Disk is deleting.
     storageType: [Deprecated] Storage type of the persistent disk.
     type: URL of the disk type resource describing which disk type to use to
       create the disk. Provide this when creating the disk. For example:
@@ -18958,7 +19240,10 @@ class Disk(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""[Output Only] The status of disk creation.
+    r"""[Output Only] The status of disk creation. CREATING: Disk is
+    provisioning. RESTORING: Source data is being copied into the disk.
+    FAILED: Disk creation failed. READY: Disk is ready for use. DELETING: Disk
+    is deleting.
 
     Values:
       CREATING: <no description>
@@ -24871,7 +25156,11 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
   r"""A InstanceGroupManagerUpdatePolicy object.
 
   Enums:
-    InstanceRedistributionTypeValueValuesEnum:
+    InstanceRedistributionTypeValueValuesEnum: The  instance redistribution
+      policy for regional managed instance groups. Valid values are:   -
+      PROACTIVE (default): The group attempts to maintain an even distribution
+      of VM instances across zones in the region.  - NONE: For non-autoscaled
+      groups, proactive redistribution is disabled.
     MinimalActionValueValuesEnum: Minimal action to be taken on an instance.
       You can specify either RESTART to restart existing instances or REPLACE
       to delete and create new instances from the target template. If you
@@ -24887,8 +25176,11 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       recreateInstances calls).
 
   Fields:
-    instanceRedistributionType: A InstanceRedistributionTypeValueValuesEnum
-      attribute.
+    instanceRedistributionType: The  instance redistribution policy for
+      regional managed instance groups. Valid values are:   - PROACTIVE
+      (default): The group attempts to maintain an even distribution of VM
+      instances across zones in the region.  - NONE: For non-autoscaled
+      groups, proactive redistribution is disabled.
     maxSurge: The maximum number of instances that can be created above the
       specified targetSize during the update process. By default, a fixed
       value of 1 is used. This value can be either a fixed number or a
@@ -24924,7 +25216,10 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
   """
 
   class InstanceRedistributionTypeValueValuesEnum(_messages.Enum):
-    r"""InstanceRedistributionTypeValueValuesEnum enum type.
+    r"""The  instance redistribution policy for regional managed instance
+    groups. Valid values are:   - PROACTIVE (default): The group attempts to
+    maintain an even distribution of VM instances across zones in the region.
+    - NONE: For non-autoscaled groups, proactive redistribution is disabled.
 
     Values:
       NONE: <no description>
@@ -26727,7 +27022,8 @@ class InterconnectAttachment(_messages.Message):
       take one of the following values:  - BPS_50M: 50 Mbit/s  - BPS_100M: 100
       Mbit/s  - BPS_200M: 200 Mbit/s  - BPS_300M: 300 Mbit/s  - BPS_400M: 400
       Mbit/s  - BPS_500M: 500 Mbit/s  - BPS_1G: 1 Gbit/s  - BPS_2G: 2 Gbit/s
-      - BPS_5G: 5 Gbit/s  - BPS_10G: 10 Gbit/s
+      - BPS_5G: 5 Gbit/s  - BPS_10G: 10 Gbit/s  - BPS_20G: 20 Gbit/s  -
+      BPS_50G: 50 Gbit/s
     EdgeAvailabilityDomainValueValuesEnum: Desired availability domain for the
       attachment. Only available for type PARTNER, at creation time, and can
       take one of the following values:  - AVAILABILITY_DOMAIN_ANY  -
@@ -26781,7 +27077,8 @@ class InterconnectAttachment(_messages.Message):
       following values:  - BPS_50M: 50 Mbit/s  - BPS_100M: 100 Mbit/s  -
       BPS_200M: 200 Mbit/s  - BPS_300M: 300 Mbit/s  - BPS_400M: 400 Mbit/s  -
       BPS_500M: 500 Mbit/s  - BPS_1G: 1 Gbit/s  - BPS_2G: 2 Gbit/s  - BPS_5G:
-      5 Gbit/s  - BPS_10G: 10 Gbit/s
+      5 Gbit/s  - BPS_10G: 10 Gbit/s  - BPS_20G: 20 Gbit/s  - BPS_50G: 50
+      Gbit/s
     candidateSubnets: Up to 16 candidate prefixes that can be used to restrict
       the allocation of cloudRouterIpAddress and customerRouterIpAddress for
       this attachment. All prefixes must be within link-local address space
@@ -26896,17 +27193,19 @@ class InterconnectAttachment(_messages.Message):
     values:  - BPS_50M: 50 Mbit/s  - BPS_100M: 100 Mbit/s  - BPS_200M: 200
     Mbit/s  - BPS_300M: 300 Mbit/s  - BPS_400M: 400 Mbit/s  - BPS_500M: 500
     Mbit/s  - BPS_1G: 1 Gbit/s  - BPS_2G: 2 Gbit/s  - BPS_5G: 5 Gbit/s  -
-    BPS_10G: 10 Gbit/s
+    BPS_10G: 10 Gbit/s  - BPS_20G: 20 Gbit/s  - BPS_50G: 50 Gbit/s
 
     Values:
       BPS_100M: <no description>
       BPS_10G: <no description>
       BPS_1G: <no description>
       BPS_200M: <no description>
+      BPS_20G: <no description>
       BPS_2G: <no description>
       BPS_300M: <no description>
       BPS_400M: <no description>
       BPS_500M: <no description>
+      BPS_50G: <no description>
       BPS_50M: <no description>
       BPS_5G: <no description>
     """
@@ -26914,12 +27213,14 @@ class InterconnectAttachment(_messages.Message):
     BPS_10G = 1
     BPS_1G = 2
     BPS_200M = 3
-    BPS_2G = 4
-    BPS_300M = 5
-    BPS_400M = 6
-    BPS_500M = 7
-    BPS_50M = 8
-    BPS_5G = 9
+    BPS_20G = 4
+    BPS_2G = 5
+    BPS_300M = 6
+    BPS_400M = 7
+    BPS_500M = 8
+    BPS_50G = 9
+    BPS_50M = 10
+    BPS_5G = 11
 
   class EdgeAvailabilityDomainValueValuesEnum(_messages.Enum):
     r"""Desired availability domain for the attachment. Only available for
@@ -28146,13 +28447,15 @@ class InterconnectOutageNotification(_messages.Message):
     Values:
       ACTIVE: <no description>
       CANCELLED: <no description>
+      COMPLETED: <no description>
       NS_ACTIVE: <no description>
       NS_CANCELED: <no description>
     """
     ACTIVE = 0
     CANCELLED = 1
-    NS_ACTIVE = 2
-    NS_CANCELED = 3
+    COMPLETED = 2
+    NS_ACTIVE = 3
+    NS_CANCELED = 4
 
   affectedCircuits = _messages.StringField(1, repeated=True)
   description = _messages.StringField(2)
@@ -32617,6 +32920,61 @@ class OutlierDetection(_messages.Message):
   successRateStdevFactor = _messages.IntegerField(11, variant=_messages.Variant.INT32)
 
 
+class PacketIntervals(_messages.Message):
+  r"""Next free: 7
+
+  Enums:
+    DurationValueValuesEnum: From how long ago in the past these intervals
+      were observed.
+    TypeValueValuesEnum: The type of packets for which inter-packet intervals
+      were computed.
+
+  Fields:
+    avgMs: Average observed inter-packet interval in milliseconds.
+    duration: From how long ago in the past these intervals were observed.
+    maxMs: Maximum observed inter-packet interval in milliseconds.
+    minMs: Minimum observed inter-packet interval in milliseconds.
+    numIntervals: Number of inter-packet intervals from which these statistics
+      were derived.
+    type: The type of packets for which inter-packet intervals were computed.
+  """
+
+  class DurationValueValuesEnum(_messages.Enum):
+    r"""From how long ago in the past these intervals were observed.
+
+    Values:
+      DURATION_UNSPECIFIED: <no description>
+      HOUR: <no description>
+      MAX: <no description>
+      MINUTE: <no description>
+    """
+    DURATION_UNSPECIFIED = 0
+    HOUR = 1
+    MAX = 2
+    MINUTE = 3
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of packets for which inter-packet intervals were computed.
+
+    Values:
+      LOOPBACK: <no description>
+      RECEIVE: <no description>
+      TRANSMIT: <no description>
+      TYPE_UNSPECIFIED: <no description>
+    """
+    LOOPBACK = 0
+    RECEIVE = 1
+    TRANSMIT = 2
+    TYPE_UNSPECIFIED = 3
+
+  avgMs = _messages.IntegerField(1)
+  duration = _messages.EnumField('DurationValueValuesEnum', 2)
+  maxMs = _messages.IntegerField(3)
+  minMs = _messages.IntegerField(4)
+  numIntervals = _messages.IntegerField(5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+
+
 class PathMatcher(_messages.Message):
   r"""A matcher for the path portion of the URL. The BackendService from the
   longest-matched rule will serve the URL. If no rule was matched, the default
@@ -32747,7 +33105,7 @@ class Policy(_messages.Message):
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten blindly.
+      the existing policy is overwritten.
     iamOwned:
     rules: If more than one rule is specified, the rules are applied in the
       following manner: - All matching LOG rules are always applied. - If any
@@ -32959,8 +33317,10 @@ class Quota(_messages.Message):
       BACKEND_SERVICES: <no description>
       C2_CPUS: <no description>
       COMMITMENTS: <no description>
+      COMMITTED_C2_CPUS: <no description>
       COMMITTED_CPUS: <no description>
       COMMITTED_LOCAL_SSD_TOTAL_GB: <no description>
+      COMMITTED_N2_CPUS: <no description>
       COMMITTED_NVIDIA_K80_GPUS: <no description>
       COMMITTED_NVIDIA_P100_GPUS: <no description>
       COMMITTED_NVIDIA_P4_GPUS: <no description>
@@ -33038,79 +33398,81 @@ class Quota(_messages.Message):
     BACKEND_SERVICES = 2
     C2_CPUS = 3
     COMMITMENTS = 4
-    COMMITTED_CPUS = 5
-    COMMITTED_LOCAL_SSD_TOTAL_GB = 6
-    COMMITTED_NVIDIA_K80_GPUS = 7
-    COMMITTED_NVIDIA_P100_GPUS = 8
-    COMMITTED_NVIDIA_P4_GPUS = 9
-    COMMITTED_NVIDIA_T4_GPUS = 10
-    COMMITTED_NVIDIA_V100_GPUS = 11
-    CPUS = 12
-    CPUS_ALL_REGIONS = 13
-    DISKS_TOTAL_GB = 14
-    EXTERNAL_VPN_GATEWAYS = 15
-    FIREWALLS = 16
-    FORWARDING_RULES = 17
-    GLOBAL_INTERNAL_ADDRESSES = 18
-    GPUS_ALL_REGIONS = 19
-    HEALTH_CHECKS = 20
-    IMAGES = 21
-    INSTANCES = 22
-    INSTANCE_GROUPS = 23
-    INSTANCE_GROUP_MANAGERS = 24
-    INSTANCE_TEMPLATES = 25
-    INTERCONNECTS = 26
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 27
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 28
-    INTERNAL_ADDRESSES = 29
-    IN_USE_ADDRESSES = 30
-    IN_USE_BACKUP_SCHEDULES = 31
-    IN_USE_SNAPSHOT_SCHEDULES = 32
-    LOCAL_SSD_TOTAL_GB = 33
-    N2_CPUS = 34
-    NETWORKS = 35
-    NETWORK_ENDPOINT_GROUPS = 36
-    NVIDIA_K80_GPUS = 37
-    NVIDIA_P100_GPUS = 38
-    NVIDIA_P100_VWS_GPUS = 39
-    NVIDIA_P4_GPUS = 40
-    NVIDIA_P4_VWS_GPUS = 41
-    NVIDIA_T4_GPUS = 42
-    NVIDIA_T4_VWS_GPUS = 43
-    NVIDIA_V100_GPUS = 44
-    PREEMPTIBLE_CPUS = 45
-    PREEMPTIBLE_LOCAL_SSD_GB = 46
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 47
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 48
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 49
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 50
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 51
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 52
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 53
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 54
-    REGIONAL_AUTOSCALERS = 55
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 56
-    RESERVATIONS = 57
-    RESOURCE_POLICIES = 58
-    ROUTERS = 59
-    ROUTES = 60
-    SECURITY_POLICIES = 61
-    SECURITY_POLICY_RULES = 62
-    SNAPSHOTS = 63
-    SSD_TOTAL_GB = 64
-    SSL_CERTIFICATES = 65
-    STATIC_ADDRESSES = 66
-    SUBNETWORKS = 67
-    TARGET_HTTPS_PROXIES = 68
-    TARGET_HTTP_PROXIES = 69
-    TARGET_INSTANCES = 70
-    TARGET_POOLS = 71
-    TARGET_SSL_PROXIES = 72
-    TARGET_TCP_PROXIES = 73
-    TARGET_VPN_GATEWAYS = 74
-    URL_MAPS = 75
-    VPN_GATEWAYS = 76
-    VPN_TUNNELS = 77
+    COMMITTED_C2_CPUS = 5
+    COMMITTED_CPUS = 6
+    COMMITTED_LOCAL_SSD_TOTAL_GB = 7
+    COMMITTED_N2_CPUS = 8
+    COMMITTED_NVIDIA_K80_GPUS = 9
+    COMMITTED_NVIDIA_P100_GPUS = 10
+    COMMITTED_NVIDIA_P4_GPUS = 11
+    COMMITTED_NVIDIA_T4_GPUS = 12
+    COMMITTED_NVIDIA_V100_GPUS = 13
+    CPUS = 14
+    CPUS_ALL_REGIONS = 15
+    DISKS_TOTAL_GB = 16
+    EXTERNAL_VPN_GATEWAYS = 17
+    FIREWALLS = 18
+    FORWARDING_RULES = 19
+    GLOBAL_INTERNAL_ADDRESSES = 20
+    GPUS_ALL_REGIONS = 21
+    HEALTH_CHECKS = 22
+    IMAGES = 23
+    INSTANCES = 24
+    INSTANCE_GROUPS = 25
+    INSTANCE_GROUP_MANAGERS = 26
+    INSTANCE_TEMPLATES = 27
+    INTERCONNECTS = 28
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 29
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 30
+    INTERNAL_ADDRESSES = 31
+    IN_USE_ADDRESSES = 32
+    IN_USE_BACKUP_SCHEDULES = 33
+    IN_USE_SNAPSHOT_SCHEDULES = 34
+    LOCAL_SSD_TOTAL_GB = 35
+    N2_CPUS = 36
+    NETWORKS = 37
+    NETWORK_ENDPOINT_GROUPS = 38
+    NVIDIA_K80_GPUS = 39
+    NVIDIA_P100_GPUS = 40
+    NVIDIA_P100_VWS_GPUS = 41
+    NVIDIA_P4_GPUS = 42
+    NVIDIA_P4_VWS_GPUS = 43
+    NVIDIA_T4_GPUS = 44
+    NVIDIA_T4_VWS_GPUS = 45
+    NVIDIA_V100_GPUS = 46
+    PREEMPTIBLE_CPUS = 47
+    PREEMPTIBLE_LOCAL_SSD_GB = 48
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 49
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 50
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 51
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 52
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 53
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 54
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 55
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 56
+    REGIONAL_AUTOSCALERS = 57
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 58
+    RESERVATIONS = 59
+    RESOURCE_POLICIES = 60
+    ROUTERS = 61
+    ROUTES = 62
+    SECURITY_POLICIES = 63
+    SECURITY_POLICY_RULES = 64
+    SNAPSHOTS = 65
+    SSD_TOTAL_GB = 66
+    SSL_CERTIFICATES = 67
+    STATIC_ADDRESSES = 68
+    SUBNETWORKS = 69
+    TARGET_HTTPS_PROXIES = 70
+    TARGET_HTTP_PROXIES = 71
+    TARGET_INSTANCES = 72
+    TARGET_POOLS = 73
+    TARGET_SSL_PROXIES = 74
+    TARGET_TCP_PROXIES = 75
+    TARGET_VPN_GATEWAYS = 76
+    URL_MAPS = 77
+    VPN_GATEWAYS = 78
+    VPN_TUNNELS = 79
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -33313,8 +33675,8 @@ class RegionCommitmentsUpdateReservationsRequest(_messages.Message):
   r"""A RegionCommitmentsUpdateReservationsRequest object.
 
   Fields:
-    reservations: List of reservations for the capacity move of VMs with
-      accelerators and local ssds.
+    reservations: List of two reservations to transfer GPUs and local SSD
+      between.
   """
 
   reservations = _messages.MessageField('Reservation', 1, repeated=True)
@@ -34298,15 +34660,14 @@ class Reservation(_messages.Message):
   r"""Represents a reservation resource. A reservation ensures that capacity
   is held in a specific zone even if the reserved VMs are not running. For
   more information, read  Reserving zonal resources. (== resource_for
-  beta.reservations ==) (== resource_for v1.reservations ==) (== NextID: 13
-  ==)
+  beta.reservations ==) (== resource_for v1.reservations ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the reservation.
 
   Fields:
-    commitment: [OutputOnly] Full or partial url for parent commitment for
-      reservations which are tied to a commitment.
+    commitment: [OutputOnly] Full or partial URL to a parent commitment. This
+      field displays for reservations that are tied to a commitment.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -34331,8 +34692,8 @@ class Reservation(_messages.Message):
       set, then only VMs that target the reservation by name can consume from
       this reservation.
     status: [Output Only] The status of the reservation.
-    zone: Zone in which the reservation resides, must be provided if
-      reservation is created with commitment creation.
+    zone: Zone in which the reservation resides. A zone must be provided if
+      the reservation is created within a commitment.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -36044,6 +36405,14 @@ class RouterBgp(_messages.Message):
       ASN, either 16-bit or 32-bit. The value will be fixed for this router
       resource. All VPN tunnels that link to this router will have the same
       local ASN.
+    keepaliveInterval: The interval in seconds between BGP keepalive messages
+      that are sent to the peer. Hold time is three times the interval at
+      which keepalive messages are sent, and the hold time is the maximum
+      number of seconds allowed to elapse between successive keepalive
+      messages that BGP receives from a peer. BGP will use the smaller of
+      either the local hold time value or the peer?s hold time value as the
+      hold time for the BGP connection between the two peers. If set, this
+      value must be between 1 and 120. The default is 20.
   """
 
   class AdvertiseModeValueValuesEnum(_messages.Enum):
@@ -36069,6 +36438,7 @@ class RouterBgp(_messages.Message):
   advertisedGroups = _messages.EnumField('AdvertisedGroupsValueListEntryValuesEnum', 2, repeated=True)
   advertisedIpRanges = _messages.MessageField('RouterAdvertisedIpRange', 3, repeated=True)
   asn = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
+  keepaliveInterval = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
 
 
 class RouterBgpPeer(_messages.Message):
@@ -36078,6 +36448,10 @@ class RouterBgpPeer(_messages.Message):
     AdvertiseModeValueValuesEnum: User-specified flag to indicate which mode
       to use for advertisement.
     AdvertisedGroupsValueListEntryValuesEnum:
+    EnableValueValuesEnum: The status of the BGP peer connection. If set to
+      FALSE, any active session with the peer is terminated and all associated
+      routing information is removed. If set to TRUE, the peer connection can
+      be established with routing information. The default is TRUE.
     ManagementTypeValueValuesEnum: [Output Only] The resource that configures
       and manages this BGP peer.  - MANAGED_BY_USER is the default value and
       can be managed by you or other users  - MANAGED_BY_ATTACHMENT is a BGP
@@ -36107,6 +36481,11 @@ class RouterBgpPeer(_messages.Message):
     advertisedRoutePriority: The priority of routes advertised to this BGP
       peer. Where there is more than one matching route of maximum length, the
       routes with the lowest priority value win.
+    bfd: BFD configuration for the BGP peering.
+    enable: The status of the BGP peer connection. If set to FALSE, any active
+      session with the peer is terminated and all associated routing
+      information is removed. If set to TRUE, the peer connection can be
+      established with routing information. The default is TRUE.
     interfaceName: Name of the interface the BGP peer is associated with.
     ipAddress: IP address of the interface inside Google Cloud Platform. Only
       IPv4 is supported.
@@ -36143,6 +36522,19 @@ class RouterBgpPeer(_messages.Message):
     """
     ALL_SUBNETS = 0
 
+  class EnableValueValuesEnum(_messages.Enum):
+    r"""The status of the BGP peer connection. If set to FALSE, any active
+    session with the peer is terminated and all associated routing information
+    is removed. If set to TRUE, the peer connection can be established with
+    routing information. The default is TRUE.
+
+    Values:
+      FALSE: <no description>
+      TRUE: <no description>
+    """
+    FALSE = 0
+    TRUE = 1
+
   class ManagementTypeValueValuesEnum(_messages.Enum):
     r"""[Output Only] The resource that configures and manages this BGP peer.
     - MANAGED_BY_USER is the default value and can be managed by you or other
@@ -36163,12 +36555,122 @@ class RouterBgpPeer(_messages.Message):
   advertisedGroups = _messages.EnumField('AdvertisedGroupsValueListEntryValuesEnum', 2, repeated=True)
   advertisedIpRanges = _messages.MessageField('RouterAdvertisedIpRange', 3, repeated=True)
   advertisedRoutePriority = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
-  interfaceName = _messages.StringField(5)
-  ipAddress = _messages.StringField(6)
-  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 7)
-  name = _messages.StringField(8)
-  peerAsn = _messages.IntegerField(9, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(10)
+  bfd = _messages.MessageField('RouterBgpPeerBfd', 5)
+  enable = _messages.EnumField('EnableValueValuesEnum', 6)
+  interfaceName = _messages.StringField(7)
+  ipAddress = _messages.StringField(8)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 9)
+  name = _messages.StringField(10)
+  peerAsn = _messages.IntegerField(11, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(12)
+
+
+class RouterBgpPeerBfd(_messages.Message):
+  r"""A RouterBgpPeerBfd object.
+
+  Enums:
+    PacketModeValueValuesEnum: The BFD packet mode for this BGP peer. If set
+      to CONTROL_AND_ECHO, BFD echo mode is enabled for this BGP peer. In this
+      mode, if the peer router also has BFD echo mode enabled, BFD echo
+      packets will be sent to the other router. If the peer router does not
+      have BFD echo mode enabled, only control packets will be sent. If set to
+      CONTROL_ONLY, BFD echo mode is disabled for this BGP peer. If this
+      router and the peer router have a multihop connection, this should be
+      set to CONTROL_ONLY as BFD echo mode is only supported on singlehop
+      connections. The default is CONTROL_AND_ECHO.
+    SessionInitializationModeValueValuesEnum: The BFD session initialization
+      mode for this BGP peer. If set to ACTIVE, the Cloud Router will initiate
+      the BFD session for this BGP peer. If set to PASSIVE, the Cloud Router
+      will wait for the peer router to initiate the BFD session for this BGP
+      peer. If set to DISABLED, BFD is disabled for this BGP peer. The default
+      is PASSIVE.
+
+  Fields:
+    minReceiveInterval: The minimum interval, in milliseconds, between BFD
+      packets received from the peer router. The actual value is negotiated
+      between the two routers and is equal to the greater of this value and
+      the transmit interval of the other router. If BFD echo mode is enabled
+      on this router and the peer router, this value is used to negotiate the
+      interval between BFD echo packets transmitted by the peer router.
+      Otherwise, it will be used to determine the interval between BFD control
+      packets. If set, this value must be between 100 and 30000. The default
+      is 300.
+    minTransmitInterval: The minimum interval, in milliseconds, between BFD
+      packets transmitted to the peer router. The actual value is negotiated
+      between the two routers and is equal to the greater of this value and
+      the corresponding receive interval of the other router. If BFD echo mode
+      is enabled on this router and the peer router, this value is used to
+      negotiate the interval between BFD echo packets transmitted by this
+      router. Otherwise, it will be used to determine the interval between BFD
+      control packets. If set, this value must be between 100 and 30000. The
+      default is 300.
+    multiplier: The number of consecutive BFD packets that must be missed
+      before BFD declares that a peer is unavailable. If set, the value must
+      be a value between 2 and 16. The default is 3.
+    packetMode: The BFD packet mode for this BGP peer. If set to
+      CONTROL_AND_ECHO, BFD echo mode is enabled for this BGP peer. In this
+      mode, if the peer router also has BFD echo mode enabled, BFD echo
+      packets will be sent to the other router. If the peer router does not
+      have BFD echo mode enabled, only control packets will be sent. If set to
+      CONTROL_ONLY, BFD echo mode is disabled for this BGP peer. If this
+      router and the peer router have a multihop connection, this should be
+      set to CONTROL_ONLY as BFD echo mode is only supported on singlehop
+      connections. The default is CONTROL_AND_ECHO.
+    sessionInitializationMode: The BFD session initialization mode for this
+      BGP peer. If set to ACTIVE, the Cloud Router will initiate the BFD
+      session for this BGP peer. If set to PASSIVE, the Cloud Router will wait
+      for the peer router to initiate the BFD session for this BGP peer. If
+      set to DISABLED, BFD is disabled for this BGP peer. The default is
+      PASSIVE.
+    slowTimerInterval: The minimum interval, in milliseconds, between BFD
+      control packets transmitted to and received from the peer router when
+      BFD echo mode is enabled on both routers. The actual transmit and
+      receive intervals are negotiated between the two routers and are equal
+      to the greater of this value and the corresponding interval on the other
+      router. If set, this value must be between 1000 and 30000. The default
+      is 5000.
+  """
+
+  class PacketModeValueValuesEnum(_messages.Enum):
+    r"""The BFD packet mode for this BGP peer. If set to CONTROL_AND_ECHO, BFD
+    echo mode is enabled for this BGP peer. In this mode, if the peer router
+    also has BFD echo mode enabled, BFD echo packets will be sent to the other
+    router. If the peer router does not have BFD echo mode enabled, only
+    control packets will be sent. If set to CONTROL_ONLY, BFD echo mode is
+    disabled for this BGP peer. If this router and the peer router have a
+    multihop connection, this should be set to CONTROL_ONLY as BFD echo mode
+    is only supported on singlehop connections. The default is
+    CONTROL_AND_ECHO.
+
+    Values:
+      CONTROL_AND_ECHO: <no description>
+      CONTROL_ONLY: <no description>
+    """
+    CONTROL_AND_ECHO = 0
+    CONTROL_ONLY = 1
+
+  class SessionInitializationModeValueValuesEnum(_messages.Enum):
+    r"""The BFD session initialization mode for this BGP peer. If set to
+    ACTIVE, the Cloud Router will initiate the BFD session for this BGP peer.
+    If set to PASSIVE, the Cloud Router will wait for the peer router to
+    initiate the BFD session for this BGP peer. If set to DISABLED, BFD is
+    disabled for this BGP peer. The default is PASSIVE.
+
+    Values:
+      ACTIVE: <no description>
+      DISABLED: <no description>
+      PASSIVE: <no description>
+    """
+    ACTIVE = 0
+    DISABLED = 1
+    PASSIVE = 2
+
+  minReceiveInterval = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  minTransmitInterval = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
+  multiplier = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
+  packetMode = _messages.EnumField('PacketModeValueValuesEnum', 4)
+  sessionInitializationMode = _messages.EnumField('SessionInitializationModeValueValuesEnum', 5)
+  slowTimerInterval = _messages.IntegerField(6, variant=_messages.Variant.UINT32)
 
 
 class RouterInterface(_messages.Message):
@@ -36380,6 +36882,9 @@ class RouterNat(_messages.Message):
       other Router.Nat section in any Router for this network in this region.
 
   Fields:
+    drainNatIps: A list of URLs of the IP resources to be drained. These IPs
+      must be valid static external IPs that have been assigned to the NAT.
+      These IPs should be used for updating/patching a NAT only.
     icmpIdleTimeoutSec: Timeout (in seconds) for ICMP connections. Defaults to
       30s if not set.
     logConfig: Configure logging on this NAT.
@@ -36455,17 +36960,18 @@ class RouterNat(_messages.Message):
     ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES = 1
     LIST_OF_SUBNETWORKS = 2
 
-  icmpIdleTimeoutSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  logConfig = _messages.MessageField('RouterNatLogConfig', 2)
-  minPortsPerVm = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  name = _messages.StringField(4)
-  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 5)
-  natIps = _messages.StringField(6, repeated=True)
-  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 7)
-  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 8, repeated=True)
-  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  udpIdleTimeoutSec = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  drainNatIps = _messages.StringField(1, repeated=True)
+  icmpIdleTimeoutSec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  logConfig = _messages.MessageField('RouterNatLogConfig', 3)
+  minPortsPerVm = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  name = _messages.StringField(5)
+  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 6)
+  natIps = _messages.StringField(7, repeated=True)
+  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 8)
+  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 9, repeated=True)
+  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  udpIdleTimeoutSec = _messages.IntegerField(12, variant=_messages.Variant.INT32)
 
 
 class RouterNatLogConfig(_messages.Message):
@@ -36561,6 +37067,7 @@ class RouterStatusBgpPeerStatus(_messages.Message):
 
   Fields:
     advertisedRoutes: Routes that were advertised to the remote BGP peer
+    bfdStatus: A BfdStatus attribute.
     ipAddress: IP address of the local BGP interface.
     linkedVpnTunnel: URL of the VPN tunnel that this BGP peer controls.
     name: Name of this BGP peer. Unique within the Routers resource.
@@ -36586,15 +37093,16 @@ class RouterStatusBgpPeerStatus(_messages.Message):
     UP = 2
 
   advertisedRoutes = _messages.MessageField('Route', 1, repeated=True)
-  ipAddress = _messages.StringField(2)
-  linkedVpnTunnel = _messages.StringField(3)
-  name = _messages.StringField(4)
-  numLearnedRoutes = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(6)
-  state = _messages.StringField(7)
-  status = _messages.EnumField('StatusValueValuesEnum', 8)
-  uptime = _messages.StringField(9)
-  uptimeSeconds = _messages.StringField(10)
+  bfdStatus = _messages.MessageField('BfdStatus', 2)
+  ipAddress = _messages.StringField(3)
+  linkedVpnTunnel = _messages.StringField(4)
+  name = _messages.StringField(5)
+  numLearnedRoutes = _messages.IntegerField(6, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(7)
+  state = _messages.StringField(8)
+  status = _messages.EnumField('StatusValueValuesEnum', 9)
+  uptime = _messages.StringField(10)
+  uptimeSeconds = _messages.StringField(11)
 
 
 class RouterStatusNatStatus(_messages.Message):
@@ -36603,6 +37111,10 @@ class RouterStatusNatStatus(_messages.Message):
   Fields:
     autoAllocatedNatIps: A list of IPs auto-allocated for NAT. Example:
       ["1.1.1.1", "129.2.16.89"]
+    drainAutoAllocatedNatIps: A list of IPs auto-allocated for NAT that are in
+      drain mode. Example: ["1.1.1.1", ?179.12.26.133?].
+    drainUserAllocatedNatIps: A list of IPs user-allocated for NAT that are in
+      drain mode. Example: ["1.1.1.1", ?179.12.26.133?].
     minExtraNatIpsNeeded: The number of extra IPs to allocate. This will be
       greater than 0 only if user-specified IPs are NOT enough to allow all
       configured VMs to use NAT. This value is meaningful only when auto-
@@ -36617,11 +37129,13 @@ class RouterStatusNatStatus(_messages.Message):
   """
 
   autoAllocatedNatIps = _messages.StringField(1, repeated=True)
-  minExtraNatIpsNeeded = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  name = _messages.StringField(3)
-  numVmEndpointsWithNatMappings = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  userAllocatedNatIpResources = _messages.StringField(5, repeated=True)
-  userAllocatedNatIps = _messages.StringField(6, repeated=True)
+  drainAutoAllocatedNatIps = _messages.StringField(2, repeated=True)
+  drainUserAllocatedNatIps = _messages.StringField(3, repeated=True)
+  minExtraNatIpsNeeded = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  name = _messages.StringField(5)
+  numVmEndpointsWithNatMappings = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  userAllocatedNatIpResources = _messages.StringField(7, repeated=True)
+  userAllocatedNatIps = _messages.StringField(8, repeated=True)
 
 
 class RouterStatusResponse(_messages.Message):
@@ -43234,10 +43748,17 @@ class VmEndpointNatMappingsInterfaceNatMappings(_messages.Message):
   r"""Contain information of Nat mapping for an interface of this endpoint.
 
   Fields:
+    drainNatIpPortRanges: List of all drain IP:port-range mappings assigned to
+      this interface. These ranges are inclusive, that is, both the first and
+      the last ports can be used for NAT. Example: ["2.2.2.2:12345-12355",
+      "1.1.1.1:2234-2234"].
     natIpPortRanges: A list of all IP:port-range mappings assigned to this
       interface. These ranges are inclusive, that is, both the first and the
       last ports can be used for NAT. Example: ["2.2.2.2:12345-12355",
       "1.1.1.1:2234-2234"].
+    numTotalDrainNatPorts: Total number of drain ports across all NAT IPs
+      allocated to this interface. It equals to the aggregated port number in
+      the field drain_nat_ip_port_ranges.
     numTotalNatPorts: Total number of ports across all NAT IPs allocated to
       this interface. It equals to the aggregated port number in the field
       nat_ip_port_ranges.
@@ -43247,10 +43768,12 @@ class VmEndpointNatMappingsInterfaceNatMappings(_messages.Message):
     sourceVirtualIp: Primary IP of the VM for this NIC.
   """
 
-  natIpPortRanges = _messages.StringField(1, repeated=True)
-  numTotalNatPorts = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  sourceAliasIpRange = _messages.StringField(3)
-  sourceVirtualIp = _messages.StringField(4)
+  drainNatIpPortRanges = _messages.StringField(1, repeated=True)
+  natIpPortRanges = _messages.StringField(2, repeated=True)
+  numTotalDrainNatPorts = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  numTotalNatPorts = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  sourceAliasIpRange = _messages.StringField(5)
+  sourceVirtualIp = _messages.StringField(6)
 
 
 class VmEndpointNatMappingsList(_messages.Message):

@@ -524,10 +524,30 @@ def HandleError(exc, command_path, known_error_handler=None):
     core_exceptions.reraise(exc)
 
 
+def _MessageWhenMissingServiceUsePermission(known_exc):
+  """Generates message when missing 'serviceusage.services.use' permission."""
+  error_message_signature = (
+      'Grant the caller the Owner or Editor role, or a '
+      'custom role with the serviceusage.services.use permission')
+  help_message = ('If you want to invoke the command from a project different '
+                  'from the target resource project, use `--billing-project` '
+                  'or `{}` property.'.format(
+                      properties.VALUES.billing.quota_project))
+
+  if (isinstance(known_exc, api_exceptions.HttpException) and
+      error_message_signature in known_exc.message):
+    return help_message
+  else:
+    return None
+
+
 def _LogKnownError(known_exc, command_path, print_error):
   msg = '({0}) {1}'.format(
       console_attr.SafeText(command_path),
       console_attr.SafeText(known_exc))
+  help_message = _MessageWhenMissingServiceUsePermission(known_exc)
+  if help_message:
+    msg = '{0}\n\n{1}'.format(msg, console_attr.SafeText(help_message))
   log.debug(msg, exc_info=sys.exc_info())
   if print_error:
     log.error(msg)

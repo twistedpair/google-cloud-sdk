@@ -1084,6 +1084,15 @@ def AddMinCpuPlatformArgs(parser, track, required=False):
       """.format(track.prefix + ' ' if track.prefix else ''))
 
 
+def AddMinNodeCpuArg(parser):
+  parser.add_argument(
+      '--min-node-cpu',
+      help="""\
+      Minimum number of virtual CPUs this instance will consume when running on
+      a sole-tenant node.
+      """)
+
+
 def AddPreemptibleVmArgs(parser):
   parser.add_argument(
       '--preemptible',

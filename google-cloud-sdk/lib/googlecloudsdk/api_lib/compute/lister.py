@@ -392,18 +392,11 @@ def AddBaseListerArgs(parser, hidden=False):
         """)
 
 
-# TODO(b/38256601) - Drop these flags
 def AddZonalListerArgs(parser, hidden=False):
   """Add arguments defined by base_classes.ZonalLister."""
   AddBaseListerArgs(parser, hidden)
   parser.add_argument(
       '--zones',
-      action=actions.DeprecationAction(
-          'zones',
-          warn='Flag `--zones` is deprecated. '
-          'Use `--filter="zone:( ZONE ... )"` instead.\n'
-          'For example '
-          '--filter="zone:( europe-west1-b europe-west1-c )".'),
       metavar='ZONE',
       help='If provided, only resources from the given zones are queried.',
       hidden=hidden,

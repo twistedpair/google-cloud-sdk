@@ -1037,6 +1037,7 @@ class Policy(_messages.Message):
       the object name, e.g. projects/_/buckets/my-bucket/objects/data.txt#17.
       The current generation can be denoted with #0. This field is ignored on
       input.
+    version: The IAM policy format version.
   """
 
   class BindingsValueListEntry(_messages.Message):
@@ -1098,6 +1099,7 @@ class Policy(_messages.Message):
   etag = _messages.BytesField(2)
   kind = _messages.StringField(3, default=u'storage#policy')
   resourceId = _messages.StringField(4)
+  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class RewriteResponse(_messages.Message):
@@ -1335,6 +1337,10 @@ class StorageBucketsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     bucket: Name of a bucket.
+    optionsRequestedPolicyVersion: The IAM policy format version to be
+      returned. If the optionsRequestedPolicyVersion is for an older version
+      that doesn't support part of the requested IAM policy, the request
+      fails.
     provisionalUserProject: The project to be billed for this request if the
       target bucket is requester-pays bucket.
     userProject: The project to be billed for this request. Required for
@@ -1342,8 +1348,9 @@ class StorageBucketsGetIamPolicyRequest(_messages.Message):
   """
 
   bucket = _messages.StringField(1, required=True)
-  provisionalUserProject = _messages.StringField(2)
-  userProject = _messages.StringField(3)
+  optionsRequestedPolicyVersion = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  provisionalUserProject = _messages.StringField(3)
+  userProject = _messages.StringField(4)
 
 
 class StorageBucketsGetRequest(_messages.Message):

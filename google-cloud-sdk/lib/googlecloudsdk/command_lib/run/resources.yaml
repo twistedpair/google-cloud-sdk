@@ -17,8 +17,11 @@ region:
   - &region
     parameter_name: locationsId
     attribute_name: region
-    help: The Cloud Run region
+    help: The Cloud Run region.
     property: run/region
+    fallthroughs:
+    - hook: googlecloudsdk.command_lib.run.flags:PromptForRegion
+      hint: specify from a list of available regions in a prompt
 
 service:
   name: service

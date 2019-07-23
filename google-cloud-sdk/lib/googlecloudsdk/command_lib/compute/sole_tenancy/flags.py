@@ -49,3 +49,13 @@ def AddNodeAffinityFlagToParser(parser):
       help='The name of the node group to schedule this instance on.')
   sole_tenancy_group.add_argument(
       '--node', help='The name of the node to schedule this instance on.')
+
+
+def AddMinNodeCpusArg(parser):
+  parser.add_argument(
+      '--min-node-cpus',
+      type=int,
+      help="""\
+      Minimum number of virtual CPUs this instance will consume when running on
+      a sole-tenant node.
+      """)

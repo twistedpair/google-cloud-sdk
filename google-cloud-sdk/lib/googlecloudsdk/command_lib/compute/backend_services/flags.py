@@ -96,6 +96,13 @@ NETWORK_ENDPOINT_GROUP_ARG = compute_flags.ResourceArgument(
     zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
 
 
+GLOBAL_NETWORK_ENDPOINT_GROUP_ARG = compute_flags.ResourceArgument(
+    name='--network-endpoint-group',
+    resource_name='network endpoint group',
+    zonal_collection='compute.networkEndpointGroups',
+    global_collection='compute.globalNetworkEndpointGroups',
+    zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
+
 GLOBAL_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     name='backend_service_name',
     resource_name='backend service',
@@ -645,13 +652,18 @@ def AddLoggingSampleRate(parser):
       """)
 
 
-def AddInstanceGroupAndNetworkEndpointGroupArgs(parser, verb):
+def AddInstanceGroupAndNetworkEndpointGroupArgs(parser,
+                                                verb,
+                                                support_global_neg=False):
+  """Adds instance group and network endpoint group args to the argparse."""
   backend_group = parser.add_group(required=True, mutex=True)
   instance_group = backend_group.add_group('Instance Group')
   neg_group = backend_group.add_group('Network Endpoint Group')
   MULTISCOPE_INSTANCE_GROUP_ARG.AddArgument(
       instance_group, operation_type='{} the backend service'.format(verb))
-  NETWORK_ENDPOINT_GROUP_ARG.AddArgument(
+  neg_group_arg = (GLOBAL_NETWORK_ENDPOINT_GROUP_ARG if support_global_neg
+                   else NETWORK_ENDPOINT_GROUP_ARG)
+  neg_group_arg.AddArgument(
       neg_group, operation_type='{} the backend service'.format(verb))
 
 

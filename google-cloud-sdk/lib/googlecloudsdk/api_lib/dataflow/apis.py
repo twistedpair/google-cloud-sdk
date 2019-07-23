@@ -124,6 +124,29 @@ class Jobs(object):
     except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(error)
 
+  @staticmethod
+  def Snapshot(job_id, project_id=None, region_id=None, ttl='604800s'):
+    """Takes a snapshot of a job via the Jobs.Snapshot method.
+
+    Args:
+      job_id: Identifies a single job.
+      project_id: The project which owns the job.
+      region_id: The regional endpoint where the job lives.
+      ttl: The ttl for the snapshot.
+    Returns:
+      (Snapshot)
+    """
+    project_id = project_id or GetProject()
+    region_id = region_id or DATAFLOW_API_DEFAULT_REGION
+    request = GetMessagesModule().DataflowProjectsLocationsJobsSnapshotRequest(
+        jobId=job_id, location=region_id, projectId=project_id,
+        snapshotJobRequest=GetMessagesModule().SnapshotJobRequest(
+            location=region_id, ttl=ttl))
+    try:
+      return Jobs.GetService().Snapshot(request)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error)
+
 
 class Metrics(object):
   """The Metrics set of Dataflow API functions."""

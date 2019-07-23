@@ -881,7 +881,7 @@
       "type": "object",
       "properties": {
         "logNames": {
-          "description": "A list of log names. For example, \"projects\/my-project\/syslog\" or \"organizations\/123\/cloudresourcemanager.googleapis.com%2Factivity\".",
+          "description": "A list of log names. For example, \"projects\/my-project\/logs\/syslog\" or \"organizations\/123\/logs\/cloudresourcemanager.googleapis.com%2Factivity\".",
           "type": "array",
           "items": {
             "type": "string"

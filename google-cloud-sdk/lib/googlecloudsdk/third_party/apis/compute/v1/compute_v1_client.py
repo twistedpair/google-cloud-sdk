@@ -42,6 +42,7 @@ class ComputeV1(base_api.BaseApiClient):
     self.backendServices = self.BackendServicesService(self)
     self.diskTypes = self.DiskTypesService(self)
     self.disks = self.DisksService(self)
+    self.externalVpnGateways = self.ExternalVpnGatewaysService(self)
     self.firewalls = self.FirewallsService(self)
     self.forwardingRules = self.ForwardingRulesService(self)
     self.globalAddresses = self.GlobalAddressesService(self)
@@ -93,6 +94,7 @@ class ComputeV1(base_api.BaseApiClient):
     self.targetTcpProxies = self.TargetTcpProxiesService(self)
     self.targetVpnGateways = self.TargetVpnGatewaysService(self)
     self.urlMaps = self.UrlMapsService(self)
+    self.vpnGateways = self.VpnGatewaysService(self)
     self.vpnTunnels = self.VpnTunnelsService(self)
     self.zoneOperations = self.ZoneOperationsService(self)
     self.zones = self.ZonesService(self)
@@ -1463,6 +1465,172 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path=u'projects/{project}/zones/{zone}/disks/{resource}/testIamPermissions',
         request_field=u'testPermissionsRequest',
         request_type_name=u'ComputeDisksTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ExternalVpnGatewaysService(base_api.BaseApiService):
+    """Service class for the externalVpnGateways resource."""
+
+    _NAME = u'externalVpnGateways'
+
+    def __init__(self, client):
+      super(ComputeV1.ExternalVpnGatewaysService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified externalVpnGateway.
+
+      Args:
+        request: (ComputeExternalVpnGatewaysDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.externalVpnGateways.delete',
+        ordered_params=[u'project', u'externalVpnGateway'],
+        path_params=[u'externalVpnGateway', u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/externalVpnGateways/{externalVpnGateway}',
+        request_field='',
+        request_type_name=u'ComputeExternalVpnGatewaysDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified externalVpnGateway. Get a list of available externalVpnGateways by making a list() request.
+
+      Args:
+        request: (ComputeExternalVpnGatewaysGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ExternalVpnGateway) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.externalVpnGateways.get',
+        ordered_params=[u'project', u'externalVpnGateway'],
+        path_params=[u'externalVpnGateway', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/externalVpnGateways/{externalVpnGateway}',
+        request_field='',
+        request_type_name=u'ComputeExternalVpnGatewaysGetRequest',
+        response_type_name=u'ExternalVpnGateway',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a ExternalVpnGateway in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeExternalVpnGatewaysInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.externalVpnGateways.insert',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/externalVpnGateways',
+        request_field=u'externalVpnGateway',
+        request_type_name=u'ComputeExternalVpnGatewaysInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves the list of ExternalVpnGateway available to the specified project.
+
+      Args:
+        request: (ComputeExternalVpnGatewaysListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ExternalVpnGatewayList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.externalVpnGateways.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/externalVpnGateways',
+        request_field='',
+        request_type_name=u'ComputeExternalVpnGatewaysListRequest',
+        response_type_name=u'ExternalVpnGatewayList',
+        supports_download=False,
+    )
+
+    def SetLabels(self, request, global_params=None):
+      r"""Sets the labels on an ExternalVpnGateway. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeExternalVpnGatewaysSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.externalVpnGateways.setLabels',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/externalVpnGateways/{resource}/setLabels',
+        request_field=u'globalSetLabelsRequest',
+        request_type_name=u'ComputeExternalVpnGatewaysSetLabelsRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeExternalVpnGatewaysTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.externalVpnGateways.testIamPermissions',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/externalVpnGateways/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeExternalVpnGatewaysTestIamPermissionsRequest',
         response_type_name=u'TestPermissionsResponse',
         supports_download=False,
     )
@@ -8310,7 +8478,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves all information of the specified reservation.
+      r"""Retrieves information about the specified reservation.
 
       Args:
         request: (ComputeReservationsGetRequest) input message
@@ -8388,7 +8556,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""A list all the reservations that have been configured for the specified project in specified zone.
+      r"""A list of all the reservations that have been configured for the specified project in specified zone.
 
       Args:
         request: (ComputeReservationsListRequest) input message
@@ -8414,7 +8582,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Resize(self, request, global_params=None):
-      r"""Resizes the reservation (applicable to standalone reservations only).
+      r"""Resizes the reservation (applicable to standalone reservations only). For more information, read Modifying reservations.
 
       Args:
         request: (ComputeReservationsResizeRequest) input message
@@ -10004,7 +10172,7 @@ For more information, see Deleting snapshots.
     )
 
     def ListUsable(self, request, global_params=None):
-      r"""Retrieves an aggregated list of usable subnetworks.
+      r"""Retrieves an aggregated list of all usable subnetworks in the project. The list contains all of the subnetworks in the project and the subnetworks that were shared by a Shared VPC host project.
 
       Args:
         request: (ComputeSubnetworksListUsableRequest) input message
@@ -11666,6 +11834,224 @@ For more information, see Deleting snapshots.
         request_field=u'urlMapsValidateRequest',
         request_type_name=u'ComputeUrlMapsValidateRequest',
         response_type_name=u'UrlMapsValidateResponse',
+        supports_download=False,
+    )
+
+  class VpnGatewaysService(base_api.BaseApiService):
+    """Service class for the vpnGateways resource."""
+
+    _NAME = u'vpnGateways'
+
+    def __init__(self, client):
+      super(ComputeV1.VpnGatewaysService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves an aggregated list of VPN gateways.
+
+      Args:
+        request: (ComputeVpnGatewaysAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VpnGatewayAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.vpnGateways.aggregatedList',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/aggregated/vpnGateways',
+        request_field='',
+        request_type_name=u'ComputeVpnGatewaysAggregatedListRequest',
+        response_type_name=u'VpnGatewayAggregatedList',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified VPN gateway.
+
+      Args:
+        request: (ComputeVpnGatewaysDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.vpnGateways.delete',
+        ordered_params=[u'project', u'region', u'vpnGateway'],
+        path_params=[u'project', u'region', u'vpnGateway'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/vpnGateways/{vpnGateway}',
+        request_field='',
+        request_type_name=u'ComputeVpnGatewaysDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified VPN gateway. Gets a list of available VPN gateways by making a list() request.
+
+      Args:
+        request: (ComputeVpnGatewaysGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VpnGateway) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.vpnGateways.get',
+        ordered_params=[u'project', u'region', u'vpnGateway'],
+        path_params=[u'project', u'region', u'vpnGateway'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/vpnGateways/{vpnGateway}',
+        request_field='',
+        request_type_name=u'ComputeVpnGatewaysGetRequest',
+        response_type_name=u'VpnGateway',
+        supports_download=False,
+    )
+
+    def GetStatus(self, request, global_params=None):
+      r"""Returns the status for the specified VPN gateway.
+
+      Args:
+        request: (ComputeVpnGatewaysGetStatusRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VpnGatewaysGetStatusResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetStatus')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetStatus.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.vpnGateways.getStatus',
+        ordered_params=[u'project', u'region', u'vpnGateway'],
+        path_params=[u'project', u'region', u'vpnGateway'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/vpnGateways/{vpnGateway}/getStatus',
+        request_field='',
+        request_type_name=u'ComputeVpnGatewaysGetStatusRequest',
+        response_type_name=u'VpnGatewaysGetStatusResponse',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a VPN gateway in the specified project and region using the data included in the request.
+
+      Args:
+        request: (ComputeVpnGatewaysInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.vpnGateways.insert',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/vpnGateways',
+        request_field=u'vpnGateway',
+        request_type_name=u'ComputeVpnGatewaysInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of VPN gateways available to the specified project and region.
+
+      Args:
+        request: (ComputeVpnGatewaysListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VpnGatewayList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.vpnGateways.list',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/regions/{region}/vpnGateways',
+        request_field='',
+        request_type_name=u'ComputeVpnGatewaysListRequest',
+        response_type_name=u'VpnGatewayList',
+        supports_download=False,
+    )
+
+    def SetLabels(self, request, global_params=None):
+      r"""Sets the labels on a VpnGateway. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeVpnGatewaysSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.vpnGateways.setLabels',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/vpnGateways/{resource}/setLabels',
+        request_field=u'regionSetLabelsRequest',
+        request_type_name=u'ComputeVpnGatewaysSetLabelsRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeVpnGatewaysTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.vpnGateways.testIamPermissions',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/vpnGateways/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeVpnGatewaysTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
         supports_download=False,
     )
 

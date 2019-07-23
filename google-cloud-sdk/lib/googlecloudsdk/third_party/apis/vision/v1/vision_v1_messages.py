@@ -1671,7 +1671,7 @@ class GoogleCloudVisionV1p1beta1Paragraph(_messages.Message):
       1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the paragraph. Range [0, 1].
     property: Additional information detected for the paragraph.
-    words: List of words in this paragraph.
+    words: List of all words in this paragraph.
   """
 
   boundingBox = _messages.MessageField('GoogleCloudVisionV1p1beta1BoundingPoly', 1)
@@ -1717,7 +1717,10 @@ class GoogleCloudVisionV1p1beta1Product(_messages.Message):
       that integer values can be provided as strings, e.g. "1199". Only
       strings with integer values can match a range-based restriction which is
       to be supported soon.  Multiple values can be assigned to the same key.
-      One product may have up to 100 product_labels.
+      One product may have up to 500 product_labels.  Notice that the total
+      number of distinct product_labels over all products in one ProductSet
+      cannot exceed 1M, otherwise the product search pipeline will refuse to
+      work for that ProductSet.
   """
 
   description = _messages.StringField(1)
@@ -1973,7 +1976,7 @@ class GoogleCloudVisionV1p1beta1Symbol(_messages.Message):
       orientation. For example:   * when the text is horizontal it might look
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the symbol. Range [0, 1].
     property: Additional information detected for the symbol.
     text: The actual UTF-8 representation of the symbol.
@@ -2949,7 +2952,7 @@ class GoogleCloudVisionV1p2beta1Paragraph(_messages.Message):
       1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the paragraph. Range [0, 1].
     property: Additional information detected for the paragraph.
-    words: List of words in this paragraph.
+    words: List of all words in this paragraph.
   """
 
   boundingBox = _messages.MessageField('GoogleCloudVisionV1p2beta1BoundingPoly', 1)
@@ -2995,7 +2998,10 @@ class GoogleCloudVisionV1p2beta1Product(_messages.Message):
       that integer values can be provided as strings, e.g. "1199". Only
       strings with integer values can match a range-based restriction which is
       to be supported soon.  Multiple values can be assigned to the same key.
-      One product may have up to 100 product_labels.
+      One product may have up to 500 product_labels.  Notice that the total
+      number of distinct product_labels over all products in one ProductSet
+      cannot exceed 1M, otherwise the product search pipeline will refuse to
+      work for that ProductSet.
   """
 
   description = _messages.StringField(1)
@@ -3251,7 +3257,7 @@ class GoogleCloudVisionV1p2beta1Symbol(_messages.Message):
       orientation. For example:   * when the text is horizontal it might look
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the symbol. Range [0, 1].
     property: Additional information detected for the symbol.
     text: The actual UTF-8 representation of the symbol.
@@ -4285,7 +4291,7 @@ class GoogleCloudVisionV1p3beta1Paragraph(_messages.Message):
       1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the paragraph. Range [0, 1].
     property: Additional information detected for the paragraph.
-    words: List of words in this paragraph.
+    words: List of all words in this paragraph.
   """
 
   boundingBox = _messages.MessageField('GoogleCloudVisionV1p3beta1BoundingPoly', 1)
@@ -4331,7 +4337,10 @@ class GoogleCloudVisionV1p3beta1Product(_messages.Message):
       that integer values can be provided as strings, e.g. "1199". Only
       strings with integer values can match a range-based restriction which is
       to be supported soon.  Multiple values can be assigned to the same key.
-      One product may have up to 100 product_labels.
+      One product may have up to 500 product_labels.  Notice that the total
+      number of distinct product_labels over all products in one ProductSet
+      cannot exceed 1M, otherwise the product search pipeline will refuse to
+      work for that ProductSet.
   """
 
   description = _messages.StringField(1)
@@ -4611,7 +4620,7 @@ class GoogleCloudVisionV1p3beta1Symbol(_messages.Message):
       orientation. For example:   * when the text is horizontal it might look
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the symbol. Range [0, 1].
     property: Additional information detected for the symbol.
     text: The actual UTF-8 representation of the symbol.
@@ -5667,7 +5676,7 @@ class GoogleCloudVisionV1p4beta1Paragraph(_messages.Message):
       1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the paragraph. Range [0, 1].
     property: Additional information detected for the paragraph.
-    words: List of words in this paragraph.
+    words: List of all words in this paragraph.
   """
 
   boundingBox = _messages.MessageField('GoogleCloudVisionV1p4beta1BoundingPoly', 1)
@@ -5713,7 +5722,10 @@ class GoogleCloudVisionV1p4beta1Product(_messages.Message):
       that integer values can be provided as strings, e.g. "1199". Only
       strings with integer values can match a range-based restriction which is
       to be supported soon.  Multiple values can be assigned to the same key.
-      One product may have up to 100 product_labels.
+      One product may have up to 500 product_labels.  Notice that the total
+      number of distinct product_labels over all products in one ProductSet
+      cannot exceed 1M, otherwise the product search pipeline will refuse to
+      work for that ProductSet.
   """
 
   description = _messages.StringField(1)
@@ -5993,7 +6005,7 @@ class GoogleCloudVisionV1p4beta1Symbol(_messages.Message):
       orientation. For example:   * when the text is horizontal it might look
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the symbol. Range [0, 1].
     property: Additional information detected for the symbol.
     text: The actual UTF-8 representation of the symbol.
@@ -7097,7 +7109,7 @@ class GoogleCloudVisionV1p5beta1Paragraph(_messages.Message):
       default not returned unless specified in
       TextDetectionParams.paragraph_filter.
     property: Additional information detected for the paragraph.
-    words: List of words in this paragraph.
+    words: List of all words in this paragraph.
   """
 
   boundingBox = _messages.MessageField('GoogleCloudVisionV1p5beta1BoundingPoly', 1)
@@ -7144,7 +7156,10 @@ class GoogleCloudVisionV1p5beta1Product(_messages.Message):
       that integer values can be provided as strings, e.g. "1199". Only
       strings with integer values can match a range-based restriction which is
       to be supported soon.  Multiple values can be assigned to the same key.
-      One product may have up to 100 product_labels.
+      One product may have up to 500 product_labels.  Notice that the total
+      number of distinct product_labels over all products in one ProductSet
+      cannot exceed 1M, otherwise the product search pipeline will refuse to
+      work for that ProductSet.
   """
 
   description = _messages.StringField(1)
@@ -7424,7 +7439,7 @@ class GoogleCloudVisionV1p5beta1Symbol(_messages.Message):
       orientation. For example:   * when the text is horizontal it might look
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the symbol. Range [0, 1].
     property: Additional information detected for the symbol.
     text: The actual UTF-8 representation of the symbol.
@@ -8545,7 +8560,7 @@ class GoogleCloudVisionV1p6beta1Paragraph(_messages.Message):
       1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the paragraph. Range [0, 1].
     property: Additional information detected for the paragraph.
-    words: List of words in this paragraph.
+    words: List of all words in this paragraph.
   """
 
   boundingBox = _messages.MessageField('GoogleCloudVisionV1p6beta1BoundingPoly', 1)
@@ -8591,7 +8606,10 @@ class GoogleCloudVisionV1p6beta1Product(_messages.Message):
       that integer values can be provided as strings, e.g. "1199". Only
       strings with integer values can match a range-based restriction which is
       to be supported soon.  Multiple values can be assigned to the same key.
-      One product may have up to 100 product_labels.
+      One product may have up to 500 product_labels.  Notice that the total
+      number of distinct product_labels over all products in one ProductSet
+      cannot exceed 1M, otherwise the product search pipeline will refuse to
+      work for that ProductSet.
   """
 
   description = _messages.StringField(1)
@@ -8919,7 +8937,7 @@ class GoogleCloudVisionV1p6beta1Symbol(_messages.Message):
       orientation. For example:   * when the text is horizontal it might look
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the symbol. Range [0, 1].
     property: Additional information detected for the symbol.
     text: The actual UTF-8 representation of the symbol.
@@ -9781,7 +9799,7 @@ class Paragraph(_messages.Message):
       1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the paragraph. Range [0, 1].
     property: Additional information detected for the paragraph.
-    words: List of words in this paragraph.
+    words: List of all words in this paragraph.
   """
 
   boundingBox = _messages.MessageField('BoundingPoly', 1)
@@ -9827,7 +9845,10 @@ class Product(_messages.Message):
       that integer values can be provided as strings, e.g. "1199". Only
       strings with integer values can match a range-based restriction which is
       to be supported soon.  Multiple values can be assigned to the same key.
-      One product may have up to 100 product_labels.
+      One product may have up to 500 product_labels.  Notice that the total
+      number of distinct product_labels over all products in one ProductSet
+      cannot exceed 1M, otherwise the product search pipeline will refuse to
+      work for that ProductSet.
   """
 
   description = _messages.StringField(1)
@@ -10264,7 +10285,7 @@ class Symbol(_messages.Message):
       orientation. For example:   * when the text is horizontal it might look
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the symbol. Range [0, 1].
     property: Additional information detected for the symbol.
     text: The actual UTF-8 representation of the symbol.

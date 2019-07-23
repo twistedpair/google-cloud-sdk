@@ -803,6 +803,10 @@
           "description": "Optional. The lifetime of the ticket granting ticket, in hours. If not specified, or user specifies 0, then default value 10 will be used.",
           "type": "integer",
           "format": "int32"
+        },
+        "realm": {
+          "description": "Optional. The name of the on-cluster Kerberos realm. If not specified, the uppercased domain of hostnames will be the realm.",
+          "type": "string"
         }
       }
     },

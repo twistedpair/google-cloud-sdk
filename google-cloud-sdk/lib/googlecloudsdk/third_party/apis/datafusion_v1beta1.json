@@ -332,7 +332,7 @@
           "type": "string"
         },
         "version": {
-          "description": "Output only. Current version of the Data Fusion.",
+          "description": "Current version of the Data Fusion. Only specifiable in Update.",
           "type": "string"
         },
         "serviceAccount": {
@@ -351,7 +351,7 @@
       "type": "object",
       "properties": {
         "network": {
-          "description": "Name of the network in the customer project with which the Tenant Project\nwill be peered for executing pipelines.",
+          "description": "Name of the network in the customer project with which the Tenant Project\nwill be peered for executing pipelines. In case of shared VPC where the\nnetwork resides in another host project the network should specified in\nthe form of projects\/{host-project-id}\/global\/networks\/{network}",
           "type": "string"
         },
         "ipAllocation": {

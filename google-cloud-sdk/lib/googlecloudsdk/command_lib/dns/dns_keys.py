@@ -80,12 +80,12 @@ DESCRIBE_HELP = {
         To show details about a DNS key resource with ID 3 in a managed zone
         `my_zone`, run:
 
-          $ {command} --zone my_zone 3
+          $ {command} --zone=my_zone 3
 
         To get the DS record corresponding for the DNSKEY record from the
         previous example, run (the DNSKEY record must be for a key-signing key):
 
-          $ {command} --zone my_zone 3 --format 'value(ds_record())'
+          $ {command} --zone=my_zone 3 --format='value(ds_record())'
         """
 }
 
@@ -105,13 +105,13 @@ LIST_HELP = {
         To see the list of all DNS key resources for a managed zone `my_zone`,
         run:
 
-          $ {command} --zone my_zone
+          $ {command} --zone=my_zone
 
         To see the DS records for every key-signing DnsKey in a managed zone,
         run:
 
-          $ {command} --zone my_zone 3 --format 'value(ds_record())' \
-              --filter 'type=keySigning'
+          $ {command} --zone=my_zone 3 --format='value(ds_record())' \
+              --filter='type=keySigning'
         """
 }
 
