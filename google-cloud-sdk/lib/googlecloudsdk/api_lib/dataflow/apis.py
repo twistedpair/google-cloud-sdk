@@ -208,7 +208,8 @@ class Templates(object):
              num_workers=None,
              worker_machine_type=None,
              network=None,
-             subnetwork=None):
+             subnetwork=None,
+             dataflow_kms_key=None):
     """Calls the Dataflow Templates.CreateFromJob method.
 
     Args:
@@ -225,6 +226,7 @@ class Templates(object):
       worker_machine_type: The type of machine to use for workers.
       network: The network for launching instances to run your pipeline.
       subnetwork: The subnetwork for launching instances to run your pipeline.
+      dataflow_kms_key: The Cloud KMS key to protect the job resources.
 
     Returns:
       (Job)
@@ -248,7 +250,8 @@ class Templates(object):
             network=network,
             subnetwork=subnetwork,
             machineType=worker_machine_type,
-            tempLocation=staging_location),
+            tempLocation=staging_location,
+            kmsKeyName=dataflow_kms_key),
         parameters=Templates.PARAMETERS_VALUE(additionalProperties=params_list)
         if parameters else None)
     request = GetMessagesModule(
@@ -317,5 +320,39 @@ class Messages(object):
         pageToken=page_token)
     try:
       return Messages.GetService().List(request)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error)
+
+
+class Snapshots(object):
+  """Cloud Dataflow snapshots api."""
+
+  @staticmethod
+  def GetService():
+    return GetClientInstance().projects_locations_snapshots
+
+  @staticmethod
+  def List(job_id=None,
+           project_id=None,
+           region_id=None):
+    """Calls the Dataflow Snapshots.List method.
+
+    Args:
+      job_id: If specified, only snapshots associated with the job will be
+        returned.
+      project_id: The project that owns the snapshot.
+      region_id: The regional endpoint of the snapshot.
+
+    Returns:
+      (ListSnapshotsResponse)
+    """
+    project_id = project_id or GetProject()
+    region_id = region_id or DATAFLOW_API_DEFAULT_REGION
+    request = GetMessagesModule().DataflowProjectsLocationsSnapshotsListRequest(
+        jobId=job_id,
+        location=region_id,
+        projectId=project_id)
+    try:
+      return Snapshots.GetService().List(request)
     except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(error)

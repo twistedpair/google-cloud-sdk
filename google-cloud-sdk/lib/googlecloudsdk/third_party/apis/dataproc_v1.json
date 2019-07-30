@@ -380,11 +380,15 @@
           "$ref": "ManagedGroupConfig"
         },
         "accelerators": {
-          "description": "Optional. The Compute Engine accelerator configuration for these instances.Beta Feature: This feature is still under development. It may be changed before final release.",
+          "description": "Optional. The Compute Engine accelerator configuration for these instances.",
           "type": "array",
           "items": {
             "$ref": "AcceleratorConfig"
           }
+        },
+        "minCpuPlatform": {
+          "description": "Optional. Specifies the minimum cpu platform for the Instance Group. See Cloud Dataproc&rarr;Minimum CPU Platform.",
+          "type": "string"
         }
       }
     },
@@ -644,7 +648,10 @@
             "The cluster is currently running and healthy. It is ready for use.",
             "The cluster encountered an error. It is not ready for use.",
             "The cluster is being deleted. It cannot be used.",
-            "The cluster is being updated. It continues to accept and process jobs."
+            "The cluster is being updated. It continues to accept and process jobs.",
+            "The cluster is being stopped. It cannot be used.",
+            "The cluster is currently stopped. It is not ready for use.",
+            "The cluster is being started. It is not ready for use."
           ],
           "type": "string",
           "enum": [
@@ -653,7 +660,10 @@
             "RUNNING",
             "ERROR",
             "DELETING",
-            "UPDATING"
+            "UPDATING",
+            "STOPPING",
+            "STOPPED",
+            "STARTING"
           ]
         },
         "detail": {

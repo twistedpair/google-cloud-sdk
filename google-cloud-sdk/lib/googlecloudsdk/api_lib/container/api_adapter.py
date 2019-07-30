@@ -128,7 +128,7 @@ Flag --cluster-ipv4-cidr must be fully specified (e.g. `10.96.0.0/14`, but not `
 """
 
 ALLOW_ROUTE_OVERLAP_WITHOUT_SERVICES_CIDR_ERROR_MSG = """\
-Flag --services-ipv4-cidr must be fully specified (e.g. `10.96.0.0/14`, but not `/14`) with --allow-route-overlap.
+Flag --services-ipv4-cidr must be fully specified (e.g. `10.96.0.0/14`, but not `/14`) with --allow-route-overlap and --enable-ip-alias.
 """
 
 PREREQUISITE_OPTION_ERROR_MSG = """\
@@ -619,7 +619,6 @@ class SetMasterAuthOptions(object):
 
 
 class SetNetworkPolicyOptions(object):
-  """Options to pass to SetNetworkPolicy."""
 
   def __init__(self, enabled):
     self.enabled = enabled
@@ -1223,9 +1222,6 @@ class APIAdapter(object):
         policy.tpuUseServiceNetworking = options.enable_tpu_service_networking
       cluster.clusterIpv4Cidr = None
       cluster.ipAllocationPolicy = policy
-    else:
-      cluster.ipAllocationPolicy = self.messages.IPAllocationPolicy(
-          useIpAliases=options.enable_ip_alias)
     return cluster
 
   def ParseAllowRouteOverlapOptions(self, options, cluster):
@@ -2723,7 +2719,7 @@ def _AddNodeLabelsToNodeConfig(node_config, options):
 
 
 def _AddWorkloadMetadataToNodeConfig(node_config, options, messages):
-  """Adds workload metadata to NodeConfig."""
+  """Adds WorkLoadMetadata to NodeConfig."""
   if options.workload_metadata_from_node is not None:
     option = options.workload_metadata_from_node
     if option == 'UNSPECIFIED':

@@ -40,6 +40,7 @@ from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.third_party.appengine.admin.tools.conversion import convert_yaml
 import six
 from six.moves import filter  # pylint: disable=redefined-builtin
 from six.moves import map  # pylint: disable=redefined-builtin
@@ -624,10 +625,6 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
       A Version resource whose Deployment includes either a container pointing
         to a completed image, or a build pointing to an in-progress build.
     """
-    # TODO(b/79871515): Move this import back to the top.
-    # pylint: disable=g-import-not-at-top
-    from googlecloudsdk.third_party.appengine.admin.tools.conversion import convert_yaml
-
     config_dict = copy.deepcopy(service_config.parsed.ToDict())
 
     # We always want to set a value for entrypoint when sending the request

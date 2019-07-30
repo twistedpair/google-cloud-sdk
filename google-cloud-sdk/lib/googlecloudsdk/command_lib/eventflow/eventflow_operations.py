@@ -50,10 +50,9 @@ def Connect(conn_context):
   # connection context so that it does not pick up the api_endpoint_overrides
   # values from the connection context.
   # pylint: disable=protected-access
-  op_client = apis_internal._GetClientInstance(
+  op_client = apis._GetClientInstance(
       conn_context.api_name,
-      conn_context.api_version,
-      ca_certs=conn_context.ca_certs)
+      conn_context.api_version)
   # pylint: enable=protected-access
 
   with conn_context as conn_info:
@@ -64,7 +63,7 @@ def Connect(conn_context):
         # Only check response if not connecting to GKE
         check_response_func=apis.CheckResponseForApiEnablement
         if conn_context.supports_one_platform else None,
-        ca_certs=conn_info.ca_certs)
+        http_client=conn_context.HttpClient())
     # pylint: enable=protected-access
     yield EventflowOperations(
         client,

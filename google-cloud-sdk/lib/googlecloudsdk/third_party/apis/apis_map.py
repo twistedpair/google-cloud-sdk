@@ -196,6 +196,12 @@ MAP = {
             messages_modulepath='cloudasset_v1p1alpha1_messages',
             default_version=False
         ),
+        'v1p2beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.cloudasset.v1p2beta1',
+            client_classpath='cloudasset_v1p2beta1_client.CloudassetV1p2beta1',
+            messages_modulepath='cloudasset_v1p2beta1_messages',
+            default_version=False
+        ),
     },
     'cloudbilling': {
         'v1': APIDef(
@@ -422,6 +428,12 @@ MAP = {
         ),
     },
     'containeranalysis': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.containeranalysis.v1',
+            client_classpath='containeranalysis_v1_client.ContaineranalysisV1',
+            messages_modulepath='containeranalysis_v1_messages',
+            default_version=False
+        ),
         'v1alpha1': APIDef(
             class_path='googlecloudsdk.third_party.apis.containeranalysis.v1alpha1',
             client_classpath='containeranalysis_v1alpha1_client.ContaineranalysisV1alpha1',

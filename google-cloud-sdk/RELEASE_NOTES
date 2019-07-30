@@ -5,6 +5,48 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 256.0.0 (2019-07-30)
+
+### Breaking Changes
+
+*   **(Kubernetes Engine)** Reverted cluster creation behavior such that new clusters now come up in
+*   **(Kubernetes Engine)** Routes mode by default. The change to using VPC-Native mode as the default
+*   **(Kubernetes Engine)** will be reintroduced at a later date.
+*   **(Kubernetes Engine)** 
+*   **(Kubernetes Engine)** Use `--enable-ip-alias` flag for VPC-Native (IP Alias-enabled) mode.
+
+
+### BigQuery
+
+* Fixed bug in `bq update --transfer_config --update_credentials`.
+
+### Cloud Bigtable
+
+* Added support for specifying complex policies using `cbt setgcpolicy` such as `maxage=30d || (maxage=3d && maxversions=100)`.
+
+### Cloud Dataflow
+
+* Added `--dataflow-kms-key` flag to `gcloud beta dataflow jobs run`.
+
+### Cloud Identity-Aware Proxy
+
+* Promoted `gcloud iap` command group to beta.
+
+### Cloud Pub/Sub
+
+* Added optional flags `--push-auth-service-account` and
+ `--push-auth-token-audience` for defining an authenticated push subscription in
+ `gcloud pubsub subscriptions create | update | modify-push-config`.
+
+### Managed Active Directory
+
+* Added `gcloud active-directory` command group. This feature enables the
+  provisioning and administering of a managed Microsoft Active Directory domain.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 255.0.0 (2019-07-23)
 
 ### Breaking Changes

@@ -632,6 +632,10 @@
             "EC_SIGN_P256_SHA256",
             "EC_SIGN_P384_SHA384"
           ]
+        },
+        "name": {
+          "description": "The name of the CryptoKeyVersion public key.\nProvided here for verification.",
+          "type": "string"
         }
       }
     },
@@ -714,7 +718,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the CryptoKeyVersion used in encryption.",
+          "description": "The resource name of the CryptoKeyVersion used in encryption. Check\nthis field to verify that the intended resource was used for encryption.",
           "type": "string"
         },
         "ciphertext": {
@@ -795,6 +799,10 @@
           "description": "The created signature.",
           "type": "string",
           "format": "byte"
+        },
+        "name": {
+          "description": "The resource name of the CryptoKeyVersion used for signing. Check\nthis field to verify that the intended resource was used for signing.",
+          "type": "string"
         }
       }
     },

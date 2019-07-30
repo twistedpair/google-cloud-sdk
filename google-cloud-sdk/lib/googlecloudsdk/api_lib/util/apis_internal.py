@@ -130,48 +130,31 @@ def _GetClientClassFromDef(api_def):
 
 
 def _GetClientInstance(api_name, api_version, no_http=False,
-                       check_response_func=None, enable_resource_quota=True,
-                       force_resource_quota=False,
-                       ca_certs=None, allow_account_impersonation=True):
+                       http_client=None,
+                       check_response_func=None):
   """Returns an instance of the API client specified in the args.
 
   Args:
     api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
     no_http: bool, True to not create an http object for this client.
+    http_client: bring your own http client to use.
+      Incompatible with no_http=True.
     check_response_func: error handling callback to give to apitools.
-    enable_resource_quota: bool, By default, we are going to tell APIs to use
-      the quota of the project being operated on. For some APIs we want to use
-      gcloud's quota, so you can explicitly disable that behavior by passing
-      False here.
-    force_resource_quota: bool, If true resource project quota will be used by
-      this client regardless of the settings in gcloud. This should be used for
-      newer APIs that cannot work with legacy project quota.
-    ca_certs: str, absolute path of a ca_certs file to use instead of the
-      default
-    allow_account_impersonation: bool, True to allow use of impersonated service
-      account credentials for calls made with this client. If False, the active
-      user credentials will always be used.
 
   Returns:
     base_api.BaseApiClient, An instance of the specified API client.
   """
-  # TODO(b/77278279): Decide whether we should always set this or not.
-  encoding = None if six.PY2 else 'utf8'
 
   # pylint: disable=g-import-not-at-top
   if no_http:
-    http_client = None
-  else:
+    assert http_client is None
+  elif http_client is None:
+    # Normal gcloud authentication
     # Import http only when needed, as it depends on credential infrastructure
     # which is not needed in all cases.
-    from googlecloudsdk.core.credentials import http
-    http_client = http.Http(
-        enable_resource_quota=enable_resource_quota,
-        force_resource_quota=force_resource_quota,
-        response_encoding=encoding,
-        ca_certs=ca_certs,
-        allow_account_impersonation=allow_account_impersonation)
+    from googlecloudsdk.core.credentials import http as http_creds
+    http_client = http_creds.Http(response_encoding=http_creds.ENCODING)
 
   client_class = _GetClientClass(api_name, api_version)
   client_instance = client_class(

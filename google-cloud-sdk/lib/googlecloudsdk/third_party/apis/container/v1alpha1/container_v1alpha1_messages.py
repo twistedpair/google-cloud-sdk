@@ -2994,11 +2994,26 @@ class SandboxConfig(_messages.Message):
   r"""SandboxConfig contains configurations of the sandbox to use for the
   node.
 
+  Enums:
+    TypeValueValuesEnum: Type of the sandbox to use for the node.
+
   Fields:
     sandboxType: Type of the sandbox to use for the node (e.g. 'gvisor')
+    type: Type of the sandbox to use for the node.
   """
 
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of the sandbox to use for the node.
+
+    Values:
+      UNSPECIFIED: Default value. This should not be used.
+      GVISOR: Run sandbox using gvisor.
+    """
+    UNSPECIFIED = 0
+    GVISOR = 1
+
   sandboxType = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class SecurityProfile(_messages.Message):

@@ -672,6 +672,18 @@
         "sandboxType": {
           "description": "Type of the sandbox to use for the node (e.g. 'gvisor')",
           "type": "string"
+        },
+        "type": {
+          "description": "Type of the sandbox to use for the node.",
+          "enumDescriptions": [
+            "Default value. This should not be used.",
+            "Run sandbox using gvisor."
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED",
+            "GVISOR"
+          ]
         }
       }
     },

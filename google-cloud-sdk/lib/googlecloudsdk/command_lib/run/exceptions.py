@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
 from googlecloudsdk.api_lib.util import exceptions as exceptions_util
 from googlecloudsdk.core import exceptions
 
@@ -115,3 +116,67 @@ class NoTLSError(exceptions.Error):
   to version 2.7.9 or greater; for Python3, please upgrade to version 3.4 or
   greater.
   """
+
+
+class MalformedLabelError(exceptions_util.HttpException):
+  """Invalid label key or value provided in the service metadata."""
+
+  # The relevant field that'll have a violation.
+  LABEL_ERROR_FIELD = 'label'
+
+  def __init__(self, http_exception):
+    super(MalformedLabelError, self).__init__(
+        http_exception,
+        '{{field_violations.{}}}'.format(self.LABEL_ERROR_FIELD))
+
+
+class KubernetesError(exceptions.Error):
+  """A generic kubernetes error was encountered."""
+  pass
+
+
+class KubernetesExceptionParser(object):
+  """Converts a kubernetes exception to an object."""
+
+  def __init__(self, http_error):
+    """Wraps a generic http error returned by kubernetes.
+
+    Args:
+      http_error: apitools.base.py.exceptions.HttpError, The error to wrap.
+    """
+    self._wrapped_error = http_error
+    self._content = json.loads(http_error.content)
+
+  @property
+  def status_code(self):
+    return self._wrapped_error.status_code
+
+  @property
+  def url(self):
+    return self._wrapped_error.url
+
+  @property
+  def api_version(self):
+    return self._content['apiVersion']
+
+  @property
+  def api_name(self):
+    return self._content['details']['group']
+
+  @property
+  def resource_name(self):
+    return self._content['details']['name']
+
+  @property
+  def resource_kind(self):
+    return self._content['details']['kind']
+
+  @property
+  def default_message(self):
+    return self._content['messsage']
+
+  @property
+  def causes(self):
+    """Returns list of causes uniqued by the message."""
+    return {c['message']: c for c in self._content['details']['causes']
+           }.values()

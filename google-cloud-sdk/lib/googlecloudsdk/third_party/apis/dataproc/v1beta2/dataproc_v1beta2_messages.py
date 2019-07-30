@@ -529,6 +529,9 @@ class ClusterStatus(_messages.Message):
       DELETING: The cluster is being deleted. It cannot be used.
       UPDATING: The cluster is being updated. It continues to accept and
         process jobs.
+      STOPPING: The cluster is being stopped. It cannot be used.
+      STOPPED: The cluster is currently stopped. It is not ready for use.
+      STARTING: The cluster is being started. It is not ready for use.
     """
     UNKNOWN = 0
     CREATING = 1
@@ -536,6 +539,9 @@ class ClusterStatus(_messages.Message):
     ERROR = 3
     DELETING = 4
     UPDATING = 5
+    STOPPING = 6
+    STOPPED = 7
+    STARTING = 8
 
   class SubstateValueValuesEnum(_messages.Enum):
     r"""Output only. Additional state information that includes status
@@ -1138,6 +1144,64 @@ class DataprocProjectsRegionsClustersSetIamPolicyRequest(_messages.Message):
 
   resource = _messages.StringField(1, required=True)
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DataprocProjectsRegionsClustersStartRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersStartRequest object.
+
+  Fields:
+    clusterName: Required. The cluster name.
+    clusterUuid: Optional. Specifying the cluster_uuid means the RPC should
+      fail (with error NOT_FOUND) if cluster with specified UUID does not
+      exist.
+    projectId: Required. The ID of the Google Cloud Platform project the
+      cluster belongs to.
+    region: Required. The Cloud Dataproc region in which to handle the
+      request.
+    requestId: Optional. A unique id used to identify the request. If the
+      server receives two StartClusterRequest requests with the same id, then
+      the second request will be ignored and the first
+      google.longrunning.Operation created and stored in the backend is
+      returned.It is recommended to always set this value to a UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The id
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+  """
+
+  clusterName = _messages.StringField(1, required=True)
+  clusterUuid = _messages.StringField(2)
+  projectId = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+
+
+class DataprocProjectsRegionsClustersStopRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersStopRequest object.
+
+  Fields:
+    clusterName: Required. The cluster name.
+    clusterUuid: Optional. Specifying the cluster_uuid means the RPC should
+      fail (with error NOT_FOUND) if cluster with specified UUID does not
+      exist.
+    projectId: Required. The ID of the Google Cloud Platform project the
+      cluster belongs to.
+    region: Required. The Cloud Dataproc region in which to handle the
+      request.
+    requestId: Optional. A unique id used to identify the request. If the
+      server receives two StopClusterRequest requests with the same id, then
+      the second request will be ignored and the first
+      google.longrunning.Operation created and stored in the backend is
+      returned.It is recommended to always set this value to a UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The id
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+  """
+
+  clusterName = _messages.StringField(1, required=True)
+  clusterUuid = _messages.StringField(2)
+  projectId = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
 
 
 class DataprocProjectsRegionsClustersTestIamPermissionsRequest(_messages.Message):
@@ -2056,8 +2120,7 @@ class InstanceGroupConfig(_messages.Message):
 
   Fields:
     accelerators: Optional. The Compute Engine accelerator configuration for
-      these instances.Beta Feature: This feature is still under development.
-      It may be changed before final release.
+      these instances.
     diskConfig: Optional. Disk option config settings.
     imageUri: Optional. The Compute Engine image resource used for cluster
       instances. It can be specified or may be inferred from

@@ -296,7 +296,7 @@ class Duration(_messages.Message):
   Duration duration = ...;  duration.seconds = end.seconds - start.seconds;
   duration.nanos = end.nanos - start.nanos;  if (duration.seconds  0) {
   duration.seconds += 1; duration.nanos -= 1000000000; } else if
-  (durations.seconds > 0 && duration.nanos < 0) { duration.seconds -= 1;
+  (duration.seconds > 0 && duration.nanos < 0) { duration.seconds -= 1;
   duration.nanos += 1000000000; }  Example 2: Compute Timestamp from Timestamp
   + Duration in pseudo code.  Timestamp start = ...; Duration duration = ...;
   Timestamp end = ...;  end.seconds = start.seconds + duration.seconds;
@@ -1267,6 +1267,7 @@ class TestCase(_messages.Message):
     StatusValueValuesEnum: The status of the test case.  Required.
 
   Fields:
+    elapsedTime: The elapsed run time of the test case.  Required.
     endTime: The end time of the test case.  Optional.
     skippedMessage: Why the test case was skipped.  Present only for skipped
       test case
@@ -1299,14 +1300,15 @@ class TestCase(_messages.Message):
     passed = 3
     skipped = 4
 
-  endTime = _messages.MessageField('Timestamp', 1)
-  skippedMessage = _messages.StringField(2)
-  stackTraces = _messages.MessageField('StackTrace', 3, repeated=True)
-  startTime = _messages.MessageField('Timestamp', 4)
-  status = _messages.EnumField('StatusValueValuesEnum', 5)
-  testCaseId = _messages.StringField(6)
-  testCaseReference = _messages.MessageField('TestCaseReference', 7)
-  toolOutputs = _messages.MessageField('ToolOutputReference', 8, repeated=True)
+  elapsedTime = _messages.MessageField('Duration', 1)
+  endTime = _messages.MessageField('Timestamp', 2)
+  skippedMessage = _messages.StringField(3)
+  stackTraces = _messages.MessageField('StackTrace', 4, repeated=True)
+  startTime = _messages.MessageField('Timestamp', 5)
+  status = _messages.EnumField('StatusValueValuesEnum', 6)
+  testCaseId = _messages.StringField(7)
+  testCaseReference = _messages.MessageField('TestCaseReference', 8)
+  toolOutputs = _messages.MessageField('ToolOutputReference', 9, repeated=True)
 
 
 class TestCaseReference(_messages.Message):

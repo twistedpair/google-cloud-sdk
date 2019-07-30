@@ -35,15 +35,13 @@ class AuditConfig(_messages.Message):
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
-    exemptedMembers: A string attribute.
     service: Specifies a service that will be enabled for audit logging. For
       example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
       `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
-  exemptedMembers = _messages.StringField(2, repeated=True)
-  service = _messages.StringField(3)
+  service = _messages.StringField(2)
 
 
 class AuditLogConfig(_messages.Message):
@@ -85,36 +83,6 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
 
 
-class AuthorizationLoggingOptions(_messages.Message):
-  r"""Authorization-related information used by Cloud Audit Logging.
-
-  Enums:
-    PermissionTypeValueValuesEnum: The type of the permission that was
-      checked.
-
-  Fields:
-    permissionType: The type of the permission that was checked.
-  """
-
-  class PermissionTypeValueValuesEnum(_messages.Enum):
-    r"""The type of the permission that was checked.
-
-    Values:
-      PERMISSION_TYPE_UNSPECIFIED: Default. Should not be used.
-      ADMIN_READ: A read of admin (meta) data.
-      ADMIN_WRITE: A write of admin (meta) data.
-      DATA_READ: A read of standard data.
-      DATA_WRITE: A write of standard data.
-    """
-    PERMISSION_TYPE_UNSPECIFIED = 0
-    ADMIN_READ = 1
-    ADMIN_WRITE = 2
-    DATA_READ = 3
-    DATA_WRITE = 4
-
-  permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
-
-
 class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
@@ -147,210 +115,6 @@ class Binding(_messages.Message):
 
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
-
-
-class CloudAuditOptions(_messages.Message):
-  r"""Write a Cloud Audit log
-
-  Enums:
-    LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
-      Record.
-
-  Fields:
-    authorizationLoggingOptions: Information used by the Cloud Audit Logging
-      pipeline.
-    logName: The log_name to populate in the Cloud Audit Record.
-  """
-
-  class LogNameValueValuesEnum(_messages.Enum):
-    r"""The log_name to populate in the Cloud Audit Record.
-
-    Values:
-      UNSPECIFIED_LOG_NAME: Default. Should not be used.
-      ADMIN_ACTIVITY: Corresponds to "cloudaudit.googleapis.com/activity"
-      DATA_ACCESS: Corresponds to "cloudaudit.googleapis.com/data_access"
-    """
-    UNSPECIFIED_LOG_NAME = 0
-    ADMIN_ACTIVITY = 1
-    DATA_ACCESS = 2
-
-  authorizationLoggingOptions = _messages.MessageField('AuthorizationLoggingOptions', 1)
-  logName = _messages.EnumField('LogNameValueValuesEnum', 2)
-
-
-class Condition(_messages.Message):
-  r"""A condition to be met.
-
-  Enums:
-    IamValueValuesEnum: Trusted attributes supplied by the IAM system.
-    OpValueValuesEnum: An operator to apply the subject with.
-    SysValueValuesEnum: Trusted attributes supplied by any service that owns
-      resources and uses the IAM system for access control.
-
-  Fields:
-    iam: Trusted attributes supplied by the IAM system.
-    op: An operator to apply the subject with.
-    svc: Trusted attributes discharged by the service.
-    sys: Trusted attributes supplied by any service that owns resources and
-      uses the IAM system for access control.
-    values: The objects of the condition.
-  """
-
-  class IamValueValuesEnum(_messages.Enum):
-    r"""Trusted attributes supplied by the IAM system.
-
-    Values:
-      NO_ATTR: Default non-attribute.
-      AUTHORITY: Either principal or (if present) authority selector.
-      ATTRIBUTION: The principal (even if an authority selector is present),
-        which must only be used for attribution, not authorization.
-      SECURITY_REALM: Any of the security realms in the IAMContext (go
-        /security-realms). When used with IN, the condition indicates "any of
-        the request's realms match one of the given values; with NOT_IN, "none
-        of the realms match any of the given values". Note that a value can
-        be:  - 'self' (i.e., allow connections from clients that are in the
-        same  security realm)  - a realm (e.g., 'campus-abc')  - a realm group
-        (e.g., 'realms-for-borg-cell-xx', see: go/realm-groups) A match is
-        determined by a realm group membership check performed by a
-        RealmAclRep object (go/realm-acl-howto). It is not permitted to grant
-        access based on the *absence* of a realm, so realm conditions can only
-        be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
-      APPROVER: An approver (distinct from the requester) that has authorized
-        this request. When used with IN, the condition indicates that one of
-        the approvers associated with the request matches the specified
-        principal, or is a member of the specified group. Approvers can only
-        grant additional access, and are thus only used in a strictly positive
-        context (e.g. ALLOW/IN or DENY/NOT_IN).
-      JUSTIFICATION_TYPE: What types of justifications have been supplied with
-        this request. String values should match enum names from
-        security.credentials.JustificationType, e.g. "MANUAL_STRING". It is
-        not permitted to grant access based on the *absence* of a
-        justification, so justification conditions can only be used in a
-        "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).  Multiple
-        justifications, e.g., a Buganizer ID and a manually-entered reason,
-        are normal and supported.
-      CREDENTIALS_TYPE: What type of credentials have been supplied with this
-        request. String values should match enum names from
-        security_loas_l2.CredentialsType - currently, only
-        CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access
-        based on the *absence* of a credentials type, so the conditions can
-        only be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
-    """
-    NO_ATTR = 0
-    AUTHORITY = 1
-    ATTRIBUTION = 2
-    SECURITY_REALM = 3
-    APPROVER = 4
-    JUSTIFICATION_TYPE = 5
-    CREDENTIALS_TYPE = 6
-
-  class OpValueValuesEnum(_messages.Enum):
-    r"""An operator to apply the subject with.
-
-    Values:
-      NO_OP: Default no-op.
-      EQUALS: DEPRECATED. Use IN instead.
-      NOT_EQUALS: DEPRECATED. Use NOT_IN instead.
-      IN: The condition is true if the subject (or any element of it if it is
-        a set) matches any of the supplied values.
-      NOT_IN: The condition is true if the subject (or every element of it if
-        it is a set) matches none of the supplied values.
-      DISCHARGED: Subject is discharged
-    """
-    NO_OP = 0
-    EQUALS = 1
-    NOT_EQUALS = 2
-    IN = 3
-    NOT_IN = 4
-    DISCHARGED = 5
-
-  class SysValueValuesEnum(_messages.Enum):
-    r"""Trusted attributes supplied by any service that owns resources and
-    uses the IAM system for access control.
-
-    Values:
-      NO_ATTR: Default non-attribute type
-      REGION: Region of the resource
-      SERVICE: Service name
-      NAME: Resource name
-      IP: IP address of the caller
-    """
-    NO_ATTR = 0
-    REGION = 1
-    SERVICE = 2
-    NAME = 3
-    IP = 4
-
-  iam = _messages.EnumField('IamValueValuesEnum', 1)
-  op = _messages.EnumField('OpValueValuesEnum', 2)
-  svc = _messages.StringField(3)
-  sys = _messages.EnumField('SysValueValuesEnum', 4)
-  values = _messages.StringField(5, repeated=True)
-
-
-class CounterOptions(_messages.Message):
-  r"""Increment a streamz counter with the specified metric and field names.
-  Metric names should start with a '/', generally be lowercase-only, and end
-  in "_count". Field names should not contain an initial slash. The actual
-  exported metric names will have "/iam/policy" prepended.  Field names
-  correspond to IAM request parameters and field values are their respective
-  values.  Supported field names:    - "authority", which is "[token]" if
-  IAMContext.token is present,      otherwise the value of
-  IAMContext.authority_selector if present, and      otherwise a
-  representation of IAMContext.principal; or    - "iam_principal", a
-  representation of IAMContext.principal even if a      token or authority
-  selector is present; or    - "" (empty string), resulting in a counter with
-  no fields.  Examples:   counter { metric: "/debug_access_count"  field:
-  "iam_principal" }   ==> increment counter
-  /iam/policy/backend_debug_access_count
-  {iam_principal=[value of IAMContext.principal]}  At this time we do not
-  support multiple field names (though this may be supported in the future).
-
-  Fields:
-    field: The field value to attribute.
-    metric: The metric to update.
-  """
-
-  field = _messages.StringField(1)
-  metric = _messages.StringField(2)
-
-
-class DataAccessOptions(_messages.Message):
-  r"""Write a Data Access (Gin) log
-
-  Enums:
-    LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
-      manner at the caller. This is relevant only in the LocalIAM
-      implementation, for now.
-
-  Fields:
-    logMode: Whether Gin logging should happen in a fail-closed manner at the
-      caller. This is relevant only in the LocalIAM implementation, for now.
-  """
-
-  class LogModeValueValuesEnum(_messages.Enum):
-    r"""Whether Gin logging should happen in a fail-closed manner at the
-    caller. This is relevant only in the LocalIAM implementation, for now.
-
-    Values:
-      LOG_MODE_UNSPECIFIED: Client is not required to write a partial Gin log
-        immediately after the authorization check. If client chooses to write
-        one and it fails, client may either fail open (allow the operation to
-        continue) or fail closed (handle as a DENY outcome).
-      LOG_FAIL_CLOSED: The application's operation in the context of which
-        this authorization check is being made may only be performed if it is
-        successfully logged to Gin. For instance, the authorization library
-        may satisfy this obligation by emitting a partial log entry at
-        authorization check time and only returning ALLOW to the application
-        if it succeeds.  If a matching Rule has this directive, but the client
-        has not indicated that it will honor such requirements, then the IAM
-        check will result in authorization failure by setting
-        CheckPolicyResponse.success=false.
-    """
-    LOG_MODE_UNSPECIFIED = 0
-    LOG_FAIL_CLOSED = 1
-
-  logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
 
 
 class Empty(_messages.Message):
@@ -399,8 +163,6 @@ class Feature(_messages.Message):
     description: An optional description of the feature, limited to 2048
       characters.
     featureState: Output only. State of the resource itself.
-    helloworldFeatureSpec: A hello world feature to act as an example and test
-      our feature lifecycle code.
     labels: GCP labels for this feature.
     metadataFeatureSpec: A MetadataFeatureSpec attribute.
     meteringFeatureSpec: A MeteringFeatureSpec attribute.
@@ -440,14 +202,13 @@ class Feature(_messages.Message):
   deleteTime = _messages.StringField(2)
   description = _messages.StringField(3)
   featureState = _messages.MessageField('FeatureState', 4)
-  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  metadataFeatureSpec = _messages.MessageField('MetadataFeatureSpec', 7)
-  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 8)
-  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 9)
-  name = _messages.StringField(10)
-  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 11)
-  updateTime = _messages.StringField(12)
+  labels = _messages.MessageField('LabelsValue', 5)
+  metadataFeatureSpec = _messages.MessageField('MetadataFeatureSpec', 6)
+  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 7)
+  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 8)
+  name = _messages.StringField(9)
+  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 10)
+  updateTime = _messages.StringField(11)
 
 
 class FeatureState(_messages.Message):
@@ -535,7 +296,6 @@ class FeatureStateDetails(_messages.Message):
     code: The code indicates machine-interpretable status code of the feature.
       It also allows for an interpretation of the details.
     description: Human readable description of the issue.
-    helloworldFeatureState: A HelloWorldFeatureState attribute.
     metadataFeatureState: A MetadataFeatureState attribute.
     meteringFeatureState: A MeteringFeatureState attribute.
     multiclusteringressFeatureState: A MultiClusterIngressFeatureState
@@ -559,12 +319,11 @@ class FeatureStateDetails(_messages.Message):
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   description = _messages.StringField(2)
-  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 3)
-  metadataFeatureState = _messages.MessageField('MetadataFeatureState', 4)
-  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 5)
-  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 6)
-  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 7)
-  updateTime = _messages.StringField(8)
+  metadataFeatureState = _messages.MessageField('MetadataFeatureState', 3)
+  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 4)
+  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 5)
+  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 6)
+  updateTime = _messages.StringField(7)
 
 
 class GenerateConnectAgentManifestResponse(_messages.Message):
@@ -876,20 +635,6 @@ class GoogleRpcStatus(_messages.Message):
   message = _messages.StringField(3)
 
 
-class HelloWorldFeatureSpec(_messages.Message):
-  r"""An empty spec for hello world feature. This is required since Feature
-  proto requires a spec.
-  """
-
-
-
-class HelloWorldFeatureState(_messages.Message):
-  r"""An empty state for hello world feature. This is required since
-  FeatureStateDetails requires a state.
-  """
-
-
-
 class ListFeaturesResponse(_messages.Message):
   r"""Response message for the `GkeHubDomainFeatureService.ListFeatures`
   method.
@@ -1009,20 +754,6 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
-
-
-class LogConfig(_messages.Message):
-  r"""Specifies what kind of log the caller must write
-
-  Fields:
-    cloudAudit: Cloud audit options.
-    counter: Counter options.
-    dataAccess: Data access options.
-  """
-
-  cloudAudit = _messages.MessageField('CloudAuditOptions', 1)
-  counter = _messages.MessageField('CounterOptions', 2)
-  dataAccess = _messages.MessageField('DataAccessOptions', 3)
 
 
 class MetadataFeatureSpec(_messages.Message):
@@ -1227,77 +958,13 @@ class Policy(_messages.Message):
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten.
-    iamOwned: A boolean attribute.
-    rules: If more than one rule is specified, the rules are applied in the
-      following manner: - All matching LOG rules are always applied. - If any
-      DENY/DENY_WITH_LOG rule matches, permission is denied.   Logging will be
-      applied if one or more matching rule requires logging. - Otherwise, if
-      any ALLOW/ALLOW_WITH_LOG rule matches, permission is   granted.
-      Logging will be applied if one or more matching rule requires logging. -
-      Otherwise, if no rule applies, permission is denied.
     version: Deprecated.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
-  iamOwned = _messages.BooleanField(4)
-  rules = _messages.MessageField('Rule', 5, repeated=True)
-  version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-
-
-class Rule(_messages.Message):
-  r"""A rule to be applied in a Policy.
-
-  Enums:
-    ActionValueValuesEnum: Required
-
-  Fields:
-    action: Required
-    conditions: Additional restrictions that must be met. All conditions must
-      pass for the rule to match.
-    description: Human-readable description of the rule.
-    in_: If one or more 'in' clauses are specified, the rule matches if the
-      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
-    logConfig: The config returned to callers of tech.iam.IAM.CheckPolicy for
-      any entries that match the LOG action.
-    notIn: If one or more 'not_in' clauses are specified, the rule matches if
-      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
-      for in and not_in entries can be found at in the Local IAM documentation
-      (see go/local-iam#features).
-    permissions: A permission is a string of form '<service>.<resource
-      type>.<verb>' (e.g., 'storage.buckets.list'). A value of '*' matches all
-      permissions, and a verb part of '*' (e.g., 'storage.buckets.*') matches
-      all verbs.
-  """
-
-  class ActionValueValuesEnum(_messages.Enum):
-    r"""Required
-
-    Values:
-      NO_ACTION: Default no action.
-      ALLOW: Matching 'Entries' grant access.
-      ALLOW_WITH_LOG: Matching 'Entries' grant access and the caller promises
-        to log the request per the returned log_configs.
-      DENY: Matching 'Entries' deny access.
-      DENY_WITH_LOG: Matching 'Entries' deny access and the caller promises to
-        log the request per the returned log_configs.
-      LOG: Matching 'Entries' tell IAM.Check callers to generate logs.
-    """
-    NO_ACTION = 0
-    ALLOW = 1
-    ALLOW_WITH_LOG = 2
-    DENY = 3
-    DENY_WITH_LOG = 4
-    LOG = 5
-
-  action = _messages.EnumField('ActionValueValuesEnum', 1)
-  conditions = _messages.MessageField('Condition', 2, repeated=True)
-  description = _messages.StringField(3)
-  in_ = _messages.StringField(4, repeated=True)
-  logConfig = _messages.MessageField('LogConfig', 5, repeated=True)
-  notIn = _messages.StringField(6, repeated=True)
-  permissions = _messages.StringField(7, repeated=True)
+  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class ServiceMeshFeatureSpec(_messages.Message):
@@ -1434,8 +1101,6 @@ class TestIamPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
-encoding.AddCustomJsonFieldMapping(
-    Rule, 'in_', 'in')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

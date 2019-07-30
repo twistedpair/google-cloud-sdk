@@ -342,6 +342,13 @@
         "displayName": {
           "description": "Display name for an instance.",
           "type": "string"
+        },
+        "availableVersion": {
+          "description": "Available versions that the instance can be upgraded to using\nUpdateInstanceRequest.",
+          "type": "array",
+          "items": {
+            "$ref": "Version"
+          }
         }
       }
     },
@@ -356,6 +363,17 @@
         },
         "ipAllocation": {
           "description": "The IP range in CIDR notation to use for the managed Data Fusion instance\nnodes. This range must not overlap with any other ranges used in the Data\nFusion instance network.",
+          "type": "string"
+        }
+      }
+    },
+    "Version": {
+      "id": "Version",
+      "description": "The Data Fusion version.",
+      "type": "object",
+      "properties": {
+        "versionNumber": {
+          "description": "The version number of the Data Fusion instance, such as '6.0.1.0'.",
           "type": "string"
         }
       }

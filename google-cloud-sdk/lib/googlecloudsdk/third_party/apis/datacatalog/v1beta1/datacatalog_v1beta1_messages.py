@@ -600,12 +600,13 @@ class GoogleCloudDatacatalogV1beta1FieldTypeEnumType(_messages.Message):
   r"""A GoogleCloudDatacatalogV1beta1FieldTypeEnumType object.
 
   Fields:
-    allowedValues: Required. The set of allowed values for this enum. This set
-      must not be empty, the display names of the values in this set must not
-      be empty and the display names of the values must be case-insensitively
-      unique within this set. Currently, enum values can only be added to the
-      list of allowed values. Deletion and renaming of enum values are not
-      supported. Can have up to 500 allowed values.
+    allowedValues: Required on create; optional on update. The set of allowed
+      values for this enum. This set must not be empty, the display names of
+      the values in this set must not be empty and the display names of the
+      values must be case-insensitively unique within this set. Currently,
+      enum values can only be added to the list of allowed values. Deletion
+      and renaming of enum values are not supported. Can have up to 500
+      allowed values.
   """
 
   allowedValues = _messages.MessageField('GoogleCloudDatacatalogV1beta1FieldTypeEnumTypeEnumValue', 1, repeated=True)
@@ -986,7 +987,7 @@ class GoogleCloudDatacatalogV1beta1ViewSpec(_messages.Message):
   r"""Table view specification.
 
   Fields:
-    viewQuery: Output only. The query that defines the table view.
+    viewQuery: Required. Output only. The query that defines the table view.
   """
 
   viewQuery = _messages.StringField(1)

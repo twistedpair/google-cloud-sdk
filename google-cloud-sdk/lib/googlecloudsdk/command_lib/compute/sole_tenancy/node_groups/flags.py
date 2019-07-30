@@ -20,6 +20,23 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.util.apis import arg_utils
+
+_MAINTENANCE_POLICY_CHOICES = {
+    'default': 'VM instances on the host are live migrated to a new '
+               'physical server.',
+    'restart-in-place': 'VM instances on the host are terminated and then '
+                        'restarted on the same physical server after the '
+                        'maintenance event has completed.',
+    'migrate-within-node-group': 'VM instances on the host are live migrated '
+                                 'to another node within the same node group.',
+}
+
+_MAINTENANCE_POLICY_MAPPINGS = {
+    'DEFAULT': 'default',
+    'RESTART_IN_PLACE': 'restart-in-place',
+    'MIGRATE_WITHIN_NODE_GROUP': 'migrate-within-node-group',
+}
 
 
 def MakeNodeGroupArg():
@@ -63,3 +80,23 @@ def AddUpdateArgsToParser(parser):
       type=arg_parsers.ArgList(),
       help='The names of the nodes to remove from the group.')
   AddNoteTemplateFlagToParser(parser, required=False)
+
+
+def AddMaintenancePolicyArgToParser(parser):
+  """Add flag for adding maintenance policy to node group."""
+  parser.add_argument(
+      '--maintenance-policy',
+      choices=_MAINTENANCE_POLICY_CHOICES,
+      type=lambda policy: policy.lower(),
+      help=('Determines the maintenance behavior during host maintenance '
+            'events.'))
+
+
+def GetMaintenancePolicyEnumMapper(messages):
+  return arg_utils.ChoiceEnumMapper(
+      '--maintenance-policy',
+      messages.NodeGroup.MaintenancePolicyValueValuesEnum,
+      custom_mappings=_MAINTENANCE_POLICY_MAPPINGS,
+  )
+
+

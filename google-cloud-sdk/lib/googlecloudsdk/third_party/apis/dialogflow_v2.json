@@ -3370,6 +3370,55 @@
         }
       }
     },
+    "GoogleCloudDialogflowV2beta1LabelConversationResponse": {
+      "id": "GoogleCloudDialogflowV2beta1LabelConversationResponse",
+      "description": "The response for\nConversationDatasets.LabelConversation",
+      "type": "object",
+      "properties": {
+        "annotatedConversationDataset": {
+          "description": "New annotated conversation dataset created by the labeling task.",
+          "$ref": "GoogleCloudDialogflowV2beta1AnnotatedConversationDataset"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2beta1AnnotatedConversationDataset": {
+      "id": "GoogleCloudDialogflowV2beta1AnnotatedConversationDataset",
+      "description": "Represents an annotated conversation dataset.\nConversationDataset can have multiple AnnotatedConversationDataset, each of\nthem represents one result from one annotation task.\nAnnotatedConversationDataset can only be generated from annotation task,\nwhich will be triggered by LabelConversation.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. AnnotatedConversationDataset resource name. Format:\n`projects\/<Project ID>\/conversationDatasets\/<Conversation Dataset\nID>\/annotatedConversationDatasets\/<Annotated Conversation Dataset ID>`",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. The display name of the annotated conversation dataset.\nIt's specified when user starts an annotation task. Maximum of 64 bytes.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. The description of the annotated conversation dataset.\nMaximum of 10000 bytes.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Creation time of this annotated conversation dataset.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "exampleCount": {
+          "description": "Output only. Number of examples in the annotated conversation dataset.",
+          "type": "string",
+          "format": "int64"
+        },
+        "completedExampleCount": {
+          "description": "Output only. Number of examples that have annotations in the annotated\nconversation dataset.",
+          "type": "string",
+          "format": "int64"
+        },
+        "questionTypeName": {
+          "description": "Output only. Question type name that identifies a labeling task.\nA question is a single task that a worker answers. A question type is set\nof related questions. Each question belongs to a particular question type.\nIt can be used in CrowdCompute UI to filter and manage labeling tasks.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudDialogflowV2beta1ConversationModel": {
       "id": "GoogleCloudDialogflowV2beta1ConversationModel",
       "description": "Represents a conversation model.",

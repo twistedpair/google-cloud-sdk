@@ -2751,6 +2751,44 @@ class GoogleCloudDialogflowV2WebhookResponse(_messages.Message):
   source = _messages.StringField(6)
 
 
+class GoogleCloudDialogflowV2beta1AnnotatedConversationDataset(_messages.Message):
+  r"""Represents an annotated conversation dataset. ConversationDataset can
+  have multiple AnnotatedConversationDataset, each of them represents one
+  result from one annotation task. AnnotatedConversationDataset can only be
+  generated from annotation task, which will be triggered by
+  LabelConversation.
+
+  Fields:
+    completedExampleCount: Output only. Number of examples that have
+      annotations in the annotated conversation dataset.
+    createTime: Output only. Creation time of this annotated conversation
+      dataset.
+    description: Optional. The description of the annotated conversation
+      dataset. Maximum of 10000 bytes.
+    displayName: Required. The display name of the annotated conversation
+      dataset. It's specified when user starts an annotation task. Maximum of
+      64 bytes.
+    exampleCount: Output only. Number of examples in the annotated
+      conversation dataset.
+    name: Output only. AnnotatedConversationDataset resource name. Format:
+      `projects/<Project ID>/conversationDatasets/<Conversation Dataset
+      ID>/annotatedConversationDatasets/<Annotated Conversation Dataset ID>`
+    questionTypeName: Output only. Question type name that identifies a
+      labeling task. A question is a single task that a worker answers. A
+      question type is set of related questions. Each question belongs to a
+      particular question type. It can be used in CrowdCompute UI to filter
+      and manage labeling tasks.
+  """
+
+  completedExampleCount = _messages.IntegerField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  exampleCount = _messages.IntegerField(5)
+  name = _messages.StringField(6)
+  questionTypeName = _messages.StringField(7)
+
+
 class GoogleCloudDialogflowV2beta1ArticleSuggestionModelMetadata(_messages.Message):
   r"""Metadata for article suggestion models.
 
@@ -4091,6 +4129,17 @@ class GoogleCloudDialogflowV2beta1KnowledgeOperationMetadata(_messages.Message):
     DONE = 3
 
   state = _messages.EnumField('StateValueValuesEnum', 1)
+
+
+class GoogleCloudDialogflowV2beta1LabelConversationResponse(_messages.Message):
+  r"""The response for ConversationDatasets.LabelConversation
+
+  Fields:
+    annotatedConversationDataset: New annotated conversation dataset created
+      by the labeling task.
+  """
+
+  annotatedConversationDataset = _messages.MessageField('GoogleCloudDialogflowV2beta1AnnotatedConversationDataset', 1)
 
 
 class GoogleCloudDialogflowV2beta1OriginalDetectIntentRequest(_messages.Message):

@@ -26,6 +26,9 @@ from googlecloudsdk.api_lib.run import k8s_object
 # Label names as to be stored in k8s object metadata
 AUTHOR_ANNOTATION = 'serving.knative.dev/creator'
 SERVICE_LABEL = 'serving.knative.dev/service'
+# Used to force a new revision, and also to tie a particular request for changes
+# to a particular created revision.
+NONCE_LABEL = 'client.knative.dev/nonce'
 
 
 class Revision(k8s_object.KubernetesObject):

@@ -43,7 +43,25 @@ def ArgsForSnapshotJobRef(parser):
       '--region',
       default='us-central1',
       metavar='REGION_ID',
-      help='The region ID of the snapshot and job\'s regional endpoint.')
+      help="The region ID of the snapshot and job's regional endpoint.")
+
+
+def ArgsForListSnapshot(parser):
+  """Register flags for listing Cloud Dataflow snapshots.
+
+  Args:
+    parser: The argparse.ArgParser to configure with job-filtering arguments.
+  """
+  parser.add_argument(
+      '--job-id',
+      required=False,
+      metavar='JOB_ID',
+      help='The job ID to use to filter the snapshots list.')
+  parser.add_argument(
+      '--region',
+      default='us-central1',
+      metavar='REGION_ID',
+      help="The region ID of the snapshot and job's regional endpoint.")
 
 
 def ArgsForSnapshotTtl(parser):

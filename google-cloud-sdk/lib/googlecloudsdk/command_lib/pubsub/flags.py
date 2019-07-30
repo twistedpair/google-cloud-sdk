@@ -22,7 +22,6 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.pubsub import subscriptions
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.pubsub import util
 from googlecloudsdk.core import log
@@ -137,26 +136,25 @@ def AddPullFlags(parser, add_deprecated=False, add_wait=False):
              'subscription, if there are none.')
 
 
-def AddPushConfigFlags(parser, track, required=False):
+def AddPushConfigFlags(parser, required=False):
   """Adds flags for push subscriptions to the parser."""
   parser.add_argument(
       '--push-endpoint', required=required,
       help='A URL to use as the endpoint for this subscription. This will '
            'also automatically set the subscription type to PUSH.')
-  if track in [base.ReleaseTrack.BETA, base.ReleaseTrack.ALPHA]:
-    parser.add_argument(
-        '--push-auth-service-account',
-        required=False,
-        dest='SERVICE_ACCOUNT_EMAIL',
-        help='Service account email used as the identity for the generated '
-        'Open ID Connect token for authenticated push.')
-    parser.add_argument(
-        '--push-auth-token-audience',
-        required=False,
-        dest='OPTIONAL_AUDIENCE_OVERRIDE',
-        help='Audience used in the generated Open ID Connect token for '
-        'authenticated push. If not specified, it will be set to the '
-        'push-endpoint.')
+  parser.add_argument(
+      '--push-auth-service-account',
+      required=False,
+      dest='SERVICE_ACCOUNT_EMAIL',
+      help='Service account email used as the identity for the generated '
+      'Open ID Connect token for authenticated push.')
+  parser.add_argument(
+      '--push-auth-token-audience',
+      required=False,
+      dest='OPTIONAL_AUDIENCE_OVERRIDE',
+      help='Audience used in the generated Open ID Connect token for '
+      'authenticated push. If not specified, it will be set to the '
+      'push-endpoint.')
 
 
 def AddAckDeadlineFlag(parser, required=False):
@@ -224,10 +222,28 @@ def ParseExpirationPeriodWithNeverSentinel(value):
   return util.FormatDuration(arg_parsers.Duration()(value))
 
 
-def AddSubscriptionSettingsFlags(parser, track, is_update=False):
+def AddSubscriptionSettingsFlags(parser,
+                                 is_update=False,
+                                 support_message_ordering=False):
+  """Adds the flags for creating or updating a subscription.
+
+  Args:
+    parser: The argparse parser.
+    is_update: Whether or not this is for the update operation (vs. create).
+    support_message_ordering: Whether or not flags for ordering should be added.
+  """
   AddAckDeadlineFlag(parser)
-  AddPushConfigFlags(parser, track)
+  AddPushConfigFlags(parser)
   AddMessageRetentionFlags(parser, is_update)
+  if support_message_ordering and not is_update:
+    parser.add_argument(
+        '--enable-message-ordering',
+        action='store_true',
+        default=None,
+        help="""Whether or not to receive messages with the same ordering key in
+            order. If true, messages with the same ordering key will by sent to
+            subscribers in the order in which they were received by Cloud
+            Pub/Sub.""")
   parser.add_argument(
       '--expiration-period',
       type=ParseExpirationPeriodWithNeverSentinel,
@@ -239,12 +255,15 @@ def AddSubscriptionSettingsFlags(parser, track, is_update=False):
           indicate that the subscription will never expire.""")
 
 
-def AddPublishMessageFlags(parser, add_deprecated=False):
+def AddPublishMessageFlags(parser,
+                           add_deprecated=False,
+                           support_message_ordering=False):
   """Adds the flags for building a PubSub message to the parser.
 
   Args:
     parser: The argparse parser.
     add_deprecated: Whether or not to add the deprecated flags.
+    support_message_ordering: Whether or not flags for ordering should be added.
   """
   message_help_text = """\
       The body of the message to publish to the given topic name.
@@ -266,6 +285,13 @@ def AddPublishMessageFlags(parser, add_deprecated=False):
       help='Comma-separated list of attributes. Each ATTRIBUTE has the form '
            'name="value". You can specify up to {0} attributes.'.format(
                MAX_ATTRIBUTES))
+
+  if support_message_ordering:
+    parser.add_argument(
+        '--ordering-key',
+        help="""The key to use for ordering delivery to subscribers. All
+            messages with the same key will be sent to subcribers in the order
+            in which they were received by Cloud Pub/Sub.""")
 
 
 def ParseMessageBody(args):

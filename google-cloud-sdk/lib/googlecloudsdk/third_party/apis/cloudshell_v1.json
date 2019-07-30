@@ -270,6 +270,10 @@
             "RUNNING"
           ]
         },
+        "webHost": {
+          "description": "Output only. Host to which clients can connect to initiate HTTPS or WSS\nconnections with the environment.",
+          "type": "string"
+        },
         "sshUsername": {
           "description": "Output only. Username that clients should use when initiating SSH sessions\nwith the environment.",
           "type": "string"

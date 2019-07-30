@@ -26,7 +26,4 @@ from __future__ import unicode_literals
 
 SCRIPTS = (
     # Each element is a (comment, script) tuple.
-    ('Cloud SDK reference documentation consumer survey snippet.',
-     '<script async="" defer="" src="//www.google.com/insights/consumersurveys/'
-     'async_survey?site=szsb56j6kyilrquqs4stl4ugq4"></script>'),
     )

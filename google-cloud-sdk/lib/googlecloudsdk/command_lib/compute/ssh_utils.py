@@ -543,11 +543,11 @@ class BaseSSHHelper(object):
     new_keys_added = known_hosts.AddMultiple(
         host_key_alias, host_key_entries, overwrite=False)
     if new_keys_added:
-      log.out.Print('Writing {0} keys to {1}'
-                    .format(len(host_key_entries), known_hosts.file_path))
+      log.status.Print('Writing {0} keys to {1}'
+                       .format(len(host_key_entries), known_hosts.file_path))
     if host_key_entries and not new_keys_added:
-      log.out.Print('Existing host keys found in {0}'
-                    .format(known_hosts.file_path))
+      log.status.Print('Existing host keys found in {0}'
+                       .format(known_hosts.file_path))
     known_hosts.Write()
 
   def _SetProjectMetadata(self, client, new_metadata):

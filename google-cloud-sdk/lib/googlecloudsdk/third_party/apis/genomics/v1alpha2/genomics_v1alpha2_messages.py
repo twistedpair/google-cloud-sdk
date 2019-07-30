@@ -1576,11 +1576,13 @@ class WorkerAssignedEvent(_messages.Message):
 
   Fields:
     instance: The worker's instance name.
+    machineType: The machine type that was assigned for the worker.
     zone: The zone the worker is running in.
   """
 
   instance = _messages.StringField(1)
-  zone = _messages.StringField(2)
+  machineType = _messages.StringField(2)
+  zone = _messages.StringField(3)
 
 
 class WorkerReleasedEvent(_messages.Message):

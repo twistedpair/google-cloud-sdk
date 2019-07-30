@@ -169,7 +169,11 @@ class TopicsClient(object):
         list_subs_service, list_req, batch_size=page_size,
         field='subscriptions', batch_size_attribute='pageSize')
 
-  def Publish(self, topic_ref, message_body=None, attributes=None):
+  def Publish(self,
+              topic_ref,
+              message_body=None,
+              attributes=None,
+              ordering_key=None):
     """Publishes a message to the given topic.
 
     Args:
@@ -177,6 +181,7 @@ class TopicsClient(object):
       message_body (bytes): Message to send.
       attributes (list[AdditionalProperty]): List of attributes to attach to
         the message.
+      ordering_key (string): The ordering key to associate with this message.
     Returns:
       PublishResponse: Response message with message ids from the API.
     Raises:
@@ -192,7 +197,8 @@ class TopicsClient(object):
     message = self.messages.PubsubMessage(
         data=message_body,
         attributes=self.messages.PubsubMessage.AttributesValue(
-            additionalProperties=attributes))
+            additionalProperties=attributes),
+        orderingKey=ordering_key)
     publish_req = self.messages.PubsubProjectsTopicsPublishRequest(
         publishRequest=self.messages.PublishRequest(messages=[message]),
         topic=topic_ref.RelativeName())

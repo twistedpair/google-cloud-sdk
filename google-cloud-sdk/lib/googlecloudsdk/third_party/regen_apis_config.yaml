@@ -114,6 +114,8 @@ apis:
       resources:
         iamPolicies:
           path: iamPolicies
+    v1p2beta1:
+      discovery_doc: cloudasset_v1p2beta1.json
   cloudbilling:
     v1:
       discovery_doc: cloudbilling_v1.json
@@ -272,6 +274,8 @@ apis:
       default: true
     v1beta1:
       discovery_doc: containeranalysis_v1beta1.json
+    v1:
+      discovery_doc: containeranalysis_v1.json
   datacatalog:
     v1alpha3:
       discovery_doc: datacatalog_v1alpha3.json

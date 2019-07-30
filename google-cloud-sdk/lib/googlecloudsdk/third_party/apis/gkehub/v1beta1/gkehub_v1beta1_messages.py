@@ -151,6 +151,19 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GenerateConnectAgentManifestResponse(_messages.Message):
+  r"""Response message for `GkeHubService.GenerateConnectAgentManifest`
+  method.
+
+  Fields:
+    manifest: The generated Kubernetes manifest to be used to instantiate a
+      new agent on a Kubernetes cluster. The manifest output is in Kubernetes
+      YAML format.
+  """
+
+  manifest = _messages.StringField(1)
+
+
 class GkeCluster(_messages.Message):
   r"""GkeCluster represents a k8s cluster on GKE.
 
@@ -172,6 +185,32 @@ class GkehubProjectsLocationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsGlobalConnectAgentsGenerateManifestRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsGlobalConnectAgentsGenerateManifestRequest
+  object.
+
+  Fields:
+    connectAgent_name: Name is the unique identifier for a connect agent per
+      project. Limited to 1024 characters.
+    connectAgent_namespace: Namespace for GKE Connect agent resources.
+      Optional; if empty, use gke-connect-{project-number}
+    connectAgent_proxy: Optional connection name of the proxy, format must be
+      in the form http(s)://{proxy_address}, depends on HTTP/HTTPS protocol
+      supported by the proxy. This will direct connect agent's outbound
+      traffic through a HTTP(S) proxy.
+    parent: The parent project the connect agent is associated with.
+      `projects/[project_id]/locations/global/connectAgents`.
+    version: The version to use for connect agent. Optional; if empty, the
+      current default version will be used.
+  """
+
+  connectAgent_name = _messages.StringField(1)
+  connectAgent_namespace = _messages.StringField(2)
+  connectAgent_proxy = _messages.BytesField(3)
+  parent = _messages.StringField(4, required=True)
+  version = _messages.StringField(5)
 
 
 class GkehubProjectsLocationsGlobalMembershipsCreateRequest(_messages.Message):

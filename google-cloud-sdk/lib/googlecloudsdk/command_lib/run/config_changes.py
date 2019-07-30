@@ -20,10 +20,14 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import abc
+import copy
 
 from googlecloudsdk.api_lib.run import configuration
 from googlecloudsdk.api_lib.run import k8s_object
+from googlecloudsdk.api_lib.run import revision
+from googlecloudsdk.api_lib.run import service
 from googlecloudsdk.command_lib.run import exceptions
+from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import repeated
 
 
@@ -60,7 +64,56 @@ class LabelChanges(ConfigChanger):
       resource.metadata.labels = maybe_new_labels
       # Service labels are the source of truth and *overwrite* revision labels.
       # See run-labels-prd for deets.
-      resource.template.metadata.labels = maybe_new_labels
+      # However, we need to preserve the nonce if there is one.
+      nonce = resource.template.labels.get(revision.NONCE_LABEL)
+      resource.template.metadata.labels = copy.deepcopy(maybe_new_labels)
+      if nonce:
+        resource.template.labels[revision.NONCE_LABEL] = nonce
+
+
+class EndpointVisibilityChange(LabelChanges):
+  """Represents the user intent to modify the endpoint visibility."""
+
+  def __init__(self, endpoint_visibility):
+    """Determine label changes for modifying endpoint visibility.
+
+    Args:
+      endpoint_visibility: bool, True if Cloud Run on GKE service should only be
+        addressable from within the cluster. False if it should be publicly
+        addressable.
+    """
+    if endpoint_visibility:
+      diff = labels_util.Diff(
+          additions={service.ENDPOINT_VISIBILITY: service.CLUSTER_LOCAL})
+    else:
+      diff = labels_util.Diff(subtractions=[service.ENDPOINT_VISIBILITY])
+    super(EndpointVisibilityChange, self).__init__(diff)
+
+
+class SetTemplateAnnotationChange(ConfigChanger):
+  """Represents the user intent to set a template annotation."""
+
+  def __init__(self, key, value):
+    self._key = key
+    self._value = value
+
+  def Adjust(self, resource):
+    annotations = k8s_object.AnnotationsFromMetadata(
+        resource.MessagesModule(), resource.template.metadata)
+    annotations[self._key] = self._value
+
+
+class DeleteTemplateAnnotationChange(ConfigChanger):
+  """Represents the user intent to delete a template annotation."""
+
+  def __init__(self, key):
+    self._key = key
+
+  def Adjust(self, resource):
+    annotations = k8s_object.AnnotationsFromMetadata(
+        resource.MessagesModule(), resource.template.metadata)
+    if self._key in annotations:
+      del annotations[self._key]
 
 
 class VpcConnectorChange(ConfigChanger):

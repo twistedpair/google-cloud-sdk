@@ -329,6 +329,17 @@
         }
       }
     },
+    "GenerateConnectAgentManifestResponse": {
+      "id": "GenerateConnectAgentManifestResponse",
+      "description": "Response message for `GkeHubService.GenerateConnectAgentManifest`\nmethod.",
+      "type": "object",
+      "properties": {
+        "manifest": {
+          "description": "The generated Kubernetes manifest to be used to instantiate a new agent\non a Kubernetes cluster. The manifest output is in Kubernetes YAML format.",
+          "type": "string"
+        }
+      }
+    },
     "ListLocationsResponse": {
       "id": "ListLocationsResponse",
       "description": "The response message for Locations.ListLocations.",
@@ -917,6 +928,56 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Updates an existing Membership."
+                    }
+                  }
+                },
+                "connectAgents": {
+                  "methods": {
+                    "generateManifest": {
+                      "id": "gkehub.projects.locations.global.connectAgents.generateManifest",
+                      "path": "v1beta1/{+parent}:generateManifest",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/global/connectAgents:generateManifest",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "The parent project the connect agent is associated with.\n`projects\/[project_id]\/locations\/global\/connectAgents`.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/connectAgents$",
+                          "type": "string"
+                        },
+                        "connectAgent.name": {
+                          "description": "Name is the unique identifier for a connect agent per project.\nLimited to 1024 characters.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "connectAgent.proxy": {
+                          "description": "Optional connection name of the proxy, format must be in the form\nhttp(s):\/\/{proxy_address}, depends on HTTP\/HTTPS protocol\nsupported by the proxy.\nThis will direct connect agent's outbound traffic through a HTTP(S) proxy.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "byte"
+                        },
+                        "connectAgent.namespace": {
+                          "description": "Namespace for GKE Connect agent resources.\nOptional; if empty, use gke-connect-{project-number}",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "version": {
+                          "description": "The version to use for connect agent.\nOptional; if empty, the current default version will be used.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "GenerateConnectAgentManifestResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Generate the manifest for deployment of GKE connect agent."
                     }
                   }
                 }

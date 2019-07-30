@@ -46,6 +46,9 @@ _NORMALIZED_USER_AGENT = b'user-agent'
 _USER_AGENT_HEADER_KEYS = [_NORMALIZED_USER_AGENT, b'User-Agent', b'USER-AGENT']
 
 
+ENCODING = None if six.PY2 else 'utf8'
+
+
 def Http(timeout='unset', response_encoding=None, ca_certs=None):
   """Get an httplib2.Http client that is properly configured for use by gcloud.
 

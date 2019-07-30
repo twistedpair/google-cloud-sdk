@@ -280,26 +280,22 @@ def GetClientClass(api_name, api_version):
   return apis_internal._GetClientClass(api_name, api_version)
 
 
-def GetClientInstance(api_name, api_version, no_http=False,
-                      enable_resource_quota=True):
+def GetClientInstance(api_name, api_version, no_http=False):
   """Returns an instance of the API client specified in the args.
 
   Args:
     api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
     no_http: bool, True to not create an http object for this client.
-    enable_resource_quota: bool, By default, we are going to tell APIs to use
-      the quota of the project being operated on. For some APIs we want to use
-      gcloud's quota, so you can explicitly disable that behavior by passing
-      False here.
 
   Returns:
     base_api.BaseApiClient, An instance of the specified API client.
   """
   # pylint:disable=protected-access
-  return apis_internal._GetClientInstance(api_name, api_version, no_http,
-                                          CheckResponseForApiEnablement,
-                                          enable_resource_quota)
+  return apis_internal._GetClientInstance(
+      api_name, api_version,
+      no_http=no_http,
+      check_response_func=CheckResponseForApiEnablement)
 
 
 def GetEffectiveApiEndpoint(api_name, api_version, client_class=None):

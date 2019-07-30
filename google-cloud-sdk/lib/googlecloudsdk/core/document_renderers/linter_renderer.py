@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import collections
 import io
+import re
 
 from googlecloudsdk.core.document_renderers import text_renderer
 
@@ -29,8 +30,7 @@ class LinterRenderer(text_renderer.TextRenderer):
 
   _HEADINGS_TO_LINT = ["NAME", "EXAMPLES", "DESCRIPTION"]
   _NAME_WORD_LIMIT = 20
-  _PERSONAL_PRONOUNS = [" me ", " we ", " I ", " us ", " he ", " she ", " him ",
-                        " her ", " them ", " they "]
+  _PERSONAL_PRONOUNS = {"me", "we", "I", "us", "he", "she", "him", "her"}
 
   def __init__(self, *args, **kwargs):
     super(LinterRenderer, self).__init__(*args, **kwargs)
@@ -69,16 +69,18 @@ class LinterRenderer(text_renderer.TextRenderer):
     self._analyze[heading](section)
 
   def check_for_personal_pronouns(self, section):
-    warnings = False
+    """Raise violation if the section contains personal pronouns."""
+    words_in_section = set(re.compile(r"\w+").findall(section.lower()))
+    found_pronouns = words_in_section.intersection(self._PERSONAL_PRONOUNS)
     key_object = "# " + self._heading + "_PRONOUN_CHECK FAILED"
-    value_object = ("Please remove personal pronouns in the " +
-                    self._heading + " section.")
-    for pronoun in self._PERSONAL_PRONOUNS:
-      if pronoun in section:
-        self.json_object[key_object] = value_object
-        warnings = True
-        break
-    return warnings
+    value_object = ("Please remove the following personal pronouns in the " +
+                    self._heading + " section:\n")
+    if found_pronouns:
+      found_pronouns_list = list(found_pronouns)
+      found_pronouns_list.sort()
+      value_object += "\n".join(found_pronouns_list)
+      self.json_object[key_object] = value_object
+    return found_pronouns
 
   def Finish(self):
     if self._buffer.getvalue() and self._prev_heading:

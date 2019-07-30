@@ -446,6 +446,9 @@ class ClusterStatus(_messages.Message):
       DELETING: The cluster is being deleted. It cannot be used.
       UPDATING: The cluster is being updated. It continues to accept and
         process jobs.
+      STOPPING: The cluster is being stopped. It cannot be used.
+      STOPPED: The cluster is currently stopped. It is not ready for use.
+      STARTING: The cluster is being started. It is not ready for use.
     """
     UNKNOWN = 0
     CREATING = 1
@@ -453,6 +456,9 @@ class ClusterStatus(_messages.Message):
     ERROR = 3
     DELETING = 4
     UPDATING = 5
+    STOPPING = 6
+    STOPPED = 7
+    STARTING = 8
 
   class SubstateValueValuesEnum(_messages.Enum):
     r"""Output only. Additional state information that includes status
@@ -1662,8 +1668,7 @@ class InstanceGroupConfig(_messages.Message):
 
   Fields:
     accelerators: Optional. The Compute Engine accelerator configuration for
-      these instances.Beta Feature: This feature is still under development.
-      It may be changed before final release.
+      these instances.
     diskConfig: Optional. Disk option config settings.
     imageUri: Optional. The Compute Engine image resource used for cluster
       instances. It can be specified or may be inferred from
@@ -1684,6 +1689,8 @@ class InstanceGroupConfig(_messages.Message):
     managedGroupConfig: Output only. The config for Compute Engine Instance
       Group Manager that manages this group. This is only used for preemptible
       instance groups.
+    minCpuPlatform: Optional. Specifies the minimum cpu platform for the
+      Instance Group. See Cloud Dataproc&rarr;Minimum CPU Platform.
     numInstances: Optional. The number of VM instances in the instance group.
       For master instance groups, must be set to 1.
   """
@@ -1695,7 +1702,8 @@ class InstanceGroupConfig(_messages.Message):
   isPreemptible = _messages.BooleanField(5)
   machineTypeUri = _messages.StringField(6)
   managedGroupConfig = _messages.MessageField('ManagedGroupConfig', 7)
-  numInstances = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  minCpuPlatform = _messages.StringField(8)
+  numInstances = _messages.IntegerField(9, variant=_messages.Variant.INT32)
 
 
 class InstantiateWorkflowTemplateRequest(_messages.Message):

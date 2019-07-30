@@ -24,6 +24,8 @@ from googlecloudsdk.api_lib.services import exceptions
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.credentials import http as http_creds
+
 
 _PROJECT_RESOURCE = 'projects/%s'
 _PROJECT_SERVICE_RESOURCE = 'projects/%s/services/%s'
@@ -221,6 +223,7 @@ def GetOperation(name):
 
 
 def _GetClientInstance():
+  """Get a client instance for service usage."""
   # pylint:disable=protected-access
   # Specifically disable resource quota in all cases for service management.
   # We need to use this API to turn on APIs and sometimes the user doesn't have
@@ -229,5 +232,8 @@ def _GetClientInstance():
   # has explicitly set the quota project, then respect that.
   enable_resource_quota = (
       properties.VALUES.billing.quota_project.IsExplicitlySet())
+  http_client = http_creds.Http(
+      response_encoding=http_creds.ENCODING,
+      enable_resource_quota=enable_resource_quota)
   return apis_internal._GetClientInstance(
-      'serviceusage', 'v1', enable_resource_quota=enable_resource_quota)
+      'serviceusage', 'v1', http_client=http_client)

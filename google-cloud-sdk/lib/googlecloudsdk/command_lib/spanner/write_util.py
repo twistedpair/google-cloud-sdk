@@ -67,7 +67,7 @@ class _TableColumn(object):
             #    Foo INT64 NOT NULL
             #    Bar STRING(1024)
             #    Baz ARRAY<FLOAT32>
-            (?P<name>\w+)\s+
+            [`]?(?P<name>\w+)[`]?\s+
             (?P<type>[\w<>]+)
             # We don't care about "NOT NULL", and the length number after STRING
             # or BYTES (e.g.STRING(MAX), BYTES(1024)).

@@ -31,6 +31,8 @@ from googlecloudsdk.core.util import files
 from oauth2client import client
 import six
 
+ENCODING = None if six.PY2 else 'utf8'
+
 
 class Error(exceptions.Error):
   """Exceptions for the http module."""

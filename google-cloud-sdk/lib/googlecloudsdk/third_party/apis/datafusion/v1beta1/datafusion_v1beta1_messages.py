@@ -641,6 +641,8 @@ class Instance(_messages.Message):
       Data Fusion instance.
 
   Fields:
+    availableVersion: Available versions that the instance can be upgraded to
+      using UpdateInstanceRequest.
     createTime: Output only. The time the instance was created.
     description: An optional description of this instance.
     displayName: Display name for an instance.
@@ -761,24 +763,25 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  enableStackdriverLogging = _messages.BooleanField(4)
-  enableStackdriverMonitoring = _messages.BooleanField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  networkConfig = _messages.MessageField('NetworkConfig', 8)
-  options = _messages.MessageField('OptionsValue', 9)
-  privateInstance = _messages.BooleanField(10)
-  serviceAccount = _messages.StringField(11)
-  serviceEndpoint = _messages.StringField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  stateMessage = _messages.StringField(14)
-  type = _messages.EnumField('TypeValueValuesEnum', 15)
-  updateTime = _messages.StringField(16)
-  version = _messages.StringField(17)
-  zone = _messages.StringField(18)
+  availableVersion = _messages.MessageField('Version', 1, repeated=True)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  enableStackdriverLogging = _messages.BooleanField(5)
+  enableStackdriverMonitoring = _messages.BooleanField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  networkConfig = _messages.MessageField('NetworkConfig', 9)
+  options = _messages.MessageField('OptionsValue', 10)
+  privateInstance = _messages.BooleanField(11)
+  serviceAccount = _messages.StringField(12)
+  serviceEndpoint = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  stateMessage = _messages.StringField(15)
+  type = _messages.EnumField('TypeValueValuesEnum', 16)
+  updateTime = _messages.StringField(17)
+  version = _messages.StringField(18)
+  zone = _messages.StringField(19)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -1343,6 +1346,17 @@ class UpgradeInstanceRequest(_messages.Message):
   instance properties, instance update should be used.
   """
 
+
+
+class Version(_messages.Message):
+  r"""The Data Fusion version.
+
+  Fields:
+    versionNumber: The version number of the Data Fusion instance, such as
+      '6.0.1.0'.
+  """
+
+  versionNumber = _messages.StringField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

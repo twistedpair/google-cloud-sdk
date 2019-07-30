@@ -163,6 +163,8 @@ class Environment(_messages.Message):
     sshUsername: Output only. Username that clients should use when initiating
       SSH sessions with the environment.
     state: Output only. Current execution state of this environment.
+    webHost: Output only. Host to which clients can connect to initiate HTTPS
+      or WSS connections with the environment.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -191,6 +193,7 @@ class Environment(_messages.Message):
   sshPort = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   sshUsername = _messages.StringField(7)
   state = _messages.EnumField('StateValueValuesEnum', 8)
+  webHost = _messages.StringField(9)
 
 
 class Operation(_messages.Message):

@@ -291,36 +291,6 @@ def GetSubnetRegion():
   raise SubnetException('Region or zone should be specified.')
 
 
-def ExtractNetworkAndSubnetDaisyVariables(args, operation):
-  """Extracts network/subnet out of CLI args in the form of Daisy variables.
-
-  Args:
-    args: list of str, CLI args that might contain network/subnet args.
-    operation: ImageOperation, specifies if this call is for import or export
-
-  Returns:
-    list of strs, network/subnet variables, if specified in args. Can be empty.
-  """
-  variables = []
-  network_full_path = None
-  if args.subnet:
-    variables.append('{0}_subnet=regions/{1}/subnetworks/{2}'.format(
-        operation, GetSubnetRegion(), args.subnet.lower()))
-
-    # network variable should be empty string in case subnet is specified
-    # and network is not. Otherwise, Daisy will default network to
-    # `global/networks/default` which will fail except for default networks.
-    network_full_path = ''
-
-  if args.network:
-    network_full_path = 'global/networks/{0}'.format(args.network.lower())
-
-  if network_full_path is not None:
-    variables.append('{0}_network={1}'.format(operation, network_full_path))
-
-  return variables
-
-
 def AppendNetworkAndSubnetArgs(args, builder_args):
   """Extracts network/subnet out of CLI args and append for importer.
 
@@ -333,58 +303,6 @@ def AppendNetworkAndSubnetArgs(args, builder_args):
 
   if args.network:
     AppendArg(builder_args, 'network', args.network.lower())
-
-
-def RunDaisyBuild(args,
-                  workflow,
-                  variables,
-                  daisy_bucket,
-                  tags=None,
-                  user_zone=None,
-                  output_filter=None):
-  """Run a build with Daisy on Google Cloud Builder.
-
-  Args:
-    args: An argparse namespace. All the arguments that were provided to this
-      command invocation.
-    workflow: The path to the Daisy workflow to run.
-    variables: A string of key-value pairs to pass to Daisy.
-    daisy_bucket: A string containing the name of the GCS bucket that daisy
-      should use.
-    tags: A list of strings for adding tags to the Argo build.
-    user_zone: The GCP zone to tell Daisy to do work in. If unspecified,
-      defaults to wherever the Argo runner happens to be.
-    output_filter: A list of strings indicating what lines from the log should
-      be output. Only lines that start with one of the strings in output_filter
-      will be displayed.
-
-  Returns:
-    A build object that either streams the output or is displayed as a
-    link to the build.
-
-  Raises:
-    FailedBuildException: If the build is completed and not 'SUCCESS'.
-  """
-  project_id = projects_util.ParseProject(
-      properties.VALUES.core.project.GetOrFail())
-
-  _CheckIamPermissions(project_id)
-
-  daisy_args = [
-      '-gcs_path=gs://{0}/'.format(daisy_bucket),
-      '-default_timeout={0}s'.format(GetDaisyTimeout(args)),
-      '-variables={0}'.format(variables),
-      workflow,
-  ]
-  if user_zone is not None:
-    daisy_args = ['-zone={0}'.format(user_zone)] + daisy_args
-
-  build_tags = ['gce-daisy']
-  if tags:
-    build_tags.extend(tags)
-
-  return _RunCloudBuild(args, _DAISY_BUILDER, daisy_args, build_tags,
-                        output_filter, args.log_location)
 
 
 def RunImageImport(args, import_args, tags, output_filter):

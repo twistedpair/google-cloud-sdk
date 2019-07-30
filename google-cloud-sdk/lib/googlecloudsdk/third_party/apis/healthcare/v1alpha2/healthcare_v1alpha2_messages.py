@@ -355,14 +355,12 @@ class DeidentifySummary(_messages.Message):
   r"""Contains a detailed summary of the Deidentify operation.
 
   Fields:
-    failureResourceCount: Number of resources that processing failed for.
     successResourceCount: Number of resources successfully processed.
     successStoreCount: Number of stores successfully processed.
   """
 
-  failureResourceCount = _messages.IntegerField(1)
-  successResourceCount = _messages.IntegerField(2)
-  successStoreCount = _messages.IntegerField(3)
+  successResourceCount = _messages.IntegerField(1)
+  successStoreCount = _messages.IntegerField(2)
 
 
 class Detail(_messages.Message):
@@ -2742,8 +2740,8 @@ class ImportResourcesRequest(_messages.Message):
     server treats the input source files as BUNDLE.
 
     Values:
-      CONTENT_STRUCTURE_UNSPECIFIED: Content structure is not specified;
-        defaults to BUNDLE.
+      CONTENT_STRUCTURE_UNSPECIFIED: If the content structure is not
+        specified, the default value `BUNDLE` will be used.
       BUNDLE: The source file contains one or more lines of newline-delimited
         JSON (ndjson). Each line is a bundle, which contains one or more
         resources. Set the bundle type to `history` to import resource

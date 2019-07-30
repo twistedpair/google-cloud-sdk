@@ -54,7 +54,7 @@ def ListRegions(client):
       client.MESSAGES_MODULE.RunProjectsLocationsListRequest(
           name=project_resource_relname,
           pageSize=100))
-  return [l.locationId for l in response.locations]
+  return sorted([l.locationId for l in response.locations])
 
 
 def ListServices(client, locations):

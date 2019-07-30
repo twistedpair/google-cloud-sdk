@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.credentials import http as http_creds
 
 from oauth2client import client
 
@@ -32,9 +33,11 @@ def GenerateAccessToken(service_account_id, scopes):
       params={'projectsId': '-', 'serviceAccountsId': service_account_id})
 
   # pylint: disable=protected-access
+  http_client = http_creds.Http(
+      response_encoding=http_creds.ENCODING,
+      allow_account_impersonation=False, force_resource_quota=True)
   iam_client = apis_internal._GetClientInstance(
-      'iamcredentials', 'v1', allow_account_impersonation=False,
-      force_resource_quota=True)
+      'iamcredentials', 'v1', http_client=http_client)
   response = iam_client.projects_serviceAccounts.GenerateAccessToken(
       iam_client.MESSAGES_MODULE
       .IamcredentialsProjectsServiceAccountsGenerateAccessTokenRequest(

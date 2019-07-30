@@ -15,7 +15,9 @@
 
 """Wrapper module for ensuring consistent usage of yaml parsing.
 
-This module forces everything to use version 1.1 of the YAML spec.
+This module forces parsing to use version 1.1 of the YAML spec if not
+otherwise specified by the loading method arguments.
+However, dumping uses version 1.2.
 It also prevents use of unsafe loading and dumping.
 """
 
@@ -31,6 +33,10 @@ from googlecloudsdk.core.util import files
 
 from ruamel import yaml
 import six
+
+
+VERSION_1_1 = '1.1'
+VERSION_1_2 = '1.2'
 
 
 # YAML unfortunately uses a bunch of global class state for this kind of stuff.
@@ -89,7 +95,11 @@ class FileLoadError(Error):
     super(FileLoadError, self).__init__(e, verb='load', f=f)
 
 
-def load(stream, file_hint=None, round_trip=False, location_value=False):
+def load(stream,
+         file_hint=None,
+         round_trip=False,
+         location_value=False,
+         version=VERSION_1_1):
   """Loads YAML from the given steam.
 
   Args:
@@ -105,6 +115,7 @@ def load(stream, file_hint=None, round_trip=False, location_value=False):
       numbers for all values. Each YAML data item is an object with value and
       lc attributes, where lc.line and lc.col are the line and column location
       for the item in the YAML source file.
+    version: str, YAML version to use when parsing.
 
   Raises:
     YAMLParseError: If the data could not be parsed.
@@ -116,18 +127,19 @@ def load(stream, file_hint=None, round_trip=False, location_value=False):
     if location_value:
       return yaml_location_value.LocationValueLoad(stream)
     loader = yaml.RoundTripLoader if round_trip else yaml.SafeLoader
-    return yaml.load(stream, loader, version='1.1')
+    return yaml.load(stream, loader, version=version)
   except yaml.YAMLError as e:
     raise YAMLParseError(e, f=file_hint)
 
 
-def load_all(stream, file_hint=None):
+def load_all(stream, file_hint=None, version=VERSION_1_1):
   """Loads multiple YAML documents from the given steam.
 
   Args:
     stream: A file like object or string that can be read from.
     file_hint: str, The name of a file or url that the stream data is coming
       from. See load() for more information.
+    version: str, YAML version to use when parsing.
 
   Raises:
     YAMLParseError: If the data could not be parsed.
@@ -136,13 +148,16 @@ def load_all(stream, file_hint=None):
     The parsed YAML data.
   """
   try:
-    for x in yaml.load_all(stream, yaml.SafeLoader, version='1.1'):
+    for x in yaml.load_all(stream, yaml.SafeLoader, version=version):
       yield x
   except yaml.YAMLError as e:
     raise YAMLParseError(e, f=file_hint)
 
 
-def load_path(path, round_trip=False, location_value=False):
+def load_path(path,
+              round_trip=False,
+              location_value=False,
+              version=VERSION_1_1):
   """Loads YAML from the given file path.
 
   Args:
@@ -153,6 +168,7 @@ def load_path(path, round_trip=False, location_value=False):
       numbers for all values. Each YAML data item is an object with value and
       lc attributes, where lc.line and lc.col are the line and column location
       for the item in the YAML source file.
+    version: str, YAML version to use when parsing.
 
   Raises:
     YAMLParseError: If the data could not be parsed.
@@ -163,17 +179,22 @@ def load_path(path, round_trip=False, location_value=False):
   """
   try:
     with files.FileReader(path) as fp:
-      return load(fp, file_hint=path, round_trip=round_trip,
-                  location_value=location_value)
+      return load(
+          fp,
+          file_hint=path,
+          round_trip=round_trip,
+          location_value=location_value,
+          version=version)
   except files.Error as e:
     raise FileLoadError(e, f=path)
 
 
-def load_all_path(path):
+def load_all_path(path, version=VERSION_1_1):
   """Loads multiple YAML documents from the given file path.
 
   Args:
     path: str, A file path to open and read from.
+    version: str, YAML version to use when parsing.
 
   Raises:
     YAMLParseError: If the data could not be parsed.
@@ -184,7 +205,7 @@ def load_all_path(path):
   """
   try:
     with files.FileReader(path) as fp:
-      for x in load_all(fp, file_hint=path):
+      for x in load_all(fp, file_hint=path, version=version):
         yield x
   except files.Error as e:
     # EnvironmentError is parent of IOError, OSError and WindowsError.

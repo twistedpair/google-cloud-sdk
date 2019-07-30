@@ -1827,7 +1827,7 @@ def AddHostnameArg(parser):
       '--hostname',
       help="""\
       Specify the hostname of the instance to be created. The specified
-      homename must be RFC1035 compliant. If hostname is not specified, the
+      hostname must be RFC1035 compliant. If hostname is not specified, the
       default hostname is [INSTANCE_NAME].c.[PROJECT_ID].internal when using
       the global DNS, and [INSTANCE_NAME].[ZONE].c.[PROJECT_ID].internal
       when using zonal DNS.

@@ -1251,5 +1251,10 @@ def GKEClusterSelfLink(args):
     raise exceptions.Error(
         'Could not determine cluster location from instance.')
 
-  return '//container.googleapis.com/projects/{}/locations/{}/clusters/{}'.format(
-      project_id, cluster_location, cluster_name)
+  # Trim http prefix.
+  container_endpoint = core_apis.GetEffectiveApiEndpoint(
+      'container', 'v1').replace('https://', '', 1).replace('http://', '', 1)
+  if container_endpoint.endswith('/'):
+    container_endpoint = container_endpoint[:-1]
+  return '//{}/projects/{}/locations/{}/clusters/{}'.format(
+      container_endpoint, project_id, cluster_location, cluster_name)

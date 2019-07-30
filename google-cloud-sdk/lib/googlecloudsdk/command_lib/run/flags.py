@@ -305,7 +305,7 @@ def AddConcurrencyFlag(parser):
   parser.add_argument(
       '--concurrency',
       help='Set the number of concurrent requests allowed per '
-      'instance. A concurrency of 0 or unspecified indicates '
+      'container instance. A concurrency of 0 or unspecified indicates '
       'any number of concurrent requests are allowed. To unset '
       'this field, provide the special value `default`.')
 
@@ -417,6 +417,55 @@ def AddConfigMapsFlags(parser):
       long_name='config map mount paths')
 
 
+def AddLabelsFlags(parser, add_create=True):
+  """Adds update command labels flags to an argparse parser.
+
+  Args:
+    parser: The argparse parser to add the flags to.
+    add_create: bool, If True, add the --labels flag.
+  """
+  if add_create:
+    labels_util.GetCreateLabelsFlag(
+        validate_keys=False, validate_values=False).AddToParser(parser)
+  labels_util.GetUpdateLabelsFlag(
+      '', validate_keys=False, validate_values=False).AddToParser(parser)
+  remove_group = parser.add_mutually_exclusive_group()
+  labels_util.GetClearLabelsFlag().AddToParser(remove_group)
+  labels_util.GetRemoveLabelsFlag('').AddToParser(remove_group)
+
+
+class _ScaleValue(object):
+  """Type for min/max-instaces flag values."""
+
+  def __init__(self, value):
+    self.restore_default = value == 'default'
+    if not self.restore_default:
+      try:
+        self.instance_count = int(value)
+      except  (TypeError, ValueError):
+        raise ArgumentError(
+            'Instance count value %s is not an integer '
+            'or \'default\'.' % value
+        )
+
+      if self.instance_count < 0:
+        raise ArgumentError('Instance count value %s is negative.' % value)
+
+
+def AddScalingFlags(parser):
+  """Add flags for scaling knobs."""
+
+  help_msg = (
+      'The {bound} number of container instances of the Service to run or '
+      '\'default\' to remove any {bound}.')
+  GetClusterArgGroup(parser).add_argument(
+      '--min-instances', type=_ScaleValue,
+      help=help_msg.format(bound='minimum'))
+  parser.add_argument(
+      '--max-instances', type=_ScaleValue,
+      help=help_msg.format(bound='maximum'))
+
+
 def _HasChanges(args, flags):
   """True iff any of the passed flags are set."""
   # hasattr check is to allow the same code to work for release tracks that
@@ -480,6 +529,28 @@ def _GetEnvChanges(args):
     kwargs['clear_others'] = True
 
   return config_changes.EnvVarChanges(**kwargs)
+
+
+def _GetScalingChanges(args):
+  """Returns the list of changes for scaling for given args."""
+  result = []
+  if 'min_instances' in args and args.min_instances is not None:
+    scale_value = args.min_instances
+    if scale_value.restore_default or scale_value.instance_count == 0:
+      result.append(config_changes.DeleteTemplateAnnotationChange(
+          'autoscaling.knative.dev/minScale'))
+    else:
+      result.append(config_changes.SetTemplateAnnotationChange(
+          'autoscaling.knative.dev/minScale', str(scale_value.instance_count)))
+  if 'max_instances' in args and args.max_instances is not None:
+    scale_value = args.max_instances
+    if scale_value.restore_default:
+      result.append(config_changes.DeleteTemplateAnnotationChange(
+          'autoscaling.knative.dev/maxScale'))
+    else:
+      result.append(config_changes.SetTemplateAnnotationChange(
+          'autoscaling.knative.dev/maxScale', str(scale_value.instance_count)))
+  return result
 
 
 def _GetSecretsChanges(args):
@@ -553,6 +624,7 @@ def _CheckCloudSQLApiEnablement():
 def GetConfigurationChanges(args):
   """Returns a list of changes to Configuration, based on the flags set."""
   changes = []
+  changes.extend(_GetScalingChanges(args))
   if _HasEnvChanges(args):
     changes.append(_GetEnvChanges(args))
 
@@ -614,6 +686,11 @@ def GetConfigurationChanges(args):
     changes.append(config_changes.VpcConnectorChange(args.vpc_connector))
   if 'clear_vpc_connector' in args and args.clear_vpc_connector:
     changes.append(config_changes.ClearVpcConnectorChange())
+  if 'connectivity' in args and args.connectivity:
+    if args.connectivity == 'internal':
+      changes.append(config_changes.EndpointVisibilityChange(True))
+    elif args.connectivity == 'external':
+      changes.append(config_changes.EndpointVisibilityChange(False))
 
   return changes
 
@@ -693,15 +770,6 @@ def GetRegion(args, prompt=False):
       # GetRegion
       args.region = region
       return region
-
-
-def GetEndpointVisibility(args):
-  """Return bool for explicitly set connectivity or None if not set."""
-  if args.connectivity == 'internal':
-    return True
-  if args.connectivity == 'external':
-    return False
-  return None
 
 
 def GetAllowUnauthenticated(args, client=None, service_ref=None, prompt=False):
@@ -793,6 +861,12 @@ def VerifyOnePlatformFlags(args):
                'version of Cloud Run. Specify `--platform {platform}` or run '
                '`gcloud config set run/platform {platform}` to work with '
                '{platform_desc}.')
+  if _FlagIsExplicitlySet(args, 'min_instances'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--min-instances',
+            platform='gke',
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['gke']))
 
   if _FlagIsExplicitlySet(args, 'connectivity'):
     raise serverless_exceptions.ConfigurationError(

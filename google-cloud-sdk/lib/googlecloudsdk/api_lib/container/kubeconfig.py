@@ -59,6 +59,10 @@ class Kubeconfig(object):
   def current_context(self):
     return self._data['current-context']
 
+  @property
+  def filename(self):
+    return self._filename
+
   def Clear(self, key):
     self.contexts.pop(key, None)
     self.clusters.pop(key, None)
@@ -83,9 +87,10 @@ class Kubeconfig(object):
 
   @classmethod
   def _Validate(cls, data):
+    """Make sure we have the main fields of a kubeconfig."""
+    if not data:
+      raise Error('empty file')
     try:
-      if not data:
-        raise Error('empty file')
       for key in ('clusters', 'users', 'contexts'):
         if not isinstance(data[key], list):
           raise Error(
@@ -105,6 +110,7 @@ class Kubeconfig(object):
 
   @classmethod
   def LoadOrCreate(cls, filename):
+    """Read in the kubeconfig, and if it doesn't exist create one there."""
     try:
       return cls.LoadFromFile(filename)
     except (Error, IOError) as error:

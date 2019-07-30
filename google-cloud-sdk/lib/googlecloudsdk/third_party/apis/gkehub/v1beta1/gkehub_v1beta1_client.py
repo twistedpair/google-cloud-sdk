@@ -35,12 +35,50 @@ class GkehubV1beta1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_global_connectAgents = self.ProjectsLocationsGlobalConnectAgentsService(self)
     self.projects_locations_global_memberships = self.ProjectsLocationsGlobalMembershipsService(self)
     self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
     self.projects_locations_memberships = self.ProjectsLocationsMembershipsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsGlobalConnectAgentsService(base_api.BaseApiService):
+    """Service class for the projects_locations_global_connectAgents resource."""
+
+    _NAME = u'projects_locations_global_connectAgents'
+
+    def __init__(self, client):
+      super(GkehubV1beta1.ProjectsLocationsGlobalConnectAgentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GenerateManifest(self, request, global_params=None):
+      r"""Generate the manifest for deployment of GKE connect agent.
+
+      Args:
+        request: (GkehubProjectsLocationsGlobalConnectAgentsGenerateManifestRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GenerateConnectAgentManifestResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateManifest')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateManifest.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/global/connectAgents:generateManifest',
+        http_method=u'GET',
+        method_id=u'gkehub.projects.locations.global.connectAgents.generateManifest',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'connectAgent_name', u'connectAgent_namespace', u'connectAgent_proxy', u'version'],
+        relative_path=u'v1beta1/{+parent}:generateManifest',
+        request_field='',
+        request_type_name=u'GkehubProjectsLocationsGlobalConnectAgentsGenerateManifestRequest',
+        response_type_name=u'GenerateConnectAgentManifestResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsGlobalMembershipsService(base_api.BaseApiService):
     """Service class for the projects_locations_global_memberships resource."""

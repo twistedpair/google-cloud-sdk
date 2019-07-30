@@ -51,10 +51,13 @@ class AsymmetricSignResponse(_messages.Message):
   r"""Response message for KeyManagementService.AsymmetricSign.
 
   Fields:
+    name: The resource name of the CryptoKeyVersion used for signing. Check
+      this field to verify that the intended resource was used for signing.
     signature: The created signature.
   """
 
-  signature = _messages.BytesField(1)
+  name = _messages.StringField(1)
+  signature = _messages.BytesField(2)
 
 
 class AuditConfig(_messages.Message):
@@ -1146,7 +1149,8 @@ class EncryptResponse(_messages.Message):
 
   Fields:
     ciphertext: The encrypted data.
-    name: The resource name of the CryptoKeyVersion used in encryption.
+    name: The resource name of the CryptoKeyVersion used in encryption. Check
+      this field to verify that the intended resource was used for encryption.
   """
 
   ciphertext = _messages.BytesField(1)
@@ -1640,6 +1644,8 @@ class PublicKey(_messages.Message):
 
   Fields:
     algorithm: The Algorithm associated with this key.
+    name: The name of the CryptoKeyVersion public key. Provided here for
+      verification.
     pem: The public key, encoded in PEM format. For more information, see the
       [RFC 7468](https://tools.ietf.org/html/rfc7468) sections for [General
       Considerations](https://tools.ietf.org/html/rfc7468#section-2) and
@@ -1694,7 +1700,8 @@ class PublicKey(_messages.Message):
     EC_SIGN_P384_SHA384 = 15
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
-  pem = _messages.StringField(2)
+  name = _messages.StringField(2)
+  pem = _messages.StringField(3)
 
 
 class RestoreCryptoKeyVersionRequest(_messages.Message):

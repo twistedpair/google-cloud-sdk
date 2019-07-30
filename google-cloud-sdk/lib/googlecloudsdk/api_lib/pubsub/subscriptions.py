@@ -88,9 +88,17 @@ class SubscriptionsClient(object):
 
     return self._service.Get(get_req)
 
-  def Create(self, subscription_ref, topic_ref, ack_deadline, push_config=None,
-             retain_acked_messages=None, message_retention_duration=None,
-             labels=None, no_expiration=False, expiration_period=None):
+  def Create(self,
+             subscription_ref,
+             topic_ref,
+             ack_deadline,
+             push_config=None,
+             retain_acked_messages=None,
+             message_retention_duration=None,
+             labels=None,
+             no_expiration=False,
+             expiration_period=None,
+             enable_message_ordering=None):
     """Creates a Subscription.
 
     Args:
@@ -107,6 +115,8 @@ class SubscriptionsClient(object):
       labels (Subscriptions.LabelsValue): The labels for the request.
       no_expiration (bool): Whether or not to set no expiration on subscription.
       expiration_period (str): TTL on expiration_policy.
+      enable_message_ordering (bool): Whether or not to deliver messages with
+        the same ordering key in order.
     Returns:
       Subscription: the created subscription
     """
@@ -119,7 +129,8 @@ class SubscriptionsClient(object):
         labels=labels,
         messageRetentionDuration=message_retention_duration,
         expirationPolicy=self._ExpirationPolicy(no_expiration,
-                                                expiration_period))
+                                                expiration_period),
+        enableMessageOrdering=enable_message_ordering)
 
     return self._service.Create(subscription)
 

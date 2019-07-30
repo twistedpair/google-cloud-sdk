@@ -1008,6 +1008,58 @@ class DataprocV1beta2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Start(self, request, global_params=None):
+      r"""Starts a cluster in a project.
+
+      Args:
+        request: (DataprocProjectsRegionsClustersStartRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Start')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Start.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'dataproc.projects.regions.clusters.start',
+        ordered_params=[u'projectId', u'region', u'clusterName'],
+        path_params=[u'clusterName', u'projectId', u'region'],
+        query_params=[u'clusterUuid', u'requestId'],
+        relative_path=u'v1beta2/projects/{projectId}/regions/{region}/clusters/{clusterName}:start',
+        request_field='',
+        request_type_name=u'DataprocProjectsRegionsClustersStartRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Stop(self, request, global_params=None):
+      r"""Stops a cluster in a project.
+
+      Args:
+        request: (DataprocProjectsRegionsClustersStopRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Stop')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Stop.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'dataproc.projects.regions.clusters.stop',
+        ordered_params=[u'projectId', u'region', u'clusterName'],
+        path_params=[u'clusterName', u'projectId', u'region'],
+        query_params=[u'clusterUuid', u'requestId'],
+        relative_path=u'v1beta2/projects/{projectId}/regions/{region}/clusters/{clusterName}:stop',
+        request_field='',
+        request_type_name=u'DataprocProjectsRegionsClustersStopRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 

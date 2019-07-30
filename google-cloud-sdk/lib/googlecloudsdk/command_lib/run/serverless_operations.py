@@ -29,6 +29,7 @@ from googlecloudsdk.api_lib.run import condition as run_condition
 from googlecloudsdk.api_lib.run import configuration
 from googlecloudsdk.api_lib.run import domain_mapping
 from googlecloudsdk.api_lib.run import global_methods
+from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import metric_names
 from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import route
@@ -41,6 +42,7 @@ from googlecloudsdk.command_lib.run import config_changes as config_changes_mod
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import resource_name_conversion
 from googlecloudsdk.command_lib.run import stages
+from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
@@ -53,9 +55,6 @@ DEFAULT_ENDPOINT_VERSION = 'v1'
 
 
 _NONCE_LENGTH = 10
-# Used to force a new revision, and also to tie a particular request for changes
-# to a particular created revision.
-NONCE_LABEL = 'client.knative.dev/nonce'
 
 # Wait 11 mins for each deployment. This is longer than the server timeout,
 # making it more likely to get a useful error message from the server.
@@ -90,10 +89,9 @@ def Connect(conn_context):
   # connection context so that it does not pick up the api_endpoint_overrides
   # values from the connection context.
   # pylint: disable=protected-access
-  op_client = apis_internal._GetClientInstance(
+  op_client = apis.GetClientInstance(
       conn_context.api_name,
-      conn_context.api_version,
-      ca_certs=conn_context.ca_certs)
+      conn_context.api_version)
   # pylint: enable=protected-access
 
   with conn_context as conn_info:
@@ -104,7 +102,7 @@ def Connect(conn_context):
         # Only check response if not connecting to GKE
         check_response_func=apis.CheckResponseForApiEnablement
         if conn_context.supports_one_platform else None,
-        ca_certs=conn_info.ca_certs)
+        http_client=conn_context.HttpClient())
     # pylint: enable=protected-access
     yield ServerlessOperations(
         client,
@@ -382,7 +380,7 @@ class _NewRevisionForcingChange(config_changes_mod.ConfigChanger):
     self._nonce = nonce
 
   def Adjust(self, resource):
-    resource.template.labels[NONCE_LABEL] = self._nonce
+    resource.template.labels[revision.NONCE_LABEL] = self._nonce
 
 
 def _IsDigest(url):
@@ -425,6 +423,20 @@ class _SwitchToDigestChange(config_changes_mod.ConfigChanger):
     resource.annotations[configuration.USER_IMAGE_ANNOTATION] = (
         self._base_revision.image)
     resource.template.image = self._base_revision.image_digest
+
+
+_CLIENT_NAME_ANNOTATION = 'run.googleapis.com/client-name'
+_CLIENT_VERSION_ANNOTATION = 'run.googleapis.com/client-version'
+
+
+class _SetClientNameAndVersion(config_changes_mod.ConfigChanger):
+  """Sets the client name and version annotations."""
+
+  def Adjust(self, resource):
+    annotations = k8s_object.AnnotationsFromMetadata(resource.MessagesModule(),
+                                                     resource.metadata)
+    annotations[_CLIENT_NAME_ANNOTATION] = 'gcloud'
+    annotations[_CLIENT_VERSION_ANNOTATION] = config.CLOUD_SDK_VERSION
 
 
 class ServerlessOperations(object):
@@ -682,7 +694,7 @@ class ServerlessOperations(object):
     messages = self._messages_module
     request = messages.RunNamespacesRevisionsListRequest(
         parent=namespace_ref.RelativeName(),
-        labelSelector='{} = {}'.format(NONCE_LABEL, nonce))
+        labelSelector='{} = {}'.format(revision.NONCE_LABEL, nonce))
     response = self._client.namespaces_revisions.List(request)
     return [revision.Revision(item, messages) for item in response.items]
 
@@ -710,7 +722,7 @@ class ServerlessOperations(object):
     """
     # Or returns None if not available by nonce & the control plane has not
     # implemented latestCreatedRevisionName on the Service object yet.
-    base_revision_nonce = template.labels.get(NONCE_LABEL, None)
+    base_revision_nonce = template.labels.get(revision.NONCE_LABEL, None)
     base_revision = None
     if base_revision_nonce:
       try:
@@ -744,8 +756,7 @@ class ServerlessOperations(object):
       if base_revision:
         config_changes.append(_SwitchToDigestChange(base_revision))
 
-  def _UpdateOrCreateService(self, service_ref, config_changes, with_code,
-                             private_endpoint=None):
+  def _UpdateOrCreateService(self, service_ref, config_changes, with_code):
     """Apply config_changes to the service. Create it if necessary.
 
     Arguments:
@@ -753,16 +764,15 @@ class ServerlessOperations(object):
       config_changes: list of ConfigChanger to modify the service with
       with_code: bool, True if the config_changes contains code to deploy.
         We can't create the service if we're not deploying code.
-      private_endpoint: bool, True if creating a new Service for
-        Cloud Run on GKE that should only be addressable from within the
-        cluster. False if it should be publicly addressable. None if
-        its existing visibility should remain unchanged.
 
     Returns:
       The Service object we created or modified.
     """
     nonce = _Nonce()
-    config_changes = [_NewRevisionForcingChange(nonce)] + config_changes
+    config_changes = [
+        _NewRevisionForcingChange(nonce),
+        _SetClientNameAndVersion()
+    ] + config_changes
     messages = self._messages_module
     # GET the Service
     serv = self.GetService(service_ref)
@@ -771,14 +781,6 @@ class ServerlessOperations(object):
         if not with_code:
           # Avoid changing the running code by making the new revision by digest
           self._EnsureImageDigest(serv, config_changes)
-
-        if private_endpoint is None:
-          # Don't change the existing service visibility
-          pass
-        elif private_endpoint:
-          serv.labels[service.ENDPOINT_VISIBILITY] = service.CLUSTER_LOCAL
-        elif service.ENDPOINT_VISIBILITY in serv.labels:
-          del serv.labels[service.ENDPOINT_VISIBILITY]
 
         # Revision names must be unique across the namespace.
         # To prevent the revision name being unchanged from the last revision,
@@ -803,8 +805,7 @@ class ServerlessOperations(object):
           raise serverless_exceptions.ServiceNotFoundError(
               'Service [{}] could not be found.'.format(service_ref.servicesId))
         # POST a new Service
-        new_serv = service.Service.New(self._client, service_ref.namespacesId,
-                                       private_endpoint)
+        new_serv = service.Service.New(self._client, service_ref.namespacesId)
         new_serv.name = service_ref.servicesId
         parent = service_ref.Parent().RelativeName()
         for config_change in config_changes:
@@ -823,6 +824,9 @@ class ServerlessOperations(object):
         if (serverless_exceptions.BadImageError.IMAGE_ERROR_FIELD
             in error_payload.field_violations):
           exceptions.reraise(serverless_exceptions.BadImageError(e))
+        elif (serverless_exceptions.MalformedLabelError.LABEL_ERROR_FIELD
+              in error_payload.field_violations):
+          exceptions.reraise(serverless_exceptions.MalformedLabelError(e))
       exceptions.reraise(e)
     except api_exceptions.HttpNotFoundError as e:
       platform = properties.VALUES.run.platform.Get()
@@ -851,10 +855,14 @@ class ServerlessOperations(object):
                       'the current context or the specified context '
                       'is a valid cluster and retry.')
       raise serverless_exceptions.DeploymentFailedError(error_msg)
+    except api_exceptions.HttpError as e:
+      k8s_error = serverless_exceptions.KubernetesExceptionParser(e)
+      raise serverless_exceptions.KubernetesError('Error{}:\n{}\n'.format(
+          's' if len(k8s_error.causes) > 1 else '',
+          '\n\n'.join([c['message'] for c in k8s_error.causes])))
 
   def ReleaseService(self, service_ref, config_changes, tracker=None,
-                     asyn=False, private_endpoint=None,
-                     allow_unauthenticated=None):
+                     asyn=False, allow_unauthenticated=None):
     """Change the given service in prod using the given config_changes.
 
     Ensures a new revision is always created, even if the spec of the revision
@@ -865,10 +873,6 @@ class ServerlessOperations(object):
       config_changes: list, objects that implement Adjust().
       tracker: StagedProgressTracker, to report on the progress of releasing.
       asyn: bool, if True, release asyncronously
-      private_endpoint: bool, True if creating a new Service for
-        Cloud Run on GKE that should only be addressable from within the
-        cluster. False if it should be publicly addressable. None if
-        its existing visibility should remain unchanged.
       allow_unauthenticated: bool, True if creating a hosted Cloud Run
         service which should also have its IAM policy set to allow
         unauthenticated access. False if removing the IAM policy to allow
@@ -881,7 +885,7 @@ class ServerlessOperations(object):
     with_image = any(
         isinstance(c, config_changes_mod.ImageChange) for c in config_changes)
     self._UpdateOrCreateService(
-        service_ref, config_changes, with_image, private_endpoint)
+        service_ref, config_changes, with_image)
 
     if allow_unauthenticated is not None:
       try:
@@ -989,16 +993,15 @@ class ServerlessOperations(object):
         mapping = waiter.PollUntilDone(
             DomainMappingResourceRecordPoller(self), domain_mapping_ref)
       ready = mapping.conditions.get('Ready')
-      records = getattr(mapping.status, 'resourceRecords', None)
       message = None
       if ready and ready.get('message'):
         message = ready['message']
-      if not records:
+      if not mapping.records:
         raise serverless_exceptions.DomainMappingCreationError(
             message or 'Could not create domain mapping.')
       if message:
         log.status.Print(message)
-      return records
+      return mapping
 
     return domain_mapping.DomainMapping(response, messages)
 
