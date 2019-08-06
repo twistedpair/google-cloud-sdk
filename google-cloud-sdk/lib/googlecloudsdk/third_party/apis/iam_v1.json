@@ -739,7 +739,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of the role.\n\nWhen Role is used in CreateRole, the role name must not be set.\n\nWhen Role is used in output and other input such as UpdateRole, the role\nname is the complete path, e.g., roles\/logging.viewer for curated roles\nand organizations\/{ORGANIZATION_ID}\/roles\/logging.viewer for custom roles.",
+          "description": "The name of the role.\n\nWhen Role is used in CreateRole, the role name must not be set.\n\nWhen Role is used in output and other input such as UpdateRole, the role\nname is the complete path, e.g., roles\/logging.viewer for predefined roles\nand organizations\/{ORGANIZATION_ID}\/roles\/logging.viewer for custom roles.",
           "type": "string"
         },
         "title": {

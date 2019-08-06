@@ -548,7 +548,9 @@ def CreatePersistentCreateDiskMessages(compute_client,
                                        instance_ref, enable_kms=False,
                                        enable_snapshots=False,
                                        container_mount_disk=None,
-                                       resource_policy=False):
+                                       resource_policy=False,
+                                       enable_source_snapshot_csek=False,
+                                       enable_image_csek=False):
   """Returns a list of AttachedDisk messages for newly creating disks.
 
   Args:
@@ -562,17 +564,23 @@ def CreatePersistentCreateDiskMessages(compute_client,
              * disk-size - the size of the disk,
              * disk-type - the type of the disk (HDD or SSD),
              * image - the name of the image to initialize from,
+             * image-csek-required - the name of the CSK protected image,
              * image-family - the image family name,
              * image-project - the project name that has the image,
              * auto-delete - whether disks is deleted when VM is deleted,
              * device-name - device name on VM,
              * source-snapshot - the snapshot to initialize from,
+             * source-snapshot-csek-required - CSK protected snapshot,
              * disk-resource-policy - resource policies applied to disk.
+             * enable_source_snapshot_csek - CSK file for snapshot,
+             * enable_image_csek - CSK file for image
     instance_ref: reference to the instance that will own the new disks.
     enable_kms: True if KMS keys are supported for the disk.
     enable_snapshots: True if snapshot initialization is supported for the disk.
     container_mount_disk: list of disks to be mounted to container, if any.
     resource_policy: True if resource-policies are enabled
+    enable_source_snapshot_csek: True if snapshot CSK files are enabled
+    enable_image_csek: True if image CSK files are enabled
 
   Returns:
     list of API messages for attached disks
@@ -660,6 +668,16 @@ def CreatePersistentCreateDiskMessages(compute_client,
       policies = disk.get('disk-resource-policy')
       if policies:
         initialize_params.resourcePolicies = policies
+
+    if enable_image_csek:
+      image_key_file = disk.get('image_csek')
+      if image_key_file:
+        initialize_params.imageKeyFile = image_key_file
+
+    if enable_source_snapshot_csek:
+      snapshot_key_file = disk.get('source_snapshot_csek')
+      if snapshot_key_file:
+        initialize_params.snapshotKeyFile = snapshot_key_file
 
     device_name = GetDiskDeviceName(disk, name, container_mount_disk)
     create_disk = messages.AttachedDisk(

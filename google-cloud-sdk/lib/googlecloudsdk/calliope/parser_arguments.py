@@ -215,7 +215,7 @@ class ArgumentInterceptor(Argument):
   def concepts(self):
     return self.data.concepts
 
-  def add_concepts(self, handler):
+  def add_concepts(self, handler):  # pylint: disable=invalid-name
     # RuntimeParser is the v2 concepts handler.
     if isinstance(handler, concept_managers.RuntimeParser):
       self.data.concepts = handler
@@ -451,6 +451,13 @@ class ArgumentInterceptor(Argument):
     self.arguments.append(action)
     return action
 
+  def _FlagArgExists(self, option_string):
+    """If flag with the given option_string exists."""
+    for action in self.flag_args:
+      if option_string in action.option_strings:
+        return True
+    return False
+
   def AddFlagActionFromAncestors(self, action):
     """Add a flag action to this parser, but segregate it from the others.
 
@@ -460,6 +467,12 @@ class ArgumentInterceptor(Argument):
     Args:
       action: argparse.Action, The action for the flag being added.
     """
+    # go/gcloud-project-flag-overwritable
+    # Do not add global --project if command already has --project
+    # argument in parser
+    if self._FlagArgExists('--project') and (
+        '--project' in action.option_strings):
+      return
     # pylint:disable=protected-access, simply no other way to do this.
     self.parser._add_action(action)
     # explicitly do this second, in case ._add_action() fails.

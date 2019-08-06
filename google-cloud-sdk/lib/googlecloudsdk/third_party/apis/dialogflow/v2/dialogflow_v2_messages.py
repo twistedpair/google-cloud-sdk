@@ -2281,7 +2281,7 @@ class GoogleCloudDialogflowV2QueryResult(_messages.Message):
       preferred.
     intent: The intent that matched the conversational query. Some, not all
       fields are filled in this message, including but not limited to: `name`,
-      `display_name` and `webhook_state`.
+      `display_name`, `end_interaction` and `is_fallback`.
     intentDetectionConfidence: The intent detection confidence. Values range
       from 0.0 (completely uncertain) to 1.0 (completely certain). This value
       is for informational purpose only and is only used to help match the
@@ -4239,7 +4239,7 @@ class GoogleCloudDialogflowV2beta1QueryResult(_messages.Message):
       preferred.
     intent: The intent that matched the conversational query. Some, not all
       fields are filled in this message, including but not limited to: `name`,
-      `display_name` and `webhook_state`.
+      `display_name`, `end_interaction` and `is_fallback`.
     intentDetectionConfidence: The intent detection confidence. Values range
       from 0.0 (completely uncertain) to 1.0 (completely certain). This value
       is for informational purpose only and is only used to help match the

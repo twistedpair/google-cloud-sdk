@@ -5522,8 +5522,15 @@ class GoogleCloudVisionV1p4beta1ImageProperties(_messages.Message):
 class GoogleCloudVisionV1p4beta1ImageQuality(_messages.Message):
   r"""Stores image quality scores, could be aesthetic quality or technical
   quality.
+
+  Fields:
+    qualityScore: A score representing the aesthetic/technical quality of the
+      image. The score is in range [0, 1]. Higher value corresponds to more
+      professional looking photos. 0 means the image looks very bad, 1 means
+      the image with very high quality.
   """
 
+  qualityScore = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudVisionV1p4beta1ImportProductSetsResponse(_messages.Message):

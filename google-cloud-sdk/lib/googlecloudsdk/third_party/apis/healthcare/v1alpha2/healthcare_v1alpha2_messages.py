@@ -3748,14 +3748,10 @@ class TextConfig(_messages.Message):
   r"""A TextConfig object.
 
   Fields:
-    experimentalConfig: Experimental de-identification config to use. For
-      internal use only. If not specified, it is ignored and standard DLP is
-      used.
     transformations: The transformations to apply to the detected data.
   """
 
-  experimentalConfig = _messages.StringField(1)
-  transformations = _messages.MessageField('InfoTypeTransformation', 2, repeated=True)
+  transformations = _messages.MessageField('InfoTypeTransformation', 1, repeated=True)
 
 
 class ValidationConfig(_messages.Message):

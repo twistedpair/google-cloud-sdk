@@ -38,6 +38,7 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import exceptions as exceptions_util
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.run import config_changes as config_changes_mod
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import resource_name_conversion
@@ -60,7 +61,7 @@ _NONCE_LENGTH = 10
 # making it more likely to get a useful error message from the server.
 MAX_WAIT_MS = 660000
 
-ALLOW_UNAUTH_POLICY_BINDING_MEMBERS = ['allUsers']
+ALLOW_UNAUTH_POLICY_BINDING_MEMBER = 'allUsers'
 ALLOW_UNAUTH_POLICY_BINDING_ROLE = 'roles/run.invoker'
 
 
@@ -756,7 +757,8 @@ class ServerlessOperations(object):
       if base_revision:
         config_changes.append(_SwitchToDigestChange(base_revision))
 
-  def _UpdateOrCreateService(self, service_ref, config_changes, with_code):
+  def _UpdateOrCreateService(
+      self, service_ref, config_changes, with_code, serv):
     """Apply config_changes to the service. Create it if necessary.
 
     Arguments:
@@ -764,18 +766,14 @@ class ServerlessOperations(object):
       config_changes: list of ConfigChanger to modify the service with
       with_code: bool, True if the config_changes contains code to deploy.
         We can't create the service if we're not deploying code.
+      serv: service.Service, For update the Service to update and for
+        create None.
 
     Returns:
       The Service object we created or modified.
     """
-    nonce = _Nonce()
-    config_changes = [
-        _NewRevisionForcingChange(nonce),
-        _SetClientNameAndVersion()
-    ] + config_changes
     messages = self._messages_module
-    # GET the Service
-    serv = self.GetService(service_ref)
+    config_changes = [_SetClientNameAndVersion()] + config_changes
     try:
       if serv:
         if not with_code:
@@ -861,6 +859,32 @@ class ServerlessOperations(object):
           's' if len(k8s_error.causes) > 1 else '',
           '\n\n'.join([c['message'] for c in k8s_error.causes])))
 
+  def SetTraffic(self, service_ref, config_changes, tracker, asyn, is_managed):
+    """Set traffic splits for service."""
+    if tracker is None:
+      tracker = progress_tracker.NoOpStagedProgressTracker(
+          stages.ServiceStages(False),
+          interruptable=True,
+          abortde_message='aborted')
+    serv = self.GetService(service_ref)
+    if not serv:
+      raise serverless_exceptions.ServiceNotFoundError(
+          'Service [{}] could not be found.'.format(service_ref.servicesId))
+
+    if not serv.spec.template:
+      if is_managed:
+        raise serverless_exceptions.UnsupportedOperationError(
+            'Your provider does not support setting traffic for this service.')
+      else:
+        raise serverless_exceptions.UnsupportedOperationError(
+            'You must upgrade your cluster to version 0.61 or greater '
+            'to set traffic.')
+    self._UpdateOrCreateService(service_ref, config_changes, False, serv)
+
+    if not asyn:
+      getter = functools.partial(self.GetService, service_ref)
+      self.WaitForCondition(ServiceConditionPoller(getter, tracker))
+
   def ReleaseService(self, service_ref, config_changes, tracker=None,
                      asyn=False, allow_unauthenticated=None):
     """Change the given service in prod using the given config_changes.
@@ -884,15 +908,19 @@ class ServerlessOperations(object):
           interruptable=True, aborted_message='aborted')
     with_image = any(
         isinstance(c, config_changes_mod.ImageChange) for c in config_changes)
+    config_changes = [
+        _NewRevisionForcingChange(_Nonce()),
+    ] + config_changes
+    serv = self.GetService(service_ref)
     self._UpdateOrCreateService(
-        service_ref, config_changes, with_image)
+        service_ref, config_changes, with_image, serv)
 
     if allow_unauthenticated is not None:
       try:
         tracker.StartStage(stages.SERVICE_IAM_POLICY_SET)
         tracker.UpdateStage(stages.SERVICE_IAM_POLICY_SET, '')
         self.AddOrRemoveIamPolicyBinding(service_ref, allow_unauthenticated,
-                                         ALLOW_UNAUTH_POLICY_BINDING_MEMBERS,
+                                         ALLOW_UNAUTH_POLICY_BINDING_MEMBER,
                                          ALLOW_UNAUTH_POLICY_BINDING_ROLE)
         tracker.CompleteStage(stages.SERVICE_IAM_POLICY_SET)
       except api_exceptions.HttpError:
@@ -1043,7 +1071,7 @@ class ServerlessOperations(object):
     return response
 
   def AddOrRemoveIamPolicyBinding(self, service_ref, add_binding=True,
-                                  members=None, role=None):
+                                  member=None, role=None):
     """Add or remove the given IAM policy binding to the provided service.
 
     If no members or role are provided, set the IAM policy to the current IAM
@@ -1053,7 +1081,7 @@ class ServerlessOperations(object):
     Args:
       service_ref: str, The service to which to add the IAM policy.
       add_binding: bool, Whether to add to or remove from the IAM policy.
-      members: [str], The users for which the binding applies.
+      member: str, One of the users for which the binding applies.
       role: str, The role to grant the provided members.
 
     Returns:
@@ -1063,23 +1091,14 @@ class ServerlessOperations(object):
     oneplatform_service = resource_name_conversion.K8sToOnePlatform(
         service_ref, self._region)
     policy = self._GetIamPolicy(oneplatform_service)
-    # Don't modify bindings if not members or roles provided
-    if members and role:
-      binding = messages.Binding(members=members, role=role)
+    # Don't modify bindings if not member or roles provided
+    if member and role:
       if add_binding:
-        policy.bindings.append(binding)
-      else:
-        # Remove bindings that exactly match the provided members and role
-        policy.bindings = [b for b in policy.bindings if b != binding]
+        iam_util.AddBindingToIamPolicy(messages.Binding, policy, member, role)
+      elif iam_util.BindingInPolicy(policy, member, role):
+        iam_util.RemoveBindingFromIamPolicy(policy, member, role)
     request = messages.RunProjectsLocationsServicesSetIamPolicyRequest(
         resource=str(oneplatform_service),
         setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy))
     result = self._op_client.projects_locations_services.SetIamPolicy(request)
     return result
-
-  def CanSetIamPolicyBinding(self, service_ref):
-    try:
-      self.AddOrRemoveIamPolicyBinding(service_ref)
-      return True
-    except api_exceptions.HttpError:
-      return False

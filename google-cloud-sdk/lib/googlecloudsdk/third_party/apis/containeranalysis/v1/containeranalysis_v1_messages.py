@@ -993,6 +993,9 @@ class Detail(_messages.Message):
     packageType: The type of package; whether native or non native (e.g., ruby
       gems, node.js packages, etc.).
     severityName: The distro assigned severity of this vulnerability.
+    sourceUpdateTime: The time this information was last changed at the
+      source. This is an upstream timestamp from the underlying information
+      source - e.g. Ubuntu security tracker.
   """
 
   affectedCpeUri = _messages.StringField(1)
@@ -1006,6 +1009,7 @@ class Detail(_messages.Message):
   isObsolete = _messages.BooleanField(9)
   packageType = _messages.StringField(10)
   severityName = _messages.StringField(11)
+  sourceUpdateTime = _messages.StringField(12)
 
 
 class DiscoveryNote(_messages.Message):
@@ -2269,6 +2273,9 @@ class VulnerabilityNote(_messages.Message):
     details: Details of all known distros and packages affected by this
       vulnerability.
     severity: The note provider assigned severity of this vulnerability.
+    sourceUpdateTime: The time this information was last changed at the
+      source. This is an upstream timestamp from the underlying information
+      source - e.g. Ubuntu security tracker.
     windowsDetails: Windows details get their own format because the
       information format and model don't match a normal detail. Specifically
       Windows updates are done as patches, thus Windows vulnerabilities really
@@ -2298,7 +2305,8 @@ class VulnerabilityNote(_messages.Message):
   cvssV3 = _messages.MessageField('CVSSv3', 2)
   details = _messages.MessageField('Detail', 3, repeated=True)
   severity = _messages.EnumField('SeverityValueValuesEnum', 4)
-  windowsDetails = _messages.MessageField('WindowsDetail', 5, repeated=True)
+  sourceUpdateTime = _messages.StringField(5)
+  windowsDetails = _messages.MessageField('WindowsDetail', 6, repeated=True)
 
 
 class VulnerabilityOccurrence(_messages.Message):

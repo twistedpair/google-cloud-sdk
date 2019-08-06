@@ -825,26 +825,25 @@ class ManagedZoneDnsSecConfig(_messages.Message):
   r"""A ManagedZoneDnsSecConfig object.
 
   Enums:
-    NonExistenceValueValuesEnum: Specifies the mechanism used to provide
-      authenticated denial-of-existence responses. Can only be changed while
-      state is OFF.
+    NonExistenceValueValuesEnum: Specifies the mechanism for authenticated
+      denial-of-existence responses. Can only be changed while the state is
+      OFF.
     StateValueValuesEnum: Specifies whether DNSSEC is enabled, and what mode
       it is in.
 
   Fields:
-    defaultKeySpecs: Specifies parameters that will be used for generating
-      initial DnsKeys for this ManagedZone. Can only be changed while state is
-      OFF.
+    defaultKeySpecs: Specifies parameters for generating initial DnsKeys for
+      this ManagedZone. Can only be changed while the state is OFF.
     kind: Identifies what kind of resource this is. Value: the fixed string
       "dns#managedZoneDnsSecConfig".
-    nonExistence: Specifies the mechanism used to provide authenticated
-      denial-of-existence responses. Can only be changed while state is OFF.
+    nonExistence: Specifies the mechanism for authenticated denial-of-
+      existence responses. Can only be changed while the state is OFF.
     state: Specifies whether DNSSEC is enabled, and what mode it is in.
   """
 
   class NonExistenceValueValuesEnum(_messages.Enum):
-    r"""Specifies the mechanism used to provide authenticated denial-of-
-    existence responses. Can only be changed while state is OFF.
+    r"""Specifies the mechanism for authenticated denial-of-existence
+    responses. Can only be changed while the state is OFF.
 
     Values:
       nsec: <no description>
@@ -940,10 +939,11 @@ class ManagedZonePeeringConfigTargetNetwork(_messages.Message):
   r"""A ManagedZonePeeringConfigTargetNetwork object.
 
   Fields:
-    deactivateTime: If this zone has been deactivated (possibly because the
-      producer network it targeted was deleted), the time at which it was
-      deactivated. If the peering connection is still active, this will be the
-      empty string. This is in RFC3339 text format. Output only.
+    deactivateTime: The time at which the zone was deactivated, in RFC 3339
+      date-time format. An empty string indicates that the peering connection
+      is active. The producer network can deactivate a zone. The zone is
+      automatically deactivated if the producer network that the zone targeted
+      is deleted. Output only.
     kind: Identifies what kind of resource this is. Value: the fixed string
       "dns#managedZonePeeringConfigTargetNetwork".
     networkUrl: The fully qualified URL of the VPC network to forward queries

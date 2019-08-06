@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import collections
 import os
 import re
 
@@ -32,6 +33,7 @@ from googlecloudsdk.command_lib.functions.deploy import env_vars_util
 from googlecloudsdk.command_lib.run import config_changes
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import pretty_print
+from googlecloudsdk.command_lib.run import resourcemanager_operations
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.command_lib.util.args import repeated
@@ -48,27 +50,27 @@ _VISIBILITY_MODES = {
     'external': 'Visible from outside the cluster.',
 }
 
-_PLATFORMS = {
-    'managed': 'Fully managed version of Cloud Run. Use with the `--region` '
-               'flag or set the [run/region] property to specify a Cloud Run '
-               'region.',
-    'gke': 'Cloud Run on Google Kubernetes Engine. Use with the `--cluster` '
-           'and `--cluster-location` flags or set the [run/cluster] and '
-           '[run/cluster_location] properties to specify a cluster in a given '
-           'zone.'
-}
+_PLATFORMS = collections.OrderedDict([
+    ('managed', 'Fully managed version of Cloud Run. Use with the `--region` '
+                'flag or set the [run/region] property to specify a Cloud Run '
+                'region.'),
+    ('gke', 'Cloud Run on Google Kubernetes Engine. Use with the `--cluster` '
+            'and `--cluster-location` flags or set the [run/cluster] and '
+            '[run/cluster_location] properties to specify a cluster in a given '
+            'zone.'),
+])
 
-_PLATFORMS_ALPHA = {
-    'kubernetes': 'Use a Knative-compatible kubernetes cluster. Use with the '
-                  '`--kubeconfig` and `--context` flags to specify a '
-                  'kubeconfig file and the context for connecting.'
-}
-_PLATFORMS_ALPHA.update(_PLATFORMS)
+_PLATFORMS_ALPHA = _PLATFORMS.copy()
+_PLATFORMS_ALPHA.update(collections.OrderedDict([
+    ('kubernetes', 'Use a Knative-compatible kubernetes cluster. Use with the '
+                   '`--kubeconfig` and `--context` flags to specify a '
+                   'kubeconfig file and the context for connecting.'),
+]))
 
 _PLATFORM_SHORT_DESCRIPTIONS = {
-    'managed': 'the managed version of Cloud Run',
+    'managed': 'Cloud Run (fully managed)',
     'gke': 'Cloud Run on GKE',
-    'kubernetes': 'a Kubernetes cluster'
+    'kubernetes': 'a Kubernetes cluster',
 }
 
 _DEFAULT_KUBECONFIG_PATH = '~/.kube/config'
@@ -82,22 +84,11 @@ class KubeconfigError(exceptions.Error):
   pass
 
 
-def _AddSourceArg(parser):
-  """Add a source resource arg."""
-  parser.add_argument(
-      '--source',
-      # TODO(b/110538411): re-expose source arg when it's time.
-      hidden=True,
-      help="""\
-      The app source. Defaults to the working directory. May be a GCS bucket,
-      Google source code repository, or directory on the local filesystem.
-      """)
-
-
-def _AddImageArg(parser):
+def AddImageArg(parser):
   """Add an image resource arg."""
   parser.add_argument(
       '--image',
+      required=True,
       help='Name of the container image to deploy (e.g. '
       '`gcr.io/cloudrun/hello:latest`).')
 
@@ -166,7 +157,7 @@ def AddAsyncFlag(parser):
       '--async',
       default=False,
       action='store_true',
-      help='True to deploy asynchronously.')
+      help='True to return immediately without waiting for success.')
 
 
 def AddEndpointVisibilityEnum(parser):
@@ -185,11 +176,6 @@ def AddServiceFlag(parser):
       '--service',
       required=False,
       help='Limit matched revisions to the given service.')
-
-
-def AddSourceRefFlags(parser):
-  """Add the image and source args."""
-  _AddImageArg(parser)
 
 
 def AddRegionArg(parser):
@@ -224,6 +210,65 @@ def AddFunctionArg(parser):
       Specifies that the deployed object is a function. If a value is
       provided, that value is used as the entrypoint.
       """)
+
+
+def AddSetTrafficFlags(parser):
+  """Add flags for setting a traffic assignments for a service."""
+
+  @staticmethod
+  def TrafficTargetKey(key):
+    return key
+
+  @staticmethod
+  def TrafficPercentageValue(value):
+    """Type validation for traffic percentage flag values."""
+    try:
+      result = int(value)
+    except  (TypeError, ValueError):
+      raise ArgumentError(
+          'Traffic percentage value %s is not an integer.' % value
+      )
+
+    if result < 0 or result > 100:
+      raise ArgumentError(
+          'Traffic percentage value %s is not between 0 and 100.' % value
+      )
+    return result
+
+  group = GetGkeArgGroup(parser).add_mutually_exclusive_group()
+
+  group.add_argument(
+      '--to-revision',
+      metavar='REVISION-NAME=PERCENTAGE',
+      action=arg_parsers.UpdateAction,
+      type=arg_parsers.ArgDict(
+          key_type=TrafficTargetKey.__func__,
+          value_type=TrafficPercentageValue.__func__),
+      help='Comma separated list of traffic assignments in the form '
+      'REVISION-NAME=PERCENTAGE. REVISION-NAME must be the name for a '
+      'revision for the service as returned by \'gcloud beta run list '
+      'revisions\'. PERCENTAGE must be an integer percentage between '
+      '0 and 100 inclusive.  Ex service-nw9hs=10,service-nw9hs=20 '
+      'Up to 100 percent of traffic may be assigned. If 100 percent '
+      'of traffic is assigned,  the Service traffic is updated as '
+      'specified. If under 100 percent of traffic is assigned, the '
+      'Service traffic is updated as specified for revisions with '
+      'assignments and traffic is scaled up or down down proportionally '
+      'as needed for revision that are currently serving traffic but that do '
+      'not have new assignments. For example assume revision-1 is serving '
+      '40 percent of traffic and revision-2 is serving 60 percent. If '
+      'revision-1 is assigned 45 percent of traffic and no assignment is '
+      'made for revision-2, the service is updated with revsion-1 assigned '
+      '45 percent of traffic and revision-2 scaled down to 55 percent.')
+
+  group.add_argument(
+      '--to-latest',
+      default=False,
+      action='store_true',
+      help='True to assign 100 percent of traffic to the \'latest\' '
+      'revision of this service. Note that when a new revision is '
+      'created, it will become the \'latest\' and traffic will be '
+      'directed to it. Defaults to False.')
 
 
 def AddCloudSQLFlags(parser):
@@ -466,11 +511,29 @@ def AddScalingFlags(parser):
       help=help_msg.format(bound='maximum'))
 
 
+def AddCommandFlag(parser):
+  """Add flags for specifying container's startup command."""
+  parser.add_argument(
+      '--command',
+      help='Entrypoint for the container image. If not specified, the '
+      'container image\'s default Entrypoint is run. '
+      'To reset this field to its default, pass an empty string.')
+
+
+def AddArgsFlag(parser):
+  """Add flags for specifying container's startup args."""
+  parser.add_argument(
+      '--args',
+      help='Arguments passed to the command run by the container '
+      'image. If not specified and no \'--command\' is provided, the container '
+      'image\'s default Cmd is used. Otherwise, if not specified, no arguments '
+      'are passed. '
+      'To reset this field to its default, pass an empty string.')
+
+
 def _HasChanges(args, flags):
   """True iff any of the passed flags are set."""
-  # hasattr check is to allow the same code to work for release tracks that
-  # don't have the args at all yet.
-  return any(hasattr(args, flag) and args.IsSpecified(flag) for flag in flags)
+  return any(_FlagIsExplicitlySet(args, flag) for flag in flags)
 
 
 def _HasEnvChanges(args):
@@ -511,6 +574,12 @@ def _HasConfigMapsChanges(args):
       'clear_config_maps'
   ]
   return _HasChanges(args, config_maps_flags)
+
+
+def _HasTrafficChanges(args):
+  """True iff any of the traffic flags are set."""
+  traffic_flags = ['to_revision', 'to_latest']
+  return _HasChanges(args, traffic_flags)
 
 
 def _GetEnvChanges(args):
@@ -621,12 +690,22 @@ def _CheckCloudSQLApiEnablement():
   PromptToEnableApi(_CLOUD_SQL_ADMIN_API_SERVICE_TOKEN)
 
 
+def _GetTrafficChanges(args):
+  """Returns a changes for traffic assignment based on the flags."""
+  new_percentages = args.to_revision if args.to_revision else {}
+  new_latest_percentage = 100 if args.to_latest else None
+  return config_changes.TrafficChanges(new_percentages, new_latest_percentage)
+
+
 def GetConfigurationChanges(args):
   """Returns a list of changes to Configuration, based on the flags set."""
   changes = []
   changes.extend(_GetScalingChanges(args))
   if _HasEnvChanges(args):
     changes.append(_GetEnvChanges(args))
+
+  if _HasTrafficChanges(args):
+    changes.append(_GetTrafficChanges(args))
 
   if _HasCloudSQLChanges(args):
     region = GetRegion(args)
@@ -691,6 +770,12 @@ def GetConfigurationChanges(args):
       changes.append(config_changes.EndpointVisibilityChange(True))
     elif args.connectivity == 'external':
       changes.append(config_changes.EndpointVisibilityChange(False))
+  if 'command' in args and args.command is not None:
+    # Allow passing an empty string here to reset the field
+    changes.append(config_changes.ContainerCommandChange(args.command))
+  if 'args' in args and args.args is not None:
+    # Allow passing an empty string here to reset the field
+    changes.append(config_changes.ContainerArgsChange(args.args))
 
   return changes
 
@@ -772,7 +857,7 @@ def GetRegion(args, prompt=False):
       return region
 
 
-def GetAllowUnauthenticated(args, client=None, service_ref=None, prompt=False):
+def GetAllowUnauthenticated(args, service_ref=None, prompt=False):
   """Return bool for the explicit intent to allow unauth invocations or None.
 
   If --[no-]allow-unauthenticated is set, return that value. If not set,
@@ -781,8 +866,6 @@ def GetAllowUnauthenticated(args, client=None, service_ref=None, prompt=False):
 
   Args:
     args: Namespace, The args namespace
-    client: from googlecloudsdk.command_lib.run import serverless_operations
-      serverless_operations.ServerlessOperations object
     service_ref: service resource reference (e.g. args.CONCEPTS.service.Parse())
     prompt: bool, whether to attempt to prompt.
 
@@ -793,11 +876,8 @@ def GetAllowUnauthenticated(args, client=None, service_ref=None, prompt=False):
     return args.allow_unauthenticated
 
   if prompt:
-    if client is None or service_ref is None:
-      raise ValueError(
-          'A client and service reference are required for determining if the '
-          'service\'s IAM policy binding can be modified.')
-    if client.CanSetIamPolicyBinding(service_ref):
+    project = properties.VALUES.core.project.Get(required=True)
+    if resourcemanager_operations.CanSetProjectIamPolicyBinding(project):
       return console_io.PromptContinue(
           prompt_string=('Allow unauthenticated invocations '
                          'to [{}]'.format(service_ref.servicesId)),
@@ -852,6 +932,8 @@ def GetKubeconfig(args):
 
 def _FlagIsExplicitlySet(args, flag):
   """Return True if --flag is explicitly passed by the user."""
+  # hasattr check is to allow the same code to work for release tracks that
+  # don't have the args at all yet.
   return hasattr(args, flag) and args.IsSpecified(flag)
 
 
@@ -903,6 +985,20 @@ def VerifyOnePlatformFlags(args):
             platform='gke',
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['gke']))
 
+  if _HasSecretsChanges(args):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--[update|set|remove|clear]-secrets',
+            platform='gke',
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['gke']))
+
+  if _HasConfigMapsChanges(args):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--[update|set|remove|clear]-config-maps',
+            platform='gke',
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['gke']))
+
   if _FlagIsExplicitlySet(args, 'kubeconfig'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
@@ -914,6 +1010,20 @@ def VerifyOnePlatformFlags(args):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--context',
+            platform='kubernetes',
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['kubernetes']))
+
+  if _FlagIsExplicitlySet(args, 'to_revision'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--to-revision',
+            platform='kubernetes',
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['kubernetes']))
+
+  if _FlagIsExplicitlySet(args, 'to_latest'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--to-latest',
             platform='kubernetes',
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['kubernetes']))
 
@@ -1056,12 +1166,12 @@ def GetPlatform(args):
   choices = args.GetFlagArgument('platform').choices_help
   if platform is None:
     if console_io.CanPrompt():
-      platforms = sorted(choices.keys())
-      idx = console_io.PromptChoice(
-          platforms,
+      platform_descs = [_PLATFORM_SHORT_DESCRIPTIONS[k] for k in choices]
+      index = console_io.PromptChoice(
+          platform_descs,
           message='Please choose a target platform:',
           cancel_option=True)
-      platform = platforms[idx]
+      platform = list(choices.keys())[index]
       # Set platform so we don't re-prompt on future calls to this method
       properties.VALUES.run.platform.Set(platform)
       log.status.Print(
@@ -1080,6 +1190,8 @@ def GetPlatform(args):
     VerifyOnePlatformFlags(args)
   elif platform == 'gke':
     VerifyGKEFlags(args)
+  elif platform == 'kubernetes':
+    VerifyKubernetesFlags(args)
   else:
     raise ArgumentError(
         'Invalid target platform specified: [{}].\n'

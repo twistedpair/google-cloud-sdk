@@ -140,13 +140,20 @@ class Poller(waiter.OperationPoller):
 
 def AddFolderAndOrgArgs(parser, noun, verb):
   parent_resource_group = parser.add_group(
-      help='The scope of the {}.'.format(noun), mutex=True)
+      help='The scope of the {} which defaults to project if unspecified.'
+      .format(noun),
+      mutex=True)
   parent_resource_group.add_argument(
       '--folder', type=str, help='The folder of the {} {}.'.format(noun, verb))
   parent_resource_group.add_argument(
       '--organization',
       type=str,
       help='The organization of the {} {}.'.format(noun, verb))
+
+
+def GetGuestPolicyUriPath(parent_type, parent_name, policy_id):
+  """Return the URI path of an osconfig guest policy."""
+  return '/'.join([parent_type, parent_name, 'guestPolicies', policy_id])
 
 
 def GetResourceAndUpdateFieldsFromFile(file_path, resource_message_type):

@@ -464,14 +464,20 @@ def AddSessionAffinity(parser, target_pools=False, hidden=False):
     choices.update({
         'GENERATED_COOKIE': (
             '(Applicable if `--load-balancing-scheme` is '
-            '`INTERNAL_SELF_MANAGED` or `EXTERNAL`) '
-            'If the `--load-balancing-scheme` is `EXTERNAL`, routes '
-            'requests to backend VMs or endpoints in a NEG, based on the '
-            'contents of the "GCLB" cookie set by the load balancer. Only '
-            'applicable when --protocol is HTTP, HTTPS, or HTTP2. '
-            'If the `--load-balancing-scheme` is `INTERNAL_SELF_MANAGED`, '
-            'routes requests to backend VMs or endpoints in a NEG, '
-            'based on the contents of the a cookie set by Traffic Director.'),
+            '`INTERNAL_MANAGED`, `INTERNAL_SELF_MANAGED`, or `EXTERNAL`) '
+            ' If the `--load-balancing-scheme` is `EXTERNAL`, routes '
+            ' requests to backend VMs or endpoints in a NEG, based on the '
+            ' contents of the `GCLB` cookie set by the load balancer. Only '
+            ' applicable when `--protocol` is HTTP, HTTPS, or HTTP2. If the '
+            ' `--load-balancing-scheme` is `INTERNAL_MANAGED` or '
+            ' `INTERNAL_SELF_MANAGED`, routes requests to backend VMs or '
+            ' endpoints in a NEG, based on the contents of the `GCILB` cookie '
+            ' set by the proxy. (If no cookie is present, the proxy '
+            ' chooses a backend VM or endpoint and sends a `Set-Cookie` '
+            ' response for future requests.) If the `--load-balancing-scheme` '
+            ' is `INTERNAL_SELF_MANAGED`, routes requests to backend VMs or '
+            ' endpoints in a NEG, based on the contents of a cookie set by '
+            ' Traffic Director.'),
         'CLIENT_IP_PROTO': (
             '(Applicable if `--load-balancing-scheme` is `INTERNAL`) '
             'Connections from the same client IP with the same IP '
@@ -483,13 +489,24 @@ def AddSessionAffinity(parser, target_pools=False, hidden=False):
             'port will go to the same backend VM while that VM remains '
             'healthy.'),
         'HTTP_COOKIE': (
-            '(Applicable if `--load-balancing-scheme` is '
-            '`INTERNAL_SELF_MANAGED`) Route requests to backend VMs or '
-            'endpoints in a NEG based on an HTTP cookie set by the client.'),
+            '(Applicable if `--load-balancing-scheme` is `INTERNAL_MANAGED`'
+            ' or `INTERNAL_SELF_MANAGED`) Route requests to backend VMs or '
+            ' endpoints in a NEG, based on an HTTP cookie named in the '
+            ' `HTTP_COOKIE` flag (with the optional `--affinity-cookie-ttl` '
+            ' flag). If the client has not provided the cookie, '
+            ' the proxy generates the cookie and returns it to the client in a '
+            ' `Set-Cookie` header. This session affinity is only valid if the '
+            ' load balancing locality policy is either `RING_HASH` or `MAGLEV` '
+            ' and the backend service\'s consistent hash specifies the HTTP '
+            ' cookie.'),
         'HEADER_FIELD': (
-            '(Applicable if `--load-balancing-scheme` is '
-            '`INTERNAL_SELF_MANAGED`) Route requests to backend VMs or'
-            ' endpoints in a NEG based on an HTTP header.'),
+            '(Applicable if `--load-balancing-scheme` is `INTERNAL_MANAGED`'
+            ' or `INTERNAL_SELF_MANAGED`) Route requests to backend VMs or '
+            ' endpoints in a NEG based on the value of the HTTP header named '
+            ' in the `--custom-request-header` flag. This session '
+            ' affinity is only valid if the load balancing locality policy '
+            ' is either RING_HASH or MAGLEV and the backend service\'s '
+            ' consistent hash specifies the name of the HTTP header.'),
     })
   help_str = 'The type of TCP session affinity to use. Not supported for UDP.'
   parser.add_argument(

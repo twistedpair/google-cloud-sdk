@@ -132,6 +132,10 @@ class MalformedLabelError(exceptions_util.HttpException):
 
 class KubernetesError(exceptions.Error):
   """A generic kubernetes error was encountered."""
+
+
+class UnsupportedOperationError(exceptions.Error):
+  """The requested operation is not supported."""
   pass
 
 

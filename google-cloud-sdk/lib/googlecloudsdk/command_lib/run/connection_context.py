@@ -180,7 +180,15 @@ class _GKEConnectionContext(ConnectionInfo):
   @property
   def location_label(self):
     return ' of cluster [{{{{bold}}}}{}{{{{reset}}}}]'.format(
-        self.cluster_ref.Name())
+        self.cluster_name)
+
+  @property
+  def cluster_name(self):
+    return self.cluster_ref.Name()
+
+  @property
+  def cluster_location(self):
+    return self.cluster_ref.zone
 
   @property
   def supports_one_platform(self):
@@ -250,6 +258,14 @@ class _KubeconfigConnectionContext(ConnectionInfo):
             ' referenced by config file [{{{{bold}}}}{}{{{{reset}}}}]'.format(
                 self.curr_ctx['name'],
                 self.kubeconfig.filename))
+
+  @property
+  def cluster_name(self):
+    return self.cluster['name']
+
+  @property
+  def cluster_location(self):
+    return None
 
   @property
   def supports_one_platform(self):

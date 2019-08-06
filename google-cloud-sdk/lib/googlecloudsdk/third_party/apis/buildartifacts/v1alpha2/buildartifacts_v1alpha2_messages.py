@@ -722,11 +722,13 @@ class Repository(_messages.Message):
       DOCKER: Docker package format.
       MAVEN: Maven package format.
       NPM: NPM package format.
+      PYPI: PyPI package format.
     """
     FORMAT_UNSPECIFIED = 0
     DOCKER = 1
     MAVEN = 2
     NPM = 3
+    PYPI = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

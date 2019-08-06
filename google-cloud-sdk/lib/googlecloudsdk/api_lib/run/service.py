@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.run import configuration
 from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import revision
+from googlecloudsdk.api_lib.run import traffic
 
 
 ENDPOINT_VISIBILITY = 'serving.knative.dev/visibility'
@@ -40,14 +41,12 @@ class Service(k8s_object.KubernetesObject):
   FIELD_BLACKLIST = ['manual', 'release', 'template']
 
   @classmethod
-  def New(cls, client, namespace, private_endpoint=None):
+  def New(cls, client, namespace):
     """Produces a new Service object.
 
     Args:
       client: The Cloud Run API client.
       namespace: str, The serving namespace.
-      private_endpoint: bool, True if the new Service should only be accessible
-          from within the cluster.
 
     Returns:
       A new Service object to be deployed.
@@ -55,9 +54,6 @@ class Service(k8s_object.KubernetesObject):
     ret = super(Service, cls).New(client, namespace)
     # We're in oneOf territory, set the other to None for now.
     ret.spec.pinned = None
-
-    if private_endpoint:
-      ret.labels[ENDPOINT_VISIBILITY] = CLUSTER_LOCAL
 
     # Unset a pile of unused things on the container.
     ret.configuration.container.lifecycle = None
@@ -114,6 +110,10 @@ class Service(k8s_object.KubernetesObject):
   def domain(self):
     return self._m.status.url or self._m.status.domain
 
+  @domain.setter
+  def domain(self, domain):
+    self._m.status.url = self._m.status.domain = domain
+
   @property
   def ready_symbol(self):
     if (self.ready is False and
@@ -131,6 +131,11 @@ class Service(k8s_object.KubernetesObject):
     return next((c.lastTransitionTime
                  for c in self.status.conditions
                  if c.type == u'Ready'), None)
+
+  @property
+  def traffic(self):
+    self.AssertFullObject()
+    return traffic.TrafficTargets(self._messages, self.spec.traffic)
 
   @property
   def vpc_connector(self):

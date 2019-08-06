@@ -2270,25 +2270,24 @@ class Backend(_messages.Message):
       loadBalancingScheme, and protocol for the backend service, as well as
       the type of backend (instance group or NEG).    - If the load balancing
       mode is CONNECTION, then the load is spread based on how many concurrent
-      connections the backend can handle. The CONNECTION balancing mode is
-      only available if the protocol for the backend service is SSL, TCP, or
-      UDP.  If the loadBalancingScheme for the backend service is EXTERNAL
-      (SSL Proxy and TCP Proxy load balancers), you must also specify exactly
-      one of the following parameters: maxConnections,
-      maxConnectionsPerInstance, or maxConnectionsPerEndpoint.  If the
-      loadBalancingScheme for the backend service is INTERNAL (internal
-      TCP/UDP load balancers), you cannot specify any additional parameters.
-      - If the load balancing mode is RATE, then the load is spread based on
-      the rate of HTTP requests per second (RPS). The RATE balancing mode is
-      only available if the protocol for the backend service is HTTP or HTTPS.
-      You must specify exactly one of the following parameters: maxRate,
-      maxRatePerInstance, or maxRatePerEndpoint.   - If the load balancing
-      mode is UTILIZATION, then the load is spread based on the CPU
-      utilization of instances in an instance group. The UTILIZATION balancing
-      mode is only available if the loadBalancingScheme of the backend service
-      is EXTERNAL, INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the backend
-      is made up of instance groups. There are no restrictions on the backend
-      service protocol.
+      connections the backend can handle. You can use the CONNECTION balancing
+      mode if the protocol for the backend service is SSL, TCP, or UDP.  If
+      the loadBalancingScheme for the backend service is EXTERNAL (SSL Proxy
+      and TCP Proxy load balancers), you must also specify exactly one of the
+      following parameters: maxConnections, maxConnectionsPerInstance, or
+      maxConnectionsPerEndpoint.  If the loadBalancingScheme for the backend
+      service is INTERNAL (internal TCP/UDP load balancers), you cannot
+      specify any additional parameters.   - If the load balancing mode is
+      RATE, the load is spread based on the rate of HTTP requests per second
+      (RPS). You can use the RATE balancing mode if the protocol for the
+      backend service is HTTP or HTTPS. You must specify exactly one of the
+      following parameters: maxRate, maxRatePerInstance, or
+      maxRatePerEndpoint.   - If the load balancing mode is UTILIZATION, the
+      load is spread based on the CPU utilization of instances in an instance
+      group. You can use the UTILIZATION balancing mode if the
+      loadBalancingScheme of the backend service is EXTERNAL,
+      INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the backends are instance
+      groups. There are no restrictions on the backend service protocol.
 
   Fields:
     balancingMode: Specifies the balancing mode for the backend.  When
@@ -2296,25 +2295,24 @@ class Backend(_messages.Message):
       and protocol for the backend service, as well as the type of backend
       (instance group or NEG).    - If the load balancing mode is CONNECTION,
       then the load is spread based on how many concurrent connections the
-      backend can handle. The CONNECTION balancing mode is only available if
-      the protocol for the backend service is SSL, TCP, or UDP.  If the
+      backend can handle. You can use the CONNECTION balancing mode if the
+      protocol for the backend service is SSL, TCP, or UDP.  If the
       loadBalancingScheme for the backend service is EXTERNAL (SSL Proxy and
       TCP Proxy load balancers), you must also specify exactly one of the
       following parameters: maxConnections, maxConnectionsPerInstance, or
       maxConnectionsPerEndpoint.  If the loadBalancingScheme for the backend
       service is INTERNAL (internal TCP/UDP load balancers), you cannot
       specify any additional parameters.   - If the load balancing mode is
-      RATE, then the load is spread based on the rate of HTTP requests per
-      second (RPS). The RATE balancing mode is only available if the protocol
-      for the backend service is HTTP or HTTPS. You must specify exactly one
-      of the following parameters: maxRate, maxRatePerInstance, or
-      maxRatePerEndpoint.   - If the load balancing mode is UTILIZATION, then
-      the load is spread based on the CPU utilization of instances in an
-      instance group. The UTILIZATION balancing mode is only available if the
+      RATE, the load is spread based on the rate of HTTP requests per second
+      (RPS). You can use the RATE balancing mode if the protocol for the
+      backend service is HTTP or HTTPS. You must specify exactly one of the
+      following parameters: maxRate, maxRatePerInstance, or
+      maxRatePerEndpoint.   - If the load balancing mode is UTILIZATION, the
+      load is spread based on the CPU utilization of instances in an instance
+      group. You can use the UTILIZATION balancing mode if the
       loadBalancingScheme of the backend service is EXTERNAL,
-      INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the backend is made up of
-      instance groups. There are no restrictions on the backend service
-      protocol.
+      INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the backends are instance
+      groups. There are no restrictions on the backend service protocol.
     capacityScaler: A multiplier applied to the group's maximum servicing
       capacity (based on UTILIZATION, RATE or CONNECTION). Default value is 1,
       which means the group will serve up to 100% of its configured capacity
@@ -2401,24 +2399,23 @@ class Backend(_messages.Message):
     for the backend service, as well as the type of backend (instance group or
     NEG).    - If the load balancing mode is CONNECTION, then the load is
     spread based on how many concurrent connections the backend can handle.
-    The CONNECTION balancing mode is only available if the protocol for the
-    backend service is SSL, TCP, or UDP.  If the loadBalancingScheme for the
-    backend service is EXTERNAL (SSL Proxy and TCP Proxy load balancers), you
-    must also specify exactly one of the following parameters: maxConnections,
+    You can use the CONNECTION balancing mode if the protocol for the backend
+    service is SSL, TCP, or UDP.  If the loadBalancingScheme for the backend
+    service is EXTERNAL (SSL Proxy and TCP Proxy load balancers), you must
+    also specify exactly one of the following parameters: maxConnections,
     maxConnectionsPerInstance, or maxConnectionsPerEndpoint.  If the
     loadBalancingScheme for the backend service is INTERNAL (internal TCP/UDP
     load balancers), you cannot specify any additional parameters.   - If the
-    load balancing mode is RATE, then the load is spread based on the rate of
-    HTTP requests per second (RPS). The RATE balancing mode is only available
-    if the protocol for the backend service is HTTP or HTTPS. You must specify
+    load balancing mode is RATE, the load is spread based on the rate of HTTP
+    requests per second (RPS). You can use the RATE balancing mode if the
+    protocol for the backend service is HTTP or HTTPS. You must specify
     exactly one of the following parameters: maxRate, maxRatePerInstance, or
-    maxRatePerEndpoint.   - If the load balancing mode is UTILIZATION, then
-    the load is spread based on the CPU utilization of instances in an
-    instance group. The UTILIZATION balancing mode is only available if the
+    maxRatePerEndpoint.   - If the load balancing mode is UTILIZATION, the
+    load is spread based on the CPU utilization of instances in an instance
+    group. You can use the UTILIZATION balancing mode if the
     loadBalancingScheme of the backend service is EXTERNAL,
-    INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the backend is made up of
-    instance groups. There are no restrictions on the backend service
-    protocol.
+    INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the backends are instance
+    groups. There are no restrictions on the backend service protocol.
 
     Values:
       CONNECTION: <no description>
@@ -2670,8 +2667,8 @@ class BackendService(_messages.Message):
     SessionAffinityValueValuesEnum: Type of session affinity to use. The
       default is NONE. Session affinity is not applicable if the --protocol is
       UDP.  When the loadBalancingScheme is EXTERNAL, possible values are
-      NONE, CLIENT_IP, or GENERATED_COOKIE. GENERATED_COOKIE is only available
-      if the protocol is HTTP or HTTPS.  When the loadBalancingScheme is
+      NONE, CLIENT_IP, or GENERATED_COOKIE. You can use GENERATED_COOKIE if
+      the protocol is HTTP or HTTPS.  When the loadBalancingScheme is
       INTERNAL, possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or
       CLIENT_IP_PORT_PROTO.  When the loadBalancingScheme is
       INTERNAL_SELF_MANAGED, possible values are NONE, CLIENT_IP,
@@ -2799,11 +2796,11 @@ class BackendService(_messages.Message):
     sessionAffinity: Type of session affinity to use. The default is NONE.
       Session affinity is not applicable if the --protocol is UDP.  When the
       loadBalancingScheme is EXTERNAL, possible values are NONE, CLIENT_IP, or
-      GENERATED_COOKIE. GENERATED_COOKIE is only available if the protocol is
-      HTTP or HTTPS.  When the loadBalancingScheme is INTERNAL, possible
-      values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO.
-      When the loadBalancingScheme is INTERNAL_SELF_MANAGED, possible values
-      are NONE, CLIENT_IP, GENERATED_COOKIE, HEADER_FIELD, or HTTP_COOKIE.
+      GENERATED_COOKIE. You can use GENERATED_COOKIE if the protocol is HTTP
+      or HTTPS.  When the loadBalancingScheme is INTERNAL, possible values are
+      NONE, CLIENT_IP, CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO.  When the
+      loadBalancingScheme is INTERNAL_SELF_MANAGED, possible values are NONE,
+      CLIENT_IP, GENERATED_COOKIE, HEADER_FIELD, or HTTP_COOKIE.
     timeoutSec: The backend service timeout has a different meaning depending
       on the type of load balancer. For more information read,  Backend
       service settings The default is 30 seconds.
@@ -2893,9 +2890,9 @@ class BackendService(_messages.Message):
   class SessionAffinityValueValuesEnum(_messages.Enum):
     r"""Type of session affinity to use. The default is NONE. Session affinity
     is not applicable if the --protocol is UDP.  When the loadBalancingScheme
-    is EXTERNAL, possible values are NONE, CLIENT_IP, or GENERATED_COOKIE.
-    GENERATED_COOKIE is only available if the protocol is HTTP or HTTPS.  When
-    the loadBalancingScheme is INTERNAL, possible values are NONE, CLIENT_IP,
+    is EXTERNAL, possible values are NONE, CLIENT_IP, or GENERATED_COOKIE. You
+    can use GENERATED_COOKIE if the protocol is HTTP or HTTPS.  When the
+    loadBalancingScheme is INTERNAL, possible values are NONE, CLIENT_IP,
     CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO.  When the loadBalancingScheme is
     INTERNAL_SELF_MANAGED, possible values are NONE, CLIENT_IP,
     GENERATED_COOKIE, HEADER_FIELD, or HTTP_COOKIE.
@@ -21290,7 +21287,7 @@ class ForwardingRule(_messages.Message):
       settable as a field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
     serviceLabel: An optional prefix to the service name for this Forwarding
-      Rule. If specified, will be the first label of the fully qualified
+      Rule. If specified, the prefix is the first label of the fully qualified
       service name.  The label must be 1-63 characters long, and comply with
       RFC1035. Specifically, the label must be 1-63 characters long and match
       the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the
@@ -23979,7 +23976,11 @@ class Instance(_messages.Message):
     displayDevice: Enables display device for the instance.
     guestAccelerators: A list of the type and count of accelerator cards
       attached to the instance.
-    hostname: A string attribute.
+    hostname: Specifies the hostname of the instance. The specified hostname
+      must be RFC1035 compliant. If hostname is not specified, the default
+      hostname is [INSTANCE_NAME].c.[PROJECT_ID].internal when using the
+      global DNS, and [INSTANCE_NAME].[ZONE].c.[PROJECT_ID].internal when
+      using zonal DNS.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#instance for

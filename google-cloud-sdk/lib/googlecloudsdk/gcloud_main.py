@@ -185,8 +185,15 @@ def main(gcloud_cli=None, credential_providers=None):
   try:
     try:
       gcloud_cli.Execute()
+      # Flush stdout so that if we've received a SIGPIPE we handle the broken
+      # pipe within this try block, instead of potentially during interpreter
+      # shutdown.
+      sys.stdout.flush()
     except IOError as err:
-      # We want to ignore EPIPE IOErrors.
+      # We want to ignore EPIPE IOErrors (as of Python 3.3 these can be caught
+      # specifically with BrokenPipeError, but we do it this way for Python 2
+      # compatibility).
+      #
       # By default, Python ignores SIGPIPE (see
       # http://utcc.utoronto.ca/~cks/space/blog/python/SignalExceptionSurprise).
       # This means that attempting to write any output to a closed pipe (e.g. in
@@ -194,9 +201,26 @@ def main(gcloud_cli=None, credential_providers=None):
       # IOError, which gets reported as a gcloud crash. We don't want this
       # behavior, so we ignore EPIPE (it's not a real error; it's a normal thing
       # to occur).
-      # Before, we restore the SIGPIPE signal handler, but that caused issues
+      #
+      # Before, we restored the SIGPIPE signal handler, but that caused issues
       # with scripts/programs that wrapped gcloud.
-      if err.errno != errno.EPIPE:
+      if err.errno == errno.EPIPE:
+        # At this point we've caught the broken pipe, but since Python flushes
+        # standard streams on exit, it's still possible for a broken pipe error
+        # to happen during interpreter shutdown. The interpreter will catch this
+        # but in Python 3 it still prints a warning to stderr saying that the
+        # exception was ignored (see https://bugs.python.org/issue11380):
+        #
+        # Exception ignored in: <_io.TextIOWrapper name='<stdout>' mode='w'
+        # encoding='UTF-8'>
+        # BrokenPipeError: [Errno 32] Broken pipe
+        #
+        # To prevent this from happening, we redirect any remaining output to
+        # devnull as recommended here:
+        # https://docs.python.org/3/library/signal.html#note-on-sigpipe.
+        devnull = os.open(os.devnull, os.O_WRONLY)
+        os.dup2(devnull, sys.stdout.fileno())
+      else:
         raise
   except Exception as err:  # pylint:disable=broad-except
     crash_handling.HandleGcloudCrash(err)

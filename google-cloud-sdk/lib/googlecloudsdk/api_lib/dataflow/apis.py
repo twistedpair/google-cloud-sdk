@@ -12,8 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Helpers for interacting with the Cloud Dataflow API.
-"""
+"""Helpers for interacting with the Cloud Dataflow API."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -67,6 +66,7 @@ class Jobs(object):
       region_id: The regional endpoint where the job lives.
       view: (DataflowProjectsJobsGetRequest.ViewValueValuesEnum) Level of
         information requested in response.
+
     Returns:
       (Job)
     """
@@ -87,13 +87,15 @@ class Jobs(object):
       job_id: Identifies a single job.
       project_id: The project which owns the job.
       region_id: The regional endpoint where the job lives.
+
     Returns:
       (Job)
     """
     project_id = project_id or GetProject()
     region_id = region_id or DATAFLOW_API_DEFAULT_REGION
-    job = GetMessagesModule().Job(requestedState=(GetMessagesModule(
-    ).Job.RequestedStateValueValuesEnum.JOB_STATE_CANCELLED))
+    job = GetMessagesModule().Job(
+        requestedState=(GetMessagesModule().Job.RequestedStateValueValuesEnum
+                        .JOB_STATE_CANCELLED))
     request = GetMessagesModule().DataflowProjectsLocationsJobsUpdateRequest(
         jobId=job_id, location=region_id, projectId=project_id, job=job)
     try:
@@ -109,14 +111,15 @@ class Jobs(object):
       job_id: Identifies a single job.
       project_id: The project which owns the job.
       region_id: The regional endpoint where the job lives.
+
     Returns:
       (Job)
     """
     project_id = project_id or GetProject()
     region_id = region_id or DATAFLOW_API_DEFAULT_REGION
-    job = GetMessagesModule().Job(requestedState=(
-        GetMessagesModule().Job.RequestedStateValueValuesEnum.JOB_STATE_DRAINED
-    ))
+    job = GetMessagesModule().Job(
+        requestedState=(GetMessagesModule().Job.RequestedStateValueValuesEnum
+                        .JOB_STATE_DRAINED))
     request = GetMessagesModule().DataflowProjectsLocationsJobsUpdateRequest(
         jobId=job_id, location=region_id, projectId=project_id, job=job)
     try:
@@ -133,13 +136,16 @@ class Jobs(object):
       project_id: The project which owns the job.
       region_id: The regional endpoint where the job lives.
       ttl: The ttl for the snapshot.
+
     Returns:
       (Snapshot)
     """
     project_id = project_id or GetProject()
     region_id = region_id or DATAFLOW_API_DEFAULT_REGION
     request = GetMessagesModule().DataflowProjectsLocationsJobsSnapshotRequest(
-        jobId=job_id, location=region_id, projectId=project_id,
+        jobId=job_id,
+        location=region_id,
+        projectId=project_id,
         snapshotJobRequest=GetMessagesModule().SnapshotJobRequest(
             location=region_id, ttl=ttl))
     try:
@@ -168,6 +174,7 @@ class Metrics(object):
       region_id: The regional endpoint of the job.
       start_time: Return only metric data that has changed since this time.
         Default is to return all information about all metrics for the job.
+
     Returns:
       (MetricUpdate)
     """
@@ -234,8 +241,7 @@ class Templates(object):
     params_list = []
     for k, v in six.iteritems(parameters) if parameters else {}:
       params_list.append(
-          Templates.PARAMETERS_VALUE.AdditionalProperty(
-              key=k, value=v))
+          Templates.PARAMETERS_VALUE.AdditionalProperty(key=k, value=v))
 
     region_id = region_id or DATAFLOW_API_DEFAULT_REGION
     body = Templates.CREATE_REQUEST(
@@ -252,8 +258,8 @@ class Templates(object):
             machineType=worker_machine_type,
             tempLocation=staging_location,
             kmsKeyName=dataflow_kms_key),
-        parameters=Templates.PARAMETERS_VALUE(additionalProperties=params_list)
-        if parameters else None)
+        parameters=Templates.PARAMETERS_VALUE(
+            additionalProperties=params_list) if parameters else None)
     request = GetMessagesModule(
     ).DataflowProjectsLocationsTemplatesCreateRequest(
         projectId=project_id or GetProject(),
@@ -303,6 +309,7 @@ class Messages(object):
       page_token: If supplied, this should be the value of next_page_token
         returned by an earlier call. This will cause the next page of results to
         be returned.
+
     Returns:
       (ListJobMessagesResponse)
     """
@@ -332,9 +339,50 @@ class Snapshots(object):
     return GetClientInstance().projects_locations_snapshots
 
   @staticmethod
-  def List(job_id=None,
-           project_id=None,
-           region_id=None):
+  def Delete(snapshot_id=None, project_id=None, region_id=None):
+    """Calls the Dataflow Snapshots.Delete method.
+
+    Args:
+      snapshot_id: The id of the snapshot to delete.
+      project_id: The project that owns the snapshot.
+      region_id: The regional endpoint of the snapshot.
+
+    Returns:
+      (DeleteSnapshotResponse)
+    """
+    project_id = project_id or GetProject()
+    region_id = region_id or DATAFLOW_API_DEFAULT_REGION
+    request = GetMessagesModule(
+    ).DataflowProjectsLocationsSnapshotsDeleteRequest(
+        snapshotId=snapshot_id, location=region_id, projectId=project_id)
+    try:
+      return Snapshots.GetService().Delete(request)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error)
+
+  @staticmethod
+  def Get(snapshot_id=None, project_id=None, region_id=None):
+    """Calls the Dataflow Snapshots.Get method.
+
+    Args:
+      snapshot_id: The id of the snapshot to get.
+      project_id: The project that owns the snapshot.
+      region_id: The regional endpoint of the snapshot.
+
+    Returns:
+      (GetSnapshotResponse)
+    """
+    project_id = project_id or GetProject()
+    region_id = region_id or DATAFLOW_API_DEFAULT_REGION
+    request = GetMessagesModule().DataflowProjectsLocationsSnapshotsGetRequest(
+        snapshotId=snapshot_id, location=region_id, projectId=project_id)
+    try:
+      return Snapshots.GetService().Get(request)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error)
+
+  @staticmethod
+  def List(job_id=None, project_id=None, region_id=None):
     """Calls the Dataflow Snapshots.List method.
 
     Args:
@@ -349,9 +397,7 @@ class Snapshots(object):
     project_id = project_id or GetProject()
     region_id = region_id or DATAFLOW_API_DEFAULT_REGION
     request = GetMessagesModule().DataflowProjectsLocationsSnapshotsListRequest(
-        jobId=job_id,
-        location=region_id,
-        projectId=project_id)
+        jobId=job_id, location=region_id, projectId=project_id)
     try:
       return Snapshots.GetService().List(request)
     except apitools_exceptions.HttpError as error:

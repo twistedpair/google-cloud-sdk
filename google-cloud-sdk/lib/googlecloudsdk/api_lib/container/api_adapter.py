@@ -562,7 +562,8 @@ class UpdateClusterOptions(object):
                resource_usage_bigquery_dataset=None,
                enable_network_egress_metering=None,
                enable_resource_consumption_metering=None,
-               database_encryption=None):
+               database_encryption_key=None,
+               disable_database_encryption=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -602,7 +603,8 @@ class UpdateClusterOptions(object):
     self.enable_network_egress_metering = enable_network_egress_metering
     self.enable_resource_consumption_metering = (
         enable_resource_consumption_metering)
-    self.database_encryption = database_encryption
+    self.database_encryption_key = database_encryption_key
+    self.disable_database_encryption = disable_database_encryption
 
 
 class SetMasterAuthOptions(object):
@@ -2166,12 +2168,18 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(
           desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
               identityNamespace=''))
-    elif options.database_encryption:
+
+    if options.database_encryption_key:
       update = self.messages.ClusterUpdate(
           desiredDatabaseEncryption=self.messages.DatabaseEncryption(
-              keyName=options.database_encryption,
+              keyName=options.database_encryption_key,
               state=self.messages.DatabaseEncryption.StateValueValuesEnum
               .ENCRYPTED))
+    elif options.disable_database_encryption:
+      update = self.messages.ClusterUpdate(
+          desiredDatabaseEncryption=self.messages.DatabaseEncryption(
+              state=self.messages.DatabaseEncryption.StateValueValuesEnum
+              .DECRYPTED))
 
     if options.enable_shielded_nodes is not None:
       update = self.messages.ClusterUpdate(
@@ -2473,12 +2481,18 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       update = self.messages.ClusterUpdate(
           desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
               identityNamespace=''))
-    elif options.database_encryption:
+
+    if options.database_encryption_key:
       update = self.messages.ClusterUpdate(
           desiredDatabaseEncryption=self.messages.DatabaseEncryption(
-              keyName=options.database_encryption,
+              keyName=options.database_encryption_key,
               state=self.messages.DatabaseEncryption.StateValueValuesEnum
               .ENCRYPTED))
+    elif options.disable_database_encryption:
+      update = self.messages.ClusterUpdate(
+          desiredDatabaseEncryption=self.messages.DatabaseEncryption(
+              state=self.messages.DatabaseEncryption.StateValueValuesEnum
+              .DECRYPTED))
 
     if options.enable_shielded_nodes is not None:
       update = self.messages.ClusterUpdate(

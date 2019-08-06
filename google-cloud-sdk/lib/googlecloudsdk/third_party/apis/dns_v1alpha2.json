@@ -190,6 +190,81 @@
         }
       }
     },
+    "Change": {
+      "id": "Change",
+      "description": "! A Change represents a set of ResourceRecordSet additions and deletions\n! applied atomically to a ManagedZone. ResourceRecordSets within a\n! ManagedZone are modified by creating a new Change element in the Changes\n! collection. In turn the Changes collection also records the past\n! modifications to the ResourceRecordSets in a ManagedZone. The current\n! state of the ManagedZone is the sum effect of applying all Change\n! elements in the Changes collection in sequence.",
+      "type": "object",
+      "properties": {
+        "additions": {
+          "description": "! Which ResourceRecordSets to add?",
+          "type": "array",
+          "items": {
+            "$ref": "ResourceRecordSet"
+          }
+        },
+        "deletions": {
+          "description": "! Which ResourceRecordSets to remove? Must match existing data exactly.",
+          "type": "array",
+          "items": {
+            "$ref": "ResourceRecordSet"
+          }
+        },
+        "startTime": {
+          "description": "! The time that this operation was started by the server (output only). This\n! is in RFC3339 text format.",
+          "type": "string"
+        },
+        "id": {
+          "description": "! Unique identifier for the resource; defined by the server (output only).",
+          "type": "string"
+        },
+        "status": {
+          "description": "! Status of the operation (output only). A status of \"done\" means that the\n! request to update the authoritative servers has been sent, but the\n! servers might not be updated yet.",
+          "enumDescriptions": [
+            "",
+            ""
+          ],
+          "type": "string",
+          "enum": [
+            "pending",
+            "done"
+          ]
+        },
+        "isServing": {
+          "description": "! If the DNS queries for the zone will be served.",
+          "type": "boolean"
+        },
+        "kind": {
+          "default": "dns#change",
+          "type": "string"
+        }
+      }
+    },
+    "ChangesListResponse": {
+      "id": "ChangesListResponse",
+      "description": "! The response to a request to enumerate Changes to a ResourceRecordSets\n! collection.",
+      "type": "object",
+      "properties": {
+        "header": {
+          "$ref": "ResponseHeader"
+        },
+        "changes": {
+          "description": "! The requested changes.",
+          "type": "array",
+          "items": {
+            "$ref": "Change"
+          }
+        },
+        "nextPageToken": {
+          "description": "! The presence of this field indicates that there exist more results\n! following your last page of results in pagination order. To fetch them,\n! make another list request using this value as your pagination token.\n!\n! In this way you can retrieve the complete contents of even very large\n! collections one page at a time. However, if the contents of the collection\n! change between the first and last paginated list request, the set of all\n! elements returned will be an inconsistent view of the collection. There is\n! no way to retrieve a \"snapshot\" of collections larger than the maximum\n! page size.",
+          "type": "string"
+        },
+        "kind": {
+          "description": "Type of resource.",
+          "default": "dns#changesListResponse",
+          "type": "string"
+        }
+      }
+    },
     "DnsKey": {
       "id": "DnsKey",
       "description": "! A DNSSEC key pair.",
@@ -314,81 +389,6 @@
         "kind": {
           "description": "Type of resource.",
           "default": "dns#dnsKeysListResponse",
-          "type": "string"
-        }
-      }
-    },
-    "Change": {
-      "id": "Change",
-      "description": "! A Change represents a set of ResourceRecordSet additions and deletions\n! applied atomically to a ManagedZone. ResourceRecordSets within a\n! ManagedZone are modified by creating a new Change element in the Changes\n! collection. In turn the Changes collection also records the past\n! modifications to the ResourceRecordSets in a ManagedZone. The current\n! state of the ManagedZone is the sum effect of applying all Change\n! elements in the Changes collection in sequence.",
-      "type": "object",
-      "properties": {
-        "additions": {
-          "description": "! Which ResourceRecordSets to add?",
-          "type": "array",
-          "items": {
-            "$ref": "ResourceRecordSet"
-          }
-        },
-        "deletions": {
-          "description": "! Which ResourceRecordSets to remove? Must match existing data exactly.",
-          "type": "array",
-          "items": {
-            "$ref": "ResourceRecordSet"
-          }
-        },
-        "startTime": {
-          "description": "! The time that this operation was started by the server (output only). This\n! is in RFC3339 text format.",
-          "type": "string"
-        },
-        "id": {
-          "description": "! Unique identifier for the resource; defined by the server (output only).",
-          "type": "string"
-        },
-        "status": {
-          "description": "! Status of the operation (output only). A status of \"done\" means that the\n! request to update the authoritative servers has been sent, but the\n! servers might not be updated yet.",
-          "enumDescriptions": [
-            "",
-            ""
-          ],
-          "type": "string",
-          "enum": [
-            "pending",
-            "done"
-          ]
-        },
-        "isServing": {
-          "description": "! If the DNS queries for the zone will be served.",
-          "type": "boolean"
-        },
-        "kind": {
-          "default": "dns#change",
-          "type": "string"
-        }
-      }
-    },
-    "ChangesListResponse": {
-      "id": "ChangesListResponse",
-      "description": "! The response to a request to enumerate Changes to a ResourceRecordSets\n! collection.",
-      "type": "object",
-      "properties": {
-        "header": {
-          "$ref": "ResponseHeader"
-        },
-        "changes": {
-          "description": "! The requested changes.",
-          "type": "array",
-          "items": {
-            "$ref": "Change"
-          }
-        },
-        "nextPageToken": {
-          "description": "! The presence of this field indicates that there exist more results\n! following your last page of results in pagination order. To fetch them,\n! make another list request using this value as your pagination token.\n!\n! In this way you can retrieve the complete contents of even very large\n! collections one page at a time. However, if the contents of the collection\n! change between the first and last paginated list request, the set of all\n! elements returned will be an inconsistent view of the collection. There is\n! no way to retrieve a \"snapshot\" of collections larger than the maximum\n! page size.",
-          "type": "string"
-        },
-        "kind": {
-          "description": "Type of resource.",
-          "default": "dns#changesListResponse",
           "type": "string"
         }
       }
@@ -715,14 +715,14 @@
           ]
         },
         "defaultKeySpecs": {
-          "description": "! Specifies parameters that will be used for generating initial DnsKeys\n! for this ManagedZone. Can only be changed while state is OFF.",
+          "description": "! Specifies parameters for generating initial DnsKeys for this\n! ManagedZone. Can only be changed while the state is OFF.",
           "type": "array",
           "items": {
             "$ref": "DnsKeySpec"
           }
         },
         "nonExistence": {
-          "description": "! Specifies the mechanism used to provide authenticated\n! denial-of-existence responses. Can only be changed while state is OFF.",
+          "description": "! Specifies the mechanism for authenticated denial-of-existence responses.\n! Can only be changed while the state is OFF.",
           "enumDescriptions": [
             "",
             ""
@@ -857,7 +857,7 @@
           "type": "string"
         },
         "deactivateTime": {
-          "description": "! If this zone has been deactivated (possibly because the producer\n! network it targeted was deleted), the time at which it was\n! deactivated. If the peering connection is still active, this will be\n! the empty string. This is in RFC3339 text format. Output only.",
+          "description": "! The time at which the zone was deactivated, in RFC 3339 date-time\n! format. An empty string indicates that the peering connection is\n! active. The producer network can deactivate a zone. The zone is\n! automatically deactivated if the producer network that the zone\n! targeted is deleted. Output only.",
           "type": "string"
         },
         "kind": {
@@ -1134,111 +1134,6 @@
         }
       }
     },
-    "dnsKeys": {
-      "methods": {
-        "get": {
-          "id": "dns.dnsKeys.get",
-          "path": "dns/v1alpha2/projects/{project}/managedZones/{managedZone}/dnsKeys/{dnsKeyId}",
-          "flatPath": "dns/v1alpha2/projects/{project}/managedZones/{managedZone}/dnsKeys/{dnsKeyId}",
-          "httpMethod": "GET",
-          "parameters": {
-            "project": {
-              "description": "! Identifies the project addressed by this request.",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            },
-            "managedZone": {
-              "description": "! Identifies the managed zone addressed by this request. Can be the managed\n! zone name or id.",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            },
-            "dnsKeyId": {
-              "description": "! The identifier of the requested DnsKey.",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            },
-            "clientOperationId": {
-              "description": "! For mutating operation requests only. An optional identifier\n! specified by the client. Must be unique for operation resources in the\n! Operations collection.",
-              "location": "query",
-              "type": "string"
-            },
-            "digestType": {
-              "description": "! An optional comma-separated list of digest types to compute and display\n! for key signing keys. If omitted, the recommended digest type will be\n! computed and displayed.",
-              "location": "query",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "project",
-            "managedZone",
-            "dnsKeyId"
-          ],
-          "response": {
-            "$ref": "DnsKey"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/cloud-platform.read-only",
-            "https://www.googleapis.com/auth/ndev.clouddns.readonly",
-            "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
-          ],
-          "description": "! Fetch the representation of an existing DnsKey."
-        },
-        "list": {
-          "id": "dns.dnsKeys.list",
-          "path": "dns/v1alpha2/projects/{project}/managedZones/{managedZone}/dnsKeys",
-          "flatPath": "dns/v1alpha2/projects/{project}/managedZones/{managedZone}/dnsKeys",
-          "httpMethod": "GET",
-          "parameters": {
-            "project": {
-              "description": "! Identifies the project addressed by this request.",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            },
-            "managedZone": {
-              "description": "! Identifies the managed zone addressed by this request. Can be the managed\n! zone name or id.",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            },
-            "maxResults": {
-              "description": "! Optional. Maximum number of results to be returned. If unspecified, the\n! server will decide how many results to return.",
-              "location": "query",
-              "type": "integer",
-              "format": "int32"
-            },
-            "pageToken": {
-              "description": "! Optional. A tag returned by a previous list request that was truncated.\n! Use this parameter to continue a previous list request.",
-              "location": "query",
-              "type": "string"
-            },
-            "digestType": {
-              "description": "! An optional comma-separated list of digest types to compute and display\n! for key signing keys. If omitted, the recommended digest type will be\n! computed and displayed.",
-              "location": "query",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "project",
-            "managedZone"
-          ],
-          "response": {
-            "$ref": "DnsKeysListResponse"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/cloud-platform.read-only",
-            "https://www.googleapis.com/auth/ndev.clouddns.readonly",
-            "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
-          ],
-          "description": "! Enumerate DnsKeys to a ResourceRecordSet collection."
-        }
-      }
-    },
     "changes": {
       "methods": {
         "create": {
@@ -1385,6 +1280,111 @@
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
           "description": "! Enumerate Changes to a ResourceRecordSet collection."
+        }
+      }
+    },
+    "dnsKeys": {
+      "methods": {
+        "get": {
+          "id": "dns.dnsKeys.get",
+          "path": "dns/v1alpha2/projects/{project}/managedZones/{managedZone}/dnsKeys/{dnsKeyId}",
+          "flatPath": "dns/v1alpha2/projects/{project}/managedZones/{managedZone}/dnsKeys/{dnsKeyId}",
+          "httpMethod": "GET",
+          "parameters": {
+            "project": {
+              "description": "! Identifies the project addressed by this request.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "managedZone": {
+              "description": "! Identifies the managed zone addressed by this request. Can be the managed\n! zone name or id.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "dnsKeyId": {
+              "description": "! The identifier of the requested DnsKey.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "clientOperationId": {
+              "description": "! For mutating operation requests only. An optional identifier\n! specified by the client. Must be unique for operation resources in the\n! Operations collection.",
+              "location": "query",
+              "type": "string"
+            },
+            "digestType": {
+              "description": "! An optional comma-separated list of digest types to compute and display\n! for key signing keys. If omitted, the recommended digest type will be\n! computed and displayed.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "managedZone",
+            "dnsKeyId"
+          ],
+          "response": {
+            "$ref": "DnsKey"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only",
+            "https://www.googleapis.com/auth/ndev.clouddns.readonly",
+            "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+          ],
+          "description": "! Fetch the representation of an existing DnsKey."
+        },
+        "list": {
+          "id": "dns.dnsKeys.list",
+          "path": "dns/v1alpha2/projects/{project}/managedZones/{managedZone}/dnsKeys",
+          "flatPath": "dns/v1alpha2/projects/{project}/managedZones/{managedZone}/dnsKeys",
+          "httpMethod": "GET",
+          "parameters": {
+            "project": {
+              "description": "! Identifies the project addressed by this request.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "managedZone": {
+              "description": "! Identifies the managed zone addressed by this request. Can be the managed\n! zone name or id.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "maxResults": {
+              "description": "! Optional. Maximum number of results to be returned. If unspecified, the\n! server will decide how many results to return.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "! Optional. A tag returned by a previous list request that was truncated.\n! Use this parameter to continue a previous list request.",
+              "location": "query",
+              "type": "string"
+            },
+            "digestType": {
+              "description": "! An optional comma-separated list of digest types to compute and display\n! for key signing keys. If omitted, the recommended digest type will be\n! computed and displayed.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "managedZone"
+          ],
+          "response": {
+            "$ref": "DnsKeysListResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only",
+            "https://www.googleapis.com/auth/ndev.clouddns.readonly",
+            "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+          ],
+          "description": "! Enumerate DnsKeys to a ResourceRecordSet collection."
         }
       }
     },

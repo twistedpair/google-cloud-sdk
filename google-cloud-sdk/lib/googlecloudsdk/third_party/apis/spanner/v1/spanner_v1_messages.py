@@ -21,8 +21,7 @@ class BatchCreateSessionsRequest(_messages.Message):
       call. The API may return fewer than the requested number of sessions. If
       a specific number of sessions are desired, the client can make
       additional calls to BatchCreateSessions (adjusting session_count as
-      necessary). The maximum allowed sessions are documented at
-      https://goo.gl/hBUQED.
+      necessary).
     sessionTemplate: Parameters to be applied to each created session.
   """
 
@@ -874,7 +873,10 @@ class Mutation(_messages.Message):
     replace: Like insert, except that if the row already exists, it is
       deleted, and the column values provided are inserted instead. Unlike
       insert_or_update, this means any values not explicitly written become
-      `NULL`.
+      `NULL`.  In an interleaved table, if you create the child table with the
+      `ON DELETE CASCADE` annotation, then replacing a parent row also deletes
+      the child rows. Otherwise, you must delete the child rows before you
+      replace the parent row.
     update: Update existing rows in a table. If any of the rows does not
       already exist, the transaction fails with error `NOT_FOUND`.
   """

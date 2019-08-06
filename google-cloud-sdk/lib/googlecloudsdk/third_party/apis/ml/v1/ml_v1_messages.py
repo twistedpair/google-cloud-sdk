@@ -1273,9 +1273,18 @@ class GoogleCloudMlV1ReplicaConfig(_messages.Message):
     imageUri: The Docker image to run on the replica. This image must be in
       Container Registry. Learn more about [configuring custom containers
       ](/ml-engine/docs/distributed-training-containers).
-    tpuTfVersion: TensorFlow version used in the custom container. This field
-      is required if the replica is a TPU worker that uses a custom container.
-      Otherwise, do not specify this field.
+    tpuTfVersion: The AI Platform runtime version that includes a TensorFlow
+      version matching the one used in the custom container. This field is
+      required if the replica is a TPU worker that uses a custom container.
+      Otherwise, do not specify this field. This must be a [runtime version
+      that currently supports training with TPUs](/ml-engine/docs/tensorflow
+      /runtime-version-list#tpu-support).  Note that the version of TensorFlow
+      included in a runtime version may differ from the numbering of the
+      runtime version itself, because it may have a different [patch version](
+      https://www.tensorflow.org/guide/version_compat#semantic_versioning_20).
+      In this field, you must specify the runtime version (TensorFlow minor
+      version). For example, if your custom container runs TensorFlow `1.x.y`,
+      specify `1.x`.
   """
 
   acceleratorConfig = _messages.MessageField('GoogleCloudMlV1AcceleratorConfig', 1)

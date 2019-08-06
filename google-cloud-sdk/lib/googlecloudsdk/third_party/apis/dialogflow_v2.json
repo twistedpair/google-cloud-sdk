@@ -1786,7 +1786,7 @@
           }
         },
         "intent": {
-          "description": "The intent that matched the conversational query. Some, not\nall fields are filled in this message, including but not limited to:\n`name`, `display_name` and `webhook_state`.",
+          "description": "The intent that matched the conversational query. Some, not\nall fields are filled in this message, including but not limited to:\n`name`, `display_name`, `end_interaction` and `is_fallback`.",
           "$ref": "GoogleCloudDialogflowV2Intent"
         },
         "intentDetectionConfidence": {
@@ -3194,7 +3194,7 @@
           }
         },
         "intent": {
-          "description": "The intent that matched the conversational query. Some, not\nall fields are filled in this message, including but not limited to:\n`name`, `display_name` and `webhook_state`.",
+          "description": "The intent that matched the conversational query. Some, not\nall fields are filled in this message, including but not limited to:\n`name`, `display_name`, `end_interaction` and `is_fallback`.",
           "$ref": "GoogleCloudDialogflowV2beta1Intent"
         },
         "intentDetectionConfidence": {

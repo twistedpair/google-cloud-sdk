@@ -117,6 +117,19 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class ConnectAgentResource(_messages.Message):
+  r"""ConnectAgentResource represents a Kubernetes resource manifest for
+  connect agnet deployment.
+
+  Fields:
+    manifest: YAML manifest of the resource.
+    type: Kubernetes type of the resource.
+  """
+
+  manifest = _messages.StringField(1)
+  type = _messages.MessageField('TypeMeta', 2)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -156,12 +169,11 @@ class GenerateConnectAgentManifestResponse(_messages.Message):
   method.
 
   Fields:
-    manifest: The generated Kubernetes manifest to be used to instantiate a
-      new agent on a Kubernetes cluster. The manifest output is in Kubernetes
-      YAML format.
+    manifest: The ordered list of Kubernetes resources that need to be applied
+      to the cluster for GKE Connect agent installation/upgrade.
   """
 
-  manifest = _messages.StringField(1)
+  manifest = _messages.MessageField('ConnectAgentResource', 1, repeated=True)
 
 
 class GkeCluster(_messages.Message):
@@ -200,6 +212,8 @@ class GkehubProjectsLocationsGlobalConnectAgentsGenerateManifestRequest(_message
       in the form http(s)://{proxy_address}, depends on HTTP/HTTPS protocol
       supported by the proxy. This will direct connect agent's outbound
       traffic through a HTTP(S) proxy.
+    isUpgrade: If true, generate the resources for upgrade only. Some
+      resources (e.g. secrets) generated for installation will be excluded.
     parent: The parent project the connect agent is associated with.
       `projects/[project_id]/locations/global/connectAgents`.
     version: The version to use for connect agent. Optional; if empty, the
@@ -209,8 +223,9 @@ class GkehubProjectsLocationsGlobalConnectAgentsGenerateManifestRequest(_message
   connectAgent_name = _messages.StringField(1)
   connectAgent_namespace = _messages.StringField(2)
   connectAgent_proxy = _messages.BytesField(3)
-  parent = _messages.StringField(4, required=True)
-  version = _messages.StringField(5)
+  isUpgrade = _messages.BooleanField(4)
+  parent = _messages.StringField(5, required=True)
+  version = _messages.StringField(6)
 
 
 class GkehubProjectsLocationsGlobalMembershipsCreateRequest(_messages.Message):
@@ -951,6 +966,19 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class TypeMeta(_messages.Message):
+  r"""TypeMeta is the type information needed for content unmarshalling of the
+  Kubernetes resources in the manifest.
+
+  Fields:
+    apiVersion: APIVersion of the resource (e.g. v1).
+    kind: Kind of the resource (e.g. Deployment).
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -335,7 +335,40 @@
       "type": "object",
       "properties": {
         "manifest": {
-          "description": "The generated Kubernetes manifest to be used to instantiate a new agent\non a Kubernetes cluster. The manifest output is in Kubernetes YAML format.",
+          "description": "The ordered list of Kubernetes resources that need to be applied to the\ncluster for GKE Connect agent installation\/upgrade.",
+          "type": "array",
+          "items": {
+            "$ref": "ConnectAgentResource"
+          }
+        }
+      }
+    },
+    "ConnectAgentResource": {
+      "id": "ConnectAgentResource",
+      "description": "ConnectAgentResource represents a Kubernetes resource manifest for connect\nagnet deployment.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Kubernetes type of the resource.",
+          "$ref": "TypeMeta"
+        },
+        "manifest": {
+          "description": "YAML manifest of the resource.",
+          "type": "string"
+        }
+      }
+    },
+    "TypeMeta": {
+      "id": "TypeMeta",
+      "description": "TypeMeta is the type information needed for content unmarshalling of the\nKubernetes resources in the manifest.",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "description": "Kind of the resource (e.g. Deployment).",
+          "type": "string"
+        },
+        "apiVersion": {
+          "description": "APIVersion of the resource (e.g. v1).",
           "type": "string"
         }
       }
@@ -966,6 +999,11 @@
                           "description": "The version to use for connect agent.\nOptional; if empty, the current default version will be used.",
                           "location": "query",
                           "type": "string"
+                        },
+                        "isUpgrade": {
+                          "description": "If true, generate the resources for upgrade only. Some resources\n(e.g. secrets) generated for installation will be excluded.",
+                          "location": "query",
+                          "type": "boolean"
                         }
                       },
                       "parameterOrder": [

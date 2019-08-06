@@ -22,20 +22,17 @@ from __future__ import unicode_literals
 import abc
 import base64
 import json
-import os
 
 import enum
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.util import files
 
 from oauth2client import client
 from oauth2client import service_account
 from oauth2client.contrib import gce as oauth2client_gce
-from oauth2client.contrib import multistore_file
 import six
 import sqlite3
 
@@ -325,73 +322,7 @@ def GetCredentialStore(store_file=None, access_token_file=None):
   Returns:
     CredentialStore object.
   """
-  # TODO(b/69059614): remove migration logic and all of oauth2client multistore.
-  _MigrateMultistore2Sqlite()
   return _GetSqliteStore(store_file, access_token_file)
-
-
-class Oauth2ClientCredentialStore(CredentialStore):
-  """Implementation of credential sotore over oauth2client.multistore_file."""
-
-  def __init__(self, store_file):
-    self._store_file = store_file
-
-  def GetAccounts(self):
-    """Overrides."""
-    all_keys = multistore_file.get_all_credential_keys(
-        filename=self._store_file)
-
-    return {self._StorageKey2AccountId(key) for key in all_keys}
-
-  def Load(self, account_id):
-    credential_store = self._GetStorageByAccountId(account_id)
-    return credential_store.get()
-
-  def Store(self, account_id, credentials):
-    credential_store = self._GetStorageByAccountId(account_id)
-    credential_store.put(credentials)
-    credentials.set_store(credential_store)
-
-  def Remove(self, account_id):
-    credential_store = self._GetStorageByAccountId(account_id)
-    credential_store.delete()
-
-  def _GetStorageByAccountId(self, account_id):
-    storage_key = self._AcctountId2StorageKey(account_id)
-    return multistore_file.get_credential_storage_custom_key(
-        filename=self._store_file, key_dict=storage_key)
-
-  def _AcctountId2StorageKey(self, account_id):
-    """Converts account id into storage key."""
-    all_storage_keys = multistore_file.get_all_credential_keys(
-        filename=self._store_file)
-    matching_keys = [k for k in all_storage_keys if k['account'] == account_id]
-    if not matching_keys:
-      return {'type': 'google-cloud-sdk', 'account': account_id}
-
-    # We do not expect any other type keys in the credential store. Just in case
-    # somehow they occur:
-    #  1. prefer key with no type
-    #  2. use google-cloud-sdk type
-    #  3. use any other
-    # Also log all cases where type was present but was not google-cloud-sdk.
-    right_key = matching_keys[0]
-    for key in matching_keys:
-      if 'type' in key:
-        if key['type'] == 'google-cloud-sdk' and 'type' in right_key:
-          right_key = key
-        else:
-          log.file_only_logger.warn(
-              'Credential store has unknown type [{0}] key for account [{1}]'
-              .format(key['type'], key['account']))
-      else:
-        right_key = key
-    if 'type' in right_key:
-      right_key['type'] = 'google-cloud-sdk'
-    return right_key
-
-  def _StorageKey2AccountId(self, storage_key):
-    return storage_key['account']
 
 
 class CredentialType(enum.Enum):
@@ -524,18 +455,4 @@ def _GetSqliteStore(sqlite_credential_file=None, sqlite_access_token_file=None):
   files.PrivatizeFile(sqlite_access_token_file)
   access_token_cache = AccessTokenCache(sqlite_access_token_file)
   return CredentialStoreWithCache(credential_store, access_token_cache)
-
-
-def _MigrateMultistore2Sqlite():
-  multistore_file_path = config.Paths().credentials_path
-  if os.path.isfile(multistore_file_path):
-    multistore = Oauth2ClientCredentialStore(multistore_file_path)
-    credential_db_file = config.Paths().credentials_db_path
-    sqlite_store = _GetSqliteStore(credential_db_file)
-
-    for account_id in multistore.GetAccounts():
-      credential = multistore.Load(account_id)
-      sqlite_store.Store(account_id, credential)
-
-    os.remove(multistore_file_path)
 

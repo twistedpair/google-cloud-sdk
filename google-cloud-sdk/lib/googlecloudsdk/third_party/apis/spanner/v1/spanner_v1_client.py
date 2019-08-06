@@ -259,9 +259,7 @@ is the parent resource, without the operations collection id.
           }
 
     def BatchCreate(self, request, global_params=None):
-      r"""Creates multiple new sessions. If the requested number of sessions would.
-cause the database to exceed its session limit, returns a
-RESOURCE_EXHAUSTED error.
+      r"""Creates multiple new sessions.
 
 This API can be used to initialize a session cache on the clients.
 See https://goo.gl/TgSFN2 for best practices on session cache management.

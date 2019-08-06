@@ -28,6 +28,23 @@ from googlecloudsdk.core import resources
 DATAFLOW_API_DEFAULT_REGION = apis.DATAFLOW_API_DEFAULT_REGION
 
 
+def ArgsForSnapshotRef(parser):
+  """Register flags for specifying a single Snapshot ID.
+
+  Args:
+    parser: The argparse.ArgParser to configure with snapshot arguments.
+  """
+  parser.add_argument(
+      'snapshot',
+      metavar='SNAPSHOT_ID',
+      help='ID of the Cloud Dataflow snapshot.')
+  parser.add_argument(
+      '--region',
+      default='us-central1',
+      metavar='REGION_ID',
+      help='Region ID of the snapshot regional endpoint.')
+
+
 def ArgsForSnapshotJobRef(parser):
   """Register flags for specifying a single Job ID.
 
@@ -76,6 +93,25 @@ def ArgsForSnapshotTtl(parser):
       metavar='DURATION',
       type=arg_parsers.Duration(lower_bound='1s', upper_bound='7d'),
       help='Time to live for the snapshot.')
+
+
+def ExtractSnapshotRef(args):
+  """Extract the Snapshot Ref for a command. Used with ArgsForSnapshotRef.
+
+  Args:
+    args: The command line arguments.
+  Returns:
+    A Snapshot resource.
+  """
+  snapshot = args.snapshot
+  region = args.region or DATAFLOW_API_DEFAULT_REGION
+  return resources.REGISTRY.Parse(
+      snapshot,
+      params={
+          'projectId': properties.VALUES.core.project.GetOrFail,
+          'location': region
+      },
+      collection='dataflow.projects.locations.snapshots')
 
 
 def ExtractSnapshotJobRef(args):

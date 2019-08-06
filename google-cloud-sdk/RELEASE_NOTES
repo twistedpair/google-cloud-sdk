@@ -5,15 +5,39 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 257.0.0 (2019-08-06)
+
+### Breaking Changes
+
+*   **(Cloud SDK)** Removed support for `multistore` format credentials. To upgrade from versions older than 155.0.0 without losing credentials, run the following commands:
+    * `gcloud components update --version=255.0.0`
+    * `gcloud auth list`
+    * `gcloud components update`
+
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.7.0
+  * Add experimental support for the WebChannel protocol, allowing communication with browser clients.
+
+### Kubernetes Engine
+
+*   Added `--disable-database-encryption` to `gcloud beta container clusters
+    update` to allow disabling Database Encryption. For more information, see
+    <https://cloud.google.com/kubernetes-engine/docs/how-to/encrypting-secrets>.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 256.0.0 (2019-07-30)
 
 ### Breaking Changes
 
 *   **(Kubernetes Engine)** Reverted cluster creation behavior such that new clusters now come up in
-*   **(Kubernetes Engine)** Routes mode by default. The change to using VPC-Native mode as the default
-*   **(Kubernetes Engine)** will be reintroduced at a later date.
-*   **(Kubernetes Engine)** 
-*   **(Kubernetes Engine)** Use `--enable-ip-alias` flag for VPC-Native (IP Alias-enabled) mode.
+    Routes mode by default. The change to using VPC-Native mode as the default
+    will be reintroduced at a later date.
+    Use `--enable-ip-alias` flag for VPC-Native (IP Alias-enabled) mode.
 
 
 ### BigQuery
@@ -35,8 +59,8 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Cloud Pub/Sub
 
 * Added optional flags `--push-auth-service-account` and
- `--push-auth-token-audience` for defining an authenticated push subscription in
- `gcloud pubsub subscriptions create | update | modify-push-config`.
+  `--push-auth-token-audience` for defining an authenticated push subscription in
+  `gcloud pubsub subscriptions create | update | modify-push-config`.
 
 ### Managed Active Directory
 
@@ -52,8 +76,8 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Breaking Changes
 
 *   **(Cloud Run)** Changed `--platform` flag and its respective `run/platform` property to be
-  required in all `gcloud beta run` commands. If not specified, you will be
-  prompted to choose a platform.
+    required in all `gcloud beta run` commands. If not specified, you will be
+    prompted to choose a platform.
 
 
 ### Cloud Asset Inventory
@@ -62,7 +86,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Storage
 
-* 
 * Updated gsutil component to 4.41.
 
 ### Compute Engine
@@ -117,10 +140,10 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Firestore Emulator
 
-* Release Cloud Firestore emulator v1.6.1.
-  * Fix bug where ClearData would fail for databases with more than 500 documents.
-* Release Cloud Firestore emulator v1.6.2.
-  * Fix bug where Firestore queries with cursors had incorrect boundary behavior.
+* Released Cloud Firestore emulator v1.6.1.
+  * Fixed bug where ClearData would fail for databases with more than 500 documents.
+* Released Cloud Firestore emulator v1.6.2.
+  * Fixed bug where Firestore queries with cursors had incorrect boundary behavior.
 
 ### Cloud Pub/Sub
 
@@ -162,7 +185,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Breaking Changes
 
 *   **(Compute Engine)** Deprecated `gcloud beta compute resource-policies create-snapshot-schedule`.
-  Use `gcloud beta compute resource-policies create snapshot-schedule` instead.
+    Use `gcloud beta compute resource-policies create snapshot-schedule` instead.
 
 
 ### Cloud SDK
@@ -318,9 +341,9 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
   * `gcloud beta compute url-maps`
   * `gcloud beta compute health-checks`
 *   **(Kubernetes Engine)** Modified Kubernetes Engine cluster creation such that new clusters now
-  come up in VPC-native (IP Alias enabled) mode by default.
-  Use `--[no-]enable-ip-alias` flag for the old, non-default behavior (Routes
-  mode).
+    come up in VPC-native (IP Alias enabled) mode by default.
+    Use `--[no-]enable-ip-alias` flag for the old, non-default behavior (Routes
+    mode).
 
 
 ### Cloud Bigtable
@@ -499,7 +522,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Firestore Emulator
 
-* Release Cloud Firestore Emulator version 1.4.6.
+* Released Cloud Firestore Emulator version 1.4.6.
   * Fixed bug where some FieldTransforms were not sending the correct responses.
   * Added support for read-only transactions.
 
@@ -806,11 +829,11 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Firestore Emulator
 
-* Release Cloud Firestore Emulator version 1.4.4
+* Released Cloud Firestore Emulator version 1.4.4
   * Reduced lock contention for multiple writes on a single document
-  * Fix bug where no-op writes were incorrectly updating the updatedAt timestamp
-* Release Cloud Firestore Emulator version 1.4.3
-  * Fixes bug that caused parsing security rules with string literals to fail
+  * Fixed bug where no-op writes were incorrectly updating the updatedAt timestamp
+* Released Cloud Firestore Emulator version 1.4.3
+  * Fixed bug that caused parsing security rules with string literals to fail
 
 ### Compute Engine
 

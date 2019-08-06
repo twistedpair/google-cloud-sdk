@@ -281,17 +281,6 @@ class Paths(object):
     return os.path.join(self.global_config_dir, 'completion_cache')
 
   @property
-  def credentials_path(self):
-    """Gets the path to the file to store Oauth2Client credentials in.
-
-    This is oauth2client.contrib.multistore_file format file.
-
-    Returns:
-      str, The path to the credential file.
-    """
-    return os.path.join(self.global_config_dir, 'credentials')
-
-  @property
   def credentials_db_path(self):
     """Gets the path to the file to store credentials in.
 

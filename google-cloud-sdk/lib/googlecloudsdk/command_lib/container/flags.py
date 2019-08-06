@@ -630,8 +630,8 @@ Local SSDs have a fixed 375 GB capacity per device. The number of disks that
 can be attached to an instance is limited by the maximum number of disks
 available on a machine, which differs by compute zone. See
 https://cloud.google.com/compute/docs/disks/local-ssd for more information.
-""".format('node-pool-1 --cluster=example-cluster' if for_node_pool else
-           'example_cluster')
+""".format('node-pool-1 --cluster=example-cluster'
+           if for_node_pool else 'example_cluster')
   count_validator = arg_parsers.RegexpValidator(
       r'^[1-8]$', 'Count must be a number between 1 and 8')
   type_validator = arg_parsers.RegexpValidator(
@@ -2438,6 +2438,20 @@ def AddDatabaseEncryptionFlag(parser):
   }
   kms_resource_args.AddKmsKeyResourceArg(
       parser, 'cluster', flag_overrides=kms_flag_overrides)
+
+
+def AddDisableDatabaseEncryptionFlag(parser):
+  parser.add_argument(
+      '--disable-database-encryption',
+      default=False,
+      action='store_true',
+      help="""
+Disable database encryption.
+
+Disable Database Encryption which encrypt Kubernetes Secrets at
+the application layer. For more information, see
+<https://cloud.google.com/kubernetes-engine/docs/how-to/encrypting-secrets>.
+      """)
 
 
 def GetDatabaseEncryptionOption(args):

@@ -37,6 +37,7 @@ class Revision(k8s_object.KubernetesObject):
   API_CATEGORY = 'serving.knative.dev'
   KIND = 'Revision'
   READY_CONDITION = 'Ready'
+  _ACTIVE_CONDITION = 'Active'
   TERMINAL_CONDITIONS = {
       READY_CONDITION,
   }
@@ -81,6 +82,13 @@ class Revision(k8s_object.KubernetesObject):
   @image.setter
   def image(self, value):
     self.container.image = value
+
+  @property
+  def active(self):
+    cond = self.conditions
+    if self._ACTIVE_CONDITION in cond:
+      return cond[self._ACTIVE_CONDITION]['status']
+    return None
 
   def _EnsureResources(self):
     limits_cls = self._messages.ResourceRequirements.LimitsValue

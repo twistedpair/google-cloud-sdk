@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
+
 from apitools.base.protorpclite import messages as proto_messages
 from apitools.base.py import encoding as apitools_encoding
 from googlecloudsdk.api_lib.util import apis
@@ -292,8 +294,9 @@ def GenerateRegionChoiceToEnum():
   # Return a map of region choice strings (for arguments) to region enum values.
   msg = GetMessagesModuleAlpha()
   enums = msg.WorkerPool.RegionsValueListEntryValuesEnum
-  return {
+  d = {
       arg_utils.EnumNameToChoice(region_val.name): region_val
       for region_val in enums
       if region_val != enums.REGION_UNSPECIFIED
   }
+  return collections.OrderedDict(sorted(d.items(), key=lambda t: t[0]))

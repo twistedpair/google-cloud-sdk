@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.calliope import arg_parsers
 
 _CREATE_FILE_DESC = ('A file that contains the configuration for the '
@@ -37,6 +38,11 @@ def AddWorkerpoolArgs(parser, update=False):
   Returns:
     The parser argument with workerpool flags added in.
   """
+  # TODO(b/138224625): The source-of-truth for the allowed regions should be the
+  # server, not gcloud. We can either simply pass-through the string (removing
+  # the enum from the CreateBuildRequest proto), or we can do something more
+  # complicated.
+  region_strs = cloudbuild_util.GenerateRegionChoiceToEnum().keys()
   verb = 'update' if update else 'create'
   file_or_flags = parser.add_mutually_exclusive_group(required=True)
   file_or_flags.add_argument(
@@ -59,11 +65,10 @@ def AddWorkerpoolArgs(parser, update=False):
 Update the Cloud region or regions in which the Workerpool is located.
 To overwrite regions, use --clear-regions followed by --add-regions in the same
 command.
-Choices: us-central1, us-west1, us-east1, and us-east4.
 """)
     region_flags.add_argument(
         '--add-regions',
-        type=arg_parsers.ArgList(),
+        type=arg_parsers.ArgList(choices=region_strs),
         metavar='REGION',
         help='Add regions, separated by comma.',
     )
@@ -74,19 +79,17 @@ Choices: us-central1, us-west1, us-east1, and us-east4.
     )
     region_flags.add_argument(
         '--remove-regions',
-        type=arg_parsers.ArgList(),
+        type=arg_parsers.ArgList(choices=region_strs),
         metavar='REGION',
         help='Remove regions, separated by comma.',
     )
   else:
     flags.add_argument(
         '--regions',
-        type=arg_parsers.ArgList(),
+        type=arg_parsers.ArgList(choices=region_strs),
         metavar='REGION',
         help="""\
 The Cloud region or regions in which to create the WorkerPool.
-
-Choices: us-central1, us-west1, us-east1, us-east4.
 """)
   worker_flags = flags.add_argument_group(
       'Configuration to be used for creating workers in the WorkerPool:')

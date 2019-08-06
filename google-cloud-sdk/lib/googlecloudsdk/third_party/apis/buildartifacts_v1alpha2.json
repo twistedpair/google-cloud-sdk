@@ -225,14 +225,16 @@
             "Unspecified package format.",
             "Docker package format.",
             "Maven package format.",
-            "NPM package format."
+            "NPM package format.",
+            "PyPI package format."
           ],
           "type": "string",
           "enum": [
             "FORMAT_UNSPECIFIED",
             "DOCKER",
             "MAVEN",
-            "NPM"
+            "NPM",
+            "PYPI"
           ]
         },
         "description": {

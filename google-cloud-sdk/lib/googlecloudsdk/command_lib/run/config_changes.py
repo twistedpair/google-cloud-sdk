@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import abc
 import copy
+import re
 
 from googlecloudsdk.api_lib.run import configuration
 from googlecloudsdk.api_lib.run import k8s_object
@@ -30,8 +31,14 @@ from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import repeated
 
-
 import six
+
+
+# Matches an entire quoted section (including the quote marks)
+# or any non-whitepsace section.
+# This allows matching inputs like: two words "one word"
+# as: ['two', 'words', '"one word"']
+_WHITESPACE_WITH_DOUBEL_QUOTES_REGEX = r'(?:".*?"|\S)+'
 
 
 class ConfigChanger(six.with_metaclass(abc.ABCMeta, object)):
@@ -407,3 +414,38 @@ class VolumeChanges(ConfigChanger):
     for volume in list(volumes_of_type):
       if not any(n == volume for n in resource.template.volume_mounts.values()):
         del volumes_of_type[volume]
+
+
+class TrafficChanges(ConfigChanger):
+  """Represents the user intent to change a services traffic assignments."""
+
+  def __init__(self, new_percentages, new_latest_percentage):
+    self._new_percentages = new_percentages
+    self._new_latest_percentage = new_latest_percentage
+
+  def Adjust(self, resource):
+    """Mutates the given services traffic assignments."""
+    resource.traffic.UpdateTraffic(
+        self._new_percentages, self._new_latest_percentage)
+
+
+class ContainerCommandChange(ConfigChanger):
+  """Represents the user intent to change the 'command' for the container."""
+
+  def __init__(self, command_str):
+    self._commands = re.findall(
+        _WHITESPACE_WITH_DOUBEL_QUOTES_REGEX, command_str)
+
+  def Adjust(self, resource):
+    resource.template.container.command = self._commands
+
+
+class ContainerArgsChange(ConfigChanger):
+  """Represents the user intent to change the 'args' for the container."""
+
+  def __init__(self, args_str):
+    self._args = re.findall(
+        _WHITESPACE_WITH_DOUBEL_QUOTES_REGEX, args_str)
+
+  def Adjust(self, resource):
+    resource.template.container.args = self._args

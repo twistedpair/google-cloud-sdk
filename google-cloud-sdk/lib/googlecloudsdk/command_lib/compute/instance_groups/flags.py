@@ -232,10 +232,6 @@ def ValidateStatefulDisksDict(stateful_disks, flag_name):
 
 
 def ValidateManagedInstanceGroupStatefulProperties(args):
-  if args.IsSpecified('stateful_disk') and args.IsSpecified(
-      'stateful_names') and not args.GetValue('stateful_names'):
-    raise exceptions.ConflictingArgumentsException('--stateful-disk',
-                                                   '--no-stateful-names')
   ValidateStatefulDisksDict(args.stateful_disk, '--stateful-disk')
 
 
@@ -310,16 +306,6 @@ AUTO_DELETE_ARG_HELP = """
       """
 
 
-def AddMigStatefulNamesFlag(parser):
-  parser.add_argument(
-      '--stateful-names',
-      action='store_true',
-      default=False,
-      help='Enable stateful names of instances. Whenever instances with those '
-      'names are restarted or recreated, they will have the same names as '
-      'before. Use --no-stateful-names to disable stateful names.')
-
-
 def AddMigCreateStatefulFlags(parser):
   """Adding stateful flags for disks and names to the parser."""
   stateful_disks_help = STATEFUL_DISKS_HELP + """
@@ -339,7 +325,6 @@ def AddMigCreateStatefulFlags(parser):
       action='append',
       help=stateful_disks_help,
   )
-  AddMigStatefulNamesFlag(parser)
 
 
 def AddMigStatefulFlagsForInstanceConfigs(parser, for_update=False):
@@ -651,7 +636,6 @@ def AddMigUpdateStatefulFlags(parser):
       type=arg_parsers.ArgList(min_length=1),
       help='Stop considering the disks stateful by the instance group.',
   )
-  AddMigStatefulNamesFlag(parser)
 
 
 def ValidateUpdateStatefulPolicyParams(args, current_stateful_policy):
@@ -695,14 +679,6 @@ def ValidateUpdateStatefulPolicyParams(args, current_stateful_policy):
                  'so they cannot be removed from Stateful Policy.'.format(
                      str(not_current_device_names))))
   final_disks = current_device_names.union(update_set).difference(remove_set)
-  if final_disks and args.IsSpecified(
-      'stateful_names') and not args.GetValue('stateful_names'):
-    raise exceptions.InvalidArgumentException(
-        parameter_name='update',
-        message=(
-            'Stateful Policy is not empty, so you cannot mark instance names '
-            'as non-stateful. Current device names are [{}]'.format(
-                str(final_disks))))
   return final_disks
 
 

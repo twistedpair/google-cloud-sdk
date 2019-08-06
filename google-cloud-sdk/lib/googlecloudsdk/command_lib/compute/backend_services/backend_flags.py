@@ -84,7 +84,7 @@ def _GetBalancingModes():
           Spreads load based on how many concurrent connections the backend
           can handle.
 
-          For backend services with --load-balancing-scheme EXTERNAL, you
+          For backend services with --load-balancing-scheme `EXTERNAL`, you
           must specify exactly one of these additional parameters:
           `--max-connections`, `--max-connections-per-instance`, or
           `--max-connections-per-endpoint`.
@@ -94,20 +94,19 @@ def _GetBalancingModes():
           """.format(per_rate_flags),
       'RATE': """\
           Available if the backend service's load balancing scheme is
-          `INTERNAL_SELF_MANAGED` or `EXTERNAL`.
-          Available if the backend service's protocol is one of `HTTP`, `HTTPS`,
-          or `HTTP/2`.
+          `INTERNAL_MANAGED`, `INTERNAL_SELF_MANAGED`, or `EXTERNAL`. Available
+          if the backend service's protocol is one of HTTP, HTTPS, or HTTP/2.
 
           Spreads load based on how many HTTP requests per second (RPS) the
           backend can handle.
 
           You must specify exactly one of these additional parameters:
-          `--max-rate`, `--max-rate-per-instance`, or`--max-rate-per-endpoint`.
+          `--max-rate`, `--max-rate-per-instance`, or `--max-rate-per-endpoint`.
           """.format(utilization_extra_help),
       'UTILIZATION': """\
           Available if the backend service's load balancing scheme is
-          `INTERNAL_SELF_MANAGED` or `EXTERNAL`.
-          Available only for instance group backends.
+          `INTERNAL_MANAGED`, `INTERNAL_SELF_MANAGED`, or `EXTERNAL`. Available only
+          for managed or unmanaged instance group backends.
 
           Spreads load based on the CPU utilization of instances in a backend
           instance group.
@@ -152,7 +151,7 @@ def AddCapacityLimits(parser, support_global_neg=False):
       number of HTTP requests per second (RPS) per endpoint if all endpoints
       are healthy. When one or more endpoints are unhealthy, an effective
       maximum rate per healthy endpoint is calculated by multiplying
-      MAX_RATE_PER_ENDPOINT by the number of endpoints in the network
+      `MAX_RATE_PER_ENDPOINT` by the number of endpoints in the network
       endpoint group, then dividing by the number of healthy endpoints.
       """ + internet_disallowed_clause)
   capacity_group.add_argument(
@@ -163,7 +162,7 @@ def AddCapacityLimits(parser, support_global_neg=False):
       number of connections per endpoint if all endpoints are healthy. When
       one or more endpoints are unhealthy, an effective maximum number of
       connections per healthy endpoint is calculated by multiplying
-      MAX_CONNECTIONS_PER_ENDPOINT by the number of endpoints in the network
+      `MAX_CONNECTIONS_PER_ENDPOINT` by the number of endpoints in the network
       endpoint group, then dividing by the number of healthy endpoints.
       """ + internet_disallowed_clause)
 
@@ -184,7 +183,7 @@ def AddCapacityLimits(parser, support_global_neg=False):
       HTTP requests per second (RPS) per instance if all instances in the
       instance group are healthy. When one or more instances are unhealthy,
       an effective maximum RPS per healthy instance is calculated by
-      multiplying MAX_RATE_PER_INSTANCE by the number of instances in the
+      multiplying `MAX_RATE_PER_INSTANCE` by the number of instances in the
       instance group, then dividing by the number of healthy instances. This
       parameter is compatible with managed instance group backends that use
       autoscaling based on load balancing.
@@ -204,7 +203,7 @@ def AddCapacityLimits(parser, support_global_neg=False):
       of concurrent connections per instance if all instances in the
       instance group are healthy. When one or more instances are
       unhealthy, an effective maximum number of connections per healthy
-      instance is calculated by multiplying MAX_CONNECTIONS_PER_INSTANCE
+      instance is calculated by multiplying `MAX_CONNECTIONS_PER_INSTANCE`
       by the number of instances in the instance group, then dividing by
       the number of healthy instances.
       """)

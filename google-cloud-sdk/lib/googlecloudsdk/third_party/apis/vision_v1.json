@@ -7791,6 +7791,11 @@
       "description": "Stores image quality scores, could be aesthetic quality or technical quality.",
       "type": "object",
       "properties": {
+        "qualityScore": {
+          "description": "A score representing the aesthetic\/technical quality of the image. The\nscore is in range [0, 1]. Higher value corresponds to more professional\nlooking photos. 0 means the image looks very bad, 1 means the image with\nvery high quality.",
+          "type": "number",
+          "format": "float"
+        }
       }
     },
     "GoogleCloudVisionV1p4beta1QualityOptimizationResult": {

@@ -29,25 +29,26 @@ class AppEngineHttpRequest(_messages.Message):
   Google, you cannot explicitly set the protocol (for example, HTTP or HTTPS).
   The request to the handler, however, will appear to have used the HTTP
   protocol.  The AppEngineRouting used to construct the URL that the task is
-  delivered to can be set at the queue-level or task-level:  * If set,
-  app_engine_routing_override    is used for all tasks in the queue, no matter
-  what the setting    is for the    task-level app_engine_routing.   The `url`
-  that the task will be sent to is:  * `url =` host `+`   relative_uri  Tasks
-  can be dispatched to secure app handlers, unsecure app handlers, and URIs
-  restricted with [`login: admin`](https://cloud.google.com/appengine/docs/sta
-  ndard/python/config/appref). Because tasks are not run as any user, they
-  cannot be dispatched to URIs restricted with [`login: required`](https://clo
-  ud.google.com/appengine/docs/standard/python/config/appref) Task dispatches
-  also do not follow redirects.  The task attempt has succeeded if the app's
-  request handler returns an HTTP response code in the range [`200` - `299`].
-  The task attempt has failed if the app's handler returns a non-2xx response
-  code or Cloud Tasks does not receive response before the deadline. Failed
-  tasks will be retried according to the retry configuration. `503` (Service
-  Unavailable) is considered an App Engine system error instead of an
-  application error and will cause Cloud Tasks' traffic congestion control to
-  temporarily throttle the queue's dispatches. Unlike other types of task
-  targets, a `429` (Too Many Requests) response from an app handler does not
-  cause traffic congestion control to throttle the queue.
+  delivered to can be set at the queue-level or task-level:  * If
+  app_engine_routing_override is set on the    queue, this value is used for
+  all    tasks in the queue, no matter what the setting is for the task-level
+  app_engine_routing.   The `url` that the task will be sent to is:  * `url =`
+  host `+`   relative_uri  Tasks can be dispatched to secure app handlers,
+  unsecure app handlers, and URIs restricted with [`login: admin`](https://clo
+  ud.google.com/appengine/docs/standard/python/config/appref). Because tasks
+  are not run as any user, they cannot be dispatched to URIs restricted with
+  [`login: required`](https://cloud.google.com/appengine/docs/standard/python/
+  config/appref) Task dispatches also do not follow redirects.  The task
+  attempt has succeeded if the app's request handler returns an HTTP response
+  code in the range [`200` - `299`]. The task attempt has failed if the app's
+  handler returns a non-2xx response code or Cloud Tasks does not receive
+  response before the deadline. Failed tasks will be retried according to the
+  retry configuration. `503` (Service Unavailable) is considered an App Engine
+  system error instead of an application error and will cause Cloud Tasks'
+  traffic congestion control to temporarily throttle the queue's dispatches.
+  Unlike other types of task targets, a `429` (Too Many Requests) response
+  from an app handler does not cause traffic congestion control to throttle
+  the queue.
 
   Enums:
     HttpMethodValueValuesEnum: The HTTP method to use for the request. The
@@ -90,9 +91,10 @@ class AppEngineHttpRequest(_messages.Message):
       documentation.
 
   Fields:
-    appEngineRouting: Task-level setting for App Engine routing.  If set,
-      app_engine_routing_override is used for all tasks in the queue, no
-      matter what the setting is for the task-level app_engine_routing.
+    appEngineRouting: Task-level setting for App Engine routing.  * If
+      app_engine_routing_override is set on the    queue, this value is used
+      for all    tasks in the queue, no matter what the setting is for the
+      task-level    app_engine_routing.
     body: HTTP request body.  A request body is allowed only if the HTTP
       method is POST or PUT. It is an error to set a body on a task with an
       incompatible HttpMethod.
@@ -234,7 +236,10 @@ class AppEngineRouting(_messages.Message):
   routing](https://cloud.google.com/appengine/docs/standard/python/how-
   requests-are-routed), and [App Engine Flex request
   routing](https://cloud.google.com/appengine/docs/flexible/python/how-
-  requests-are-routed).
+  requests-are-routed).  Using AppEngineRouting requires
+  [`appengine.applications.get`](https://cloud.google.com/appengine/docs
+  /admin-api/access-control) Google IAM permission for the project and the
+  following scope:  `https://www.googleapis.com/auth/cloud-platform`
 
   Fields:
     host: Output only. The host that the task is sent to.  The host is
@@ -1102,7 +1107,7 @@ class RateLimits(_messages.Message):
       out of tokens. The bucket will be continuously refilled with new tokens
       based on max_dispatches_per_second.  Cloud Tasks will pick the value of
       `max_burst_size` based on the value of max_dispatches_per_second.  For
-      App Engine queues that were created or updated using `queue.yaml/xml`,
+      queues that were created or updated using `queue.yaml/xml`,
       `max_burst_size` is equal to [bucket_size](https://cloud.google.com/appe
       ngine/docs/standard/python/config/queueref#bucket_size). Since
       `max_burst_size` is output only, if UpdateQueue is called on a queue
@@ -1119,10 +1124,9 @@ class RateLimits(_messages.Message):
       on/config/queueref#max_concurrent_requests).
     maxDispatchesPerSecond: The maximum rate at which tasks are dispatched
       from this queue.  If unspecified when the queue is created, Cloud Tasks
-      will pick the default.  * For App Engine queues, the maximum allowed
-      value   is 500.   This field has the same meaning as [rate in queue.yaml
-      /xml](https://cloud.google.com/appengine/docs/standard/python/config/que
-      ueref#rate).
+      will pick the default.  * The maximum allowed value is 500.   This field
+      has the same meaning as [rate in queue.yaml/xml](https://cloud.google.co
+      m/appengine/docs/standard/python/config/queueref#rate).
   """
 
   maxBurstSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1427,9 +1431,8 @@ class Task(_messages.Message):
       maximum length is 500 characters.
     responseCount: Output only. The number of attempts which have received a
       response.
-    scheduleTime: The time when the task is scheduled to be attempted.  For
-      App Engine queues, this is when the task will be attempted or retried.
-      `schedule_time` will be truncated to the nearest microsecond.
+    scheduleTime: The time when the task is scheduled to be attempted or
+      retried.  `schedule_time` will be truncated to the nearest microsecond.
     view: Output only. The view specifies which subset of the Task has been
       returned.
   """

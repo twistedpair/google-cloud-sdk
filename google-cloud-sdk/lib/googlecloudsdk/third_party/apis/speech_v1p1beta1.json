@@ -293,11 +293,11 @@
           "type": "boolean"
         },
         "enableSpeakerDiarization": {
-          "description": "*Optional* If 'true', enables speaker detection for each recognized word in\nthe top alternative of the recognition result using a speaker_tag provided\nin the WordInfo.\nNote: Use diarization_config instead. This field will be DEPRECATED soon.",
+          "description": "*Optional* If 'true', enables speaker detection for each recognized word in\nthe top alternative of the recognition result using a speaker_tag provided\nin the WordInfo.\nNote: Use diarization_config instead.",
           "type": "boolean"
         },
         "diarizationSpeakerCount": {
-          "description": "*Optional*\nIf set, specifies the estimated number of speakers in the conversation.\nIf not set, defaults to '2'.\nIgnored unless enable_speaker_diarization is set to true.\"\nNote: Use diarization_config instead. This field will be DEPRECATED soon.",
+          "description": "*Optional*\nIf set, specifies the estimated number of speakers in the conversation.\nDefaults to '2'. Ignored unless enable_speaker_diarization is set to true.\nNote: Use diarization_config instead.",
           "type": "integer",
           "format": "int32"
         },
@@ -340,6 +340,7 @@
     },
     "SpeakerDiarizationConfig": {
       "id": "SpeakerDiarizationConfig",
+      "description": "*Optional* Config to enable speaker diarization.",
       "type": "object",
       "properties": {
         "enableSpeakerDiarization": {
@@ -347,12 +348,12 @@
           "type": "boolean"
         },
         "minSpeakerCount": {
-          "description": "*Optional* Only used if diarization_speaker_count is not set.\nMinimum number of speakers in the conversation. This range gives you more\nflexibility by allowing the system to automatically determine the correct\nnumber of speakers. If not set, the default value is 2.",
+          "description": "*Optional*\nMinimum number of speakers in the conversation. This range gives you more\nflexibility by allowing the system to automatically determine the correct\nnumber of speakers. If not set, the default value is 2.",
           "type": "integer",
           "format": "int32"
         },
         "maxSpeakerCount": {
-          "description": "*Optional* Only used if diarization_speaker_count is not set.\nMaximum number of speakers in the conversation. This range gives you more\nflexibility by allowing the system to automatically determine the correct\nnumber of speakers. If not set, the default value is 6.",
+          "description": "*Optional*\nMaximum number of speakers in the conversation. This range gives you more\nflexibility by allowing the system to automatically determine the correct\nnumber of speakers. If not set, the default value is 6.",
           "type": "integer",
           "format": "int32"
         }

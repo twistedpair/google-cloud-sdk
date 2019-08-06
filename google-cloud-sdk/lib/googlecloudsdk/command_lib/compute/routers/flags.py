@@ -49,19 +49,6 @@ _BFD_SESSION_INITIALIZATION_MODE_CHOICES = {
         'BFD is disabled for this BGP peer.',
 }
 
-_BFD_PACKET_MODE_CHOICES = {
-    'CONTROL_AND_ECHO':
-        'BFD echo mode is enabled for this BGP peer. If the peer router also '
-        'has BFD echo mode enabled, BFD echo packets will be sent to the other'
-        ' router. If the peer router does not have BFD echo mode enabled, only'
-        ' control packets will be sent.',
-    'CONTROL_ONLY':
-        'BFD echo mode is disabled for this BGP peer. If this router and the '
-        'peer router have a multi-hop connection, BFD_PACKET_MODE should be '
-        'set to CONTROL_ONLY as BFD echo mode is only supported on single hop '
-        'connections.',
-}
-
 
 class RoutersCompleter(compute_completers.ListCommandCompleter):
 
@@ -265,12 +252,9 @@ def AddBgpPeerArgs(parser,
             upper_bound='30000ms',
             parsed_unit='ms'),
         hidden=True,
-        help='The minimum transmit interval between BFD packets. If BFD echo '
-        'mode is enabled on both this router and the peer router this sets the '
-        'minimum transmit interval of BFD echo packets. Otherwise, this sets '
-        'the minimum transmit interval of BFD control packets. The default is '
-        '300 milliseconds. See $ gcloud topic datetimes for information on '
-        'duration formats.')
+        help='The minimum transmit interval between BFD control packets. The '
+        'default is 300 milliseconds. See $ gcloud topic datetimes for '
+        'information on duration formats.')
     bfd_group.add_argument(
         '--bfd-min-receive-interval',
         type=arg_parsers.Duration(
@@ -279,45 +263,15 @@ def AddBgpPeerArgs(parser,
             upper_bound='30000ms',
             parsed_unit='ms'),
         hidden=True,
-        help='The minimum receive interval between BFD packets. If BFD echo '
-        'mode is enabled on both this router and the peer router this sets the '
-        'minimum receive interval of BFD echo packets. Otherwise, this sets '
-        'the minimum receive interval of BFD control packets. The default is '
-        '300 milliseconds. See $ gcloud topic datetimes for information on '
-        'duration formats.')
+        help='The minimum receive interval between BFD control packets. The '
+        'default is 300 milliseconds. See $ gcloud topic datetimes for '
+        'information on duration formats.')
     bfd_group.add_argument(
         '--bfd-multiplier',
         type=int,
         hidden=True,
         help='The number of consecutive BFD control packets that must be '
         'missed before BFD declares that a peer is unavailable.')
-    bfd_group.add_argument(
-        '--bfd-packet-mode',
-        choices=_BFD_PACKET_MODE_CHOICES,
-        type=lambda mode: mode.upper(),
-        metavar='BFD_PACKET_MODE',
-        hidden=True,
-        help='The BGP packet mode for this BGP peer. Must be one of:\n\n'
-        'CONTROL_AND_ECHO - BFD echo mode is enabled for this BGP peer. If the '
-        'peer router also has BFD echo mode enabled, BFD echo packets will be '
-        'sent to the other router. If the peer router does not have BFD echo '
-        'mode enabled, only control packets will be sent.\n\n'
-        'CONTROL_ONLY - BFD echo mode is disabled for this BGP peer. If this '
-        'router and the peer router have a multi-hop connection, '
-        'BFD_PACKET_MODE should be set to CONTROL_ONLY as BFD echo mode is '
-        'only supported on single hop connections.')
-    bfd_group.add_argument(
-        '--bfd-slow-timer-interval',
-        type=arg_parsers.Duration(
-            default_unit='ms',
-            lower_bound='1000ms',
-            upper_bound='30000ms',
-            parsed_unit='ms'),
-        hidden=True,
-        help='The transmit and receive interval between BFD control packets in '
-        'milliseconds if echo mode is enabled on both this router and the peer '
-        'router. The default is 5000 milliseconds. See $ gcloud topic '
-        'datetimes for information on duration formats.')
     enabled_display_help = (
         'If enabled, the peer connection can be established with routing '
         'information. If disabled, any active session with the peer is '

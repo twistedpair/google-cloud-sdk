@@ -1230,6 +1230,11 @@
           "items": {
             "$ref": "WindowsDetail"
           }
+        },
+        "sourceUpdateTime": {
+          "description": "The time this information was last changed at the source. This is an\nupstream timestamp from the underlying information source - e.g. Ubuntu\nsecurity tracker.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -1281,6 +1286,11 @@
         "isObsolete": {
           "description": "Whether this detail is obsolete. Occurrences are expected not to point to\nobsolete details.",
           "type": "boolean"
+        },
+        "sourceUpdateTime": {
+          "description": "The time this information was last changed at the source. This is an\nupstream timestamp from the underlying information source - e.g. Ubuntu\nsecurity tracker.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

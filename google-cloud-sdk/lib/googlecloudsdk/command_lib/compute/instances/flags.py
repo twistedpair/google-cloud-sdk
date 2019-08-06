@@ -496,7 +496,8 @@ def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False,
 
 def AddCreateDiskArgs(parser, enable_kms=False, enable_snapshots=False,
                       container_mount_enabled=False, resource_policy=False,
-                      csek_key_file=False):
+                      source_snapshot_csek=False,
+                      image_csek=False):
   """Adds create-disk argument for instances and instance-templates."""
 
   disk_device_name_help = _GetDiskDeviceNameHelp(
@@ -632,23 +633,43 @@ def AddCreateDiskArgs(parser, enable_kms=False, enable_snapshots=False,
       """
     spec['disk-resource-policy'] = arg_parsers.ArgList(max_length=1)
 
+  if source_snapshot_csek:
+    disk_help += """
+      *source-snapshot-csek-required*::: The CSK protected source disk snapshot
+      that will be used to create the disk. This can be provided as a full URL
+      to the snapshot or just the snapshot name. For example, the following
+      are valid values:
+       * https://www.googleapis.com/compute/v1/projects/myproject/global/snapshots/snapshot
+       * snapshot
+      Must be specified with `source-snapshot-csek-key-file`.
+
+      *source-snapshot-csek-key-file::: Path to a Customer-Supplied Encryption
+      Key (CSEK) key file for the source snapshot. Must be specified with
+      `source-snapshot-csek-required`.
+      """
+    spec['source-snapshot-csek-key-file'] = str
+
+  if image_csek:
+    disk_help += """
+      *image-csek-required*::: Specifies the name of the CSK protected image
+      that the disk will be initialized with. A new disk will be created based
+      on the given image. To view a list of public images and projects, run
+      `$ gcloud compute images list`. It is best practice to use image when
+      a specific version of an image is needed. If both image and image-family
+      flags are omitted a blank disk will be created. Must be specified with
+      `image-csek-key-file`.
+
+      *image-csek-key-file::: Path to a Customer-Supplied Encryption Key (CSEK)
+      key file for the image. Must be specified with `image-csek-required`.
+    """
+    spec['image-csek-key-file'] = str
+
   parser.add_argument(
       '--create-disk',
       type=arg_parsers.ArgDict(spec=spec),
       action='append',
       metavar='PROPERTY=VALUE',
       help=disk_help)
-  if csek_key_file:
-    disk_help += """
-      *image-csek-key-file::: Path to a Customer-Supplied Encryption Key (CSEK)
-      key file for the image. Specified iff image is specified and the
-      image is CSEK protected.
-
-       *source-snapshot-csek-key-file::: Path to a Customer-Supplied Encryption
-       Key (CSEK) key file for the source snapshot. Specified iff
-       source-snapshot is provided and the snapshot is CSEK protected.
-    """
-    spec['csek-key-file'] = str
 
 
 def AddCustomMachineTypeArgs(parser):
@@ -758,12 +779,17 @@ def GetAddressRef(resources, address, region):
       })
 
 
-def ValidateDiskFlags(args, enable_kms=False, enable_snapshots=False):
+def ValidateDiskFlags(args, enable_kms=False, enable_snapshots=False,
+                      enable_source_snapshot_csek=False,
+                      enable_image_csek=False):
   """Validates the values of all disk-related flags."""
   ValidateDiskCommonFlags(args)
   ValidateDiskAccessModeFlags(args)
   ValidateDiskBootFlags(args, enable_kms=enable_kms)
-  ValidateCreateDiskFlags(args, enable_snapshots=enable_snapshots)
+  ValidateCreateDiskFlags(
+      args, enable_snapshots=enable_snapshots,
+      enable_source_snapshot_csek=enable_source_snapshot_csek,
+      enable_image_csek=enable_image_csek)
 
 
 def ValidateDiskCommonFlags(args):
@@ -870,7 +896,9 @@ def ValidateDiskBootFlags(args, enable_kms=False):
             'boot disk.')
 
 
-def ValidateCreateDiskFlags(args, enable_snapshots=False):
+def ValidateCreateDiskFlags(args, enable_snapshots=False,
+                            enable_source_snapshot_csek=False,
+                            enable_image_csek=False):
   """Validates the values of create-disk related flags."""
   require_csek_key_create = getattr(args, 'require_csek_key_create', None)
   csek_key_file = getattr(args, 'csek_key_file', None)
@@ -895,6 +923,8 @@ def ValidateCreateDiskFlags(args, enable_snapshots=False):
     image_value = disk.get('image')
     image_family_value = disk.get('image-family')
     source_snapshot = disk.get('source-snapshot')
+    image_csek_file = disk.get('image_csek')
+    source_snapshot_csek_file = disk.get('source_snapshot_csek_file')
 
     disk_source = set()
     if image_value:
@@ -903,15 +933,24 @@ def ValidateCreateDiskFlags(args, enable_snapshots=False):
       disk_source.add(image_family_value)
     if source_snapshot:
       disk_source.add(source_snapshot)
+    if image_csek_file:
+      disk_source.add(image_csek_file)
+    if source_snapshot_csek_file:
+      disk_source.add(source_snapshot_csek_file)
 
-    source_error_message = (
-        'Cannot specify [image] and [image-family] for a '
-        '[--create-disk]. The fields are mutually exclusive.')
+    mutex_attributes = ['[image]', '[image-family]']
+    if enable_image_csek:
+      mutex_attributes.append('[image-csek-required]')
     if enable_snapshots:
-      source_error_message = (
-          'Must specify exactly one of [image], [image-family] or '
-          '[source-snapshot] for a [--create-disk]. '
-          'These fields are mutually exclusive.')
+      mutex_attributes.append('[source-snapshot]')
+    if enable_source_snapshot_csek:
+      mutex_attributes.append('[source-snapshot-csek-required]')
+    formatted_attributes = '{}, or {}'.format(', '.join(mutex_attributes[:-1]),
+                                              mutex_attributes[-1])
+    source_error_message = (
+        'Must specify exactly one of {} for a '
+        '[--create-disk]. These fields are mutually exclusive.'.format(
+            formatted_attributes))
     if len(disk_source) > 1:
       raise exceptions.ToolException(source_error_message)
 
@@ -1350,7 +1389,7 @@ def ValidatePublicDnsFlags(args):
 
   network_interface = getattr(args, 'network_interface', None)
   public_dns = getattr(args, 'public_dns', None)
-  if public_dns is True:
+  if public_dns:
     if (network_interface is not None and
         network_interface != constants.DEFAULT_NETWORK_INTERFACE):
       raise exceptions.ToolException(

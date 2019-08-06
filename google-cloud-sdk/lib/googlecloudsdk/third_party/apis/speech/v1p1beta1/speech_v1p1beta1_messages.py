@@ -524,9 +524,9 @@ class RecognitionConfig(_messages.Message):
       provided only in the top alternative of the FINAL
       SpeechRecognitionResult.
     diarizationSpeakerCount: *Optional* If set, specifies the estimated number
-      of speakers in the conversation. If not set, defaults to '2'. Ignored
-      unless enable_speaker_diarization is set to true." Note: Use
-      diarization_config instead. This field will be DEPRECATED soon.
+      of speakers in the conversation. Defaults to '2'. Ignored unless
+      enable_speaker_diarization is set to true. Note: Use diarization_config
+      instead.
     enableAutomaticPunctuation: *Optional* If 'true', adds punctuation to
       recognition result hypotheses. This feature is only available in select
       languages. Setting this for requests in other languages has no effect at
@@ -544,7 +544,7 @@ class RecognitionConfig(_messages.Message):
     enableSpeakerDiarization: *Optional* If 'true', enables speaker detection
       for each recognized word in the top alternative of the recognition
       result using a speaker_tag provided in the WordInfo. Note: Use
-      diarization_config instead. This field will be DEPRECATED soon.
+      diarization_config instead.
     enableWordConfidence: *Optional* If `true`, the top result includes a list
       of words and the confidence for those words. If `false`, no word-level
       confidence information is returned. The default is `false`.
@@ -865,20 +865,20 @@ class RefreshDataRequest(_messages.Message):
 
 
 class SpeakerDiarizationConfig(_messages.Message):
-  r"""A SpeakerDiarizationConfig object.
+  r"""*Optional* Config to enable speaker diarization.
 
   Fields:
     enableSpeakerDiarization: *Optional* If 'true', enables speaker detection
       for each recognized word in the top alternative of the recognition
       result using a speaker_tag provided in the WordInfo.
-    maxSpeakerCount: *Optional* Only used if diarization_speaker_count is not
-      set. Maximum number of speakers in the conversation. This range gives
-      you more flexibility by allowing the system to automatically determine
-      the correct number of speakers. If not set, the default value is 6.
-    minSpeakerCount: *Optional* Only used if diarization_speaker_count is not
-      set. Minimum number of speakers in the conversation. This range gives
-      you more flexibility by allowing the system to automatically determine
-      the correct number of speakers. If not set, the default value is 2.
+    maxSpeakerCount: *Optional* Maximum number of speakers in the
+      conversation. This range gives you more flexibility by allowing the
+      system to automatically determine the correct number of speakers. If not
+      set, the default value is 6.
+    minSpeakerCount: *Optional* Minimum number of speakers in the
+      conversation. This range gives you more flexibility by allowing the
+      system to automatically determine the correct number of speakers. If not
+      set, the default value is 2.
   """
 
   enableSpeakerDiarization = _messages.BooleanField(1)

@@ -72,7 +72,7 @@ class GkehubV1beta1(base_api.BaseApiClient):
         method_id=u'gkehub.projects.locations.global.connectAgents.generateManifest',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'connectAgent_name', u'connectAgent_namespace', u'connectAgent_proxy', u'version'],
+        query_params=[u'connectAgent_name', u'connectAgent_namespace', u'connectAgent_proxy', u'isUpgrade', u'version'],
         relative_path=u'v1beta1/{+parent}:generateManifest',
         request_field='',
         request_type_name=u'GkehubProjectsLocationsGlobalConnectAgentsGenerateManifestRequest',

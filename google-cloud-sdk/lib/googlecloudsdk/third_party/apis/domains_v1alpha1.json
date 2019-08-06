@@ -418,6 +418,34 @@
         "yearlyPrice": {
           "description": "Create only. Yearly price to register or renew the domain.\nRequired for confirmation of the price when creating a new registration.\nYearly price that should be put here can be obtained from\nCheckAvailability or SearchAvailability calls.",
           "$ref": "Money"
+        },
+        "billingMethod": {
+          "description": "The billing method for this Registration.",
+          "enumDescriptions": [
+            "The billing relationship is undefined.",
+            "Google Cloud will charge you for this registration. The registration will\nautomatically renew until you delete this resource. Note that\nregistrations are usually in increments of one year, so you may continue\nto see charges on your monthly bill until the full year elapses.\n\nSetting the `billing_method` field to this value will cancel any\nalternate payment arrangements and enable automatic renewals. Billing\nwill begin when the domain is next renewed, on or around its current\nexpiration date.",
+            "Billing is handled through some other method. Visit\nhttps:\/\/domains.google.com\/m\/registrar\/[domain-name] to manage the\ndomain's current billing & renewal settings.\n\nSetting the `billing_method` field to this value will disable automatic\nrenewals and require you to visit Google Domains\nto set up billing at some point before the domain's expiration."
+          ],
+          "type": "string",
+          "enum": [
+            "BILLING_METHOD_UNSPECIFIED",
+            "GOOGLE_CLOUD",
+            "OTHER"
+          ]
+        },
+        "renewalMethod": {
+          "description": "Output only. The renewal method for this Registration.",
+          "enumDescriptions": [
+            "The renewal method is undefined.",
+            "Your domain will be automatically renewed each year, and will be billed\naccording to the billing method specified in the `billed_by` field. If\nyour billing method is `BILLED_BY_GOOGLE_CLOUD`, automatic renewal is the\nonly supported renewal method.",
+            "To keep your domain, you must explicitly renew it each year before its\nexpiration date. The manual renewal option is only available when your\nRegistration is billed through a separate service such as Google Domains.\nVisit https:\/\/domains.google.com\/m\/registrar\/[domain-name]\nto manage the domain's current billing & renewal settings."
+          ],
+          "type": "string",
+          "enum": [
+            "RENEWAL_METHOD_UNSPECIFIED",
+            "AUTOMATIC_RENEWAL",
+            "MANUAL_RENEWAL"
+          ]
         }
       }
     },
@@ -537,6 +565,13 @@
           "description": "Optional. The name of the organization at the address.",
           "type": "string"
         }
+      }
+    },
+    "ReattachRegistrationRequest": {
+      "id": "ReattachRegistrationRequest",
+      "description": "Request for the `ReattachRegistration` method.",
+      "type": "object",
+      "properties": {
       }
     },
     "DetachRegistrationRequest": {
@@ -1389,6 +1424,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Creates a new Registration, i.e. attempts to register the domain, in a\ngiven project and location"
+                },
+                "reattach": {
+                  "id": "domains.projects.locations.registrations.reattach",
+                  "path": "v1alpha1/{+name}:reattach",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}:reattach",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the Registration to reattach. Must be in the format\n`projects\/*\/locations\/*\/registrations\/*`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "ReattachRegistrationRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Reattach a Registration, reenabling Cloud Domains management. Can only be\napplied to existing resources in the `DETACHED` state that are not expired,\nstill managed by Google Domains, and accessible to the caller."
                 },
                 "patch": {
                   "id": "domains.projects.locations.registrations.patch",
