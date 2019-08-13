@@ -113,7 +113,7 @@ class _ImportFile(_BaseImport):
         self.content = files.ReadFileContents(self.full_path)
       except files.Error as e:
         raise exceptions.ConfigError(
-            "Unable to read file '%s'. %s" % (self.full_path, str(e)))
+            "Unable to read file '%s'. %s" % (self.full_path, six.text_type(e)))
     return self.content
 
   def BuildChildPath(self, child_path):

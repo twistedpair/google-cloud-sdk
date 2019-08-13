@@ -26,6 +26,7 @@ from googlecloudsdk.command_lib.projects import util as  projects_command_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
+import six
 
 
 _ENTER_PROJECT_ID_MESSAGE = """\
@@ -52,7 +53,7 @@ def _GetProjectIds(limit=None):
     projects = projects_api.List(limit=limit)
     return sorted([project.projectId for project in projects])
   except Exception as err:  # pylint: disable=broad-except
-    log.warning('Listing available projects failed: %s', str(err))
+    log.warning('Listing available projects failed: %s', six.text_type(err))
     return None
 
 
@@ -139,7 +140,7 @@ def _CreateProject(project_id, project_ids):
                 '    $ gcloud projects create {project}\n'
                 'or change to another project using\n'
                 '    $ gcloud config set project <PROJECT ID>'.format(
-                    err=str(err), project=project_id))
+                    err=six.text_type(err), project=project_id))
     return None
   return project_id
 

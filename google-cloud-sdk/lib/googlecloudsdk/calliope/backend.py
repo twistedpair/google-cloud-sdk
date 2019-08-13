@@ -39,7 +39,6 @@ from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
-from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import text
 import six
 
@@ -635,16 +634,6 @@ class CommandGroup(CommandCommon):
     Returns:
       _CommandCommon, The loaded sub element, or None if it did not exist.
     """
-    # TODO(b/71714857): Remove once all surfaces support py3.
-    if not self._common_type._allow_py3:  # pylint: disable=protected-access
-      try:
-        platforms.PythonVersion().IsCompatible(
-            allow_py3=False, raise_exception=True)
-      except platforms.Error:
-        raise exceptions.ToolException(
-            'This command is not yet compatible with Python 3.\n' +
-            platforms.PythonVersion.ENV_VAR_MESSAGE)
-
     name = name.replace('-', '_')
 
     # See if this element has already been loaded.

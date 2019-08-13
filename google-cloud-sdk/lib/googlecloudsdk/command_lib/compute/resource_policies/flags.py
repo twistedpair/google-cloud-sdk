@@ -117,6 +117,18 @@ def AddCycleFrequencyArgs(parser, flag_suffix, start_time_help,
         """.format(flag_suffix))
 
 
+def AddMaxPercentArg(parser):
+  parser.add_argument(
+      '--max-percent',
+      help='Sets maximum percentage of instances in the group that can '
+           'undergo simultaneous maintenance. If this flag is not specified '
+           'default value of 1% will be set. Usage example: `--max-percent=10` '
+           'sets to 10%.',
+      type=arg_parsers.BoundedInt(lower_bound=1, upper_bound=100),
+      default=1
+  )
+
+
 def AddCommonArgs(parser):
   parser.add_argument(
       '--description',

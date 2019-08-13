@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.compute import managed_instance_groups_utils
 from googlecloudsdk.api_lib.compute import path_simplifier
+import six
 
 
 class InstanceConfigsGetterWithSimpleCache(object):
@@ -57,12 +58,12 @@ class InstanceConfigsGetterWithSimpleCache(object):
       if per_instance_config is None:
         raise managed_instance_groups_utils.ResourceNotFoundException(
             'Instance config for {instance} does not exist'.format(
-                instance=instance_ref.SelfLink()))
+                instance=instance_ref))
     else:
       if per_instance_config is not None:
         raise managed_instance_groups_utils.ResourceAlreadyExistsException(
             'Instance config for {instance} already exists'.format(
-                instance=instance_ref.SelfLink()))
+                instance=instance_ref))
 
   @staticmethod
   def _build_key(igm_ref, instance_ref):
@@ -71,7 +72,7 @@ class InstanceConfigsGetterWithSimpleCache(object):
 
   def _do_get_instance_config(self, igm_ref, instance_ref):
     """Returns instance config for given instance."""
-    instance_name = path_simplifier.Name(str(instance_ref))
+    instance_name = path_simplifier.Name(six.text_type(instance_ref))
     filter_param = 'name eq {0}'.format(instance_name)
     if igm_ref.Collection() == 'compute.instanceGroupManagers':
       service = self._client.apitools_client.instanceGroupManagers

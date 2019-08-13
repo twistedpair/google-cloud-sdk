@@ -22,6 +22,7 @@ import re
 
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util.apis import arg_utils
+import six
 
 
 STANDBY_NAME = 'standby'
@@ -210,7 +211,8 @@ def ParseInstanceActionFlag(flag_name, instance_action_str, messages):
   }
   if instance_action_str not in instance_actions_enum_map:
     raise exceptions.InvalidArgumentException(
-        flag_name, 'unknown instance action: ' + str(instance_action_str))
+        flag_name,
+        'unknown instance action: ' + six.text_type(instance_action_str))
   return instance_actions_enum_map[instance_action_str]
 
 

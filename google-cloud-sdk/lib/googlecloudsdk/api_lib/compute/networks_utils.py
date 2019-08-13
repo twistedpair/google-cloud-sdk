@@ -66,4 +66,7 @@ def CreateNetworkResourceFromArgs(messages, network_ref, network_args):
         messages.NetworkRoutingConfig.RoutingModeValueValuesEnum(
             network_args.bgp_routing_mode.upper()))
 
+  if hasattr(network_args, 'mtu') and network_args.mtu is not None:
+    network.mtu = network_args.mtu
+
   return network

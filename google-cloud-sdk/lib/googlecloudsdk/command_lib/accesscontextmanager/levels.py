@@ -29,6 +29,7 @@ from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import yaml
+import six
 
 COLLECTION = 'accesscontextmanager.accessPolicies.accessLevels'
 
@@ -50,7 +51,7 @@ class InvalidFormatError(ParseError):
                'conditions, which are YAML objects with the fields [{}]. For '
                'example:\n\n'
                ' - ipSubnetworks:\n'
-               '   - 192.168.100.14/24\n'
+               '   - 162.222.181.197/24\n'
                '   - 2001:db8::/48\n'
                ' - members:\n'
                '   - user:user@example.com').format(reason,
@@ -109,7 +110,7 @@ def ParseBasicLevelConditionsBase(path, version=None):
   try:
     conditions = [encoding.DictToMessage(c, message_class) for c in data]
   except Exception as err:
-    raise InvalidFormatError(path, str(err), message_class)
+    raise InvalidFormatError(path, six.text_type(err), message_class)
 
   _ValidateAllFieldsRecognized(path, conditions)
   return conditions
@@ -178,7 +179,7 @@ def AddLevelSpecArgs(parser, version=None):
       'reference. For example:\n\n'
       '    ```\n'
       '     - ipSubnetworks:\n'
-      '       - 192.168.100.14/24\n'
+      '       - 162.222.181.197/24\n'
       '       - 2001:db8::/48\n'
       '     - members\n'
       '       - user:user@example.com\n'

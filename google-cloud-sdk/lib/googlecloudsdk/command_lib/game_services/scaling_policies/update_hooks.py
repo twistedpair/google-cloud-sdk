@@ -75,10 +75,11 @@ def GetRequestMessage(resource_ref):
 
 
 def MatchClusters(ref, args, req):
-  if args.match_clusters:
+  if args.match_clusters or args.clear_match_clusters:
     req = utils.AddFieldToUpdateMask('cluster_selectors.labels', req)
     if req.scalingPolicy is None:
       req.scalingPolicy = utils.GetApiMessage(ref).ScalingPolicy()
+  if args.match_clusters:
     req.scalingPolicy.clusterSelectors = utils.ParseMatchClusters(
         ref, args.match_clusters)
   return req

@@ -434,6 +434,12 @@ apis:
       resources:
         iamPolicies:
           path: iamPolicies
+  iamassist:
+    v1alpha2:
+      resources:
+        simulator:
+          path: simulator
+      discovery_doc: iamassist_v1alpha2.json
   iamcredentials:
     v1:
       discovery_doc: iamcredentials_v1.json
@@ -682,3 +688,6 @@ apis:
   gameservices:
     v1alpha:
       discovery_doc: gameservices_v1alpha.json
+  translate:
+    v3beta1:
+      discovery_doc: translate_v3beta1.json

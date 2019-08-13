@@ -169,7 +169,7 @@ def ParseAction(action, flag_name):
   if deprecation:
     return actions.DeprecationAction(flag_name, **deprecation)
 
-  raise ValueError('Unknown value for action: ' + str(action))
+  raise ValueError('Unknown value for action: ' + six.text_type(action))
 
 
 BUILTIN_TYPES = {
@@ -205,7 +205,7 @@ def ParseType(t):
   if 'arg_dict' in t:
     return ArgDict.FromData(t.get('arg_dict'))
 
-  raise ValueError('Unknown value for type: ' + str(t))
+  raise ValueError('Unknown value for type: ' + six.text_type(t))
 
 
 class Choice(object):

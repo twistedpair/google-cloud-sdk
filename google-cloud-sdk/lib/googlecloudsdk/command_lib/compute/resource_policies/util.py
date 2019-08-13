@@ -74,6 +74,37 @@ def MakeVmMaintenancePolicy(policy_ref, args, messages):
       vmMaintenancePolicy=vm_policy)
 
 
+def MakeVmMaintenanceMaintenanceWindow(policy_ref, args, messages):
+  """Creates a VM Maintenance window policy message from args."""
+  vm_policy = messages.ResourcePolicyVmMaintenancePolicy()
+  _, daily_cycle, _ = _ParseCycleFrequencyArgs(args, messages)
+  vm_policy.maintenanceWindow = \
+    messages.ResourcePolicyVmMaintenancePolicyMaintenanceWindow(
+        dailyMaintenanceWindow=daily_cycle)
+  return messages.ResourcePolicy(
+      name=policy_ref.Name(),
+      description=args.description,
+      region=policy_ref.region,
+      vmMaintenancePolicy=vm_policy)
+
+
+def MakeVmMaintenanceConcurrentPolicy(policy_ref, args, messages):
+  """Creates a VM Maintenance concurrency limit policy message from args."""
+  concurrency_control_group = \
+    messages.ResourcePolicyVmMaintenancePolicyConcurrencyControl(
+        concurrencyLimit=args.max_percent
+    )
+  vm_policy = messages.ResourcePolicyVmMaintenancePolicy(
+      concurrencyControlGroup=concurrency_control_group
+  )
+
+  return messages.ResourcePolicy(
+      name=policy_ref.Name(),
+      description=args.description,
+      region=policy_ref.region,
+      vmMaintenancePolicy=vm_policy)
+
+
 def MakeDiskSnapshotSchedulePolicy(policy_ref, args, messages):
   """Creates a Disk Snapshot Schedule Resource Policy message from args."""
   hourly_cycle, daily_cycle, weekly_cycle = _ParseCycleFrequencyArgs(

@@ -26,8 +26,6 @@ from googlecloudsdk.api_lib.build_artifacts import exceptions as cba_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
-from six.moves.urllib import parse
-
 _INVALID_REPO_NAME_ERROR = (
     "Names may only contain lowercase letters, numbers, and hyphens, and must "
     "begin with a letter and end with a letter or number.")
@@ -86,19 +84,20 @@ def AppendRepoDataToRequest(repo_ref, repo_args, request):
   return request
 
 
-def URLEscapePackageName(pkg_ref, unused_args, request):
-  """URL escapes package name for ListVersionsRequest."""
+def SlashEscapePackageName(pkg_ref, unused_args, request):
+  """Escapes slashes in package name for ListVersionsRequest."""
   request.parent = "{}/packages/{}".format(
       pkg_ref.Parent().RelativeName(),
-      parse.quote(pkg_ref.packagesId, safe="@:"))
+      pkg_ref.packagesId.replace("/", "%2F"))
   return request
 
 
-def URLDecodePackageName(response, unused_args):
-  """URL decodes package name for ListPackagesResponse."""
+def SlashUnescapePackageName(response, unused_args):
+  """Unescape slashes in package name from ListPackagesResponse."""
   ret = []
   for ver in response:
-    ver.name = parse.unquote(os.path.basename(ver.name))
+    ver.name = os.path.basename(ver.name)
+    ver.name = ver.name.replace("%2F", "/").replace("%2f", "/")
     ret.append(ver)
   return ret
 

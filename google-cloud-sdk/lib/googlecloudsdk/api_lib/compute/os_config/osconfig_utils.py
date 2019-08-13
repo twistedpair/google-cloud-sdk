@@ -47,6 +47,8 @@ INSTANCE_DETAILS_KEY_MAP = {
     'instancesSucceeded': InstanceDetailsStates.FINISHED,
     'instancesSucceededRebootRequired': InstanceDetailsStates.FINISHED,
     'instancesTimedOut': InstanceDetailsStates.FINISHED,
+    'instancesRunningPrePatchStep': InstanceDetailsStates.PATCHING,
+    'instancesRunningPostPatchStep': InstanceDetailsStates.PATCHING,
 }
 
 _API_CLIENT_NAME = 'osconfig'

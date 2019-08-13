@@ -29,6 +29,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.third_party.appengine.api import client_deployinfo
+import six
 from six.moves import urllib
 
 
@@ -278,7 +279,7 @@ def GetUserAgent():
   product_tokens.append(platforms.Platform.Current().UserAgentFragment())
 
   # Python version
-  python_version = '.'.join(str(i) for i in sys.version_info)
+  python_version = '.'.join(six.text_type(i) for i in sys.version_info)
   product_tokens.append('Python/%s' % python_version)
 
   return ' '.join(product_tokens)

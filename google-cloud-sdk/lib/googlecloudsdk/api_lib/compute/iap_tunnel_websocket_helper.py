@@ -116,10 +116,13 @@ class IapTunnelWebSocketHelper(object):
 
   def SendClose(self):
     """Send WebSocket Close message if possible."""
-    if self._websocket.sock:
+    # Save self._websocket.sock, because some other thread could set it to None
+    # while this function is executing.
+    sock = self._websocket.sock
+    if sock:
       log.debug('CLOSE')
       try:
-        self._websocket.sock.send_close()
+        sock.send_close()
       except (EnvironmentError,
               websocket.WebSocketConnectionClosedException) as e:
         log.info('Unable to send WebSocket Close message [%s].', str(e))

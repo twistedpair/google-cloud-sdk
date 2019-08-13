@@ -31,6 +31,7 @@ from googlecloudsdk.core import metrics
 from googlecloudsdk.core.util import retry
 from googlecloudsdk.core.util import text
 from googlecloudsdk.core.util import times
+import six
 from six.moves import map  # pylint: disable=redefined-builtin
 
 
@@ -358,7 +359,7 @@ def _StopPreviousVersionIfApplies(old_default_version, api_client):
         block=False)
   except operations_util.MiscOperationError as err:
     log.warning('Error stopping version [{0}]: {1}'.format(old_default_version,
-                                                           str(err)))
+                                                           six.text_type(err)))
     log.warning('Version [{0}] is still running and you must stop or delete it '
                 'yourself in order to turn it off. (If you do not, you may be '
                 'charged.)'.format(old_default_version))

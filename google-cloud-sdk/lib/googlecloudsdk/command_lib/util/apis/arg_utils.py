@@ -743,7 +743,7 @@ class ChoiceEnumMapper(object):
 
   def GetChoiceForEnum(self, enum_value):
     """Converts an enum value to a choice argument value."""
-    return self._enum_to_choice.get(str(enum_value))
+    return self._enum_to_choice.get(six.text_type(enum_value))
 
   def GetEnumForChoice(self, choice_value):
     """Converts a mapped string choice value to an enum."""

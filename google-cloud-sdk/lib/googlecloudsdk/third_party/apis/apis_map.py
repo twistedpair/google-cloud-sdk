@@ -705,6 +705,14 @@ MAP = {
             default_version=True
         ),
     },
+    'iamassist': {
+        'v1alpha2': APIDef(
+            class_path='googlecloudsdk.third_party.apis.iamassist.v1alpha2',
+            client_classpath='iamassist_v1alpha2_client.IamassistV1alpha2',
+            messages_modulepath='iamassist_v1alpha2_messages',
+            default_version=True
+        ),
+    },
     'iamcredentials': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.iamcredentials.v1',
@@ -1042,6 +1050,14 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.tpu.v1alpha1',
             client_classpath='tpu_v1alpha1_client.TpuV1alpha1',
             messages_modulepath='tpu_v1alpha1_messages',
+            default_version=True
+        ),
+    },
+    'translate': {
+        'v3beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.translate.v3beta1',
+            client_classpath='translate_v3beta1_client.TranslateV3beta1',
+            messages_modulepath='translate_v3beta1_messages',
             default_version=True
         ),
     },

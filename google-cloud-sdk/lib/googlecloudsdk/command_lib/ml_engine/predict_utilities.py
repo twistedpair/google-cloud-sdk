@@ -63,7 +63,7 @@ def ReadInstances(input_file, data_format, limit=None):
                                       'instances file.')
     if limit and line_num >= limit:
       raise InvalidInstancesFileError(
-          'Online prediction can process no more than ' + str(limit) +
+          'Online prediction can process no more than ' + six.text_type(limit) +
           ' instances per file. Please use batch prediction instead.')
     if data_format == 'json':
       try:

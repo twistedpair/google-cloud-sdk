@@ -50,8 +50,12 @@ class ConfigChanger(six.with_metaclass(abc.ABCMeta, object)):
 
     Args:
       resource: the k8s_object to adjust.
+
+    Returns:
+      A k8s_object that reflects applying the requested update.
+      May be resource after a mutation or a different object.
     """
-    pass
+    return resource
 
 
 class LabelChanges(ConfigChanger):
@@ -76,6 +80,7 @@ class LabelChanges(ConfigChanger):
       resource.template.metadata.labels = copy.deepcopy(maybe_new_labels)
       if nonce:
         resource.template.labels[revision.NONCE_LABEL] = nonce
+    return resource
 
 
 class EndpointVisibilityChange(LabelChanges):
@@ -108,6 +113,7 @@ class SetTemplateAnnotationChange(ConfigChanger):
     annotations = k8s_object.AnnotationsFromMetadata(
         resource.MessagesModule(), resource.template.metadata)
     annotations[self._key] = self._value
+    return resource
 
 
 class DeleteTemplateAnnotationChange(ConfigChanger):
@@ -121,6 +127,7 @@ class DeleteTemplateAnnotationChange(ConfigChanger):
         resource.MessagesModule(), resource.template.metadata)
     if self._key in annotations:
       del annotations[self._key]
+    return resource
 
 
 class VpcConnectorChange(ConfigChanger):
@@ -134,6 +141,7 @@ class VpcConnectorChange(ConfigChanger):
                                                      resource.metadata)
     annotations['run.googleapis.com/vpc-access-connector'] = (
         self._connector_name)
+    return resource
 
 
 class ClearVpcConnectorChange(ConfigChanger):
@@ -144,6 +152,7 @@ class ClearVpcConnectorChange(ConfigChanger):
                                                      resource.metadata)
     if 'run.googleapis.com/vpc-access-connector' in annotations:
       del annotations['run.googleapis.com/vpc-access-connector']
+    return resource
 
 
 class ImageChange(ConfigChanger):
@@ -160,6 +169,7 @@ class ImageChange(ConfigChanger):
     annotations[configuration.USER_IMAGE_ANNOTATION] = (
         self.image)
     resource.template.image = self.image
+    return resource
 
 
 class EnvVarChanges(ConfigChanger):
@@ -192,6 +202,7 @@ class EnvVarChanges(ConfigChanger):
           del resource.template.env_vars[env_var]
 
     if self._to_update: resource.template.env_vars.update(self._to_update)
+    return resource
 
 
 class ResourceChanges(ConfigChanger):
@@ -207,6 +218,7 @@ class ResourceChanges(ConfigChanger):
       resource.template.resource_limits['memory'] = self._memory
     if self._cpu is not None:
       resource.template.resource_limits['cpu'] = self._cpu
+    return resource
 
 _CLOUDSQL_ANNOTATION = 'run.googleapis.com/cloudsql-instances'
 
@@ -262,6 +274,7 @@ class CloudSQLChanges(ConfigChanger):
         self, 'cloudsql-instances', GetCurrentInstances)
     if instances is not None:
       resource.template.annotations[_CLOUDSQL_ANNOTATION] = ','.join(instances)
+    return resource
 
   def _Augment(self, instance_str):
     instance = instance_str.split(':')
@@ -301,6 +314,7 @@ class ConcurrencyChanges(ConfigChanger):
     else:
       resource.template.deprecated_string_concurrency = self._concurrency
       resource.template.concurrency = None
+    return resource
 
 
 class TimeoutChanges(ConfigChanger):
@@ -312,6 +326,7 @@ class TimeoutChanges(ConfigChanger):
   def Adjust(self, resource):
     """Mutates the given config's timeout to match what's desired."""
     resource.template.timeout = self._timeout
+    return resource
 
 
 class ServiceAccountChanges(ConfigChanger):
@@ -323,6 +338,7 @@ class ServiceAccountChanges(ConfigChanger):
   def Adjust(self, resource):
     """Mutates the given config's service account to match what's desired."""
     resource.template.service_account = self._service_account
+    return resource
 
 
 class RevisionNameChanges(ConfigChanger):
@@ -335,6 +351,7 @@ class RevisionNameChanges(ConfigChanger):
     """Mutates the given config's revision name to match what's desired."""
     resource.template.name = '{}-{}'.format(resource.name,
                                             self._revision_suffix)
+    return resource
 
 
 class VolumeChanges(ConfigChanger):
@@ -414,6 +431,7 @@ class VolumeChanges(ConfigChanger):
     for volume in list(volumes_of_type):
       if not any(n == volume for n in resource.template.volume_mounts.values()):
         del volumes_of_type[volume]
+    return resource
 
 
 class TrafficChanges(ConfigChanger):
@@ -427,6 +445,7 @@ class TrafficChanges(ConfigChanger):
     """Mutates the given services traffic assignments."""
     resource.traffic.UpdateTraffic(
         self._new_percentages, self._new_latest_percentage)
+    return resource
 
 
 class ContainerCommandChange(ConfigChanger):
@@ -438,6 +457,7 @@ class ContainerCommandChange(ConfigChanger):
 
   def Adjust(self, resource):
     resource.template.container.command = self._commands
+    return resource
 
 
 class ContainerArgsChange(ConfigChanger):
@@ -449,3 +469,4 @@ class ContainerArgsChange(ConfigChanger):
 
   def Adjust(self, resource):
     resource.template.container.args = self._args
+    return resource

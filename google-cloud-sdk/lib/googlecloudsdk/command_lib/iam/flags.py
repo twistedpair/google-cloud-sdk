@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.util.args import common_args
 
 
 def GetRoleFlag(verb):
@@ -47,6 +48,17 @@ def GetOrgFlag(verb):
   return base.Argument(
       '--organization',
       help='The organization of the role you want to {0}.'.format(verb))
+
+
+def GetProjectFlag(verb):
+  help_text = 'The project of the role you want to {0}.'.format(verb)
+  return common_args.ProjectArgument(help_text_to_prepend=help_text)
+
+
+def AddParentFlags(parser, verb, required=True):
+  parent_group = parser.add_mutually_exclusive_group(required=required)
+  GetOrgFlag(verb).AddToParser(parent_group)
+  GetProjectFlag(verb).AddToParser(parent_group)
 
 
 _RESOURCE_NAME_HELP = """\

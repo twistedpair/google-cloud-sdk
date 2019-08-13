@@ -27,6 +27,7 @@ from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.util import completers
+import six
 
 
 # TODO(b/110191362): resign from passing whole args to functions in this file
@@ -374,7 +375,8 @@ def AddMigStatefulFlagsForInstanceConfigs(parser, for_update=False):
 
       *mode*::: Specifies the mode of the disk to attach. Supported options are
       `ro` for read-only and `rw` for read-write. If omitted when source is
-      specified, `rw` is used as a default.
+      specified, `rw` is used as a default. `mode` can only be specified if
+      `source` is given.
       """ + AUTO_DELETE_ARG_HELP
   parser.add_argument(
       stateful_disk_argument_name,
@@ -475,6 +477,7 @@ def AddCreateInstancesFlags(parser):
 
       *mode*::: Specifies the attachment mode of the disk. Supported options are
       'ro' for read-only and 'rw' for read-write. If omitted, defaults to 'rw'.
+      `mode` can only be specified if `source` is given.
       """ + AUTO_DELETE_ARG_HELP
   parser.add_argument(
       '--stateful-disk',
@@ -670,14 +673,14 @@ def ValidateUpdateStatefulPolicyParams(args, current_stateful_policy):
         parameter_name='update',
         message=
         ('You cannot simultaneously add and remove the same device names {} to '
-         'Stateful Policy.'.format(str(intersection))))
+         'Stateful Policy.'.format(six.text_type(intersection))))
   not_current_device_names = remove_set - current_device_names
   if not_current_device_names:
     raise exceptions.InvalidArgumentException(
         parameter_name='update',
         message=('Disks [{}] are not currently set as stateful, '
                  'so they cannot be removed from Stateful Policy.'.format(
-                     str(not_current_device_names))))
+                     six.text_type(not_current_device_names))))
   final_disks = current_device_names.union(update_set).difference(remove_set)
   return final_disks
 

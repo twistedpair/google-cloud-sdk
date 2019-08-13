@@ -698,9 +698,9 @@ def AddCustomMachineTypeArgs(parser):
       action='store_true',
       help='Use the extended custom machine type.')
   custom_group.add_argument(
-      '--custom-vm-gen',
+      '--custom-vm-type',
       help="""
-      Specifies VM generation. n1 - VMs with CPU platforms Skylake and older,
+      Specifies VM type. n1 - VMs with CPU platforms Skylake and older,
       n2 - VMs with CPU platform Cascade Lake. n2 offers flexible sizing from
       2 to 80 vCPUs, and 1 to 640GBs of memory.
       It also features a number of performance enhancements including exposing

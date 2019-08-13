@@ -148,7 +148,8 @@ def AddAllowUnauthenticatedFlag(parser):
   parser.add_argument(
       '--allow-unauthenticated',
       action=arg_parsers.StoreTrueFalseAction,
-      help='Whether to enable allowing unauthenticated access to the service.')
+      help='Whether to enable allowing unauthenticated access to the service. '
+           'This may take a few moments to take effect.')
 
 
 def AddAsyncFlag(parser):

@@ -26,10 +26,11 @@ class AptRepository(_messages.Message):
       behavior is DEB.
     components: List of components for this repository. Must contain at least
       one item.
-    distribution: Distribution of this repository.
+    distribution: Required. Distribution of this repository.
     gpgKey: Optional. URI of the key file for this repository. The agent will
-      ensure that this key has been downloaded.
-    uri: URI for this repository.
+      maintain a keyring at /etc/apt/trusted.gpg.d/osconfig_agent_managed.gpg
+      containing all the keys in any applied GuestPolicy.
+    uri: Required. URI for this repository.
   """
 
   class ArchiveTypeValueValuesEnum(_messages.Enum):
@@ -82,31 +83,20 @@ class Artifact(_messages.Message):
   r"""Specifies a resource to be used in the recipe.
 
   Fields:
-    allowInsecure: Defaults to false. If false it will verify that the
-      downloaded artifact is the artifact that this recipe expects. The checks
-      it makes are dependent on the protocol for the artifact: https: The file
-      will be verified that it matches the checksum. http:  This protocol is
-      disabled if allow_insecure is false. Use https        instead. gcs:   A
-      version will need to be specified as part of the uri.
-    checksum: Optional if allow_insecure is true or if the protocol is gcs://.
-      SHA256 checksum to compare to the checksum of the artifact. If the
-      checksum is not empty and it doesn't match the artifact then the recipe
-      installation will fail before running any of the steps.
+    allowInsecure: Defaults to false. When false, recipes will be subject to
+      validations based on the artifact type:  Remote: A checksum must be
+      specified, and only protocols with         transport-layer security will
+      be permitted. GCS:    An object generation number must be specified.
+    gcs: A GCS artifact.
     id: Id of the artifact, which the installation and update steps of this
       recipe can reference. Artifacts in a recipe cannot have the same id.
-    uri: URI from which to fetch the object. It should contain both the
-      protocol and path following the format {protocol}://{location}.  The
-      format of the location varies based on the specied protocol but it must
-      contain all the information required to successfully retrieve the
-      intended object. This means that, for example, if you need to retrieve a
-      specific version of an object in GCS the version needs to be specified
-      as part of the uri.
+    remote: A generic remote artifact.
   """
 
   allowInsecure = _messages.BooleanField(1)
-  checksum = _messages.StringField(2)
+  gcs = _messages.MessageField('Gcs', 2)
   id = _messages.StringField(3)
-  uri = _messages.StringField(4)
+  remote = _messages.MessageField('Remote', 4)
 
 
 class Assignment(_messages.Message):
@@ -207,6 +197,62 @@ class ExecFile(_messages.Message):
   localPath = _messages.StringField(4)
 
 
+class ExecStep(_messages.Message):
+  r"""A step that runs an executable for a PatchJob.
+
+  Fields:
+    linuxExecStepConfig: The ExecStepConfig for all Linux VMs targeted by the
+      PatchJob.
+    windowsExecStepConfig: The ExecStepConfig for all Windows VMs targeted by
+      the PatchJob.
+  """
+
+  linuxExecStepConfig = _messages.MessageField('ExecStepConfig', 1)
+  windowsExecStepConfig = _messages.MessageField('ExecStepConfig', 2)
+
+
+class ExecStepConfig(_messages.Message):
+  r"""Common configurations for an ExecStep.
+
+  Enums:
+    InterpreterValueValuesEnum: The script interpreter to use to run the
+      script. If no interpreter is specified the script will be executed
+      directly, which will likely only succeed for scripts with shebang lines.
+      [Wikipedia shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)).
+
+  Fields:
+    allowedSuccessCodes: Optional. Defaults to [0]. A list of possible return
+      values that the execution can return to indicate a success.
+    gcsObject: A GCS object containing the executable.
+    interpreter: The script interpreter to use to run the script. If no
+      interpreter is specified the script will be executed directly, which
+      will likely only succeed for scripts with shebang lines. [Wikipedia
+      shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)).
+    localPath: An absolute path to the executable on the VM.
+  """
+
+  class InterpreterValueValuesEnum(_messages.Enum):
+    r"""The script interpreter to use to run the script. If no interpreter is
+    specified the script will be executed directly, which will likely only
+    succeed for scripts with shebang lines. [Wikipedia
+    shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)).
+
+    Values:
+      INTERPRETER_UNSPECIFIED: Default value.
+      SHELL: Indicates that the script will be run with /bin/sh on Linux and
+        cmd on windows.
+      POWERSHELL: Indicates that the file will be run with PowerShell.
+    """
+    INTERPRETER_UNSPECIFIED = 0
+    SHELL = 1
+    POWERSHELL = 2
+
+  allowedSuccessCodes = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
+  gcsObject = _messages.MessageField('GcsObject', 2)
+  interpreter = _messages.EnumField('InterpreterValueValuesEnum', 3)
+  localPath = _messages.StringField(4)
+
+
 class ExecutePatchJobRequest(_messages.Message):
   r"""A request message to initiate patching across GCE instances.
 
@@ -273,13 +319,43 @@ class ExtractArchive(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
+class Gcs(_messages.Message):
+  r"""Specifies an artifact available as a GCS Object.
+
+  Fields:
+    bucket: Bucket of the GCS object.
+    generation: Optional if allow_insecure is true. Generation number of the
+      GCS object.
+    object: Name of the GCS object.
+  """
+
+  bucket = _messages.StringField(1)
+  generation = _messages.IntegerField(2)
+  object = _messages.StringField(3)
+
+
+class GcsObject(_messages.Message):
+  r"""GCS object representation.
+
+  Fields:
+    bucket: Bucket of the GCS object.
+    generationNumber: Generation number of the GCS object. This is used to
+      ensure that the ExecStep specified by this PatchJob does not change.
+    object: Name of the GCS object.
+  """
+
+  bucket = _messages.StringField(1)
+  generationNumber = _messages.IntegerField(2)
+  object = _messages.StringField(3)
+
+
 class GooRepository(_messages.Message):
   r"""Represents a Goo package repository. These will be added to a repo file
   that will be managed at C:/ProgramData/GooGet/repos/google_osconfig.repo.
 
   Fields:
-    name: The name of the repository.
-    url: The url of the repository.
+    name: Required. The name of the repository.
+    url: Required. The url of the repository.
   """
 
   name = _messages.StringField(1)
@@ -440,6 +516,10 @@ class InstanceDetailsSummary(_messages.Message):
     instancesNotified: Number of instances notified about patch job.
     instancesPending: Number of instances pending patch job.
     instancesRebooting: Number of instances rebooting.
+    instancesRunningPostPatchStep: Number of instances that are running the
+      post-patch step.
+    instancesRunningPrePatchStep: Number of instances that are running the
+      pre-patch step.
     instancesStarted: Number of instances that have started.
     instancesSucceeded: Number of instances that have completed successfully.
     instancesSucceededRebootRequired: Number of instances that require reboot.
@@ -455,10 +535,12 @@ class InstanceDetailsSummary(_messages.Message):
   instancesNotified = _messages.IntegerField(6)
   instancesPending = _messages.IntegerField(7)
   instancesRebooting = _messages.IntegerField(8)
-  instancesStarted = _messages.IntegerField(9)
-  instancesSucceeded = _messages.IntegerField(10)
-  instancesSucceededRebootRequired = _messages.IntegerField(11)
-  instancesTimedOut = _messages.IntegerField(12)
+  instancesRunningPostPatchStep = _messages.IntegerField(9)
+  instancesRunningPrePatchStep = _messages.IntegerField(10)
+  instancesStarted = _messages.IntegerField(11)
+  instancesSucceeded = _messages.IntegerField(12)
+  instancesSucceededRebootRequired = _messages.IntegerField(13)
+  instancesTimedOut = _messages.IntegerField(14)
 
 
 class ListGuestPoliciesResponse(_messages.Message):
@@ -884,8 +966,6 @@ class Package(_messages.Message):
       behavior is ANY.
     name: The name of the package. A package is uniquely identified for
       conflict validation by checking its name and the manager(s) it targets.
-    version: Optional. The version of the package to install. If omitted, the
-      agent will install the latest version.
   """
 
   class DesiredStateValueValuesEnum(_messages.Enum):
@@ -934,7 +1014,6 @@ class Package(_messages.Message):
   desiredState = _messages.EnumField('DesiredStateValueValuesEnum', 1)
   manager = _messages.EnumField('ManagerValueValuesEnum', 2)
   name = _messages.StringField(3)
-  version = _messages.StringField(4)
 
 
 class PackageRepository(_messages.Message):
@@ -963,6 +1042,8 @@ class PatchConfig(_messages.Message):
   Fields:
     apt: Apt update settings. Use this override the default apt patch rules.
     goo: Goo update settings. Use this override the default goo patch rules.
+    postStep: Optional. The ExecStep to run after the patch update.
+    preStep: Optional. The ExecStep to run before the patch update.
     rebootConfig: Optional. Post-patch reboot settings.
     retryStrategy: Optional. Retry strategy can be defined to have the agent
       retry patching during the window if patching fails. If omitted, the
@@ -980,7 +1061,9 @@ class PatchConfig(_messages.Message):
     Values:
       REBOOT_CONFIG_UNSPECIFIED: The default behavior is DEFAULT.
       DEFAULT: The agent will decide if a reboot is necessary by checking well
-        known signals such as registry keys or `/var/run/reboot-required`.
+        known signals such as registry keys on Windows or `/var/run/reboot-
+        required` on APT based systems. On RPM based systems a set of core
+        system package install times will be compared with system boot time.
       ALWAYS: Always reboot the machine after the update has completed.
       NEVER: Never reboot the machine after the update has completed.
     """
@@ -991,11 +1074,13 @@ class PatchConfig(_messages.Message):
 
   apt = _messages.MessageField('AptSettings', 1)
   goo = _messages.MessageField('GooSettings', 2)
-  rebootConfig = _messages.EnumField('RebootConfigValueValuesEnum', 3)
-  retryStrategy = _messages.MessageField('RetryStrategy', 4)
-  windowsUpdate = _messages.MessageField('WindowsUpdateSettings', 5)
-  yum = _messages.MessageField('YumSettings', 6)
-  zypper = _messages.MessageField('ZypperSettings', 7)
+  postStep = _messages.MessageField('ExecStep', 3)
+  preStep = _messages.MessageField('ExecStep', 4)
+  rebootConfig = _messages.EnumField('RebootConfigValueValuesEnum', 5)
+  retryStrategy = _messages.MessageField('RetryStrategy', 6)
+  windowsUpdate = _messages.MessageField('WindowsUpdateSettings', 7)
+  yum = _messages.MessageField('YumSettings', 8)
+  zypper = _messages.MessageField('ZypperSettings', 9)
 
 
 class PatchJob(_messages.Message):
@@ -1099,6 +1184,8 @@ class PatchJobInstanceDetails(_messages.Message):
       FAILED: The instance has failed to apply the patch.
       ACKED: The instance acked the notification and will start shortly.
       TIMED_OUT: The instance exceeded the time out while applying the patch.
+      RUNNING_PRE_PATCH_STEP: The instance is running the pre-patch step.
+      RUNNING_POST_PATCH_STEP: The instance is running the post-patch step.
     """
     PATCH_STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -1113,12 +1200,30 @@ class PatchJobInstanceDetails(_messages.Message):
     FAILED = 10
     ACKED = 11
     TIMED_OUT = 12
+    RUNNING_PRE_PATCH_STEP = 13
+    RUNNING_POST_PATCH_STEP = 14
 
   attemptCount = _messages.IntegerField(1)
   failureReason = _messages.StringField(2)
   instanceSystemId = _messages.StringField(3)
   name = _messages.StringField(4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
+
+
+class Remote(_messages.Message):
+  r"""Specifies an artifact available via some URI.
+
+  Fields:
+    checksum: Optional if allow_insecure is true. SHA256 checksum to compare
+      to the checksum of the artifact. If the checksum is not empty and it
+      doesn't match the artifact then the recipe installation will fail before
+      running any of the steps.
+    uri: URI from which to fetch the object. It should contain both the
+      protocol and path following the format {protocol}://{location}.
+  """
+
+  checksum = _messages.StringField(1)
+  uri = _messages.StringField(2)
 
 
 class ReportPatchJobInstanceDetailsRequest(_messages.Message):
@@ -1162,6 +1267,8 @@ class ReportPatchJobInstanceDetailsRequest(_messages.Message):
       FAILED: The instance has failed to apply the patch.
       ACKED: The instance acked the notification and will start shortly.
       TIMED_OUT: The instance exceeded the time out while applying the patch.
+      RUNNING_PRE_PATCH_STEP: The instance is running the pre-patch step.
+      RUNNING_POST_PATCH_STEP: The instance is running the post-patch step.
     """
     PATCH_STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -1176,6 +1283,8 @@ class ReportPatchJobInstanceDetailsRequest(_messages.Message):
     FAILED = 10
     ACKED = 11
     TIMED_OUT = 12
+    RUNNING_PRE_PATCH_STEP = 13
+    RUNNING_POST_PATCH_STEP = 14
 
   attemptCount = _messages.IntegerField(1)
   failureReason = _messages.StringField(2)
@@ -1520,7 +1629,7 @@ class YumRepository(_messages.Message):
 
   Fields:
     baseUrl: Required. The location of the repository directory.
-    displayName: Optional. If omitted, the id will be used for the name.
+    displayName: Optional.
     gpgKeys: Optional. URIs of GPG keys.
     id: Required. A one word, unique name for this repository. This will be
       the `repo id` in the yum config file and also the `display_name` if
@@ -1558,7 +1667,7 @@ class ZypperRepository(_messages.Message):
 
   Fields:
     baseUrl: Required. The location of the repository directory.
-    displayName: Optional. If omitted, the id will be used for the name.
+    displayName: Optional.
     gpgKeys: Optional. URIs of GPG keys.
     id: Required. A one word, unique name for this repository. This will be
       the `repo id` in the zypper config file and also the `display_name` if

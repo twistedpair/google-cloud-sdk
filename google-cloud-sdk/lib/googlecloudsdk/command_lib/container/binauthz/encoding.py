@@ -95,7 +95,7 @@ def DictToMessageWithErrorCheck(dict_, message_type):
     raise ScalarTypeMismatchError(
         'Failed to parse value in protobuf [{type_}]:\n'
         '  {type_}.??: "{msg}"'.format(
-            type_=message_type.__name__, msg=str(e)))
+            type_=message_type.__name__, msg=six.text_type(e)))
   except AttributeError:
     # TODO(b/77547931): This is a bug in apitools and must be fixed upstream.
     # The decode logic attempts an unchecked access to 'iteritems' assuming the

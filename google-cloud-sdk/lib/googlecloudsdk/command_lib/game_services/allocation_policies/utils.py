@@ -24,7 +24,7 @@ from googlecloudsdk.command_lib.game_services import utils
 
 
 def AdditionalUpdateArguments():
-  return [MatchClustersFlag()]
+  return [MatchClustersUpdateFlag(), ClearMatchClustersFlag()]
 
 
 def AdditionalAllocationPolicyCreateArguments():
@@ -48,7 +48,39 @@ def MatchClustersFlag():
       """)
 
 
+def MatchClustersUpdateFlag():
+  return base.Argument(
+      '--match-clusters',
+      action='append',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help="""\
+      Labels to select clusters to which this Allocation Policy applies. This flag can be repeated.
+      Specifying --match-clusters during update will fully replace existing cluster selection.
+
+      Example:
+        $ {command} example-policy --match-clusters=label_a=value1,label_b=value2 --match-clusters=label_c=value3,label_d=value4
+
+      With the above command, this policy is applicable to clusters that have
+      either label_a=value1 and label_b=value2, or label_c=value3,label_d=value4.
+      """)
+
+
+def ClearMatchClustersFlag():
+  return base.Argument(
+      '--clear-match-clusters',
+      action='store_true',
+      help="""\
+      Remove all labels that select clusters. If `--match-clusters` is also
+      specified then `--clear-match-cluster` is applied first.
+
+      Example:
+        $ {command} example-policy --clear-match-clusters
+      """)
+
+
 def MatchClusters(ref, args, req):
-  req.allocationPolicy.clusterSelectors = utils.ParseMatchClusters(
-      ref, args.match_clusters)
+  if args.match_clusters:
+    req.allocationPolicy.clusterSelectors = utils.ParseMatchClusters(
+        ref, args.match_clusters)
   return req

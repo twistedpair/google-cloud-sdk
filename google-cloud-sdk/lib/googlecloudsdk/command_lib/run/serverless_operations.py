@@ -51,6 +51,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import retry
+import six
 
 DEFAULT_ENDPOINT_VERSION = 'v1'
 
@@ -382,6 +383,7 @@ class _NewRevisionForcingChange(config_changes_mod.ConfigChanger):
 
   def Adjust(self, resource):
     resource.template.labels[revision.NONCE_LABEL] = self._nonce
+    return resource
 
 
 def _IsDigest(url):
@@ -416,15 +418,15 @@ class _SwitchToDigestChange(config_changes_mod.ConfigChanger):
 
   def Adjust(self, resource):
     if _IsDigest(self._base_revision.image):
-      return
+      return resource
     if not self._base_revision.image_digest:
-      return
+      return resource
 
     # Mutates through to metadata: Save the by-tag user intent.
     resource.annotations[configuration.USER_IMAGE_ANNOTATION] = (
         self._base_revision.image)
     resource.template.image = self._base_revision.image_digest
-
+    return resource
 
 _CLIENT_NAME_ANNOTATION = 'run.googleapis.com/client-name'
 _CLIENT_VERSION_ANNOTATION = 'run.googleapis.com/client-version'
@@ -438,6 +440,7 @@ class _SetClientNameAndVersion(config_changes_mod.ConfigChanger):
                                                      resource.metadata)
     annotations[_CLIENT_NAME_ANNOTATION] = 'gcloud'
     annotations[_CLIENT_VERSION_ANNOTATION] = config.CLOUD_SDK_VERSION
+    return resource
 
 
 class ServerlessOperations(object):
@@ -787,7 +790,7 @@ class ServerlessOperations(object):
 
         # PUT the changed Service
         for config_change in config_changes:
-          config_change.Adjust(serv)
+          serv = config_change.Adjust(serv)
         serv_name = service_ref.RelativeName()
         serv_update_req = (
             messages.RunNamespacesServicesReplaceServiceRequest(
@@ -807,7 +810,7 @@ class ServerlessOperations(object):
         new_serv.name = service_ref.servicesId
         parent = service_ref.Parent().RelativeName()
         for config_change in config_changes:
-          config_change.Adjust(new_serv)
+          new_serv = config_change.Adjust(new_serv)
         serv_create_req = (
             messages.RunNamespacesServicesCreateRequest(
                 service=new_serv.Message(),
@@ -896,7 +899,7 @@ class ServerlessOperations(object):
       service_ref: Resource, the service to release
       config_changes: list, objects that implement Adjust().
       tracker: StagedProgressTracker, to report on the progress of releasing.
-      asyn: bool, if True, release asyncronously
+      asyn: bool, if True, return without waiting for the service to be updated.
       allow_unauthenticated: bool, True if creating a hosted Cloud Run
         service which should also have its IAM policy set to allow
         unauthenticated access. False if removing the IAM policy to allow
@@ -1066,7 +1069,7 @@ class ServerlessOperations(object):
     """Gets the IAM policy for the service."""
     messages = self._messages_module
     request = messages.RunProjectsLocationsServicesGetIamPolicyRequest(
-        resource=str(service_name))
+        resource=six.text_type(service_name))
     response = self._op_client.projects_locations_services.GetIamPolicy(request)
     return response
 
@@ -1098,7 +1101,7 @@ class ServerlessOperations(object):
       elif iam_util.BindingInPolicy(policy, member, role):
         iam_util.RemoveBindingFromIamPolicy(policy, member, role)
     request = messages.RunProjectsLocationsServicesSetIamPolicyRequest(
-        resource=str(oneplatform_service),
+        resource=six.text_type(oneplatform_service),
         setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy))
     result = self._op_client.projects_locations_services.SetIamPolicy(request)
     return result

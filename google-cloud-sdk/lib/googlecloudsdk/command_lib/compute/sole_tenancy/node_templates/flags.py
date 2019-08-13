@@ -23,6 +23,7 @@ from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core.util import scaled_integer
+import six
 
 
 def MakeNodeTemplateArg():
@@ -42,7 +43,7 @@ def _BinarySizeOrAny(default_unit):
       return value
     size = arg_parsers.BinarySize(default_unit=default_unit)(value)
     converted_size = size // bytes_per_unit
-    return str(converted_size)
+    return six.text_type(converted_size)
   return _Parse
 
 
@@ -53,7 +54,7 @@ def _IntOrAny():
       return value
     # Validate that an integer is passed.
     value = int(value)
-    return str(value)
+    return six.text_type(value)
   return _Parse
 
 
@@ -67,13 +68,13 @@ def _BinarySizeAsStr(default_unit, lower_bound=None, upper_bound=None):
         lower_bound=lower_bound, upper_bound=upper_bound,
         default_unit=default_unit)(value)
     converted_size = size // bytes_per_unit
-    return str(converted_size)
+    return six.text_type(converted_size)
   return _Parse
 
 
 def _Choice(valid_choices):
   def _Parse(value):
-    value = str(value.lower())
+    value = six.text_type(value.lower())
     if value not in valid_choices:
       raise arg_parsers.ArgumentTypeError(
           '[type] must be one of [{0}]'.format(

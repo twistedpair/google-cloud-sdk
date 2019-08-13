@@ -25,6 +25,7 @@ from googlecloudsdk.api_lib.dns import util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.dns import flags
+import six
 
 
 ALGORITHM_NUMBERS = {
@@ -50,9 +51,10 @@ DIGEST_TYPE_NUMBERS = {
 
 
 def _GenerateDSRecord(key):
-  key_tag = str(key.keyTag)
-  key_algorithm = str(ALGORITHM_NUMBERS[key.algorithm.name])
-  digest_algorithm = str(DIGEST_TYPE_NUMBERS[key.digests[0].type.name])
+  key_tag = six.text_type(key.keyTag)
+  key_algorithm = six.text_type(ALGORITHM_NUMBERS[key.algorithm.name])
+  digest_algorithm = six.text_type(
+      DIGEST_TYPE_NUMBERS[key.digests[0].type.name])
   digest = key.digests[0].digest
   return ' '.join([key_tag, key_algorithm, digest_algorithm, digest])
 

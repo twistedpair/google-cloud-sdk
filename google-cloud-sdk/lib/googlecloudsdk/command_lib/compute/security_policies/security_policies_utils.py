@@ -24,6 +24,7 @@ import json
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_printer
+import six
 
 
 def SecurityPolicyFromFile(input_file, messages, file_format):
@@ -45,7 +46,7 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
       parsed_security_policy = json.load(input_file)
     except ValueError as e:
       raise exceptions.BadFileException('Error parsing JSON: {0}'.format(
-          str(e)))
+          six.text_type(e)))
 
   security_policy = messages.SecurityPolicy()
   if 'description' in parsed_security_policy:

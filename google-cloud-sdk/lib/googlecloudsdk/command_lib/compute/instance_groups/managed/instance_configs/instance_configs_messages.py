@@ -98,7 +98,7 @@ def CreatePerInstanceConfigMessage(holder,
         MakePreservedStateMetadataEntry(
             messages, key=metadata_key, value=metadata_value))
   return messages.PerInstanceConfig(
-      name=path_simplifier.Name(str(instance_ref)),
+      name=path_simplifier.Name(six.text_type(instance_ref)),
       preservedState=messages.PreservedState(
           disks=messages.PreservedState.DisksValue(
               additionalProperties=preserved_state_disks),

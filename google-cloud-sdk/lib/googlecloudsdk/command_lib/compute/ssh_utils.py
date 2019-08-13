@@ -47,6 +47,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import times
+import six
 
 # The maximum amount of time to wait for a newly-added SSH key to
 # propagate before giving up.
@@ -510,7 +511,7 @@ class BaseSSHHelper(object):
       hostkeys = client.MakeRequests(requests)[0]
     except exceptions.ToolException as e:
       if ('The resource \'hostkeys/\' of type \'Guest Attribute\' was not '
-          'found.') in str(e):
+          'found.') in six.text_type(e):
         hostkeys = None
       else:
         raise e
@@ -918,6 +919,6 @@ def CreateSSHPoller(remote, identity_file, options, iap_tunnel_args,
   # Do not include default port since that will prevent users from
   # specifying a custom port (b/121998342).
   if port:
-    ssh_poller_args['port'] = str(port)
+    ssh_poller_args['port'] = six.text_type(port)
 
   return ssh.SSHPoller(**ssh_poller_args)

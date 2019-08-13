@@ -557,7 +557,8 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
     try:
       self._RunReceiveLocalData(conn, repr(socket_address))
     except EnvironmentError as e:
-      log.info('Socket error [%s] while receiving from client.', str(e))
+      log.info('Socket error [%s] while receiving from client.',
+               six.text_type(e))
     except:  # pylint: disable=bare-except
       log.exception('Error while receiving from client.')
 

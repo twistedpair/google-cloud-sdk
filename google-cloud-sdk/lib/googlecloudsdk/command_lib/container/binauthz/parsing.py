@@ -26,6 +26,7 @@ import enum
 from googlecloudsdk.command_lib.container.binauthz import exceptions
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files
+import six
 
 
 class ResourceFileReadError(exceptions.Error):
@@ -73,19 +74,21 @@ def LoadResourceFile(input_fname):
   try:
     input_text = files.ReadFileContents(input_fname)
   except files.Error as e:
-    raise ResourceFileReadError(str(e))
+    raise ResourceFileReadError(six.text_type(e))
 
   file_type = GetResourceFileType(input_fname)
   if file_type == ResourceFileType.JSON:
     try:
       return json.loads(input_text)
     except ValueError as e:
-      raise ResourceFileParseError('Error in resource file JSON: ' + str(e))
+      raise ResourceFileParseError('Error in resource file JSON: ' +
+                                   six.text_type(e))
   elif file_type == ResourceFileType.YAML:
     try:
       return yaml.load(input_text)
     except yaml.YAMLParseError as e:
-      raise ResourceFileParseError('Error in resource file YAML: ' + str(e))
+      raise ResourceFileParseError('Error in resource file YAML: ' +
+                                   six.text_type(e))
   else:  # file_type == ResourceFileType.UNKNOWN
     raise ResourceFileTypeError(
         'Input file [{}] not of type YAML or JSON'.format(input_fname))

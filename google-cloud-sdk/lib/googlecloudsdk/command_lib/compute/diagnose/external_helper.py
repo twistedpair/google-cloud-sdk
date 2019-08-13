@@ -23,6 +23,7 @@ from googlecloudsdk.command_lib.compute import ssh_utils
 from googlecloudsdk.command_lib.util.ssh import containers
 from googlecloudsdk.command_lib.util.ssh import ssh
 from googlecloudsdk.core import log
+import six
 
 
 def RunSubprocess(proc_name, command_list):
@@ -46,8 +47,7 @@ def RunSubprocess(proc_name, command_list):
       # Recycling exception type
       raise OSError(proc.stderr.read().strip())
   except OSError as e:
-    error_str = str(e)
-    log.err.Print('Error running %s: %s' % (proc_name, error_str))
+    log.err.Print('Error running %s: %s' % (proc_name, six.text_type(e)))
     command_list_str = ' '.join(command_list)
     log.err.Print('INVOCATION: %s' % command_list_str)
 
@@ -74,7 +74,7 @@ def CallSubprocess(proc_name, command_list, dry_run=False):
     return subprocess.call(command_list)
   except OSError as e:
     log.error('Error running {proc_name}: {error_msg}'.format(
-        proc_name=proc_name, error_msg=str(e)))
+        proc_name=proc_name, error_msg=six.text_type(e)))
     command_list_str = ' '.join(command_list)
     log.err.Print('INVOCATION: %s' % command_list_str)
     raise e

@@ -169,7 +169,7 @@ def GetServiceTimeoutString(timeout_property_str):
   if timeout_property_str is None:
     return None
   build_timeout_secs = GetServiceTimeoutSeconds(timeout_property_str)
-  return str(build_timeout_secs) + 's'
+  return six.text_type(build_timeout_secs) + 's'
 
 
 class InvalidBuildError(ValueError):

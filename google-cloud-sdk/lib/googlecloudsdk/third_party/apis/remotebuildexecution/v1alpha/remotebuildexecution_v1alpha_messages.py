@@ -797,6 +797,20 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
   message = _messages.StringField(2)
 
 
+class GoogleDevtoolsRemotebuildexecutionAdminV1alphaAcceleratorConfig(_messages.Message):
+  r"""AcceleratorConfig defines the accelerator cards to attach to the VM.
+
+  Fields:
+    acceleratorCount: The number of the guest accelerator cards exposed to
+      this VM.
+    acceleratorType: The type of accelerator to attach to this VM, e.g.
+      "nvidia-tesla-k80" for nVidia Tesla K80.
+  """
+
+  acceleratorCount = _messages.IntegerField(1)
+  acceleratorType = _messages.StringField(2)
+
+
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateInstanceRequest(_messages.Message):
   r"""The request used for `CreateInstance`.
 
@@ -1017,6 +1031,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
       optional. There can not be more than 64 labels per resource.
 
   Fields:
+    accelerator: The accelerator card attached to each VM.
     diskSizeGb: Required. Size of the disk attached to the worker, in GB. See
       https://cloud.google.com/compute/docs/disks/
     diskType: Required. Disk Type to use for the worker. See [Storage
@@ -1067,12 +1082,13 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  diskSizeGb = _messages.IntegerField(1)
-  diskType = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  machineType = _messages.StringField(4)
-  minCpuPlatform = _messages.StringField(5)
-  reserved = _messages.BooleanField(6)
+  accelerator = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaAcceleratorConfig', 1)
+  diskSizeGb = _messages.IntegerField(2)
+  diskType = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  machineType = _messages.StringField(5)
+  minCpuPlatform = _messages.StringField(6)
+  reserved = _messages.BooleanField(7)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool(_messages.Message):

@@ -38,6 +38,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import archive
 from googlecloudsdk.core.util import files as file_utils
+import six
 from six.moves import range
 
 
@@ -71,7 +72,7 @@ def _ValidateUnpackedSourceSize(path, ignore_file=None):
   size_limit_b = size_limit_mb * 2 ** 20
   if size_b > size_limit_b:
     raise exceptions.OversizedDeployment(
-        str(size_b) + 'B', str(size_limit_b) + 'B')
+        six.text_type(size_b) + 'B', six.text_type(size_limit_b) + 'B')
 
 
 def _CreateSourcesZipFile(zip_dir, source_path, ignore_file=None):
@@ -101,7 +102,7 @@ def _CreateSourcesZipFile(zip_dir, source_path, ignore_file=None):
   except ValueError as e:
     raise exceptions.FunctionsError(
         'Error creating a ZIP archive with the source code '
-        'for directory {0}: {1}'.format(source_path, str(e)))
+        'for directory {0}: {1}'.format(source_path, six.text_type(e)))
   return zip_file_name
 
 

@@ -27,6 +27,7 @@ from googlecloudsdk.command_lib.compute.diagnose import external_helper
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
+import six
 
 SOSREPORT_GITHUB_PATH = 'https://github.com/sosreport/sos.git'
 
@@ -310,7 +311,7 @@ def RunSSHCommand(context, *cmd_list, **kwargs):
   Raises:
     ssh.CommandError: there was an error running a SSH command
   """
-  command = ' '.join(str(i) for i in cmd_list)
+  command = ' '.join(six.text_type(i) for i in cmd_list)
   log.out.Print('Running: "{command}"'.format(command=command))
   return_code = external_helper.RunSSHCommandToInstance(
       command_list=cmd_list,

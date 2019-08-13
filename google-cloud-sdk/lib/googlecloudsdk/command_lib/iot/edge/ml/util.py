@@ -26,6 +26,7 @@ from googlecloudsdk.api_lib.edgeml import util as edgeml_util
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
+import six
 
 
 class InvalidFrameworkException(core_exceptions.InternalError):
@@ -44,7 +45,8 @@ class UncompilableModelException(core_exceptions.Error):
 
   def __init__(self, reason):
     super(UncompilableModelException, self).__init__(
-        'This model cannot be optimized for Edge TPU. {}'.format(str(reason)))
+        'This model cannot be optimized for Edge TPU. {}'.format(
+            six.text_type(reason)))
 
 
 def ParseSamplingInfo(path):

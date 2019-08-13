@@ -25,6 +25,7 @@ from googlecloudsdk.command_lib.compute.instance_groups import flags as instance
 from googlecloudsdk.command_lib.compute.managed_instance_groups import update_instances_utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import times
+import six
 
 
 def CreateRequest(args,
@@ -72,7 +73,7 @@ def CreateRequest(args,
       client.messages.InstanceGroupManagerVersion(
           instanceTemplate=igm_info.instanceTemplate)
   ])
-  current_time_str = str(times.Now(times.UTC))
+  current_time_str = six.text_type(times.Now(times.UTC))
   for i, version in enumerate(versions):
     version.name = '%d/%s' % (i, current_time_str)
 

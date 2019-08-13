@@ -38,6 +38,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import times
+import six
 
 GENERATED_LABEL_PREFIX = 'goog-dataproc-'
 
@@ -287,7 +288,6 @@ If you want to enable all scopes use the 'cloud-platform' scope.
     parser.add_argument(
         '--max-idle',
         type=arg_parsers.Duration(),
-        hidden=not(beta),
         help="""\
           The duration before cluster is auto-deleted after last job completes,
           such as "2h" or "1d".
@@ -298,7 +298,6 @@ If you want to enable all scopes use the 'cloud-platform' scope.
     auto_delete_group.add_argument(
         '--max-age',
         type=arg_parsers.Duration(),
-        hidden=not(beta),
         help="""\
           The lifespan of the cluster before it is auto-deleted, such as
           "2h" or "1d".
@@ -308,7 +307,6 @@ If you want to enable all scopes use the 'cloud-platform' scope.
     auto_delete_group.add_argument(
         '--expiration-time',
         type=arg_parsers.Datetime.Parse,
-        hidden=not(beta),
         help="""\
           The time when cluster will be auto-deleted, such as
           "2017-08-29T18:52:51.142Z." See $ gcloud topic datetimes for
@@ -485,7 +483,7 @@ def GetClusterConfig(args,
           'region': properties.VALUES.compute.region.GetOrFail,
       },
       collection='compute.subnetworks')
-  timeout_str = str(args.initialization_action_timeout) + 's'
+  timeout_str = six.text_type(args.initialization_action_timeout) + 's'
   init_actions = [
       dataproc.messages.NodeInitializationAction(
           executableFile=exe, executionTimeout=timeout_str)
@@ -625,14 +623,14 @@ def GetClusterConfig(args,
     lifecycle_config = dataproc.messages.LifecycleConfig()
     changed_config = False
     if args.max_age is not None:
-      lifecycle_config.autoDeleteTtl = str(args.max_age) + 's'
+      lifecycle_config.autoDeleteTtl = six.text_type(args.max_age) + 's'
       changed_config = True
     if args.expiration_time is not None:
       lifecycle_config.autoDeleteTime = times.FormatDateTime(
           args.expiration_time)
       changed_config = True
     if args.max_idle is not None:
-      lifecycle_config.idleDeleteTtl = str(args.max_idle) + 's'
+      lifecycle_config.idleDeleteTtl = six.text_type(args.max_idle) + 's'
       changed_config = True
     if changed_config:
       cluster_config.lifecycleConfig = lifecycle_config

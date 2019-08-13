@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.util.args import common_args
 
 
 def AddOrganizationArgs(parser):
@@ -36,7 +37,10 @@ def AddFolderArgs(parser):
 
 
 def AddParentArgs(parser):
-  parent_group = parser.add_group(mutex=True)
+  parent_group = parser.add_mutually_exclusive_group(required=True)
+  common_args.ProjectArgument(
+      help_text_to_prepend='The project which is the root asset.').AddToParser(
+          parent_group)
   AddOrganizationArgs(parent_group)
   AddFolderArgs(parent_group)
 

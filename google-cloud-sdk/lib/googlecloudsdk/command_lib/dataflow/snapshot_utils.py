@@ -24,6 +24,7 @@ from googlecloudsdk.calliope import arg_parsers
 
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+import six
 
 DATAFLOW_API_DEFAULT_REGION = apis.DATAFLOW_API_DEFAULT_REGION
 
@@ -141,4 +142,4 @@ def ExtractSnapshotTtlDuration(args):
   Returns:
     A duration string for the snapshot ttl.
   """
-  return str(args.snapshot_ttl) + 's'
+  return six.text_type(args.snapshot_ttl) + 's'

@@ -33,6 +33,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_printer
+import six
 
 
 _CONSOLE_URL = ('https://console.cloud.google.com/mlengine/jobs/{job_id}?'
@@ -405,7 +406,7 @@ def SubmitTraining(jobs_client, job, job_dir=None, staging_bucket=None,
       log.status.Print(_FOLLOW_UP_MESSAGE.format(job_id=job.jobId,
                                                  project=project_ref.Name()))
     except exceptions.HttpError as err:
-      log.status.Print('Polling logs failed:\n{}\n'.format(str(err)))
+      log.status.Print('Polling logs failed:\n{}\n'.format(six.text_type(err)))
       log.info('Failure details:', exc_info=True)
       log.status.Print(_FOLLOW_UP_MESSAGE.format(job_id=job.jobId,
                                                  project=project_ref.Name()))

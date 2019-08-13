@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from apitools.base.py import encoding
 from googlecloudsdk.command_lib.compute.sole_tenancy.node_templates import flags
+import six
 
 
 def _ParseNodeAffinityLabels(affinity_labels, messages):
@@ -38,7 +39,7 @@ def CreateNodeTemplate(node_template_ref, args, messages, enable_disk=False):
   node_type_flexbility = None
   if args.IsSpecified('node_requirements'):
     node_type_flexbility = messages.NodeTemplateNodeTypeFlexibility(
-        cpus=str(args.node_requirements.get('vCPU', 'any')),
+        cpus=six.text_type(args.node_requirements.get('vCPU', 'any')),
         # local SSD is unique because the user may omit the local SSD constraint
         # entirely to include the possibility of node types with no local SSD.
         # "any" corresponds to "greater than zero".

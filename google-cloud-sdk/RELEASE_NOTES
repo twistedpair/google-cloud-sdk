@@ -5,6 +5,55 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 258.0.0 (2019-08-13)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Renamed `--custom-vm-gen` flag to `--custom-vm-type` for the following commands:
+    * `gcloud compute instances create`
+    * `gcloud compute instances create-with-container`
+    * `gcloud compute instances import`
+    * `gcloud compute instances set-machine-type`
+    * `gcloud compute instance-template create`
+    * `gcloud compute instance-template create-with-container`
+
+
+### Cloud Dataproc
+
+* Added flags `--max-age`,  `--max-idle`, `--expiration-time` to
+  `gcloud dataproc clusters create` command group.
+* Added flags `--max-age`, '--max-idle', `--expiration-time`, `--no-max-age`,
+  `--no-max-idle` to `gcloud dataproc clusters update` command group.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.7.1
+  * Fix bug where auth context was always null when using WebChannel.
+  * Change name of experimental `--webchannel-port` flag to `--webchannel_port`.
+
+### Cloud Functions
+
+* Changed `gcloud beta functions deploy` to disallow unauthenticated callers of
+  new functions by default. The GA `gcloud functions deploy` command remains the
+  same.
+
+### Cloud Storage
+
+*
+* Updated gsutil component to 4.42.
+
+### Kubernetes Engine
+
+*   Added `--shielded-secure-boot` and `--shielded-integrity-monitoring` to
+    `gcloud beta container clusters create` and  `gcloud beta container
+    clusters create`. These flags control the corresponding Shielded VM options
+    on Nodes, see
+    <https://cloud.google.com/security/shielded-cloud/shielded-vm>.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 257.0.0 (2019-08-06)
 
 ### Breaking Changes
@@ -25,9 +74,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 *   Added `--disable-database-encryption` to `gcloud beta container clusters
     update` to allow disabling Database Encryption. For more information, see
     <https://cloud.google.com/kubernetes-engine/docs/how-to/encrypting-secrets>.
-
-
-Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
 ## 256.0.0 (2019-07-30)
@@ -213,7 +259,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Firestore Emulator
 
-* Release Cloud Firestore emulator v1.6.0.
+* Released Cloud Firestore emulator v1.6.0.
   * Calling SetSecurityRules with invalid rules is allowed.
 
 
@@ -236,13 +282,13 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 * Fixed bug where `gcloud compute images import` would create temporary Cloud Storage bucket in US multi-region when source image file is in a different region.
 * Promoted `gcloud compute instances get-guest-attributes` to GA.
 * Promoted `--storage-location` flag of `gcloud compute images create` to beta.
-* Modified `gcloud compute backend-services <create|update>` to relax validation for specifying `--enable-logging`, and `--logging-sample-rate`.
+* Modified `gcloud compute backend-services create` and `gcloud compute backend-services update` to relax validation for specifying `--enable-logging`, and `--logging-sample-rate`.
 * Promoted `http2` value to v1 for `--protocol` flag of `gcloud compute
-  backend-services <create|update>`.
+  backend-services create` and `gcloud compute backend-services update`.
 * Promoted `gcloud compute start-iap-tunnel` to GA.
 * Promoted `--tunnel-through-iap` flag of `gcloud compute ssh` and `gcloud compute scp` to GA.
 * Promoted `--internal-ip` flag of `gcloud compute scp` to GA.
-* Promoted `gcloud compute health-checks <create|update> http2` commands to GA.
+* Promoted `gcloud compute health-checks create http2` and `gcloud compute health-checks update http2` commands to GA.
 * Promoted `gcloud compute instances import` to beta.
 * Added `--ssh_key_expiration` and `--ssh_key_expire_after` flags to
   `gcloud compute scp`, and `gcloud compute ssh`, and
@@ -282,9 +328,9 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Data Catalog
 
-* Added `gcloud <alpha|beta> data-catalog <tags|tag-templates>` to manage tags
+* Added `gcloud beta data-catalog tags` and `gcloud beta data-catalog tag-templates` to manage tags
   and tag templates in Cloud Data Catalog.
-* Added `gcloud <alpha|beta> data-catalog search` to search Cloud Data Catalog
+* Added `gcloud beta data-catalog search` to search Cloud Data Catalog
   resources.
 
 ### Cloud Datalab
@@ -295,7 +341,11 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Functions
 
-* Promoted `gcloud functions <add-iam-policy-binding|get-iam-policy|remove-iam-policy-binding|set-iam-policy>` to beta.
+* Promoted the following commands to beta:
+  * `gcloud functions add-iam-policy-binding`
+  * `gcloud functions get-iam-policy`
+  * `gcloud functions remove-iam-policy-binding`
+  * `gcloud functions set-iam-policy`
 * Promoted `--max-instances` and `--clear-max-instances` flags of `gcloud functions deploy` to GA.
 
 ### Cloud Pub/Sub
@@ -312,18 +362,22 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Compute Engine
 
-* Promoted `--allow-global-access` flag of `gcloud compute forwarding-rules <create|update>` to beta.
+* Promoted `--allow-global-access` flag of `gcloud compute forwarding-rules create` and `gcloud compute forwarding-rules update` to beta.
 * Promoted `--source-snapshot` flag of `gcloud compute instances create` to GA.
 * Promoted `source-snapshot` option of `--create-disk` flag of
   `gcloud compute instances create` to GA.
 * `update-instances` command (`gcloud beta compute instance-groups managed update-instances`) is now available in beta.
-* Added `gcloud beta compute reservations <get|set>-iam-policy` and `gcloud beta compute reservations <add|remove>-iam-policy-binding`.
+* Added the following commands:
+  * `gcloud beta compute reservations get-iam-policy`
+  * `gcloud beta compute reservations set-iam-policy`
+  * `gcloud beta compute reservations add-iam-policy-binding`
+  * `gcloud beta compute reservations remove-iam-policy-binding`
 
 ### Kubernetes Engine
 
 * Promoted `--identity-namespace` and `--disable-workload-identity` flags of
-  `gcloud container clusters <create|update>` to beta.  These flags control
-  Workload Identity, which lets Kubernetes service accounts act as Google
+  `gcloud container clusters create` and `gcloud container clusters update` to
+  beta. These flags control Workload Identity, which lets Kubernetes service accounts act as Google
   service accounts.  For more information, see
   <https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity>.
 
@@ -445,7 +499,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Memorystore
 
-* Added `gcloud beta redis instances <import|export>` to import data to or
+* Added `gcloud beta redis instances import` and `gcloud beta redis instances export` to import data to or
   export data from a Memorystore Redis instance from or to Google Cloud Storage.
 * Added `gcloud beta redis operations cancel` to cancel a Memorystore Redis
   import or export operation.
@@ -498,9 +552,12 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Compute Engine
 
 * Promoted the following commands to beta:
-  * `gcloud compute backend-services <import|export>`.
-  * `gcloud compute url-maps <import|export>`.
-  * `gcloud compute forwarding-rules <import|export>`.
+  * `gcloud compute backend-services import`
+  * `gcloud compute backend-services export`
+  * `gcloud compute url-maps import`
+  * `gcloud compute url-maps export`
+  * `gcloud compute forwarding-rules import`
+  * `gcloud compute forwarding-rules export`
 
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
@@ -522,7 +579,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Firestore Emulator
 
-* Released Cloud Firestore Emulator version 1.4.6.
+* Release Cloud Firestore Emulator version 1.4.6.
   * Fixed bug where some FieldTransforms were not sending the correct responses.
   * Added support for read-only transactions.
 
@@ -594,13 +651,17 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Scheduler
 
-* Added `gcloud beta scheduler jobs update <app-engine|http|pubsub>` commands.
+* Added the following commands:
+  * `gcloud beta scheduler jobs update app-engine`
+  * `gcloud beta scheduler jobs update http`
+  * `gcloud beta scheduler jobs update pubsub`
 
 ### Cloud Tasks
 
 * Added `gcloud beta tasks create-http-task` command.
 * Added `--log-sampling-ratio` and `--clear-log-sampling-ratio` to
-  `gcloud beta tasks queues <create|update>` commands.
+  `gcloud beta tasks queues create` and `gcloud beta tasks queues update`
+  commands.
 
 ### Kubernetes Engine
 
@@ -635,8 +696,8 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Pub/Sub
 
-*   Promoted `--expiration-period` in `gcloud pubsub subscriptions
-    <create|update>` to GA.
+*   Promoted `--expiration-period` in `gcloud pubsub subscriptions create`
+    and `gcloud pubsub subscriptions update` to GA.
 
 ### Cloud Scheduler
 
@@ -689,12 +750,13 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Scheduler
 
-* Added `gcloud beta scheduler jobs <pause|resume>` commands.
+* Added `gcloud beta scheduler jobs pause` and `gcloud beta scheduler jobs
+  resume` commands.
 
 ### Compute Engine
 
 * Promoted `--instance-redistribution-type` flag of
-  `gcloud compute instance-groups managed <create|update>` to beta.
+  `gcloud compute instance-groups managed create` and `gcloud compute instance-groups managed update` to beta.
 
 
 ### Kubernetes Engine
@@ -743,7 +805,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### AI Platform
 
 * Added the `gcloud ai-platform` command group to replace `gcloud ml-engine`.
-* Promoted `gcloud ai-platform versions <create|update>` to beta.
+* Promoted `gcloud ai-platform versions create` and `gcloud ai-platform versions update` to beta.
 * Added the `--enable-console-logging` flag to `gcloud beta ai-platform models
   create` to enable logging of stderr and stdout streams for online prediction
   in Stackdriver Logging.
@@ -770,8 +832,8 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Tasks
 
-*   Replaced `gcloud tasks queues <create|update>-app-engine-queue` with
-    `gcloud tasks queues <create|update>` in beta and GA.
+*   Replaced `gcloud tasks queues create-app-engine-queue` and `gcloud tasks queues update-app-engine-queue` with
+    `gcloud tasks queues create`  and `gcloud tasks queues update` in beta and GA.
 
 ### Compute Engine
 
@@ -779,24 +841,32 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 * Promoted the `--storage-location` and `--labels` flag of
   `gcloud compute disks snapshot` to GA.
 * Promoted `--network-endpoint-group` and `--network-endpoint-group-zone`
-  flags of `gcloud compute backend-services
-  <add-backend|remove-backend|update-backend>` to GA.
+  flags of `gcloud compute backend-services add-backend`,
+  `gcloud compute backend-services remove-backend`,
+  and `gcloud compute backend-services update-backend` to GA.
 * Promoted `--max-connections-per-endpoint` and `--max-rate-per-endpoint`
-  flags of `gcloud compute backend-services <add-backend|update-backend>` to GA.
-* Promoted `--use-serving-port` flag of `gcloud compute health-checks
-  <http|https|http2|ssl> create` to GA.
+  flags of `gcloud compute backend-services add-backend`
+  and `gcloud compute backend-services update-backend` to GA.
+* Promoted `--use-serving-port` flag to GA for the following commands:
+  * `gcloud compute health-checks http create`
+  * `gcloud compute health-checks https create`
+  * `gcloud compute health-checks http2 create`
+  * `gcloud compute health-checks ssl create`
 * Promoted `--custom-request-headers` and `--no-custom-request-headers` flags of
-  `gcloud compute backend-services <create|update>` to GA.
+  `gcloud compute backend-services create` and
+  `gcloud compute backend-services update` to GA.
 * Promoted `--no-guest-environment`, `--network`, and `--subnet` flags of `gcloud
   compute images import` to GA.
 * Changed `--no-guest-environment` to `--guest-environment` flag in `gcloud
   compute images import`.
 * Promoted `--subnet` flag of `gcloud compute images export` to GA.
-* Promoted feature allowing `gcloud beta compute images <import|export>` to use
+* Promoted feature allowing `gcloud beta compute images import`
+  and `gcloud beta compute images export` to use
   temporary buckets in the same region as source/destination buckets. This avoids
   cross-region copying and its associated cost and performance penalty.
 * Promoted `--container-mount-disk-*` flags of
-  `gcloud compute instances <create-with-container|update-container>` to GA.
+  `gcloud compute instances create-with-container` and
+  `gcloud compute instances update-container` to GA.
 * Promoted `--container-mount-disk-*` flags of
   `gcloud compute instance-templates create-with-container` to GA.
 
@@ -837,7 +907,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Compute Engine
 
-* Updated `gcloud beta compute <ssh|scp>` to use IAP Tunneling by default
+* Updated `gcloud beta compute ssh` and `gcloud beta compute scp` to use IAP Tunneling by default
   if an external interface/IP address is not available and `--internal-ip` has
   not been specified.
 * Added warning message about the maximum number of nodes that a cluster can have when being created.
@@ -847,8 +917,8 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Identity and Access Management
 
-*   Added the `--description` flag to `gcloud beta iam service-accounts
-    <create|update>`.
+*   Added the `--description` flag to `gcloud beta iam service-accounts create`
+    and `gcloud beta iam service-accounts update`.
 
 ### Kubernetes Engine
 
@@ -958,8 +1028,11 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Cloud Pub/Sub
 
 * Added optional flags `--push-auth-service-account` and
- `--push-auth-token-audience` for defining an authenticated push subscription in
- `gcloud beta pubsub subscriptions <create|update|modify-push-config>`.
+  `--push-auth-token-audience` for defining an authenticated push subscription
+  to the following commands:
+  * `gcloud beta pubsub subscriptions create`
+  * `gcloud beta pubsub subscriptions update`
+  * `gcloud beta pubsub subscriptions modify-push-config`
 
 ### Cloud Storage
 
@@ -974,7 +1047,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Promoted `--logging-aggregation-interval`, `--logging-flow-sampling`, and
   `--logging-metadata` flags of
-  `gcloud compute networks subnets <create|update>` to beta.
+  `gcloud compute networks subnets create` and `gcloud compute networks subnets update` to beta.
 * Modified `gcloud compute networks subnets update` to support specifying
   `--logging-aggregation-interval`, `--logging-flow-sampling`, and
   `--logging-metadata` flags in a single call.
@@ -987,9 +1060,9 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Firebase Test Lab
 
-* Promoted `--num-flaky-test-attempts` flag of `gcloud firebase test
-  <android|ios> run` to GA. This flag specifies how many times to rerun any
-  failed executions.
+* Promoted `--num-flaky-test-attempts` flag of
+  `gcloud firebase test android run` and `gcloud firebase test ios run` to GA.
+  This flag specifies how many times to rerun any failed executions.
 
 ### Kubernetes Engine
 
@@ -1024,8 +1097,8 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Breaking Changes
 
 *   **(Kubernetes Engine)** Enabled node auto-upgrade by default for clusters
-    and node-pools created with `gcloud beta container <clusters|node-pools>
-    create`. To disable manually, **(Kubernetes Engine)** use the
+    and node-pools created with `gcloud beta container clusters create`
+    and `gcloud beta container node-pools create`. To disable manually, use the
     `--no-enable-autoupgrade` flag.
 
 
@@ -1046,7 +1119,8 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Dataproc
 
-* Added `gcloud beta dataproc <jobs submit|workflow-templates add-job> presto`
+* Added `gcloud beta dataproc jobs submit presto` and
+  `gcloud beta dataproc workflow-templates add-job presto`
   to enable submitting Presto jobs to a Dataproc cluster and adding Presto jobs
   to workflow templates, respectively.
 * Added `--enable-component-gateway` flag to `gcloud beta dataproc clusters
@@ -1056,9 +1130,11 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Promoted `--failover-ratio`, `--drop-traffic-if-unhealthy`, and
   `--connection-drain-on-failover` flags of
-  `gcloud compute backend-services <create|update>` to beta.
+  `gcloud compute backend-services create` and
+  `gcloud compute backend-services update` to beta.
 * Promoted `--failover` flag of
-  `gcloud compute backend-services <add_backend|update_backend>` to beta.
+  `gcloud compute backend-services add_backend` and
+  `gcloud compute backend-services update_backend` to beta.
 * Promoted `gcloud compute instance-groups managed wait-until` command to beta.
 * Promoted `--region` flag of `gcloud compute disks` and related commands to GA.
 * Added `gcloud beta compute external-vpn-gateway` command group to enable reading and manipulating of Compute Engine external VPN gateways.
@@ -1090,7 +1166,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
   Cloud Dataproc autoscaling policies. For more information, see:
   https://cloud.google.com/dataproc/docs/concepts/configuring-clusters/autoscaling
 * Added `--autoscaling-policy` flag to
-  `gcloud beta dataproc clusters <create|update>` and
+  `gcloud beta dataproc clusters create`, `gcloud beta dataproc clusters update`, and
   `gcloud beta dataproc workflow-templates set-managed-cluster` to support
   enabling and disabling autoscaling on Cloud Dataproc clusters with autoscaling
   policies.
@@ -1106,8 +1182,8 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Compute Engine
 
-* Promoted `--bandwidth` flag of `gcloud compute interconnects attachments dedicated <create|update>` to GA.
-* Promoted load_balancing_scheme enum value INTERNAL_SELF_MANAGED to beta in 'gcloud compute forwarding-rules create' and 'gcloud compute backend-services create'.
+* Promoted `--bandwidth` flag of `gcloud compute interconnects attachments dedicated create` and `gcloud compute interconnects attachments dedicated     update` to GA.
+* Promoted load_balancing_scheme enum value INTERNAL_SELF_MANAGED to beta in 'gcloud compute forwarding-rules create' and 'gcloud compute backend-       services create'.
 * Promoted `gcloud compute instances get-shielded-identity` to GA.
 * Promoted the `--shielded-vtpm`, `--shielded-secure-boot`, and
   `--shielded-integrity-monitoring` flags of `gcloud compute instances create`
@@ -1207,9 +1283,11 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Dataproc
 
-* Fixed a bug where several fields were hidden from `gcloud dataproc clusters
-<import|export>` in all release tracks. Note that these fields were always
-available in `gcloud dataproc clusters <create-from-file|describe>`.
+* Fixed a bug where several fields were hidden from
+  `gcloud dataproc clusters import` and `gcloud dataproc clusters export`
+  in all release tracks. Note that these fields were always
+  available in `gcloud dataproc clusters create-from-file` and
+  `gcloud dataproc clusters describe`.
 
 ### Cloud Storage
 
@@ -1318,8 +1396,9 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
   `IMPORT_CUSTOM_ROUTES`/`EXPORT_CUSTOM_ROUTES` columns.
 * Promoted `--resource-policies` of `gcloud compute disks create` to beta.
 * Promoted `--enable-logging` and `--logging-sample-rate` flags of
-  `gcloud compute backend-services <create|update>` to beta.
-* Promoted `--bandwidth` flag of `gcloud compute interconnects attachments dedicated <create|update>` to beta
+  `gcloud compute backend-services create` and `gcloud compute backend-services update` to beta.
+* Promoted `--bandwidth` flag of `gcloud compute interconnects attachments dedicated create`
+  and `gcloud compute interconnects attachments dedicated update` to beta.
 
 ### Firebase Test Lab
 
@@ -1358,9 +1437,14 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Compute Engine
 
-* Promoted `gcloud beta compute networks subnets <get|set>-iam-policy` and `<add|remove>-iam-policy-bindings` to GA.
+* Promoted the following commands to GA:
+  * `gcloud beta compute networks subnets get-iam-policy`
+  * `gcloud beta compute networks subnets set-iam-policy`
+  * `add-iam-policy-bindings`
+  * `remove-iam-policy-bindings`
 * Promoted the following commands to beta:
-    *   `gcloud compute disks <add|remove-resource-policies>`
+    *   `gcloud compute disks add`
+    *   `gcloud compute disks remove-resource-policies`
     *   `gcloud compute resource-policies create-snapshot-schedule`
     *   `gcloud compute resource-policies delete`
     *   `gcloud compute resource-policies describe`
@@ -1432,14 +1516,15 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Compute Engine
 
 * Promoted the `--force-attach` flag of `compute instances attach-disk` to GA
-* Added `<get|set>-iam-policy` and `<add|remove>-iam-policy-bindings` to `gcloud beta compute networks subnets`
+* Added `get-iam-policy`, `set-iam-policy`, `add-iam-policy-bindings`,
+  and `remove-iam-policy-bindings` to `gcloud beta compute networks subnets`
 * Promoted `gcloud compute instances get-shielded-identity` to beta.
 * Promoted `gcloud compute instance-groups managed update` to GA together with
   `--health-check`, `--initial-delay` and `--clear-autohealing` flags.
 * Promoted `--initial-delay` and `--health-check` flags of `gcloud compute
   instance-groups managed create` to GA.
-* Enabled the use of multiple `--network-interface` flags with `gcloud compute
-  <instances|instance-templates> create-with-container` to support using
+* Enabled the use of multiple `--network-interface` flags with `gcloud compute instances create-with-container`
+  and `gcloud compute instance-templates create-with-container` to support using
   multiple network interfaces.
 * Promoted `gcloud compute instance-groups managed rolling-action` command group
   to GA.
@@ -1463,14 +1548,13 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Compute Engine
 
-* Promoted `<get|set>-iam-policy` and `<add|remove>-iam-policy-bindings` to GA
-  in the following command groups:
+* Promoted `get-iam-policy`, `set-iam-policy`, `add-iam-policy-bindings`,
+  and `remove-iam-policy-bindings` to GA in the following command groups:
     * `gcloud compute disks`
     * `gcloud compute images`
     * `gcloud compute instance-templates`
     * `gcloud compute snapshots`
-* Added '--enable-display-device' to `gcloud beta compute instances
-  <create|update>`
+* Added '--enable-display-device' to `gcloud beta compute instances create` and `gcloud beta compute instances update`
 * Deprecated `gcloud compute instance-groups managed set-autohealing` command.
   Use `gcloud compute instance-groups managed update` instead.
 
@@ -1563,7 +1647,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 * Added the flag `--zone` to `gcloud sql instances create` as an alternative to
   `--gce-zone`, which is now deprecated.
 * Deprecated First Generation Cloud SQL instances, adding warnings to
-  `gcloud sql instances <describe|patch>`.
+  `gcloud sql instances describe` and `gcloud sql instances patch`.
 
 ### Cloud Scheduler
 
@@ -1571,8 +1655,8 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Compute Engine
 
-* Promoted `<get|set>-iam-policy` and `<add|remove>-iam-policy-bindings` to GA
-  in the following command groups:
+* Promoted `get-iam-policy`, `set-iam-policy`, `add-iam-policy-bindings`, and
+  `remove-iam-policy-bindings` to GA in the following command groups:
     * `gcloud compute instances`
     * `gcloud compute sole-tenancy node-templates`
     * `gcloud compute sole-tenancy node-groups`
@@ -1666,7 +1750,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
   instead.
 * Promoted 'gcloud compute interconnects get-diagnostics' to GA.
 * Promoted `--enable-logging` flag of
-  `gcloud compute firewall-rules <create|update>` to GA.
+  `gcloud compute firewall-rules create` and `gcloud compute firewall-rules update` to GA.
 
 ### Firebase Test Lab
 
@@ -1716,7 +1800,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 * Added `--subnet` flag to `gcloud beta compute images export`.
 * Fixed `gcloud beta compute images import` to use gcloud command line tool
   config for `zone` flag in addition to `--zone` command line flag.
-* Modified `gcloud beta compute images <import|export>` to use temporary bucket
+* Modified `gcloud beta compute images import` and `gcloud beta compute images export` to use temporary bucket
   in the same region as source/destination buckets to avoid cross-region copying
   and its associated cost and performance penalty.
 * Added `--prefix-length`, `--purpose` and `--network` flags to GA for
@@ -1738,11 +1822,13 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Breaking Changes
 
-*   **(Cloud Datastore)** `gcloud datastore <create|cleanup>-indexes` is removed. Please use
-  `gcloud datastore indexes <create|cleanup>` instead. See
+*   **(Cloud Datastore)** `gcloud datastore create-indexes` and
+    `gcloud datastore cleanup-indexes` is removed. Please use
+    `gcloud datastore indexes create` and `gcloud datastore indexes cleanup` instead. See
   https://cloud.google.com/sdk/gcloud/reference/datastore/indexes/ for
   additional details.
-*   **(Cloud IoT)** Removed deprecated `-event-pubsub-topic` and `--pubsub-topic` flags from `gcloud iot registries create|update`
+*   **(Cloud IoT)** Removed deprecated `-event-pubsub-topic` and `--pubsub-topic`
+    flags from `gcloud iot registries create` and `gcloud iot registries update`
 *   **(Container Builder)** Removed `gcloud container builds` command group. Use `gcloud builds`
     instead.
 
@@ -1767,7 +1853,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud DNS
 
-* Added the `--forwarding-targets` flag to `gcloud beta dns managed-zones <create|update>`
+* Added the `--forwarding-targets` flag to `gcloud beta dns managed-zones create` and `gcloud beta dns managed-zones update`
 
 ### Cloud Dataproc
 
@@ -1789,7 +1875,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Cloud IoT
 
 * Promoted `gcloud iot devices commands send` command group to GA.
-* Promoted `--log-level` flag of `gcloud iot <devices|registries>` to GA.
+* Promoted `--log-level` flag of `gcloud iot devices` and `gcloud iot registries` to GA.
 * Promoted `gcloud iot devices gateways` command group to beta.
 
 ### Cloud Pub/Sub
@@ -2008,15 +2094,16 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud SQL
 
-* Updated `gcloud <alpha|beta> sql connect` to connect to V2 instances through
+* Updated `gcloud beta sql connect` to connect to V2 instances through
   the Cloud SQL Proxy Component.
-* Added the `--port` flag to `gcloud <alpha|beta> sql connect` to allow for
+* Added the `--port` flag to `gcloud beta sql connect` to allow for
   connecting to the Cloud SQL Proxy through a custom port.
 
 ### Compute Engine
 
 * Promoted `--container-mount-disk-*` flags of
-  `gcloud compute instances <create-with-container|update-container>` to beta.
+  `gcloud compute instances create-with-container` and
+  `gcloud compute instances update-container` to beta.
   These flags enable mounting disks to containers running on VMs.
 
 ### Container Builder
@@ -2043,15 +2130,15 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Breaking Changes
 
-*   **(Cloud SQL)** Removed the deprecated `host` positional argument from `gcloud sql users
-  <create|delete|set-password>`.
+*   **(Cloud SQL)** Removed the deprecated `host` positional argument from
+    `gcloud sql users create`, `gcloud sql users delete`, and `gcloud sql users set-password`.
 
 
 ### App Engine
 
 * Fixed a bug where environment variables with values of 'on' or 'off' were
   ending up as 'true' or 'false' when deployed.
-* `gcloud app logs <read|tail>` now displays stdout and stderr from the
+* `gcloud app logs read` and `gcloud app logs tail` now displays stdout and stderr from the
   App Engine standard environment Python 3.7, PHP 7.2, Go 1.11, Java 8,
   and Node.js 8 runtimes by default, or explicitly by supplying
   `--logs=<stdout|stderr>`.
@@ -2113,9 +2200,21 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
   commands are affected by this change:
     *   `functions deploy`
     *   `compute images import`
-    *   `dataproc jobs submit <pyspark|hadoop|pig|hive|spark|spark-sql>`
-    *   `composer environments storage <dags|data|plugins>
-        <delete|export|import>`
+    *   `dataproc jobs submit pyspark`
+    *   `dataproc jobs submit hadoop`
+    *   `dataproc jobs submit pig`
+    *   `dataproc jobs submit hive`
+    *   `dataproc jobs submit spark`
+    *   `dataproc jobs submit spark-sql`
+    *   `composer environments storage dags delete`
+    *   `composer environments storage dags export`
+    *   `composer environments storage dags import`
+    *   `composer environments storage data delete`
+    *   `composer environments storage data export`
+    *   `composer environments storage data import`
+    *   `composer environments storage plugins delete`
+    *   `composer environments storage plugins export`
+    *   `composer environments storage plugins import`
 *  Added functionality to `gcloud beta help` that allows running a search for
    terms of interest within the help text of gcloud commands. For more
    information, run $ gcloud beta help --help.
@@ -2162,8 +2261,10 @@ configs that don't specify a logging option. See
 
 ### Internet of Things
 
-* Added `--log-level` flag for `gcloud iot <devices|registries> <create|update>` for alpha and beta.
-* Added `gcloud iot commands` to alpha and beta.
+* Added `--log-level` flag for `gcloud iot devices create`,
+  `gcloud iot devices update`, `gcloud iot registries create`, and
+  `gcloud iot registries update` for beta.
+* Added `gcloud iot commands` to beta.
 
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
@@ -2188,8 +2289,8 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 * Promoted `compute routers nats` to beta.
 * Promoted 'gcloud compute interconnects get-diagnostics' to beta.
 * Promoted the following flags to GA to support using KMS keys to protect disks and images:
-    *   `--kms-key-*` flags of `gcloud compute <disks|images>`
-    *   `--boot-disk-kms-*` flags of `gcloud compute <instances|instance-templates>`.
+    *   `--kms-key-*` flags of `gcloud compute disks` and `gcloud compute images`
+    *   `--boot-disk-kms-*` flags of `gcloud compute instances` and `gcloud compute instance-templates`.
 * Promoted `gcloud compute instance-templates create-with-container` from beta to GA.
 
 ### Interactive
@@ -2222,7 +2323,15 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
     from configuration in a YAML file.
 *   Added `--optional-components` flag to `gcloud beta dataproc clusters create`
     command.
-*   Promoted `gcloud dataproc <clusters|jobs|operations|workflow-templates> <get|set>-iam-policy` to GA.
+*   Promoted the following commands to GA:
+    * `gcloud dataproc clusters get-iam-policy`
+    * `gcloud dataproc clusters set-iam-policy`
+    * `gcloud dataproc jobs get-iam-policy`
+    * `gcloud dataproc jobs set-iam-policy`
+    * `gcloud dataproc operations get-iam-policy`
+    * `gcloud dataproc operations set-iam-policy`
+    * `gcloud dataproc workflow-templates get-iam-policy`
+    * `gcloud dataproc workflow-templates set-iam-policy`
 *   Promoted `gcloud dataproc workflow-templates` to GA.
 
 ### Cloud Scheduler
@@ -2264,8 +2373,7 @@ to specify location region of a snapshot.
 
 ### Kubernetes Engine
 
-* Added `--metadata` and `--metadata-from-file` flags to `gcloud
-  <node-pools|clusters> create`.
+* Added `--metadata` and `--metadata-from-file` flags to `gcloud node-pools create` and `gcloud clusters create`.
 * Added `--internal-ip` flag to `gcloud beta container clusters
   get-credentials`.
 
@@ -2290,7 +2398,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud SQL
 
-* Promoted the `--network` flag of `gcloud sql instances <create|patch>` to
+* Promoted the `--network` flag of `gcloud sql instances create` and `gcloud sql instances patch` to
   beta.
 
 ### Cloud Storage
@@ -2301,12 +2409,12 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Compute Engine
 
 * Added `--prefix-length`, `--purpose` and `--network` flags to BETA for `gcloud compute addresses create` to support reserving IP range from virtual network for peering.
-* Added the `description` property to the `--create-disk` flag of `gcloud compute <instances|instance-templates> create`.
+* Added the `description` property to the `--create-disk` flag of `gcloud compute instances create` and `gcloud compute instance-templates create`.
 
 ### Kubernetes Engine
 
-* Added `--metadata` and `--metadata-from-file` flags to `gcloud beta
-  <node-pools|clusters> create`.
+* Added `--metadata` and `--metadata-from-file` flags to
+  `gcloud beta node-pools create` and `gcloud beta clusters create`.
 * Updated Google Kubernetes Engine's kubectl from version 1.9.7 to 1.10.7.
 
 
@@ -2342,8 +2450,11 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Promoted `--internal-ip` flag of `gcloud compute scp` to beta.
 * Promoted `--disabled` flag of `gcloud compute firewall-rules` to GA.
-* Fixed bug preventing `gcloud compute <ssh|scp>` from finding an instance's external IP address when configured with multiple network interfaces.
-* Promoted `gcloud compute instances <create-with-container|update-container>` to GA.
+* Fixed bug preventing `gcloud compute ssh` and `gcloud compute scp` from
+  finding an instance's external IP address when configured with multiple
+  network interfaces.
+* Promoted `gcloud compute instances create-with-container`
+  and `gcloud compute instances update-container` to GA.
 
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
@@ -2458,19 +2569,21 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Compute Engine
 
 *   Promoted the following flags to GA:
-    *   `--network-tier` of `gcloud compute <addresses|forwarding-rules> create`
+    *   `--network-tier` of `gcloud compute addresses create`
+    *   `--network-tier` of `gcloud compute forwarding-rules create`
     *   `--default-network-tier` of `gcloud compute project-info update`
-    *   `--network-tier` of `gcloud compute instances <add-access-config|create>`
+    *   `--network-tier` of `gcloud compute instances add-access-config`
+     *   `--network-tier` of `gcloud compute instances create`
     *   `--network-tier` of `gcloud compute instance-templates create`
 *   Promoted `gcloud compute instances simulate-maintenance-event` to GA.
-*   Promoted `<get|set\>-iam-policy` and `<add|remove\>-iam-policy-bindings` to
+*   Promoted `get-iam-policy`, `set-iam-policy`, `add-iam-policy-bindings` and `remove-iam-policy-bindings` to
     beta in the following commands groups:
     * `gcloud compute sole-tenancy node-groups`
     * `gcloud compute sole-tenancy node-templates`
 
 ### Kubernetes Engine
 
-* Promoted `--disk-type` flag of `gcloud container <clusters|node-pools> create` to GA.
+* Promoted `--disk-type` flag of `gcloud container clusters create` and `gcloud container node-pools create` to GA.
 * Promoted `--default-max-pods-per-node` flag of `gcloud container clusters create` to beta.
 * Promoted `--max-pods-per-node` flag of `gcloud container node-pools create` to beta.
 * Modified `--monitoring-service` flag of `gcloud containers clusters update` to enable Google Cloud Monitoring service with Kubernetes-native resource model.
@@ -2487,7 +2600,8 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Breaking Changes
 
-*   **(Cloud Datastore)** Deprecated `gcloud datastore <create|cleanup>-indexes`. Use `gcloud datastore indexes <create|cleanup>` instead.
+*   **(Cloud Datastore)** Deprecated `gcloud datastore create-indexes` and `gcloud datastore cleanup-indexes`.
+    Use `gcloud datastore indexes create` and `gcloud datastore indexes cleanup` instead.
 
 
 ### App Engine
@@ -2508,7 +2622,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Kubernetes Engine
 
-*   Promoted `--disk-type` flag of `gcloud container <clusters|node-pools> create` to GA.
+*   Promoted `--disk-type` flag of `gcloud container clusters create` and `gcloud container node-pools create` to GA.
 * Modified `--monitoring-service` flag of `gcloud containers clusters update` to enable Google Cloud Monitoring service with Kubernetes-native resource model.
 * Modified `--logging-service` flag of `gcloud containers clusters update` to enable Google Cloud Logging service with Kubernetes-native resource model.
 * Modified output of `gcloud beta container clusters list` for `DEGRADED` clusters to include reason for degradation.
@@ -2560,12 +2674,18 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Deployment Manager
 
-*   Added config key which enables globbing in the `gcloud deployment-manager deployments <create|update>` command. Config files can now use glob patterns in import paths.
-    *   This feature can be enabled by setting the config property `deployment_manager/glob_imports` to true: `gcloud config set deployment_manager/glob_imports True`.
-    *   Imports with a path pattern that match multiple files cannot be named.
-    *   When referencing a template in a resource type field, its full name is still required.
-    *   More information on globbing is available at <http://man7.org/linux/man-pages/man7/glob.7.html>.
-    *   More information on deployment-manager configurations is available at <https://cloud.google.com/deployment-manager/docs/configuration/>.
+* Added config key which enables globbing in the
+  `gcloud deployment-manager deployments create` and
+  `gcloud deployment-manager deployments update` commands. Config files
+  can now use glob patterns in import paths.
+
+  This feature can be enabled by setting the config property
+  `deployment_manager/glob_imports` to true: `gcloud config set deployment_manager/glob_imports True`.
+  Additional details for this feature:
+  * Imports with a path pattern that match multiple files cannot be named.
+  * When referencing a template in a resource type field, its full name is still required.
+  * More information on globbing is available at <http://man7.org/linux/man-pages/man7/glob.7.html>.
+  * More information on deployment-manager configurations is available at <https://cloud.google.com/deployment-manager/docs/configuration/>.
 
 ### Cloud Services
 
@@ -2577,10 +2697,10 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Compute Engine
 
-* Promoted `--network-tier` flag of `gcloud compute <addresses|forwarding-rules> create` to GA.
+* Promoted `--network-tier` flag of `gcloud compute addresses create` and `gcloud compute forwarding-rules create` to GA.
 * Promoted `--default-network-tier` flag of `gcloud compute project-info update` to GA.
-* Promoted `--network-tier` flag of `gcloud compute instances <add-access-config|create>` to GA.
-* Promoted `--network-tier` flag of `gcloud compute instance-templates <create>` to GA.
+* Promoted `--network-tier` flag of `gcloud compute instances add-access-config` and `gcloud compute instances create` to GA.
+* Promoted `--network-tier` flag of `gcloud compute instance-templates create` to GA.
 
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
@@ -2650,7 +2770,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 * Promoted `--internal-ip` flag of `gcloud compute ssh` to GA.
 * Added `list-nodes` command to `gcloud compute sole-tenancy node-groups` for showing node information.
 * Added `--use-serving-port` flag to `gcloud compute health-checks tcp create` command.
-* Promoted `--enable-logging` flag of `gcloud compute firewall-rules <create|update>` to beta.
+* Promoted `--enable-logging` flag of `gcloud compute firewall-rules create` and `gcloud compute firewall-rules update` to beta.
 * Promoted `gcloud compute networks subnets list-usable` to GA.
 
 ### Container Builder
@@ -2668,11 +2788,11 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Breaking Changes
 
 *   **(Cloud DNS)** Removed deprecated `gcloud beta dnskeys` command group; please use
-  `gcloud beta dns-keys` instead.
-*   **(Kubernetes Engine)** Modified `gcloud container <clusters|node-pools> create` commands to create
-  clusters and node-pools with node autorepair enabled by default if they use
-  COS base image. Use the `--no-enable-autorepair` flag to disable this
-  behavior.
+    `gcloud beta dns-keys` instead.
+*   **(Kubernetes Engine)** Modified `gcloud container clusters create` and
+    `gcloud container node-pools create` commands to create clusters and
+    node-pools with node autorepair enabled by default if they use COS base
+    image. Use the `--no-enable-autorepair` flag to disable this behavior.
 
 
 ### App Engine
@@ -2700,7 +2820,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Compute Engine
 
 *   Promoted `--zones` flag of `gcloud compute instance-groups managed create` command to GA.
-*   Promoted `<get|set\>-iam-policy` and `<add|remove\>-iam-policy-bindings` to
+*   Promoted `get-iam-policy`, `set-iam-policy`, `add-iam-policy-bindings`, and `remove-iam-policy-bindings` to
     beta in the following commands groups:
     *   `gcloud compute disks`
     *   `gcloud compute images`
@@ -2797,8 +2917,11 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
     *   `--boot-disk-kms-keyring`
     *   `--boot-disk-kms-location`
     *   `--boot-disk-kms-project`
-*   Added `--use-serving-port` flag to `gcloud compute health-checks
-    <http|https|http2|ssl> create`.
+*   Added `--use-serving-port` flag to the following commands:
+    * `gcloud compute health-checks http create`
+    * `gcloud compute health-checks https create`
+    * `gcloud compute health-checks http2 create`
+    * `gcloud compute health-checks ssl create`
 *   Promoted the following `source-instance` flags of `gcloud compute
     instance-templates create` command to GA:
     *   `--source-instance`
@@ -2806,9 +2929,12 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
     *   `--configure-disk`
 *   Promoted `gcloud compute network-endpoint-groups` command group to beta.
 *   Promoted `--network-endpoint-group` and `--network-endpoint-group-zone`
-    flags of `gcloud compute backend-services <add|remove|update>-backend` to beta.
+    flags of `gcloud compute backend-services add-backend`,
+    `gcloud compute backend-services remove-backend`,
+    and `gcloud compute backend-services update-backend` to beta.
 *   Promoted `--max-connections-per-endpoint` and `--max-rate-per-endpoint`
-    flags of `gcloud compute backend-services <add|update>-backend` to beta.
+    flags of `gcloud compute backend-services add-backend` and
+    `gcloud compute backend-services update-backend` to beta.
 
 ### Kubernetes Engine
 
@@ -2855,9 +2981,11 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud SQL
 
-* Added the `--host` flag to `gcloud sql users <create|delete|set-password>`.
-* Deprecated the `host` argument of `gcloud sql users
-  <create|delete|set-password>` in favor of the `--host` flag.
+* Added the `--host` flag to `gcloud sql users create`, `gcloud sql users delete`
+  and `gcloud sql users set-password`.
+* Deprecated the `host` argument of
+  `gcloud sql users create`, `gcloud sql users delete`, and
+  `gcloud sql users set-password` in favor of the `--host` flag.
 
 ### Cloud TPU
 
@@ -2876,8 +3004,8 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
     *   `gcloud compute backend-buckets update`
     *   `gcloud compute backend-services create`
     *   `gcloud compute backend-services update`
-* Promoted the `HTTP2` value to beta for the `--protocol` flag of `gcloud
-  compute backend-services <create|update>`.
+* Promoted the `HTTP2` value to beta for the `--protocol` flag of
+  `gcloud compute backend-services create` and `gcloud compute backend-services update`.
 * Promoted `http2` related `gcloud compute health-checks` commands to beta.
 
 ### Kubernetes Engine
@@ -2923,7 +3051,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 * Modified `gcloud app domain-mappings create` to provision an automatically
   managed SSL certificate by default on domain mapping creation.
 * Promoted `--certificate-management` flag of
-  `gcloud app domain-mappings <create|update>` to GA.
+  `gcloud app domain-mappings create` and `gcloud app domain-mappings update` to GA.
 
 ### Cloud Dataproc
 
@@ -2940,7 +3068,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Kubernetes Engine
 
 *   Promoted the `--min-cpu-platform` flag of `gcloud container create` to GA.
-*   Promoted `--accelerator` flag of `gcloud container <clusters|node-pools> create` to GA.
+*   Promoted `--accelerator` flag of `gcloud container clusters create` and `gcloud container node-pools create` to GA.
 
 
 
@@ -2979,8 +3107,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Added the `--network` flag to `gcloud compute images export` to allow the
   export process to use a network other than `default`.
-* Promoted `--quic-override` flag of `compute target-https-proxies
-  <create|update>` to GA.
+* Promoted `--quic-override` flag of `compute target-https-proxies create` and `compute target-https-proxies update` to GA.
 
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
@@ -2990,7 +3117,10 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Breaking Changes
 
-*   **(Compute Engine)** Replaced `--node-index` with `--node` for `gcloud alpha compute <instance|instance_templates> create`. Node name will replace node index in the API, and nodes can now be targeted directly by node name (as opposed to node index, which was only unique within a group).
+*   **(Compute Engine)** Replaced `--node-index` with `--node` for `gcloud alpha compute instance create`
+    and `gcloud alpha compute instance_templates create`. Node name will
+    replace node index in the API, and nodes can now be targeted directly
+    by node name (as opposed to node index, which was only unique within a group).
 
 
 ### App Engine
@@ -3024,7 +3154,8 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Promoted `--response` flag of `gcloud compute health-checks` commands to beta.
 *   Promoted the following flags to beta to support using KMS keys to protect disks, images, and snapshots:
-    *    `--kms-key-*` flags of `gcloud compute <disks|images>`
+    *    `--kms-key-*` flags of `gcloud compute disks`
+    *    `--kms-key-*` flags of `gcloud compute images`
     *    `--boot-disk-kms-*` flags of `gcloud compute instances`.
 * Promoted node affinities in instance and instance template creation to beta.
 
@@ -3139,14 +3270,15 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 * Added help text output upon creating interconnects/interconnect attachments.
   To hide this output, append the `--no-user-output-enabled` flag.
 * Promoted `--enable-flow-logs` flag of
-  `gcloud compute networks subnets <create|update>` to GA.
+  `gcloud compute networks subnets create` and `gcloud compute networks subnets update` to GA.
 * Promoted `gcloud compute sole-tenancy` commands to beta.
 * Modified `--delete-nodes` of `gcloud beta compute sole-tenancy node-groups`
   to accept node names instead of node indexes.
 
 ### Kubernetes Engine
 
-* Added `--disk-type` to `gcloud beta container <clusters|node-pools> create` to allow setting of the node VM boot disk type.
+* Added `--disk-type` to `gcloud beta container clusters create` and
+  `gcloud beta container node-pools create` to allow setting of the node VM boot disk type.
 * Updated Google Kubernetes Engine's kubectl from version 1.8.6 to 1.9.7.
 
 
@@ -3187,8 +3319,10 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Firebase Test Lab
 
 *   Firebase Test Lab now supports mobile app testing for iOS. Please request access here: [https://docs.google.com/forms/d/e/1FAIpQLSf5cx1ot8ndHU9YrFkCn6gPoQZLxgW_6H13e_bot3he90n7Ng/viewform](https://docs.google.com/forms/d/e/1FAIpQLSf5cx1ot8ndHU9YrFkCn6gPoQZLxgW_6H13e_bot3he90n7Ng/viewform). Added the following commands:
-    *   `gcloud beta firebase test ios models <list|describe>`
-    *   `gcloud beta firebase test ios versions <list|describe>`
+    *   `gcloud beta firebase test ios models list`
+    *   `gcloud beta firebase test ios models describe`
+    *   `gcloud beta firebase test ios versions list`
+    *   `gcloud beta firebase test ios versions describe`
     *   `gcloud alpha firebase test ios run`
 
 ### Kubernetes Engine
@@ -3226,7 +3360,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud DNS
 
-* Promoted `gcloud dns dns-keys <list|describe>` commands to GA.
+* Promoted `gcloud dns dns-keys list` and `gcloud dns dns-keys describe` commands to GA.
 
 ### Cloud SQL
 
@@ -3290,13 +3424,14 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Billing API
 
-* Added `gcloud billing accounts <get|set>-iam-policy` in alpha and beta.
+* Added `gcloud billing accounts get-iam-policy` and
+  `gcloud billing accounts set-iam-policy` in alpha and beta.
 * Modified output of `gcloud billing accounts list` in beta to include the
   master account ID of any subaccounts.
 
 ### Cloud DNS
 
-* Promoted `gcloud dns operations <list|describe>` commands to GA.
+* Promoted `gcloud dns operations list` and `gcloud dns operations describe` commands to GA.
 
 ### Cloud Datalab
 
@@ -3351,7 +3486,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud TPU
 
-* Added `gcloud compute tpus accelerator-types <list|describe>` to beta.
+* Added `gcloud compute tpus accelerator-types list` and `gcloud compute tpus accelerator-types describe` to beta.
 
 ### Compute Engine
 
@@ -3392,12 +3527,12 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Breaking Changes
 
 *   **(Cloud Bigtable)** Removed deprecated `--instance-type` flag for `gcloud beta bigtable instances
-  update`. Use `gcloud beta bigtable instances upgrade` instead.
-*   **(Cloud Bigtable)** Removed deprecated `--description` flag from `gcloud beta bigtable instances
-  <create|update>`. Use `--display-name` instead.
-*   **(Kubernetes Engine)** Added warning that the default value of `--enable-autorepair` will change for
-  `container <clusters|node-pools> create` commands. Use
-  `--[no-]enable-autorepair` flag  to suppress this warning.
+    update`. Use `gcloud beta bigtable instances upgrade` instead.
+*   **(Cloud Bigtable)** Removed deprecated `--description` flag from
+    `gcloud beta bigtable instances create` and `gcloud beta bigtable instances update`. Use `--display-name` instead.
+*   **(Kubernetes Engine)** Added warning that the default value of
+    `--enable-autorepair` will change for `container clusters create` and
+    `container node-pools create` commands. Use `--[no-]enable-autorepair` flag  to suppress this warning.
 
 
 ### App Engine
@@ -3424,14 +3559,18 @@ deprecation, see
 
 ### Cloud TPU
 
-* Added gcloud compute tpus <reimage|start|stop> commands to beta.
+* Added `gcloud compute tpus reimage`, `gcloud compute tpus start`, and `gcloud compute tpus stop` commands to beta.
 
 ### Compute Engine
 
-* Promoted `--network-tier` flag of `gcloud compute <addresses|forwarding-rules> create` to beta.
+* Promoted `--network-tier` flag of `gcloud compute addresses create` to beta.
+* Promoted `--network-tier` flag of `gcloud compute forwarding-rules create` to beta.
 * Promoted `--default-network-tier` flag of `gcloud compute project-info update` to beta.
-* Promoted `--network-tier` flag of `gcloud compute instances <add-access-config|create|create-with-container>` to beta.
-* Promoted `--network-tier` flag of `gcloud compute instance-templates <create|create-with-container>` to beta.
+* Promoted `--network-tier` flag of `gcloud compute instances add-access-config` to beta.
+* Promoted `--network-tier` flag of `gcloud compute instances create` to beta.
+* Promoted `--network-tier` flag of `gcloud compute instances create-with-container` to beta.
+* Promoted `--network-tier` flag of `gcloud compute instance-templates create` to beta.
+* Promoted `--network-tier` flag of `gcloud compute instance-templates create-with-container` to beta.
 
 ### Container Registry
 
@@ -3483,8 +3622,10 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud TPU
 
-* Added `gcloud compute tpus versions <list|describe>` to beta.
-* Added `gcloud compute tpus locations <list|describe>` to beta.
+* Added `gcloud compute tpus versions list` to beta.
+* Added `gcloud compute tpus versions describe` to beta.
+* Added `gcloud compute tpus locations list` to beta.
+* Added `gcloud compute tpus locations describe` to beta.
 
 ### Cloud Tools For PowerShell
 
@@ -3503,7 +3644,8 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
   compute addresses create` in alpha to support reserving IP range from virtual
   network for peering.
 * Promoted `--enable-flow-logs` flag of
-  `gcloud compute networks subnets <create|update>` to beta.
+  `gcloud compute networks subnets create` and
+  `gcloud compute networks subnets update` to beta.
 *   Promoted SSL policies support to GA.
     *   Promoted the following commands to GA:
         *   `compute ssl-policies create`
@@ -3512,12 +3654,14 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
         *   `compute ssl-policies update`
         *   `compute ssl-policies delete`
         *   `compute ssl-policies list-available-features`
-    *   Promoted `--ssl-policy` flag of `compute
-        <target-https-proxies|target-ssl-proxies> create` to GA.
+    *   Promoted `--ssl-policy` flag of
+        `compute target-https-proxies create`
+        and `compute target-ssl-proxies create` to GA.
     *   Promoted `--ssl-policy` and `--clear-ssl-policy` flags of
-        `compute <target-https-proxies|target-ssl-proxies> update` to GA.
+        `compute target-https-proxies update`
+        and `compute target-ssl-proxies update` to GA.
 * Promoted `--custom-request-headers` and `--no-custom-request-headers` flags of
-  `gcloud compute backend-services <create|update>` to beta.
+  `gcloud compute backend-services create` and `gcloud compute backend-services update` to beta.
 
 ### Container Registry
 
@@ -3565,7 +3709,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud SQL
 
-* Promoted `--availability-type` of `gcloud sql instances <create|patch>` to GA.
+* Promoted `--availability-type` of `gcloud sql instances create` and `gcloud sql instances patch` to GA.
 
 ### Compute Engine
 
@@ -3574,8 +3718,8 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
   create` command to GA.
 * Promoted `gcloud compute images export` to GA.
 *   Promoted QUIC support to beta
-    *   Promoted `--quic-override` flag of `compute target-https-proxies
-        <create|update>` to beta.
+    *   Promoted `--quic-override` flag of
+        `compute target-https-proxies create` and `compute target-https-proxies update` to beta.
 
 
 ## 194.0.0 (2018-03-21)
@@ -3661,7 +3805,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Deployment Manager
 
-*  Added `--create-policy` to `gcloud <alpha|beta> deployment-manager
+*  Added `--create-policy` to `gcloud beta deployment-manager
    deployments create`.
 *  Added the create-policy CREATE to Deployment Manager alpha and beta tracks.
 
@@ -3713,8 +3857,8 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Added `--private-cluster` flag to enable PrivateCluster creation:
   `gcloud beta container clusters create --private-cluster --master-ipv4-cidr <CIDR>
-* Added `--workload-metadata-from-node` flag to `gcloud beta container
-  <clusters|node-pools> create` to allow enabling metadata concealment on
+* Added `--workload-metadata-from-node` flag to `gcloud beta container clusters create`
+  and `gcloud beta container node-pools create` to allow enabling metadata concealment on
   clusters and node pools.  See
   [https://cloud.google.com/kubernetes-engine/docs/how-to/metadata-proxy](https://cloud.google.com/kubernetes-engine/docs/how-to/metadata-proxy)
   for more information.  This feature is scheduled to be deprecated in the
@@ -3728,7 +3872,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 * **(DEPRECATED)** Deprecated `--instance-type` flag for `gcloud beta bigtable
   instances update`. Use `gcloud beta bigtable instances upgrade` instead.
 * **(DEPRECATED)** Renamed the `--description` flag to `--display-name` for
-  `gcloud beta bigtable instances <create|update>`.
+  `gcloud beta bigtable instances create` and `gcloud beta bigtable instances update`.
 * **(MODIFIED)** The behavior of `--trigger-bucket` flag for
    `gcloud functions deploy` has changed and now corresponds to the new
    `object.finalize` event on file creation. To get the legacy behavior, use the
@@ -3798,7 +3942,8 @@ date, apps will be blocked from deploying until you specify the SSL library
 ### Kubernetes Engine
 
 * Added `--enable-pod-security-policy` flag to enable PodSecurityPolicy enforcement in clusters:
-  `gcloud <alpha|beta> container clusters <create|update> --enable-pod-security-policy`
+  `gcloud beta container clusters create --enable-pod-security-policy`
+  and `gcloud beta container clusters update --enable-pod-security-policy`
 
 ### Stackdriver Debugger
 
@@ -3834,12 +3979,12 @@ date, apps will be blocked from deploying until you specify the SSL library
        https://cloud.google.com/functions/docs/writing/background#event_parameter
        for more information on the new schema.
 * In alpha and beta:
-  * Removed `iot <configs|credentials>` command groups. Please use
-    `iot devices <configs|credentials>` instead.
-  * Removed the `--enable-device` flag from `iot devices <create|update>`. Please
-    use `--blocked` instead.
+  * Removed `iot configs` and `iot credentials` command groups. Please use
+    `iot devices configs` and `iot devices credentials` instead.
+  * Removed the `--enable-device` flag from `iot devices create` and
+    `iot devices update`. Please use `--blocked` instead.
   * Removed the `--pubsub-topic` flag and deprecated the `--event-pubsub-topic`
-    flag from `iot registries <create|update>`. Please use the
+    flag from `iot registries create` and `iot registries update`. Please use the
     `--event-notification-config` flag instead.
 *  **(REMOVED)** Removed `NAME` and `--regexp` args from
    `compute target-ssl-proxies list`. Please use the `--filter` flag instead.
@@ -3879,7 +4024,8 @@ date, apps will be blocked from deploying until you specify the SSL library
 
 ### Cloud Machine Learning Engine
 
-* Added `--description` flag to `gcloud <models|versions> <create|update>`
+* Added `--description` flag to `gcloud models create`, `gcloud models update`,
+  `gcloud versions create`, and `gcloud versions update`
   to manage model and version descriptions, respectively.
 
 ### Cloud SDK
@@ -3895,7 +4041,8 @@ date, apps will be blocked from deploying until you specify the SSL library
 ### Compute Engine
 
 * Promoted `public-ptr` and `public-ptr-domain` flags of
-  `gcloud compute instances <create|add-access-config|update-access-config>` to
+  `gcloud compute instances create`, `gcloud compute instances add-access-config`,
+  and `gcloud compute instances update-access-config` to
   GA. These flags allow setting up the PTR record for the external IPs of
   Compute Engine instances.
 * Added `--shielded-vm-secure-boot` and `--shielded-vm-vtpm` flags to
@@ -3935,7 +4082,9 @@ date, apps will be blocked from deploying until you specify the SSL library
 
 ### Breaking Changes
 
-* **(REMOVED)** Removed the `--ssl-certificate` flag from `gcloud compute <target-https-proxies|target-ssl-proxies> <create|update>`. Use `--ssl-certificates` instead.
+* **(REMOVED)** Removed the `--ssl-certificate` flag from `gcloud compute target-https-proxies create`,
+  `gcloud compute target-https-proxies update`, `gcloud compute target-ssl-proxies create`,
+  and `gcloud compute target-ssl-proxies update`. Use `--ssl-certificates` instead.
 
 
 ### App Engine
@@ -4083,7 +4232,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud DNS
 
-*   Added Cloud labels flags to `gcloud beta managed-zones <create|update>`
+*   Added Cloud labels flags to `gcloud beta managed-zones create` and `gcloud beta managed-zones update`
     commands.
 
 ### Cloud Interconnect
@@ -4143,7 +4292,7 @@ labels.
 
 ### Breaking Changes
 
-* **(REMOVED)** Removed support for the format `--scopes=[ACCOUNT=]SCOPE,[[ACCOUNT=]SCOPE,...]]` in `gcloud compute instances <create|create-with-container>` and `gcloud compute instance-templates <create|create-with-container>`. Please use `--scopes=[SCOPE, ...]` and `--service-account=ACCOUNT` instead.
+* **(REMOVED)** Removed support for the format `--scopes=[ACCOUNT=]SCOPE,[[ACCOUNT=]SCOPE,...]]` in `gcloud compute instances create`, `gcloud compute instances create-with-container`, `gcloud compute instance-templates create`, and `gcloud compute instance-templates create-with-container`. Please use `--scopes=[SCOPE, ...]` and `--service-account=ACCOUNT` instead.
 
 *   **(MODIFIED)** Added cautionary 'y/n' prompts to
     `gcloud beta iam roles create`, `gcloud beta iam roles update`, and
@@ -4277,10 +4426,10 @@ labels.
 
 ### Cloud Machine Learning Engine
 
-* Added `--labels` flag to `gcloud ml-engine <models|versions> create`.
-* Added `--labels` flag to `gcloud ml-engine jobs <prediction|training> submit`.
-* Added `gcloud ml-engine <models|versions|jobs> update` commands which update
-  Cloud Machine Learning resources.
+* Added `--labels` flag to `gcloud ml-engine models create` and `gcloud ml-engine versions create`.
+* Added `--labels` flag to `gcloud ml-engine jobs prediction submit` and `gcloud ml-engine jobs training submit`.
+* Added `gcloud ml-engine models update`, `gcloud ml-engine versions update`,
+  and `gcloud ml-engine jobs update` commands which update Cloud Machine Learning resources.
 
 ### Cloud Pub/Sub
 
@@ -4300,8 +4449,9 @@ Added support for `.gcloudignore` files to `container builds submit` command.
 ### Container Engine
 
 * Updated Google Kubernetes Engine's kubectl from version 1.8.4 to 1.8.6.
-* Promoted `--node-version` flag of `gcloud container <clusters|node-pools>
-  create` to GA. Clusters/node-pools can now be created with a node version
+* Promoted `--node-version` flag of `gcloud container clusters create` and
+  `gcloud container node-pools create` to GA. Clusters/node-pools can now be
+  created with a node version
   different from that of the master, via the `--node-version` flag.
 
 ### Container Registry
@@ -4373,10 +4523,11 @@ Added support for `.gcloudignore` files to `container builds submit` command.
 
 ### Deployment Manager
 
-*  Modified `gcloud alpha deployment-manager deployments
-   <create|update|describe>` and 'gcloud alpha deployment-manager
-   resources list' commands to show additional 'TO_RUN' or
-   'NOT_RUN' intent for action resources under previewed
+*  Modified `gcloud alpha deployment-manager deployments create`,
+   `gcloud alpha deployment-manager deployments update`,
+   `gcloud alpha deployment-manager deployments describe` and
+   'gcloud alpha deployment-manager resources list' commands to show additional
+   'TO_RUN' or 'NOT_RUN' intent for action resources under previewed
    deployment.
 
 ### Speech API
@@ -4462,7 +4613,9 @@ Added support for `.gcloudignore` files to `container builds submit` command.
     `pubsub subscriptions modify-message-ack-deadline`.
     * **(BETA - DEPRECATED)** Deprecated `modify-ack-deadline`. It will be
       removed in the future.
-  * In `pubsub subscriptions <ack|modify-message-ack-deadline|modify-ack-deadline>`,
+  * In `pubsub subscriptions ack`,
+    `pubsub subscriptions modify-message-ack-deadline`, and
+    `pubsub subscriptions modify-ack-deadline`,
     the positional argument `ACK_ID` has been replaced by `--ack-ids`.
     * **(BETA - DEPRECATED)** Deprecated the positional. It will be removed
       in the future.
@@ -4474,9 +4627,9 @@ Added support for `.gcloudignore` files to `container builds submit` command.
     `pubsub topics publish` .
     * **(BETA - DEPRECATED)** Deprecated the positional. It will be removed
       in the future.
-  * Added `pubsub <subscriptions|topics> describe` commands to all
+  * Added `pubsub subscriptions describe` and `pubsub topics describe` commands to all
     release tracks.
-  * All commands in `pubsub <subscriptions|topics>` now output exactly the
+  * All commands in `pubsub subscriptions` and `pubsub topics` now output exactly the
     API response. Extra fields have been removed. See the following for
     output
     documentation: https://cloud.google.com/pubsub/docs/reference/rest/
@@ -4637,8 +4790,10 @@ Added support for `.gcloudignore` files to `container builds submit` command.
     * `get-iam-policy`
     * `add-iam-policy-binding`
     * `remove-iam-policy-binding`
-*  Added labels flags (`--labels`, `--<update|remove>-labels`) to
-   `gcloud pubsub <topics|subscriptions|snapshots> <update|create>` in release
+*  Added labels flags (`--labels`, `--update-labels`, and `--remove-labels`) to
+   `gcloud pubsub topics create`, `gcloud pubsub topics update`, `gcloud pubsub subscriptions create`,
+   `gcloud pubsub subscriptions update`, `gcloud pubsub snapshots create`,
+   and `gcloud pubsub snapshots update` in release
    tracks where these commands exist. Use these labels to organize your Google
    Cloud Pub/Sub subscriptions.
 
@@ -4709,7 +4864,9 @@ Added support for `.gcloudignore` files to `container builds submit` command.
 *   **(BETA - DEPRECATED)** The `--include-ignored-file` flag of `gcloud beta
     functions deploy` is now deprecated. Added support for using a
     `.gcloudignore` file instead.
-*   The `gcloud pubsub <snapshots|subscriptions|topics> <create|update>` and
+*   The `gcloud pubsub snapshots create`, `gcloud pubsub snapshots update`,
+    `gcloud pubsub subscriptions create`, `gcloud pubsub subscriptions update`,
+    `gcloud pubsub topics create`, `gcloud pubsub topics update`, and
     `gcloud pubsub subscriptions update` commands have been updated:
       *   These now throw an exception when any of the API requests fail. The
           exception contains the list of failed requests.
@@ -5041,9 +5198,9 @@ Added support for `.gcloudignore` files to `container builds submit` command.
 ### Google Cloud Service Management
 *   Commands in `gcloud service-management` will soon be deprecated.
       *   The preferred commands to list, enable, and disable services are now
-          under `gcloud <alpha|beta> services`.
+          under `gcloud beta services`.
       *   The preferred commands to produce services for consumption are now
-          under `gcloud <alpha|beta> endpoints services`.
+          under `gcloud beta endpoints services`.
 
 ### Google Cloud SQL
 
@@ -5628,8 +5785,11 @@ disabled on existing clusters via the
     beta tracks remain.
 *   `gcloud alpha compute networks list-ip-owners` is now available in the
     alpha track.
-*   Added `source-service-accounts` and `target-service-accounts` to the `gcloud
-    beta compute firewall-rules <describe|list|create|update>` commands.
+*   Added `source-service-accounts` and `target-service-accounts` to the
+    `gcloud beta compute firewall-rules describe`,
+    `gcloud beta compute firewall-rules list`,
+    `gcloud beta compute firewall-rules create`, and
+    `gcloud beta compute firewall-rules update` commands.
 *   Added the `--custom-extensions` flag to:
     *   `gcloud compute instances create`
     *   `gcloud compute instances set-machine-type`
@@ -5663,7 +5823,10 @@ disabled on existing clusters via the
 
 ### Google Cloud Machine Learning Engine
 
-*   Added the `gcloud ml-engine models <get-iam-policy|set-iam-policy|remove-iam-policy-binding|add-iam-policy-binding>`
+*   Added the `gcloud ml-engine models get-iam-policy`,
+    `gcloud ml-engine models set-iam-policy`,
+    `gcloud ml-engine models remove-iam-policy-binding`, and
+    `gcloud ml-engine models add-iam-policy-binding`
     commands. These read and modify IAM policy data for ML Engine models. See
     https://cloud.google.com/iam/docs/managing-policies for details.
 
@@ -5677,8 +5840,14 @@ disabled on existing clusters via the
 ### Google Cloud Resource Manager
 
 *   The following Organization Policy commands are now available in the beta
-    track: `gcloud beta resource-manager org-policies
-    <allow|delete|deny|describe|disable-enforce|enable-enforce|list|set-policy>`.
+    track: `gcloud beta resource-manager org-policies allow`,
+    `gcloud beta resource-manager org-policies delete`,
+    `gcloud beta resource-manager org-policies deny`,
+    `gcloud beta resource-manager org-policies describe`,
+    `gcloud beta resource-manager org-policies disable-enforce`,
+    `gcloud beta resource-manager org-policies enable-enforce`,
+    `gcloud beta resource-manager org-policies list`,
+    and `gcloud beta resource-manager org-policies set-policy`.
 
 ### Google Cloud SQL
 
@@ -5735,7 +5904,7 @@ disabled on existing clusters via the
 
 ### Google App Engine
 
-*   Promoted `gcloud app instances <ssh|scp>` to GA. The beta commands remain
+*   Promoted `gcloud app instances ssh` and `gcloud app instances scp` to GA. The beta commands remain
     and are identical.
 *   Updated App Engine components for Python to version 1.9.55.
     Please visit the release notes for details:
@@ -5770,22 +5939,25 @@ disabled on existing clusters via the
 ### Google Cloud SQL
 
 *   Added `--labels` flag to `gcloud beta sql instances create` and
-    `--<update|remove|clear>-labels` flags to `gcloud beta sql instances patch`
+    `--update-labels`, `--remove-labels`, and `--clear-labels` flags to `gcloud beta sql instances patch`
     to support the application of labels to SQL instances.
 
 ### Google Compute Engine
 
-*   Added `--source-instance-template` flag to `gcloud beta compute instances
-    <create|create-from-container>` to allow instance creation based on an
+*   Added `--source-instance-template` flag to `gcloud beta compute instances create`
+    and `gcloud beta compute instances create-from-container` to allow instance
+    creation based on an
     instance template (see `gcloud compute instance-templates` command group).
-*   Added `--ssl-certificates` flag to `gcloud alpha compute
-    <target-https-proxies|target-ssl-proxies> <create|update>` to allow the
+*   Added `--ssl-certificates` flag to `gcloud alpha compute target-https-proxies create`,
+    `gcloud alpha compute target-https-proxies update`,
+    `gcloud alpha compute target-ssl-proxies create`, and
+    `gcloud alpha compute target-ssl-proxies update` to allow the
     specification of multiple ssl certificates when creating or updating a
     target proxy.
 *   Added for option `STANDARD` for
     *   `--network-interface` sub-flag `network-tier` in
-        `gcloud alpha compute instances create` and
-        `gcloud alpha compute instances <create|create-from-container>`
+        `gcloud alpha compute instances create`, and
+        `gcloud alpha compute instances create-from-container`.
     *   `--network-tier` flag in
         `gcloud alpha compute instances
         <create|add-access-config|update-access-config>`, `gcloud alpha compute
@@ -6089,7 +6261,9 @@ disabled on existing clusters via the
 *   Promoted `gcloud compute scp` to the GA release track.
 
 *   Add the `--custom-extensions` flag to
-    `gcloud beta compute <instances create|instances set-machine-type|instance-templates create`
+    `gcloud beta compute instances create`,
+    `gcloud beta compute instances set-machine-type`,
+    and `gcloud beta compute instance-templates create`.
 
 ### Firebase Test Lab
 
@@ -6312,18 +6486,20 @@ disabled on existing clusters via the
 
 *   The `--force-creation` flag is no longer supported in `gcloud compute images
     create`.
-*   The `gcloud compute instance-groups managed
-    <abandon|delete|recreate>-instances` commands now support more than 1000
-    instances.
+*   The `gcloud compute instance-groups managed abandon-instances`,
+    `gcloud compute instance-groups managed delete-instances, and
+    `gcloud compute instance-groups managed recreate-instances` commands now
+    support more than 1000 instances.
 *   Custom cache keys are now v1, adding the following flags to `gcloud compute
-    backend-services <create|update>`:
+    backend-services create` and `gcloud compute backend-services update`:
     *    `--cache-key-include-host`
     *    `--cache-key-include-protocol`
     *    `--cache-key-include-query-string`
     *    `--cache-key-query-string-blacklist`
     *    `--cache-key-query-string-whitelist`
-*   (Alpha, Beta) Added the `gcloud <alpha|beta> compute disks
-    <add-labels|remove-labels|update>` commands to support labels for Compute
+*   (Alpha, Beta) Added the `gcloud beta compute disks add-labels`,
+    `gcloud beta compute disks remove-labels`, and
+    `gcloud beta compute disks update` commands to support labels for Compute
     Engine disk resources.
 
 ### Google Cloud SQL

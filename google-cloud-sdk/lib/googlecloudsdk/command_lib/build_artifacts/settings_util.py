@@ -75,7 +75,7 @@ Please insert following snippet into your .npmrc
 
 ======================================================
 {registry}
-//npm.pkg.dev/{repo_path}/:_password=\"${{{password}}}\"
+//npm.pkg.dev/{repo_path}/:_password=""
 //npm.pkg.dev/{repo_path}/:username=oauth2accesstoken
 //npm.pkg.dev/{repo_path}/:email=not.valid@email.com
 //npm.pkg.dev/{repo_path}/:always-auth=true
@@ -85,77 +85,42 @@ Please insert following snippet into your .npmrc
   data = {
       "registry": registry,
       "repo_path": repo_path,
-      "password": "GOOGLE_BUILDARTIFACTS_TOKEN_NPM"
   }
   return npm_setting_template.format(**data)
 
 
-def GetMavenSettingsSnippet():
-  """Forms a maven settings snippet to add to the settings.xml file.
-
-  Returns:
-    A maven settings snippet.
-  """
-
-  mvn_setting_template = """\
-Please insert following snippet into your settings.xml
-
-======================================================
-<settings>
-  <servers>
-    <server>
-      <id>{server_id}</id>
-      <configuration>
-        <httpConfiguration>
-          <get>
-            <usePreemptive>true</usePreemptive>
-          </get>
-          <put>
-            <params>
-              <property>
-                <name>http.protocol.expect-continue</name>
-                <value>false</value>
-              </property>
-            </params>
-          </put>
-        </httpConfiguration>
-      </configuration>
-      <username>oauth2accesstoken</username>
-      <password>${{env.{password}}}</password>
-    </server>
-  </servers>
-</settings>
-======================================================
-"""
-
-  data = {
-      "server_id": "cloud-build-artifacts",
-      "password": "GOOGLE_BUILDARTIFACTS_TOKEN"
-  }
-  return mvn_setting_template.format(**data)
-
-
-def GetMavenPomSnippet(args):
-  """Forms a maven pom snippet to add to the pom.xml file.
+def GetMavenSnippet(args):
+  """Forms a maven snippet to add to the pom.xml file.
 
   Args:
     args: an argparse namespace. All the arguments that were provided to this
       command invocation.
 
   Returns:
-    A maven pom snippet.
+    A maven snippet.
   """
 
   repo_path = _GetRepoPath(args)
-  mvn_pom_template = """\
+  mvn_template = """\
 Please insert following snippet into your pom.xml
 
 ======================================================
 <project>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>{server_id}</id>
+      <url>buildartifacts://maven.pkg.dev/{repo_path}</url>
+    </snapshotRepository>
+    <repository>
+      <id>{server_id}</id>
+      <url>buildartifacts://maven.pkg.dev/{repo_path}</url>
+    </repository>
+  </distributionManagement>
+
   <repositories>
     <repository>
       <id>{server_id}</id>
-      <url>https://maven.pkg.dev/{repo_path}</url>
+      <url>buildartifacts://maven.pkg.dev/{repo_path}</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -164,37 +129,26 @@ Please insert following snippet into your pom.xml
       </snapshots>
     </repository>
   </repositories>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>{server_id}</id>
-      <url>https://maven.pkg.dev/{repo_path}</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
-  <distributionManagement>
-    <repository>
-      <id>{server_id}</id>
-      <url>https://maven.pkg.dev/{repo_path}</url>
-    </repository>
-    <snapshotRepository>
-      <id>{server_id}</id>
-      <url>https://maven.pkg.dev/{repo_path}</url>
-    </snapshotRepository>
-  </distributionManagement>
+
+  <build>
+    <extensions>
+      <extension>
+        <groupId>com.google.cloud.buildartifacts</groupId>
+        <artifactId>buildartifacts-maven-wagon</artifactId>
+        <version>{extension_version}</version>
+      </extension>
+    </extensions>
+  </build>
 </project>
 ======================================================
 """
 
   data = {
       "server_id": "cloud-build-artifacts",
+      "extension_version": "1.0.0",
       "repo_path": repo_path,
   }
-  return mvn_pom_template.format(**data)
+  return mvn_template.format(**data)
 
 
 def GetGradleSnippet(args):
@@ -216,33 +170,20 @@ see docs.gradle.org/current/userguide/publishing_maven.html
 ======================================================
 plugins {{
   id "maven-publish"
+  id "com.google.cloud.buildartifacts.gradle-plugin" version "1.1.0"
 }}
-
-// Move the secret to ~/.gradle.properties
-def mavenSecret = "$System.env.{password}"
 
 publishing {{
   repositories {{
     maven {{
-      url "https://maven.pkg.dev/{repo_path}"
-      credentials {{
-        username = "oauth2accesstoken"
-        password = "$mavenSecret"
-      }}
+      url "buildartifacts://maven.pkg.dev/{repo_path}"
     }}
   }}
 }}
 
 repositories {{
   maven {{
-    url "https://maven.pkg.dev/{repo_path}"
-    credentials {{
-      username = "oauth2accesstoken"
-      password = "$mavenSecret"
-    }}
-    authentication {{
-      basic(BasicAuthentication)
-    }}
+    url "buildartifacts://maven.pkg.dev/{repo_path}"
   }}
 }}
 ======================================================
@@ -250,6 +191,5 @@ repositories {{
 
   data = {
       "repo_path": repo_path,
-      "password": "GOOGLE_BUILDARTIFACTS_TOKEN",
   }
   return gradle_template.format(**data)

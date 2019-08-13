@@ -37,6 +37,21 @@ _DETAILED_SOURCE_SNAPSHOT_HELP = """\
       size of the disks.
 """
 
+_SOURCE_DISK_DETAILED_HELP = """\
+      Source disk used to create the disks. It is safe to
+      delete a source disk after a disk has been created from the
+      source disk. To get a list of disks in your current project,
+      run `gcloud compute disks list`. This flag is mutually
+      exclusive with *--image* and *--source-snapshot*.
+
+      When using this option, the size of the disks must be at least
+      as large as the source disk size. Use *--size* to adjust the
+      size of the disks.
+
+      The value for this option can be the name of a disk with the zone
+      specified via ``--source-disk-zone'' flag.
+"""
+
 
 DEFAULT_LIST_FORMAT = """\
     table(
@@ -98,3 +113,13 @@ SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     global_collection='compute.snapshots',
     short_help='Source snapshot used to create the disks.',
     detailed_help=_DETAILED_SOURCE_SNAPSHOT_HELP,)
+
+SOURCE_DISK_ARG = compute_flags.ResourceArgument(
+    resource_name='source disk',
+    name='--source-disk',
+    completer=compute_completers.DisksCompleter,
+    short_help='Source disk used to create the disks.',
+    detailed_help=_SOURCE_DISK_DETAILED_HELP,
+    zonal_collection='compute.disks',
+    zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
+    required=False)

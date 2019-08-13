@@ -35,6 +35,7 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files
+import six
 
 msgs = core_apis.GetMessagesModule('iam', 'v1')
 MANAGED_BY = (msgs.IamProjectsServiceAccountsKeysListRequest
@@ -777,12 +778,12 @@ def ParseYamlOrJsonPolicyFile(policy_file_path, policy_message_type):
     raise gcloud_exceptions.BadFileException(
         'Policy file [{0}] is not a properly formatted YAML or JSON '
         'policy file. {1}'
-        .format(policy_file_path, str(e)))
+        .format(policy_file_path, six.text_type(e)))
   except (apitools_messages.DecodeError, binascii.Error) as e:
     # DecodeError is raised when etag is badly formatted (not proper Base64)
     raise IamEtagReadError(
         'The etag of policy file [{0}] is not properly formatted. {1}'
-        .format(policy_file_path, str(e)))
+        .format(policy_file_path, six.text_type(e)))
   return (policy, update_mask)
 
 
@@ -828,12 +829,12 @@ def ParseYamlToRole(file_path, role_message_type):
     # Raised when the YAML file is not properly formatted YAML role file.
     raise gcloud_exceptions.BadFileException(
         'Role file {0} is not a properly formatted YAML role file. {1}'
-        .format(file_path, str(e)))
+        .format(file_path, six.text_type(e)))
   except (apitools_messages.DecodeError, binascii.Error) as e:
     # DecodeError is raised when etag is badly formatted (not proper Base64)
     raise IamEtagReadError(
         'The etag of role file {0} is not properly formatted. {1}'
-        .format(file_path, str(e)))
+        .format(file_path, six.text_type(e)))
   return role
 
 

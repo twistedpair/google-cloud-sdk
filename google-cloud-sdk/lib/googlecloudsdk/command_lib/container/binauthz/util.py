@@ -22,6 +22,7 @@ import json
 
 from containerregistry.client import docker_name
 from googlecloudsdk.core.exceptions import Error
+import six
 from six.moves import urllib
 
 
@@ -83,7 +84,7 @@ def MakeSignaturePayloadDict(container_image_url):
   return {
       'critical': {
           'identity': {
-              'docker-reference': str(repo_digest.as_repository()),
+              'docker-reference': six.text_type(repo_digest.as_repository()),
           },
           'image': {
               'docker-manifest-digest': repo_digest.digest,

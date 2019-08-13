@@ -105,8 +105,8 @@ class _FlagOverrideStack(object):
     Args:
       args: [str], The command line args for this invocation.
     """
-    # TODO(b/71714857): Decoding the arguments won't be necessary here long term
-    # once sys.argv is always decoded at the place where it is accessed.
+    # TODO(b/138858862): Decoding the arguments won't be necessary here long
+    # term once sys.argv is always decoded at the place where it is accessed.
     args = [encoding.Decode(a) for a in args]
     self.Push(_FlagOverrideStack._FindFlagValue(args))
 

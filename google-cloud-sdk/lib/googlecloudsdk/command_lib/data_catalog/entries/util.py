@@ -25,6 +25,7 @@ from googlecloudsdk.api_lib.data_catalog import util as api_util
 from googlecloudsdk.command_lib.concepts import exceptions as concept_exceptions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import yaml
+import six
 
 
 class InvalidSchemaError(exceptions.Error):
@@ -152,7 +153,7 @@ def _GetUnrecognizedFieldPaths(message):
   errors = encoding.UnrecognizedFieldIter(message)
   unrecognized_field_paths = []
   for edges_to_message, field_names in errors:
-    message_field_path = '.'.join(str(e) for e in edges_to_message)
+    message_field_path = '.'.join(six.text_type(e) for e in edges_to_message)
     # Don't print the top level columns field since the user didn't specify it
     message_field_path = message_field_path.replace('columns', '', 1)
     for field_name in field_names:

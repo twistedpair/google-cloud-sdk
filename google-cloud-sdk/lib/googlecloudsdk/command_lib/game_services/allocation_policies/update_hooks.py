@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Update hooks for Cloud Game Services Scaling Policy."""
+"""Update hooks for Cloud Game Services Allocation Policy."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -22,10 +22,12 @@ from googlecloudsdk.command_lib.game_services import utils
 
 
 def MatchClusters(ref, args, req):
-  if args.match_clusters:
+  if args.match_clusters or args.clear_match_clusters:
     req = utils.AddFieldToUpdateMask('cluster_selectors', req)
     if req.allocationPolicy is None:
       req.allocationPolicy = utils.GetApiMessage(ref).AllocationPolicy()
+    req.allocationPolicy.clusterSelectors = []
+  if args.match_clusters:
     req.allocationPolicy.clusterSelectors = utils.ParseMatchClusters(
         ref, args.match_clusters)
   return req

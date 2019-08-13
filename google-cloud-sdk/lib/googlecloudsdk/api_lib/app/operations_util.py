@@ -34,6 +34,7 @@ from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
+import six
 
 # Default is to retry every 5 seconds for 1 hour.
 DEFAULT_OPERATION_RETRY_INTERVAL = 5
@@ -69,7 +70,7 @@ def CallAndCollectOpErrors(method, *args, **kwargs):
 
 def _ReraiseMiscOperationError(err):
   """Transform and re-raise error helper."""
-  exceptions.reraise(MiscOperationError(str(err)))
+  exceptions.reraise(MiscOperationError(six.text_type(err)))
 
 
 class MiscOperationError(exceptions.Error):

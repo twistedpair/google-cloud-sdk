@@ -24,6 +24,7 @@ from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.compute.networks.subnets import flags as subnet_flags
 from googlecloudsdk.command_lib.compute.routers.nats import flags as nat_flags
 from googlecloudsdk.core import exceptions as core_exceptions
+import six
 
 
 class NatNotFoundError(core_exceptions.Error):
@@ -87,7 +88,7 @@ def UpdateNatMessage(nat,
     if args.drain_nat_ips:
       drain_nat_ips = nat_flags.DRAIN_NAT_IP_ADDRESSES_ARG.ResolveAsResource(
           args, compute_holder.resources)
-      nat.drainNatIps = [str(ip) for ip in drain_nat_ips]
+      nat.drainNatIps = [six.text_type(ip) for ip in drain_nat_ips]
 
       # Remove a IP from nat_ips if it is going to be drained.
       if not args.nat_external_ip_pool:
@@ -210,7 +211,7 @@ def _ParseSubnetFields(args, compute_holder):
                        LIST_OF_SECONDARY_IP_RANGES)
 
       subnetworks.append({
-          'name': str(subnet_ref[0]),
+          'name': six.text_type(subnet_ref[0]),
           'sourceIpRangesToNat': options,
           'secondaryIpRangeNames': subnet_usage.secondary_ranges
       })
@@ -224,7 +225,8 @@ def _ParseNatIpFields(args, compute_holder):
     return (messages.RouterNat.NatIpAllocateOptionValueValuesEnum.AUTO_ONLY,
             list())
   return (messages.RouterNat.NatIpAllocateOptionValueValuesEnum.MANUAL_ONLY, [
-      str(address) for address in nat_flags.IP_ADDRESSES_ARG.ResolveAsResource(
+      six.text_type(address)
+      for address in nat_flags.IP_ADDRESSES_ARG.ResolveAsResource(
           args, compute_holder.resources)
   ])
 

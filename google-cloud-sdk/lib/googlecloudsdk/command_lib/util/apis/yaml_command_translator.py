@@ -915,7 +915,7 @@ class CommandBuilder(object):
               _GetAttribute(error, self.spec.response.error.message)))
         if messages:
           raise exceptions.Error(' '.join(messages))
-        raise exceptions.Error(str(error))
+        raise exceptions.Error(six.text_type(error))
     if self.spec.response.result_attribute:
       response = _GetAttribute(response, self.spec.response.result_attribute)
     for hook in self.spec.response.modify_response_hooks:

@@ -25,6 +25,7 @@ import sys
 
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr_os
+import six
 
 from six.moves import range
 from six.moves import urllib
@@ -97,7 +98,7 @@ class CommentHolder(object):
 def _FormatNewIssueUrl(comment):
   params = {
       'description': comment,
-      'component': str(ISSUE_TRACKER_COMPONENT)
+      'component': six.text_type(ISSUE_TRACKER_COMPONENT)
   }
   return NEW_ISSUE_URL + '?' + urllib.parse.urlencode(params)
 
@@ -302,7 +303,7 @@ def _FormatIssueBody(info, log_data=None):
         before stacktrace, the stacktrace portion of the comment, and the
         exception
   """
-  gcloud_info = str(info)
+  gcloud_info = six.text_type(info)
 
   formatted_command = ''
   if log_data and log_data.command:

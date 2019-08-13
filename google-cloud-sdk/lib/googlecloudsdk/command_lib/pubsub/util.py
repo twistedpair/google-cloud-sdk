@@ -145,9 +145,9 @@ def FormatDuration(duration):
   Args:
     duration (int): The duration in seconds.
   Returns:
-    str: The formatted duration.
+    unicode: The formatted duration.
   """
-  return str(duration) + 's'
+  return six.text_type(duration) + 's'
 
 
 def ParseAttributes(attribute_dict, messages=None):

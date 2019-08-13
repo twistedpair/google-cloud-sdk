@@ -501,7 +501,7 @@ def DoPrepareManagedVms(gae_client):
     log.warning(
         ("We couldn't validate that your project is ready to deploy to App "
          'Engine Flexible Environment. If deployment fails, please check the '
-         'following message and try again:\n') + str(err))
+         'following message and try again:\n') + six.text_type(err))
   metrics.CustomTimedEvent(metric_names.PREPARE_ENV)
 
 

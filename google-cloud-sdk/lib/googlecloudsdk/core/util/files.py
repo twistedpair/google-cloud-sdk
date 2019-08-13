@@ -606,15 +606,15 @@ class Checksum(object):
     self.__files = set()
 
   def AddContents(self, contents):
-    """Adds the given string contents to the checksum.
+    """Adds the given contents to the checksum.
 
     Args:
-      contents: str, The contents to add.
+      contents: str or bytes, The contents to add.
 
     Returns:
       self, For method chaining.
     """
-    self.__hash.update(contents)
+    self.__hash.update(six.ensure_binary(contents))
     return self
 
   def AddFileContents(self, file_path):

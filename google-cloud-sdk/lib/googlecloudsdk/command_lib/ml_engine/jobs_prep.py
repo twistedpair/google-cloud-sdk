@@ -445,7 +445,7 @@ def BuildPackages(package_path, output_dir):
     try:
       return _RunSetupTools(package_root, setup_py_path, output_dir)
     except RuntimeError as err:
-      raise SetuptoolsFailedError(str(err), generated)
+      raise SetuptoolsFailedError(six.text_type(err), generated)
     finally:
       if generated:
         # For some reason, this artifact gets generated in the package root by

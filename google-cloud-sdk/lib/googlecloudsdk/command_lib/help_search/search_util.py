@@ -361,7 +361,7 @@ class SummaryBuilder(object):
       elif isinstance(section, dict):
         line = ', '.join(sorted(section.keys()))
       else:
-        line = str(section)
+        line = six.text_type(section)
     assert line, self._INVALID_LOCATION_MESSAGE.format(DOT.join(location))
     header = _FormatHeader(location[-1])
     if header:

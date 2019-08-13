@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import properties
+import six
 from six.moves import range  # pylint: disable=redefined-builtin
 
 
@@ -135,7 +136,8 @@ def _DeduceRegionInProject(resources, current_project, disk_resource,
       raise exceptions.InvalidArgumentException(
           '--zone',
           'Zone [{}] lives in different project than disk [{}].'.format(
-              str(zone.SelfLink()), str(disk_resource.SelfLink())))
+              six.text_type(zone.SelfLink()),
+              six.text_type(disk_resource.SelfLink())))
   # check if all zones live in the same region
   for i in range(len(current_zones) - 1):
     if (utils.ZoneNameToRegionName(current_zones[i].zone) !=

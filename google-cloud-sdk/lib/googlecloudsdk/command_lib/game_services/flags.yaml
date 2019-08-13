@@ -7,5 +7,5 @@ spec_file:
     Path to a JSON or YAML file that contains game server spec which is sent to Agones. The game
     server spec follows the format of the spec field in Agones GameServer custom resource. Please
     see https://github.com/googleforgames/agones/blob/master/examples/simple-udp/gameserver.yaml for
-    example and https://github.com/googleforgames/agones/blob/master/pkg/apis/stable/v1alpha1/gameserver.go#L116-L120
-    for spec definition. Required when template-id is specified.
+    example and https://github.com/googleforgames/agones/blob/master/pkg/apis/agones/v1/gameserver.go
+    for GameServerTemplateSpec definition. Required when template-id is specified.

@@ -39,14 +39,15 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
+import six
 
-_DAISY_BUILDER = 'gcr.io/compute-image-tools/daisy:release'
+_IMAGE_IMPORT_BUILDER = 'gcr.io/compute-image-tools/gce_vm_image_import:{}'
 
-_IMAGE_IMPORT_BUILDER = 'gcr.io/compute-image-tools/gce_vm_image_import:release'
+_IMAGE_EXPORT_BUILDER = 'gcr.io/compute-image-tools/gce_vm_image_export:{}'
 
-_IMAGE_EXPORT_BUILDER = 'gcr.io/compute-image-tools/gce_vm_image_export:release'
+_OVF_IMPORT_BUILDER = 'gcr.io/compute-image-tools/gce_ovf_import:{}'
 
-_OVF_IMPORT_BUILDER = 'gcr.io/compute-image-tools/gce_ovf_import:release'
+_DEFAULT_BUILDER_VERSION = 'release'
 
 SERVICE_ACCOUNT_ROLES = [
     'roles/iam.serviceAccountUser',
@@ -151,6 +152,22 @@ def AddCommonDaisyArgs(parser, add_log_location=True):
           See $ gcloud topic datetimes for information on duration formats.
           """)
   base.ASYNC_FLAG.AddToParser(parser)
+
+
+def AddExtraCommonDaisyArgs(parser):
+  """Extra common arguments for Daisy builds."""
+
+  parser.add_argument(
+      '--docker-image-tag',
+      default=_DEFAULT_BUILDER_VERSION,
+      hidden=True,
+      help="""\
+          Specify which docker image tag (of tools from compute-image-tools)
+          should be used for this command. By default it's "release", while
+          "latest" is supported as well. There may be more versions supported in
+          the future.
+          """
+  )
 
 
 def _CheckIamPermissions(project_id):
@@ -305,7 +322,8 @@ def AppendNetworkAndSubnetArgs(args, builder_args):
     AppendArg(builder_args, 'network', args.network.lower())
 
 
-def RunImageImport(args, import_args, tags, output_filter):
+def RunImageImport(args, import_args, tags, output_filter,
+                   docker_image_tag=_DEFAULT_BUILDER_VERSION):
   """Run a build over gce_vm_image_import on Google Cloud Builder.
 
   Args:
@@ -316,6 +334,7 @@ def RunImageImport(args, import_args, tags, output_filter):
     output_filter: A list of strings indicating what lines from the log should
       be output. Only lines that start with one of the strings in output_filter
       will be displayed.
+    docker_image_tag: Specified docker image tag.
 
   Returns:
     A build object that either streams the output or is displayed as a
@@ -324,11 +343,12 @@ def RunImageImport(args, import_args, tags, output_filter):
   Raises:
     FailedBuildException: If the build is completed and not 'SUCCESS'.
   """
-  return _RunImageCloudBuild(args, _IMAGE_IMPORT_BUILDER, import_args, tags,
-                             output_filter)
+  builder = _IMAGE_IMPORT_BUILDER.format(docker_image_tag)
+  return RunImageCloudBuild(args, builder, import_args, tags, output_filter)
 
 
-def RunImageExport(args, export_args, tags, output_filter):
+def RunImageExport(args, export_args, tags, output_filter,
+                   docker_image_tag=_DEFAULT_BUILDER_VERSION):
   """Run a build over gce_vm_image_export on Google Cloud Builder.
 
   Args:
@@ -339,6 +359,7 @@ def RunImageExport(args, export_args, tags, output_filter):
     output_filter: A list of strings indicating what lines from the log should
       be output. Only lines that start with one of the strings in output_filter
       will be displayed.
+    docker_image_tag: Specified docker image tag.
 
   Returns:
     A build object that either streams the output or is displayed as a
@@ -347,11 +368,11 @@ def RunImageExport(args, export_args, tags, output_filter):
   Raises:
     FailedBuildException: If the build is completed and not 'SUCCESS'.
   """
-  return _RunImageCloudBuild(args, _IMAGE_EXPORT_BUILDER, export_args, tags,
-                             output_filter)
+  builder = _IMAGE_EXPORT_BUILDER.format(docker_image_tag)
+  return RunImageCloudBuild(args, builder, export_args, tags, output_filter)
 
 
-def _RunImageCloudBuild(args, builder, builder_args, tags, output_filter):
+def RunImageCloudBuild(args, builder, builder_args, tags, output_filter):
   """Run a build related to image on Google Cloud Builder.
 
   Args:
@@ -544,8 +565,8 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
 
   build_tags = ['gce-ovf-import']
 
-  return _RunCloudBuild(args, _OVF_IMPORT_BUILDER, ovf_importer_args,
-                        build_tags, output_filter)
+  return _RunCloudBuild(args, _OVF_IMPORT_BUILDER.format(args.docker_image_tag),
+                        ovf_importer_args, build_tags, output_filter)
 
 
 def _AppendNodeAffinityLabelArgs(
@@ -558,7 +579,8 @@ def _AppendNodeAffinityLabelArgs(
 
 
 def _BuildOvfImporterNodeAffinityFlagValue(node_affinity):
-  node_affinity_flag = node_affinity.key + ',' + str(node_affinity.operator)
+  node_affinity_flag = node_affinity.key + ',' + six.text_type(
+      node_affinity.operator)
   for value in node_affinity.values:
     node_affinity_flag += ',' + value
   return node_affinity_flag

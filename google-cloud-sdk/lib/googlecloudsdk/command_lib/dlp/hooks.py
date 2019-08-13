@@ -30,6 +30,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
+import six
 
 _DLP_API = 'dlp'
 _DLP_API_VERSION = 'v2'
@@ -389,7 +390,7 @@ def GetRedactColorFromString(color_string):
 
 def GetJobScheduleDurationString(value):
   """Return API required format for duration specified by value."""
-  return '{}s'.format(str(value))
+  return '{}s'.format(six.text_type(value))
 
 
 # Additional Arguments Hook
