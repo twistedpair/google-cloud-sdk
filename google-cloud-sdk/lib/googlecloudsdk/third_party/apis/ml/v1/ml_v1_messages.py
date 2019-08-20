@@ -115,6 +115,7 @@ class GoogleCloudMlV1AcceleratorConfig(_messages.Message):
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
       TPU_V2: TPU v2.
+      TPU_V3: TPU v3.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -123,6 +124,7 @@ class GoogleCloudMlV1AcceleratorConfig(_messages.Message):
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
     TPU_V2 = 6
+    TPU_V3 = 7
 
   count = _messages.IntegerField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -203,6 +205,7 @@ class GoogleCloudMlV1Capability(_messages.Message):
       NVIDIA_TESLA_P4: <no description>
       NVIDIA_TESLA_T4: <no description>
       TPU_V2: <no description>
+      TPU_V3: <no description>
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -211,6 +214,7 @@ class GoogleCloudMlV1Capability(_messages.Message):
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
     TPU_V2 = 6
+    TPU_V3 = 7
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""TypeValueValuesEnum enum type.
@@ -2242,8 +2246,8 @@ class MlProjectsJobsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -2406,8 +2410,8 @@ class MlProjectsModelsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.

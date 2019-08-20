@@ -111,7 +111,7 @@ class _OnGCECache(object):
         mtime = os.stat(gce_cache_path).st_mtime
         expiration_time = mtime + _GCE_CACHE_MAX_AGE
         gcecache_file_value = files.ReadFileContents(gce_cache_path)
-        return gcecache_file_value == str(True), expiration_time
+        return gcecache_file_value == six.text_type(True), expiration_time
       except (OSError, IOError, files.Error):
         # Failed to read Google Compute Engine credential cache file.
         # This could be due to permission reasons, or because it doesn't yet

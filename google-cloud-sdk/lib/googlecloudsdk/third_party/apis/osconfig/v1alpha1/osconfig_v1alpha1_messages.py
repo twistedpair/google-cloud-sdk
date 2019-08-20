@@ -202,9 +202,6 @@ class AuditLogConfig(_messages.Message):
   Fields:
     exemptedMembers: Specifies the identities that do not cause logging for
       this type of permission. Follows the same format of Binding.members.
-    ignoreChildExemptions: Specifies whether principals can be exempted for
-      the same LogType in lower-level resource policies. If true, any lower-
-      level exemptions will be ignored.
     logType: The log type that this config enables.
   """
 
@@ -223,8 +220,7 @@ class AuditLogConfig(_messages.Message):
     DATA_READ = 3
 
   exemptedMembers = _messages.StringField(1, repeated=True)
-  ignoreChildExemptions = _messages.BooleanField(2)
-  logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
 class Binding(_messages.Message):
@@ -335,8 +331,8 @@ class GetPolicyOptions(_messages.Message):
 
   Fields:
     requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
   """
 
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1796,10 +1792,22 @@ class ZypperRepository(_messages.Message):
 
 
 class ZypperSettings(_messages.Message):
-  r"""Zypper patching is performed by running `zypper refresh && zypper
-  update`
+  r"""Zypper patching is performed by running `zypper patch`. See also
+  https://en.opensuse.org/SDB:Zypper_manual.
+
+  Fields:
+    categories: Optional. Install only patches with these categories. Common
+      categories include security, recommended, and feature.
+    severities: Optional. Install only patches with these severities. Common
+      severities include critical, important, moderate, and low.
+    withOptional: Optional. Adds the `--with-optional` flag to `zypper patch`.
+    withUpdate: Optional. Adds the `--with-update` flag, to `zypper patch`.
   """
 
+  categories = _messages.StringField(1, repeated=True)
+  severities = _messages.StringField(2, repeated=True)
+  withOptional = _messages.BooleanField(3)
+  withUpdate = _messages.BooleanField(4)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -1807,9 +1807,9 @@ class ToolresultsProjectsHistoriesExecutionsStepsCreateRequest(_messages.Message
   r"""A ToolresultsProjectsHistoriesExecutionsStepsCreateRequest object.
 
   Fields:
-    executionId: A Execution id.  Required.
-    historyId: A History id.  Required.
-    projectId: A Project id.  Required.
+    executionId: Required. An Execution id.
+    historyId: Required. A History id.
+    projectId: Required. A Project id.
     requestId: A unique request ID for server to detect duplicated requests.
       For example, a UUID.  Optional, but strongly recommended.
     step: A Step resource to be passed as the request body.

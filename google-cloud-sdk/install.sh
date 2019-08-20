@@ -9,6 +9,7 @@ echo Welcome to the Google Cloud SDK!
 #
 #  CLOUDSDK_ROOT_DIR            (a)  installation root dir
 #  CLOUDSDK_PYTHON              (u)  python interpreter path
+#  CLOUDSDK_GSUTIL_PYTHON       (u)  python interpreter path for gsutil
 #  CLOUDSDK_PYTHON_ARGS         (u)  python interpreter arguments
 #  CLOUDSDK_PYTHON_SITEPACKAGES (u)  use python site packages
 #
@@ -19,6 +20,12 @@ echo Welcome to the Google Cloud SDK!
 # to command -v
 _cloudsdk_which() {
   which "$1" 2>/dev/null || command -v "$1" 2>/dev/null
+}
+
+# For Python 3, gsutil requires Python 3.5+.
+_py3_interpreter_compat_with_gsutil () {
+  # Some environments (e.g. macOS) don't support grep -P, so we use grep -E.
+  echo "$("$1" -V 2>&1)" | grep -E "Python 3[.]([5-9]|[1-9][0-9])" > /dev/null
 }
 
 # Determines the real cloud sdk root dir given the script path.
@@ -124,7 +131,37 @@ case :$CLOUDSDK_PYTHON_SITEPACKAGES:$VIRTUAL_ENV: in
       ;;
 esac
 
-export CLOUDSDK_ROOT_DIR CLOUDSDK_PYTHON_ARGS
+# TODO(b/133246173): Remove this once we want to default to Python 3.
+# Allow users to set the Python interpreter used to launch gsutil, falling
+# back to the CLOUDSDK_PYTHON interpreter otherwise. In the future, if this
+# is not set, we'll try finding (and prefer using) Python 3 before falling
+# back to the default Cloud SDK Python.
+if [ -z "$CLOUDSDK_GSUTIL_PYTHON" ]; then
+  CLOUDSDK_GSUTIL_PYTHON="$CLOUDSDK_PYTHON"
+fi
+
+# Gsutil prefers Python 3 if it is available, which may likely differ from the
+# $CLOUDSDK_PYTHON version. We launch Gsutil with $CLOUDSDK_GSUTIL_PYTHON; the
+# user can set this to any interpreter they like, so we only try to find
+# Python 3 for them if they haven't specified the interpreter already.
+if [ -z "$CLOUDSDK_GSUTIL_PYTHON" ]; then
+  if _cloudsdk_which python3 >/dev/null && \
+       _py3_interpreter_compat_with_gsutil python3; then
+    # Try `python3` first.
+    CLOUDSDK_GSUTIL_PYTHON=python3
+  elif _cloudsdk_which python >/dev/null && \
+      _py3_interpreter_compat_with_gsutil python; then
+    # If `python3` isn't found or valid, try `python`.
+    CLOUDSDK_GSUTIL_PYTHON=python
+  else
+    # Python 3 doesn't appear to be in the OS path. Use $CLOUDSDK_PYTHON.
+    CLOUDSDK_GSUTIL_PYTHON="$CLOUDSDK_PYTHON"
+  fi
+fi
+
+export CLOUDSDK_ROOT_DIR
+export CLOUDSDK_PYTHON_ARGS
+export CLOUDSDK_GSUTIL_PYTHON
 
 # </cloud-sdk-sh-preamble>
 

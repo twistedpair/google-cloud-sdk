@@ -496,6 +496,12 @@ apis:
       unelidable_request_methods:
         - monitoring.projects.alertPolicies.create
         - monitoring.projects.notificationChannels.create
+  policytroubleshooter:
+    v1beta:
+      resources:
+        iam:
+          path: iam
+      discovery_doc: policytroubleshooter_v1beta.json
   pubsub:
     v1:
       discovery_doc: pubsub_v1.json

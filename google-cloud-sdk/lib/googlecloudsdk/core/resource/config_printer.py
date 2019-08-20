@@ -108,7 +108,7 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
   def _Prefix(prefix, name):
     """Returns a new prefix based on prefix and name."""
     if isinstance(name, int):
-      name = 'I' + str(name)
+      name = 'I' + six.text_type(name)
     return prefix + name + '_'
 
   def _PrintEnvExport(self, items, prefix=''):
@@ -131,7 +131,7 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
       elif isinstance(value, list):
         for i, v in enumerate(value):
           if not isinstance(v, dict):
-            v = {'I' + str(i): v}
+            v = {'I' + six.text_type(i): v}
           self._PrintEnvExport(six.iteritems(v),
                                prefix=self._Prefix(prefix, name))
       else:
@@ -154,7 +154,7 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
       elif isinstance(value, list):
         for i, v in enumerate(value):
           if not isinstance(v, dict):
-            v = {'I' + str(i): v}
+            v = {'I' + six.text_type(i): v}
           self._PrintEnvUnset(six.iteritems(v),
                               prefix=self._Prefix(prefix, name))
       else:

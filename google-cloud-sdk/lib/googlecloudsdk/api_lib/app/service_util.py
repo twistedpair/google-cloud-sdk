@@ -190,7 +190,7 @@ def DeleteServices(api_client, services):
       operations_util.CallAndCollectOpErrors(
           api_client.DeleteService, service.id)
     except operations_util.MiscOperationError as err:
-      errors[service.id] = str(err)
+      errors[service.id] = six.text_type(err)
 
   if errors:
     printable_errors = {}

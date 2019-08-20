@@ -277,13 +277,15 @@
           "enumDescriptions": [
             "Not set.",
             "STANDARD tier.",
-            "PREMIUM tier."
+            "PREMIUM tier.",
+            "SCALE OUT tier.\nThis is a possibly temporary change for\ngo\/elastifile-filestore-hackathon."
           ],
           "type": "string",
           "enum": [
             "TIER_UNSPECIFIED",
             "STANDARD",
-            "PREMIUM"
+            "PREMIUM",
+            "SCALE_OUT"
           ]
         },
         "labels": {
@@ -560,13 +562,15 @@
           "enumDescriptions": [
             "Not set.",
             "STANDARD tier.",
-            "PREMIUM tier."
+            "PREMIUM tier.",
+            "SCALE OUT tier.\nThis is a possibly temporary change for\ngo\/elastifile-filestore-hackathon."
           ],
           "type": "string",
           "enum": [
             "TIER_UNSPECIFIED",
             "STANDARD",
-            "PREMIUM"
+            "PREMIUM",
+            "SCALE_OUT"
           ]
         }
       }
@@ -1232,7 +1236,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Mask of fields to update.  At least one path must be supplied in this\nfield.  The elements of the repeated paths field may only include these\nfields:\n\"description\"",
+                      "description": "Mask of fields to update.  At least one path must be supplied in this\nfield.  The elements of the repeated paths field may only include these\nfields:\n\"description\"\n\"file_shares\"\n\"labels\"",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"

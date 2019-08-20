@@ -19,7 +19,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import datetime
+
 from googlecloudsdk.core import config
+
+import six
 
 
 class ConfigHelperResult(object):
@@ -50,8 +54,8 @@ class Credential(object):
   def __init__(self, cred):
     self.access_token = cred.access_token
     expiry = getattr(cred, 'token_expiry', None)
-    self.token_expiry = (expiry.strftime(Credential._EXPIRY_FORMAT) if expiry
-                         else None)
+    self.token_expiry = self._ConvertExpiryTime(expiry)
+
     # The cache blanks the token_response field, so if it's present that
     # indicates there's either no cache entry, or we just refreshed tokens.
     # Either way, the response is fresher.
@@ -63,6 +67,15 @@ class Credential(object):
       id_token = getattr(cred, 'id_tokenb64', None)
 
     self.id_token = id_token
+
+  def _ConvertExpiryTime(self, value):
+    if not value:
+      return None
+
+    if isinstance(value, six.string_types):
+      value = datetime.datetime.strptime(value, Credential._EXPIRY_FORMAT)
+
+    return value.strftime(Credential._EXPIRY_FORMAT)
 
 
 class Configuration(object):

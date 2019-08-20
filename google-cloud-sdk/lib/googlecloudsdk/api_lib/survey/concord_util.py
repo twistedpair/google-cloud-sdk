@@ -94,19 +94,29 @@ def _HatsResponseFromSurvey(survey_instance):
   }
 
   multi_choice_questions = []
+  rating_questions = []
   open_text_questions = []
 
   for i, q in enumerate(survey_instance):
     if not q.IsAnswered():
       continue
     if isinstance(q, question.MultiChoiceQuestion):
-      answer_int = int(q.answer)
+      # Remap answers from 1-5 to 5-1 because we reversed choice indexing.
+      # 5 is "Very satisfied" and 1 is "Very dissatisfied", but when we send
+      # answer to log, we want 1 to be "Very satisfied" and 5 to be "Very
+      # dissatisfied" to be backward compatible.
+      answer_int = len(q) + 1 - int(q.answer)
       multi_choice_questions.append({
           'question_number': i,
           'order_index': [answer_int],
           'answer_index': [answer_int],
-          'answer_text': [q.Choice(answer_int - 1)],
+          'answer_text': [q.Choice(int(q.answer))],
           'order': list(range(1, len(q)+1))
+      })
+    elif isinstance(q, question.RatingQuestion):
+      rating_questions.append({
+          'question_number': i,
+          'rating': int(q.answer)
       })
     elif isinstance(q, question.FreeTextQuestion):
       open_text_questions.append({
@@ -117,6 +127,8 @@ def _HatsResponseFromSurvey(survey_instance):
   response = {'hats_metadata': hats_metadata}
   if multi_choice_questions:
     response['multiple_choice_response'] = multi_choice_questions
+  if rating_questions:
+    response['rating_response'] = rating_questions
   if open_text_questions:
     response['open_text_response'] = open_text_questions
   return response

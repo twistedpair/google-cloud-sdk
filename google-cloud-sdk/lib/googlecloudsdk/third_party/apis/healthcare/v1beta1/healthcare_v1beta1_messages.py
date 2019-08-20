@@ -59,9 +59,6 @@ class AuditLogConfig(_messages.Message):
   Fields:
     exemptedMembers: Specifies the identities that do not cause logging for
       this type of permission. Follows the same format of Binding.members.
-    ignoreChildExemptions: Specifies whether principals can be exempted for
-      the same LogType in lower-level resource policies. If true, any lower-
-      level exemptions will be ignored.
     logType: The log type that this config enables.
   """
 
@@ -80,8 +77,7 @@ class AuditLogConfig(_messages.Message):
     DATA_READ = 3
 
   exemptedMembers = _messages.StringField(1, repeated=True)
-  ignoreChildExemptions = _messages.BooleanField(2)
-  logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
 class Binding(_messages.Message):
@@ -142,7 +138,7 @@ class CryptoHashConfig(_messages.Message):
 
   Fields:
     cryptoKey: An AES 128/192/256 bit key. Causes the hash to be computed
-      based on this key. A default key is generated for each DeidentifyDataset
+      based on this key. A default key is generated for each Deidentify
       operation and is used wherever crypto_key is not specified.
   """
 
@@ -175,7 +171,7 @@ class DateShiftConfig(_messages.Message):
   Fields:
     cryptoKey: An AES 128/192/256 bit key. Causes the shift to be computed
       based on this key and the patient ID. A default key is generated for
-      each DeidentifyDataset operation and is used wherever crypto_key is not
+      each Deidentify operation and is used wherever crypto_key is not
       specified.
   """
 
@@ -257,6 +253,15 @@ class DicomConfig(_messages.Message):
       keep/remove.
     keepList: List of tags to keep. Remove all other tags.
     removeList: List of tags to remove. Keep all other tags.
+    skipIdRedaction: If true, skip replacing StudyInstanceUID,
+      SeriesInstanceUID, SOPInstanceUID, and MediaStorageSOPInstanceUID and
+      leave them untouched. The Cloud Healthcare API regenerates these UIDs by
+      default based on the DICOM Standard's reasoning: "Whilst these UIDs
+      cannot be mapped directly to an individual out of context, given access
+      to the original images, or to a database of the original images
+      containing the UIDs, it would be possible to recover the individual's
+      identity." http://dicom.nema.org/medical/dicom/current/output/chtml/part
+      15/sect_E.3.9.html
   """
 
   class FilterProfileValueValuesEnum(_messages.Enum):
@@ -286,6 +291,7 @@ class DicomConfig(_messages.Message):
   filterProfile = _messages.EnumField('FilterProfileValueValuesEnum', 1)
   keepList = _messages.MessageField('TagFilterList', 2)
   removeList = _messages.MessageField('TagFilterList', 3)
+  skipIdRedaction = _messages.BooleanField(4)
 
 
 class DicomStore(_messages.Message):
@@ -664,17 +670,43 @@ class GoogleCloudHealthcareV1beta1FhirBigQueryDestination(_messages.Message):
   Fields:
     datasetUri: BigQuery URI to a dataset, up to 2000 characters long, in the
       format `bq://projectId.bqDatasetId`
+    force: If this flag is `TRUE`, all tables will be deleted from the dataset
+      before the new exported tables are written. If the flag is not set and
+      the destination dataset contains tables, the export call returns an
+      error.
     schemaConfig: The configuration for the exported BigQuery schema.
   """
 
   datasetUri = _messages.StringField(1)
-  schemaConfig = _messages.MessageField('SchemaConfig', 2)
+  force = _messages.BooleanField(2)
+  schemaConfig = _messages.MessageField('SchemaConfig', 3)
+
+
+class GoogleCloudHealthcareV1beta1FhirRestExportResourcesErrorDetails(_messages.Message):
+  r"""Response when errors occur while exporting resources. This structure is
+  included in the error details to describe the detailed outcome. It is only
+  included when the operation finishes with errors.
+
+  Fields:
+    errorCount: The number of resources that had errors.
+    fhirStore: The name of the FHIR store where resources have been exported,
+      in the format `projects/{project_id}/locations/{location_id}/datasets/{d
+      ataset_id}/fhirStores/{fhir_store_id}`.
+    resourceCount: The total number of resources included in the export
+      operation. This is the sum of the success and error counts.
+    successCount: The number of resources that were exported.
+  """
+
+  errorCount = _messages.IntegerField(1)
+  fhirStore = _messages.StringField(2)
+  resourceCount = _messages.IntegerField(3)
+  successCount = _messages.IntegerField(4)
 
 
 class GoogleCloudHealthcareV1beta1FhirRestExportResourcesResponse(_messages.Message):
-  r"""Final response of exporting resources. This structure will be included
-  in the response to describe the detailed outcome. It will only be included
-  when the operation finishes.
+  r"""Response when all resources export successfully. This structure will be
+  included in the response to describe the detailed outcome. It will only be
+  included when the operation finishes successfully.
 
   Fields:
     fhirStore: The name of the FHIR store where resources have been exported,
@@ -847,8 +879,8 @@ class HealthcareProjectsLocationsDatasetsDicomStoresGetIamPolicyRequest(_message
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -1497,17 +1529,26 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientEverythingRequest(
   object.
 
   Fields:
+    _count: Maximum number of resources in a page. Defaults to 100.
     end: The response includes records prior to the end date. If no end date
       is provided, all records subsequent to the start date are in scope.
     name: Name of the `Patient` resource for which the information is
       required.
+    pageToken: Used to retrieve the next or previous page of results when
+      using pagination. Value should be set to the value of page_token set in
+      next or previous page links' urls. Next and previous page are returned
+      in the response bundle's links field, where `link.relation` is
+      "previous" or "next".  Omit `page_token` if no previous request has been
+      made.
     start: The response includes records subsequent to the start date. If no
       start date is provided, all records prior to the end date are in scope.
   """
 
-  end = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  start = _messages.StringField(3)
+  _count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  end = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageToken = _messages.StringField(4)
+  start = _messages.StringField(5)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresFhirReadRequest(_messages.Message):
@@ -1572,8 +1613,8 @@ class HealthcareProjectsLocationsDatasetsFhirStoresGetIamPolicyRequest(_messages
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -1683,8 +1724,8 @@ class HealthcareProjectsLocationsDatasetsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -1736,8 +1777,8 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresGetIamPolicyRequest(_message
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -2309,10 +2350,16 @@ class ImportResourcesRequest(_messages.Message):
         versions.
       RESOURCE: The source file contains one or more lines of newline-
         delimited JSON (ndjson). Each line is a single resource.
+      BUNDLE_PRETTY: The entire file is one JSON bundle. The JSON can span
+        multiple lines.
+      RESOURCE_PRETTY: The entire file is one JSON resource. The JSON can span
+        multiple lines.
     """
     CONTENT_STRUCTURE_UNSPECIFIED = 0
     BUNDLE = 1
     RESOURCE = 2
+    BUNDLE_PRETTY = 3
+    RESOURCE_PRETTY = 4
 
   contentStructure = _messages.EnumField('ContentStructureValueValuesEnum', 1)
   gcsSource = _messages.MessageField('GoogleCloudHealthcareV1beta1FhirRestGcsSource', 2)

@@ -799,7 +799,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a cluster in a project.
+      r"""Creates a cluster in a project. The returned Operation.metadata will be ClusterOperationMetadata.
 
       Args:
         request: (DataprocProjectsRegionsClustersCreateRequest) input message
@@ -825,7 +825,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a cluster in a project.
+      r"""Deletes a cluster in a project. The returned Operation.metadata will be ClusterOperationMetadata.
 
       Args:
         request: (DataprocProjectsRegionsClustersDeleteRequest) input message
@@ -851,7 +851,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Diagnose(self, request, global_params=None):
-      r"""Gets cluster diagnostic information. After the operation completes, the Operation.response field contains DiagnoseClusterOutputLocation.
+      r"""Gets cluster diagnostic information. The returned Operation.metadata will be ClusterOperationMetadata. After the operation completes, Operation.response contains DiagnoseClusterResults.
 
       Args:
         request: (DataprocProjectsRegionsClustersDiagnoseRequest) input message
@@ -956,7 +956,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a cluster in a project.
+      r"""Updates a cluster in a project. The returned Operation.metadata will be ClusterOperationMetadata.
 
       Args:
         request: (DataprocProjectsRegionsClustersPatchRequest) input message

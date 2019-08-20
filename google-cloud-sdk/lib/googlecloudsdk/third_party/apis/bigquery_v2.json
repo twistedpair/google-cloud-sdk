@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20190726",
+ "revision": "20190815",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -1038,9 +1038,13 @@
      "description": "[Optional] Whether to print out a header row in the results. Default is true.",
      "default": "true"
     },
+    "sourceModel": {
+     "$ref": "ModelReference",
+     "description": "A reference to the model being exported."
+    },
     "sourceTable": {
      "$ref": "TableReference",
-     "description": "[Required] A reference to the table being exported."
+     "description": "A reference to the table being exported."
     }
    }
   },
@@ -1762,6 +1766,24 @@
      "items": {
       "$ref": "BqmlTrainingRun"
      }
+    }
+   }
+  },
+  "ModelReference": {
+   "id": "ModelReference",
+   "type": "object",
+   "properties": {
+    "datasetId": {
+     "type": "string",
+     "description": "[Required] The ID of the dataset containing this model."
+    },
+    "modelId": {
+     "type": "string",
+     "description": "[Required] The ID of the model. The ID must contain only letters (a-z, A-Z), numbers (0-9), or underscores (_). The maximum length is 1,024 characters."
+    },
+    "projectId": {
+     "type": "string",
+     "description": "[Required] The ID of the project containing this model."
     }
    }
   },
@@ -3053,6 +3075,11 @@
       "pageToken": {
        "type": "string",
        "description": "Page token, returned by a previous call, to request the next page of results",
+       "location": "query"
+      },
+      "parentJobId": {
+       "type": "string",
+       "description": "If set, retrieves only jobs whose parent is this job. Otherwise, retrieves only jobs which have no parent",
        "location": "query"
       },
       "projectId": {

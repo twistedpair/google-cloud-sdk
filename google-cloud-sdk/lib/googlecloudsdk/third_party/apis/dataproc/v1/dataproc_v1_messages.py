@@ -487,9 +487,13 @@ class DataprocProjectsLocationsWorkflowTemplatesCreateRequest(_messages.Message)
   r"""A DataprocProjectsLocationsWorkflowTemplatesCreateRequest object.
 
   Fields:
-    parent: Required. The "resource name" of the region, as described in
-      https://cloud.google.com/apis/design/resource_names of the form
-      projects/{project_id}/regions/{region}
+    parent: Required. The resource name of the region or location, as
+      described in https://cloud.google.com/apis/design/resource_names. For
+      projects.regions.workflowTemplates,create, the resource name of the
+      region has the following format:  projects/{project_id}/regions/{region}
+      For projects.locations.workflowTemplates.create, the resource name of
+      the location has the following format:
+      projects/{project_id}/locations/{location}
     workflowTemplate: A WorkflowTemplate resource to be passed as the request
       body.
   """
@@ -502,9 +506,14 @@ class DataprocProjectsLocationsWorkflowTemplatesDeleteRequest(_messages.Message)
   r"""A DataprocProjectsLocationsWorkflowTemplatesDeleteRequest object.
 
   Fields:
-    name: Required. The "resource name" of the workflow template, as described
-      in https://cloud.google.com/apis/design/resource_names of the form
+    name: Required. The resource name of the workflow template, as described
+      in https://cloud.google.com/apis/design/resource_names. For
+      projects.regions.workflowTemplates.delete, the resource name of the
+      template has the following format:
       projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
+      For projects.locations.workflowTemplates.instantiate, the resource name
+      of the template has the following format:  projects/{project_id}/locatio
+      ns/{location}/workflowTemplates/{template_id}
     version: Optional. The version of workflow template to delete. If
       specified, will only delete the template if the current server version
       matches specified version.
@@ -533,11 +542,16 @@ class DataprocProjectsLocationsWorkflowTemplatesGetRequest(_messages.Message):
   r"""A DataprocProjectsLocationsWorkflowTemplatesGetRequest object.
 
   Fields:
-    name: Required. The "resource name" of the workflow template, as described
-      in https://cloud.google.com/apis/design/resource_names of the form
+    name: Required. The resource name of the workflow template, as described
+      in https://cloud.google.com/apis/design/resource_names. For
+      projects.regions.workflowTemplates.get, the resource name of the
+      template has the following format:
       projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
+      For projects.locations.workflowTemplates.get, the resource name of the
+      template has the following format:  projects/{project_id}/locations/{loc
+      ation}/workflowTemplates/{template_id}
     version: Optional. The version of workflow template to retrieve. Only
-      previously instatiated versions can be retrieved.If unspecified,
+      previously instantiated versions can be retrieved.If unspecified,
       retrieves the current version.
   """
 
@@ -550,9 +564,14 @@ class DataprocProjectsLocationsWorkflowTemplatesInstantiateInlineRequest(_messag
   object.
 
   Fields:
-    parent: Required. The "resource name" of the workflow template region, as
-      described in https://cloud.google.com/apis/design/resource_names of the
-      form projects/{project_id}/regions/{region}
+    parent: Required. The resource name of the region or location, as
+      described in https://cloud.google.com/apis/design/resource_names. For
+      projects.regions.workflowTemplates,instantiateinline, the resource  name
+      of the region has the following format:
+      projects/{project_id}/regions/{region} For
+      projects.locations.workflowTemplates.instantiateinline, the  resource
+      name of the location has the following format:
+      projects/{project_id}/locations/{location}
     requestId: Optional. A tag that prevents multiple concurrent workflow
       instances with the same tag from running. This mitigates risk of
       concurrent instances started due to retries.It is recommended to always
@@ -575,9 +594,14 @@ class DataprocProjectsLocationsWorkflowTemplatesInstantiateRequest(_messages.Mes
   Fields:
     instantiateWorkflowTemplateRequest: A InstantiateWorkflowTemplateRequest
       resource to be passed as the request body.
-    name: Required. The "resource name" of the workflow template, as described
-      in https://cloud.google.com/apis/design/resource_names of the form
+    name: Required. The resource name of the workflow template, as described
+      in https://cloud.google.com/apis/design/resource_names. For
+      projects.regions.workflowTemplates.instantiate, the resource name of the
+      template has the following format:
       projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
+      For projects.locations.workflowTemplates.instantiate, the resource name
+      of the template has the following format:  projects/{project_id}/locatio
+      ns/{location}/workflowTemplates/{template_id}
   """
 
   instantiateWorkflowTemplateRequest = _messages.MessageField('InstantiateWorkflowTemplateRequest', 1)
@@ -592,9 +616,13 @@ class DataprocProjectsLocationsWorkflowTemplatesListRequest(_messages.Message):
       response.
     pageToken: Optional. The page token, returned by a previous call, to
       request the next page of results.
-    parent: Required. The "resource name" of the region, as described in
-      https://cloud.google.com/apis/design/resource_names of the form
-      projects/{project_id}/regions/{region}
+    parent: Required. The resource name of the region or location, as
+      described in https://cloud.google.com/apis/design/resource_names. For
+      projects.regions.workflowTemplates,list, the resource  name of the
+      region has the following format:  projects/{project_id}/regions/{region}
+      For projects.locations.workflowTemplates.list, the  resource name of the
+      location has the following format:
+      projects/{project_id}/locations/{location}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1139,9 +1167,13 @@ class DataprocProjectsRegionsWorkflowTemplatesCreateRequest(_messages.Message):
   r"""A DataprocProjectsRegionsWorkflowTemplatesCreateRequest object.
 
   Fields:
-    parent: Required. The "resource name" of the region, as described in
-      https://cloud.google.com/apis/design/resource_names of the form
-      projects/{project_id}/regions/{region}
+    parent: Required. The resource name of the region or location, as
+      described in https://cloud.google.com/apis/design/resource_names. For
+      projects.regions.workflowTemplates,create, the resource name of the
+      region has the following format:  projects/{project_id}/regions/{region}
+      For projects.locations.workflowTemplates.create, the resource name of
+      the location has the following format:
+      projects/{project_id}/locations/{location}
     workflowTemplate: A WorkflowTemplate resource to be passed as the request
       body.
   """
@@ -1154,9 +1186,14 @@ class DataprocProjectsRegionsWorkflowTemplatesDeleteRequest(_messages.Message):
   r"""A DataprocProjectsRegionsWorkflowTemplatesDeleteRequest object.
 
   Fields:
-    name: Required. The "resource name" of the workflow template, as described
-      in https://cloud.google.com/apis/design/resource_names of the form
+    name: Required. The resource name of the workflow template, as described
+      in https://cloud.google.com/apis/design/resource_names. For
+      projects.regions.workflowTemplates.delete, the resource name of the
+      template has the following format:
       projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
+      For projects.locations.workflowTemplates.instantiate, the resource name
+      of the template has the following format:  projects/{project_id}/locatio
+      ns/{location}/workflowTemplates/{template_id}
     version: Optional. The version of workflow template to delete. If
       specified, will only delete the template if the current server version
       matches specified version.
@@ -1185,11 +1222,16 @@ class DataprocProjectsRegionsWorkflowTemplatesGetRequest(_messages.Message):
   r"""A DataprocProjectsRegionsWorkflowTemplatesGetRequest object.
 
   Fields:
-    name: Required. The "resource name" of the workflow template, as described
-      in https://cloud.google.com/apis/design/resource_names of the form
+    name: Required. The resource name of the workflow template, as described
+      in https://cloud.google.com/apis/design/resource_names. For
+      projects.regions.workflowTemplates.get, the resource name of the
+      template has the following format:
       projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
+      For projects.locations.workflowTemplates.get, the resource name of the
+      template has the following format:  projects/{project_id}/locations/{loc
+      ation}/workflowTemplates/{template_id}
     version: Optional. The version of workflow template to retrieve. Only
-      previously instatiated versions can be retrieved.If unspecified,
+      previously instantiated versions can be retrieved.If unspecified,
       retrieves the current version.
   """
 
@@ -1202,9 +1244,14 @@ class DataprocProjectsRegionsWorkflowTemplatesInstantiateInlineRequest(_messages
   object.
 
   Fields:
-    parent: Required. The "resource name" of the workflow template region, as
-      described in https://cloud.google.com/apis/design/resource_names of the
-      form projects/{project_id}/regions/{region}
+    parent: Required. The resource name of the region or location, as
+      described in https://cloud.google.com/apis/design/resource_names. For
+      projects.regions.workflowTemplates,instantiateinline, the resource  name
+      of the region has the following format:
+      projects/{project_id}/regions/{region} For
+      projects.locations.workflowTemplates.instantiateinline, the  resource
+      name of the location has the following format:
+      projects/{project_id}/locations/{location}
     requestId: Optional. A tag that prevents multiple concurrent workflow
       instances with the same tag from running. This mitigates risk of
       concurrent instances started due to retries.It is recommended to always
@@ -1227,9 +1274,14 @@ class DataprocProjectsRegionsWorkflowTemplatesInstantiateRequest(_messages.Messa
   Fields:
     instantiateWorkflowTemplateRequest: A InstantiateWorkflowTemplateRequest
       resource to be passed as the request body.
-    name: Required. The "resource name" of the workflow template, as described
-      in https://cloud.google.com/apis/design/resource_names of the form
+    name: Required. The resource name of the workflow template, as described
+      in https://cloud.google.com/apis/design/resource_names. For
+      projects.regions.workflowTemplates.instantiate, the resource name of the
+      template has the following format:
       projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
+      For projects.locations.workflowTemplates.instantiate, the resource name
+      of the template has the following format:  projects/{project_id}/locatio
+      ns/{location}/workflowTemplates/{template_id}
   """
 
   instantiateWorkflowTemplateRequest = _messages.MessageField('InstantiateWorkflowTemplateRequest', 1)
@@ -1244,9 +1296,13 @@ class DataprocProjectsRegionsWorkflowTemplatesListRequest(_messages.Message):
       response.
     pageToken: Optional. The page token, returned by a previous call, to
       request the next page of results.
-    parent: Required. The "resource name" of the region, as described in
-      https://cloud.google.com/apis/design/resource_names of the form
-      projects/{project_id}/regions/{region}
+    parent: Required. The resource name of the region or location, as
+      described in https://cloud.google.com/apis/design/resource_names. For
+      projects.regions.workflowTemplates,list, the resource  name of the
+      region has the following format:  projects/{project_id}/regions/{region}
+      For projects.locations.workflowTemplates.list, the  resource name of the
+      location has the following format:
+      projects/{project_id}/locations/{location}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1485,8 +1541,8 @@ class GetPolicyOptions(_messages.Message):
 
   Fields:
     requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
   """
 
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1668,7 +1724,8 @@ class InstanceGroupConfig(_messages.Message):
 
   Fields:
     accelerators: Optional. The Compute Engine accelerator configuration for
-      these instances.
+      these instances.Beta Feature: This feature is still under development.
+      It may be changed before final release.
     diskConfig: Optional. Disk option config settings.
     imageUri: Optional. The Compute Engine image resource used for cluster
       instances. It can be specified or may be inferred from
@@ -2769,6 +2826,8 @@ class SoftwareConfig(_messages.Message):
       PRESTO: <no description>
       ZEPPELIN: <no description>
       ZOOKEEPER: <no description>
+      SOLR: <no description>
+      HBASE: <no description>
     """
     COMPONENT_UNSPECIFIED = 0
     ANACONDA = 1
@@ -2779,6 +2838,8 @@ class SoftwareConfig(_messages.Message):
     PRESTO = 6
     ZEPPELIN = 7
     ZOOKEEPER = 8
+    SOLR = 9
+    HBASE = 10
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
@@ -3278,7 +3339,14 @@ class WorkflowMetadata(_messages.Message):
       parameters.
     startTime: Output only. Workflow start time.
     state: Output only. The workflow state.
-    template: Output only. The "resource name" of the template.
+    template: Output only. The resource name of the workflow template as
+      described in https://cloud.google.com/apis/design/resource_names. For
+      projects.regions.workflowTemplates, the resource name of the  template
+      has the following format:
+      projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
+      For projects.locations.workflowTemplates, the resource name of the
+      template has the following format:  projects/{project_id}/locations/{loc
+      ation}/workflowTemplates/{template_id}
     version: Output only. The version of template at the time of workflow
       instantiation.
   """
@@ -3401,9 +3469,14 @@ class WorkflowTemplate(_messages.Message):
       empty, but, if present, must contain 1 to 63 characters, and must
       conform to RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt).No more than
       32 labels can be associated with a template.
-    name: Output only. The "resource name" of the template, as described in
-      https://cloud.google.com/apis/design/resource_names of the form
+    name: Output only. The resource name of the workflow template, as
+      described in https://cloud.google.com/apis/design/resource_names. For
+      projects.regions.workflowTemplates, the resource name of the  template
+      has the following format:
       projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
+      For projects.locations.workflowTemplates, the resource name of the
+      template has the following format:  projects/{project_id}/locations/{loc
+      ation}/workflowTemplates/{template_id}
     parameters: Optional. Template parameters whose values are substituted
       into the template. Values for parameters must be provided when the
       template is instantiated.

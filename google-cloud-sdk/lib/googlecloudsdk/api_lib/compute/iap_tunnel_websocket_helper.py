@@ -28,6 +28,7 @@ import traceback
 from googlecloudsdk.api_lib.compute import iap_tunnel_websocket_utils as utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+import six
 
 import websocket
 
@@ -125,7 +126,8 @@ class IapTunnelWebSocketHelper(object):
         sock.send_close()
       except (EnvironmentError,
               websocket.WebSocketConnectionClosedException) as e:
-        log.info('Unable to send WebSocket Close message [%s].', str(e))
+        log.info('Unable to send WebSocket Close message [%s].',
+                 six.text_type(e))
         self.Close()
       except:  # pylint: disable=bare-except
         log.info('Error during WebSocket send of Close message.', exc_info=True)
@@ -171,7 +173,7 @@ class IapTunnelWebSocketHelper(object):
                                           opcode)
       self._on_data(binary_data)
     except EnvironmentError as e:
-      log.info('Error [%s] while sending to client.', str(e))
+      log.info('Error [%s] while sending to client.', six.text_type(e))
       self.Close()
       raise
     except:  # pylint: disable=bare-except
@@ -186,7 +188,7 @@ class IapTunnelWebSocketHelper(object):
       log.info('Error during WebSocket processing:\n' +
                ''.join(traceback.format_exception_only(type(exception_obj),
                                                        exception_obj)))
-      self._error_msg = str(exception_obj)
+      self._error_msg = six.text_type(exception_obj)
 
   def _ReceiveFromWebSocket(self):
     """Receive data from WebSocket connection."""

@@ -222,7 +222,7 @@
           "type": "string"
         },
         "linkedResource": {
-          "description": "Output only. The full name of the cloud resource the entry belongs to. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name\n\nData Catalog supports resources from select Google Cloud Platform systems.\n`linked_resource` is the full name of the Google Cloud Platform resource.\nFor example, the `linked_resource` for a table resource from BigQuery is:\n\n* \/\/bigquery.googleapis.com\/projects\/projectId\/datasets\/datasetId\/tables\/tableId",
+          "description": "Output only. The resource this metadata entry refers to.\n\nFor Google Cloud Platform resources, `linked_resource` is the [full name of\nthe\nresource](https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name).\nFor example, the `linked_resource` for a table resource from BigQuery is:\n\n* \/\/bigquery.googleapis.com\/projects\/projectId\/datasets\/datasetId\/tables\/tableId",
           "type": "string"
         },
         "type": {
@@ -429,6 +429,10 @@
       "description": "The template for an individual field within a tag template.",
       "type": "object",
       "properties": {
+        "name": {
+          "description": "Output only. The resource name of the tag template field in URL format.\nExample:\n\n* projects\/{project_id}\/locations\/{location}\/tagTemplates\/{tag_template}\/fields\/{field}\n\nNote that this TagTemplateField may not actually be stored in the location\nin this name.",
+          "type": "string"
+        },
         "displayName": {
           "description": "Optional. The display name for this field. Defaults to an empty string.",
           "type": "string"
@@ -697,7 +701,7 @@
       "type": "object",
       "properties": {
         "requestedPolicyVersion": {
-          "description": "Optional. The policy format version to be returned.\nAcceptable values are 0 and 1.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+          "description": "Optional. The policy format version to be returned.\nAcceptable values are 0, 1, and 3.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
           "type": "integer",
           "format": "int32"
         }

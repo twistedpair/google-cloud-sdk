@@ -171,27 +171,6 @@
           "type": "integer",
           "format": "int32"
         },
-        "retentionRules": {
-          "description": "Fine grained retention rules that can override retention period.",
-          "type": "array",
-          "items": {
-            "$ref": "LogRetentionRule"
-          }
-        },
-        "retentionRuleResolution": {
-          "description": "Describes how to choose the retention period for logs that match multiple retention policies.",
-          "enumDescriptions": [
-            "Unspecified. This value may not be used.",
-            "Use the maximum retention period from matching retention policies.",
-            "Use the minimum retention period from matching retention policies."
-          ],
-          "type": "string",
-          "enum": [
-            "LOG_RETENTION_RULE_RESOLUTION_UNSPECIFIED",
-            "MAX_RETENTION_PERIOD",
-            "MIN_RETENTION_PERIOD"
-          ]
-        },
         "locked": {
           "description": "Whether the bucket has been locked. The retention period on a locked bucket may not be changed. A locked bucket may not have any retention rules. Logs may not be deleted from a locked bucket.",
           "type": "boolean"
@@ -200,26 +179,6 @@
           "description": "etag is used for optimistic concurrency control as a way to help prevent simultaneous updates of a bucket from overwriting each other. It is strongly suggested that systems make use of the etag in the read-modify-write cycle to perform bucket updates in order to avoid race conditions: An etag is returned in the response to getBucket, and systems are expected to put that etag in the request to setIamPolicy to ensure that their change will be applied to the same version of the bucket.If no etag is provided in the call to UpdateBucket, then the existing bucket is overwritten blindly.",
           "type": "string",
           "format": "byte"
-        }
-      }
-    },
-    "LogRetentionRule": {
-      "id": "LogRetentionRule",
-      "description": "Describes a rule for log retention.",
-      "type": "object",
-      "properties": {
-        "description": {
-          "description": "Describes this policy.",
-          "type": "string"
-        },
-        "filter": {
-          "description": "Log entries to which this retention policy applies. The filter may only contain a conjunction of log_id and source_name matches. If a log entry is selected by more than one policy, the retention_rule_resolution parameter of the containing bucket is used to resolve the conflict.",
-          "type": "string"
-        },
-        "retentionPeriod": {
-          "description": "Logs matching this policy will be retained for this amount of time, after which they will automatically be deleted.",
-          "type": "string",
-          "format": "google-duration"
         }
       }
     },
@@ -265,6 +224,14 @@
           "description": "Optional. An advanced logs filter. The only exported log entries are those that are in the resource owning the sink and that match the filter. For example:\nlogName=\"projects\/[PROJECT_ID]\/logs\/[LOG_ID]\" AND severity>=ERROR\n",
           "type": "string"
         },
+        "description": {
+          "description": "Optional. A description of this sink. The maximum length of the description is 8000 characters.",
+          "type": "string"
+        },
+        "disabled": {
+          "description": "Optional. If set to True, then this sink is disabled and it does not export any log entries.",
+          "type": "boolean"
+        },
         "exclusions": {
           "description": "Optional. Log entries that match any of the exclusion filters will not be exported. If a log entry is matched by both filter and one of exclusion_filters it will not be exported.",
           "type": "array",
@@ -293,6 +260,10 @@
         "includeChildren": {
           "description": "Optional. This field applies only to sinks owned by organizations and folders. If the field is false, the default, only the logs owned by the sink's parent resource are available for export. If the field is true, then logs from all the projects, folders, and billing accounts contained in the sink's parent resource are also available for export. Whether a particular log entry from the children is exported depends on the sink's filter expression. For example, if this field is true, then the filter resource.type=gce_instance would export all Compute Engine VM instance log entries from all projects in the sink's parent. To only export entries from certain child projects, filter on the project part of the log name:\nlogName:(\"projects\/test-project1\/\" OR \"projects\/test-project2\/\") AND\nresource.type=gce_instance\n",
           "type": "boolean"
+        },
+        "bigqueryOptions": {
+          "description": "Optional. Options that affect sinks exporting data to BigQuery.",
+          "$ref": "BigQueryOptions"
         },
         "dlpOptions": {
           "description": "Optional. Settings for Data Loss Prevention (DLP) enabled sinks.",
@@ -340,6 +311,17 @@
           "description": "Output only. The last update timestamp of the exclusion.This field may not be present for older exclusions.",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "BigQueryOptions": {
+      "id": "BigQueryOptions",
+      "description": "Options that change functionality of a sink exporting data to BigQuery.",
+      "type": "object",
+      "properties": {
+        "usePartitionedTables": {
+          "description": "Optional. Whether to use BigQuery's partition tables. By default, Logging creates dated tables based on the log entries' timestamps, e.g. syslog_20170523. With partitioned tables the date suffix is no longer present and special query syntax has to be used instead. In both cases, tables are sharded based on UTC timezone.",
+          "type": "boolean"
         }
       }
     },
@@ -928,12 +910,9 @@
           "description": "Required. An advanced logs filter which is used to match log entries. Example:\n\"resource.type=gae_app AND severity>=ERROR\"\nThe maximum length of the filter is 20000 characters.",
           "type": "string"
         },
-        "exclusions": {
-          "description": "Optional. Log entries that match any of the exclusion filters will not be matched. If a log entry is matched by both filter and one of exclusion_filters it will not be matched.",
-          "type": "array",
-          "items": {
-            "$ref": "LogExclusion"
-          }
+        "disabled": {
+          "description": "Optional. If set to True, then this metric is disabled and it does not generate any points.",
+          "type": "boolean"
         },
         "metricDescriptor": {
           "description": "Optional. The metric descriptor associated with the logs-based metric. If unspecified, it uses a default metric descriptor with a DELTA metric kind, INT64 value type, with no labels and a unit of \"1\". Such a metric counts the number of log entries matching the filter expression.The name, type, and description fields in the metric_descriptor are output only, and is constructed using the name and description field in the LogMetric.To create a logs-based metric that records a distribution of log values, a DELTA metric kind with a DISTRIBUTION value type must be used along with a value_extractor expression in the LogMetric.Each label in the metric descriptor must have a matching label name as the key and an extractor expression as the value in the label_extractors map.The metric_kind and value_type fields in the metric_descriptor cannot be updated once initially configured. New labels can be added in the metric_descriptor, but existing labels cannot be modified except for their description.",

@@ -36,6 +36,7 @@ class IamassistV1alpha2(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.access = self.AccessService(self)
+    self.operations = self.OperationsService(self)
     self.simulator = self.SimulatorService(self)
 
   class AccessService(base_api.BaseApiService):
@@ -73,6 +74,80 @@ to the resource's effective IAM policy interpretation.
         request_field='<request>',
         request_type_name=u'GoogleIamAssistV1alpha2ExplainAccessRequest',
         response_type_name=u'GoogleIamAssistV1alpha2ExplainAccessResponse',
+        supports_download=False,
+    )
+
+  class OperationsService(base_api.BaseApiService):
+    """Service class for the operations resource."""
+
+    _NAME = u'operations'
+
+    def __init__(self, client):
+      super(IamassistV1alpha2.OperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
+method to poll the operation result at intervals as recommended by the API
+service.
+
+      Args:
+        request: (IamassistOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha2/operations/{operationsId}',
+        http_method=u'GET',
+        method_id=u'iamassist.operations.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha2/operations/{+name}',
+        request_field='',
+        request_type_name=u'IamassistOperationsGetRequest',
+        response_type_name=u'GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the.
+server doesn't support this method, it returns `UNIMPLEMENTED`.
+
+NOTE: the `name` binding allows API services to override the binding
+to use different resource name schemes, such as `users/*/operations`. To
+override the binding, API services can add a binding such as
+`"/v1/{name=users/*}/operations"` to their service configuration.
+For backwards compatibility, the default name includes the operations
+collection id, however overriding users must ensure the name binding
+is the parent resource, without the operations collection id.
+
+      Args:
+        request: (IamassistOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'iamassist.operations.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=[u'filter', u'name', u'pageSize', u'pageToken'],
+        relative_path=u'v1alpha2/operations',
+        request_field='',
+        request_type_name=u'IamassistOperationsListRequest',
+        response_type_name=u'GoogleLongrunningListOperationsResponse',
         supports_download=False,
     )
 

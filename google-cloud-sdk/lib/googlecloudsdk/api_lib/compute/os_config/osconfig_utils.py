@@ -25,6 +25,7 @@ from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import yaml
+import six
 
 
 class InstanceDetailsStates(Enum):
@@ -168,4 +169,4 @@ def GetResourceAndUpdateFieldsFromFile(file_path, resource_message_type):
   except (AttributeError) as e:
     raise exceptions.BadFileException(
         'Policy config file [{0}] is not a properly formatted YAML or JSON '
-        'file. {1}'.format(file_path, str(e)))
+        'file. {1}'.format(file_path, six.text_type(e)))

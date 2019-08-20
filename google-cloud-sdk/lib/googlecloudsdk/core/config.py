@@ -29,6 +29,7 @@ from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import pkg_resources
 from googlecloudsdk.core.util import platforms
+import six
 
 
 class Error(exceptions.Error):
@@ -110,7 +111,7 @@ class InstallationConfig(object):
     Returns:
       time.struct_time, The parsed time.
     """
-    return time.strptime(str(revision),
+    return time.strptime(six.text_type(revision),
                          InstallationConfig.REVISION_FORMAT_STRING)
 
   @staticmethod

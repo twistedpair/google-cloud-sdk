@@ -256,9 +256,31 @@
     },
     "ZypperSettings": {
       "id": "ZypperSettings",
-      "description": "Zypper patching is performed by running `zypper refresh && zypper update`",
+      "description": "Zypper patching is performed by running `zypper patch`.\nSee also https:\/\/en.opensuse.org\/SDB:Zypper_manual.",
       "type": "object",
       "properties": {
+        "withOptional": {
+          "description": "Optional. Adds the `--with-optional` flag to `zypper patch`.",
+          "type": "boolean"
+        },
+        "withUpdate": {
+          "description": "Optional. Adds the `--with-update` flag, to `zypper patch`.",
+          "type": "boolean"
+        },
+        "categories": {
+          "description": "Optional. Install only patches with these categories.\nCommon categories include security, recommended, and feature.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "severities": {
+          "description": "Optional. Install only patches with these severities.\nCommon severities include critical, important, moderate, and low.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     },
     "WindowsUpdateSettings": {

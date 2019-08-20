@@ -51,7 +51,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create an Access Level. The longrunning.
+      r"""[Deprecated] Create an Access Level. The longrunning.
 operation from this RPC will have a successful status once the Access
 Level has
 propagated to long-lasting storage. Access Levels containing
@@ -82,7 +82,7 @@ errors will result in an error response for the first error encountered.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete an Access Level by resource.
+      r"""[Deprecated] Delete an Access Level by resource.
 name. The longrunning operation from this RPC will have a successful status
 once the Access Level has been removed
 from long-lasting storage.
@@ -112,7 +112,7 @@ from long-lasting storage.
     )
 
     def Get(self, request, global_params=None):
-      r"""Get an Access Level by resource.
+      r"""[Deprecated] Get an Access Level by resource.
 name.
 
       Args:
@@ -140,7 +140,7 @@ name.
     )
 
     def List(self, request, global_params=None):
-      r"""List all Access Levels for an access.
+      r"""[Deprecated] List all Access Levels for an access.
 policy.
 
       Args:
@@ -168,7 +168,7 @@ policy.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update an Access Level. The longrunning.
+      r"""[Deprecated] Update an Access Level. The longrunning.
 operation from this RPC will have a successful status once the changes to
 the Access Level have propagated
 to long-lasting storage. Access Levels containing
@@ -209,7 +209,7 @@ errors will result in an error response for the first error encountered.
           }
 
     def Create(self, request, global_params=None):
-      r"""Create an Access Zone. The longrunning.
+      r"""[Deprecated] Create an Access Zone. The longrunning.
 operation from this RPC will have a successful status once the Access
 Zone has
 propagated to long-lasting storage. Access Zones containing errors
@@ -240,7 +240,7 @@ will result in an error response for the first error encountered.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete an Access Zone by resource name.
+      r"""[Deprecated] Delete an Access Zone by resource name.
 The longrunning operation from this RPC will have a successful status once
 the Access Zone
 has been removed from long-lasting storage.
@@ -270,7 +270,7 @@ has been removed from long-lasting storage.
     )
 
     def Get(self, request, global_params=None):
-      r"""Get an Access Zone by resource name.
+      r"""[Deprecated] Get an Access Zone by resource name.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesAccessZonesGetRequest) input message
@@ -297,7 +297,7 @@ has been removed from long-lasting storage.
     )
 
     def List(self, request, global_params=None):
-      r"""List all Access Zones for an access.
+      r"""[Deprecated] List all Access Zones for an access.
 policy.
 
       Args:
@@ -325,7 +325,7 @@ policy.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update an Access Zone. The longrunning.
+      r"""[Deprecated] Update an Access Zone. The longrunning.
 operation from this RPC will have a successful status once the changes to
 the Access Zone
 have propagated to long-lasting storage. Access Zone containing errors
@@ -366,9 +366,9 @@ will result in an error response for the first error encountered.
           }
 
     def Create(self, request, global_params=None):
-      r"""Create an `AccessPolicy`. Fails if this organization already has a.
-`AccessPolicy`. The longrunning Operation will have a successful status
-once the `AccessPolicy` has propagated to long-lasting storage.
+      r"""[Deprecated] Create an `AccessPolicy`. Fails if this organization already.
+has a `AccessPolicy`. The longrunning Operation will have a successful
+status once the `AccessPolicy` has propagated to long-lasting storage.
 Syntactic and basic semantic errors will be returned in `metadata` as a
 BadRequest proto.
 
@@ -396,7 +396,7 @@ BadRequest proto.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete an AccessPolicy by resource.
+      r"""[Deprecated] Delete an AccessPolicy by resource.
 name. The longrunning Operation will have a successful status once the
 AccessPolicy
 has been removed from long-lasting storage.
@@ -426,7 +426,7 @@ has been removed from long-lasting storage.
     )
 
     def Get(self, request, global_params=None):
-      r"""Get an AccessPolicy by name.
+      r"""[Deprecated] Get an AccessPolicy by name.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesGetRequest) input message
@@ -453,7 +453,7 @@ has been removed from long-lasting storage.
     )
 
     def List(self, request, global_params=None):
-      r"""List all AccessPolicies under a.
+      r"""[Deprecated] List all AccessPolicies under a.
 container.
 
       Args:
@@ -480,7 +480,7 @@ container.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update an AccessPolicy. The.
+      r"""[Deprecated] Update an AccessPolicy. The.
 longrunning Operation from this RPC will have a successful status once the
 changes to the AccessPolicy have propagated
 to long-lasting storage. Syntactic and basic semantic errors will be

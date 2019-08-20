@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 
 import abc
 import copy
-import re
+import shlex
 
 from googlecloudsdk.api_lib.run import configuration
 from googlecloudsdk.api_lib.run import k8s_object
@@ -32,13 +32,6 @@ from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import repeated
 
 import six
-
-
-# Matches an entire quoted section (including the quote marks)
-# or any non-whitepsace section.
-# This allows matching inputs like: two words "one word"
-# as: ['two', 'words', '"one word"']
-_WHITESPACE_WITH_DOUBEL_QUOTES_REGEX = r'(?:".*?"|\S)+'
 
 
 class ConfigChanger(six.with_metaclass(abc.ABCMeta, object)):
@@ -452,8 +445,7 @@ class ContainerCommandChange(ConfigChanger):
   """Represents the user intent to change the 'command' for the container."""
 
   def __init__(self, command_str):
-    self._commands = re.findall(
-        _WHITESPACE_WITH_DOUBEL_QUOTES_REGEX, command_str)
+    self._commands = shlex.split(command_str)
 
   def Adjust(self, resource):
     resource.template.container.command = self._commands
@@ -464,8 +456,7 @@ class ContainerArgsChange(ConfigChanger):
   """Represents the user intent to change the 'args' for the container."""
 
   def __init__(self, args_str):
-    self._args = re.findall(
-        _WHITESPACE_WITH_DOUBEL_QUOTES_REGEX, args_str)
+    self._args = shlex.split(args_str)
 
   def Adjust(self, resource):
     resource.template.container.args = self._args

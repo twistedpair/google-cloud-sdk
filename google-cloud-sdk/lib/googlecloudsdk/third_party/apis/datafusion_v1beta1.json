@@ -305,7 +305,8 @@
             "Instance is being deleted",
             "Instance is being upgraded",
             "Instance is being restarted",
-            "Instance is being updated"
+            "Instance is being updated on customer request",
+            "Instance is being auto-updated"
           ],
           "type": "string",
           "enum": [
@@ -316,7 +317,8 @@
             "DELETING",
             "UPGRADING",
             "RESTARTING",
-            "UPDATING"
+            "UPDATING",
+            "AUTO_UPDATING"
           ]
         },
         "stateMessage": {
@@ -1377,7 +1379,7 @@
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
-                      "description": "Optional. The policy format version to be returned.\nAcceptable values are 0 and 1.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+                      "description": "Optional. The policy format version to be returned.\nAcceptable values are 0, 1, and 3.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"

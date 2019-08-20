@@ -31,6 +31,7 @@ from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 
+import six
 from six.moves import urllib
 
 
@@ -231,4 +232,4 @@ def ReadConfigurationFile(path):
   except ValueError as err:
     raise InvalidDockerConfigError(
         ('Docker configuration file [{}] could not be read as JSON: '
-         '{}').format(path, str(err)))
+         '{}').format(path, six.text_type(err)))

@@ -24,6 +24,7 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import text
+import six
 
 
 class InvalidVersionConfigFile(exceptions.Error):
@@ -189,7 +190,7 @@ class VersionsClient(object):
       except (yaml.Error) as err:
         raise InvalidVersionConfigFile(
             'Could not read Version configuration file [{path}]:\n\n'
-            '{err}'.format(path=path, err=str(err.inner_error)))
+            '{err}'.format(path=path, err=six.text_type(err.inner_error)))
       if data:
         version = encoding.DictToMessage(data, self.version_class)
 

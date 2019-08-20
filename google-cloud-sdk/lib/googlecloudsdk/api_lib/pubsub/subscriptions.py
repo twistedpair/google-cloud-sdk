@@ -345,7 +345,9 @@ class SubscriptionsClient(object):
       Policy: the policy for the Subscription.
     """
     request = self.messages.PubsubProjectsSubscriptionsGetIamPolicyRequest(
-        resource=subscription_ref.RelativeName())
+        resource=subscription_ref.RelativeName(),
+        options_requestedPolicyVersion=
+        iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION)
     return self._service.GetIamPolicy(request)
 
   def AddIamPolicyBinding(self, subscription_ref, member, role):

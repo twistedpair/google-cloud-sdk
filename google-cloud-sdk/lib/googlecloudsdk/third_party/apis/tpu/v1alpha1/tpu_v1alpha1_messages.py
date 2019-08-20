@@ -40,10 +40,12 @@ class ListAcceleratorTypesResponse(_messages.Message):
   Fields:
     acceleratorTypes: The listed nodes.
     nextPageToken: The next page token or empty if none.
+    unreachable: Locations that could not be reached.
   """
 
   acceleratorTypes = _messages.MessageField('AcceleratorType', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -92,10 +94,12 @@ class ListTensorFlowVersionsResponse(_messages.Message):
   Fields:
     nextPageToken: The next page token or empty if none.
     tensorflowVersions: The listed nodes.
+    unreachable: Locations that could not be reached.
   """
 
   nextPageToken = _messages.StringField(1)
   tensorflowVersions = _messages.MessageField('TensorFlowVersion', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class Location(_messages.Message):

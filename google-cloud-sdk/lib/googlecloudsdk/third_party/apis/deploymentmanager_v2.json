@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager",
  "version": "v2",
- "revision": "20190726",
+ "revision": "20190815",
  "title": "Google Cloud Deployment Manager API",
  "description": "Declares, configures, and deploys complex solutions on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -592,7 +592,7 @@
     },
     "id": {
      "type": "string",
-     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
+     "description": "[Output Only] The unique identifier for the operation. This identifier is defined by the server.",
      "format": "uint64"
     },
     "insertTime": {
@@ -606,7 +606,7 @@
     },
     "name": {
      "type": "string",
-     "description": "[Output Only] Name of the resource."
+     "description": "[Output Only] Name of the operation."
     },
     "operationType": {
      "type": "string",

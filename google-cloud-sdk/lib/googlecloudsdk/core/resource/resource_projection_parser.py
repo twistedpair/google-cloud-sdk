@@ -137,18 +137,18 @@ class Parser(object):
         options = ', [{0}]'.format('|'.join(option))
       else:
         options = ''
-      return (
-          '({flag}, {order}, {label}, {align}, {active}, {wrap},'
-          ' {transform}{options})'.format(
-              flag=self.flag,
-              order=('UNORDERED' if self.order is None else str(self.order)),
-              label=(self.label if self.label is None
-                     else "'" + self.label + "'"),
-              align=self.align,
-              active=self.transform.active if self.transform else None,
-              wrap=self.wrap,
-              transform=self.transform,
-              options=options))
+      return ('({flag}, {order}, {label}, {align}, {active}, {wrap},'
+              ' {transform}{options})'.format(
+                  flag=self.flag,
+                  order=('UNORDERED'
+                         if self.order is None else six.text_type(self.order)),
+                  label=(self.label if self.label is None else "'" +
+                         self.label + "'"),
+                  align=self.align,
+                  active=self.transform.active if self.transform else None,
+                  wrap=self.wrap,
+                  transform=self.transform,
+                  options=options))
 
   def _AngrySnakeCase(self, key):
     """Returns an ANGRY_SNAKE_CASE string representation of a parsed key.

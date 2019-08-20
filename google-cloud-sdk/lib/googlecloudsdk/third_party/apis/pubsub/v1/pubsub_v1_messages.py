@@ -103,6 +103,38 @@ class CreateSnapshotRequest(_messages.Message):
   subscription = _messages.StringField(2)
 
 
+class DeadLetterPolicy(_messages.Message):
+  r"""Dead lettering is done on a best effort basis. The same message might be
+  dead lettered multiple times.  If validation on any of the fields fails at
+  subscription creation/updation, the create/update subscription request will
+  fail.
+
+  Fields:
+    deadLetterTopic: The name of the topic to which dead letter messages
+      should be published. Format is `projects/{project}/topics/{topic}`.The
+      Cloud Pub/Sub service account associated with the enclosing
+      subscription's parent project (i.e., service-{project_number}@gcp-sa-
+      pubsub.iam.gserviceaccount.com) must have permission to Publish() to
+      this topic.  Users should ensure that the topic exists. Users should
+      ensure that there is a subscription attached to this topic. Otherwise,
+      dead letter messages published to this topic will be lost.
+    maxDeliveryAttempts: The maximum number of delivery attempts for any
+      message.  The number of delivery attempts is defined as 1 + (the sum of
+      number of NACKs and number of ack_deadline exceeds).  A NACK is any call
+      to ModifyAckDeadline with a 0 deadline. An ack_deadline exceeds event is
+      whenever a message is not acknowledged within
+      Subscription.ackDeadlineSeconds. Note that client libraries may
+      automatically extend ack_deadlines.  This field will be honored on a
+      best effort basis. The minimum value allowed is 5 to reduce
+      unintentional dead lettering because of the best effort nature of this
+      field. The maximum value allowed is 100.  If this parameter is 0, a
+      default value of 5 is used.
+  """
+
+  deadLetterTopic = _messages.StringField(1)
+  maxDeliveryAttempts = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -458,8 +490,8 @@ class PubsubProjectsSnapshotsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -570,8 +602,8 @@ class PubsubProjectsSubscriptionsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -726,8 +758,8 @@ class PubsubProjectsTopicsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -866,8 +898,9 @@ class PullRequest(_messages.Message):
   r"""Request for the `Pull` method.
 
   Fields:
-    maxMessages: The maximum number of messages returned for this request. The
-      Pub/Sub system may return fewer than the number specified.
+    maxMessages: The maximum number of messages to return for this request.
+      Must be a positive integer. The Pub/Sub system may return fewer than the
+      number specified.
     returnImmediately: If this field set to true, the system will respond
       immediately even if it there are no messages available to return in the
       `Pull` response. Otherwise, the system may wait (for a bounded amount of
@@ -1180,6 +1213,18 @@ class Subscription(_messages.Message):
       delivery, this value is also used to set the request timeout for the
       call to the push endpoint.  If the subscriber never acknowledges the
       message, the Pub/Sub system will eventually redeliver the message.
+    deadLetterPolicy: A policy that specifies the conditions for dead
+      lettering messages in this subscription. If dead_letter_policy is not
+      set, dead lettering is disabled.  The Cloud Pub/Sub service account
+      associated with this subscriptions's parent project (i.e.,
+      service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com) must
+      have permission to Acknowledge() messages on this subscription. This is
+      needed in order for Cloud Pub/Sub to Acknowledge() messages on the
+      subscription once it has successfully published them to the dead letter
+      topic. <b>EXPERIMENTAL:</b> This feature is part of a closed alpha
+      release. This API might be changed in backward-incompatible ways and is
+      not recommended for production use. It is not subject to any SLA or
+      deprecation policy.
     enableMessageOrdering: If true, messages published with the same
       `ordering_key` in `PubsubMessage` will be delivered to the subscribers
       in the order in which they are received by the Pub/Sub system.
@@ -1248,14 +1293,15 @@ class Subscription(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   ackDeadlineSeconds = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  enableMessageOrdering = _messages.BooleanField(2)
-  expirationPolicy = _messages.MessageField('ExpirationPolicy', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  messageRetentionDuration = _messages.StringField(5)
-  name = _messages.StringField(6)
-  pushConfig = _messages.MessageField('PushConfig', 7)
-  retainAckedMessages = _messages.BooleanField(8)
-  topic = _messages.StringField(9)
+  deadLetterPolicy = _messages.MessageField('DeadLetterPolicy', 2)
+  enableMessageOrdering = _messages.BooleanField(3)
+  expirationPolicy = _messages.MessageField('ExpirationPolicy', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  messageRetentionDuration = _messages.StringField(6)
+  name = _messages.StringField(7)
+  pushConfig = _messages.MessageField('PushConfig', 8)
+  retainAckedMessages = _messages.BooleanField(9)
+  topic = _messages.StringField(10)
 
 
 class TestIamPermissionsRequest(_messages.Message):

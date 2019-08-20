@@ -236,14 +236,10 @@ def ValidateDirectoryExistsOrRaiseFunctionError(directory):
   """
   if not os.path.exists(directory):
     raise exceptions.FunctionsError(
-        'argument --source: Provided directory does not exist. If '
-        'you intended to provide a path to Google Cloud Repository, you must '
-        'specify the --source-url argument')
+        'argument `--source`: Provided directory does not exist')
   if not os.path.isdir(directory):
     raise exceptions.FunctionsError(
-        'argument --source: Provided path does not point to a directory. If '
-        'you intended to provide a path to Google Cloud Repository, you must '
-        'specify the --source-url argument')
+        'argument `--source`: Provided path does not point to a directory')
   return directory
 
 
@@ -393,9 +389,10 @@ def CreateFunction(function, location):
 def GetFunctionIamPolicy(function_resource_name):
   client = GetApiClientInstance()
   messages = client.MESSAGES_MODULE
-  return client.projects_locations_functions.GetIamPolicy(
-      messages.CloudfunctionsProjectsLocationsFunctionsGetIamPolicyRequest(
-          resource=function_resource_name))
+  request = messages.CloudfunctionsProjectsLocationsFunctionsGetIamPolicyRequest(
+      resource=function_resource_name,
+      options_requestedPolicyVersion=iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION)
+  return client.projects_locations_functions.GetIamPolicy(request)
 
 
 @CatchHTTPErrorRaiseHTTPException

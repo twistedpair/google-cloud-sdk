@@ -30,6 +30,7 @@ from googlecloudsdk.calliope import walker
 from googlecloudsdk.core.document_renderers import render_document
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import pkg_resources
+import six
 
 
 _HELP_HTML_DATA_FILES = [
@@ -477,7 +478,7 @@ class CommandTreeGenerator(walker.Walker):
           if arg.choices:
             choices = sorted(arg.choices)
             if choices != ['false', 'true']:
-              value = ','.join([str(choice) for choice in choices])
+              value = ','.join([six.text_type(choice) for choice in choices])
           elif isinstance(arg.type, int):
             value = ':int:'
           elif isinstance(arg.type, float):

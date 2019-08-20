@@ -215,7 +215,7 @@ def DeleteVersions(api_client, versions):
       operations_util.CallAndCollectOpErrors(
           api_client.DeleteVersion, version.service, version.id)
     except operations_util.MiscOperationError as err:
-      errors[version_path] = str(err)
+      errors[version_path] = six.text_type(err)
 
   if errors:
     printable_errors = {}

@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.core import log as core_log
 from googlecloudsdk.core.console.style import text
+import six
 
 
 def _PrintResourceChange(operation,
@@ -62,7 +63,7 @@ def _PrintResourceChange(operation,
     msg.append(' {}'.format(kind))
   if resource:
     msg.append(' ')
-    msg.append(text.TextTypes.RESOURCE_NAME(str(resource)))
+    msg.append(text.TextTypes.RESOURCE_NAME(six.text_type(resource)))
   if details:
     msg.append(' ')
     msg.append(details)

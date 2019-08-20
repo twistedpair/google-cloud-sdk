@@ -186,6 +186,21 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsPatchRequest(_messages.Messa
   updateMask = _messages.StringField(3)
 
 
+class AccesscontextmanagerAccessPoliciesAccessLevelsReplaceAllRequest(_messages.Message):
+  r"""A AccesscontextmanagerAccessPoliciesAccessLevelsReplaceAllRequest
+  object.
+
+  Fields:
+    parent: Required. Resource name for the access policy which owns these
+      Access Levels.  Format: `accessPolicies/{policy_id}`
+    replaceAccessLevelsRequest: A ReplaceAccessLevelsRequest resource to be
+      passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  replaceAccessLevelsRequest = _messages.MessageField('ReplaceAccessLevelsRequest', 2)
+
+
 class AccesscontextmanagerAccessPoliciesDeleteRequest(_messages.Message):
   r"""A AccesscontextmanagerAccessPoliciesDeleteRequest object.
 
@@ -313,6 +328,21 @@ class AccesscontextmanagerAccessPoliciesServicePerimetersPatchRequest(_messages.
   name = _messages.StringField(1, required=True)
   servicePerimeter = _messages.MessageField('ServicePerimeter', 2)
   updateMask = _messages.StringField(3)
+
+
+class AccesscontextmanagerAccessPoliciesServicePerimetersReplaceAllRequest(_messages.Message):
+  r"""A AccesscontextmanagerAccessPoliciesServicePerimetersReplaceAllRequest
+  object.
+
+  Fields:
+    parent: Required. Resource name for the access policy which owns these
+      Service Perimeters.  Format: `accessPolicies/{policy_id}`
+    replaceServicePerimetersRequest: A ReplaceServicePerimetersRequest
+      resource to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  replaceServicePerimetersRequest = _messages.MessageField('ReplaceServicePerimetersRequest', 2)
 
 
 class AccesscontextmanagerOperationsGetRequest(_messages.Message):
@@ -686,6 +716,52 @@ class OsConstraint(_messages.Message):
   minimumVersion = _messages.StringField(1)
   osType = _messages.EnumField('OsTypeValueValuesEnum', 2)
   requireVerifiedChromeOs = _messages.BooleanField(3)
+
+
+class ReplaceAccessLevelsRequest(_messages.Message):
+  r"""A request to replace all existing Access Levels in an Access Policy with
+  the Access Levels provided. This is done within one transaction.
+
+  Fields:
+    accessLevels: Required. The desired Access Levels that should replace all
+      existing Access Levels in the Access Policy.
+  """
+
+  accessLevels = _messages.MessageField('AccessLevel', 1, repeated=True)
+
+
+class ReplaceAccessLevelsResponse(_messages.Message):
+  r"""A response to ReplaceAccessLevelsRequest. This will be put inside of
+  Operation.response field.
+
+  Fields:
+    accessLevels: List of the Access Level instances.
+  """
+
+  accessLevels = _messages.MessageField('AccessLevel', 1, repeated=True)
+
+
+class ReplaceServicePerimetersRequest(_messages.Message):
+  r"""A request to replace all existing Service Perimeters in an Access Policy
+  with the Service Perimeters provided. This is done within one transaction.
+
+  Fields:
+    servicePerimeters: Required. The desired Service Perimeters that should
+      replace all existing Service Perimeters in the Access Policy.
+  """
+
+  servicePerimeters = _messages.MessageField('ServicePerimeter', 1, repeated=True)
+
+
+class ReplaceServicePerimetersResponse(_messages.Message):
+  r"""A response to ReplaceServicePerimetersRequest. This will be put inside
+  of Operation.response field.
+
+  Fields:
+    servicePerimeters: List of the Service Perimeter instances.
+  """
+
+  servicePerimeters = _messages.MessageField('ServicePerimeter', 1, repeated=True)
 
 
 class ServicePerimeter(_messages.Message):

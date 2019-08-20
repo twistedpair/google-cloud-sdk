@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager V2Beta",
  "version": "v2beta",
- "revision": "20190726",
+ "revision": "20190815",
  "title": "Google Cloud Deployment Manager API V2Beta Methods",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -793,7 +793,7 @@
     },
     "id": {
      "type": "string",
-     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
+     "description": "[Output Only] The unique identifier for the operation. This identifier is defined by the server.",
      "format": "uint64"
     },
     "insertTime": {
@@ -807,7 +807,7 @@
     },
     "name": {
      "type": "string",
-     "description": "[Output Only] Name of the resource."
+     "description": "[Output Only] Name of the operation."
     },
     "operationType": {
      "type": "string",

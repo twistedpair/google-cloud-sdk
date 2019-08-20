@@ -4074,7 +4074,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Returns the list of all session entity types in the specified session."
+                      "description": "Returns the list of all session entity types in the specified session.\n\nThis method doesn't work with Google Assistant integration.\nContact Dialogflow support if you need to use session entities\nwith Google Assistant integration."
                     },
                     "get": {
                       "id": "dialogflow.projects.agent.sessions.entityTypes.get",
@@ -4100,7 +4100,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Retrieves the specified session entity type."
+                      "description": "Retrieves the specified session entity type.\n\nThis method doesn't work with Google Assistant integration.\nContact Dialogflow support if you need to use session entities\nwith Google Assistant integration."
                     },
                     "create": {
                       "id": "dialogflow.projects.agent.sessions.entityTypes.create",
@@ -4129,7 +4129,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Creates a session entity type.\n\nIf the specified session entity type already exists, overrides the session\nentity type."
+                      "description": "Creates a session entity type.\n\nIf the specified session entity type already exists, overrides the session\nentity type.\n\nThis method doesn't work with Google Assistant integration.\nContact Dialogflow support if you need to use session entities\nwith Google Assistant integration."
                     },
                     "patch": {
                       "id": "dialogflow.projects.agent.sessions.entityTypes.patch",
@@ -4164,7 +4164,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Updates the specified session entity type."
+                      "description": "Updates the specified session entity type.\n\nThis method doesn't work with Google Assistant integration.\nContact Dialogflow support if you need to use session entities\nwith Google Assistant integration."
                     },
                     "delete": {
                       "id": "dialogflow.projects.agent.sessions.entityTypes.delete",
@@ -4190,7 +4190,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Deletes the specified session entity type."
+                      "description": "Deletes the specified session entity type.\n\nThis method doesn't work with Google Assistant integration.\nContact Dialogflow support if you need to use session entities\nwith Google Assistant integration."
                     }
                   }
                 }

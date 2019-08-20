@@ -214,6 +214,7 @@ def AddEnableLogging(parser, required=False):
   parser.add_argument(
       '--enable-logging',
       required=required,
+      action='store_true',
       help=('Use this flag to enable logging of connections that allowed or '
             'denied by this rule.'))
 

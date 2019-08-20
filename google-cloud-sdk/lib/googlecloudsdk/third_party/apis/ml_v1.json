@@ -341,7 +341,8 @@
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
             "Nvidia Tesla T4 GPU.",
-            "TPU v2."
+            "TPU v2.",
+            "TPU v3."
           ],
           "type": "string",
           "enum": [
@@ -351,7 +352,8 @@
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
             "NVIDIA_TESLA_T4",
-            "TPU_V2"
+            "TPU_V2",
+            "TPU_V3"
           ]
         }
       }
@@ -1083,7 +1085,8 @@
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
             "Nvidia Tesla T4 GPU.",
-            "TPU v2."
+            "TPU v2.",
+            "TPU v3."
           ],
           "type": "array",
           "items": {
@@ -1095,7 +1098,8 @@
               "NVIDIA_TESLA_V100",
               "NVIDIA_TESLA_P4",
               "NVIDIA_TESLA_T4",
-              "TPU_V2"
+              "TPU_V2",
+              "TPU_V3"
             ]
           }
         }
@@ -2029,7 +2033,7 @@
                   "type": "string"
                 },
                 "options.requestedPolicyVersion": {
-                  "description": "Optional. The policy format version to be returned.\nAcceptable values are 0 and 1.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+                  "description": "Optional. The policy format version to be returned.\nAcceptable values are 0, 1, and 3.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -2433,7 +2437,7 @@
                   "type": "string"
                 },
                 "options.requestedPolicyVersion": {
-                  "description": "Optional. The policy format version to be returned.\nAcceptable values are 0 and 1.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+                  "description": "Optional. The policy format version to be returned.\nAcceptable values are 0, 1, and 3.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"

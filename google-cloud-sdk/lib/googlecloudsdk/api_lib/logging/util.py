@@ -25,6 +25,7 @@ from apitools.base.py import extra_types
 from googlecloudsdk.api_lib.resource_manager import folders
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.command_lib.resource_manager import completers
+from googlecloudsdk.command_lib.util.args import common_args
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log as sdk_log
 from googlecloudsdk.core import properties
@@ -86,8 +87,8 @@ def ConvertToJsonObject(json_string):
     raise InvalidJSONValueError('Invalid JSON value: %s' % e)
 
 
-def AddNonProjectArgs(parser, help_string):
-  """Adds optional arguments for non-project entities.
+def AddParentArgs(parser, help_string):
+  """Adds arguments for parent of the entities.
 
   Args:
     parser: parser to which arguments are added.
@@ -106,6 +107,10 @@ def AddNonProjectArgs(parser, help_string):
   entity_group.add_argument(
       '--billing-account', required=False, metavar='BILLING_ACCOUNT_ID',
       help='{0} associated with this billing account.'.format(help_string))
+
+  common_args.ProjectArgument(
+      help_text_to_prepend='{0} associated with this project.'.format(
+          help_string)).AddToParser(entity_group)
 
 
 def AddBucketLocationArg(parser, required, help_string):

@@ -173,7 +173,7 @@
     },
     "ListAccessPoliciesResponse": {
       "id": "ListAccessPoliciesResponse",
-      "description": "A response to `ListAccessPoliciesRequest`.",
+      "description": "[Deprecated] A response to `ListAccessPoliciesRequest`.",
       "type": "object",
       "properties": {
         "accessPolicies": {
@@ -220,7 +220,7 @@
     },
     "ListAccessLevelsResponse": {
       "id": "ListAccessLevelsResponse",
-      "description": "A response to `ListAccessLevelsRequest`.",
+      "description": "[Deprecated] A response to `ListAccessLevelsRequest`.",
       "type": "object",
       "properties": {
         "accessLevels": {
@@ -437,7 +437,7 @@
     },
     "ListAccessZonesResponse": {
       "id": "ListAccessZonesResponse",
-      "description": "A response to `ListAccessZonesRequest`.",
+      "description": "[Deprecated] A response to `ListAccessZonesRequest`.",
       "type": "object",
       "properties": {
         "accessZones": {
@@ -586,7 +586,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "List all AccessPolicies under a\ncontainer."
+          "description": "[Deprecated] List all AccessPolicies under a\ncontainer."
         },
         "get": {
           "id": "accesscontextmanager.accessPolicies.get",
@@ -611,7 +611,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Get an AccessPolicy by name."
+          "description": "[Deprecated] Get an AccessPolicy by name."
         },
         "create": {
           "id": "accesscontextmanager.accessPolicies.create",
@@ -631,7 +631,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Create an `AccessPolicy`. Fails if this organization already has a\n`AccessPolicy`. The longrunning Operation will have a successful status\nonce the `AccessPolicy` has propagated to long-lasting storage.\nSyntactic and basic semantic errors will be returned in `metadata` as a\nBadRequest proto."
+          "description": "[Deprecated] Create an `AccessPolicy`. Fails if this organization already\nhas a `AccessPolicy`. The longrunning Operation will have a successful\nstatus once the `AccessPolicy` has propagated to long-lasting storage.\nSyntactic and basic semantic errors will be returned in `metadata` as a\nBadRequest proto."
         },
         "patch": {
           "id": "accesscontextmanager.accessPolicies.patch",
@@ -665,7 +665,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Update an AccessPolicy. The\nlongrunning Operation from this RPC will have a successful status once the\nchanges to the AccessPolicy have propagated\nto long-lasting storage. Syntactic and basic semantic errors will be\nreturned in `metadata` as a BadRequest proto."
+          "description": "[Deprecated] Update an AccessPolicy. The\nlongrunning Operation from this RPC will have a successful status once the\nchanges to the AccessPolicy have propagated\nto long-lasting storage. Syntactic and basic semantic errors will be\nreturned in `metadata` as a BadRequest proto."
         },
         "delete": {
           "id": "accesscontextmanager.accessPolicies.delete",
@@ -690,7 +690,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Delete an AccessPolicy by resource\nname. The longrunning Operation will have a successful status once the\nAccessPolicy\nhas been removed from long-lasting storage."
+          "description": "[Deprecated] Delete an AccessPolicy by resource\nname. The longrunning Operation will have a successful status once the\nAccessPolicy\nhas been removed from long-lasting storage."
         }
       }
       ,
@@ -741,7 +741,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "List all Access Levels for an access\npolicy."
+              "description": "[Deprecated] List all Access Levels for an access\npolicy."
             },
             "get": {
               "id": "accesscontextmanager.accessPolicies.accessLevels.get",
@@ -776,7 +776,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Get an Access Level by resource\nname."
+              "description": "[Deprecated] Get an Access Level by resource\nname."
             },
             "create": {
               "id": "accesscontextmanager.accessPolicies.accessLevels.create",
@@ -804,7 +804,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Create an Access Level. The longrunning\noperation from this RPC will have a successful status once the Access\nLevel has\npropagated to long-lasting storage. Access Levels containing\nerrors will result in an error response for the first error encountered."
+              "description": "[Deprecated] Create an Access Level. The longrunning\noperation from this RPC will have a successful status once the Access\nLevel has\npropagated to long-lasting storage. Access Levels containing\nerrors will result in an error response for the first error encountered."
             },
             "patch": {
               "id": "accesscontextmanager.accessPolicies.accessLevels.patch",
@@ -838,7 +838,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Update an Access Level. The longrunning\noperation from this RPC will have a successful status once the changes to\nthe Access Level have propagated\nto long-lasting storage. Access Levels containing\nerrors will result in an error response for the first error encountered."
+              "description": "[Deprecated] Update an Access Level. The longrunning\noperation from this RPC will have a successful status once the changes to\nthe Access Level have propagated\nto long-lasting storage. Access Levels containing\nerrors will result in an error response for the first error encountered."
             },
             "delete": {
               "id": "accesscontextmanager.accessPolicies.accessLevels.delete",
@@ -863,7 +863,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Delete an Access Level by resource\nname. The longrunning operation from this RPC will have a successful status\nonce the Access Level has been removed\nfrom long-lasting storage."
+              "description": "[Deprecated] Delete an Access Level by resource\nname. The longrunning operation from this RPC will have a successful status\nonce the Access Level has been removed\nfrom long-lasting storage."
             }
           }
         },
@@ -903,7 +903,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "List all Access Zones for an access\npolicy."
+              "description": "[Deprecated] List all Access Zones for an access\npolicy."
             },
             "get": {
               "id": "accesscontextmanager.accessPolicies.accessZones.get",
@@ -928,7 +928,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Get an Access Zone by resource name."
+              "description": "[Deprecated] Get an Access Zone by resource name."
             },
             "create": {
               "id": "accesscontextmanager.accessPolicies.accessZones.create",
@@ -956,7 +956,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Create an Access Zone. The longrunning\noperation from this RPC will have a successful status once the Access\nZone has\npropagated to long-lasting storage. Access Zones containing errors\nwill result in an error response for the first error encountered."
+              "description": "[Deprecated] Create an Access Zone. The longrunning\noperation from this RPC will have a successful status once the Access\nZone has\npropagated to long-lasting storage. Access Zones containing errors\nwill result in an error response for the first error encountered."
             },
             "patch": {
               "id": "accesscontextmanager.accessPolicies.accessZones.patch",
@@ -990,7 +990,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Update an Access Zone. The longrunning\noperation from this RPC will have a successful status once the changes to\nthe Access Zone\nhave propagated to long-lasting storage. Access Zone containing errors\nwill result in an error response for the first error encountered."
+              "description": "[Deprecated] Update an Access Zone. The longrunning\noperation from this RPC will have a successful status once the changes to\nthe Access Zone\nhave propagated to long-lasting storage. Access Zone containing errors\nwill result in an error response for the first error encountered."
             },
             "delete": {
               "id": "accesscontextmanager.accessPolicies.accessZones.delete",
@@ -1015,7 +1015,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Delete an Access Zone by resource name.\nThe longrunning operation from this RPC will have a successful status once\nthe Access Zone\nhas been removed from long-lasting storage."
+              "description": "[Deprecated] Delete an Access Zone by resource name.\nThe longrunning operation from this RPC will have a successful status once\nthe Access Zone\nhas been removed from long-lasting storage."
             }
           }
         }

@@ -269,7 +269,7 @@ def MaybeAttachAccessTokenCacheStore(credentials,
     return credentials
   account_id = getattr(credentials, 'service_account_email', None)
   if not account_id:
-    account_id = str(hash(credentials.refresh_token))
+    account_id = six.text_type(hash(credentials.refresh_token))
 
   access_token_cache = AccessTokenCache(
       access_token_file or config.Paths().access_token_db_path)

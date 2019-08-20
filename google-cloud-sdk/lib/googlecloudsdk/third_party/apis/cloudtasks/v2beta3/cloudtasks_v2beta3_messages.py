@@ -822,8 +822,8 @@ class GetPolicyOptions(_messages.Message):
 
   Fields:
     requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
   """
 
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -839,7 +839,7 @@ class HttpRequest(_messages.Message):
   state.  * System throttling: To prevent the worker from overloading, Cloud
   Tasks may   temporarily reduce the queue's effective rate. User-specified
   settings   will not be changed.   System throttling happens because:    *
-  Cloud Tasks backoffs on all errors. Normally the backoff specified in
+  Cloud Tasks backs off on all errors. Normally the backoff specified in
   rate limits will be used. But if the worker returns     `429` (Too Many
   Requests), `503` (Service Unavailable), or the rate of     errors is high,
   Cloud Tasks will use a higher backoff rate. The retry     specified in the

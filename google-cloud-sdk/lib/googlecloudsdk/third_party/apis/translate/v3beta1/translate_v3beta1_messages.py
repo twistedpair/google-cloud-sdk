@@ -739,12 +739,12 @@ class TranslateProjectsDetectLanguageRequest(_messages.Message):
   Fields:
     detectLanguageRequest: A DetectLanguageRequest resource to be passed as
       the request body.
-    parent: Required. Target project or location to make a call.  Format:
-      `projects/{project-id}/locations/{location-id}` or `projects/{project-
-      id}`.  For global calls, use `projects/{project-id}/locations/global` or
-      `projects/{project-id}`.  Only models within the same region (has same
-      location-id) can be used. Otherwise an INVALID_ARGUMENT (400) error is
-      returned.
+    parent: Required. Project or location to make a call. Must refer to a
+      caller's project.  Format: `projects/{project-id}/locations/{location-
+      id}` or `projects/{project-id}`.  For global calls, use `projects
+      /{project-id}/locations/global` or `projects/{project-id}`.  Only models
+      within the same region (has same location-id) can be used. Otherwise an
+      INVALID_ARGUMENT (400) error is returned.
   """
 
   detectLanguageRequest = _messages.MessageField('DetectLanguageRequest', 1)
@@ -766,12 +766,13 @@ class TranslateProjectsGetSupportedLanguagesRequest(_messages.Message):
       id}/models/general/base`   Returns languages supported by the specified
       model. If missing, we get supported languages of Google general base
       (PBMT) model.
-    parent: Required. Target project or location to make a call.  Format:
-      `projects/{project-id}` or `projects/{project-id}/locations/{location-
-      id}`.  For global calls, use `projects/{project-id}/locations/global` or
-      `projects/{project-id}`.  Non-global location is required for AutoML
-      models.  Only models within the same region (have same location-id) can
-      be used, otherwise an INVALID_ARGUMENT (400) error is returned.
+    parent: Required. Project or location to make a call. Must refer to a
+      caller's project.  Format: `projects/{project-id}` or `projects
+      /{project-id}/locations/{location-id}`.  For global calls, use `projects
+      /{project-id}/locations/global` or `projects/{project-id}`.  Non-global
+      location is required for AutoML models.  Only models within the same
+      region (have same location-id) can be used, otherwise an
+      INVALID_ARGUMENT (400) error is returned.
   """
 
   displayLanguageCode = _messages.StringField(1)
@@ -785,11 +786,12 @@ class TranslateProjectsLocationsBatchTranslateTextRequest(_messages.Message):
   Fields:
     batchTranslateTextRequest: A BatchTranslateTextRequest resource to be
       passed as the request body.
-    parent: Required. Location to make a regional call.  Format: `projects
-      /{project-id}/locations/{location-id}`.  The `global` location is not
-      supported for batch translation.  Only AutoML Translation models or
-      glossaries within the same region (have the same location-id) can be
-      used, otherwise an INVALID_ARGUMENT (400) error is returned.
+    parent: Required. Location to make a call. Must refer to a caller's
+      project.  Format: `projects/{project-id}/locations/{location-id}`.  The
+      `global` location is not supported for batch translation.  Only AutoML
+      Translation models or glossaries within the same region (have the same
+      location-id) can be used, otherwise an INVALID_ARGUMENT (400) error is
+      returned.
   """
 
   batchTranslateTextRequest = _messages.MessageField('BatchTranslateTextRequest', 1)
@@ -802,12 +804,12 @@ class TranslateProjectsLocationsDetectLanguageRequest(_messages.Message):
   Fields:
     detectLanguageRequest: A DetectLanguageRequest resource to be passed as
       the request body.
-    parent: Required. Target project or location to make a call.  Format:
-      `projects/{project-id}/locations/{location-id}` or `projects/{project-
-      id}`.  For global calls, use `projects/{project-id}/locations/global` or
-      `projects/{project-id}`.  Only models within the same region (has same
-      location-id) can be used. Otherwise an INVALID_ARGUMENT (400) error is
-      returned.
+    parent: Required. Project or location to make a call. Must refer to a
+      caller's project.  Format: `projects/{project-id}/locations/{location-
+      id}` or `projects/{project-id}`.  For global calls, use `projects
+      /{project-id}/locations/global` or `projects/{project-id}`.  Only models
+      within the same region (has same location-id) can be used. Otherwise an
+      INVALID_ARGUMENT (400) error is returned.
   """
 
   detectLanguageRequest = _messages.MessageField('DetectLanguageRequest', 1)
@@ -839,12 +841,13 @@ class TranslateProjectsLocationsGetSupportedLanguagesRequest(_messages.Message):
       id}/models/general/base`   Returns languages supported by the specified
       model. If missing, we get supported languages of Google general base
       (PBMT) model.
-    parent: Required. Target project or location to make a call.  Format:
-      `projects/{project-id}` or `projects/{project-id}/locations/{location-
-      id}`.  For global calls, use `projects/{project-id}/locations/global` or
-      `projects/{project-id}`.  Non-global location is required for AutoML
-      models.  Only models within the same region (have same location-id) can
-      be used, otherwise an INVALID_ARGUMENT (400) error is returned.
+    parent: Required. Project or location to make a call. Must refer to a
+      caller's project.  Format: `projects/{project-id}` or `projects
+      /{project-id}/locations/{location-id}`.  For global calls, use `projects
+      /{project-id}/locations/global` or `projects/{project-id}`.  Non-global
+      location is required for AutoML models.  Only models within the same
+      region (have same location-id) can be used, otherwise an
+      INVALID_ARGUMENT (400) error is returned.
   """
 
   displayLanguageCode = _messages.StringField(1)
@@ -991,13 +994,14 @@ class TranslateProjectsLocationsTranslateTextRequest(_messages.Message):
   r"""A TranslateProjectsLocationsTranslateTextRequest object.
 
   Fields:
-    parent: Required. Target project or location to make a call.  Format:
-      `projects/{project-id}` or `projects/{project-id}/locations/{location-
-      id}`.  For global calls, use `projects/{project-id}/locations/global` or
-      `projects/{project-id}`.  Non-global location is required for requests
-      using AutoML models or custom glossaries.  Models and glossaries must be
-      within the same region (have same location-id), otherwise an
-      INVALID_ARGUMENT (400) error is returned.
+    parent: Required. Project or location to make a call. Must refer to a
+      caller's project.  Format: `projects/{project-id}` or `projects
+      /{project-id}/locations/{location-id}`.  For global calls, use `projects
+      /{project-id}/locations/global` or `projects/{project-id}`.  Non-global
+      location is required for requests using AutoML models or custom
+      glossaries.  Models and glossaries must be within the same region (have
+      same location-id), otherwise an INVALID_ARGUMENT (400) error is
+      returned.
     translateTextRequest: A TranslateTextRequest resource to be passed as the
       request body.
   """
@@ -1010,13 +1014,14 @@ class TranslateProjectsTranslateTextRequest(_messages.Message):
   r"""A TranslateProjectsTranslateTextRequest object.
 
   Fields:
-    parent: Required. Target project or location to make a call.  Format:
-      `projects/{project-id}` or `projects/{project-id}/locations/{location-
-      id}`.  For global calls, use `projects/{project-id}/locations/global` or
-      `projects/{project-id}`.  Non-global location is required for requests
-      using AutoML models or custom glossaries.  Models and glossaries must be
-      within the same region (have same location-id), otherwise an
-      INVALID_ARGUMENT (400) error is returned.
+    parent: Required. Project or location to make a call. Must refer to a
+      caller's project.  Format: `projects/{project-id}` or `projects
+      /{project-id}/locations/{location-id}`.  For global calls, use `projects
+      /{project-id}/locations/global` or `projects/{project-id}`.  Non-global
+      location is required for requests using AutoML models or custom
+      glossaries.  Models and glossaries must be within the same region (have
+      same location-id), otherwise an INVALID_ARGUMENT (400) error is
+      returned.
     translateTextRequest: A TranslateTextRequest resource to be passed as the
       request body.
   """

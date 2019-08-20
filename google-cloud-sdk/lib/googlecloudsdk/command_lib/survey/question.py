@@ -44,7 +44,13 @@ class RetrieveAnswerOfUnansweredQuestion(Error):
 
 class QuestionCreationError(Error):
   """Raises when question cannot be created with the provided data."""
-  pass
+
+  def __init__(self, required_fields):
+    required_fields_in_string = ', '.join(required_fields)
+    super(QuestionCreationError, self).__init__(
+        'Question cannot be created because either some '
+        'required field is missing or there are redundant fields. Required '
+        'fields are {}.'.format(required_fields_in_string))
 
 
 class Question(six.with_metaclass(abc.ABCMeta, object)):
@@ -74,10 +80,6 @@ class Question(six.with_metaclass(abc.ABCMeta, object)):
   @property
   def question(self):
     return self._question
-
-  @question.setter
-  def question(self, question):
-    self._question = question
 
   @property
   def instruction(self):
@@ -161,25 +163,30 @@ class MultiChoiceQuestion(Question):
   @classmethod
   def FromDictionary(cls, content):
     try:
-      return cls(
-          question=content['question'],
-          instruction=content['instruction'],
-          instruction_on_rejection=content['instruction_on_rejection'],
-          choices=content['choices'])
-    except KeyError:
-      raise QuestionCreationError('Question cannot be created because some '
-                                  'required field is missing.')
+      return cls(**content)
+    except TypeError:
+      raise QuestionCreationError(required_fields=[
+          'question', 'instruction', 'instruction_on_rejection', 'choices'
+      ])
 
   def _PrintQuestion(self):
     """Prints question and lists all choices."""
+    # index choices from 1
+    question_repr = self._FormatQuestion(
+        indexes=range(1,
+                      len(self._choices) + 1))
+    log.Print(question_repr)
+
+  def _FormatQuestion(self, indexes):
+    """Formats question to present to users."""
     choices_repr = [
         '[{}] {}'.format(index, msg)
-        for index, msg in enumerate(self._choices, 1)
+        for index, msg in zip(indexes, self._choices)
     ]
     choices_repr = [survey_util.Indent(content, 2) for content in choices_repr]
     choices_repr = '\n'.join(choices_repr)
     question_repr = survey_util.Indent(self._question, 1)
-    log.Print('\n'.join([question_repr, choices_repr]))
+    return '\n'.join([question_repr, choices_repr])
 
   def AcceptAnswer(self, answer):
     """Returns True if answer is accepted, otherwise returns False."""
@@ -191,8 +198,9 @@ class MultiChoiceQuestion(Question):
       return 1 <= answer_int <= len(self._choices)
 
   def Choice(self, index):
-    """Gets one choice of the multi-choice question."""
-    return self._choices[index]
+    """Gets the choice at the given index."""
+    # choices are indexed from 1
+    return self._choices[index - 1]
 
   def __eq__(self, other):
     if isinstance(other, self.__class__):
@@ -210,6 +218,95 @@ class MultiChoiceQuestion(Question):
 
   def __len__(self):
     return len(self._choices)
+
+
+class SatisfactionQuestion(MultiChoiceQuestion):
+  """Customer satisfaction question."""
+
+  def IsSatisfied(self):
+    """Returns true is user answers "Very satisfied" or "Somewhat satisfied"."""
+    if self.IsAnswered():
+      return int(self.answer) > 3
+    else:
+      return None
+
+  def _PrintQuestion(self):
+    # index choices in the reverse order, e.g. 5 is "Very satisfied" and 1 is
+    # "Very dissatisfied".
+    choice_indexes = range(len(self._choices), 0, -1)
+    question_repr = self._FormatQuestion(indexes=choice_indexes)
+    log.Print(question_repr)
+
+  def Choice(self, index):
+    """Gets the choice at the given index."""
+    # choices are indexed in the reverse order
+    return self._choices[len(self._choices) - index]
+
+
+class RatingQuestion(Question):
+  """"Rating question.
+
+  Attributes:
+     min_answer: int, minimum acceptable value for answer.
+     max_answer: int, maximum acceptable value for answer.
+  """
+
+  @classmethod
+  def FromDictionary(cls, content):
+    try:
+      return cls(**content)
+    except TypeError:
+      raise QuestionCreationError(required_fields=[
+          'question', 'instruction', 'instruction_on_rejection', 'min_answer',
+          'max_answer'
+      ])
+
+  def __init__(self,
+               question,
+               instruction,
+               instruction_on_rejection,
+               min_answer,
+               max_answer,
+               answer=None):
+    super(RatingQuestion, self).__init__(
+        question=question,
+        instruction=instruction,
+        instruction_on_rejection=instruction_on_rejection,
+        answer=answer)
+    self._min = min_answer
+    self._max = max_answer
+
+  def _PrintQuestion(self):
+    question = survey_util.Indent(self._question, 1)
+    log.Print(question)
+
+  def AcceptAnswer(self, answer):
+    try:
+      answer_int = int(answer)
+      return self._min <= answer_int <= self._max
+    except ValueError:
+      return False
+
+  def __eq__(self, other):
+    if isinstance(other, self.__class__):
+      # pylint: disable=protected-access
+      return (self._question == other._question and
+              self._instruction == other._instruction and
+              self._instruction_on_rejection == other._instruction_on_rejection
+              and self._min == other._min and self._max == other._max)
+      # pylint: enable=protected-access
+    return False
+
+  def __ne__(self, other):
+    return not self == other  # pylint: disable=g-comparison-negation
+
+  def __hash__(self):
+    return hash((self._question, self._instruction,
+                 self._instruction_on_rejection, self._min, self._max))
+
+
+class NPSQuestion(RatingQuestion):
+  """Net promoter score question."""
 
 
 class FreeTextQuestion(Question):
@@ -235,9 +332,6 @@ class FreeTextQuestion(Question):
   @classmethod
   def FromDictionary(cls, content):
     try:
-      return cls(
-          question=content['question'],
-          instruction=content['instruction'])
-    except KeyError:
-      raise QuestionCreationError('Question cannot be created because some'
-                                  ' required field is missing.')
+      return cls(**content)
+    except TypeError:
+      raise QuestionCreationError(required_fields=['question', 'instruction'])

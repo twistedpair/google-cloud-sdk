@@ -19,9 +19,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.iamcredentials import util as impersonation_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import store as c_store
 from oauth2client import service_account
+from oauth2client.contrib import gce as oauth2client_gce
 
 
 ACCOUNT_TABLE_FORMAT = ("""\
@@ -51,9 +53,26 @@ def AllAccounts():
           for account in c_store.AvailableAccounts()]
 
 
-def CheckAccountType(cred):
+def IsGceAccountCredentials(cred):
+  if isinstance(cred, oauth2client_gce.AppAssertionCredentials):
+    return True
+  return False
+
+
+def IsServiceAccountCredential(cred):
   """check account type."""
   if isinstance(cred, service_account.ServiceAccountCredentials):
     return True
   return False
 
+
+def IsImpersonationCredential(cred):
+  """check account type."""
+  return (impersonation_util.
+          ImpersonationAccessTokenProvider.IsImpersonationCredential(cred))
+
+
+def ValidIdTokenCredential(cred):
+  return (IsImpersonationCredential(cred) or
+          IsServiceAccountCredential(cred) or
+          IsGceAccountCredentials(cred))

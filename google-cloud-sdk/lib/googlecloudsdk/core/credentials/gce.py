@@ -40,6 +40,10 @@ class CannotConnectToMetadataServerException(MetadataServerException):
   """Exception for when the metadata server cannot be reached."""
 
 
+class MissingAudienceForIdTokenError(Error):
+  """Exception for when audience is missing from ID token minting call."""
+
+
 @retry.RetryOnException(max_retrials=3)
 def _ReadNoProxyWithCleanFailures(uri, http_errors_to_ignore=()):
   """Reads data from a URI with no proxy, yielding cloud-sdk exceptions."""
@@ -219,6 +223,36 @@ class _GCEMetadata(object):
     zone = self.Zone()
     return '-'.join(zone.split('-')[:-1]) if zone else None
 
+  @_HandleMissingMetadataServer()
+  def GetIdToken(self, audience):
+    """Get a valid identity token on the host GCE instance.
+
+    Fetches GOOGLE_GCE_METADATA_ID_TOKEN_URI and returns its contents.
+
+    Args:
+      audience: str, target audience for ID token.
+
+    Raises:
+      CannotConnectToMetadataServerException: If the metadata server
+          cannot be reached.
+      MetadataServerException: If there is a problem communicating with the
+          metadata server.
+      MissingAudienceForIdTokenError: If audience is missing.
+
+    Returns:
+      str, The id token or None if not on a CE VM, or if there are no
+      service accounts associated with this VM.
+    """
+
+    if not self.connected:
+      return None
+
+    if not audience:
+      raise MissingAudienceForIdTokenError()
+
+    return _ReadNoProxyWithCleanFailures(
+        gce_read.GOOGLE_GCE_METADATA_ID_TOKEN_URI.format(audience=audience),
+        http_errors_to_ignore=(404,))
 
 _metadata = None
 _metadata_lock = threading.Lock()

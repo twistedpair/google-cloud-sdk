@@ -29,6 +29,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import retry
+import six
 
 MAX_WEBSOCKET_OPEN_WAIT_TIME_SEC = 60
 MAX_RECONNECT_SLEEP_TIME_MS = 20 * 1000  # 20 seconds
@@ -252,7 +253,7 @@ class IapTunnelWebSocket(object):
       except helper.WebSocketConnectionClosed:
         pass
       except EnvironmentError as e:
-        log.info('Unable to send WebSocket ack [%s]', str(e))
+        log.info('Unable to send WebSocket ack [%s]', six.text_type(e))
       except:  # pylint: disable=bare-except
         if not self._IsClosed():
           log.info('Error while attempting to ack [%d] bytes', bytes_received,
@@ -300,7 +301,7 @@ class IapTunnelWebSocket(object):
       except helper.WebSocketConnectionClosed:
         break
       except EnvironmentError as e:
-        log.info('Unable to send WebSocket data [%s]', str(e))
+        log.info('Unable to send WebSocket data [%s]', six.text_type(e))
         break
       except:  # pylint: disable=bare-except
         log.info('Error while attempting to send [%d] bytes', len(send_data),

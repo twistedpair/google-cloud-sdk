@@ -3522,6 +3522,20 @@ class PubsubLocation(_messages.Message):
   withAttributes = _messages.BooleanField(7)
 
 
+class PubsubSnapshotMetadata(_messages.Message):
+  r"""Represents a Pubsub snapshot.
+
+  Fields:
+    expireTime: The expire time of the Pubsub snapshot.
+    snapshotName: The name of the Pubsub snapshot.
+    topicName: The name of the Pubsub topic.
+  """
+
+  expireTime = _messages.StringField(1)
+  snapshotName = _messages.StringField(2)
+  topicName = _messages.StringField(3)
+
+
 class ReadInstruction(_messages.Message):
   r"""An instruction that reads records. Takes no inputs, produces one output.
 
@@ -4029,6 +4043,7 @@ class Snapshot(_messages.Message):
     creationTime: The time this snapshot was created.
     id: The unique ID of this snapshot.
     projectId: The project this snapshot belongs to.
+    pubsubMetadata: PubSub snapshot metadata.
     sourceJobId: The job this snapshot was created from.
     state: State of the snapshot.
     ttl: The time after which this snapshot will be automatically deleted.
@@ -4056,9 +4071,10 @@ class Snapshot(_messages.Message):
   creationTime = _messages.StringField(1)
   id = _messages.StringField(2)
   projectId = _messages.StringField(3)
-  sourceJobId = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  ttl = _messages.StringField(6)
+  pubsubMetadata = _messages.MessageField('PubsubSnapshotMetadata', 4, repeated=True)
+  sourceJobId = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  ttl = _messages.StringField(7)
 
 
 class SnapshotJobRequest(_messages.Message):
@@ -4066,11 +4082,14 @@ class SnapshotJobRequest(_messages.Message):
 
   Fields:
     location: The location that contains this job.
+    snapshotSources: If true, perform snapshots for sources which support
+      this.
     ttl: TTL for the snapshot.
   """
 
   location = _messages.StringField(1)
-  ttl = _messages.StringField(2)
+  snapshotSources = _messages.BooleanField(2)
+  ttl = _messages.StringField(3)
 
 
 class Source(_messages.Message):
@@ -4768,6 +4787,10 @@ class StreamingConfigTask(_messages.Message):
       families.
 
   Fields:
+    commitStreamChunkSizeBytes: Chunk size for commit streams from the harness
+      to windmill.
+    getDataStreamChunkSizeBytes: Chunk size for get data streams from the
+      harness to windmill.
     maxWorkItemCommitBytes: Maximum size for work item commit supported
       windmill storage layer.
     streamingComputationConfigs: Set of computation configuration information.
@@ -4807,11 +4830,13 @@ class StreamingConfigTask(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  maxWorkItemCommitBytes = _messages.IntegerField(1)
-  streamingComputationConfigs = _messages.MessageField('StreamingComputationConfig', 2, repeated=True)
-  userStepToStateFamilyNameMap = _messages.MessageField('UserStepToStateFamilyNameMapValue', 3)
-  windmillServiceEndpoint = _messages.StringField(4)
-  windmillServicePort = _messages.IntegerField(5)
+  commitStreamChunkSizeBytes = _messages.IntegerField(1)
+  getDataStreamChunkSizeBytes = _messages.IntegerField(2)
+  maxWorkItemCommitBytes = _messages.IntegerField(3)
+  streamingComputationConfigs = _messages.MessageField('StreamingComputationConfig', 4, repeated=True)
+  userStepToStateFamilyNameMap = _messages.MessageField('UserStepToStateFamilyNameMapValue', 5)
+  windmillServiceEndpoint = _messages.StringField(6)
+  windmillServicePort = _messages.IntegerField(7)
 
 
 class StreamingSetupTask(_messages.Message):

@@ -350,7 +350,8 @@ def ValidateResultsBucket(args):
     bucket_ref = storage_util.BucketReference.FromArgument(args.results_bucket,
                                                            require_prefix=False)
   except Exception as err:
-    raise exceptions.InvalidArgumentException('results-bucket', str(err))
+    raise exceptions.InvalidArgumentException('results-bucket',
+                                              six.text_type(err))
   args.results_bucket = bucket_ref.bucket
 
 

@@ -15,6 +15,20 @@ from apitools.base.py import extra_types
 package = 'logging'
 
 
+class BigQueryOptions(_messages.Message):
+  r"""Options that change functionality of a sink exporting data to BigQuery.
+
+  Fields:
+    usePartitionedTables: Optional. Whether to use BigQuery's partition
+      tables. By default, Logging creates dated tables based on the log
+      entries' timestamps, e.g. syslog_20170523. With partitioned tables the
+      date suffix is no longer present and special query syntax has to be used
+      instead. In both cases, tables are sharded based on UTC timezone.
+  """
+
+  usePartitionedTables = _messages.BooleanField(1)
+
+
 class BucketOptions(_messages.Message):
   r"""BucketOptions describes the bucket boundaries used to create a histogram
   for the distribution. The buckets can be in a linear sequence, an
@@ -421,10 +435,6 @@ class ListSinksResponse(_messages.Message):
 class LogBucket(_messages.Message):
   r"""Describes a repository of logs.
 
-  Enums:
-    RetentionRuleResolutionValueValuesEnum: Describes how to choose the
-      retention period for logs that match multiple retention policies.
-
   Fields:
     createTime: Output only. The creation timestamp of the bucket. This is not
       set for any of the default buckets.
@@ -450,28 +460,8 @@ class LogBucket(_messages.Message):
     retentionDays: Logs will be retained by default for this amount of time,
       after which they will automatically be deleted. The minimum retention
       period is 1 day.
-    retentionRuleResolution: Describes how to choose the retention period for
-      logs that match multiple retention policies.
-    retentionRules: Fine grained retention rules that can override retention
-      period.
     updateTime: Output only. The last update timestamp of the bucket.
   """
-
-  class RetentionRuleResolutionValueValuesEnum(_messages.Enum):
-    r"""Describes how to choose the retention period for logs that match
-    multiple retention policies.
-
-    Values:
-      LOG_RETENTION_RULE_RESOLUTION_UNSPECIFIED: Unspecified. This value may
-        not be used.
-      MAX_RETENTION_PERIOD: Use the maximum retention period from matching
-        retention policies.
-      MIN_RETENTION_PERIOD: Use the minimum retention period from matching
-        retention policies.
-    """
-    LOG_RETENTION_RULE_RESOLUTION_UNSPECIFIED = 0
-    MAX_RETENTION_PERIOD = 1
-    MIN_RETENTION_PERIOD = 2
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
@@ -480,9 +470,7 @@ class LogBucket(_messages.Message):
   locked = _messages.BooleanField(5)
   name = _messages.StringField(6)
   retentionDays = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  retentionRuleResolution = _messages.EnumField('RetentionRuleResolutionValueValuesEnum', 8)
-  retentionRules = _messages.MessageField('LogRetentionRule', 9, repeated=True)
-  updateTime = _messages.StringField(10)
+  updateTime = _messages.StringField(8)
 
 
 class LogEntry(_messages.Message):
@@ -875,9 +863,8 @@ class LogMetric(_messages.Message):
       may not be present for older metrics.
     description: Optional. A description of this metric, which is used in
       documentation. The maximum length of the description is 8000 characters.
-    exclusions: Optional. Log entries that match any of the exclusion filters
-      will not be matched. If a log entry is matched by both filter and one of
-      exclusion_filters it will not be matched.
+    disabled: Optional. If set to True, then this metric is disabled and it
+      does not generate any points.
     filter: Required. An advanced logs filter which is used to match log
       entries. Example: "resource.type=gae_app AND severity>=ERROR" The
       maximum length of the filter is 20000 characters.
@@ -988,7 +975,7 @@ class LogMetric(_messages.Message):
   bucketOptions = _messages.MessageField('BucketOptions', 1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  exclusions = _messages.MessageField('LogExclusion', 4, repeated=True)
+  disabled = _messages.BooleanField(4)
   filter = _messages.StringField(5)
   labelExtractors = _messages.MessageField('LabelExtractorsValue', 6)
   metricDescriptor = _messages.MessageField('MetricDescriptor', 7)
@@ -996,24 +983,6 @@ class LogMetric(_messages.Message):
   updateTime = _messages.StringField(9)
   valueExtractor = _messages.StringField(10)
   version = _messages.EnumField('VersionValueValuesEnum', 11)
-
-
-class LogRetentionRule(_messages.Message):
-  r"""Describes a rule for log retention.
-
-  Fields:
-    description: Describes this policy.
-    filter: Log entries to which this retention policy applies. The filter may
-      only contain a conjunction of log_id and source_name matches. If a log
-      entry is selected by more than one policy, the retention_rule_resolution
-      parameter of the containing bucket is used to resolve the conflict.
-    retentionPeriod: Logs matching this policy will be retained for this
-      amount of time, after which they will automatically be deleted.
-  """
-
-  description = _messages.StringField(1)
-  filter = _messages.StringField(2)
-  retentionPeriod = _messages.StringField(3)
 
 
 class LogSink(_messages.Message):
@@ -1029,8 +998,12 @@ class LogSink(_messages.Message):
       default and cannot be changed.
 
   Fields:
+    bigqueryOptions: Optional. Options that affect sinks exporting data to
+      BigQuery.
     createTime: Output only. The creation timestamp of the sink.This field may
       not be present for older sinks.
+    description: Optional. A description of this sink. The maximum length of
+      the description is 8000 characters.
     destination: Required. The export destination:
       "storage.googleapis.com/[GCS_BUCKET]"
       "bigquery.googleapis.com/projects/[PROJECT_ID]/datasets/[DATASET]"
@@ -1038,6 +1011,8 @@ class LogSink(_messages.Message):
       sink's writer_identity, set when the sink is created, must have
       permission to write to the destination or else the log entries are not
       exported. For more information, see Exporting Logs with Sinks.
+    disabled: Optional. If set to True, then this sink is disabled and it does
+      not export any log entries.
     dlpOptions: Optional. Settings for Data Loss Prevention (DLP) enabled
       sinks.
     exclusions: Optional. Log entries that match any of the exclusion filters
@@ -1093,16 +1068,19 @@ class LogSink(_messages.Message):
     V2 = 1
     V1 = 2
 
-  createTime = _messages.StringField(1)
-  destination = _messages.StringField(2)
-  dlpOptions = _messages.MessageField('DlpOptions', 3)
-  exclusions = _messages.MessageField('LogExclusion', 4, repeated=True)
-  filter = _messages.StringField(5)
-  includeChildren = _messages.BooleanField(6)
-  name = _messages.StringField(7)
-  outputVersionFormat = _messages.EnumField('OutputVersionFormatValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
-  writerIdentity = _messages.StringField(10)
+  bigqueryOptions = _messages.MessageField('BigQueryOptions', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  destination = _messages.StringField(4)
+  disabled = _messages.BooleanField(5)
+  dlpOptions = _messages.MessageField('DlpOptions', 6)
+  exclusions = _messages.MessageField('LogExclusion', 7, repeated=True)
+  filter = _messages.StringField(8)
+  includeChildren = _messages.BooleanField(9)
+  name = _messages.StringField(10)
+  outputVersionFormat = _messages.EnumField('OutputVersionFormatValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
+  writerIdentity = _messages.StringField(13)
 
 
 class LoggingBillingAccountsBucketsGetRequest(_messages.Message):

@@ -236,7 +236,9 @@ class TopicsClient(object):
       Policy: the policy for the Topic.
     """
     request = self.messages.PubsubProjectsTopicsGetIamPolicyRequest(
-        resource=topic_ref.RelativeName())
+        resource=topic_ref.RelativeName(),
+        options_requestedPolicyVersion=
+        iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION)
     return self._service.GetIamPolicy(request)
 
   def AddIamPolicyBinding(self, topic_ref, member, role):

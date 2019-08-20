@@ -417,7 +417,7 @@ def KillSubprocess(p):
   if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
     # Consume stdout so it doesn't show in the shell
     taskkill_process = subprocess.Popen(
-        ['taskkill', '/F', '/T', '/PID', str(p.pid)],
+        ['taskkill', '/F', '/T', '/PID', six.text_type(p.pid)],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE)
     (stdout, stderr) = taskkill_process.communicate()

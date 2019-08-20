@@ -27,6 +27,7 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+import six
 
 
 class RepoResourceError(core_exceptions.Error):
@@ -41,7 +42,7 @@ def ParseRepo(repo):
         params={'projectsId': properties.VALUES.core.project.GetOrFail},
         collection='sourcerepo.projects.repos')
   except core_exceptions.Error as e:
-    raise RepoResourceError(str(e))
+    raise RepoResourceError(six.text_type(e))
 
 
 def GetDefaultProject():

@@ -401,8 +401,8 @@ class DatafusionProjectsLocationsInstancesGetIamPolicyRequest(_messages.Message)
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -684,7 +684,8 @@ class Instance(_messages.Message):
       DELETING: Instance is being deleted
       UPGRADING: Instance is being upgraded
       RESTARTING: Instance is being restarted
-      UPDATING: Instance is being updated
+      UPDATING: Instance is being updated on customer request
+      AUTO_UPDATING: Instance is being auto-updated
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -694,6 +695,7 @@ class Instance(_messages.Message):
     UPGRADING = 5
     RESTARTING = 6
     UPDATING = 7
+    AUTO_UPDATING = 8
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Required. Instance type.

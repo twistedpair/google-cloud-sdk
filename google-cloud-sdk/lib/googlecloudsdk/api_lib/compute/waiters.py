@@ -133,11 +133,13 @@ class OperationData(object):
                operation,
                operation_service,
                resource_service,
-               project=None):
+               project=None,
+               followup_override=None):
     self.operation = operation
     self.project = project
     self.operation_service = operation_service
     self.resource_service = resource_service
+    self.followup_override = followup_override
 
   def __eq__(self, o):
     if not isinstance(o, OperationData):
@@ -202,9 +204,11 @@ def WaitForOperations(
     for operation in unfinished_operations:
       # Reify operation
       data = operation_details[operation.selfLink]
+
       project = data.project
       operation_service = data.operation_service
       resource_service = data.resource_service
+      followup_override = data.followup_override
 
       operation_type = operation_service.GetResponseType('Get')
 
@@ -252,8 +256,17 @@ def WaitForOperations(
             request.region = path_simplifier.Name(operation.region)
           name_field = resource_service.GetMethodConfig(
               'Get').ordered_params[-1]
-          setattr(request, name_field,
-                  path_simplifier.Name(operation.targetLink))
+
+          # If the new resource that is created's name differs from the one used
+          # for polling, this will check for the new resource (such as when
+          # renaming an instance).
+
+          if followup_override:
+            resource_name = followup_override
+          else:
+            resource_name = path_simplifier.Name(operation.targetLink)
+
+          setattr(request, name_field, resource_name)
           resource_requests.append((resource_service, 'Get', request))
 
         log.status.write('{0} [{1}].\n'.format(
@@ -286,6 +299,7 @@ def WaitForOperations(
         requests=requests,
         http=http,
         batch_url=batch_url)
+
     errors.extend(request_errors)
 
     unfinished_operations = []

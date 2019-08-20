@@ -510,9 +510,6 @@ class GoogleIamV1AuditLogConfig(_messages.Message):
   Fields:
     exemptedMembers: Specifies the identities that do not cause logging for
       this type of permission. Follows the same format of Binding.members.
-    ignoreChildExemptions: Specifies whether principals can be exempted for
-      the same LogType in lower-level resource policies. If true, any lower-
-      level exemptions will be ignored.
     logType: The log type that this config enables.
   """
 
@@ -531,8 +528,7 @@ class GoogleIamV1AuditLogConfig(_messages.Message):
     DATA_READ = 3
 
   exemptedMembers = _messages.StringField(1, repeated=True)
-  ignoreChildExemptions = _messages.BooleanField(2)
-  logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
 class GoogleIamV1Binding(_messages.Message):
@@ -605,6 +601,19 @@ class GoogleIamV1Policy(_messages.Message):
   bindings = _messages.MessageField('GoogleIamV1Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class GoogleLongrunningListOperationsResponse(_messages.Message):
+  r"""The response message for Operations.ListOperations.
+
+  Fields:
+    nextPageToken: The standard List next-page token.
+    operations: A list of operations that matches the specified filter in the
+      request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  operations = _messages.MessageField('GoogleLongrunningOperation', 2, repeated=True)
 
 
 class GoogleLongrunningOperation(_messages.Message):
@@ -1030,8 +1039,9 @@ class GoogleRpcContextAttributeContextResource(_messages.Message):
     service: The name of the service that this resource belongs to, such as
       `pubsub.googleapis.com`. The service may be different from the DNS
       hostname that actually serves the request.
-    type: The type of the resource. The scheme is platform-specific because
-      different platforms define their resources differently.
+    type: The type of the resource. The syntax is platform-specific because
+      different platforms define their resources differently.  For Google
+      APIs, the type format must be "{service}/{kind}".
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1189,6 +1199,32 @@ class GoogleTypeExpr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class IamassistOperationsGetRequest(_messages.Message):
+  r"""A IamassistOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamassistOperationsListRequest(_messages.Message):
+  r"""A IamassistOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):

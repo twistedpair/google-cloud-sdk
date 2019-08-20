@@ -34,6 +34,7 @@ from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.docker import client_lib
 from googlecloudsdk.core.docker import constants
 from googlecloudsdk.core.util import files
+import six
 
 
 _USERNAME = 'gclouddockertoken'
@@ -215,7 +216,7 @@ def UpdateDockerCredentials(server, refresh=True):
       DockerLogin(server, _USERNAME, cred.access_token)
     except client_lib.DockerError as e:
       # Only catch docker-not-found error
-      if str(e) != client_lib.DOCKER_NOT_FOUND_ERROR:
+      if six.text_type(e) != client_lib.DOCKER_NOT_FOUND_ERROR:
         raise
 
       # Fall back to the previous manual .dockercfg manipulation

@@ -206,7 +206,7 @@ class _Result(object):
     except Exception as err:  # pylint: disable=broad-except
       return _Result(error=pickle.PicklingError(
           "Couldn't pickle result [{0}]: {1}".format(
-              pickleable_result, str(err))))
+              pickleable_result, six.text_type(err))))
     return pickleable_result
 
   def __str__(self):

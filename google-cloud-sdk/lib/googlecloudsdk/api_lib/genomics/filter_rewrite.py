@@ -34,7 +34,7 @@ def _RewriteTimeTerm(key, op, operand):
   except ValueError as e:
     raise ValueError(
         '{operand}: date-time value expected for {key}: {error}'
-        .format(operand=operand, key=key, error=str(e)))
+        .format(operand=operand, key=key, error=six.text_type(e)))
 
   if op == ':':
     op = '='

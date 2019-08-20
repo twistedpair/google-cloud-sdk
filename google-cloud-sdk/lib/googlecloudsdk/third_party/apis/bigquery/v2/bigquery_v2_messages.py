@@ -214,6 +214,8 @@ class BigqueryJobsListRequest(_messages.Message):
       are returned
     pageToken: Page token, returned by a previous call, to request the next
       page of results
+    parentJobId: If set, retrieves only jobs whose parent is this job.
+      Otherwise, retrieves only jobs which have no parent
     projectId: Project ID of the jobs to list
     projection: Restrict information returned to a set of selected fields
     stateFilter: Filter for job state
@@ -246,9 +248,10 @@ class BigqueryJobsListRequest(_messages.Message):
   maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
   minCreationTime = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   pageToken = _messages.StringField(5)
-  projectId = _messages.StringField(6, required=True)
-  projection = _messages.EnumField('ProjectionValueValuesEnum', 7)
-  stateFilter = _messages.EnumField('StateFilterValueValuesEnum', 8, repeated=True)
+  parentJobId = _messages.StringField(6)
+  projectId = _messages.StringField(7, required=True)
+  projection = _messages.EnumField('ProjectionValueValuesEnum', 8)
+  stateFilter = _messages.EnumField('StateFilterValueValuesEnum', 9, repeated=True)
 
 
 class BigqueryJobsQueryRequest(_messages.Message):
@@ -1412,7 +1415,8 @@ class JobConfigurationExtract(_messages.Message):
       data. Default is ','
     printHeader: [Optional] Whether to print out a header row in the results.
       Default is true.
-    sourceTable: [Required] A reference to the table being exported.
+    sourceModel: A reference to the model being exported.
+    sourceTable: A reference to the table being exported.
   """
 
   compression = _messages.StringField(1)
@@ -1421,7 +1425,8 @@ class JobConfigurationExtract(_messages.Message):
   destinationUris = _messages.StringField(4, repeated=True)
   fieldDelimiter = _messages.StringField(5)
   printHeader = _messages.BooleanField(6, default=True)
-  sourceTable = _messages.MessageField('TableReference', 7)
+  sourceModel = _messages.MessageField('ModelReference', 7)
+  sourceTable = _messages.MessageField('TableReference', 8)
 
 
 class JobConfigurationLoad(_messages.Message):
@@ -2154,6 +2159,22 @@ class ModelDefinition(_messages.Message):
 
   modelOptions = _messages.MessageField('ModelOptionsValue', 1)
   trainingRuns = _messages.MessageField('BqmlTrainingRun', 2, repeated=True)
+
+
+class ModelReference(_messages.Message):
+  r"""A ModelReference object.
+
+  Fields:
+    datasetId: [Required] The ID of the dataset containing this model.
+    modelId: [Required] The ID of the model. The ID must contain only letters
+      (a-z, A-Z), numbers (0-9), or underscores (_). The maximum length is
+      1,024 characters.
+    projectId: [Required] The ID of the project containing this model.
+  """
+
+  datasetId = _messages.StringField(1)
+  modelId = _messages.StringField(2)
+  projectId = _messages.StringField(3)
 
 
 class ProjectList(_messages.Message):

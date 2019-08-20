@@ -259,7 +259,7 @@
       "type": "object",
       "properties": {
         "requestedPolicyVersion": {
-          "description": "Optional. The policy format version to be returned.\nAcceptable values are 0 and 1.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+          "description": "Optional. The policy format version to be returned.\nAcceptable values are 0, 1, and 3.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
           "type": "integer",
           "format": "int32"
         }
@@ -457,7 +457,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output Only. The resource name of the organization. This is the\norganization's relative path in the API. Its format is\n\"organizations\/[organization_id]\". For example, \"organizations\/1234\".",
+          "description": "Output only. The resource name of the organization. This is the\norganization's relative path in the API. Its format is\n\"organizations\/[organization_id]\". For example, \"organizations\/1234\".",
           "type": "string"
         },
         "organizationId": {
@@ -465,7 +465,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "A human-readable string that refers to the Organization in the\nGCP Console UI. This string is set by the server and cannot be\nchanged. The string will be set to the primary domain (for example,\n\"google.com\") of the G Suite customer that owns the organization.\n@OutputOnly",
+          "description": "A human-readable string that refers to the Organization in the\nGCP Console UI. This string is set by the server and cannot be\nchanged. The string will be set to the primary domain (for example,\n\"google.com\") of the G Suite customer that owns the organization.",
           "type": "string"
         },
         "owner": {
@@ -473,12 +473,12 @@
           "$ref": "OrganizationOwner"
         },
         "creationTime": {
-          "description": "Timestamp when the Organization was created. Assigned by the server.\n@OutputOnly",
+          "description": "Timestamp when the Organization was created. Assigned by the server.",
           "type": "string",
           "format": "google-datetime"
         },
         "lifecycleState": {
-          "description": "The organization's current lifecycle state. Assigned by the server.\n@OutputOnly",
+          "description": "The organization's current lifecycle state. Assigned by the server.",
           "enumDescriptions": [
             "Unspecified state.  This is only useful for distinguishing unset values.",
             "The normal and active state.",
@@ -909,7 +909,7 @@
           "httpMethod": "PUT",
           "parameters": {
             "organizationsId": {
-              "description": "Part of `name`. Output Only. The resource name of the organization. This is the\norganization's relative path in the API. Its format is\n\"organizations\/[organization_id]\". For example, \"organizations\/1234\".",
+              "description": "Part of `name`. Output only. The resource name of the organization. This is the\norganization's relative path in the API. Its format is\n\"organizations\/[organization_id]\". For example, \"organizations\/1234\".",
               "location": "path",
               "required": true,
               "type": "string"

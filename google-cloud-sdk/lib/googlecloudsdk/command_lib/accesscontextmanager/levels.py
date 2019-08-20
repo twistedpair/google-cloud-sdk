@@ -34,6 +34,13 @@ import six
 COLLECTION = 'accesscontextmanager.accessPolicies.accessLevels'
 
 
+class ParseResponseError(exceptions.Error):
+
+  def __init__(self, reason):
+    super(ParseResponseError,
+          self).__init__('Issue parsing response: {}'.format(reason))
+
+
 class ParseError(exceptions.Error):
 
   def __init__(self, path, reason):
@@ -46,15 +53,30 @@ class InvalidFormatError(ParseError):
   def __init__(self, path, reason, message_class):
     valid_fields = [f.name for f in message_class.all_fields()]
     super(InvalidFormatError, self).__init__(
-        path, ('Invalid format: {}\n\n'
-               'An access level condition file is a YAML-formatted list of '
-               'conditions, which are YAML objects with the fields [{}]. For '
-               'example:\n\n'
-               ' - ipSubnetworks:\n'
-               '   - 162.222.181.197/24\n'
-               '   - 2001:db8::/48\n'
-               ' - members:\n'
-               '   - user:user@example.com').format(reason,
+        path,
+        ('Invalid format: {}\n\n'
+         'The valid fields for the YAML objects in this file type are '
+         '[{}].\n'
+         'For an access level condition file, an example of the '
+         'YAML-formatted list of conditions will look like:\n\n'
+         ' - ipSubnetworks:\n'
+         '   - 162.222.181.197/24\n'
+         '   - 2001:db8::/48\n'
+         ' - members:\n'
+         '   - user:user@example.com\n\n'
+         'For access levels file, an example of the YAML-formatted list '
+         'of access levels will look like:\n\n'
+         ' - name: accessPolicies/my_policy/accessLevels/my_level\n'
+         '   title: My Level\n'
+         '   description: Level for foo.\n'
+         '   basic:\n'
+         '     combiningFunction: AND\n'
+         '     conditions:\n'
+         '     - ipSubnetworks:\n'
+         '       - 192.168.100.14/24\n'
+         '       - 2001:db8::/48\n'
+         '     - members\n'
+         '       - user1:user1@example.com').format(reason,
                                                     ', '.join(valid_fields)))
 
 
@@ -87,8 +109,39 @@ def ParseBasicLevelConditionsBeta(path):
   return ParseBasicLevelConditionsBase(path, version='v1beta')
 
 
+def ParseBasicAccessLevelsBeta(path):
+  return ParseBasicAccessLevelsBase(path, version='v1beta')
+
+
+def ParseReplaceAccessLevelsResponseBeta(lro, unused_args):
+  return ParseReplaceAccessLevelsResponseBase(lro, version='v1beta')
+
+
+def ParseReplaceAccessLevelsResponseBase(lro, version):
+  """Parse the Long Running Operation response of the ReplaceAccessLevels call.
+
+  Args:
+    lro: Long Running Operation response of ReplaceAccessLevels.
+    version: version of the API. e.g. 'v1beta', 'v1'.
+
+  Returns:
+    The replacement Access Levels created by the ReplaceAccessLevels call.
+
+  Raises:
+    ParseResponseError: if the response could not be parsed into the proper
+    object.
+  """
+  messages = util.GetMessages(version)
+  message_class = messages.ReplaceAccessLevelsResponse
+  try:
+    return encoding.DictToMessage(
+        encoding.MessageToDict(lro.response), message_class).accessLevels
+  except Exception as err:
+    raise ParseResponseError(six.text_type(err))
+
+
 def ParseBasicLevelConditionsBase(path, version=None):
-  """Parse a YAML representation of basic level conditions..
+  """Parse a YAML representation of basic level conditions.
 
   Args:
     path: str, path to file containing basic level conditions
@@ -107,6 +160,35 @@ def ParseBasicLevelConditionsBase(path, version=None):
 
   messages = util.GetMessages(version=version)
   message_class = messages.Condition
+  try:
+    conditions = [encoding.DictToMessage(c, message_class) for c in data]
+  except Exception as err:
+    raise InvalidFormatError(path, six.text_type(err), message_class)
+
+  _ValidateAllFieldsRecognized(path, conditions)
+  return conditions
+
+
+def ParseBasicAccessLevelsBase(path, version=None):
+  """Parse a YAML representation of a list of Access Levels with basic level conditions.
+
+  Args:
+    path: str, path to file containing basic access levels
+    version: str, api version of ACM to use for proto messages
+
+  Returns:
+    list of Access Level objects.
+
+  Raises:
+    ParseError: if the file could not be read into the proper object
+  """
+
+  data = yaml.load_path(path)
+  if not data:
+    raise ParseError(path, 'File is empty')
+
+  messages = util.GetMessages(version=version)
+  message_class = messages.AccessLevel
   try:
     conditions = [encoding.DictToMessage(c, message_class) for c in data]
   except Exception as err:

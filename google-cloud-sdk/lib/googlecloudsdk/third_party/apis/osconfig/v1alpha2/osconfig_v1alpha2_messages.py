@@ -1682,10 +1682,22 @@ class ZypperRepository(_messages.Message):
 
 
 class ZypperSettings(_messages.Message):
-  r"""Zypper patching is performed by running `zypper refresh && zypper
-  update`
+  r"""Zypper patching is performed by running `zypper patch`. See also
+  https://en.opensuse.org/SDB:Zypper_manual.
+
+  Fields:
+    categories: Optional. Install only patches with these categories. Common
+      categories include security, recommended, and feature.
+    severities: Optional. Install only patches with these severities. Common
+      severities include critical, important, moderate, and low.
+    withOptional: Optional. Adds the `--with-optional` flag to `zypper patch`.
+    withUpdate: Optional. Adds the `--with-update` flag, to `zypper patch`.
   """
 
+  categories = _messages.StringField(1, repeated=True)
+  severities = _messages.StringField(2, repeated=True)
+  withOptional = _messages.BooleanField(3)
+  withUpdate = _messages.BooleanField(4)
 
 
 encoding.AddCustomJsonFieldMapping(

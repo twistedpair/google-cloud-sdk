@@ -162,10 +162,17 @@ class AsyncBatchAnnotateFilesRequest(_messages.Message):
   service call.
 
   Fields:
+    parent: Optional. Target project and location to make a call.  Format:
+      `projects/{project-id}/locations/{location-id}`.  If no parent is
+      specified, a region will be chosen automatically.  Supported location-
+      ids:     `us`: USA country only,     `asia`: East asia areas, like
+      Japan, Taiwan,     `eu`: The European Union.  Example:
+      `projects/project-A/locations/eu`.
     requests: Individual async file annotation requests for this batch.
   """
 
-  requests = _messages.MessageField('AsyncAnnotateFileRequest', 1, repeated=True)
+  parent = _messages.StringField(1)
+  requests = _messages.MessageField('AsyncAnnotateFileRequest', 2, repeated=True)
 
 
 class AsyncBatchAnnotateFilesResponse(_messages.Message):
@@ -185,11 +192,18 @@ class AsyncBatchAnnotateImagesRequest(_messages.Message):
   Fields:
     outputConfig: Required. The desired output location and metadata (e.g.
       format).
+    parent: Optional. Target project and location to make a call.  Format:
+      `projects/{project-id}/locations/{location-id}`.  If no parent is
+      specified, a region will be chosen automatically.  Supported location-
+      ids:     `us`: USA country only,     `asia`: East asia areas, like
+      Japan, Taiwan,     `eu`: The European Union.  Example:
+      `projects/project-A/locations/eu`.
     requests: Individual image annotation requests for this batch.
   """
 
   outputConfig = _messages.MessageField('OutputConfig', 1)
-  requests = _messages.MessageField('AnnotateImageRequest', 2, repeated=True)
+  parent = _messages.StringField(2)
+  requests = _messages.MessageField('AnnotateImageRequest', 3, repeated=True)
 
 
 class AsyncBatchAnnotateImagesResponse(_messages.Message):
@@ -207,11 +221,18 @@ class BatchAnnotateFilesRequest(_messages.Message):
   r"""A list of requests to annotate files using the BatchAnnotateFiles API.
 
   Fields:
+    parent: Optional. Target project and location to make a call.  Format:
+      `projects/{project-id}/locations/{location-id}`.  If no parent is
+      specified, a region will be chosen automatically.  Supported location-
+      ids:     `us`: USA country only,     `asia`: East asia areas, like
+      Japan, Taiwan,     `eu`: The European Union.  Example:
+      `projects/project-A/locations/eu`.
     requests: The list of file annotation requests. Right now we support only
       one AnnotateFileRequest in BatchAnnotateFilesRequest.
   """
 
-  requests = _messages.MessageField('AnnotateFileRequest', 1, repeated=True)
+  parent = _messages.StringField(1)
+  requests = _messages.MessageField('AnnotateFileRequest', 2, repeated=True)
 
 
 class BatchAnnotateFilesResponse(_messages.Message):
@@ -230,10 +251,17 @@ class BatchAnnotateImagesRequest(_messages.Message):
   call.
 
   Fields:
+    parent: Optional. Target project and location to make a call.  Format:
+      `projects/{project-id}/locations/{location-id}`.  If no parent is
+      specified, a region will be chosen automatically.  Supported location-
+      ids:     `us`: USA country only,     `asia`: East asia areas, like
+      Japan, Taiwan,     `eu`: The European Union.  Example:
+      `projects/project-A/locations/eu`.
     requests: Individual image annotation requests for this batch.
   """
 
-  requests = _messages.MessageField('AnnotateImageRequest', 1, repeated=True)
+  parent = _messages.StringField(1)
+  requests = _messages.MessageField('AnnotateImageRequest', 2, repeated=True)
 
 
 class BatchAnnotateImagesResponse(_messages.Message):
@@ -649,15 +677,11 @@ class FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -671,15 +695,11 @@ class FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -693,15 +713,11 @@ class FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -715,15 +731,11 @@ class FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -737,15 +749,11 @@ class FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -759,15 +767,11 @@ class FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -781,15 +785,11 @@ class FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -1206,15 +1206,11 @@ class GoogleCloudVisionV1p1beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -1228,15 +1224,11 @@ class GoogleCloudVisionV1p1beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -1250,15 +1242,11 @@ class GoogleCloudVisionV1p1beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -1272,15 +1260,11 @@ class GoogleCloudVisionV1p1beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -1294,15 +1278,11 @@ class GoogleCloudVisionV1p1beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -1316,15 +1296,11 @@ class GoogleCloudVisionV1p1beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -1338,15 +1314,11 @@ class GoogleCloudVisionV1p1beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -1851,15 +1823,11 @@ class GoogleCloudVisionV1p1beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -1873,15 +1841,11 @@ class GoogleCloudVisionV1p1beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -1898,15 +1862,11 @@ class GoogleCloudVisionV1p1beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -1921,15 +1881,11 @@ class GoogleCloudVisionV1p1beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -1943,15 +1899,11 @@ class GoogleCloudVisionV1p1beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -2488,15 +2440,11 @@ class GoogleCloudVisionV1p2beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -2510,15 +2458,11 @@ class GoogleCloudVisionV1p2beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -2532,15 +2476,11 @@ class GoogleCloudVisionV1p2beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -2554,15 +2494,11 @@ class GoogleCloudVisionV1p2beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -2576,15 +2512,11 @@ class GoogleCloudVisionV1p2beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -2598,15 +2530,11 @@ class GoogleCloudVisionV1p2beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -2620,15 +2548,11 @@ class GoogleCloudVisionV1p2beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -3133,15 +3057,11 @@ class GoogleCloudVisionV1p2beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -3155,15 +3075,11 @@ class GoogleCloudVisionV1p2beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -3180,15 +3096,11 @@ class GoogleCloudVisionV1p2beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -3203,15 +3115,11 @@ class GoogleCloudVisionV1p2beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -3225,15 +3133,11 @@ class GoogleCloudVisionV1p2beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -3810,15 +3714,11 @@ class GoogleCloudVisionV1p3beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -3832,15 +3732,11 @@ class GoogleCloudVisionV1p3beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -3854,15 +3750,11 @@ class GoogleCloudVisionV1p3beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -3876,15 +3768,11 @@ class GoogleCloudVisionV1p3beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -3898,15 +3786,11 @@ class GoogleCloudVisionV1p3beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -3920,15 +3804,11 @@ class GoogleCloudVisionV1p3beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -3942,15 +3822,11 @@ class GoogleCloudVisionV1p3beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -4497,15 +4373,11 @@ class GoogleCloudVisionV1p3beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -4519,15 +4391,11 @@ class GoogleCloudVisionV1p3beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -4544,15 +4412,11 @@ class GoogleCloudVisionV1p3beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -4567,15 +4431,11 @@ class GoogleCloudVisionV1p3beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -4589,15 +4449,11 @@ class GoogleCloudVisionV1p3beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -5202,15 +5058,11 @@ class GoogleCloudVisionV1p4beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -5224,15 +5076,11 @@ class GoogleCloudVisionV1p4beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -5246,15 +5094,11 @@ class GoogleCloudVisionV1p4beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -5268,15 +5112,11 @@ class GoogleCloudVisionV1p4beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -5290,15 +5130,11 @@ class GoogleCloudVisionV1p4beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -5312,15 +5148,11 @@ class GoogleCloudVisionV1p4beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -5334,15 +5166,11 @@ class GoogleCloudVisionV1p4beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -5927,14 +5755,26 @@ class GoogleCloudVisionV1p4beta1SafeSearchAnnotation(_messages.Message):
     adult: Represents the adult content likelihood for the image. Adult
       content may contain elements such as nudity, pornographic images or
       cartoons, or sexual activities.
+    adultConfidence: Confidence of adult_score. Range [0, 1]. 0 means not
+      confident, 1 means very confident.
     medical: Likelihood that this is a medical image.
+    medicalConfidence: Confidence of medical_score. Range [0, 1]. 0 means not
+      confident, 1 means very confident.
+    nsfwConfidence: Confidence of nsfw_score. Range [0, 1]. 0 means not
+      confident, 1 means very confident.
     racy: Likelihood that the request image contains racy content. Racy
       content may include (but is not limited to) skimpy or sheer clothing,
       strategically covered nudity, lewd or provocative poses, or close-ups of
       sensitive body areas.
+    racyConfidence: Confidence of racy_score. Range [0, 1]. 0 means not
+      confident, 1 means very confident.
     spoof: Spoof likelihood. The likelihood that an modification was made to
       the image's canonical version to make it appear funny or offensive.
+    spoofConfidence: Confidence of spoof_score. Range [0, 1]. 0 means not
+      confident, 1 means very confident.
     violence: Likelihood that this image contains violent content.
+    violenceConfidence: Confidence of violence_score. Range [0, 1]. 0 means
+      not confident, 1 means very confident.
   """
 
   class AdultValueValuesEnum(_messages.Enum):
@@ -5944,15 +5784,11 @@ class GoogleCloudVisionV1p4beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -5966,15 +5802,11 @@ class GoogleCloudVisionV1p4beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -5991,15 +5823,11 @@ class GoogleCloudVisionV1p4beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -6014,15 +5842,11 @@ class GoogleCloudVisionV1p4beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -6036,15 +5860,11 @@ class GoogleCloudVisionV1p4beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -6054,10 +5874,16 @@ class GoogleCloudVisionV1p4beta1SafeSearchAnnotation(_messages.Message):
     VERY_LIKELY = 5
 
   adult = _messages.EnumField('AdultValueValuesEnum', 1)
-  medical = _messages.EnumField('MedicalValueValuesEnum', 2)
-  racy = _messages.EnumField('RacyValueValuesEnum', 3)
-  spoof = _messages.EnumField('SpoofValueValuesEnum', 4)
-  violence = _messages.EnumField('ViolenceValueValuesEnum', 5)
+  adultConfidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  medical = _messages.EnumField('MedicalValueValuesEnum', 3)
+  medicalConfidence = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  nsfwConfidence = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+  racy = _messages.EnumField('RacyValueValuesEnum', 6)
+  racyConfidence = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
+  spoof = _messages.EnumField('SpoofValueValuesEnum', 8)
+  spoofConfidence = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
+  violence = _messages.EnumField('ViolenceValueValuesEnum', 10)
+  violenceConfidence = _messages.FloatField(11, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudVisionV1p4beta1Symbol(_messages.Message):
@@ -6657,15 +6483,11 @@ class GoogleCloudVisionV1p5beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -6679,15 +6501,11 @@ class GoogleCloudVisionV1p5beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -6701,15 +6519,11 @@ class GoogleCloudVisionV1p5beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -6723,15 +6537,11 @@ class GoogleCloudVisionV1p5beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -6745,15 +6555,11 @@ class GoogleCloudVisionV1p5beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -6767,15 +6573,11 @@ class GoogleCloudVisionV1p5beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -6789,15 +6591,11 @@ class GoogleCloudVisionV1p5beta1FaceAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -7362,14 +7160,26 @@ class GoogleCloudVisionV1p5beta1SafeSearchAnnotation(_messages.Message):
     adult: Represents the adult content likelihood for the image. Adult
       content may contain elements such as nudity, pornographic images or
       cartoons, or sexual activities.
+    adultConfidence: Confidence of adult_score. Range [0, 1]. 0 means not
+      confident, 1 means very confident.
     medical: Likelihood that this is a medical image.
+    medicalConfidence: Confidence of medical_score. Range [0, 1]. 0 means not
+      confident, 1 means very confident.
+    nsfwConfidence: Confidence of nsfw_score. Range [0, 1]. 0 means not
+      confident, 1 means very confident.
     racy: Likelihood that the request image contains racy content. Racy
       content may include (but is not limited to) skimpy or sheer clothing,
       strategically covered nudity, lewd or provocative poses, or close-ups of
       sensitive body areas.
+    racyConfidence: Confidence of racy_score. Range [0, 1]. 0 means not
+      confident, 1 means very confident.
     spoof: Spoof likelihood. The likelihood that an modification was made to
       the image's canonical version to make it appear funny or offensive.
+    spoofConfidence: Confidence of spoof_score. Range [0, 1]. 0 means not
+      confident, 1 means very confident.
     violence: Likelihood that this image contains violent content.
+    violenceConfidence: Confidence of violence_score. Range [0, 1]. 0 means
+      not confident, 1 means very confident.
   """
 
   class AdultValueValuesEnum(_messages.Enum):
@@ -7379,15 +7189,11 @@ class GoogleCloudVisionV1p5beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -7401,15 +7207,11 @@ class GoogleCloudVisionV1p5beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -7426,15 +7228,11 @@ class GoogleCloudVisionV1p5beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -7449,15 +7247,11 @@ class GoogleCloudVisionV1p5beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -7471,15 +7265,11 @@ class GoogleCloudVisionV1p5beta1SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -7489,10 +7279,16 @@ class GoogleCloudVisionV1p5beta1SafeSearchAnnotation(_messages.Message):
     VERY_LIKELY = 5
 
   adult = _messages.EnumField('AdultValueValuesEnum', 1)
-  medical = _messages.EnumField('MedicalValueValuesEnum', 2)
-  racy = _messages.EnumField('RacyValueValuesEnum', 3)
-  spoof = _messages.EnumField('SpoofValueValuesEnum', 4)
-  violence = _messages.EnumField('ViolenceValueValuesEnum', 5)
+  adultConfidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  medical = _messages.EnumField('MedicalValueValuesEnum', 3)
+  medicalConfidence = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  nsfwConfidence = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+  racy = _messages.EnumField('RacyValueValuesEnum', 6)
+  racyConfidence = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
+  spoof = _messages.EnumField('SpoofValueValuesEnum', 8)
+  spoofConfidence = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
+  violence = _messages.EnumField('ViolenceValueValuesEnum', 10)
+  violenceConfidence = _messages.FloatField(11, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudVisionV1p5beta1Symbol(_messages.Message):
@@ -8640,14 +8436,26 @@ class SafeSearchAnnotation(_messages.Message):
     adult: Represents the adult content likelihood for the image. Adult
       content may contain elements such as nudity, pornographic images or
       cartoons, or sexual activities.
+    adultConfidence: Confidence of adult_score. Range [0, 1]. 0 means not
+      confident, 1 means very confident.
     medical: Likelihood that this is a medical image.
+    medicalConfidence: Confidence of medical_score. Range [0, 1]. 0 means not
+      confident, 1 means very confident.
+    nsfwConfidence: Confidence of nsfw_score. Range [0, 1]. 0 means not
+      confident, 1 means very confident.
     racy: Likelihood that the request image contains racy content. Racy
       content may include (but is not limited to) skimpy or sheer clothing,
       strategically covered nudity, lewd or provocative poses, or close-ups of
       sensitive body areas.
+    racyConfidence: Confidence of racy_score. Range [0, 1]. 0 means not
+      confident, 1 means very confident.
     spoof: Spoof likelihood. The likelihood that an modification was made to
       the image's canonical version to make it appear funny or offensive.
+    spoofConfidence: Confidence of spoof_score. Range [0, 1]. 0 means not
+      confident, 1 means very confident.
     violence: Likelihood that this image contains violent content.
+    violenceConfidence: Confidence of violence_score. Range [0, 1]. 0 means
+      not confident, 1 means very confident.
   """
 
   class AdultValueValuesEnum(_messages.Enum):
@@ -8657,15 +8465,11 @@ class SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -8679,15 +8483,11 @@ class SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -8704,15 +8504,11 @@ class SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -8727,15 +8523,11 @@ class SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -8749,15 +8541,11 @@ class SafeSearchAnnotation(_messages.Message):
 
     Values:
       UNKNOWN: Unknown likelihood.
-      VERY_UNLIKELY: It is very unlikely that the image belongs to the
-        specified vertical.
-      UNLIKELY: It is unlikely that the image belongs to the specified
-        vertical.
-      POSSIBLE: It is possible that the image belongs to the specified
-        vertical.
-      LIKELY: It is likely that the image belongs to the specified vertical.
-      VERY_LIKELY: It is very likely that the image belongs to the specified
-        vertical.
+      VERY_UNLIKELY: It is very unlikely.
+      UNLIKELY: It is unlikely.
+      POSSIBLE: It is possible.
+      LIKELY: It is likely.
+      VERY_LIKELY: It is very likely.
     """
     UNKNOWN = 0
     VERY_UNLIKELY = 1
@@ -8767,10 +8555,16 @@ class SafeSearchAnnotation(_messages.Message):
     VERY_LIKELY = 5
 
   adult = _messages.EnumField('AdultValueValuesEnum', 1)
-  medical = _messages.EnumField('MedicalValueValuesEnum', 2)
-  racy = _messages.EnumField('RacyValueValuesEnum', 3)
-  spoof = _messages.EnumField('SpoofValueValuesEnum', 4)
-  violence = _messages.EnumField('ViolenceValueValuesEnum', 5)
+  adultConfidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  medical = _messages.EnumField('MedicalValueValuesEnum', 3)
+  medicalConfidence = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  nsfwConfidence = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+  racy = _messages.EnumField('RacyValueValuesEnum', 6)
+  racyConfidence = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
+  spoof = _messages.EnumField('SpoofValueValuesEnum', 8)
+  spoofConfidence = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
+  violence = _messages.EnumField('ViolenceValueValuesEnum', 10)
+  violenceConfidence = _messages.FloatField(11, variant=_messages.Variant.FLOAT)
 
 
 class StandardQueryParameters(_messages.Message):

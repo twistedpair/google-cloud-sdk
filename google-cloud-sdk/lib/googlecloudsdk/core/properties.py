@@ -1304,6 +1304,7 @@ class _SectionAuth(_Section):
         'credential_file_override', hidden=True)
     self.impersonate_service_account = self._Add(
         'impersonate_service_account', hidden=True)
+    self.pkce_code_verifier = self._Add('pkce_code_verifier', hidden=True)
 
 
 class _SectionBilling(_Section):

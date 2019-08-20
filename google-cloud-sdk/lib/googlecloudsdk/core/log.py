@@ -1110,7 +1110,7 @@ def _PrintResourceChange(operation,
   if kind:
     msg.append(kind)
   if resource:
-    msg.append('[{0}]'.format(str(resource)))
+    msg.append('[{0}]'.format(six.text_type(resource)))
   if details:
     msg.append(details)
   if failed:

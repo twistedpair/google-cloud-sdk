@@ -632,10 +632,6 @@
             "EC_SIGN_P256_SHA256",
             "EC_SIGN_P384_SHA384"
           ]
-        },
-        "name": {
-          "description": "The name of the CryptoKeyVersion public key.\nProvided here for verification.",
-          "type": "string"
         }
       }
     },
@@ -799,10 +795,6 @@
           "description": "The created signature.",
           "type": "string",
           "format": "byte"
-        },
-        "name": {
-          "description": "The resource name of the CryptoKeyVersion used for signing. Check\nthis field to verify that the intended resource was used for signing.",
-          "type": "string"
         }
       }
     },
@@ -1315,7 +1307,7 @@
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
-                      "description": "Optional. The policy format version to be returned.\nAcceptable values are 0 and 1.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+                      "description": "Optional. The policy format version to be returned.\nAcceptable values are 0, 1, and 3.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -1653,7 +1645,7 @@
                           "type": "string"
                         },
                         "options.requestedPolicyVersion": {
-                          "description": "Optional. The policy format version to be returned.\nAcceptable values are 0 and 1.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+                          "description": "Optional. The policy format version to be returned.\nAcceptable values are 0, 1, and 3.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -2178,7 +2170,7 @@
                           "type": "string"
                         },
                         "options.requestedPolicyVersion": {
-                          "description": "Optional. The policy format version to be returned.\nAcceptable values are 0 and 1.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+                          "description": "Optional. The policy format version to be returned.\nAcceptable values are 0, 1, and 3.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"

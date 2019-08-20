@@ -596,7 +596,7 @@ class RecognitionConfig(_messages.Message):
       details, see AudioEncoding.
     speechContexts: *Optional* array of SpeechContext. A means to provide
       context to assist the speech recognition. For more information, see
-      [Phrase Hints](/speech-to-text/docs/basics#phrase-hints).
+      [speech adaptation](/speech-to-text/docs/context-strength).
     useEnhanced: *Optional* Set to true to use an enhanced model for speech
       recognition. If `use_enhanced` is set to true and the `model` field is
       not set, then an appropriate enhanced model is chosen if an enhanced

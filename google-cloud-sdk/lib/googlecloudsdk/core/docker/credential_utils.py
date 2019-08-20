@@ -26,7 +26,7 @@ from distutils import version as distutils_version
 from googlecloudsdk.core.docker import client_lib as client_utils
 from googlecloudsdk.core.docker import constants
 from googlecloudsdk.core.util import files
-
+import six
 
 MIN_DOCKER_CONFIG_HELPER_VERSION = distutils_version.LooseVersion('1.13')
 CREDENTIAL_HELPER_KEY = 'credHelpers'
@@ -71,7 +71,7 @@ class Configuration(object):
 
   def DockerVersion(self):
     if not self._version:
-      version_str = str(client_utils.GetDockerVersion())
+      version_str = six.text_type(client_utils.GetDockerVersion())
       self._version = distutils_version.LooseVersion(version_str)
     return self._version
 
@@ -131,7 +131,7 @@ class Configuration(object):
       files.WriteFileAtomically(self.path, self.ToJson())
     except (TypeError, ValueError, OSError, IOError) as err:
       raise DockerConfigUpdateError('Error writing Docker configuration '
-                                    'to disk: {}'.format(str(err)))
+                                    'to disk: {}'.format(six.text_type(err)))
 
   # Defaulting to new config location since we know minimum version
   # for supporting credential helpers is > 1.7.
@@ -160,7 +160,7 @@ class Configuration(object):
     except (ValueError, client_utils.DockerError) as err:
       raise client_utils.InvalidDockerConfigError(
           ('Docker configuration file [{}] could not be read as JSON: {}'
-          ).format(path, str(err)))
+          ).format(path, six.text_type(err)))
 
     return cls(content, path)
 

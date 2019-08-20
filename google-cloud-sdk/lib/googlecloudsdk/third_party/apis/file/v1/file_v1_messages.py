@@ -108,7 +108,7 @@ class FileProjectsLocationsInstancesPatchRequest(_messages.Message):
       projects/{project_id}/locations/{location_id}/instances/{instance_id}.
     updateMask: Mask of fields to update.  At least one path must be supplied
       in this field.  The elements of the repeated paths field may only
-      include these fields: "description"
+      include these fields: "description" "file_shares" "labels"
   """
 
   instance = _messages.MessageField('Instance', 1)

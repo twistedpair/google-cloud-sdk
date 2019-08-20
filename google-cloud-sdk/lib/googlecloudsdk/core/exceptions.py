@@ -66,7 +66,8 @@ class MultiError(Error):
   """Collection of Error instances as single exception."""
 
   def __init__(self, errors):
-    super(MultiError, self).__init__(', '.join(str(e) for e in errors))
+    super(MultiError,
+          self).__init__(', '.join(six.text_type(e) for e in errors))
 
 
 class RequiresAdminRightsError(Error):

@@ -469,6 +469,13 @@
         "nextPageToken": {
           "description": "The next page token or empty if none.",
           "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -502,6 +509,13 @@
         "nextPageToken": {
           "description": "The next page token or empty if none.",
           "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

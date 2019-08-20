@@ -51,13 +51,10 @@ class AsymmetricSignResponse(_messages.Message):
   r"""Response message for KeyManagementService.AsymmetricSign.
 
   Fields:
-    name: The resource name of the CryptoKeyVersion used for signing. Check
-      this field to verify that the intended resource was used for signing.
     signature: The created signature.
   """
 
-  name = _messages.StringField(1)
-  signature = _messages.BytesField(2)
+  signature = _messages.BytesField(1)
 
 
 class AuditConfig(_messages.Message):
@@ -416,8 +413,8 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysGetIamPolicyRequest(_messages.M
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -547,8 +544,8 @@ class CloudkmsProjectsLocationsKeyRingsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -588,8 +585,8 @@ class CloudkmsProjectsLocationsKeyRingsImportJobsGetIamPolicyRequest(_messages.M
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -1644,8 +1641,6 @@ class PublicKey(_messages.Message):
 
   Fields:
     algorithm: The Algorithm associated with this key.
-    name: The name of the CryptoKeyVersion public key. Provided here for
-      verification.
     pem: The public key, encoded in PEM format. For more information, see the
       [RFC 7468](https://tools.ietf.org/html/rfc7468) sections for [General
       Considerations](https://tools.ietf.org/html/rfc7468#section-2) and
@@ -1700,8 +1695,7 @@ class PublicKey(_messages.Message):
     EC_SIGN_P384_SHA384 = 15
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
-  name = _messages.StringField(2)
-  pem = _messages.StringField(3)
+  pem = _messages.StringField(2)
 
 
 class RestoreCryptoKeyVersionRequest(_messages.Message):

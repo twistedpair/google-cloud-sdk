@@ -212,7 +212,6 @@
             "XC tests which run on physical devices must have\n\"IsAppHostedTestBundle\" == \"true\" in the xctestrun file.",
             "An Info.plist file in the XCTest zip could not be parsed.",
             "The APK is marked as \"testOnly\".\nDeprecated and not currently used.",
-            "The input IPA could not be parsed.\nDeprecated and not currently used.",
             "APK contains no code.\nSee also\nhttps:\/\/developer.android.com\/guide\/topics\/manifest\/application-element.html#code",
             "Either the provided input APK path was malformed,\nthe APK file does not exist, or the user does not have permission to\naccess the APK file.",
             "APK is built for a preview SDK which is unsupported"
@@ -248,7 +247,6 @@
             "TEST_NOT_APP_HOSTED",
             "PLIST_CANNOT_BE_PARSED",
             "TEST_ONLY_APK",
-            "MALFORMED_IPA",
             "NO_CODE_APK",
             "INVALID_INPUT_APK",
             "INVALID_APK_PREVIEW_SDK"
@@ -1532,7 +1530,7 @@
     },
     "IosModel": {
       "id": "IosModel",
-      "description": "A description of an iOS device tests may be run on.",
+      "description": "A description of an iOS device tests may be run on.\nNext tag: 10",
       "type": "object",
       "properties": {
         "id": {
@@ -1563,6 +1561,21 @@
           "items": {
             "type": "string"
           }
+        },
+        "screenX": {
+          "description": "Screen size in the horizontal (X) dimension measured in pixels.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "screenY": {
+          "description": "Screen size in the vertical (Y) dimension measured in pixels.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "screenDensity": {
+          "description": "Screen density in DPI.",
+          "type": "integer",
+          "format": "int32"
         },
         "formFactor": {
           "description": "Whether this device is a phone, tablet, wearable, etc.",

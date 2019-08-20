@@ -25,6 +25,7 @@ from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
+import six
 
 ANDROID_INSTRUMENTATION_TEST = 'ANDROID INSTRUMENTATION TEST'
 ANDROID_ROBO_TEST = 'ANDROID ROBO TEST'
@@ -605,7 +606,7 @@ def ApplyLowerPriorityArgs(args, lower_pri_args, issue_cli_warning=False):
   for arg in lower_pri_args:
     if getattr(args, arg, None) is None:
       log.debug('Applying default {0}: {1}'
-                .format(arg, str(lower_pri_args[arg])))
+                .format(arg, six.text_type(lower_pri_args[arg])))
       setattr(args, arg, lower_pri_args[arg])
     elif issue_cli_warning and getattr(args, arg) != lower_pri_args[arg]:
       ext_name = exceptions.ExternalArgNameFrom(arg)
@@ -620,4 +621,4 @@ def _FormatArgValue(value):
   if isinstance(value, list):
     return ' '.join(value)
   else:
-    return str(value)
+    return six.text_type(value)

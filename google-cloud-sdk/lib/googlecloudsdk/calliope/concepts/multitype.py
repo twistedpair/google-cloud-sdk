@@ -259,7 +259,7 @@ class MultitypeResourceSpec(MultitypeConceptSpec, concepts.ResourceSpec):
                        parsed_args=parsed_args)
           return True, []
         except deps_lib.AttributeNotFoundError as e:
-          errors.append(str(e))
+          errors.append(six.text_type(e))
     return False, errors
 
   def Initialize(self, fallthroughs_map, parsed_args=None, type_filter=None):

@@ -217,6 +217,13 @@
         "nextPageToken": {
           "description": "Token to retrieve the next page of results, or empty if there are no\nmore results in the list.",
           "type": "string"
+        },
+        "unreachableLocations": {
+          "description": "List of locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -326,6 +333,13 @@
         "nextPageToken": {
           "description": "Token to retrieve the next page of results, or empty if there are no more\nresults in the list.",
           "type": "string"
+        },
+        "unreachableLocations": {
+          "description": "List of locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -406,6 +420,13 @@
         "nextPageToken": {
           "description": "Token to retrieve the next page of results, or empty if there are no more\nresults in the list.",
           "type": "string"
+        },
+        "unreachableLocations": {
+          "description": "List of locations that were not reachable.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -528,20 +549,46 @@
     },
     "DeploymentTarget": {
       "id": "DeploymentTarget",
-      "description": "The rollout target of the deployment, e.g. the target percentage of game\nservers running stable_game_server_template and new_game_server_template in\nclusters.",
+      "description": "Response message for GameServerDeploymentsService.GetDeploymentTarget.",
       "type": "object",
       "properties": {
-        "clusters": {
+        "locationTargets": {
+          "description": "The details of a deployment in a given location.",
           "type": "array",
           "items": {
-            "$ref": "ClusterRolloutTarget"
+            "$ref": "LocationTarget"
+          }
+        },
+        "unavailableLocations": {
+          "description": "List of locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
     },
-    "ClusterRolloutTarget": {
-      "id": "ClusterRolloutTarget",
-      "description": "The rollout target of a cluster, i.e. the percentage of game servers\nrunning stable_game_server_template and new_game_server_template.",
+    "LocationTarget": {
+      "id": "LocationTarget",
+      "description": "A detailed description of the deployment including details about the fleet\nand autoscalers.",
+      "type": "object",
+      "properties": {
+        "location": {
+          "description": "The location.",
+          "type": "string"
+        },
+        "clusterRolloutDetails": {
+          "description": "Details about all the clusters with the deployment.",
+          "type": "array",
+          "items": {
+            "$ref": "ClusterRolloutDetails"
+          }
+        }
+      }
+    },
+    "ClusterRolloutDetails": {
+      "id": "ClusterRolloutDetails",
+      "description": "Cluster level details about the deployment.",
       "type": "object",
       "properties": {
         "realm": {
@@ -552,15 +599,71 @@
           "description": "The cluster name.",
           "type": "string"
         },
-        "stablePercent": {
-          "description": "The desired percentage of game servers that run\nstable_game_server_template.",
+        "fleet": {
+          "description": "The details of the agones fleet.",
+          "$ref": "Fleet"
+        },
+        "stableGameServerTemplate": {
+          "description": "This is set to true if this fleet uses the stable GameServerTemplate.\nThere is at most one fleet in a cluster at one time that uses the\nstable GameServerTemplate.",
+          "type": "boolean"
+        },
+        "newGameServerTemplate": {
+          "description": "This is set to true if this fleet uses the new GameServerTemplate.\nThere is at most one fleet in a cluster at one time that uses the\nnew GameServerTemplate.\nIf no deployment is ongoing, then no fleet will have it set.",
+          "type": "boolean"
+        }
+      }
+    },
+    "Fleet": {
+      "id": "Fleet",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the Agones game server fleet.",
+          "type": "string"
+        },
+        "size": {
+          "description": "The number of game servers in the game server fleet.\nThe number returned in always greater or equal to 0.",
+          "type": "string",
+          "format": "int64"
+        },
+        "agonesSpec": {
+          "description": "The Agones game server spec.",
+          "type": "string"
+        },
+        "autoscaler": {
+          "description": "The name of the Agones autoscaler.",
+          "type": "string"
+        },
+        "autoscalerSettings": {
+          "description": "The Agones autoscaler settings.",
+          "$ref": "FleetAutoscalerSettings"
+        }
+      }
+    },
+    "FleetAutoscalerSettings": {
+      "id": "FleetAutoscalerSettings",
+      "description": "Fleet autoscaling parameters.",
+      "type": "object",
+      "properties": {
+        "bufferSizeAbsolute": {
+          "description": "The size of a buffer of ready game server instances in absolute number.\nAs game server instances get allocated or terminated, the fleet will be\nscaled up and down so that this buffer is maintained.",
+          "type": "string",
+          "format": "int64"
+        },
+        "bufferSizePercentage": {
+          "description": "The size of a buffer of ready game server instances in percentage. Value\nmust be in range [1, 99]. As game server instances get allocated or\nterminated, the fleet will be scaled up and down so that this buffer is\nmaintained.",
           "type": "integer",
           "format": "int32"
         },
-        "newPercent": {
-          "description": "The desired percentage of game servers that run new_game_server_template.",
-          "type": "integer",
-          "format": "int32"
+        "minReplicas": {
+          "description": "The minimum fleet size.",
+          "type": "string",
+          "format": "int64"
+        },
+        "maxReplicas": {
+          "description": "The maximum fleet size.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -629,6 +732,13 @@
         "nextPageToken": {
           "description": "Token to retrieve the next page of results, or empty if there are no more\nresults in the list.",
           "type": "string"
+        },
+        "unreachableLocations": {
+          "description": "List of locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -684,33 +794,6 @@
         "gameServerDeployment": {
           "description": "The game server deployment for this scaling policy. For example,\n\n\"projects\/my-project\/locations\/{location}\/gameServerDeployments\/my-deployment\".",
           "type": "string"
-        }
-      }
-    },
-    "FleetAutoscalerSettings": {
-      "id": "FleetAutoscalerSettings",
-      "description": "Fleet autoscaling parameters.",
-      "type": "object",
-      "properties": {
-        "bufferSizeAbsolute": {
-          "description": "The size of a buffer of ready game server instances in absolute number.\nAs game server instances get allocated or terminated, the fleet will be\nscaled up and down so that this buffer is maintained.",
-          "type": "string",
-          "format": "int64"
-        },
-        "bufferSizePercentage": {
-          "description": "The size of a buffer of ready game server instances in percentage. Value\nmust be in range [1, 99]. As game server instances get allocated or\nterminated, the fleet will be scaled up and down so that this buffer is\nmaintained.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "minReplicas": {
-          "description": "The minimum fleet size.",
-          "type": "string",
-          "format": "int64"
-        },
-        "maxReplicas": {
-          "description": "The maximum fleet size.",
-          "type": "string",
-          "format": "int64"
         }
       }
     },
@@ -1887,7 +1970,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the game server deployment, using the\nform:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}`",
+                      "description": "Required. The name of the game server deployment, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+$",
@@ -1947,7 +2030,7 @@
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
-                      "description": "Optional. The policy format version to be returned.\nAcceptable values are 0 and 1.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+                      "description": "Optional. The policy format version to be returned.\nAcceptable values are 0, 1, and 3.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"

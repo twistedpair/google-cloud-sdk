@@ -284,7 +284,7 @@ class FullySpecifiedAnchorFallthrough(_FallthroughBase):
             and other.parameter_name == self.parameter_name)
 
   def __hash__(self):
-    return sum(map(hash, [self.fallthrough, str(self.collection_info),
+    return sum(map(hash, [self.fallthrough, six.text_type(self.collection_info),
                           self.parameter_name]))
 
 

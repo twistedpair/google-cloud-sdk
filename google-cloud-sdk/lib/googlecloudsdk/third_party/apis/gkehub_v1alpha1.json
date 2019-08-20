@@ -244,8 +244,8 @@
         "servicemeshFeatureSpec": {
           "$ref": "ServiceMeshFeatureSpec"
         },
-        "metadataFeatureSpec": {
-          "$ref": "MetadataFeatureSpec"
+        "authorizerFeatureSpec": {
+          "$ref": "AuthorizerFeatureSpec"
         },
         "multiclusteringressFeatureSpec": {
           "$ref": "MultiClusterIngressFeatureSpec"
@@ -285,9 +285,8 @@
         }
       }
     },
-    "MetadataFeatureSpec": {
-      "id": "MetadataFeatureSpec",
-      "description": "There is no spec for metadata, but the Feature proto requires a spec.",
+    "AuthorizerFeatureSpec": {
+      "id": "AuthorizerFeatureSpec",
       "type": "object",
       "properties": {
       }
@@ -371,8 +370,8 @@
         "servicemeshFeatureState": {
           "$ref": "ServiceMeshFeatureState"
         },
-        "metadataFeatureState": {
-          "$ref": "MetadataFeatureState"
+        "authorizerFeatureState": {
+          "$ref": "AuthorizerFeatureState"
         },
         "multiclusteringressFeatureState": {
           "$ref": "MultiClusterIngressFeatureState"
@@ -394,29 +393,10 @@
       "properties": {
       }
     },
-    "MetadataFeatureState": {
-      "id": "MetadataFeatureState",
-      "description": "Represents metadata about a Membership (e.g., the version of its API server,\nthe number of nodes).",
+    "AuthorizerFeatureState": {
+      "id": "AuthorizerFeatureState",
       "type": "object",
       "properties": {
-        "version": {
-          "description": "Output only. The version of the Kubernetes (or Kubernetes-style) API\nserver.",
-          "type": "string"
-        },
-        "healthStatus": {
-          "description": "Output only. The response from the \/healthz endpoint on the API server.\nThis is the source of `code` in the FeatureStateDetails proto.",
-          "type": "string"
-        },
-        "createTime": {
-          "description": "Output only. Timestamp for when the Metadata was created.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. Timestamp for when the Metadata was last updated.",
-          "type": "string",
-          "format": "google-datetime"
-        }
       }
     },
     "MultiClusterIngressFeatureState": {
@@ -633,10 +613,6 @@
           "items": {
             "type": "string"
           }
-        },
-        "ignoreChildExemptions": {
-          "description": "Specifies whether principals can be exempted for the same LogType in\nlower-level resource policies. If true, any lower-level exemptions will\nbe ignored.",
-          "type": "boolean"
         }
       }
     },
@@ -1147,7 +1123,7 @@
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
-                      "description": "Optional. The policy format version to be returned.\nAcceptable values are 0 and 1.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+                      "description": "Optional. The policy format version to be returned.\nAcceptable values are 0, 1, and 3.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"

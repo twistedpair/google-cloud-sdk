@@ -24,6 +24,7 @@ from googlecloudsdk.api_lib.resource_manager import exceptions
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files
+import six
 
 CONSTRAINTS_PREFIX = 'constraints/'
 ORG_POLICIES_API_VERSION = 'v1'
@@ -67,7 +68,7 @@ def GetFileAsMessage(path, message):
       # DecodeError is raised when a tag is badly formatted (not Base64)
       raise exceptions.ResourceManagerInputFileError(
           'Policy file [{0}] is not properly formatted YAML or JSON '
-          'due to [{1}]'.format(path, str(e)))
+          'due to [{1}]'.format(path, six.text_type(e)))
   return result
 
 

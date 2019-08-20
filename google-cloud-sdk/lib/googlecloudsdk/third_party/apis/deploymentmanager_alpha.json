@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager Alpha",
  "version": "alpha",
- "revision": "20190726",
+ "revision": "20190815",
  "title": "Google Cloud Deployment Manager Alpha API",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -854,7 +854,7 @@
     },
     "id": {
      "type": "string",
-     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
+     "description": "[Output Only] The unique identifier for the operation. This identifier is defined by the server.",
      "format": "uint64"
     },
     "insertTime": {
@@ -868,7 +868,7 @@
     },
     "name": {
      "type": "string",
-     "description": "[Output Only] Name of the resource."
+     "description": "[Output Only] Name of the operation."
     },
     "operationType": {
      "type": "string",
@@ -2030,6 +2030,12 @@
      "httpMethod": "GET",
      "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
      "parameters": {
+      "optionsRequestedPolicyVersion": {
+       "type": "integer",
+       "description": "Requested IAM Policy version.",
+       "format": "int32",
+       "location": "query"
+      },
       "project": {
        "type": "string",
        "description": "Project ID for this request.",
@@ -3031,39 +3037,6 @@
   },
   "types": {
    "methods": {
-    "delete": {
-     "id": "deploymentmanager.types.delete",
-     "path": "{project}/global/types/{type}",
-     "httpMethod": "DELETE",
-     "description": "Deletes a type and all of the resources in the type.",
-     "parameters": {
-      "project": {
-       "type": "string",
-       "description": "The project ID for this request.",
-       "required": true,
-       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
-       "location": "path"
-      },
-      "type": {
-       "type": "string",
-       "description": "The name of the type for this request.",
-       "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
-       "location": "path"
-      }
-     },
-     "parameterOrder": [
-      "project",
-      "type"
-     ],
-     "response": {
-      "$ref": "Operation"
-     },
-     "scopes": [
-      "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/ndev.cloudman"
-     ]
-    },
     "get": {
      "id": "deploymentmanager.types.get",
      "path": "{project}/global/types/{type}",
@@ -3097,34 +3070,6 @@
       "https://www.googleapis.com/auth/cloud-platform.read-only",
       "https://www.googleapis.com/auth/ndev.cloudman",
       "https://www.googleapis.com/auth/ndev.cloudman.readonly"
-     ]
-    },
-    "insert": {
-     "id": "deploymentmanager.types.insert",
-     "path": "{project}/global/types",
-     "httpMethod": "POST",
-     "description": "Creates a type.",
-     "parameters": {
-      "project": {
-       "type": "string",
-       "description": "The project ID for this request.",
-       "required": true,
-       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
-       "location": "path"
-      }
-     },
-     "parameterOrder": [
-      "project"
-     ],
-     "request": {
-      "$ref": "Type"
-     },
-     "response": {
-      "$ref": "Operation"
-     },
-     "scopes": [
-      "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/ndev.cloudman"
      ]
     },
     "list": {
@@ -3175,78 +3120,6 @@
       "https://www.googleapis.com/auth/cloud-platform.read-only",
       "https://www.googleapis.com/auth/ndev.cloudman",
       "https://www.googleapis.com/auth/ndev.cloudman.readonly"
-     ]
-    },
-    "patch": {
-     "id": "deploymentmanager.types.patch",
-     "path": "{project}/global/types/{type}",
-     "httpMethod": "PATCH",
-     "description": "Updates a type. This method supports patch semantics.",
-     "parameters": {
-      "project": {
-       "type": "string",
-       "description": "The project ID for this request.",
-       "required": true,
-       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
-       "location": "path"
-      },
-      "type": {
-       "type": "string",
-       "description": "The name of the type for this request.",
-       "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
-       "location": "path"
-      }
-     },
-     "parameterOrder": [
-      "project",
-      "type"
-     ],
-     "request": {
-      "$ref": "Type"
-     },
-     "response": {
-      "$ref": "Operation"
-     },
-     "scopes": [
-      "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/ndev.cloudman"
-     ]
-    },
-    "update": {
-     "id": "deploymentmanager.types.update",
-     "path": "{project}/global/types/{type}",
-     "httpMethod": "PUT",
-     "description": "Updates a type.",
-     "parameters": {
-      "project": {
-       "type": "string",
-       "description": "The project ID for this request.",
-       "required": true,
-       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
-       "location": "path"
-      },
-      "type": {
-       "type": "string",
-       "description": "The name of the type for this request.",
-       "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
-       "location": "path"
-      }
-     },
-     "parameterOrder": [
-      "project",
-      "type"
-     ],
-     "request": {
-      "$ref": "Type"
-     },
-     "response": {
-      "$ref": "Operation"
-     },
-     "scopes": [
-      "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/ndev.cloudman"
      ]
     }
    }

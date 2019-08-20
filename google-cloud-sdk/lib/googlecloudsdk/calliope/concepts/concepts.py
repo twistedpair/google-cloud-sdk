@@ -227,7 +227,7 @@ class Attribute(_Attribute):
 
   def __hash__(self):
     return super(Attribute, self).__hash__() + sum(
-        map(hash, [str(self.completion_request_params),
+        map(hash, [six.text_type(self.completion_request_params),
                    self.completion_id_field]))
 
 

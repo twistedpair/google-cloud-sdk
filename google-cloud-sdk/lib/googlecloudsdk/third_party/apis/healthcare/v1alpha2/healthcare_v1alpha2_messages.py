@@ -17,7 +17,7 @@ class Annotation(_messages.Message):
 
   Fields:
     annotationSource: Details of the source.
-    imageAnnotation: Annnotations for images, e.g., bounding polygons.
+    imageAnnotation: Annotations for images, e.g., bounding polygons.
     name: Output only. Resource name of the Annotation, of the form `projects/
       {project_id}/locations/{location_id}/datasets/{dataset_id}/annotationSto
       res/{annotation_store_id}/annotations/{annotation_id}`.
@@ -153,9 +153,6 @@ class AuditLogConfig(_messages.Message):
   Fields:
     exemptedMembers: Specifies the identities that do not cause logging for
       this type of permission. Follows the same format of Binding.members.
-    ignoreChildExemptions: Specifies whether principals can be exempted for
-      the same LogType in lower-level resource policies. If true, any lower-
-      level exemptions will be ignored.
     logType: The log type that this config enables.
   """
 
@@ -174,8 +171,7 @@ class AuditLogConfig(_messages.Message):
     DATA_READ = 3
 
   exemptedMembers = _messages.StringField(1, repeated=True)
-  ignoreChildExemptions = _messages.BooleanField(2)
-  logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
 class Binding(_messages.Message):
@@ -221,7 +217,7 @@ class BoundingPoly(_messages.Message):
 
 
 class CharacterMaskConfig(_messages.Message):
-  r"""Mask a string by replacing its characters with a fixed character.
+  r"""Masks a string by replacing its characters with a fixed character.
 
   Fields:
     maskingCharacter: Character to mask the sensitive values. If not supplied,
@@ -252,14 +248,14 @@ class CreateMessageRequest(_messages.Message):
 
 
 class CryptoHashConfig(_messages.Message):
-  r"""Pseudonymization method that generates surrogates via cryptographic
+  r"""Pseudonymization method that generates surrogates using cryptographic
   hashing. Uses SHA-256. Outputs a base64-encoded representation of the hashed
-  output (for example, `L7k0BHmF1ha5U3NfGykjro4xWi1MPVQPjhMAZbSV9mM=`).
+  output. For example, `L7k0BHmF1ha5U3NfGykjro4xWi1MPVQPjhMAZbSV9mM=`.
 
   Fields:
     cryptoKey: An AES 128/192/256 bit key. Causes the hash to be computed
-      based on this key. A default key is generated for each DeidentifyDataset
-      operation and is used wherever crypto_key is not specified.
+      based on this key. A default key is generated for each Deidentify
+      operation and is used when crypto_key is not specified.
   """
 
   cryptoKey = _messages.BytesField(1)
@@ -285,13 +281,13 @@ class Dataset(_messages.Message):
 
 
 class DateShiftConfig(_messages.Message):
-  r"""Shift a date forward or backward in time by a random amount which is
+  r"""Shifts a date forward or backward in time by a random amount that is
   consistent for a given patient and crypto key combination.
 
   Fields:
     cryptoKey: An AES 128/192/256 bit key. Causes the shift to be computed
       based on this key and the patient ID. A default key is generated for
-      each DeidentifyDataset operation and is used wherever crypto_key is not
+      each de-identification operation and is used when crypto_key is not
       specified.
   """
 
@@ -306,10 +302,9 @@ class DeidentifyConfig(_messages.Message):
   Fields:
     dicom: Configures de-id of application/DICOM content.
     fhir: Configures de-id of application/FHIR content.
-    image: Configures de-identification of image pixels wherever they are
-      found in the source_dataset.
-    text: Configures de-identification of text wherever it is found in the
+    image: Configures the de-identification of image pixels in the
       source_dataset.
+    text: Configures the de-identification of text in `source_dataset`.
   """
 
   dicom = _messages.MessageField('DicomConfig', 1)
@@ -375,21 +370,22 @@ class Detail(_messages.Message):
 
 
 class DicomConfig(_messages.Message):
-  r"""Specifies the parameters needed for de-identification of DICOM stores.
+  r"""Specifies the parameters needed for the de-identification of DICOM
+  stores.
 
   Enums:
-    FilterProfileValueValuesEnum: Tag filtering profile that determines which
-      tags to keep/remove.
+    FilterProfileValueValuesEnum: Tag filtering profile that determines the
+      tags to keep or remove.
 
   Fields:
-    filterProfile: Tag filtering profile that determines which tags to
-      keep/remove.
+    filterProfile: Tag filtering profile that determines the tags to keep or
+      remove.
     keepList: List of tags to keep. Remove all other tags.
     removeList: List of tags to remove. Keep all other tags.
   """
 
   class FilterProfileValueValuesEnum(_messages.Enum):
-    r"""Tag filtering profile that determines which tags to keep/remove.
+    r"""Tag filtering profile that determines the tags to keep or remove.
 
     Values:
       TAG_FILTER_PROFILE_UNSPECIFIED: No tag filtration profile provided. Same
@@ -404,7 +400,7 @@ class DicomConfig(_messages.Message):
       DEIDENTIFY_TAG_CONTENTS: Inspects within tag contents and replaces
         sensitive text. The process can be configured using the TextConfig.
         Applies to all tags with the following Value Representation names: AE,
-        LO, LT, PN, SH, ST, UC, UT, DA, DT, AS
+        LO, LT, PN, SH, ST, UC, UT, DA, DT, AS.
     """
     TAG_FILTER_PROFILE_UNSPECIFIED = 0
     MINIMAL_KEEP_LIST_PROFILE = 1
@@ -570,13 +566,13 @@ class Expr(_messages.Message):
 
 
 class FhirConfig(_messages.Message):
-  r"""Specifies how de-identification of a FHIR store should be handled.
+  r"""Specifies how to handle the de-identification of a FHIR store.
 
   Fields:
     fieldMetadataList: Specifies FHIR paths to match and how to transform
-      them. Any field that is not matched by a FieldMetadata will be passed
-      through to the output dataset unmodified. All extensions are removed in
-      the output.
+      them. Any field that is not matched by a FieldMetadata is passed through
+      to the output dataset unmodified. All extensions are removed in the
+      output.
   """
 
   fieldMetadataList = _messages.MessageField('FieldMetadata', 1, repeated=True)
@@ -707,7 +703,7 @@ class FhirStore(_messages.Message):
 
 
 class FieldMetadata(_messages.Message):
-  r"""Specifies FHIR paths to match, and how to handle de-identification of
+  r"""Specifies FHIR paths to match and how to handle the de-identification of
   matching fields.
 
   Enums:
@@ -715,11 +711,11 @@ class FieldMetadata(_messages.Message):
 
   Fields:
     action: Deidentify action for one field.
-    paths: List of paths to FHIR fields to be redacted. Each path is a period-
+    paths: List of paths to FHIR fields to redact. Each path is a period-
       separated list where each component is either a field name or FHIR type
-      name, for example: Patient, HumanName. For "choice" types (those defined
-      in the FHIR spec with the form: field[x]) we use two separate
-      components. e.g. "deceasedAge.unit" is matched by "Deceased.Age.unit".
+      name. For example: Patient, HumanName. For "choice" types (those defined
+      in the FHIR spec with the form: field[x]), use two separate components.
+      For example, "deceasedAge.unit" is matched by "Deceased.Age.unit".
       Supported types are: AdministrativeGenderCode, Code, Date, DateTime,
       Decimal, HumanName, Id, LanguageCode, Markdown, MimeTypeCode, Oid,
       String, Uri, Uuid, Xhtml.
@@ -732,7 +728,7 @@ class FieldMetadata(_messages.Message):
       ACTION_UNSPECIFIED: No action specified.
       TRANSFORM: Transform the entire field.
       INSPECT_AND_TRANSFORM: Inspect and transform any found PHI. When
-        `AnnotationConfig` is provided, annotations of PHI will be generated,
+        `AnnotationConfig` is provided, annotations of PHI are generated,
         except for Date and Datetime.
       DO_NOT_TRANSFORM: Do not transform.
     """
@@ -776,8 +772,8 @@ class GetPolicyOptions(_messages.Message):
 
   Fields:
     requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
   """
 
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -860,10 +856,31 @@ class GoogleCloudHealthcareV1alpha2FhirBigQueryDestination(_messages.Message):
   schemaConfig = _messages.MessageField('SchemaConfig', 2)
 
 
+class GoogleCloudHealthcareV1alpha2FhirRestExportResourcesErrorDetails(_messages.Message):
+  r"""Response when errors occur while exporting resources. This structure is
+  included in the error details to describe the detailed outcome. It is only
+  included when the operation finishes with errors.
+
+  Fields:
+    errorCount: The number of resources that had errors.
+    fhirStore: The name of the FHIR store where resources have been exported,
+      in the format `projects/{project_id}/locations/{location_id}/datasets/{d
+      ataset_id}/fhirStores/{fhir_store_id}`.
+    resourceCount: The total number of resources included in the export
+      operation. This is the sum of the success and error counts.
+    successCount: The number of resources that were exported.
+  """
+
+  errorCount = _messages.IntegerField(1)
+  fhirStore = _messages.StringField(2)
+  resourceCount = _messages.IntegerField(3)
+  successCount = _messages.IntegerField(4)
+
+
 class GoogleCloudHealthcareV1alpha2FhirRestExportResourcesResponse(_messages.Message):
-  r"""Final response of exporting resources. This structure will be included
-  in the response to describe the detailed outcome. It will only be included
-  when the operation finishes.
+  r"""Response when all resources export successfully. This structure will be
+  included in the response to describe the detailed outcome. It will only be
+  included when the operation finishes successfully.
 
   Fields:
     fhirStore: The name of the FHIR store where resources have been exported,
@@ -1595,8 +1612,8 @@ class HealthcareProjectsLocationsDatasetsDicomStoresGetIamPolicyRequest(_message
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -1919,17 +1936,25 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientEverythingRequest(
   object.
 
   Fields:
+    _count: Maximum number of resources in a page. Defaults to 100.
     end: The response includes records prior to the end date. If no end date
       is provided, all records subsequent to the start date are in scope.
     name: Name of the `Patient` resource for which the information is
       required.
+    pageToken: Used to retrieve the next or previous page of results when
+      using pagination. Value should be set to the value of page_token set in
+      next or previous page links' url. Next and previous page are returned in
+      the response bundle's links field, where `link.relation` is "previous"
+      or "next".  Omit `page_token` if no previous request has been made.
     start: The response includes records subsequent to the start date. If no
       start date is provided, all records prior to the end date are in scope.
   """
 
-  end = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  start = _messages.StringField(3)
+  _count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  end = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageToken = _messages.StringField(4)
+  start = _messages.StringField(5)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresFhirReadRequest(_messages.Message):
@@ -1994,8 +2019,8 @@ class HealthcareProjectsLocationsDatasetsFhirStoresGetIamPolicyRequest(_messages
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -2105,8 +2130,8 @@ class HealthcareProjectsLocationsDatasetsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -2158,8 +2183,8 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresGetIamPolicyRequest(_message
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -2658,18 +2683,18 @@ class ImageAnnotation(_messages.Message):
 
 
 class ImageConfig(_messages.Message):
-  r"""Specifies how de-identification of image pixel should be handled.
+  r"""Specifies how to handle the de-identification of image pixels.
 
   Enums:
     TextRedactionModeValueValuesEnum: Determines how to redact text from
-      image.
+      images.
 
   Fields:
-    textRedactionMode: Determines how to redact text from image.
+    textRedactionMode: Determines how to redact text from images.
   """
 
   class TextRedactionModeValueValuesEnum(_messages.Enum):
-    r"""Determines how to redact text from image.
+    r"""Determines how to redact text from images.
 
     Values:
       TEXT_REDACTION_MODE_UNSPECIFIED: No text redaction specified. Same as
@@ -3333,15 +3358,15 @@ class ProgressCounter(_messages.Message):
 
 
 class RedactConfig(_messages.Message):
-  r"""Define how to redact sensitive values. Default behaviour is erase, e.g.
-  "My name is Jake." becomes "My name is ."
+  r"""Defines how to redact sensitive values. Default behavior is erase. For
+  example, "My name is Jake." becomes "My name is ."
   """
 
 
 
 class ReplaceWithInfoTypeConfig(_messages.Message):
   r"""When using the INSPECT_AND_TRANSFORM action, each match is replaced with
-  the name of the info_type. For example, "My name is Jake" becomes "My name
+  the name of the `info_type`. For example, "My name is Jake" becomes "My name
   is [PERSON_NAME]." The TRANSFORM action is equivalent to redacting.
   """
 
@@ -3707,13 +3732,13 @@ class SubscriptionRestHookEndpoint(_messages.Message):
 
 
 class TagFilterList(_messages.Message):
-  r"""List of tags to be filtered.
+  r"""List of tags to filter.
 
   Fields:
-    tags: Tags to be filtered. Tags must be DICOM Data Elements, File Meta
+    tags: Tags to filter. Tags must be DICOM Data Elements, File Meta
       Elements, or Directory Structuring Elements, as defined at: http://dicom
       .nema.org/medical/dicom/current/output/html/part06.html#table_6-1,. They
-      may be provided by "Keyword" or "Tag". For example "PatientID",
+      may be provided by "Keyword" or "Tag". For example, "PatientID",
       "00100010".
   """
 

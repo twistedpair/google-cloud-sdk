@@ -224,8 +224,8 @@ class BindingDelta(_messages.Message):
 
   Fields:
     action: The action that was performed on a Binding. Required
-    condition: Unimplemented. The condition that is associated with this
-      binding. This field is logged only for Cloud Audit Logging.
+    condition: The condition that is associated with this binding. This field
+      is logged only for Cloud Audit Logging.
     member: A single identity requesting access for a Cloud Platform resource.
       Follows the same format of Binding.members. Required
     role: Role that is assigned to `members`. For example, `roles/viewer`,
@@ -891,8 +891,8 @@ class IamProjectsServiceAccountsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.

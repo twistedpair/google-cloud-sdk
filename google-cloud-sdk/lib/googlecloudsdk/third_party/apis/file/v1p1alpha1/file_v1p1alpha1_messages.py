@@ -120,7 +120,7 @@ class FileProjectsLocationsInstancesPatchRequest(_messages.Message):
       projects/{project_id}/locations/{location_id}/instances/{instance_id}.
     updateMask: Mask of fields to update.  At least one path must be supplied
       in this field.  The elements of the repeated paths field may only
-      include these fields: "description"
+      include these fields: "description" "file_shares" "labels"
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -828,10 +828,13 @@ class Instance(_messages.Message):
       TIER_UNSPECIFIED: Not set.
       STANDARD: STANDARD tier.
       PREMIUM: PREMIUM tier.
+      SCALE_OUT: SCALE OUT tier. This is a possibly temporary change for go
+        /elastifile-filestore-hackathon.
     """
     TIER_UNSPECIFIED = 0
     STANDARD = 1
     PREMIUM = 2
+    SCALE_OUT = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1319,10 +1322,13 @@ class Snapshot(_messages.Message):
       TIER_UNSPECIFIED: Not set.
       STANDARD: STANDARD tier.
       PREMIUM: PREMIUM tier.
+      SCALE_OUT: SCALE OUT tier. This is a possibly temporary change for go
+        /elastifile-filestore-hackathon.
     """
     TIER_UNSPECIFIED = 0
     STANDARD = 1
     PREMIUM = 2
+    SCALE_OUT = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The snapshot state.

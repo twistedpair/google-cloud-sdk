@@ -112,7 +112,7 @@ def MakeGetAssetsHistoryHttpRequests(args, api_version=DEFAULT_API_VERSION):
     history_response = encoding.JsonToMessage(response_message_class, content)
   except ValueError as e:
     err_msg = ('Failed receiving proper response from server, cannot'
-               'parse received assets. Error details: ' + str(e))
+               'parse received assets. Error details: ' + six.text_type(e))
     raise MessageDecodeError(err_msg)
 
   for asset in history_response.assets:

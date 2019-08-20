@@ -85,6 +85,7 @@ from googlecloudsdk.api_lib.firebase.test import exceptions
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import yaml
+import six
 
 
 _ARG_GROUP_PATTERN = re.compile(r'^[a-zA-Z0-9._\-]+\Z')
@@ -121,7 +122,7 @@ def GetArgsFromArgFile(argspec, all_test_args_set):
   args_from_file = {}
   _MergeArgGroupIntoArgs(args_from_file, group_name, all_arg_groups,
                          all_test_args_set)
-  log.info('Args loaded from file: ' + str(args_from_file))
+  log.info('Args loaded from file: ' + six.text_type(args_from_file))
   return args_from_file
 
 
@@ -159,7 +160,7 @@ def _ReadArgGroupsFromFile(arg_file):
     else:
       raise calliope_exceptions.BadFileException(
           'Failed to parse YAML file [{}]: [{}] is not a valid argument '
-          'group.'.format(arg_file, str(d)))
+          'group.'.format(arg_file, six.text_type(d)))
   return all_groups
 
 

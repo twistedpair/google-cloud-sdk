@@ -24,6 +24,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.diagnostics import check_base
 from googlecloudsdk.core.diagnostics import diagnostic_base
+import six
 
 
 class PropertyDiagnostic(diagnostic_base.Diagnostic):
@@ -93,10 +94,10 @@ class HiddenPropertiesChecker(check_base.Checker):
     return result, None
 
   def _CheckHiddenProperty(self, prop):
-    if str(prop) in self._WHITELIST:
+    if six.text_type(prop) in self._WHITELIST:
       return
     if not self.ignore_hidden_property_whitelist and \
-        str(prop) in self.whitelist:
+        six.text_type(prop) in self.whitelist:
       return
 
     # pylint:disable=protected-access

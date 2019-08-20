@@ -153,7 +153,7 @@ class InvalidCredentialFileException(Error):
   def __init__(self, f, e):
     super(InvalidCredentialFileException, self).__init__(
         'Failed to load credential file: [{f}].  {message}'
-        .format(f=f, message=str(e)))
+        .format(f=f, message=six.text_type(e)))
 
 
 class AccountImpersonationError(Error):
@@ -433,16 +433,20 @@ def _Load(account, scopes, prevent_refresh):
   return cred
 
 
-def Refresh(credentials, http_client=None):
+def Refresh(credentials, http_client=None, is_impersonated_credential=False):
   """Refresh credentials.
 
   Calls credentials.refresh(), unless they're SignedJwtAssertionCredentials.
-  If the credentials correspond to a service account, issue an additional
-  request to generate a fresh id_token.
+  If the credentials correspond to a service account or impersonated credentials
+  issue an additional request to generate a fresh id_token.
 
   Args:
     credentials: oauth2client.client.Credentials, The credentials to refresh.
     http_client: httplib2.Http, The http transport to refresh with.
+    is_impersonated_credential: bool, True treat provided credential as an
+      impersonated service account credential. If False, treat as service
+      account or user credential. Needed to avoid circular dependency on
+      IMPERSONATION_TOKEN_PROVIDER.
 
   Raises:
     TokenRefreshError: If the credentials fail to refresh.
@@ -453,9 +457,25 @@ def Refresh(credentials, http_client=None):
   try:
     credentials.refresh(request_client)
 
+    id_token = None
     # Service accounts require an additional request to receive a fresh id_token
-    if isinstance(credentials, service_account.ServiceAccountCredentials):
+    if is_impersonated_credential:
+      if not IMPERSONATION_TOKEN_PROVIDER:
+        raise AccountImpersonationError(
+            'gcloud is configured to impersonate a service account but '
+            'impersonation support is not available.')
+      if not IMPERSONATION_TOKEN_PROVIDER.IsImpersonationCredential(
+          credentials):
+        raise AccountImpersonationError(
+            'Invalid impersonation account for refresh {}'.format(credentials))
+      id_token = _RefreshImpersonatedAccountIdToken(credentials)
+    # Service accounts require an additional request to receive a fresh id_token
+    elif isinstance(credentials, service_account.ServiceAccountCredentials):
       id_token = _RefreshServiceAccountIdToken(credentials, request_client)
+    elif isinstance(credentials, oauth2client_gce.AppAssertionCredentials):
+      id_token = c_gce.Metadata().GetIdToken(config.CLOUDSDK_CLIENT_ID)
+
+    if id_token:
       if credentials.token_response:
         credentials.token_response['id_token'] = id_token
       credentials.id_tokenb64 = id_token
@@ -464,6 +484,15 @@ def Refresh(credentials, http_client=None):
     raise TokenRefreshError(six.text_type(e))
   except reauth_errors.ReauthError as e:
     raise TokenRefreshReauthError(e.message)
+
+
+def _RefreshImpersonatedAccountIdToken(cred):
+  """Get a fresh id_token for the given impersonated service account."""
+  # pylint: disable=protected-access
+  service_account_email = cred._service_account_id
+  return IMPERSONATION_TOKEN_PROVIDER.GetElevationIdToken(
+      service_account_email, config.CLOUDSDK_CLIENT_ID)
+  # pylint: enable=protected-access
 
 
 def _RefreshServiceAccountIdToken(cred, http_client):
@@ -648,6 +677,8 @@ def AcquireFromWebFlow(launch_browser=True,
       user_agent=config.CLOUDSDK_USER_AGENT,
       auth_uri=auth_uri,
       token_uri=token_uri,
+      pkce=True,
+      code_verifier=properties.VALUES.auth.pkce_code_verifier.Get(),
       prompt='select_account')
   return RunWebFlow(webflow, launch_browser=launch_browser)
 
@@ -759,7 +790,7 @@ def SaveCredentialsAsADC(credentials, file_path):
   except files.Error as e:
     log.debug(e, exc_info=True)
     raise CredentialFileSaveError(
-        'Error saving Application Default Credentials: ' + str(e))
+        'Error saving Application Default Credentials: ' + six.text_type(e))
 
 
 class _LegacyGenerator(object):

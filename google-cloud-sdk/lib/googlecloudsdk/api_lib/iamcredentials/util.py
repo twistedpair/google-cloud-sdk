@@ -49,6 +49,29 @@ def GenerateAccessToken(service_account_id, scopes):
   return response
 
 
+def GenerateIdToken(service_account_id, audience):
+  """Generates an id token for the given service account."""
+  service_account_ref = resources.REGISTRY.Parse(
+      service_account_id, collection='iamcredentials.serviceAccounts',
+      params={'projectsId': '-', 'serviceAccountsId': service_account_id})
+
+  # pylint: disable=protected-access
+  http_client = http_creds.Http(
+      response_encoding=http_creds.ENCODING,
+      allow_account_impersonation=False, force_resource_quota=True)
+  iam_client = apis_internal._GetClientInstance(
+      'iamcredentials', 'v1', http_client=http_client)
+  response = iam_client.projects_serviceAccounts.GenerateIdToken(
+      iam_client.MESSAGES_MODULE
+      .IamcredentialsProjectsServiceAccountsGenerateIdTokenRequest(
+          name=service_account_ref.RelativeName(),
+          generateIdTokenRequest=iam_client.MESSAGES_MODULE
+          .GenerateIdTokenRequest(audience=audience)
+      )
+  )
+  return response.token
+
+
 class ImpersonationAccessTokenProvider(object):
   """A token provider for service account elevation.
 
@@ -59,6 +82,13 @@ class ImpersonationAccessTokenProvider(object):
     response = GenerateAccessToken(service_account_id, scopes)
     return ImpersonationCredentials(
         service_account_id, response.accessToken, response.expireTime, scopes)
+
+  def GetElevationIdToken(self, service_account_id, audience):
+    return GenerateIdToken(service_account_id, audience)
+
+  @classmethod
+  def IsImpersonationCredential(cls, cred):
+    return isinstance(cred, ImpersonationCredentials)
 
 
 class ImpersonationCredentials(client.OAuth2Credentials):

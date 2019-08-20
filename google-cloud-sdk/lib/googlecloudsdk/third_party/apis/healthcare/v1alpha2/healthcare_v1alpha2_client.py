@@ -1424,8 +1424,8 @@ GCP error might be returned instead.
     )
 
     def Patient_everything(self, request, global_params=None):
-      r"""Retrieves all the resources in the patient compartment for a `Patient`.
-resource.
+      r"""Retrieves all the resources directly referenced by a patient, as well as.
+all of the resources in the patient compartment.
 
 Implements the FHIR extended operation
 [Patient-everything](http://hl7.org/implement/standards/fhir/STU3/patient-operations.html#everything).
@@ -1454,7 +1454,7 @@ GCP error might be returned instead.
         method_id=u'healthcare.projects.locations.datasets.fhirStores.fhir.Patient-everything',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'end', u'start'],
+        query_params=[u'_count', u'end', u'pageToken', u'start'],
         relative_path=u'v1alpha2/{+name}/$everything',
         request_field='',
         request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientEverythingRequest',
@@ -2360,10 +2360,11 @@ be used to track the status of the import by calling
 GetOperation.
 
 Immediate fatal errors appear in the
-error field.
-Otherwise, when the operation finishes, a detailed response of type
-ImportResourcesResponse is returned in the
-response field.
+error field, errors are also logged
+to Stackdriver (see [Viewing
+logs](/healthcare/docs/how-tos/stackdriver-logging)). Otherwise, when the
+operation finishes, a detailed response of type ImportResourcesResponse
+is returned in the response field.
 The metadata field type for this
 operation is OperationMetadata.
 

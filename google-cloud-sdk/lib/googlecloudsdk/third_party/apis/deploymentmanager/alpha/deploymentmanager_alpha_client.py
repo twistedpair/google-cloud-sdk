@@ -315,7 +315,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
         method_id=u'deploymentmanager.deployments.getIamPolicy',
         ordered_params=[u'project', u'resource'],
         path_params=[u'project', u'resource'],
-        query_params=[],
+        query_params=[u'optionsRequestedPolicyVersion'],
         relative_path=u'projects/{project}/global/deployments/{resource}/getIamPolicy',
         request_field='',
         request_type_name=u'DeploymentmanagerDeploymentsGetIamPolicyRequest',
@@ -919,32 +919,6 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Delete(self, request, global_params=None):
-      r"""Deletes a type and all of the resources in the type.
-
-      Args:
-        request: (DeploymentmanagerTypesDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'deploymentmanager.types.delete',
-        ordered_params=[u'project', u'type'],
-        path_params=[u'project', u'type'],
-        query_params=[],
-        relative_path=u'projects/{project}/global/types/{type}',
-        request_field='',
-        request_type_name=u'DeploymentmanagerTypesDeleteRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
     def Get(self, request, global_params=None):
       r"""Gets information about a specific type.
 
@@ -971,32 +945,6 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Insert(self, request, global_params=None):
-      r"""Creates a type.
-
-      Args:
-        request: (DeploymentmanagerTypesInsertRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Insert')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'deploymentmanager.types.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[],
-        relative_path=u'projects/{project}/global/types',
-        request_field=u'type',
-        request_type_name=u'DeploymentmanagerTypesInsertRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
     def List(self, request, global_params=None):
       r"""Lists all resource types for Deployment Manager.
 
@@ -1020,57 +968,5 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name=u'DeploymentmanagerTypesListRequest',
         response_type_name=u'TypesListResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates a type. This method supports patch semantics.
-
-      Args:
-        request: (DeploymentmanagerTypesPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'deploymentmanager.types.patch',
-        ordered_params=[u'project', u'type'],
-        path_params=[u'project', u'type'],
-        query_params=[],
-        relative_path=u'projects/{project}/global/types/{type}',
-        request_field=u'typeResource',
-        request_type_name=u'DeploymentmanagerTypesPatchRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
-    def Update(self, request, global_params=None):
-      r"""Updates a type.
-
-      Args:
-        request: (DeploymentmanagerTypesUpdateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Update')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'deploymentmanager.types.update',
-        ordered_params=[u'project', u'type'],
-        path_params=[u'project', u'type'],
-        query_params=[],
-        relative_path=u'projects/{project}/global/types/{type}',
-        request_field=u'typeResource',
-        request_type_name=u'DeploymentmanagerTypesUpdateRequest',
-        response_type_name=u'Operation',
         supports_download=False,
     )

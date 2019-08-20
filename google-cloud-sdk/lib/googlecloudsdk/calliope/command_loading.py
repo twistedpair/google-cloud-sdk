@@ -41,7 +41,7 @@ class CommandLoadFailure(Exception):
     self.root_exception = root_exception
     super(CommandLoadFailure, self).__init__(
         'Problem loading {command}: {issue}.'.format(
-            command=command, issue=str(root_exception)))
+            command=command, issue=six.text_type(root_exception)))
 
 
 class LayoutException(Exception):
@@ -601,7 +601,7 @@ def _ExtractReleaseTrackImplementation(
     if duplicates:
       raise LayoutException(
           'Multiple definitions for release tracks [{0}] for element: [{1}]'
-          .format(', '.join([str(d) for d in duplicates]), impl_file))
+          .format(', '.join([six.text_type(d) for d in duplicates]), impl_file))
     implemented_release_tracks |= valid_tracks
 
   valid_commands_or_groups = [impl for impl, valid_tracks in implementations

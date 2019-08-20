@@ -282,7 +282,7 @@ def GetArgDetails(arg, depth=0):
   if hasattr(arg, 'store_property'):
     prop, _, _ = arg.store_property
     # Don't add help if there's already explicit help.
-    if str(prop) not in help_message:
+    if six.text_type(prop) not in help_message:
       extra_help.append('Overrides the default *{0}* property value'
                         ' for this command invocation.'.format(prop))
       # '?' in Boolean flag check to cover legacy choices={'true', 'false'}

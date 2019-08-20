@@ -413,8 +413,8 @@ class GetPolicyOptions(_messages.Message):
 
   Fields:
     requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
   """
 
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -518,14 +518,12 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
     displayName: Optional. Display information such as title and description.
       A short name to identify the entry, for example, "Analytics Data - Jan
       2011". Default value is an empty string.
-    linkedResource: Output only. The full name of the cloud resource the entry
-      belongs to. See:
-      https://cloud.google.com/apis/design/resource_names#full_resource_name
-      Data Catalog supports resources from select Google Cloud Platform
-      systems. `linked_resource` is the full name of the Google Cloud Platform
-      resource. For example, the `linked_resource` for a table resource from
-      BigQuery is:  * //bigquery.googleapis.com/projects/projectId/datasets/da
-      tasetId/tables/tableId
+    linkedResource: Output only. The resource this metadata entry refers to.
+      For Google Cloud Platform resources, `linked_resource` is the [full name
+      of the resource](https://cloud.google.com/apis/design/resource_names#ful
+      l_resource_name). For example, the `linked_resource` for a table
+      resource from BigQuery is:  * //bigquery.googleapis.com/projects/project
+      Id/datasets/datasetId/tables/tableId
     name: Required when used in UpdateEntryRequest. The Data Catalog resource
       name of the entry in URL format. Example:  * projects/{project_id}/locat
       ions/{location}/entryGroups/{entry_group_id}/entries/{entry_id}  Note
@@ -976,11 +974,16 @@ class GoogleCloudDatacatalogV1beta1TagTemplateField(_messages.Message):
   Fields:
     displayName: Optional. The display name for this field. Defaults to an
       empty string.
+    name: Output only. The resource name of the tag template field in URL
+      format. Example:  * projects/{project_id}/locations/{location}/tagTempla
+      tes/{tag_template}/fields/{field}  Note that this TagTemplateField may
+      not actually be stored in the location in this name.
     type: Required. The type of value this tag field can contain.
   """
 
   displayName = _messages.StringField(1)
-  type = _messages.MessageField('GoogleCloudDatacatalogV1beta1FieldType', 2)
+  name = _messages.StringField(2)
+  type = _messages.MessageField('GoogleCloudDatacatalogV1beta1FieldType', 3)
 
 
 class GoogleCloudDatacatalogV1beta1ViewSpec(_messages.Message):

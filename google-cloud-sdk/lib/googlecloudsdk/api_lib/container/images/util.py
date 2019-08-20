@@ -143,11 +143,12 @@ def RecoverProjectId(repository):
 
 
 def _UnqualifiedResourceUrl(repo):
-  return 'https://{repo}@'.format(repo=str(repo))
+  return 'https://{repo}@'.format(repo=six.text_type(repo))
 
 
 def _ResourceUrl(repo, digest):
-  return 'https://{repo}@{digest}'.format(repo=str(repo), digest=digest)
+  return 'https://{repo}@{digest}'.format(
+      repo=six.text_type(repo), digest=digest)
 
 
 def _FullyqualifiedDigest(digest):
@@ -188,7 +189,7 @@ def FetchDeploymentsForImage(image, occurrence_filter=None):
   occurrences = list(
       containeranalysis_util.MakeOccurrenceRequest(project_id, occ_filter))
   deployments = []
-  image_string = str(image)
+  image_string = six.text_type(image)
   for occ in occurrences:
     if not occ.deployment:
       continue
@@ -336,7 +337,7 @@ def GetDockerTagsForDigest(digest, http_obj):
   tag_names = GetTagNamesForDigest(digest, http_obj)
   for tag_name in tag_names:  # iterate over digest tags
     try:
-      tag = docker_name.Tag(str(repository) + ':' + tag_name)
+      tag = docker_name.Tag(six.text_type(repository) + ':' + tag_name)
     except docker_name.BadNameException as e:
       raise InvalidImageNameError(six.text_type(e))
     tags.append(tag)
@@ -495,11 +496,11 @@ def WrapExpectedDockerlessErrors(optional_image_name=None):
         six.moves.http_client.UNAUTHORIZED, six.moves.http_client.FORBIDDEN
     ]:
       raise UserRecoverableV2Error('Access denied: {}'.format(
-          optional_image_name or str(err)))
+          optional_image_name or six.text_type(err)))
     elif err.status == six.moves.http_client.NOT_FOUND:
       raise UserRecoverableV2Error('Not found: {}'.format(
-          optional_image_name or str(err)))
+          optional_image_name or six.text_type(err)))
     raise
   except (v2_docker_http.TokenRefreshException,
           v2_2_docker_http.TokenRefreshException) as err:
-    raise TokenRefreshError(str(err))
+    raise TokenRefreshError(six.text_type(err))

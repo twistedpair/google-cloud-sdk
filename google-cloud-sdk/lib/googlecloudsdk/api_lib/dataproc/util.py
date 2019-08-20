@@ -403,7 +403,7 @@ def WaitForJobTermination(dataproc,
         try:
           job = dataproc.client.projects_regions_jobs.Get(request)
         except apitools_exceptions.HttpError as error:
-          log.warning('GetJob failed:\n{}'.format(str(error)))
+          log.warning('GetJob failed:\n{}'.format(six.text_type(error)))
           # Do not retry on 4xx errors.
           if IsClientHttpException(error):
             raise

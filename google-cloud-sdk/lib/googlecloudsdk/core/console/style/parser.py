@@ -76,7 +76,7 @@ class TypedTextParser(object):
              set(getattr(text_attributes, 'attrs', [])))
     if attrs:
       style_sequence += ';'.join(sorted([
-          str(attr.value) for attr in attrs]))
+          six.text_type(attr.value) for attr in attrs]))
     color = (getattr(text_attributes, 'color', None) or
              getattr(style_context, 'color', None))
     if color:

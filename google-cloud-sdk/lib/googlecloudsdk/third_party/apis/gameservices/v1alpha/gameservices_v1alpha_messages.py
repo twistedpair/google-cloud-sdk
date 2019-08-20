@@ -256,23 +256,27 @@ class ClusterPercentageSelector(_messages.Message):
   percent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
-class ClusterRolloutTarget(_messages.Message):
-  r"""The rollout target of a cluster, i.e. the percentage of game servers
-  running stable_game_server_template and new_game_server_template.
+class ClusterRolloutDetails(_messages.Message):
+  r"""Cluster level details about the deployment.
 
   Fields:
     cluster: The cluster name.
-    newPercent: The desired percentage of game servers that run
-      new_game_server_template.
+    fleet: The details of the agones fleet.
+    newGameServerTemplate: This is set to true if this fleet uses the new
+      GameServerTemplate. There is at most one fleet in a cluster at one time
+      that uses the new GameServerTemplate. If no deployment is ongoing, then
+      no fleet will have it set.
     realm: The realm name.
-    stablePercent: The desired percentage of game servers that run
-      stable_game_server_template.
+    stableGameServerTemplate: This is set to true if this fleet uses the
+      stable GameServerTemplate. There is at most one fleet in a cluster at
+      one time that uses the stable GameServerTemplate.
   """
 
   cluster = _messages.StringField(1)
-  newPercent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  realm = _messages.StringField(3)
-  stablePercent = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  fleet = _messages.MessageField('Fleet', 2)
+  newGameServerTemplate = _messages.BooleanField(3)
+  realm = _messages.StringField(4)
+  stableGameServerTemplate = _messages.BooleanField(5)
 
 
 class CommitRolloutRequest(_messages.Message):
@@ -455,15 +459,15 @@ class DataAccessOptions(_messages.Message):
 
 
 class DeploymentTarget(_messages.Message):
-  r"""The rollout target of the deployment, e.g. the target percentage of game
-  servers running stable_game_server_template and new_game_server_template in
-  clusters.
+  r"""Response message for GameServerDeploymentsService.GetDeploymentTarget.
 
   Fields:
-    clusters: A ClusterRolloutTarget attribute.
+    locationTargets: The details of a deployment in a given location.
+    unavailableLocations: List of locations that could not be reached.
   """
 
-  clusters = _messages.MessageField('ClusterRolloutTarget', 1, repeated=True)
+  locationTargets = _messages.MessageField('LocationTarget', 1, repeated=True)
+  unavailableLocations = _messages.StringField(2, repeated=True)
 
 
 class Empty(_messages.Message):
@@ -498,6 +502,25 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class Fleet(_messages.Message):
+  r"""A Fleet object.
+
+  Fields:
+    agonesSpec: The Agones game server spec.
+    autoscaler: The name of the Agones autoscaler.
+    autoscalerSettings: The Agones autoscaler settings.
+    name: The name of the Agones game server fleet.
+    size: The number of game servers in the game server fleet. The number
+      returned in always greater or equal to 0.
+  """
+
+  agonesSpec = _messages.StringField(1)
+  autoscaler = _messages.StringField(2)
+  autoscalerSettings = _messages.MessageField('FleetAutoscalerSettings', 3)
+  name = _messages.StringField(4)
+  size = _messages.IntegerField(5)
 
 
 class FleetAutoscalerSettings(_messages.Message):
@@ -819,8 +842,8 @@ class GameservicesProjectsLocationsGameServerDeploymentsGetIamPolicyRequest(_mes
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -1363,10 +1386,12 @@ class ListAllocationPoliciesResponse(_messages.Message):
     allocationPolicies: The list of allocation policies.
     nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
+    unreachableLocations: List of locations that could not be reached.
   """
 
   allocationPolicies = _messages.MessageField('AllocationPolicy', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachableLocations = _messages.StringField(3, repeated=True)
 
 
 class ListGameServerClustersResponse(_messages.Message):
@@ -1376,10 +1401,12 @@ class ListGameServerClustersResponse(_messages.Message):
     gameServerClusters: The list of game server clusters.
     nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
+    unreachableLocations: List of locations that could not be reached.
   """
 
   gameServerClusters = _messages.MessageField('GameServerCluster', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachableLocations = _messages.StringField(3, repeated=True)
 
 
 class ListGameServerDeploymentsResponse(_messages.Message):
@@ -1390,10 +1417,12 @@ class ListGameServerDeploymentsResponse(_messages.Message):
     gameServerDeployments: The list of game server delpoyments.
     nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
+    unreachableLocations: List of locations that were not reachable.
   """
 
   gameServerDeployments = _messages.MessageField('GameServerDeployment', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachableLocations = _messages.StringField(3, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -1442,10 +1471,12 @@ class ListScalingPoliciesResponse(_messages.Message):
     nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
     scalingPolicies: The list of scaling policies.
+    unreachableLocations: List of locations that could not be reached.
   """
 
   nextPageToken = _messages.StringField(1)
   scalingPolicies = _messages.MessageField('ScalingPolicy', 2, repeated=True)
+  unreachableLocations = _messages.StringField(3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -1526,6 +1557,19 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class LocationTarget(_messages.Message):
+  r"""A detailed description of the deployment including details about the
+  fleet and autoscalers.
+
+  Fields:
+    clusterRolloutDetails: Details about all the clusters with the deployment.
+    location: The location.
+  """
+
+  clusterRolloutDetails = _messages.MessageField('ClusterRolloutDetails', 1, repeated=True)
+  location = _messages.StringField(2)
 
 
 class LogConfig(_messages.Message):

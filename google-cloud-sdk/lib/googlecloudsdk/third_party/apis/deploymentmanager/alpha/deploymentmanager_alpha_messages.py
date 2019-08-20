@@ -547,12 +547,14 @@ class DeploymentmanagerDeploymentsGetIamPolicyRequest(_messages.Message):
   r"""A DeploymentmanagerDeploymentsGetIamPolicyRequest object.
 
   Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
     project: Project ID for this request.
     resource: Name or id of the resource for this request.
   """
 
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class DeploymentmanagerDeploymentsGetRequest(_messages.Message):
@@ -1169,18 +1171,6 @@ class DeploymentmanagerTypeProvidersUpdateRequest(_messages.Message):
   typeProviderResource = _messages.MessageField('TypeProvider', 3)
 
 
-class DeploymentmanagerTypesDeleteRequest(_messages.Message):
-  r"""A DeploymentmanagerTypesDeleteRequest object.
-
-  Fields:
-    project: The project ID for this request.
-    type: The name of the type for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  type = _messages.StringField(2, required=True)
-
-
 class DeploymentmanagerTypesGetRequest(_messages.Message):
   r"""A DeploymentmanagerTypesGetRequest object.
 
@@ -1191,18 +1181,6 @@ class DeploymentmanagerTypesGetRequest(_messages.Message):
 
   project = _messages.StringField(1, required=True)
   type = _messages.StringField(2, required=True)
-
-
-class DeploymentmanagerTypesInsertRequest(_messages.Message):
-  r"""A DeploymentmanagerTypesInsertRequest object.
-
-  Fields:
-    project: The project ID for this request.
-    type: A Type resource to be passed as the request body.
-  """
-
-  project = _messages.StringField(1, required=True)
-  type = _messages.MessageField('Type', 2)
 
 
 class DeploymentmanagerTypesListRequest(_messages.Message):
@@ -1249,34 +1227,6 @@ class DeploymentmanagerTypesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
-
-
-class DeploymentmanagerTypesPatchRequest(_messages.Message):
-  r"""A DeploymentmanagerTypesPatchRequest object.
-
-  Fields:
-    project: The project ID for this request.
-    type: The name of the type for this request.
-    typeResource: A Type resource to be passed as the request body.
-  """
-
-  project = _messages.StringField(1, required=True)
-  type = _messages.StringField(2, required=True)
-  typeResource = _messages.MessageField('Type', 3)
-
-
-class DeploymentmanagerTypesUpdateRequest(_messages.Message):
-  r"""A DeploymentmanagerTypesUpdateRequest object.
-
-  Fields:
-    project: The project ID for this request.
-    type: The name of the type for this request.
-    typeResource: A Type resource to be passed as the request body.
-  """
-
-  project = _messages.StringField(1, required=True)
-  type = _messages.StringField(2, required=True)
-  typeResource = _messages.MessageField('Type', 3)
 
 
 class DeploymentsCancelPreviewRequest(_messages.Message):
@@ -1573,13 +1523,13 @@ class Operation(_messages.Message):
     httpErrorStatusCode: [Output Only] If the operation fails, this field
       contains the HTTP error status code that was returned. For example, a
       404 means the resource was not found.
-    id: [Output Only] The unique identifier for the resource. This identifier
+    id: [Output Only] The unique identifier for the operation. This identifier
       is defined by the server.
     insertTime: [Output Only] The time that this operation was requested. This
       value is in RFC3339 text format.
     kind: [Output Only] Type of the resource. Always compute#operation for
       Operation resources.
-    name: [Output Only] Name of the resource.
+    name: [Output Only] Name of the operation.
     operationType: [Output Only] The type of operation, such as insert,
       update, or delete, and so on.
     progress: [Output Only] An optional progress indicator that ranges from 0

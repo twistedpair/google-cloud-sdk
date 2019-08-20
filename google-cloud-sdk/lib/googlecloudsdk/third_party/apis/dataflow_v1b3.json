@@ -221,6 +221,33 @@
             "FAILED",
             "DELETED"
           ]
+        },
+        "pubsubMetadata": {
+          "description": "PubSub snapshot metadata.",
+          "type": "array",
+          "items": {
+            "$ref": "PubsubSnapshotMetadata"
+          }
+        }
+      }
+    },
+    "PubsubSnapshotMetadata": {
+      "id": "PubsubSnapshotMetadata",
+      "description": "Represents a Pubsub snapshot.",
+      "type": "object",
+      "properties": {
+        "topicName": {
+          "description": "The name of the Pubsub topic.",
+          "type": "string"
+        },
+        "snapshotName": {
+          "description": "The name of the Pubsub snapshot.",
+          "type": "string"
+        },
+        "expireTime": {
+          "description": "The expire time of the Pubsub snapshot.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -1454,6 +1481,10 @@
         "location": {
           "description": "The location that contains this job.",
           "type": "string"
+        },
+        "snapshotSources": {
+          "description": "If true, perform snapshots for sources which support this.",
+          "type": "boolean"
         }
       }
     },
@@ -3911,6 +3942,16 @@
         },
         "maxWorkItemCommitBytes": {
           "description": "Maximum size for work item commit supported windmill storage layer.",
+          "type": "string",
+          "format": "int64"
+        },
+        "commitStreamChunkSizeBytes": {
+          "description": "Chunk size for commit streams from the harness to windmill.",
+          "type": "string",
+          "format": "int64"
+        },
+        "getDataStreamChunkSizeBytes": {
+          "description": "Chunk size for get data streams from the harness to windmill.",
           "type": "string",
           "format": "int64"
         }

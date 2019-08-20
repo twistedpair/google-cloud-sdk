@@ -508,7 +508,7 @@
       "type": "object",
       "properties": {
         "requestedPolicyVersion": {
-          "description": "Optional. The policy format version to be returned.\nAcceptable values are 0 and 1.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+          "description": "Optional. The policy format version to be returned.\nAcceptable values are 0, 1, and 3.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
           "type": "integer",
           "format": "int32"
         }
@@ -635,10 +635,6 @@
           "items": {
             "type": "string"
           }
-        },
-        "ignoreChildExemptions": {
-          "description": "Specifies whether principals can be exempted for the same LogType in\nlower-level resource policies. If true, any lower-level exemptions will\nbe ignored.",
-          "type": "boolean"
         }
       }
     },
@@ -910,9 +906,31 @@
     },
     "ZypperSettings": {
       "id": "ZypperSettings",
-      "description": "Zypper patching is performed by running `zypper refresh && zypper update`",
+      "description": "Zypper patching is performed by running `zypper patch`.\nSee also https:\/\/en.opensuse.org\/SDB:Zypper_manual.",
       "type": "object",
       "properties": {
+        "withOptional": {
+          "description": "Optional. Adds the `--with-optional` flag to `zypper patch`.",
+          "type": "boolean"
+        },
+        "withUpdate": {
+          "description": "Optional. Adds the `--with-update` flag, to `zypper patch`.",
+          "type": "boolean"
+        },
+        "categories": {
+          "description": "Optional. Install only patches with these categories.\nCommon categories include security, recommended, and feature.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "severities": {
+          "description": "Optional. Install only patches with these severities.\nCommon severities include critical, important, moderate, and low.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     },
     "WindowsUpdateSettings": {

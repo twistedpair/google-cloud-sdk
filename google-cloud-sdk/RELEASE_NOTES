@@ -5,6 +5,36 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 259.0.0 (2019-08-20)
+
+### Cloud SDK
+
+* Updated `gsutil` component be able to use Python v3.x.
+* Added `--impersonate-service-account` flag to `gcloud auth print-identity-token` to be used in
+  conjunction with `--audiences`.
+* Added support for Compute Engine service accounts to `gcloud auth print-identity-token`.
+
+### Cloud Pub/Sub
+
+* Added the following optional flags to `gcloud pubsub topics create` to support Cloud KMS integration:
+  * `--topic-encryption-key`
+  * `--topic-encryption-key-keyring`
+  * `--topic-encryption-key-location`
+  * `--topic-encryption-key-project`
+
+### Compute Engine
+
+* Added `--storage-location` flag to `gcloud beta compute images import` to allow specifying image location in VM image import.
+
+### GKE Hub
+
+* Promoted `gcloud container hub` commands to beta. Added `--version` flag
+  to allow specifying a specific GKE Connect version to use.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 258.0.0 (2019-08-13)
 
 ### Breaking Changes
@@ -27,9 +57,9 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Firestore Emulator
 
-* Release Cloud Firestore emulator v1.7.1
-  * Fix bug where auth context was always null when using WebChannel.
-  * Change name of experimental `--webchannel-port` flag to `--webchannel_port`.
+* Released Cloud Firestore emulator v1.7.1
+  * Fixed bug where auth context was always null when using WebChannel.
+  * Changed name of experimental `--webchannel-port` flag to `--webchannel_port`.
 
 ### Cloud Functions
 
@@ -39,7 +69,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Storage
 
-*
 * Updated gsutil component to 4.42.
 
 ### Kubernetes Engine
@@ -66,8 +95,8 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Firestore Emulator
 
-* Release Cloud Firestore emulator v1.7.0
-  * Add experimental support for the WebChannel protocol, allowing communication with browser clients.
+* Released Cloud Firestore emulator v1.7.0
+  * Added experimental support for the WebChannel protocol, allowing communication with browser clients.
 
 ### Kubernetes Engine
 

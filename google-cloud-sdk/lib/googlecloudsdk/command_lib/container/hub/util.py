@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utils for GKE Hub commands."""
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
@@ -29,6 +30,7 @@ from containerregistry.client.v2_2 import docker_image
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.container import kubeconfig as kconfig
 from googlecloudsdk.api_lib.container import util as c_util
+from googlecloudsdk.api_lib.container.hub import api_adapter
 from googlecloudsdk.api_lib.container.images import util as i_util
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.api_lib.util import waiter
@@ -71,21 +73,26 @@ deploy the manifest.
 **This file contains sensitive data; please treat it with the same discretion \
 as your service account key file.**"""
 
-# The manifest used to deploy the Connect agent install workload and its
-# supporting components.
-#
-# Note that the deployment must be last: kubectl apply deploys resources in
-# manifest order, and the deployment depends on other resources; and the
-# imagePullSecrets template below is appended to this template if image
-# pull secrets are required.
-INSTALL_MANIFEST_TEMPLATE = """\
+CREDENTIAL_SECRET_TEMPLATE = """\
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {gcp_sa_key_secret_name}
+  namespace: {namespace}
+data:
+  {gcp_sa_key_secret_name}.json: {gcp_sa_key}
+"""
+
+NAMESPACE_TEMPLATE = """\
 apiVersion: v1
 kind: Namespace
 metadata:
   name: {namespace}
   labels:
     {connect_resource_label}: {project_id}
----
+"""
+
+INSTALL_ALPHA_TEMPLATE = """\
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -97,14 +104,6 @@ data:
   membership_name: "{membership_name}"
   proxy: "{proxy}"
   image: "{image}"
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: {gcp_sa_key_secret_name}
-  namespace: {namespace}
-data:
-  {gcp_sa_key_secret_name}.json: {gcp_sa_key}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -151,7 +150,21 @@ spec:
         - name: MY_POD_NAMESPACE
           valueFrom:
             fieldRef:
-              fieldPath: metadata.namespace"""
+              fieldPath: metadata.namespace
+"""
+
+# The manifest used to deploy the Connect agent install workload and its
+# supporting components.
+#
+# Note that the deployment must be last: kubectl apply deploys resources in
+# manifest order, and the deployment depends on other resources; and the
+# imagePullSecrets template below is appended to this template if image
+# pull secrets are required.
+INSTALL_MANIFEST_TEMPLATE = NAMESPACE_TEMPLATE + """\
+---
+""" + CREDENTIAL_SECRET_TEMPLATE + """\
+---
+""" + INSTALL_ALPHA_TEMPLATE
 
 # The secret that will be installed if a Docker registry credential is provided.
 # This is appended to the end of INSTALL_MANIFEST_TEMPLATE.
@@ -546,10 +559,188 @@ def Base64EncodedFileContents(filename):
       files.ReadBinaryFileContents(files.ExpandHomeDir(filename)))
 
 
+def _DeleteNamespaceForReinstall(kube_client, namespace):
+  """Delete the existing connect namespace for reinstallation.
+
+  Args:
+    kube_client: The KubernetesClient towards the cluster.
+    namespace: the namespace of connect agent deployment.
+
+  Raises:
+    exceptions.Error: if failed to delete the namespace
+  """
+  if kube_client.NamespaceExists(namespace):
+    console_io.PromptContinue(
+        message='Namespace [{namespace}] already exists in the cluster. This '
+        'may be from a previous installation of the agent. If you want to '
+        'investigate, enter "n" and run\n\n'
+        '  kubectl \\\n'
+        '    --kubeconfig={kubeconfig} \\\n'
+        '    --context={context} \\\n'
+        '    get all -n {namespace}\n\n'
+        'Continuing will delete namespace [{namespace}].'.format(
+            namespace=namespace,
+            kubeconfig=kube_client.kubeconfig,
+            context=kube_client.context),
+        cancel_on_no=True)
+    try:
+      succeeded, error = waiter.WaitFor(
+          KubernetesPoller(),
+          NamespaceDeleteOperation(namespace, kube_client),
+          'Deleting namespace [{}] in the cluster'.format(namespace),
+          pre_start_sleep_ms=NAMESPACE_DELETION_INITIAL_WAIT_MS,
+          max_wait_ms=NAMESPACE_DELETION_TIMEOUT_MS,
+          wait_ceiling_ms=NAMESPACE_DELETION_MAX_POLL_INTERVAL_MS,
+          sleep_ms=NAMESPACE_DELETION_INITIAL_POLL_INTERVAL_MS)
+    except waiter.TimeoutError:
+      # waiter.TimeoutError assumes that the operation is a Google API
+      # operation, and prints a debugging string to that effect.
+      raise exceptions.Error(
+          'Could not delete namespace [{}] from cluster.'.format(namespace))
+
+    if not succeeded:
+      raise exceptions.Error(
+          'Could not delete namespace [{}] from cluster. Error: {}'.format(
+              namespace, error))
+
+
+def _GetConnectAgentOptions(args, upgrade, namespace):
+  return api_adapter.ConnectAgentOption(
+      name=args.CLUSTER_NAME,
+      proxy=args.proxy or '',
+      namespace=namespace,
+      is_upgrade=upgrade,
+      version=args.version or '')
+
+
+def _GenerateManifest(args, service_account_key_data, upgrade, namespace):
+  """Generate the manifest for connect agent from API.
+
+  Args:
+    args: arguments of the command.
+    service_account_key_data: The contents of a Google IAM service account JSON
+      file.
+    upgrade: if this is an upgrade operation.
+    namespace: namespace to deploy the connect agent.
+
+  Returns:
+    The full manifest to deploy the connect agent resources.
+  """
+  adapter = api_adapter.NewV1Beta1APIAdapter()
+  connect_agent_ref = _GetConnectAgentOptions(args, upgrade, namespace)
+  manifest_resources = adapter.GenerateConnectAgentManifest(connect_agent_ref)
+  delimeter = '---\n'
+  full_manifest = ''
+
+  for resource in manifest_resources:
+    full_manifest = full_manifest + resource['manifest'] + delimeter
+
+  # Append creds secret.
+  full_manifest = full_manifest + CREDENTIAL_SECRET_TEMPLATE.format(
+      namespace=namespace,
+      gcp_sa_key_secret_name=GCP_SA_KEY_SECRET_NAME,
+      gcp_sa_key=service_account_key_data)
+  return full_manifest
+
+
+def _PurgeAlphaInstaller(kube_client, namespace, project_id):
+  """Purge the Alpha installation resources if exists.
+
+  Args:
+    kube_client: Kubernetes client to operate on the cluster.
+    namespace: namespace of connect agent deployment.
+    project_id: the GCP project ID.
+
+  Raises:
+    exceptions.Error: if Alpha resources deletion failed.
+  """
+  project_number = p_util.GetProjectNumber(project_id)
+  # GKE On-Prem Alpha installation uses `gke-connect` namespace.
+  on_prem_namespace = 'gke-connect'
+  if kube_client.NamespaceExists(on_prem_namespace):
+    namespace = on_prem_namespace
+  err = kube_client.Delete(INSTALL_ALPHA_TEMPLATE.format(
+      namespace=namespace,
+      connect_resource_label=CONNECT_RESOURCE_LABEL,
+      project_id=project_id,
+      project_number=project_number,
+      membership_name='',
+      proxy='',
+      image='',
+      gcp_sa_key='',
+      gcp_sa_key_secret_name=GCP_SA_KEY_SECRET_NAME,
+      agent_install_deployment_name=AGENT_INSTALL_DEPLOYMENT_NAME,
+      agent_install_app_label=AGENT_INSTALL_APP_LABEL
+      ))
+  if err:
+    if 'NotFound' not in err:
+      raise exceptions.Error('failed to delete Alpha installation: {}'.format(
+          err))
+
+
 def DeployConnectAgent(args,
                        service_account_key_data,
-                       docker_credential_data,
                        upgrade=False):
+  """Deploys the GKE Connect agent to the cluster.
+
+  Args:
+    args: arguments of the command.
+    service_account_key_data: The contents of a Google IAM service account JSON
+      file
+    upgrade: whether to attempt to upgrade the agent, rather than replacing it.
+
+  Raises:
+    exceptions.Error: If the agent cannot be deployed properly
+    calliope_exceptions.MinimumArgumentException: If the agent cannot be
+    deployed properly
+  """
+  kube_client = KubernetesClient(args)
+  project_id = properties.VALUES.core.project.GetOrFail()
+  namespace = _GKEConnectNamespace(kube_client, project_id)
+
+  log.status.Print('Generating connect agent manifest...')
+
+  full_manifest = _GenerateManifest(args,
+                                    service_account_key_data,
+                                    upgrade,
+                                    namespace)
+
+  # Generate a manifest file if necessary.
+  if args.manifest_output_file:
+    try:
+      files.WriteFileContents(
+          files.ExpandHomeDir(args.manifest_output_file),
+          full_manifest,
+          private=True)
+    except files.Error as e:
+      exceptions.Error('could not create manifest file: {}'.format(e))
+
+    log.status.Print(MANIFEST_SAVED_MESSAGE.format(args.manifest_output_file))
+    return
+
+  log.status.Print('Deploying GKE Connect agent to cluster...')
+
+  # During an upgrade, the namespace should not be deleted.
+  if not upgrade:
+    # Delete the ns if necessary
+    _DeleteNamespaceForReinstall(kube_client, namespace)
+
+  # TODO(b/138816749): add check for cluster-admin permissions
+  _PurgeAlphaInstaller(kube_client, namespace, project_id)
+
+  # Create or update the agent install deployment and related resources.
+  err = kube_client.Apply(full_manifest)
+  if err:
+    raise exceptions.Error(
+        'Failed to apply manifest to cluster: {}'.format(err))
+  # TODO(b/131925085): Check connect agent health status.
+
+
+# TODO(b/137108762): Remove this method after we fully make it v1beta1.
+def DeployConnectAgentAlpha(args,
+                            service_account_key_data,
+                            docker_credential_data,
+                            upgrade=False):
   """Deploys the GKE Connect agent to the cluster.
 
   Args:
@@ -853,6 +1044,16 @@ class KubernetesClient(object):
 
     return out.replace("'", '')
 
+  def GetEvents(self, namespace):
+    cmd = ['get',
+           'events',
+           '--namespace=' + namespace,
+           "--sort-by='{.lastTimestamp}'"]
+    out, err = self._RunKubectl(cmd, None)
+    if err:
+      raise exceptions.Error()
+    return out
+
   def NamespacesWithLabelSelector(self, label):
     cmd = ['get', 'namespace', '-l', label, '-o', 'jsonpath={.metadata.name}']
     out, err = self._RunKubectl(cmd, None)
@@ -924,6 +1125,10 @@ class KubernetesClient(object):
 
   def Apply(self, manifest):
     _, err = self._RunKubectl(['apply', '-f', '-'], stdin=manifest)
+    return err
+
+  def Delete(self, manifest):
+    _, err = self._RunKubectl(['delete', '-f', '-'], stdin=manifest)
     return err
 
   def Logs(self, namespace, log_target):

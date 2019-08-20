@@ -2809,7 +2809,7 @@ class GooglePrivacyDlpV2JobTrigger(_messages.Message):
       only field.
     name: Unique resource name for the triggeredJob, assigned by the service
       when the triggeredJob is created, for example `projects/dlp-test-
-      project/triggeredJobs/53234423`.
+      project/jobTriggers/53234423`.
     status: A status for this trigger. [required]
     triggers: A list of triggers which will be OR'ed together. Only one in the
       list needs to trigger for a job to be started. The list may contain only

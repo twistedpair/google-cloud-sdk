@@ -858,9 +858,11 @@ class ServerlessOperations(object):
       raise serverless_exceptions.DeploymentFailedError(error_msg)
     except api_exceptions.HttpError as e:
       k8s_error = serverless_exceptions.KubernetesExceptionParser(e)
+      causes = '\n\n'.join([c['message'] for c in k8s_error.causes])
+      if not causes:
+        causes = k8s_error.error
       raise serverless_exceptions.KubernetesError('Error{}:\n{}\n'.format(
-          's' if len(k8s_error.causes) > 1 else '',
-          '\n\n'.join([c['message'] for c in k8s_error.causes])))
+          's' if len(k8s_error.causes) > 1 else '', causes))
 
   def SetTraffic(self, service_ref, config_changes, tracker, asyn, is_managed):
     """Set traffic splits for service."""

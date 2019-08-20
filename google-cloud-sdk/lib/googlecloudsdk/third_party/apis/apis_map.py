@@ -823,6 +823,14 @@ MAP = {
             default_version=False
         ),
     },
+    'policytroubleshooter': {
+        'v1beta': APIDef(
+            class_path='googlecloudsdk.third_party.apis.policytroubleshooter.v1beta',
+            client_classpath='policytroubleshooter_v1beta_client.PolicytroubleshooterV1beta',
+            messages_modulepath='policytroubleshooter_v1beta_messages',
+            default_version=True
+        ),
+    },
     'pubsub': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.pubsub.v1',

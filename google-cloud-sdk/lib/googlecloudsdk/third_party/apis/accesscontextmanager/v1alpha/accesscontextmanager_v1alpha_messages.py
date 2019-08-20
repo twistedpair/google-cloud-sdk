@@ -551,7 +551,7 @@ class DevicePolicy(_messages.Message):
 
 
 class ListAccessLevelsResponse(_messages.Message):
-  r"""A response to `ListAccessLevelsRequest`.
+  r"""[Deprecated] A response to `ListAccessLevelsRequest`.
 
   Fields:
     accessLevels: List of the Access Level instances.
@@ -564,7 +564,7 @@ class ListAccessLevelsResponse(_messages.Message):
 
 
 class ListAccessPoliciesResponse(_messages.Message):
-  r"""A response to `ListAccessPoliciesRequest`.
+  r"""[Deprecated] A response to `ListAccessPoliciesRequest`.
 
   Fields:
     accessPolicies: List of the AccessPolicy instances.
@@ -577,7 +577,7 @@ class ListAccessPoliciesResponse(_messages.Message):
 
 
 class ListAccessZonesResponse(_messages.Message):
-  r"""A response to `ListAccessZonesRequest`.
+  r"""[Deprecated] A response to `ListAccessZonesRequest`.
 
   Fields:
     accessZones: List of the Access Zone instances.

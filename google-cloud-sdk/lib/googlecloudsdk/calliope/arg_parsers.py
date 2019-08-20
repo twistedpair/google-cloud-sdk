@@ -540,7 +540,7 @@ class Range(object):
 
   def __str__(self):
     if self.start == self.end:
-      return str(self.start)
+      return six.text_type(self.start)
     return '{0}-{1}'.format(self.start, self.end)
 
 
@@ -816,7 +816,7 @@ class ArgList(ArgType):
         if typed_value not in choices:
           raise ArgumentTypeError('{value} must be one of [{choices}]'.format(
               value=typed_value, choices=', '.join(
-                  [str(choice) for choice in choices])))
+                  [six.text_type(choice) for choice in choices])))
         return typed_value
       self.element_type = ChoiceType
 

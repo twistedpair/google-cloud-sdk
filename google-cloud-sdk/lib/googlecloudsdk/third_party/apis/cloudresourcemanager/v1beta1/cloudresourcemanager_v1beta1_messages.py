@@ -209,7 +209,7 @@ class CloudresourcemanagerOrganizationsUpdateRequest(_messages.Message):
 
   Fields:
     organization: A Organization resource to be passed as the request body.
-    organizationsId: Part of `name`. Output Only. The resource name of the
+    organizationsId: Part of `name`. Output only. The resource name of the
       organization. This is the organization's relative path in the API. Its
       format is "organizations/[organization_id]". For example,
       "organizations/1234".
@@ -463,8 +463,8 @@ class GetPolicyOptions(_messages.Message):
 
   Fields:
     requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
   """
 
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -515,19 +515,18 @@ class Organization(_messages.Message):
 
   Enums:
     LifecycleStateValueValuesEnum: The organization's current lifecycle state.
-      Assigned by the server. @OutputOnly
+      Assigned by the server.
 
   Fields:
     creationTime: Timestamp when the Organization was created. Assigned by the
-      server. @OutputOnly
+      server.
     displayName: A human-readable string that refers to the Organization in
       the GCP Console UI. This string is set by the server and cannot be
       changed. The string will be set to the primary domain (for example,
       "google.com") of the G Suite customer that owns the organization.
-      @OutputOnly
     lifecycleState: The organization's current lifecycle state. Assigned by
-      the server. @OutputOnly
-    name: Output Only. The resource name of the organization. This is the
+      the server.
+    name: Output only. The resource name of the organization. This is the
       organization's relative path in the API. Its format is
       "organizations/[organization_id]". For example, "organizations/1234".
     organizationId: An immutable id for the Organization that is assigned on
@@ -539,7 +538,6 @@ class Organization(_messages.Message):
 
   class LifecycleStateValueValuesEnum(_messages.Enum):
     r"""The organization's current lifecycle state. Assigned by the server.
-    @OutputOnly
 
     Values:
       LIFECYCLE_STATE_UNSPECIFIED: Unspecified state.  This is only useful for

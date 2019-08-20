@@ -377,8 +377,9 @@ class _MetricsCollector(object):
         'console_type': 'CloudSDK',
         'client_install_id': cid,
     }
-    self._clearcut_concord_event_metadata = [
-        {'key': param[1], 'value': str(param[2])} for param in common_params]
+    self._clearcut_concord_event_metadata = [{
+        'key': param[1], 'value': six.text_type(param[2])
+    } for param in common_params]
     self._clearcut_concord_timed_events = []
 
     self._metrics = []
@@ -576,7 +577,10 @@ def _RecordEventAndSetTimerContext(
     event_metadata = []
     if flag_names is not None:
       cds['cd6'] = flag_names
-      event_metadata.append({'key': 'flag_names', 'value': str(flag_names)})
+      event_metadata.append({
+          'key': 'flag_names',
+          'value': six.text_type(flag_names)
+      })
     if error is not None:
       cds['cd8'] = error
       event_metadata.append({'key': _CLEARCUT_ERROR_TYPE_KEY, 'value': error})

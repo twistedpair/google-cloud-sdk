@@ -36,16 +36,16 @@ class AuditConfig(_messages.Message):
   multiple AuditConfigs:      {       "audit_configs": [         {
   "service": "allServices"           "audit_log_configs": [             {
   "log_type": "DATA_READ",               "exempted_members": [
-  "user:foo@gmail.com"               ]             },             {
+  "user:jose@example.com"               ]             },             {
   "log_type": "DATA_WRITE",             },             {
   "log_type": "ADMIN_READ",             }           ]         },         {
-  "service": "fooservice.googleapis.com"           "audit_log_configs": [
+  "service": "sampleservice.googleapis.com"           "audit_log_configs": [
   {               "log_type": "DATA_READ",             },             {
   "log_type": "DATA_WRITE",               "exempted_members": [
-  "user:bar@gmail.com"               ]             }           ]         }
-  ]     }  For fooservice, this policy enables DATA_READ, DATA_WRITE and
-  ADMIN_READ logging. It also exempts foo@gmail.com from DATA_READ logging,
-  and bar@gmail.com from DATA_WRITE logging.
+  "user:aliya@example.com"               ]             }           ]         }
+  ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
+  ADMIN_READ logging. It also exempts jose@example.com from DATA_READ logging,
+  and aliya@example.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -61,10 +61,10 @@ class AuditConfig(_messages.Message):
 class AuditLogConfig(_messages.Message):
   r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
-  "exempted_members": [             "user:foo@gmail.com"           ]
+  "exempted_members": [             "user:jose@example.com"           ]
   },         {           "log_type": "DATA_WRITE",         }       ]     }
   This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
-  foo@gmail.com from DATA_READ logging.
+  jose@example.com from DATA_READ logging.
 
   Enums:
     LogTypeValueValuesEnum: The log type that this config enables.
@@ -123,9 +123,9 @@ class Binding(_messages.Message):
       with or without a Google account.  * `allAuthenticatedUsers`: A special
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
-      represents a specific Google    account. For example, `alice@gmail.com`
-      .   * `serviceAccount:{emailid}`: An email address that represents a
-      service    account. For example, `my-other-
+      represents a specific Google    account. For example,
+      `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
+      that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
       * `domain:{domain}`: The G Suite domain (primary) that represents all
@@ -165,6 +165,25 @@ class ConfigMapEnvSource(_messages.Message):
   optional = _messages.BooleanField(2)
 
 
+class ConfigMapKeySelector(_messages.Message):
+  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  Selects a key from a ConfigMap.
+
+  Fields:
+    key: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+      The key to select.
+    localObjectReference: Cloud Run fully managed: not supported  Cloud Run on
+      GKE: supported  The ConfigMap to select from.
+    optional: Cloud Run fully managed: not supported  Cloud Run on GKE:
+      supported  Specify whether the ConfigMap or its key must be defined
+      +optional
+  """
+
+  key = _messages.StringField(1)
+  localObjectReference = _messages.MessageField('LocalObjectReference', 2)
+  optional = _messages.BooleanField(3)
+
+
 class ConfigMapVolumeSource(_messages.Message):
   r"""Adapts a ConfigMap into a volume. The contents of the target ConfigMap's
   Data field will be presented in a volume as files using the keys in the Data
@@ -202,7 +221,8 @@ class Configuration(_messages.Message):
   /blob/master/docs/spec/overview.md#configuration
 
   Fields:
-    apiVersion: The API version for this call such as "v1alpha1".
+    apiVersion: The API version for this call such as
+      "serving.knative.dev/v1alpha1".
     kind: The kind of resource, in this case always "Configuration".
     metadata: Metadata associated with this Configuration, including name,
       namespace, labels, and annotations.
@@ -265,7 +285,7 @@ class ConfigurationSpec(_messages.Message):
       not currently support referencing a build that is responsible for
       materializing the container image from source.
     template: Template holds the latest specification for the Revision to be
-      stamped out. Not currently supported by Cloud Run.
+      stamped out.
   """
 
   generation = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -455,7 +475,8 @@ class DomainMapping(_messages.Message):
   r"""Resource to hold the state and status of a user's domain mapping.
 
   Fields:
-    apiVersion: The API version for this call such as "v1alpha1".
+    apiVersion: The API version for this call such as
+      "domains.cloudrun.com/v1alpha1".
     kind: The kind of resource, in this case "DomainMapping".
     metadata: Metadata associated with this BuildTemplate.
     spec: The spec for this DomainMapping.
@@ -588,17 +609,37 @@ class EnvVar(_messages.Message):
       double $$, ie: $$(VAR_NAME). Escaped references will never be expanded,
       regardless of whether the variable exists or not. Defaults to "".
       +optional
+    valueFrom: Cloud Run fully managed: not supported  Cloud Run on GKE:
+      supported  Source for the environment variable's value. Cannot be used
+      if value is not empty. +optional
   """
 
   name = _messages.StringField(1)
   value = _messages.StringField(2)
+  valueFrom = _messages.MessageField('EnvVarSource', 3)
+
+
+class EnvVarSource(_messages.Message):
+  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  EnvVarSource represents a source for the value of an EnvVar.
+
+  Fields:
+    configMapKeyRef: Cloud Run fully managed: not supported  Cloud Run on GKE:
+      supported  Selects a key of a ConfigMap. +optional
+    secretKeyRef: Cloud Run fully managed: not supported  Cloud Run on GKE:
+      supported  Selects a key of a secret in the pod's namespace +optional
+  """
+
+  configMapKeyRef = _messages.MessageField('ConfigMapKeySelector', 1)
+  secretKeyRef = _messages.MessageField('SecretKeySelector', 2)
 
 
 class EventType(_messages.Message):
   r"""A EventType object.
 
   Fields:
-    apiVersion: The API version for this call such as "v1alpha1".
+    apiVersion: The API version for this call such as
+      "eventing.knative.dev/v1alpha1".
     kind: The kind of resource, in this case "EventType".
     metadata: Metadata associated with this EventType.
     spec: Spec defines the desired state of the EventType.
@@ -610,6 +651,32 @@ class EventType(_messages.Message):
   spec = _messages.MessageField('EventTypeSpec', 4)
 
 
+class EventTypeImporter(_messages.Message):
+  r"""A EventTypeImporter object.
+
+  Fields:
+    apiVersion: The API version of the importer CRD.
+    kind: The kind of the importer CRD.
+    parameters: Parameters required to create an importer for the EventType.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  parameters = _messages.MessageField('EventTypeParameter', 3, repeated=True)
+
+
+class EventTypeParameter(_messages.Message):
+  r"""A EventTypeParameter object.
+
+  Fields:
+    description: Description of the parameter. E.g. "Google Cloud Project Id."
+    name: Name of the parameter. E.g. googleCloudProject.
+  """
+
+  description = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
 class EventTypeSpec(_messages.Message):
   r"""A EventTypeSpec object.
 
@@ -617,6 +684,7 @@ class EventTypeSpec(_messages.Message):
     broker: Refers to the Broker that can provide the EventType.
     description: Description is a string describing what the EventType is
       about. +optional
+    importer: The importer that provides this EventType to the eventing mesh.
     schema: Schema is a URI with the EventType schema. It may be a JSON
       schema, a protobuf schema, etc. +optional
     source: Source is a valid URI. Refers to the CloudEvent source as it
@@ -627,9 +695,10 @@ class EventTypeSpec(_messages.Message):
 
   broker = _messages.StringField(1)
   description = _messages.StringField(2)
-  schema = _messages.StringField(3)
-  source = _messages.StringField(4)
-  type = _messages.StringField(5)
+  importer = _messages.MessageField('EventTypeImporter', 3)
+  schema = _messages.StringField(4)
+  source = _messages.StringField(5)
+  type = _messages.StringField(6)
 
 
 class ExecAction(_messages.Message):
@@ -761,7 +830,7 @@ class IntOrString(_messages.Message):
 
   intVal = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   strVal = _messages.StringField(2)
-  type = _messages.IntegerField(3)
+  type = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class KeyToPath(_messages.Message):
@@ -826,7 +895,8 @@ class ListConfigurationsResponse(_messages.Message):
   r"""ListConfigurationsResponse is a list of Configuration resources.
 
   Fields:
-    apiVersion: The API version for this call such as "v1alpha1".
+    apiVersion: The API version for this call such as
+      "serving.knative.dev/v1alpha1".
     items: List of Configurations.
     kind: The kind of this resource, in this case "ConfigurationList".
     metadata: Metadata associated with this Configuration list.
@@ -844,7 +914,8 @@ class ListDomainMappingsResponse(_messages.Message):
   r"""ListDomainMappingsResponse is a list of DomainMapping resources.
 
   Fields:
-    apiVersion: The API version for this call such as "v1alpha1".
+    apiVersion: The API version for this call such as
+      "domains.cloudrun.com/v1alpha1".
     items: List of DomainMappings.
     kind: The kind of this resource, in this case "DomainMappingList".
     metadata: Metadata associated with this DomainMapping list.
@@ -860,7 +931,8 @@ class ListEventTypesResponse(_messages.Message):
   r"""ListEventTypesResponse is a list of EventType resources.
 
   Fields:
-    apiVersion: The API version for this call such as "v1alpha1".
+    apiVersion: The API version for this call such as
+      "eventing.knative.dev/v1alpha1".
     items: List of EventTypes.
     kind: The kind of this resource, in this case "EventTypeList".
     metadata: Metadata associated with this EventType list.
@@ -920,7 +992,8 @@ class ListRevisionsResponse(_messages.Message):
   r"""ListRevisionsResponse is a list of Revision resources.
 
   Fields:
-    apiVersion: The API version for this call such as "v1alpha1".
+    apiVersion: The API version for this call such as
+      "serving.knative.dev/v1alpha1".
     items: List of Revisions.
     kind: The kind of this resource, in this case "RevisionList".
     metadata: Metadata associated with this revision list.
@@ -938,7 +1011,8 @@ class ListRoutesResponse(_messages.Message):
   r"""ListRoutesResponse is a list of Route resources.
 
   Fields:
-    apiVersion: The API version for this call such as "v1alpha1".
+    apiVersion: The API version for this call such as
+      "serving.knative.dev/v1alpha1".
     items: List of Routes.
     kind: The kind of this resource, in this case always "RouteList".
     metadata: Metadata associated with this Route list.
@@ -956,7 +1030,8 @@ class ListServicesResponse(_messages.Message):
   r"""A list of Service resources.
 
   Fields:
-    apiVersion: The API version for this call such as "v1alpha1".
+    apiVersion: The API version for this call such as
+      "serving.knative.dev/v1alpha1".
     items: List of Services.
     kind: The kind of this resource, in this case "ServiceList".
     metadata: Metadata associated with this Service list.
@@ -974,7 +1049,8 @@ class ListTriggersResponse(_messages.Message):
   r"""ListTriggersResponse is a list of Trigger resources.
 
   Fields:
-    apiVersion: The API version for this call such as "v1alpha1".
+    apiVersion: The API version for this call such as
+      "eventing.knative.dev/v1alpha1".
     items: List of Triggers.
     kind: The kind of this resource, in this case "TriggerList".
     metadata: Metadata associated with this Trigger list.
@@ -1382,7 +1458,7 @@ class Policy(_messages.Message):
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten blindly.
+      the existing policy is overwritten.
     version: Deprecated.
   """
 
@@ -1647,7 +1723,8 @@ class Revision(_messages.Message):
   evision
 
   Fields:
-    apiVersion: The API version for this call such as "v1alpha1".
+    apiVersion: The API version for this call such as
+      "serving.knative.dev/v1alpha1".
     kind: The kind of this resource, in this case "Revision".
     metadata: Metadata associated with this Revision, including name,
       namespace, labels, and annotations.
@@ -1810,7 +1887,13 @@ class RevisionTemplate(_messages.Message):
 
   Fields:
     metadata: Optional metadata for this Revision, including labels and
-      annotations. Name will be generated by the Configuration.
+      annotations. Name will be generated by the Configuration. To set minimum
+      instances for this revision, use the "autoscaling.knative.dev/minScale"
+      annotation key. (Cloud Run on GKE only). To set maximum instances for
+      this revision, use the "autoscaling.knative.dev/maxScale" annotation
+      key. To set Cloud SQL connections for the revision, use the
+      "run.googleapis.com/cloudsql-instances" annotation key. Values should be
+      comma separated.
     spec: RevisionSpec holds the desired state of the Revision (from the
       client).
   """
@@ -1831,7 +1914,8 @@ class Route(_messages.Message):
   automatically deploy the "latest ready" Revision from that Configuration.
 
   Fields:
-    apiVersion: The API version for this call such as "v1alpha1".
+    apiVersion: The API version for this call such as
+      "serving.knative.dev/v1alpha1".
     kind: The kind of this resource, in this case always "Route".
     metadata: Metadata associated with this Route, including name, namespace,
       labels, and annotations.
@@ -2732,12 +2816,16 @@ class RunProjectsLocationsServicesGetIamPolicyRequest(_messages.Message):
   r"""A RunProjectsLocationsServicesGetIamPolicyRequest object.
 
   Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
   """
 
-  resource = _messages.StringField(1, required=True)
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class RunProjectsLocationsServicesGetRequest(_messages.Message):
@@ -2945,6 +3033,26 @@ class SecretEnvSource(_messages.Message):
   optional = _messages.BooleanField(2)
 
 
+class SecretKeySelector(_messages.Message):
+  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  SecretKeySelector selects a key of a Secret.
+
+  Fields:
+    key: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+      The key of the secret to select from.  Must be a valid secret key.
+    localObjectReference: Cloud Run fully managed: not supported  Cloud Run on
+      GKE: supported  The name of the secret in the pod's namespace to select
+      from.
+    optional: Cloud Run fully managed: not supported  Cloud Run on GKE:
+      supported  Specify whether the Secret or its key must be defined
+      +optional
+  """
+
+  key = _messages.StringField(1)
+  localObjectReference = _messages.MessageField('LocalObjectReference', 2)
+  optional = _messages.BooleanField(3)
+
+
 class SecretVolumeSource(_messages.Message):
   r"""The contents of the target Secret's Data field will be presented in a
   volume as files using the keys in the Data field as the file names.
@@ -3018,9 +3126,9 @@ class SecurityContext(_messages.Message):
   capabilities = _messages.MessageField('Capabilities', 2)
   privileged = _messages.BooleanField(3)
   readOnlyRootFilesystem = _messages.BooleanField(4)
-  runAsGroup = _messages.IntegerField(5)
+  runAsGroup = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   runAsNonRoot = _messages.BooleanField(6)
-  runAsUser = _messages.IntegerField(7)
+  runAsUser = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   seLinuxOptions = _messages.MessageField('SELinuxOptions', 8)
 
 
@@ -3037,7 +3145,8 @@ class Service(_messages.Message):
   https://github.com/knative/serving/blob/master/docs/spec/overview.md#service
 
   Fields:
-    apiVersion: The API version for this call such as "v1alpha1".
+    apiVersion: The API version for this call such as
+      "serving.knative.dev/v1alpha1".
     kind: The kind of resource, in this case "Service".
     metadata: Metadata associated with this Service, including name,
       namespace, labels, and annotations.
@@ -3102,12 +3211,9 @@ class ServiceSpec(_messages.Message):
       configure a route that keeps the latest ready revision from the supplied
       configuration running. +optional
     template: Template holds the latest specification for the Revision to be
-      stamped out.  Not currently supported by Cloud Run.
+      stamped out.
     traffic: Traffic specifies how to distribute traffic over a collection of
-      Knative Revisions and Configurations. This will replace existing service
-      specs (ServiceSpecRunLatest, ServiceSpecPinnedType,
-      ServiceSpecReleaseType, and ServiceSpecManualType).  Not currently
-      supported by Cloud Run.
+      Knative Revisions and Configurations.
   """
 
   generation = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3366,7 +3472,7 @@ class TrafficTarget(_messages.Message):
       the latest ready Revision of the Configuration should be used for this
       traffic target. When provided LatestRevision must be true if
       RevisionName is empty; it must be false when RevisionName is non-empty.
-      Not currently supported in Cloud Run. +optional
+      +optional
     name: Name is optionally used to expose a dedicated hostname for
       referencing this target exclusively.  Not currently supported by Cloud
       Run. +optional
@@ -3399,7 +3505,8 @@ class Trigger(_messages.Message):
   r"""A Trigger object.
 
   Fields:
-    apiVersion: The API version for this call such as "v1alpha1".
+    apiVersion: The API version for this call such as
+      "eventing.knative.dev/v1alpha1".
     kind: The kind of resource, in this case "Trigger".
     metadata: Metadata associated with this Trigger.
     spec: Spec defines the desired state of the Trigger.
@@ -3462,6 +3569,48 @@ class TriggerFilterSourceAndType(_messages.Message):
   type = _messages.StringField(2)
 
 
+class TriggerImporterSpec(_messages.Message):
+  r"""A TriggerImporterSpec object.
+
+  Messages:
+    ArgumentsValue: Arguments to use for the importer. These must match the
+      parameters in the EventType's importer.
+
+  Fields:
+    arguments: Arguments to use for the importer. These must match the
+      parameters in the EventType's importer.
+    eventTypeName: Name of the EventType that this importer provides.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ArgumentsValue(_messages.Message):
+    r"""Arguments to use for the importer. These must match the parameters in
+    the EventType's importer.
+
+    Messages:
+      AdditionalProperty: An additional property for a ArgumentsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ArgumentsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ArgumentsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  arguments = _messages.MessageField('ArgumentsValue', 1)
+  eventTypeName = _messages.StringField(2)
+
+
 class TriggerSpec(_messages.Message):
   r"""The desired state of the Trigger.
 
@@ -3470,9 +3619,10 @@ class TriggerSpec(_messages.Message):
       not specified, will default to 'default'.  Not currently supported by
       Cloud Run.
     filter: Filter is the filter to apply against all events from the Broker.
-      Only events that pass this filter will be sent to the Subscriber. If not
-      specified, will default to allowing all events.  This must be specified
-      in Cloud Run.
+      Only events that pass this filter will be sent to the Subscriber.
+    importers: Specification of the importers that will provide events to the
+      trigger. Note, for Cloud Run, the importers will only be used if a
+      filter is not specified.
     subscriber: Subscriber is the addressable that receives events from the
       Broker that pass the Filter. It is required.  E.g. https://us-
       central1-myproject.cloudfunctions.net/myfunction or /namespaces/my-
@@ -3481,7 +3631,8 @@ class TriggerSpec(_messages.Message):
 
   broker = _messages.StringField(1)
   filter = _messages.MessageField('TriggerFilter', 2)
-  subscriber = _messages.MessageField('SubscriberSpec', 3)
+  importers = _messages.MessageField('TriggerImporterSpec', 3, repeated=True)
+  subscriber = _messages.MessageField('SubscriberSpec', 4)
 
 
 class TriggerStatus(_messages.Message):

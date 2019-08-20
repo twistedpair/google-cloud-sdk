@@ -713,6 +713,10 @@ If the specified context already exists, overrides the context.
 If the specified session entity type already exists, overrides the session
 entity type.
 
+This method doesn't work with Google Assistant integration.
+Contact Dialogflow support if you need to use session entities
+with Google Assistant integration.
+
       Args:
         request: (DialogflowProjectsAgentSessionsEntityTypesCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -739,6 +743,10 @@ entity type.
 
     def Delete(self, request, global_params=None):
       r"""Deletes the specified session entity type.
+
+This method doesn't work with Google Assistant integration.
+Contact Dialogflow support if you need to use session entities
+with Google Assistant integration.
 
       Args:
         request: (DialogflowProjectsAgentSessionsEntityTypesDeleteRequest) input message
@@ -767,6 +775,10 @@ entity type.
     def Get(self, request, global_params=None):
       r"""Retrieves the specified session entity type.
 
+This method doesn't work with Google Assistant integration.
+Contact Dialogflow support if you need to use session entities
+with Google Assistant integration.
+
       Args:
         request: (DialogflowProjectsAgentSessionsEntityTypesGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -794,6 +806,10 @@ entity type.
     def List(self, request, global_params=None):
       r"""Returns the list of all session entity types in the specified session.
 
+This method doesn't work with Google Assistant integration.
+Contact Dialogflow support if you need to use session entities
+with Google Assistant integration.
+
       Args:
         request: (DialogflowProjectsAgentSessionsEntityTypesListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -820,6 +836,10 @@ entity type.
 
     def Patch(self, request, global_params=None):
       r"""Updates the specified session entity type.
+
+This method doesn't work with Google Assistant integration.
+Contact Dialogflow support if you need to use session entities
+with Google Assistant integration.
 
       Args:
         request: (DialogflowProjectsAgentSessionsEntityTypesPatchRequest) input message

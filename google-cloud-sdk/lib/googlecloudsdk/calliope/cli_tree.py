@@ -222,7 +222,7 @@ class FlagOrPositional(Argument):
     self.default = arg.default
     self.description = _NormalizeDescription(_GetDescription(arg))
     self.name = six.text_type(name)
-    self.nargs = str(arg.nargs or 0)
+    self.nargs = six.text_type(arg.nargs or 0)
     if arg.metavar:
       self.value = six.text_type(arg.metavar)
     else:
@@ -302,7 +302,7 @@ class Flag(FlagOrPositional):
     prop, kind, value = getattr(flag, 'store_property', (None, None, None))
     if prop:
       # This allows actions.Store*Property() to be reconstituted.
-      attr = {LOOKUP_NAME: str(prop)}
+      attr = {LOOKUP_NAME: six.text_type(prop)}
       if kind == 'bool':
         flag.type = 'bool'
       if value:
@@ -609,20 +609,20 @@ def _Serialize(tree):
 
   def _FlagIndexKey(flag):
     return '::'.join([
-        str(flag.name),
-        str(flag.attr),
-        str(flag.category),
-        str(flag.choices),
-        str(flag.completer),
-        str(flag.default),
-        str(flag.description),
-        str(flag.is_hidden),
-        str(flag.is_global),
-        str(flag.is_group),
-        str(flag.is_required),
-        str(flag.nargs),
-        str(flag.type),
-        str(flag.value),
+        six.text_type(flag.name),
+        six.text_type(flag.attr),
+        six.text_type(flag.category),
+        six.text_type(flag.choices),
+        six.text_type(flag.completer),
+        six.text_type(flag.default),
+        six.text_type(flag.description),
+        six.text_type(flag.is_hidden),
+        six.text_type(flag.is_global),
+        six.text_type(flag.is_group),
+        six.text_type(flag.is_required),
+        six.text_type(flag.nargs),
+        six.text_type(flag.type),
+        six.text_type(flag.value),
     ])
 
   def _CollectAllFlags(command):

@@ -701,7 +701,7 @@ class IosDeviceList(_messages.Message):
 
 
 class IosModel(_messages.Message):
-  r"""A description of an iOS device tests may be run on.
+  r"""A description of an iOS device tests may be run on. Next tag: 10
 
   Enums:
     FormFactorValueValuesEnum: Whether this device is a phone, tablet,
@@ -716,6 +716,9 @@ class IosModel(_messages.Message):
       TestExecutionService.
     name: The human-readable name for this device model. Examples: "iPhone
       4s", "iPad Mini 2".
+    screenDensity: Screen density in DPI.
+    screenX: Screen size in the horizontal (X) dimension measured in pixels.
+    screenY: Screen size in the vertical (Y) dimension measured in pixels.
     supportedVersionIds: The set of iOS major software versions this device
       supports.
     tags: Tags for this dimension. Examples: "default", "preview",
@@ -740,8 +743,11 @@ class IosModel(_messages.Message):
   formFactor = _messages.EnumField('FormFactorValueValuesEnum', 2)
   id = _messages.StringField(3)
   name = _messages.StringField(4)
-  supportedVersionIds = _messages.StringField(5, repeated=True)
-  tags = _messages.StringField(6, repeated=True)
+  screenDensity = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  screenX = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  screenY = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  supportedVersionIds = _messages.StringField(8, repeated=True)
+  tags = _messages.StringField(9, repeated=True)
 
 
 class IosRuntimeConfiguration(_messages.Message):
@@ -1294,8 +1300,6 @@ class TestMatrix(_messages.Message):
         be parsed.
       TEST_ONLY_APK: The APK is marked as "testOnly". Deprecated and not
         currently used.
-      MALFORMED_IPA: The input IPA could not be parsed. Deprecated and not
-        currently used.
       NO_CODE_APK: APK contains no code. See also
         https://developer.android.com/guide/topics/manifest/application-
         element.html#code
@@ -1334,10 +1338,9 @@ class TestMatrix(_messages.Message):
     TEST_NOT_APP_HOSTED = 26
     PLIST_CANNOT_BE_PARSED = 27
     TEST_ONLY_APK = 28
-    MALFORMED_IPA = 29
-    NO_CODE_APK = 30
-    INVALID_INPUT_APK = 31
-    INVALID_APK_PREVIEW_SDK = 32
+    NO_CODE_APK = 29
+    INVALID_INPUT_APK = 30
+    INVALID_APK_PREVIEW_SDK = 31
 
   class OutcomeSummaryValueValuesEnum(_messages.Enum):
     r"""Output Only. The overall outcome of the test. Only set when the test

@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import encoding
+
 from googlecloudsdk.api_lib.accesscontextmanager import util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope.concepts import concepts
@@ -27,9 +29,63 @@ from googlecloudsdk.command_lib.accesscontextmanager import policies
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import repeated
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
+from googlecloudsdk.core import yaml
+import six
 
 REGISTRY = resources.REGISTRY
+
+
+class ParseResponseError(exceptions.Error):
+
+  def __init__(self, reason):
+    super(ParseResponseError,
+          self).__init__('Issue parsing response: {}'.format(reason))
+
+
+class ParseError(exceptions.Error):
+
+  def __init__(self, path, reason):
+    super(ParseError,
+          self).__init__('Issue parsing file [{}]: {}'.format(path, reason))
+
+
+class InvalidFormatError(ParseError):
+
+  def __init__(self, path, reason, message_class):
+    valid_fields = [f.name for f in message_class.all_fields()]
+    super(InvalidFormatError, self).__init__(
+        path, ('Invalid format: {}\n\n'
+               'A service perimeter file is a YAML-formatted list of service '
+               'perimeters, which are YAML objects with the fields [{}]. For '
+               'example:\n\n'
+               '- name: my_perimeter\n'
+               '  title: My Perimeter\n'
+               '  description: Perimeter for foo.\n'
+               '  perimeterType: PERIMETER_TYPE_REGULAR\n'
+               '  status:\n'
+               '    resources:\n'
+               '    - projects/0123456789\n'
+               '    accessLevels:\n'
+               '    - accessPolicies/my_policy/accessLevels/my_level\n'
+               '    unrestrictedServices\n'
+               '    - "*"'
+               '    restrictedServices:\n'
+               '    - storage.googleapis.com').format(reason,
+                                                      ', '.join(valid_fields)))
+
+
+def _ValidateAllFieldsRecognized(path, conditions):
+  unrecognized_fields = set()
+  for condition in conditions:
+    if condition.all_unrecognized_fields():
+      unrecognized_fields.update(condition.all_unrecognized_fields())
+  if unrecognized_fields:
+    raise InvalidFormatError(
+        path,
+        'Unrecognized fields: [{}]'.format(', '.join(unrecognized_fields)),
+        type(conditions[0]))
 
 
 def _AddServiceFilterRestriction(args, req, version, restriction_type):
@@ -406,3 +462,64 @@ def ParseLevels(args, perimeter_result, policy_id):
           levels.COLLECTION, accessPoliciesId=policy_id, accessLevelsId=l)
       for l in level_ids
   ]
+
+
+def ParseServicePerimetersBeta(path):
+  return ParseServicePerimetersBase(path, version='v1beta')
+
+
+def ParseServicePerimetersBase(path, version=None):
+  """Parse a YAML representation of a list of Service Perimeters.
+
+  Args:
+    path: str, path to file containing service perimeters
+    version: str, api version of ACM to use for proto messages
+
+  Returns:
+    list of Service Perimeters objects.
+
+  Raises:
+    ParseError: if the file could not be read into the proper object
+  """
+
+  data = yaml.load_path(path)
+  if not data:
+    raise ParseError(path, 'File is empty')
+
+  messages = util.GetMessages(version=version)
+  message_class = messages.ServicePerimeter
+  try:
+    conditions = [encoding.DictToMessage(c, message_class) for c in data]
+  except Exception as err:
+    raise InvalidFormatError(path, six.text_type(err), message_class)
+
+  _ValidateAllFieldsRecognized(path, conditions)
+  return conditions
+
+
+def ParseReplaceServicePerimetersResponseBeta(lro, unused_args):
+  return ParseReplaceServicePerimetersResponseBase(lro, version='v1beta')
+
+
+def ParseReplaceServicePerimetersResponseBase(lro, version):
+  """Parse the Long Running Operation response of the ReplaceServicePerimeters call.
+
+  Args:
+    lro: Long Running Operation response of ReplaceServicePerimeters.
+    version: version of the API. e.g. 'v1beta', 'v1'.
+
+  Returns:
+    The replacement Service Perimeters created by the ReplaceServicePerimeters
+    call.
+
+  Raises:
+    ParseResponseError: if the response could not be parsed into the proper
+    object.
+  """
+  messages = util.GetMessages(version)
+  message_class = messages.ReplaceServicePerimetersResponse
+  try:
+    return encoding.DictToMessage(
+        encoding.MessageToDict(lro.response), message_class).servicePerimeters
+  except Exception as err:
+    raise ParseResponseError(six.text_type(err))

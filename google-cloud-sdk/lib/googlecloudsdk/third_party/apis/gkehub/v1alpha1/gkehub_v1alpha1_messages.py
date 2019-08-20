@@ -58,9 +58,6 @@ class AuditLogConfig(_messages.Message):
   Fields:
     exemptedMembers: Specifies the identities that do not cause logging for
       this type of permission. Follows the same format of Binding.members.
-    ignoreChildExemptions: Specifies whether principals can be exempted for
-      the same LogType in lower-level resource policies. If true, any lower-
-      level exemptions will be ignored.
     logType: The log type that this config enables.
   """
 
@@ -79,8 +76,15 @@ class AuditLogConfig(_messages.Message):
     DATA_READ = 3
 
   exemptedMembers = _messages.StringField(1, repeated=True)
-  ignoreChildExemptions = _messages.BooleanField(2)
-  logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+
+
+class AuthorizerFeatureSpec(_messages.Message):
+  r"""A AuthorizerFeatureSpec object."""
+
+
+class AuthorizerFeatureState(_messages.Message):
+  r"""A AuthorizerFeatureState object."""
 
 
 class Binding(_messages.Message):
@@ -158,13 +162,13 @@ class Feature(_messages.Message):
     LabelsValue: GCP labels for this feature.
 
   Fields:
+    authorizerFeatureSpec: A AuthorizerFeatureSpec attribute.
     createTime: Output only. Timestamp for when the Feature was created.
     deleteTime: Output only. Timestamp for when the Feature was deleted.
     description: An optional description of the feature, limited to 2048
       characters.
     featureState: Output only. State of the resource itself.
     labels: GCP labels for this feature.
-    metadataFeatureSpec: A MetadataFeatureSpec attribute.
     meteringFeatureSpec: A MeteringFeatureSpec attribute.
     multiclusteringressFeatureSpec: A MultiClusterIngressFeatureSpec
       attribute.
@@ -198,12 +202,12 @@ class Feature(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  deleteTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  featureState = _messages.MessageField('FeatureState', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  metadataFeatureSpec = _messages.MessageField('MetadataFeatureSpec', 6)
+  authorizerFeatureSpec = _messages.MessageField('AuthorizerFeatureSpec', 1)
+  createTime = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  featureState = _messages.MessageField('FeatureState', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
   meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 7)
   multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 8)
   name = _messages.StringField(9)
@@ -293,10 +297,10 @@ class FeatureStateDetails(_messages.Message):
       of the feature. It also allows for an interpretation of the details.
 
   Fields:
+    authorizerFeatureState: A AuthorizerFeatureState attribute.
     code: The code indicates machine-interpretable status code of the feature.
       It also allows for an interpretation of the details.
     description: Human readable description of the issue.
-    metadataFeatureState: A MetadataFeatureState attribute.
     meteringFeatureState: A MeteringFeatureState attribute.
     multiclusteringressFeatureState: A MultiClusterIngressFeatureState
       attribute.
@@ -317,9 +321,9 @@ class FeatureStateDetails(_messages.Message):
     OK = 1
     FAILED = 2
 
-  code = _messages.EnumField('CodeValueValuesEnum', 1)
-  description = _messages.StringField(2)
-  metadataFeatureState = _messages.MessageField('MetadataFeatureState', 3)
+  authorizerFeatureState = _messages.MessageField('AuthorizerFeatureState', 1)
+  code = _messages.EnumField('CodeValueValuesEnum', 2)
+  description = _messages.StringField(3)
   meteringFeatureState = _messages.MessageField('MeteringFeatureState', 4)
   multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 5)
   servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 6)
@@ -344,8 +348,8 @@ class GkehubProjectsLocationsFeaturesGetIamPolicyRequest(_messages.Message):
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0 and 1. If the value is 0, or the field
-      is omitted, policy format version 1 will be returned.
+      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
+      field is omitted, policy format version 1 will be returned.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -754,30 +758,6 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
-
-
-class MetadataFeatureSpec(_messages.Message):
-  r"""There is no spec for metadata, but the Feature proto requires a spec."""
-
-
-class MetadataFeatureState(_messages.Message):
-  r"""Represents metadata about a Membership (e.g., the version of its API
-  server, the number of nodes).
-
-  Fields:
-    createTime: Output only. Timestamp for when the Metadata was created.
-    healthStatus: Output only. The response from the /healthz endpoint on the
-      API server. This is the source of `code` in the FeatureStateDetails
-      proto.
-    updateTime: Output only. Timestamp for when the Metadata was last updated.
-    version: Output only. The version of the Kubernetes (or Kubernetes-style)
-      API server.
-  """
-
-  createTime = _messages.StringField(1)
-  healthStatus = _messages.StringField(2)
-  updateTime = _messages.StringField(3)
-  version = _messages.StringField(4)
 
 
 class MeteringFeatureSpec(_messages.Message):

@@ -22,6 +22,7 @@ from googlecloudsdk.api_lib.logging import util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import times
+import six
 
 
 LOG_LEVELS = ['critical', 'error', 'warning', 'info', 'debug', 'any']
@@ -95,9 +96,9 @@ def FormatAppEntry(entry):
   if entry.resource.type != 'gae_app':
     return None
   if entry.protoPayload:
-    text = str(entry.protoPayload)
+    text = six.text_type(entry.protoPayload)
   elif entry.jsonPayload:
-    text = str(entry.jsonPayload)
+    text = six.text_type(entry.jsonPayload)
   else:
     text = entry.textPayload
   service, version = _ExtractServiceAndVersion(entry)
@@ -272,11 +273,12 @@ class LogPrinter(object):
     return out
 
   def _FallbackFormatter(self, entry):
-    # TODO(b/36057358): Is there better serialization for messages than str()?
+    # TODO(b/36057358): Is there better serialization for messages than
+    # six.text_type()?
     if entry.protoPayload:
-      return str(entry.protoPayload)
+      return six.text_type(entry.protoPayload)
     elif entry.jsonPayload:
-      return str(entry.jsonPayload)
+      return six.text_type(entry.jsonPayload)
     else:
       return entry.textPayload
 

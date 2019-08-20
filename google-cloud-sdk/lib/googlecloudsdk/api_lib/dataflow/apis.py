@@ -128,7 +128,11 @@ class Jobs(object):
       raise exceptions.HttpException(error)
 
   @staticmethod
-  def Snapshot(job_id, project_id=None, region_id=None, ttl='604800s'):
+  def Snapshot(job_id,
+               project_id=None,
+               region_id=None,
+               ttl='604800s',
+               snapshot_sources=False):
     """Takes a snapshot of a job via the Jobs.Snapshot method.
 
     Args:
@@ -136,6 +140,7 @@ class Jobs(object):
       project_id: The project which owns the job.
       region_id: The regional endpoint where the job lives.
       ttl: The ttl for the snapshot.
+      snapshot_sources: If true, the sources will be snapshotted.
 
     Returns:
       (Snapshot)
@@ -147,7 +152,8 @@ class Jobs(object):
         location=region_id,
         projectId=project_id,
         snapshotJobRequest=GetMessagesModule().SnapshotJobRequest(
-            location=region_id, ttl=ttl))
+            location=region_id, ttl=ttl, snapshotSources=snapshot_sources),
+        )
     try:
       return Jobs.GetService().Snapshot(request)
     except apitools_exceptions.HttpError as error:

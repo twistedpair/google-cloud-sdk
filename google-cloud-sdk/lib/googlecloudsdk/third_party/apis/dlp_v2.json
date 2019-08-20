@@ -2231,7 +2231,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Unique resource name for the triggeredJob, assigned by the service when the\ntriggeredJob is created, for example\n`projects\/dlp-test-project\/triggeredJobs\/53234423`.",
+          "description": "Unique resource name for the triggeredJob, assigned by the service when the\ntriggeredJob is created, for example\n`projects\/dlp-test-project\/jobTriggers\/53234423`.",
           "type": "string"
         },
         "displayName": {

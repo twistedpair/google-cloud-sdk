@@ -27,6 +27,7 @@ from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import encoding
+import six
 
 
 class Error(exceptions.Error):
@@ -102,8 +103,9 @@ def _SOATranslation(rdata, origin):
     SOA fields. Note that the master NS name is left in a substitutable form
     because it is always provided by Cloud DNS.
   """
+  # pylint: disable=g-complex-comprehension
   return ' '.join(
-      str(x) for x in [
+      six.text_type(x) for x in [
           '{0}',
           rdata.rname.derelativize(origin),
           rdata.serial,
@@ -111,6 +113,7 @@ def _SOATranslation(rdata, origin):
           rdata.retry,
           rdata.expire,
           rdata.minimum])
+  # pylint: enable=g-complex-comprehension
 
 
 def _SRVTranslation(rdata, origin):
@@ -124,12 +127,14 @@ def _SRVTranslation(rdata, origin):
     str, The translation of the given SRV rdata which includes all the required
     SRV fields. Note that the translated target name is always qualified.
   """
+  # pylint: disable=g-complex-comprehension
   return ' '.join(
-      str(x) for x in [
+      six.text_type(x) for x in [
           rdata.priority,
           rdata.weight,
           rdata.port,
           rdata.target.derelativize(origin)])
+  # pylint: enable=g-complex-comprehension
 
 
 def _TargetTranslation(rdata, origin):

@@ -153,7 +153,10 @@ class KubernetesExceptionParser(object):
 
   @property
   def status_code(self):
-    return self._wrapped_error.status_code
+    try:
+      return self._wrapped_error.status_code
+    except KeyError:
+      return None
 
   @property
   def url(self):
@@ -161,26 +164,50 @@ class KubernetesExceptionParser(object):
 
   @property
   def api_version(self):
-    return self._content['apiVersion']
+    try:
+      return self._content['apiVersion']
+    except KeyError:
+      return None
 
   @property
   def api_name(self):
-    return self._content['details']['group']
+    try:
+      return self._content['details']['group']
+    except KeyError:
+      return None
 
   @property
   def resource_name(self):
-    return self._content['details']['name']
+    try:
+      return self._content['details']['name']
+    except KeyError:
+      return None
 
   @property
   def resource_kind(self):
-    return self._content['details']['kind']
+    try:
+      return self._content['details']['kind']
+    except KeyError:
+      return None
 
   @property
   def default_message(self):
-    return self._content['messsage']
+    try:
+      return self._content['message']
+    except KeyError:
+      return None
+
+  @property
+  def error(self):
+    return self._wrapped_error
 
   @property
   def causes(self):
     """Returns list of causes uniqued by the message."""
-    return {c['message']: c for c in self._content['details']['causes']
-           }.values()
+    try:
+      messages = {
+          c['message']: c for c in self._content['details'][
+              'causes']}
+      return [messages[k] for k in sorted(messages)]
+    except KeyError:
+      return []

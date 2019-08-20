@@ -22,6 +22,7 @@ from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import resources
+import six
 from six.moves import zip
 
 
@@ -105,7 +106,8 @@ class OperationBatch(object):
     return iter(self._operation_refs)
 
   def __str__(self):
-    return '[{0}]'.format(', '.join(str(r) for r in self._operation_refs))
+    return '[{0}]'.format(', '.join(
+        six.text_type(r) for r in self._operation_refs))
 
 
 class BatchPoller(waiter.OperationPoller):
