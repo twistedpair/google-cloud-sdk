@@ -537,7 +537,7 @@ The count of the accelerator must be greater than 0.
       type=accelerator_type)
 
 
-def AddCustomContainerFlags(parser):
+def AddCustomContainerFlags(parser, support_tpu_tf_version=False):
   """Add Custom container flags to parser."""
   GetMasterMachineType().AddToParser(parser)
   GetMasterAccelerator().AddToParser(parser)
@@ -548,6 +548,8 @@ def AddCustomContainerFlags(parser):
   GetWorkerMachineConfig().AddToParser(parser)
   GetWorkerAccelerator().AddToParser(parser)
   GetWorkerImageUri().AddToParser(parser)
+  if support_tpu_tf_version:
+    GetTpuTfVersion().AddToParser(parser)
 
 # Custom Container Flags
 _ACCELERATOR_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
@@ -710,6 +712,16 @@ def GetWorkerImageUri():
       help=('Docker image to run on each worker node. '
             'This image must be in Google Container Registry. If not '
             'specified, the value of `--master-image-uri` is used.'))
+
+
+def GetTpuTfVersion():
+  """Build tpu-tf-version flag."""
+  return base.Argument(
+      '--tpu-tf-version',
+      required=False,
+      help=('Runtime version of TensorFlow used by the container. This field '
+            'must be specified if a custom container on the TPU worker is '
+            'being used.'))
 
 
 def AddMachineTypeFlagToParser(parser):

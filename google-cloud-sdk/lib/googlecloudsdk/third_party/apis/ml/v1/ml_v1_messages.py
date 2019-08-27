@@ -1401,8 +1401,6 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       See more about [using Compute Engine machine types](/ml-
       engine/docs/tensorflow/machine-types#compute-engine-machine-types).  You
       must set this value when `scaleTier` is set to `CUSTOM`.
-    maxRunningTime: Optional. The maximum job running time. The default is 7
-      days.
     packageUris: Required. The Google Cloud Storage location of the packages
       with the training program and any additional dependencies. The maximum
       number of package URIs is 100.
@@ -1516,19 +1514,18 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
   jobDir = _messages.StringField(3)
   masterConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 4)
   masterType = _messages.StringField(5)
-  maxRunningTime = _messages.StringField(6)
-  packageUris = _messages.StringField(7, repeated=True)
-  parameterServerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 8)
-  parameterServerCount = _messages.IntegerField(9)
-  parameterServerType = _messages.StringField(10)
-  pythonModule = _messages.StringField(11)
-  pythonVersion = _messages.StringField(12)
-  region = _messages.StringField(13)
-  runtimeVersion = _messages.StringField(14)
-  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 15)
-  workerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 16)
-  workerCount = _messages.IntegerField(17)
-  workerType = _messages.StringField(18)
+  packageUris = _messages.StringField(6, repeated=True)
+  parameterServerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 7)
+  parameterServerCount = _messages.IntegerField(8)
+  parameterServerType = _messages.StringField(9)
+  pythonModule = _messages.StringField(10)
+  pythonVersion = _messages.StringField(11)
+  region = _messages.StringField(12)
+  runtimeVersion = _messages.StringField(13)
+  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 14)
+  workerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 15)
+  workerCount = _messages.IntegerField(16)
+  workerType = _messages.StringField(17)
 
 
 class GoogleCloudMlV1TrainingOutput(_messages.Message):

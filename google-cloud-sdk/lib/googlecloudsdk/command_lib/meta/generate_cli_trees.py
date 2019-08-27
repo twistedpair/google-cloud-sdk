@@ -1338,7 +1338,7 @@ def LoadAll(directory=None, ignore_out_of_date=False, root=None,
   for directory in directories:
     if not directory or not os.path.exists(directory):
       continue
-    for (dirpath, _, filenames) in os.walk(directory):
+    for (dirpath, _, filenames) in os.walk(six.text_type(directory)):
       for filename in sorted(filenames):  # For stability across runs.
         command, extension = os.path.splitext(filename)
         if extension != '.json':

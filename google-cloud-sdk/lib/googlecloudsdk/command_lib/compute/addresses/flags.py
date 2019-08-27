@@ -184,11 +184,15 @@ def AddNetworkTier(parser):
       """)
 
 
-def AddPurpose(parser):
+def AddPurpose(parser, support_shared_loadbalancer_vip):
   """Adds purpose flag."""
+  if support_shared_loadbalancer_vip:
+    choices = ['VPC_PEERING', 'SHARED_LOADBALANCER_VIP', 'GCE_ENDPOINT']
+  else:
+    choices = ['VPC_PEERING', 'GCE_ENDPOINT']
   parser.add_argument(
       '--purpose',
-      choices=['VPC_PEERING', 'GCE_ENDPOINT'],
+      choices=choices,
       type=lambda x: x.upper(),
       help="""\
       The purpose of the address resource. This field is not applicable to

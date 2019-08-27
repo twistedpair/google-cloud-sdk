@@ -127,8 +127,12 @@ class ExceptionContext(object):
   def __init__(self, e):
     self._exception = e
     self._traceback = sys.exc_info()[2]
+    # This isn't fool-proof as Python 2 persists sys.exc_info() until exiting
+    # the frame where the exception was caught (unlike Python 3 which clears it
+    # upon exiting the exception handler, which is what we want). But it should
+    # at least catch some cases of this class being initialized incorrectly.
     if not self._traceback:
-      raise ValueError('Must set ExceptionContext within an except clause.')
+      raise InternalError('Must set ExceptionContext within an except clause.')
 
   def Reraise(self):
     six.reraise(type(self._exception), self._exception, self._traceback)

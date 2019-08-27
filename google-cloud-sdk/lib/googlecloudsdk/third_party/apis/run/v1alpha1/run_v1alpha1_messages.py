@@ -740,6 +740,57 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GoogleRpcStatus(_messages.Message):
+  r"""The `Status` type defines a logical error model that is suitable for
+  different programming environments, including REST APIs and RPC APIs. It is
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details.  You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    details: A list of messages that carry the error details.  There is a
+      common set of message types for APIs to use.
+    message: A developer-facing error message, which should be in English. Any
+      user-facing error message should be localized and sent in the
+      google.rpc.Status.details field, or localized by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  message = _messages.StringField(3)
+
+
 class HTTPGetAction(_messages.Message):
   r"""HTTPGetAction describes an action based on HTTP Get requests.
 
@@ -894,24 +945,63 @@ class ListAuthorizedDomainsResponse(_messages.Message):
 class ListConfigurationsResponse(_messages.Message):
   r"""ListConfigurationsResponse is a list of Configuration resources.
 
+  Messages:
+    RegionDetailsValue: Details for the regions used during a global call
+      including any failures. This is not populated when targeting a specific
+      region.
+
   Fields:
     apiVersion: The API version for this call such as
       "serving.knative.dev/v1alpha1".
     items: List of Configurations.
     kind: The kind of this resource, in this case "ConfigurationList".
     metadata: Metadata associated with this Configuration list.
+    regionDetails: Details for the regions used during a global call including
+      any failures. This is not populated when targeting a specific region.
     unreachable: Locations that could not be reached.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RegionDetailsValue(_messages.Message):
+    r"""Details for the regions used during a global call including any
+    failures. This is not populated when targeting a specific region.
+
+    Messages:
+      AdditionalProperty: An additional property for a RegionDetailsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type RegionDetailsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RegionDetailsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A RegionDetails attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('RegionDetails', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('Configuration', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
-  unreachable = _messages.StringField(5, repeated=True)
+  regionDetails = _messages.MessageField('RegionDetailsValue', 5)
+  unreachable = _messages.StringField(6, repeated=True)
 
 
 class ListDomainMappingsResponse(_messages.Message):
   r"""ListDomainMappingsResponse is a list of DomainMapping resources.
+
+  Messages:
+    RegionDetailsValue: Details for the regions used during a global call
+      including any failures. This is not populated when targeting a specific
+      region.
 
   Fields:
     apiVersion: The API version for this call such as
@@ -919,16 +1009,50 @@ class ListDomainMappingsResponse(_messages.Message):
     items: List of DomainMappings.
     kind: The kind of this resource, in this case "DomainMappingList".
     metadata: Metadata associated with this DomainMapping list.
+    regionDetails: Details for the regions used during a global call including
+      any failures. This is not populated when targeting a specific region.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RegionDetailsValue(_messages.Message):
+    r"""Details for the regions used during a global call including any
+    failures. This is not populated when targeting a specific region.
+
+    Messages:
+      AdditionalProperty: An additional property for a RegionDetailsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type RegionDetailsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RegionDetailsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A RegionDetails attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('RegionDetails', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('DomainMapping', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
+  regionDetails = _messages.MessageField('RegionDetailsValue', 5)
 
 
 class ListEventTypesResponse(_messages.Message):
   r"""ListEventTypesResponse is a list of EventType resources.
+
+  Messages:
+    RegionDetailsValue: Details for the regions used during a global call
+      including any failures. This is not populated when targeting a specific
+      region.
 
   Fields:
     apiVersion: The API version for this call such as
@@ -936,14 +1060,43 @@ class ListEventTypesResponse(_messages.Message):
     items: List of EventTypes.
     kind: The kind of this resource, in this case "EventTypeList".
     metadata: Metadata associated with this EventType list.
+    regionDetails: Details for the regions used during a global call including
+      any failures. This is not populated when targeting a specific region.
     unreachable: Locations that could not be reached.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RegionDetailsValue(_messages.Message):
+    r"""Details for the regions used during a global call including any
+    failures. This is not populated when targeting a specific region.
+
+    Messages:
+      AdditionalProperty: An additional property for a RegionDetailsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type RegionDetailsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RegionDetailsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A RegionDetails attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('RegionDetails', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('EventType', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
-  unreachable = _messages.StringField(5, repeated=True)
+  regionDetails = _messages.MessageField('RegionDetailsValue', 5)
+  unreachable = _messages.StringField(6, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -991,24 +1144,63 @@ class ListMeta(_messages.Message):
 class ListRevisionsResponse(_messages.Message):
   r"""ListRevisionsResponse is a list of Revision resources.
 
+  Messages:
+    RegionDetailsValue: Details for the regions used during a global call
+      including any failures. This is not populated when targeting a specific
+      region.
+
   Fields:
     apiVersion: The API version for this call such as
       "serving.knative.dev/v1alpha1".
     items: List of Revisions.
     kind: The kind of this resource, in this case "RevisionList".
     metadata: Metadata associated with this revision list.
+    regionDetails: Details for the regions used during a global call including
+      any failures. This is not populated when targeting a specific region.
     unreachable: Locations that could not be reached.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RegionDetailsValue(_messages.Message):
+    r"""Details for the regions used during a global call including any
+    failures. This is not populated when targeting a specific region.
+
+    Messages:
+      AdditionalProperty: An additional property for a RegionDetailsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type RegionDetailsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RegionDetailsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A RegionDetails attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('RegionDetails', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('Revision', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
-  unreachable = _messages.StringField(5, repeated=True)
+  regionDetails = _messages.MessageField('RegionDetailsValue', 5)
+  unreachable = _messages.StringField(6, repeated=True)
 
 
 class ListRoutesResponse(_messages.Message):
   r"""ListRoutesResponse is a list of Route resources.
+
+  Messages:
+    RegionDetailsValue: Details for the regions used during a global call
+      including any failures. This is not populated when targeting a specific
+      region.
 
   Fields:
     apiVersion: The API version for this call such as
@@ -1016,18 +1208,52 @@ class ListRoutesResponse(_messages.Message):
     items: List of Routes.
     kind: The kind of this resource, in this case always "RouteList".
     metadata: Metadata associated with this Route list.
+    regionDetails: Details for the regions used during a global call including
+      any failures. This is not populated when targeting a specific region.
     unreachable: Locations that could not be reached.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RegionDetailsValue(_messages.Message):
+    r"""Details for the regions used during a global call including any
+    failures. This is not populated when targeting a specific region.
+
+    Messages:
+      AdditionalProperty: An additional property for a RegionDetailsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type RegionDetailsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RegionDetailsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A RegionDetails attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('RegionDetails', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('Route', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
-  unreachable = _messages.StringField(5, repeated=True)
+  regionDetails = _messages.MessageField('RegionDetailsValue', 5)
+  unreachable = _messages.StringField(6, repeated=True)
 
 
 class ListServicesResponse(_messages.Message):
   r"""A list of Service resources.
+
+  Messages:
+    RegionDetailsValue: Details for the regions used during a global call
+      including any failures. This is not populated when targeting a specific
+      region.
 
   Fields:
     apiVersion: The API version for this call such as
@@ -1035,18 +1261,52 @@ class ListServicesResponse(_messages.Message):
     items: List of Services.
     kind: The kind of this resource, in this case "ServiceList".
     metadata: Metadata associated with this Service list.
+    regionDetails: Details for the regions used during a global call including
+      any failures. This is not populated when targeting a specific region.
     unreachable: Locations that could not be reached.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RegionDetailsValue(_messages.Message):
+    r"""Details for the regions used during a global call including any
+    failures. This is not populated when targeting a specific region.
+
+    Messages:
+      AdditionalProperty: An additional property for a RegionDetailsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type RegionDetailsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RegionDetailsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A RegionDetails attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('RegionDetails', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('Service', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
-  unreachable = _messages.StringField(5, repeated=True)
+  regionDetails = _messages.MessageField('RegionDetailsValue', 5)
+  unreachable = _messages.StringField(6, repeated=True)
 
 
 class ListTriggersResponse(_messages.Message):
   r"""ListTriggersResponse is a list of Trigger resources.
+
+  Messages:
+    RegionDetailsValue: Details for the regions used during a global call
+      including any failures. This is not populated when targeting a specific
+      region.
 
   Fields:
     apiVersion: The API version for this call such as
@@ -1054,14 +1314,43 @@ class ListTriggersResponse(_messages.Message):
     items: List of Triggers.
     kind: The kind of this resource, in this case "TriggerList".
     metadata: Metadata associated with this Trigger list.
+    regionDetails: Details for the regions used during a global call including
+      any failures. This is not populated when targeting a specific region.
     unreachable: Locations that could not be reached.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RegionDetailsValue(_messages.Message):
+    r"""Details for the regions used during a global call including any
+    failures. This is not populated when targeting a specific region.
+
+    Messages:
+      AdditionalProperty: An additional property for a RegionDetailsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type RegionDetailsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RegionDetailsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A RegionDetails attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('RegionDetails', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('Trigger', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
-  unreachable = _messages.StringField(5, repeated=True)
+  regionDetails = _messages.MessageField('RegionDetailsValue', 5)
+  unreachable = _messages.StringField(6, repeated=True)
 
 
 class LocalObjectReference(_messages.Message):
@@ -1510,6 +1799,16 @@ class Quantity(_messages.Message):
   """
 
   string = _messages.StringField(1)
+
+
+class RegionDetails(_messages.Message):
+  r"""Information for a regional call used for a global API.
+
+  Fields:
+    error: The status indicating why the regional call failed
+  """
+
+  error = _messages.MessageField('GoogleRpcStatus', 1)
 
 
 class ResourceRecord(_messages.Message):

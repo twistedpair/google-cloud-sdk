@@ -256,9 +256,9 @@ ENABLE_IP_ALIAS_FLAG = base.Argument(
     action='store_true',
     help="""\
     Enable use of alias IPs (https://cloud.google.com/compute/docs/alias-ip/)
-    for pod IPs within the Environment cluster. This will create two secondary
-    ranges, one for the pod IPs and another to reserve space for the services
-    range.
+    for Pod IPs. This will require at least two secondary ranges in the
+    subnetwork, one for the pod IPs and another to reserve space for the
+    services range.
     """)
 
 CLUSTER_SECONDARY_RANGE_NAME_FLAG = base.Argument(

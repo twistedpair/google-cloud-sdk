@@ -67,7 +67,7 @@ NO_AUTOPROVISIONING_LIMITS_ERROR_MSG = """\
 Must specify both --max-cpu and --max-memory to enable autoprovisioning.
 """
 
-ATMOST_ONE_IDENTITY_FOR_AUTOPROVISIONING_ERROR_MSG = """\
+AT_MOST_ONE_IDENTITY_FOR_AUTOPROVISIONING_ERROR_MSG = """\
 At most one of --autoprovisioning-service-account and \
 --autoprovisioning-scopes \
 can be specified"""
@@ -1397,7 +1397,8 @@ class APIAdapter(object):
           desiredMasterAuthorizedNetworksConfig=authorized_networks)
     elif options.enable_autoprovisioning is not None or \
          options.autoscaling_profile is not None:
-      autoscaling = self.CreateClusterAutoscalingCommon(cluster_ref, options)
+      autoscaling = self.CreateClusterAutoscalingCommon(cluster_ref, options,
+                                                        True)
       update = self.messages.ClusterUpdate(
           desiredClusterAutoscaling=autoscaling)
     elif options.enable_pod_security_policy is not None:
@@ -2143,7 +2144,7 @@ class V1Beta1Adapter(V1Adapter):
             disabled=False, auth=istio_auth)
     if options.enable_autoprovisioning is not None:
       cluster.autoscaling = self.CreateClusterAutoscalingCommon(
-          cluster_ref, options)
+          cluster_ref, options, False)
     if options.database_encryption:
       cluster.databaseEncryption = self.messages.DatabaseEncryption(
           keyName=options.database_encryption,
@@ -2219,12 +2220,13 @@ class V1Beta1Adapter(V1Adapter):
             update=update))
     return self.ParseOperation(op.name, cluster_ref.zone)
 
-  def CreateClusterAutoscalingCommon(self, _cluster_ref, options):
+  def CreateClusterAutoscalingCommon(self, _cluster_ref, options, for_update):
     """Create cluster's autoscaling configuration.
 
     Args:
       _cluster_ref: Cluster reference.
       options: Either CreateClusterOptions or UpdateClusterOptions.
+      for_update: Is function executed for update operation.
 
     Returns:
       Cluster's autoscaling configuration.
@@ -2261,31 +2263,33 @@ class V1Beta1Adapter(V1Adapter):
         autoscaling.autoprovisioningLocations = \
             sorted(autoprovisioning_locations)
 
-    self.ValidateClusterAutoscaling(autoscaling)
+    self.ValidateClusterAutoscaling(autoscaling, for_update)
     return autoscaling
 
-  def ValidateClusterAutoscaling(self, autoscaling):
+  def ValidateClusterAutoscaling(self, autoscaling, for_update):
     """Validate cluster autoscaling configuration.
 
     Args:
       autoscaling: autoscaling configuration to be validated.
+      for_update: Is function executed for update operation.
 
     Raises:
       Error if the new configuration is invalid.
     """
     if autoscaling.enableNodeAutoprovisioning:
-      cpu_found, mem_found = False, False
-      for limit in autoscaling.resourceLimits:
-        if limit.resourceType == 'cpu':
-          cpu_found = True
-        if limit.resourceType == 'memory':
-          mem_found = True
-      if not cpu_found or not mem_found:
-        raise util.Error(NO_AUTOPROVISIONING_LIMITS_ERROR_MSG)
+      if  not for_update or autoscaling.resourceLimits:
+        cpu_found, mem_found = False, False
+        for limit in autoscaling.resourceLimits:
+          if limit.resourceType == 'cpu':
+            cpu_found = True
+          if limit.resourceType == 'memory':
+            mem_found = True
+        if not cpu_found or not mem_found:
+          raise util.Error(NO_AUTOPROVISIONING_LIMITS_ERROR_MSG)
       if autoscaling.autoprovisioningNodePoolDefaults \
         and autoscaling.autoprovisioningNodePoolDefaults.serviceAccount \
         and autoscaling.autoprovisioningNodePoolDefaults.oauthScopes:
-        raise util.Error(ATMOST_ONE_IDENTITY_FOR_AUTOPROVISIONING_ERROR_MSG)
+        raise util.Error(AT_MOST_ONE_IDENTITY_FOR_AUTOPROVISIONING_ERROR_MSG)
     elif autoscaling.resourceLimits:
       raise util.Error(LIMITS_WITHOUT_AUTOPROVISIONING_MSG)
     elif autoscaling.autoprovisioningNodePoolDefaults and \
@@ -2396,7 +2400,8 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     cluster = self.CreateClusterCommon(cluster_ref, options)
     if (options.enable_autoprovisioning is not None or
         options.autoscaling_profile is not None):
-      cluster.autoscaling = self.CreateClusterAutoscalingCommon(None, options)
+      cluster.autoscaling = self.CreateClusterAutoscalingCommon(None, options,
+                                                                False)
     if options.local_ssd_volume_configs:
       for pool in cluster.nodePools:
         self._AddLocalSSDVolumeConfigsToNodeConfig(pool.config, options)
@@ -2556,12 +2561,13 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     operation = self.client.projects_locations_clusters_nodePools.Create(req)
     return self.ParseOperation(operation.name, node_pool_ref.zone)
 
-  def CreateClusterAutoscalingCommon(self, cluster_ref, options):
+  def CreateClusterAutoscalingCommon(self, cluster_ref, options, for_update):
     """Create cluster's autoscaling configuration.
 
     Args:
       cluster_ref: Cluster reference.
       options: Either CreateClusterOptions or UpdateClusterOptions.
+      for_update: Is function executed for update operation.
 
     Returns:
       Cluster's autoscaling configuration.
@@ -2614,7 +2620,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       autoscaling.autoscalingProfile = \
           self.CreateAutoscalingProfileCommon(options)
 
-    self.ValidateClusterAutoscaling(autoscaling)
+    self.ValidateClusterAutoscaling(autoscaling, for_update)
     return autoscaling
 
   def CreateAutoscalingProfileCommon(self, options):

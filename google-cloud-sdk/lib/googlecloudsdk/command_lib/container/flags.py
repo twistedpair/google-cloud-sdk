@@ -337,7 +337,7 @@ def AddAutoscalingProfilesFlag(parser, hidden=False):
       type=str)
 
 
-def AddAutoprovisioningFlags(parser, hidden=False):
+def AddAutoprovisioningFlags(parser, hidden=False, for_create=False):
   """Adds node autoprovisioning related flags to parser.
 
   Autoprovisioning related flags are: --enable-autoprovisioning
@@ -346,6 +346,7 @@ def AddAutoprovisioningFlags(parser, hidden=False):
   Args:
     parser: A given parser.
     hidden: If true, suppress help text for added options.
+    for_create: Add flags for create request.
   """
 
   group = parser.add_argument_group('Node autoprovisioning', hidden=hidden)
@@ -400,7 +401,7 @@ master(s).
       'Flags to configure autoprovisioned nodes')
   from_flags_group.add_argument(
       '--max-cpu',
-      required=True,
+      required=for_create,
       help="""\
 Maximum number of cores in the cluster.
 
@@ -417,7 +418,7 @@ Minimum number of cores to which the cluster can scale.""",
       type=int)
   from_flags_group.add_argument(
       '--max-memory',
-      required=True,
+      required=for_create,
       help="""\
 Maximum memory in the cluster.
 
@@ -502,7 +503,7 @@ https://cloud.google.com/sdk/gcloud/reference/container/clusters/create#--scopes
 """)
   from_flags_group.add_argument(
       '--autoprovisioning-locations',
-      hidden=True,
+      hidden=hidden,
       help="""\
 Set of zones where new node pools can be created by autoprovisioning.
 All zones must be in the same region as the cluster's master(s).
@@ -737,8 +738,8 @@ Enable node autorepair feature for a node-pool.
 """
     if for_create:
       help_text += """
-Node autorepair is enabled by default for node pools using COS as a base image,
-use --no-enable-autorepair to disable.
+Node autorepair is enabled by default for node pools using COS or COS_CONTAINERD
+as a base image, use --no-enable-autorepair to disable.
 """
   else:
     help_text = """\
@@ -748,8 +749,8 @@ Enable node autorepair feature for a cluster's default node-pool(s).
 """
     if for_create:
       help_text += """
-Node autorepair is enabled by default for clusters using COS as a base image,
-use --no-enable-autorepair to disable.
+Node autorepair is enabled by default for clusters using COS or COS_CONTAINERD
+as a base image, use --no-enable-autorepair to disable.
 """
   help_text += """
 See https://cloud.google.com/kubernetes-engine/docs/how-to/node-auto-repair for \
@@ -1135,8 +1136,9 @@ def AddIPAliasFlags(parser):
       default=None,
       help="""\
 Enable use of alias IPs (https://cloud.google.com/compute/docs/alias-ip/)
-for pod IPs. This will create two secondary ranges, one for the pod IPs
-and another to reserve space for the services range.
+for Pod IPs. This will require at least two secondary ranges in the
+subnetwork, one for the pod IPs and another to reserve space for the
+services range.
 """)
   parser.add_argument(
       '--services-ipv4-cidr',
@@ -2235,7 +2237,7 @@ more secure Node credential bootstrapping implementation.
       action='store_true',
       default=None,
       help=help_text,
-      hidden=True)
+      hidden=False)
 
 
 def AddSurgeUpgradeFlag(parser, hidden=False, for_node_pool=False):

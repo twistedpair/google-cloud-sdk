@@ -882,6 +882,12 @@ MAP = {
         ),
     },
     'run': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.run.v1',
+            client_classpath='run_v1_client.RunV1',
+            messages_modulepath='run_v1_messages',
+            default_version=False
+        ),
         'v1alpha1': APIDef(
             class_path='googlecloudsdk.third_party.apis.run.v1alpha1',
             client_classpath='run_v1alpha1_client.RunV1alpha1',

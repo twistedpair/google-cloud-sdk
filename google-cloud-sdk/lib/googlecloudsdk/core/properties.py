@@ -1467,15 +1467,11 @@ class _SectionDataproc(_Section):
     super(_SectionDataproc, self).__init__('dataproc')
     self.region = self._Add(
         'region',
-        default='global',
         help_text=(
             'Cloud Dataproc region to use. Each Cloud Dataproc '
             'region constitutes an independent resource namespace constrained '
             'to deploying instances into Compute Engine zones inside '
-            'the region. The default value of `global` is a special '
-            'multi-region namespace which is capable of deploying instances '
-            'into all Compute Engine zones globally, and is disjoint '
-            'from other Cloud Dataproc regions.'))
+            'the region.'))
 
 
 class _SectionDeploymentManager(_Section):
@@ -1677,6 +1673,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.gkehub = self._Add('gkehub')
     self.healthcare = self._Add('healthcare')
     self.iam = self._Add('iam')
+    self.iamassist = self._Add('iamassist')
     self.kubernetespolicy = self._Add('kubernetespolicy')
     self.language = self._Add('language')
     self.logging = self._Add('logging')

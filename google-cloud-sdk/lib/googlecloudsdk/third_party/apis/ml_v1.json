@@ -295,11 +295,6 @@
         "pythonVersion": {
           "description": "Optional. The version of Python used in training. If not set, the default\nversion is '2.7'. Python '3.5' is available when `runtime_version` is set\nto '1.4' and above. Python '2.7' works with all supported\n<a href=\"\/ml-engine\/docs\/runtime-version-list\">runtime versions<\/a>.",
           "type": "string"
-        },
-        "maxRunningTime": {
-          "description": "Optional. The maximum job running time. The default is 7 days.",
-          "type": "string",
-          "format": "google-duration"
         }
       }
     },

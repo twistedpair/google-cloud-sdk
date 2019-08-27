@@ -532,7 +532,7 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
     schema: Optional. Schema of the entry. An entry might not have any schema
       attached to it.
     sourceSystemTimestamps: Output only. Timestamps about the underlying
-      Google Cloud Platform resource -- not about this Data Catalog Entry.
+      Google Cloud Platform resource, not about this Data Catalog Entry.
     type: The type of the entry.
   """
 
@@ -779,12 +779,11 @@ class GoogleCloudDatacatalogV1beta1SystemTimestamps(_messages.Message):
   r"""Timestamps about this resource according to a particular system.
 
   Fields:
-    createTime: Output only. The creation time of the resource within the
-      given system.
+    createTime: The creation time of the resource within the given system.
     expireTime: Output only. The expiration time of the resource within the
-      given system.
-    updateTime: Output only. The last-modified time of the resource within the
-      given system.
+      given system. Currently only apllicable to BigQuery resources.
+    updateTime: The last-modified time of the resource within the given
+      system.
   """
 
   createTime = _messages.StringField(1)

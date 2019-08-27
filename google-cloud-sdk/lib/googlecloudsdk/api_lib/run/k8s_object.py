@@ -281,6 +281,9 @@ class KubernetesObject(object):
   def MakeSerializable(self):
     return self.Message()
 
+  def __repr__(self):
+    return '{}({})'.format(type(self).__name__, repr(self._m))
+
 
 def AnnotationsFromMetadata(messages_mod, metadata):
   if not metadata.annotations:
@@ -349,7 +352,69 @@ class LazyListWrapper(collections.MutableSequence):
     self._l.insert(i, v)
 
 
-class ListAsDictionaryWrapper(collections.MutableMapping):
+class ListAsReadOnlyDictionaryWrapper(collections.Mapping):
+  """Wraps repeated messages field with name in a dict-like object.
+
+  This class is a simplified version of ListAsDictionaryWrapper for when there
+  is no single value field on the underlying messages. Compared to
+  ListAsDictionaryWrapper, this class does not directly allow mutating the
+  underlying messages and returns the entire message when getting.
+
+  Operations in these classes are O(n) for simplicity. This needs to match the
+  live state of the underlying list of messages, including edits made by others.
+  """
+
+  def __init__(self, to_wrap, key_field='name', filter_func=None):
+    """Wraps list of messages to be accessible as a read-only dictionary.
+
+    Arguments:
+      to_wrap: List[Message], List of messages to treat as a dictionary.
+      key_field: attribute to use as the keys of the dictionary
+      filter_func: filter function to allow only considering certain messages
+        from the wrapped list. This function should take a message as its only
+        argument and return True if this message should be included.
+    """
+    self._m = to_wrap
+    self._key_field = key_field
+    self._filter = filter_func or (lambda _: True)
+
+  def __getitem__(self, key):
+    """Implements evaluation of `self[key]`."""
+    for item in self._m:
+      if getattr(item, self._key_field) == key:
+        if self._filter(item):
+          return item
+        break
+    raise KeyError(key)
+
+  def __contains__(self, item):
+    """Implements evaluation of `item in self`."""
+    for list_elem in self._m:
+      if getattr(list_elem, self._key_field) == item:
+        return self._filter(list_elem)
+    return False
+
+  def __len__(self):
+    """Implements evaluation of `len(self)`."""
+    return sum(1 for m in self._m if self._filter(m))
+
+  def __iter__(self):
+    """Returns a generator yielding the message keys."""
+    for item in self._m:
+      if self._filter(item):
+        yield getattr(item, self._key_field)
+
+  def MakeSerializable(self):
+    return self._m
+
+  def __repr__(self):
+    return '{}{{{}}}'.format(
+        type(self).__name__,
+        ', '.join('{}: {}'.format(k, v) for k, v in self.items()))
+
+
+class ListAsDictionaryWrapper(ListAsReadOnlyDictionaryWrapper,
+                              collections.MutableMapping):
   """Wraps repeated messages field with name and value in a dict-like object.
 
   Properties which resemble dictionaries (e.g. environment variables, build
@@ -360,7 +425,7 @@ class ListAsDictionaryWrapper(collections.MutableMapping):
   """
 
   def __init__(self, to_wrap, item_class,
-               key_field='name', value_field='value'):
+               key_field='name', value_field='value', filter_func=None):
     """Wrap a list of messages to be accessible as a dictionary.
 
     Arguments:
@@ -368,26 +433,39 @@ class ListAsDictionaryWrapper(collections.MutableMapping):
       item_class: type of the underlying Message objects
       key_field: attribute to use as the keys of the dictionary
       value_field: attribute to use as the values of the dictionary
-
+      filter_func: filter function to allow only considering certain messages
+        from the wrapped list. This function should take a message as its only
+        argument and return True if this message should be included.
     """
-    self._m = to_wrap
+    super(ListAsDictionaryWrapper, self).__init__(
+        to_wrap, key_field=key_field, filter_func=filter_func)
     self._item_class = item_class
-    self._key_field = key_field
     self._value_field = value_field
 
   def __getitem__(self, key):
     """Implements evaluation of `self[key]`."""
-    for item in self._m:
-      if getattr(item, self._key_field) == key:
-        return getattr(item, self._value_field)
-    raise KeyError(key)
+    item = super(ListAsDictionaryWrapper, self).__getitem__(key)
+    return getattr(item, self._value_field)
 
   def __setitem__(self, key, value):
-    """Implements evaluation of `self[key] = value`."""
+    """Implements evaluation of `self[key] = value`.
+
+    Args:
+      key: value of the key field
+      value: value of the value field
+
+    Raises:
+      KeyError: if a message with the same key value already exists, but is
+        hidden by the filter func, this is raised to prevent accidental
+        overwrites
+    """
     for item in self._m:
       if getattr(item, self._key_field) == key:
-        setattr(item, self._value_field, value)
-        break
+        if self._filter(item):
+          setattr(item, self._value_field, value)
+          break
+        else:
+          raise KeyError(key)
     else:
       self._m.append(self._item_class(**{
           self._key_field: key,
@@ -395,34 +473,12 @@ class ListAsDictionaryWrapper(collections.MutableMapping):
 
   def __delitem__(self, key):
     """Implements evaluation of `del self[key]`."""
-    index_to_delete = 0
-    for index, elem in enumerate(self._m):
-      if getattr(elem, self._key_field) == key:
-        index_to_delete = index
+    index_to_delete = None
+    for index, item in enumerate(self._m):
+      if getattr(item, self._key_field) == key:
+        if self._filter(item):
+          index_to_delete = index
         break
-    else:
+    if index_to_delete is None:
       raise KeyError(key)
-
     del self._m[index_to_delete]
-
-  def __contains__(self, item):
-    """Implements evaluation of `item in self`."""
-    for list_elem in self._m:
-      if getattr(list_elem, self._key_field) == item:
-        return True
-    return False
-
-  def __len__(self):
-    """Implements evaluation of `len(self)`."""
-    return len(self._m)
-
-  def __iter__(self):
-    """Returns a generator yielding the message keys."""
-    for item in self._m:
-      yield getattr(item, self._key_field)
-
-  def MakeSerializable(self):
-    return self._m
-
-  def __str__(self):
-    return ', '.join('{}: {}'.format(k, v) for k, v in self.items())

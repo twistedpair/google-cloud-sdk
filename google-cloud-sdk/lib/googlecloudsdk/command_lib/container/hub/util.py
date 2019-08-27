@@ -1404,10 +1404,9 @@ def GKEClusterSelfLink(args):
   vm_instance_id, err = kube_client.GetResourceField(
       None, 'nodes',
       '.items[0].metadata.annotations.container\\.googleapis\\.com/instance_id')
-  if err:
-    raise exceptions.Error(
-        'Error retrieving instance ID for cluster node: {}'.format(err))
-  if not vm_instance_id:
+  # If we cannot determine this is a GKE cluster, no resource link will be
+  # attached.
+  if err or (not vm_instance_id):
     return None
 
   # The provider ID field exists on both GKE-on-GCP and Kubernetes-on-GCP

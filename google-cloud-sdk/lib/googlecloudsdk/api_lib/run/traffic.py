@@ -20,6 +20,13 @@ from __future__ import unicode_literals
 
 import collections
 
+from googlecloudsdk.core import exceptions
+
+
+class InvalidTrafficSpecificationError(exceptions.Error):
+  """Error to indicate an invalid traffic specification."""
+  pass
+
 
 class _LatestRevisionKey(object):
   """Key class for the latest revision in TrafficTargets."""
@@ -239,21 +246,19 @@ class TrafficTargets(collections.MutableMapping):
 
   def _ValidateNewPercentages(self, new_percentages, unspecified_targets):
     """Validate the new traffic percentages the user specified."""
-    if not self._IsChangedPercentages(new_percentages):
-      raise ValueError('No traffic changes specified.')
-
     specified_percent = sum(new_percentages.values())
     if specified_percent > 100:
-      raise ValueError('Over 100% of traffic is specified.')
+      raise InvalidTrafficSpecificationError(
+          'Over 100% of traffic is specified.')
 
     for key in new_percentages:
       if new_percentages[key] < 0 or new_percentages[key] > 100:
-        raise ValueError(
+        raise InvalidTrafficSpecificationError(
             'New traffic for target %s is %s, not between 0 and 100' % (
                 key, new_percentages[key]))
 
     if not unspecified_targets and specified_percent < 100:
-      raise ValueError(
+      raise InvalidTrafficSpecificationError(
           'Every target with traffic is updated but 100% of '
           'traffic has not been specified.')
 
@@ -317,7 +322,9 @@ class TrafficTargets(collections.MutableMapping):
       new_latest_percentage: int, Percent traffic to assign to the
         latest revision or None to not explicitly specify.
     Raises:
-      ValueError: if the specified traffic settings are not valid.
+      ValueError: If the current traffic for the service is invalid.
+      InvalidTrafficSpecificationError: If the caller attempts to set
+        the traffic for the service to an incorrect state.
     """
     self._ValidateCurrentTraffic()
     original_targets = {GetKey(target): target for target in self._m}

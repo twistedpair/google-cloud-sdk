@@ -193,7 +193,7 @@ class Bucket(_messages.Message):
       """
 
       enabled = _messages.BooleanField(1)
-      lockedTime = _messages.StringField(2)
+      lockedTime = _message_types.DateTimeField(2)
 
     bucketPolicyOnly = _messages.MessageField('BucketPolicyOnlyValue', 1)
     uniformBucketLevelAccess = _messages.MessageField('UniformBucketLevelAccessValue', 2)

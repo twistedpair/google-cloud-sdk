@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20190815",
+ "revision": "20190816",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -12270,13 +12270,6 @@
      "type": "string",
      "description": "[Output Only] The URL of the instance. The URL can exist even if the instance has not yet been created."
     },
-    "instanceHealth": {
-     "type": "array",
-     "description": "[Output Only] Health state of the instance per health-check.",
-     "items": {
-      "$ref": "ManagedInstanceInstanceHealth"
-     }
-    },
     "instanceStatus": {
      "type": "string",
      "description": "[Output Only] The status of the instance. This field is empty when the instance does not exist.",
@@ -12310,34 +12303,6 @@
     "version": {
      "$ref": "ManagedInstanceVersion",
      "description": "[Output Only] Intended version of this instance."
-    }
-   }
-  },
-  "ManagedInstanceInstanceHealth": {
-   "id": "ManagedInstanceInstanceHealth",
-   "type": "object",
-   "properties": {
-    "detailedHealthState": {
-     "type": "string",
-     "description": "[Output Only] The current detailed instance health state.",
-     "enum": [
-      "DRAINING",
-      "HEALTHY",
-      "TIMEOUT",
-      "UNHEALTHY",
-      "UNKNOWN"
-     ],
-     "enumDescriptions": [
-      "",
-      "",
-      "",
-      "",
-      ""
-     ]
-    },
-    "healthCheck": {
-     "type": "string",
-     "description": "[Output Only] The URL for the health check that verifies whether the instance is healthy."
     }
    }
   },

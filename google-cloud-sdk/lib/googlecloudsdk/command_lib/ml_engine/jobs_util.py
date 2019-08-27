@@ -131,6 +131,7 @@ class TrainingCustomInputServerConfig(object):
                parameter_image_uri=None,
                parameter_accelerator_type=None,
                parameter_accelerator_count=None,
+               tpu_tf_version=None,
                worker_machine_type=None,
                worker_machine_count=None,
                worker_image_uri=None,
@@ -145,6 +146,7 @@ class TrainingCustomInputServerConfig(object):
     self.parameter_image_uri = parameter_image_uri
     self.parameter_accelerator_type = parameter_accelerator_type
     self.parameter_accelerator_count = parameter_accelerator_count
+    self.tpu_tf_version = tpu_tf_version
     self.worker_machine_type = worker_machine_type
     self.worker_machine_count = worker_machine_count
     self.worker_image_uri = worker_image_uri
@@ -184,14 +186,15 @@ class TrainingCustomInputServerConfig(object):
         'workerConfig': {'imageUri': self.worker_image_uri,
                          'acceleratorConfig':
                              {'count': self.work_accelerator_count,
-                              'type': self.work_accelerator_type}
+                              'type': self.work_accelerator_type},
+                         'tpuTfVersion': self.tpu_tf_version
                         },
         'workerCount': self.worker_machine_count,
         'workerType': self.worker_machine_type,
     }
 
   @classmethod
-  def FromArgs(cls, args):
+  def FromArgs(cls, args, support_tpu_tf_version=False):
     """Build TrainingCustomInputServerConfig from argparse.Namespace."""
     tier = args.scale_tier
 
@@ -201,6 +204,7 @@ class TrainingCustomInputServerConfig(object):
         tier = data.get('trainingInput', {}).get('scaleTier', None)
 
     parsed_tier = ScaleTierFlagMap().GetEnumForChoice(tier)
+
     return cls(
         scale_tier=parsed_tier,
         runtime_version=args.runtime_version,
@@ -218,6 +222,7 @@ class TrainingCustomInputServerConfig(object):
             'type') if args.parameter_server_accelerator else None,
         parameter_accelerator_count=args.parameter_server_accelerator.get(
             'count') if args.parameter_server_accelerator else None,
+        tpu_tf_version=args.tpu_tf_version if support_tpu_tf_version else None,
         worker_machine_type=args.worker_machine_type,
         worker_machine_count=args.worker_count,
         worker_image_uri=args.worker_image_uri,
@@ -375,7 +380,7 @@ def SubmitTraining(jobs_client, job, job_dir=None, staging_bucket=None,
         python_version=python_version,
         labels=labels,
         custom_train_server_config=custom_train_server_config)
-  except jobs.NoStagingLocationError:
+  except jobs_prep.NoStagingLocationError:
     raise flags.ArgumentError(
         'If `--package-path` is not specified, at least one Python package '
         'must be specified via `--packages`.')

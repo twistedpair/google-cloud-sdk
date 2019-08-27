@@ -3719,6 +3719,8 @@ class RuntimeEnvironment(_messages.Message):
       Expected to be of the form "regions/REGION/subnetworks/SUBNETWORK".
     tempLocation: The Cloud Storage path to use for temporary files. Must be a
       valid Cloud Storage URL, beginning with `gs://`.
+    usePrivateIps: Optional. Specifies whether worker pools should be started
+      with private IP addresses. False by default.
     zone: The Compute Engine [availability
       zone](https://cloud.google.com/compute/docs/regions-zones/regions-zones)
       for launching worker instances to run your pipeline.
@@ -3764,7 +3766,8 @@ class RuntimeEnvironment(_messages.Message):
   serviceAccountEmail = _messages.StringField(9)
   subnetwork = _messages.StringField(10)
   tempLocation = _messages.StringField(11)
-  zone = _messages.StringField(12)
+  usePrivateIps = _messages.BooleanField(12)
+  zone = _messages.StringField(13)
 
 
 class SdkVersion(_messages.Message):

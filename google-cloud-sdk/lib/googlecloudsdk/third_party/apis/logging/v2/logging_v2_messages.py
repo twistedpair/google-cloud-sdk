@@ -751,10 +751,11 @@ class LogEntrySourceLocation(_messages.Message):
 
 class LogExclusion(_messages.Message):
   r"""Specifies a set of log entries that are not to be stored in Logging. If
-  your project receives a large volume of logs, you might be able to use
-  exclusions to reduce your chargeable logs. Exclusions are processed after
-  log sinks, so you can export log entries before they are excluded. Audit log
-  entries and log entries from Amazon Web Services are never excluded.
+  your GCP resource receives a large volume of logs, you can use exclusions to
+  reduce your chargeable logs. Exclusions are processed after log sinks, so
+  you can export log entries before they are excluded. Note that organization-
+  level and folder-level exclusions don't apply to child resources, and that
+  you can't exclude audit log entries.
 
   Fields:
     createTime: Output only. The creation timestamp of the exclusion.This
@@ -765,10 +766,9 @@ class LogExclusion(_messages.Message):
       the value of this field.
     filter: Required. An advanced logs filter that matches the log entries to
       be excluded. By using the sample function, you can exclude less than
-      100% of the matching log entries. For example, the following filter
-      matches 99% of low-severity log entries from load
-      balancers:"resource.type=http_load_balancer severity<ERROR
-      sample(insertId, 0.99)"
+      100% of the matching log entries. For example, the following query
+      matches 99% of low-severity log entries from Google Cloud Storage
+      buckets:"resource.type=gcs_bucket severity<ERROR sample(insertId, 0.99)"
     name: Required. A client-assigned identifier, such as "load-balancer-
       exclusion". Identifiers are limited to 100 characters and can include
       only letters, digits, underscores, hyphens, and periods.
@@ -1177,7 +1177,7 @@ class LoggingBillingAccountsExclusionsPatchRequest(_messages.Message):
       "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
       "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" Example: "projects/my-
       project-id/exclusions/my-exclusion-id".
-    updateMask: Required. A nonempty list of fields to change in the existing
+    updateMask: Required. A non-empty list of fields to change in the existing
       exclusion. New values for the fields are taken from the corresponding
       fields in the LogExclusion included in this request. Fields not
       mentioned in update_mask are not changed and are ignored in the
@@ -1616,7 +1616,7 @@ class LoggingExclusionsPatchRequest(_messages.Message):
       "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
       "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" Example: "projects/my-
       project-id/exclusions/my-exclusion-id".
-    updateMask: Required. A nonempty list of fields to change in the existing
+    updateMask: Required. A non-empty list of fields to change in the existing
       exclusion. New values for the fields are taken from the corresponding
       fields in the LogExclusion included in this request. Fields not
       mentioned in update_mask are not changed and are ignored in the
@@ -1706,7 +1706,7 @@ class LoggingFoldersExclusionsPatchRequest(_messages.Message):
       "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
       "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" Example: "projects/my-
       project-id/exclusions/my-exclusion-id".
-    updateMask: Required. A nonempty list of fields to change in the existing
+    updateMask: Required. A non-empty list of fields to change in the existing
       exclusion. New values for the fields are taken from the corresponding
       fields in the LogExclusion included in this request. Fields not
       mentioned in update_mask are not changed and are ignored in the
@@ -2202,7 +2202,7 @@ class LoggingOrganizationsExclusionsPatchRequest(_messages.Message):
       "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
       "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" Example: "projects/my-
       project-id/exclusions/my-exclusion-id".
-    updateMask: Required. A nonempty list of fields to change in the existing
+    updateMask: Required. A non-empty list of fields to change in the existing
       exclusion. New values for the fields are taken from the corresponding
       fields in the LogExclusion included in this request. Fields not
       mentioned in update_mask are not changed and are ignored in the
@@ -2632,7 +2632,7 @@ class LoggingProjectsExclusionsPatchRequest(_messages.Message):
       "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
       "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" Example: "projects/my-
       project-id/exclusions/my-exclusion-id".
-    updateMask: Required. A nonempty list of fields to change in the existing
+    updateMask: Required. A non-empty list of fields to change in the existing
       exclusion. New values for the fields are taken from the corresponding
       fields in the LogExclusion included in this request. Fields not
       mentioned in update_mask are not changed and are ignored in the

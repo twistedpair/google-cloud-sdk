@@ -25,6 +25,7 @@ from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import files as file_utils
+import six
 from six.moves import zip
 
 
@@ -99,7 +100,7 @@ def _GetFilesRelative(root):
     list of str, the paths in the given directory.
   """
   paths = []
-  for dirpath, _, filenames in os.walk(root):
+  for dirpath, _, filenames in os.walk(six.text_type(root)):
     for filename in filenames:
       abs_path = os.path.join(dirpath, filename)
       paths.append(os.path.relpath(abs_path, start=root))

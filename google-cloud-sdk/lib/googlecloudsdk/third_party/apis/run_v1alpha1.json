@@ -224,6 +224,13 @@
           "items": {
             "type": "string"
           }
+        },
+        "regionDetails": {
+          "description": "Details for the regions used during a global call including any failures.\nThis is not populated when targeting a specific region.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "RegionDetails"
+          }
         }
       }
     },
@@ -1241,6 +1248,44 @@
         }
       }
     },
+    "RegionDetails": {
+      "id": "RegionDetails",
+      "description": "Information for a regional call used for a global API.",
+      "type": "object",
+      "properties": {
+        "error": {
+          "description": "The status indicating why the regional call failed",
+          "$ref": "GoogleRpcStatus"
+        }
+      }
+    },
+    "GoogleRpcStatus": {
+      "id": "GoogleRpcStatus",
+      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains\nthree pieces of data: error code, error message, and error details.\n\nYou can find out more about this error model and how to work with it in the\n[API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
     "Empty": {
       "id": "Empty",
       "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
@@ -1277,6 +1322,13 @@
           "type": "array",
           "items": {
             "type": "string"
+          }
+        },
+        "regionDetails": {
+          "description": "Details for the regions used during a global call including any failures.\nThis is not populated when targeting a specific region.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "RegionDetails"
           }
         }
       }
@@ -1574,6 +1626,13 @@
           "items": {
             "$ref": "DomainMapping"
           }
+        },
+        "regionDetails": {
+          "description": "Details for the regions used during a global call including any failures.\nThis is not populated when targeting a specific region.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "RegionDetails"
+          }
         }
       }
     },
@@ -1694,6 +1753,13 @@
           "items": {
             "type": "string"
           }
+        },
+        "regionDetails": {
+          "description": "Details for the regions used during a global call including any failures.\nThis is not populated when targeting a specific region.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "RegionDetails"
+          }
         }
       }
     },
@@ -1726,6 +1792,13 @@
           "type": "array",
           "items": {
             "type": "string"
+          }
+        },
+        "regionDetails": {
+          "description": "Details for the regions used during a global call including any failures.\nThis is not populated when targeting a specific region.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "RegionDetails"
           }
         }
       }
@@ -1929,6 +2002,13 @@
           "type": "array",
           "items": {
             "type": "string"
+          }
+        },
+        "regionDetails": {
+          "description": "Details for the regions used during a global call including any failures.\nThis is not populated when targeting a specific region.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "RegionDetails"
           }
         }
       }
@@ -2525,6 +2605,13 @@
           "type": "array",
           "items": {
             "type": "string"
+          }
+        },
+        "regionDetails": {
+          "description": "Details for the regions used during a global call including any failures.\nThis is not populated when targeting a specific region.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "RegionDetails"
           }
         }
       }

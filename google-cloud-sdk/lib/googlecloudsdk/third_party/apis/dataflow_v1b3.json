@@ -1832,6 +1832,10 @@
         "kmsKeyName": {
           "description": "Optional. Name for the Cloud KMS key for the job.\nKey format is:\nprojects\/<project>\/locations\/<location>\/keyRings\/<keyring>\/cryptoKeys\/<key>",
           "type": "string"
+        },
+        "usePrivateIps": {
+          "description": "Optional. Specifies whether worker pools should be started with private IP addresses.\nFalse by default.",
+          "type": "boolean"
         }
       }
     },

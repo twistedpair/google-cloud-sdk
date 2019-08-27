@@ -19,6 +19,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import datetime
+
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.credentials import http as http_creds
@@ -94,9 +96,11 @@ class ImpersonationAccessTokenProvider(object):
 class ImpersonationCredentials(client.OAuth2Credentials):
   """Implementation of a credential that refreshes using the iamcredentials API.
   """
+  _EXPIRY_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
   def __init__(self, service_account_id, access_token, token_expiry, scopes):
     self._service_account_id = service_account_id
+    token_expiry = self._ConvertExpiryTime(token_expiry)
     super(ImpersonationCredentials, self).__init__(
         access_token, None, None, None, token_expiry, None, None, scopes=scopes)
 
@@ -105,4 +109,8 @@ class ImpersonationCredentials(client.OAuth2Credentials):
     # back to a list before making the API request.
     response = GenerateAccessToken(self._service_account_id, list(self.scopes))
     self.access_token = response.accessToken
-    self.token_expiry = response.expireTime
+    self.token_expiry = self._ConvertExpiryTime(response.expireTime)
+
+  def _ConvertExpiryTime(self, value):
+    return datetime.datetime.strptime(value,
+                                      ImpersonationCredentials._EXPIRY_FORMAT)

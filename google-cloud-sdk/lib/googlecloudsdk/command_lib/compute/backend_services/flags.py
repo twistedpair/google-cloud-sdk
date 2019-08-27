@@ -254,15 +254,15 @@ def AddCustomRequestHeaders(parser, remove_all_flag=False, default=None):
         """)
 
 
-def AddEnableCdn(parser, default):
+def AddEnableCdn(parser):
   parser.add_argument(
       '--enable-cdn',
-      action='store_true',
-      default=default,
+      action=arg_parsers.StoreTrueFalseAction,
       help="""\
-      Enable Cloud CDN for the backend service. Cloud CDN can cache HTTP
-      responses from a backend service at the edge of the network, close to
-      users. Cloud CDN is disabled by default.
+      Enable or disable Cloud CDN for the backend service. Only available for
+      backend services with --load-balancing-scheme=EXTERNAL that use a
+      --protocol of HTTP, HTTPS, or HTTP2. Cloud CDN caches HTTP responses at
+      the edge of Google's network. Cloud CDN is disabled by default.
       """)
 
 

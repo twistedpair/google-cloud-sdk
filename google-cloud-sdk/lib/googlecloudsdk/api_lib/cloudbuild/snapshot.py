@@ -30,6 +30,7 @@ from googlecloudsdk.command_lib.util import gcloudignore
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core.util import files
+import six
 
 _IGNORED_FILE_MESSAGE = """\
 Some files were not included in the source upload.
@@ -86,7 +87,7 @@ class Snapshot(object):
                                                      write_on_disk=False,
                                                      ignore_file=ignore_file)
     self.any_files_ignored = False
-    for (dirpath, dirnames, filenames) in os.walk(self.src_dir):
+    for (dirpath, dirnames, filenames) in os.walk(six.text_type(self.src_dir)):
       relpath = os.path.relpath(dirpath, self.src_dir)
       if (dirpath != self.src_dir and  # don't ever ignore the main source dir!
           not file_chooser.IsIncluded(relpath, is_dir=True)):

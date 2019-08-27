@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20190729",
+ "revision": "20190816",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1232,7 +1232,7 @@
     },
     "diskSizeGb": {
      "type": "string",
-     "description": "Specifies the size of the disk in base-2 GB.",
+     "description": "Specifies the size of the disk in base-2 GB. If not specified, the disk will be the same size as the image (usually 10GB). If specified, the size must be equal to or larger than 10GB.",
      "format": "int64"
     },
     "diskType": {
@@ -3187,7 +3187,7 @@
     },
     "negotiatedLocalControlTxIntervalMs": {
      "type": "integer",
-     "description": "Negotiated transmit interval for control packets. When echo mode is enabled this will reflect the negotiated slow timer interval.",
+     "description": "Negotiated transmit interval for control packets.",
      "format": "uint32"
     },
     "negotiatedLocalEchoTxIntervalMs": {
@@ -3534,11 +3534,13 @@
      "enum": [
       "COMPUTE_OPTIMIZED",
       "GENERAL_PURPOSE",
+      "GENERAL_PURPOSE_E2",
       "GENERAL_PURPOSE_N2",
       "MEMORY_OPTIMIZED",
       "TYPE_UNSPECIFIED"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -5900,7 +5902,7 @@
    "properties": {
     "IPAddress": {
      "type": "string",
-     "description": "The IP address that this forwarding rule is serving on behalf of.\n\nAddresses are restricted based on the forwarding rule's load balancing scheme (EXTERNAL or INTERNAL) and scope (global or regional).\n\nWhen the load balancing scheme is EXTERNAL, for global forwarding rules, the address must be a global IP, and for regional forwarding rules, the address must live in the same region as the forwarding rule. If this field is empty, an ephemeral IPv4 address from the same scope (global or regional) will be assigned. A regional forwarding rule supports IPv4 only. A global forwarding rule supports either IPv4 or IPv6.\n\nWhen the load balancing scheme is INTERNAL_SELF_MANAGED, this must be a URL reference to an existing Address resource ( internal regional static IP address), with a purpose of GCE_END_POINT and address_type of INTERNAL.\n\nWhen the load balancing scheme is INTERNAL, this can only be an RFC 1918 IP address belonging to the network/subnet configured for the forwarding rule. By default, if this field is empty, an ephemeral internal IP address will be automatically allocated from the IP range of the subnet or network configured for this forwarding rule.\n\nAn address can be specified either by a literal IP address or a URL reference to an existing Address resource. The following examples are all valid:  \n- 100.1.2.3 \n- https://www.googleapis.com/compute/v1/projects/project/regions/region/addresses/address \n- projects/project/regions/region/addresses/address \n- regions/region/addresses/address \n- global/addresses/address \n- address"
+     "description": "IP address that this forwarding rule serves. When a client sends traffic to this IP address, the forwarding rule directs the traffic to the target that you specify in the forwarding rule.\n\nIf you don't specify a reserved IP address, an ephemeral IP address is assigned. Methods for specifying an IP address:\n\n* IPv4 dotted decimal, as in `100.1.2.3` * Full URL, as in https://www.googleapis.com/compute/v1/projects/project_id/regions/region/addresses/address-name * Partial URL or by name, as in: * projects/project_id/regions/region/addresses/address-name * regions/region/addresses/address-name * global/addresses/address-name * address-name \n\nThe loadBalancingScheme and the forwarding rule's target determine the type of IP address that you can use. For detailed information, refer to [IP address specifications](/load-balancing/docs/forwarding-rule-concepts#ip_address_specifications)."
     },
     "IPProtocol": {
      "type": "string",
@@ -6037,11 +6039,11 @@
     },
     "portRange": {
      "type": "string",
-     "description": "This field is used along with the target field for TargetHttpProxy, TargetHttpsProxy, TargetSslProxy, TargetTcpProxy, TargetVpnGateway, TargetPool, TargetInstance.\n\nApplicable only when IPProtocol is TCP, UDP, or SCTP, only packets addressed to ports in the specified range will be forwarded to target. Forwarding rules with the same [IPAddress, IPProtocol] pair must have disjoint port ranges.\n\nSome types of forwarding target have constraints on the acceptable ports:  \n- TargetHttpProxy: 80, 8080 \n- TargetHttpsProxy: 443 \n- TargetTcpProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 1688, 1883, 5222 \n- TargetSslProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 1688, 1883, 5222 \n- TargetVpnGateway: 500, 4500"
+     "description": "This field is deprecated. See the port\nfield."
     },
     "ports": {
      "type": "array",
-     "description": "This field is used along with the backend_service field for internal load balancing.\n\nWhen the load balancing scheme is INTERNAL, a list of ports can be configured, for example, ['80'], ['8000','9000'] etc. Only packets addressed to these ports will be forwarded to the backends configured with this forwarding rule.\n\nYou may specify a maximum of up to 5 ports.",
+     "description": "List of comma-separated ports. The forwarding rule forwards packets with matching destination ports. If the forwarding rule's loadBalancingScheme is EXTERNAL, and the forwarding rule references a target pool, specifying ports is optional. You can specify an unlimited number of ports, but they must be contiguous. If you omit ports, GCP forwards traffic on any port of the forwarding rule's protocol.\n\nIf the forwarding rule's loadBalancingScheme is EXTERNAL, and the forwarding rule references a target HTTP proxy, target HTTPS proxy, target TCP proxy, target SSL proxy, or target VPN gateway, you must specify ports using the following constraints:\n\n \n- TargetHttpProxy: 80, 8080 \n- TargetHttpsProxy: 443 \n- TargetTcpProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 1688, 1883, 5222 \n- TargetSslProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 1688, 1883, 5222 \n- TargetVpnGateway: 500, 4500  \n\nIf the forwarding rule's loadBalancingScheme is INTERNAL, you must specify ports in one of the following ways:\n\n* A list of up to five ports, which can be non-contiguous * Keyword ALL, which causes the forwarding rule to forward traffic on any port of the forwarding rule's protocol.\n\nThe ports field is used along with the target field for TargetHttpProxy, TargetHttpsProxy, TargetSslProxy, TargetTcpProxy, TargetVpnGateway, TargetPool, TargetInstance.\n\nApplicable only when IPProtocol is TCP, UDP, or SCTP. Forwarding rules with the same [IPAddress, IPProtocol] pair must have disjoint port ranges.",
      "items": {
       "type": "string"
      }
@@ -6967,16 +6969,6 @@
     "enable": {
      "type": "boolean",
      "description": "Indicates whether or not to export logs. This is false by default, which means no health check logging will be done."
-    },
-    "filter": {
-     "type": "string",
-     "description": "Specifies the desired filtering of logs on this health check. If this is unspecified and enable is true, logs are exported with LOG_TRANSITION filter.",
-     "enum": [
-      "LOG_TRANSITION"
-     ],
-     "enumDescriptions": [
-      ""
-     ]
     }
    }
   },
@@ -8394,7 +8386,7 @@
     },
     "storageLocations": {
      "type": "array",
-     "description": "GCS bucket storage location of the image (regional or multi-regional).",
+     "description": "Cloud Storage bucket storage location of the image (regional or multi-regional).",
      "items": {
       "type": "string"
      }
@@ -11668,6 +11660,11 @@
       "type": "string"
      }
     },
+    "mtu": {
+     "type": "integer",
+     "description": "Maximum Transmission Unit (MTU), in bytes, of packets passing through this interconnect attachment. Only 1440 and 1500 are allowed. If not specified, the value will default to 1440.",
+     "format": "int32"
+    },
     "name": {
      "type": "string",
      "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
@@ -13493,6 +13490,11 @@
      "items": {
       "type": "string"
      }
+    },
+    "totalStorageBytes": {
+     "type": "string",
+     "description": "[Output Only] Total size of the storage used by the machine image.",
+     "format": "int64"
     }
    }
   },
@@ -14126,7 +14128,7 @@
     },
     "healthState": {
      "type": "string",
-     "description": "[Output Only] The current instance health state.",
+     "description": "[Output Only] The current instance health state. This field will not get promoted to beta/GA and might be removed from alpha APIs after 01/12/2019. Please use detailed_health_state field instead.",
      "enum": [
       "HEALTHY",
       "UNHEALTHY"
@@ -14465,7 +14467,7 @@
     },
     "ipAddress": {
      "type": "string",
-     "description": "Optional IPv4 address of network endpoint. The IP address must belong to a VM in GCE (either the primary IP or as part of an aliased IP range). If the IP address is not specified, then the primary IP address for the VM instance in the network that the network endpoint group belongs to will be used."
+     "description": "Optional IPv4 address of network endpoint. The IP address must belong to a VM in Compute Engine (either the primary IP or as part of an aliased IP range). If the IP address is not specified, then the primary IP address for the VM instance in the network that the network endpoint group belongs to will be used."
     },
     "port": {
      "type": "integer",
@@ -14526,11 +14528,13 @@
      "description": "Type of network endpoints in this network endpoint group. Currently the only supported value is GCE_VM_IP_PORT.",
      "enum": [
       "GCE_VM_IP_PORT",
+      "GCE_VM_PRIMARY_IP",
       "INTERNET_FQDN_PORT",
       "INTERNET_IP_PORT",
       "NON_GCP_PRIVATE_IP_PORT"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -15832,6 +15836,7 @@
    "properties": {
     "nodes": {
      "type": "array",
+     "description": "Names of the nodes to delete.",
      "items": {
       "type": "string"
      }
@@ -17100,7 +17105,7 @@
     },
     "id": {
      "type": "string",
-     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
+     "description": "[Output Only] The unique identifier for the operation. This identifier is defined by the server.",
      "format": "uint64"
     },
     "insertTime": {
@@ -17114,7 +17119,7 @@
     },
     "name": {
      "type": "string",
-     "description": "[Output Only] Name of the resource."
+     "description": "[Output Only] Name of the operation."
     },
     "operationType": {
      "type": "string",
@@ -19543,6 +19548,7 @@
       "INTERCONNECTS",
       "INTERCONNECT_ATTACHMENTS_PER_REGION",
       "INTERCONNECT_ATTACHMENTS_TOTAL_MBPS",
+      "INTERCONNECT_TOTAL_GBPS",
       "INTERNAL_ADDRESSES",
       "INTERNAL_FORWARDING_RULES_PER_NETWORK",
       "INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK",
@@ -19602,6 +19608,7 @@
       "XPN_SERVICE_PROJECTS"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -22045,7 +22052,7 @@
     },
     "storageLocations": {
      "type": "array",
-     "description": "GCS bucket storage location of the auto snapshot (regional or multi-regional).",
+     "description": "Cloud Storage bucket storage location of the auto snapshot (regional or multi-regional).",
      "items": {
       "type": "string"
      }
@@ -22793,13 +22800,23 @@
     },
     "name": {
      "type": "string",
-     "description": "Name of this BGP peer. The name must be 1-63 characters long and comply with RFC1035.",
-     "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
+     "description": "Name of this BGP peer. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
+     "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+     "annotations": {
+      "required": [
+       "compute.routers.insert"
+      ]
+     }
     },
     "peerAsn": {
      "type": "integer",
      "description": "Peer BGP Autonomous System Number (ASN). Each BGP interface may use a different value.",
-     "format": "uint32"
+     "format": "uint32",
+     "annotations": {
+      "required": [
+       "compute.routers.insert"
+      ]
+     }
     },
     "peerIpAddress": {
      "type": "string",
@@ -22813,12 +22830,12 @@
    "properties": {
     "minReceiveInterval": {
      "type": "integer",
-     "description": "The minimum interval, in milliseconds, between BFD packets received from the peer router. The actual value is negotiated between the two routers and is equal to the greater of this value and the transmit interval of the other router. If BFD echo mode is enabled on this router and the peer router, this value is used to negotiate the interval between BFD echo packets transmitted by the peer router. Otherwise, it will be used to determine the interval between BFD control packets. If set, this value must be between 100 and 30000. The default is 300.",
+     "description": "The minimum interval, in milliseconds, between BFD control packets received from the peer router. The actual value is negotiated between the two routers and is equal to the greater of this value and the transmit interval of the other router. If set, this value must be between 100 and 30000. The default is 300.",
      "format": "uint32"
     },
     "minTransmitInterval": {
      "type": "integer",
-     "description": "The minimum interval, in milliseconds, between BFD packets transmitted to the peer router. The actual value is negotiated between the two routers and is equal to the greater of this value and the corresponding receive interval of the other router. If BFD echo mode is enabled on this router and the peer router, this value is used to negotiate the interval between BFD echo packets transmitted by this router. Otherwise, it will be used to determine the interval between BFD control packets. If set, this value must be between 100 and 30000. The default is 300.",
+     "description": "The minimum interval, in milliseconds, between BFD control packets transmitted to the peer router. The actual value is negotiated between the two routers and is equal to the greater of this value and the corresponding receive interval of the other router. If set, this value must be between 100 and 30000. The default is 300.",
      "format": "uint32"
     },
     "mode": {
@@ -22903,8 +22920,13 @@
     },
     "name": {
      "type": "string",
-     "description": "Name of this interface entry. The name must be 1-63 characters long and comply with RFC1035.",
-     "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
+     "description": "Name of this interface entry. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
+     "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+     "annotations": {
+      "required": [
+       "compute.routers.insert"
+      ]
+     }
     }
    }
   },
@@ -24573,7 +24595,7 @@
     },
     "storageLocations": {
      "type": "array",
-     "description": "GCS bucket storage location of the snapshot (regional or multi-regional).",
+     "description": "Cloud Storage bucket storage location of the snapshot (regional or multi-regional).",
      "items": {
       "type": "string"
      }
@@ -32186,6 +32208,12 @@
      "httpMethod": "GET",
      "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
      "parameters": {
+      "optionsRequestedPolicyVersion": {
+       "type": "integer",
+       "description": "Requested IAM Policy version.",
+       "format": "int32",
+       "location": "query"
+      },
       "project": {
        "type": "string",
        "description": "Project ID for this request.",
@@ -33338,6 +33366,12 @@
      "httpMethod": "GET",
      "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
      "parameters": {
+      "optionsRequestedPolicyVersion": {
+       "type": "integer",
+       "description": "Requested IAM Policy version.",
+       "format": "int32",
+       "location": "query"
+      },
       "project": {
        "type": "string",
        "description": "Project ID for this request.",
@@ -37061,6 +37095,12 @@
      "httpMethod": "GET",
      "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
      "parameters": {
+      "optionsRequestedPolicyVersion": {
+       "type": "integer",
+       "description": "Requested IAM Policy version.",
+       "format": "int32",
+       "location": "query"
+      },
       "project": {
        "type": "string",
        "description": "Project ID for this request.",
@@ -39022,6 +39062,12 @@
      "httpMethod": "GET",
      "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
      "parameters": {
+      "optionsRequestedPolicyVersion": {
+       "type": "integer",
+       "description": "Requested IAM Policy version.",
+       "format": "int32",
+       "location": "query"
+      },
       "project": {
        "type": "string",
        "description": "Project ID for this request.",
@@ -39725,6 +39771,12 @@
      "httpMethod": "GET",
      "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
      "parameters": {
+      "optionsRequestedPolicyVersion": {
+       "type": "integer",
+       "description": "Requested IAM Policy version.",
+       "format": "int32",
+       "location": "query"
+      },
       "project": {
        "type": "string",
        "description": "Project ID for this request.",
@@ -41604,6 +41656,12 @@
      "httpMethod": "GET",
      "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
      "parameters": {
+      "optionsRequestedPolicyVersion": {
+       "type": "integer",
+       "description": "Requested IAM Policy version.",
+       "format": "int32",
+       "location": "query"
+      },
       "project": {
        "type": "string",
        "description": "Project ID for this request.",
@@ -42170,6 +42228,12 @@
      "httpMethod": "GET",
      "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
      "parameters": {
+      "optionsRequestedPolicyVersion": {
+       "type": "integer",
+       "description": "Requested IAM Policy version.",
+       "format": "int32",
+       "location": "query"
+      },
       "project": {
        "type": "string",
        "description": "Project ID for this request.",
@@ -42474,6 +42538,12 @@
      "httpMethod": "GET",
      "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
      "parameters": {
+      "optionsRequestedPolicyVersion": {
+       "type": "integer",
+       "description": "Requested IAM Policy version.",
+       "format": "int32",
+       "location": "query"
+      },
       "project": {
        "type": "string",
        "description": "Project ID for this request.",
@@ -42657,6 +42727,12 @@
      "httpMethod": "GET",
      "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
      "parameters": {
+      "optionsRequestedPolicyVersion": {
+       "type": "integer",
+       "description": "Requested IAM Policy version.",
+       "format": "int32",
+       "location": "query"
+      },
       "project": {
        "type": "string",
        "description": "Project ID for this request.",
@@ -42925,6 +43001,12 @@
      "httpMethod": "GET",
      "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
      "parameters": {
+      "optionsRequestedPolicyVersion": {
+       "type": "integer",
+       "description": "Requested IAM Policy version.",
+       "format": "int32",
+       "location": "query"
+      },
       "project": {
        "type": "string",
        "description": "Project ID for this request.",
@@ -44516,7 +44598,7 @@
      "parameters": {
       "nodeGroup": {
        "type": "string",
-       "description": "Name of the NodeGroup resource to delete.",
+       "description": "Name of the NodeGroup resource whose nodes will be deleted.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -44605,6 +44687,12 @@
      "httpMethod": "GET",
      "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
      "parameters": {
+      "optionsRequestedPolicyVersion": {
+       "type": "integer",
+       "description": "Requested IAM Policy version.",
+       "format": "int32",
+       "location": "query"
+      },
       "project": {
        "type": "string",
        "description": "Project ID for this request.",
@@ -45146,6 +45234,12 @@
      "httpMethod": "GET",
      "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
      "parameters": {
+      "optionsRequestedPolicyVersion": {
+       "type": "integer",
+       "description": "Requested IAM Policy version.",
+       "format": "int32",
+       "location": "query"
+      },
       "project": {
        "type": "string",
        "description": "Project ID for this request.",
@@ -48617,6 +48711,12 @@
      "httpMethod": "GET",
      "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
      "parameters": {
+      "optionsRequestedPolicyVersion": {
+       "type": "integer",
+       "description": "Requested IAM Policy version.",
+       "format": "int32",
+       "location": "query"
+      },
       "project": {
        "type": "string",
        "description": "Project ID for this request.",
@@ -52818,6 +52918,12 @@
      "httpMethod": "GET",
      "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
      "parameters": {
+      "optionsRequestedPolicyVersion": {
+       "type": "integer",
+       "description": "Requested IAM Policy version.",
+       "format": "int32",
+       "location": "query"
+      },
       "project": {
        "type": "string",
        "description": "Project ID for this request.",
@@ -53237,6 +53343,12 @@
      "httpMethod": "GET",
      "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
      "parameters": {
+      "optionsRequestedPolicyVersion": {
+       "type": "integer",
+       "description": "Requested IAM Policy version.",
+       "format": "int32",
+       "location": "query"
+      },
       "project": {
        "type": "string",
        "description": "Project ID for this request.",
@@ -54768,6 +54880,12 @@
      "httpMethod": "GET",
      "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
      "parameters": {
+      "optionsRequestedPolicyVersion": {
+       "type": "integer",
+       "description": "Requested IAM Policy version.",
+       "format": "int32",
+       "location": "query"
+      },
       "project": {
        "type": "string",
        "description": "Project ID for this request.",
@@ -55676,6 +55794,12 @@
      "httpMethod": "GET",
      "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
      "parameters": {
+      "optionsRequestedPolicyVersion": {
+       "type": "integer",
+       "description": "Requested IAM Policy version.",
+       "format": "int32",
+       "location": "query"
+      },
       "project": {
        "type": "string",
        "description": "Project ID for this request.",

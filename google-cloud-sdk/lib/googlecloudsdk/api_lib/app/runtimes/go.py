@@ -29,6 +29,7 @@ from gae_ext_runtime import ext_runtime
 from googlecloudsdk.api_lib.app.images import config as images_config
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
+import six
 
 
 NAME ='go'
@@ -158,7 +159,7 @@ def _GoFiles(path):
     ([str, ...]) List of full pathnames for all '*.go' files under 'path' dir.
   """
   go_files = []
-  for root, _, filenames in os.walk(path):
+  for root, _, filenames in os.walk(six.text_type(path)):
     for filename in fnmatch.filter(filenames, '*.go'):
       go_files.append(os.path.join(root, filename))
   return go_files

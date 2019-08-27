@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import os
 import zipfile
+import six
 
 try:
   # pylint: disable=unused-import
@@ -61,7 +62,7 @@ def MakeZipFromDir(dest_zip_file, src_dir, predicate=None):
     predicate = lambda x: True
   zip_file = zipfile.ZipFile(dest_zip_file, 'w', _ZIP_COMPRESSION)
   try:
-    for root, _, filelist in os.walk(src_dir):
+    for root, _, filelist in os.walk(six.text_type(src_dir)):
       # In case this is empty directory.
       path = os.path.normpath(os.path.relpath(root, src_dir))
       if not predicate(path):

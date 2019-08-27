@@ -229,7 +229,7 @@ class FileChooser(object):
       dir or itself.
     """
     for dirpath, dirnames, filenames in os.walk(
-        upload_directory, followlinks=True):
+        six.text_type(upload_directory), followlinks=True):
       if dirpath == upload_directory:
         relpath = ''
       else:

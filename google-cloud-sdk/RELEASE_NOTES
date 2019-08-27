@@ -5,6 +5,70 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 260.0.0 (2019-08-27)
+
+### Breaking Changes
+
+*   **(Cloud Dataproc)** Modified `--region` flag to be mandatory.
+  * To use Cloud Dataproc commands, pass the `--region` flag on every invocation, or set the `dataproc/region` configuration variable via `gcloud config set dataproc/region`.
+  * For `gcloud beta dataproc` commands, this flag/config value is required.
+  * For `gcloud dataproc` commands, the default will remain `global` until January 2020.
+*   **(Cloud Run)** Removed `--[no-]allow-unauthenticated` flag from `gcloud beta run services update`. Use `gcloud beta run services add-iam-policy-binding` and `gcloud beta run services remove-iam-policy-binding` commands to modify the policies of an existing service.
+
+
+### Cloud SDK
+
+* Deprecated `--size` alias of `gcloud container clusters resize --num-nodes`.
+
+### AI Platform
+
+* Added `--tpu-tf-version` to `gcloud beta ai-platform jobs submit training`.
+
+### BigQuery
+
+* Added support for org/folder level reservation grants.
+* Added support for setting and getting IAM policies: `bq get-iam-policy <resource> [<json_file_name>]`.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.8.0
+  * Add support for queries inside of read-write transactions.
+  * Fix bug causing the WebChannel adapter to reject queries with limits.
+
+### Cloud Run
+
+* Updated success message for synchronous `gcloud run alpha/beta deploy`
+to indicate if and how much traffic the new revision is serving.
+
+### Compute Engine
+
+* Added windows-2019, windows-2019-byol, and windows-8-1-x64-byol options to `--os` flag of `gcloud compute images import`.
+
+### Kubernetes Engine
+
+*   Added `--enable-shielded-nodes` to `gcloud beta container clusters create`
+    and  `gcloud beta container clusters update`. These flags control the
+    Shielded GKE Nodes feature, see
+    <https://cloud.google.com/kubernetes-engine/docs/how-to/shielded-gke-nodes>.
+*   Made `--max-cpu` and `--max-memory` flags optional for `gcloud container clusters update --enable-autoprovisioning`.
+*   Enabled auto repair by default on COS_CONTAINERD image.
+*   Google Kubernetes Engine default kubectl is updated to 1.13.9.
+*   Additional kubectl versions:
+  *   kubectl.1.11 (1.11.10)
+  *   kubectl.1.12 (1.12.10)
+  *   kubectl.1.13 (1.13.9)
+  *   kubectl.1.14 (1.14.5)
+  *   kubectl.1.15 (1.15.2)
+*   Added `--autoprovisioning-locations` flag for `gcloud container clusters create --enable-autoprovisioning` and `gcloud container clusters update --enable-autoprovisioning`.
+
+### Policy Troubleshooter
+
+*   Added `gcloud beta policy-troubleshoot iam` which troubleshoots a member's IAM permission on a resource.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 259.0.0 (2019-08-20)
 
 ### Cloud SDK

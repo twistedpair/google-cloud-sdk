@@ -857,6 +857,9 @@ class ServerlessOperations(object):
                       'is a valid cluster and retry.')
       raise serverless_exceptions.DeploymentFailedError(error_msg)
     except api_exceptions.HttpError as e:
+      platform = properties.VALUES.run.platform.Get()
+      if platform == 'managed':
+        exceptions.reraise(e)
       k8s_error = serverless_exceptions.KubernetesExceptionParser(e)
       causes = '\n\n'.join([c['message'] for c in k8s_error.causes])
       if not causes:

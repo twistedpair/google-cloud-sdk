@@ -519,6 +519,9 @@ apis:
   run:
     v1alpha1:
       discovery_doc: run_v1alpha1.json
+      default: true
+    v1:
+      discovery_doc: run_v1.json
   runtimeconfig:
     v1beta1:
       discovery_doc: runtimeconfig_v1beta1.json

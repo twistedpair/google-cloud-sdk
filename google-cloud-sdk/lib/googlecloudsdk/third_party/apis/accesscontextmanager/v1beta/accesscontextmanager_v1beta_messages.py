@@ -788,6 +788,13 @@ class ServicePerimeter(_messages.Message):
     createTime: Output only. Time the `ServicePerimeter` was created in UTC.
     description: Description of the `ServicePerimeter` and its use. Does not
       affect behavior.
+    dryRun: Dry run flag. This flag enables dry run tests for the "proposed"
+      Service Perimeter configuration. When this flag is enabled, access
+      restrictions suggestions from the proposed("spec") configuration are
+      tested without actually enforcing them. This testing is done through
+      analyzing the differences between currently enforced and suggested
+      restrictions. As of now, dry_run must be set to true if there is any
+      proposed config
     name: Required. Resource name for the ServicePerimeter.  The `short_name`
       component must begin with a letter and only include alphanumeric and
       '_'. Format: `accessPolicies/{policy_id}/servicePerimeters/{short_name}`
@@ -797,6 +804,10 @@ class ServicePerimeter(_messages.Message):
       being included in regular perimeter. For perimeter bridges,
       restricted/unrestricted service lists as well as access lists must be
       empty.
+    spec: Proposed (or dry run) ServicePerimeter configuration. This
+      configuration allows to specify and test ServicePerimeter configuration
+      without enforcing actual access restrictions. Only allowed to be set
+      when the "dry_run" flag is set.
     status: Current ServicePerimeter configuration. Specifies sets of
       resources, restricted/unrestricted services and access levels that
       determine perimeter content and boundaries.
@@ -820,11 +831,13 @@ class ServicePerimeter(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  name = _messages.StringField(3)
-  perimeterType = _messages.EnumField('PerimeterTypeValueValuesEnum', 4)
-  status = _messages.MessageField('ServicePerimeterConfig', 5)
-  title = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  dryRun = _messages.BooleanField(3)
+  name = _messages.StringField(4)
+  perimeterType = _messages.EnumField('PerimeterTypeValueValuesEnum', 5)
+  spec = _messages.MessageField('ServicePerimeterConfig', 6)
+  status = _messages.MessageField('ServicePerimeterConfig', 7)
+  title = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class ServicePerimeterConfig(_messages.Message):

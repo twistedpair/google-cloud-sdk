@@ -193,10 +193,10 @@ class JobsClient(object):
         if value is not None:
           if field_name.endswith('Config'):
             if value['imageUri']:
-              arg_utils.SetFieldInMessage(job,
-                                          'trainingInput.{}.imageUri'.format(
-                                              field_name),
-                                          value['imageUri'])
+              arg_utils.SetFieldInMessage(
+                  job,
+                  'trainingInput.{}.imageUri'.format(field_name),
+                  value['imageUri'])
             if value['acceleratorConfig']['type']:
               arg_utils.SetFieldInMessage(
                   job,
@@ -207,6 +207,11 @@ class JobsClient(object):
                   job,
                   'trainingInput.{}.acceleratorConfig.count'.format(field_name),
                   value['acceleratorConfig']['count'])
+            if field_name == 'workerConfig' and value['tpuTfVersion']:
+              arg_utils.SetFieldInMessage(
+                  job,
+                  'trainingInput.{}.tpuTfVersion'.format(field_name),
+                  value['tpuTfVersion'])
           else:
             setattr(job.trainingInput, field_name, value)
 

@@ -256,7 +256,7 @@ def GetAutoRepair(args):
   # default. Other node pools using (Ubuntu, custom images) don't support
   # node auto repairs, attempting to enable autorepair for them will result
   # in API call failing so don't do it.
-  return (args.image_type or '').lower() in ['', 'cos']
+  return (args.image_type or '').lower() in ['', 'cos', 'cos_containerd']
 
 
 def ParseUpdateOptionsBase(args, locations):

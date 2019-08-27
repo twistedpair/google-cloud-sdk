@@ -1456,7 +1456,9 @@ class AttachedDiskInitializeParams(_messages.Message):
       the name of the instance. If the disk with the instance name exists
       already in the given zone/region, a new name will be automatically
       generated.
-    diskSizeGb: Specifies the size of the disk in base-2 GB.
+    diskSizeGb: Specifies the size of the disk in base-2 GB. If not specified,
+      the disk will be the same size as the image (usually 10GB). If
+      specified, the size must be equal to or larger than 10GB.
     diskType: Specifies the disk type to use to create the instance. If not
       specified, the default is pd-standard, specified using the full URL. For
       example: https://www.googleapis.com/compute/v1/projects/project/zones/zo
@@ -3878,8 +3880,7 @@ class BfdStatus(_messages.Message):
     localState: The current BFD session state as seen by the transmitting
       system. These states are specified in section 4.1 of RFC5880
     negotiatedLocalControlTxIntervalMs: Negotiated transmit interval for
-      control packets. When echo mode is enabled this will reflect the
-      negotiated slow timer interval.
+      control packets.
     negotiatedLocalEchoTxIntervalMs: Negotiated transmit interval for echo
       packets.
     rxPacket: The most recent Rx control packet for this BFD session.
@@ -4320,15 +4321,17 @@ class Commitment(_messages.Message):
     Values:
       COMPUTE_OPTIMIZED: <no description>
       GENERAL_PURPOSE: <no description>
+      GENERAL_PURPOSE_E2: <no description>
       GENERAL_PURPOSE_N2: <no description>
       MEMORY_OPTIMIZED: <no description>
       TYPE_UNSPECIFIED: <no description>
     """
     COMPUTE_OPTIMIZED = 0
     GENERAL_PURPOSE = 1
-    GENERAL_PURPOSE_N2 = 2
-    MEMORY_OPTIMIZED = 3
-    TYPE_UNSPECIFIED = 4
+    GENERAL_PURPOSE_E2 = 2
+    GENERAL_PURPOSE_N2 = 3
+    MEMORY_OPTIMIZED = 4
+    TYPE_UNSPECIFIED = 5
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
@@ -5359,12 +5362,14 @@ class ComputeBackendBucketsGetIamPolicyRequest(_messages.Message):
   r"""A ComputeBackendBucketsGetIamPolicyRequest object.
 
   Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
     project: Project ID for this request.
     resource: Name or id of the resource for this request.
   """
 
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeBackendBucketsGetRequest(_messages.Message):
@@ -6086,14 +6091,16 @@ class ComputeDisksGetIamPolicyRequest(_messages.Message):
   r"""A ComputeDisksGetIamPolicyRequest object.
 
   Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
     project: Project ID for this request.
     resource: Name or id of the resource for this request.
     zone: The name of the zone for this request.
   """
 
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeDisksGetRequest(_messages.Message):
@@ -8383,12 +8390,14 @@ class ComputeImagesGetIamPolicyRequest(_messages.Message):
   r"""A ComputeImagesGetIamPolicyRequest object.
 
   Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
     project: Project ID for this request.
     resource: Name or id of the resource for this request.
   """
 
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeImagesGetRequest(_messages.Message):
@@ -9619,12 +9628,14 @@ class ComputeInstanceTemplatesGetIamPolicyRequest(_messages.Message):
   r"""A ComputeInstanceTemplatesGetIamPolicyRequest object.
 
   Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
     project: Project ID for this request.
     resource: Name or id of the resource for this request.
   """
 
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeInstanceTemplatesGetRequest(_messages.Message):
@@ -9994,14 +10005,16 @@ class ComputeInstancesGetIamPolicyRequest(_messages.Message):
   r"""A ComputeInstancesGetIamPolicyRequest object.
 
   Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
     project: Project ID for this request.
     resource: Name or id of the resource for this request.
     zone: The name of the zone for this request.
   """
 
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeInstancesGetRequest(_messages.Message):
@@ -11029,14 +11042,16 @@ class ComputeInterconnectAttachmentsGetIamPolicyRequest(_messages.Message):
   r"""A ComputeInterconnectAttachmentsGetIamPolicyRequest object.
 
   Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
     project: Project ID for this request.
     region: The name of the region for this request.
     resource: Name or id of the resource for this request.
   """
 
-  project = _messages.StringField(1, required=True)
-  region = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  resource = _messages.StringField(4, required=True)
 
 
 class ComputeInterconnectAttachmentsGetRequest(_messages.Message):
@@ -11331,12 +11346,14 @@ class ComputeInterconnectsGetIamPolicyRequest(_messages.Message):
   r"""A ComputeInterconnectsGetIamPolicyRequest object.
 
   Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
     project: Project ID for this request.
     resource: Name or id of the resource for this request.
   """
 
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeInterconnectsGetRequest(_messages.Message):
@@ -11495,12 +11512,14 @@ class ComputeLicenseCodesGetIamPolicyRequest(_messages.Message):
   r"""A ComputeLicenseCodesGetIamPolicyRequest object.
 
   Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
     project: Project ID for this request.
     resource: Name or id of the resource for this request.
   """
 
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeLicenseCodesGetRequest(_messages.Message):
@@ -11572,12 +11591,14 @@ class ComputeLicensesGetIamPolicyRequest(_messages.Message):
   r"""A ComputeLicensesGetIamPolicyRequest object.
 
   Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
     project: Project ID for this request.
     resource: Name or id of the resource for this request.
   """
 
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeLicensesGetRequest(_messages.Message):
@@ -11718,12 +11739,14 @@ class ComputeMachineImagesGetIamPolicyRequest(_messages.Message):
   r"""A ComputeMachineImagesGetIamPolicyRequest object.
 
   Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
     project: Project ID for this request.
     resource: Name or id of the resource for this request.
   """
 
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeMachineImagesGetRequest(_messages.Message):
@@ -12766,7 +12789,7 @@ class ComputeNodeGroupsDeleteNodesRequest(_messages.Message):
   r"""A ComputeNodeGroupsDeleteNodesRequest object.
 
   Fields:
-    nodeGroup: Name of the NodeGroup resource to delete.
+    nodeGroup: Name of the NodeGroup resource whose nodes will be deleted.
     nodeGroupsDeleteNodesRequest: A NodeGroupsDeleteNodesRequest resource to
       be passed as the request body.
     project: Project ID for this request.
@@ -12819,14 +12842,16 @@ class ComputeNodeGroupsGetIamPolicyRequest(_messages.Message):
   r"""A ComputeNodeGroupsGetIamPolicyRequest object.
 
   Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
     project: Project ID for this request.
     resource: Name or id of the resource for this request.
     zone: The name of the zone for this request.
   """
 
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeNodeGroupsGetRequest(_messages.Message):
@@ -13134,14 +13159,16 @@ class ComputeNodeTemplatesGetIamPolicyRequest(_messages.Message):
   r"""A ComputeNodeTemplatesGetIamPolicyRequest object.
 
   Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
     project: Project ID for this request.
     region: The name of the region for this request.
     resource: Name or id of the resource for this request.
   """
 
-  project = _messages.StringField(1, required=True)
-  region = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  resource = _messages.StringField(4, required=True)
 
 
 class ComputeNodeTemplatesGetRequest(_messages.Message):
@@ -15304,14 +15331,16 @@ class ComputeRegionDisksGetIamPolicyRequest(_messages.Message):
   r"""A ComputeRegionDisksGetIamPolicyRequest object.
 
   Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
     project: Project ID for this request.
     region: The name of the region for this request.
     resource: Name or id of the resource for this request.
   """
 
-  project = _messages.StringField(1, required=True)
-  region = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  resource = _messages.StringField(4, required=True)
 
 
 class ComputeRegionDisksGetRequest(_messages.Message):
@@ -17706,14 +17735,16 @@ class ComputeReservationsGetIamPolicyRequest(_messages.Message):
   r"""A ComputeReservationsGetIamPolicyRequest object.
 
   Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
     project: Project ID for this request.
     resource: Name or id of the resource for this request.
     zone: The name of the zone for this request.
   """
 
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeReservationsGetRequest(_messages.Message):
@@ -17940,14 +17971,16 @@ class ComputeResourcePoliciesGetIamPolicyRequest(_messages.Message):
   r"""A ComputeResourcePoliciesGetIamPolicyRequest object.
 
   Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
     project: Project ID for this request.
     region: The name of the region for this request.
     resource: Name or id of the resource for this request.
   """
 
-  project = _messages.StringField(1, required=True)
-  region = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  resource = _messages.StringField(4, required=True)
 
 
 class ComputeResourcePoliciesGetRequest(_messages.Message):
@@ -18806,12 +18839,14 @@ class ComputeSnapshotsGetIamPolicyRequest(_messages.Message):
   r"""A ComputeSnapshotsGetIamPolicyRequest object.
 
   Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
     project: Project ID for this request.
     resource: Name or id of the resource for this request.
   """
 
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeSnapshotsGetRequest(_messages.Message):
@@ -19379,14 +19414,16 @@ class ComputeSubnetworksGetIamPolicyRequest(_messages.Message):
   r"""A ComputeSubnetworksGetIamPolicyRequest object.
 
   Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
     project: Project ID for this request.
     region: The name of the region for this request.
     resource: Name or id of the resource for this request.
   """
 
-  project = _messages.StringField(1, required=True)
-  region = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  resource = _messages.StringField(4, required=True)
 
 
 class ComputeSubnetworksGetRequest(_messages.Message):
@@ -24451,29 +24488,20 @@ class ForwardingRule(_messages.Message):
       RFC1035. Label values may be empty.
 
   Fields:
-    IPAddress: The IP address that this forwarding rule is serving on behalf
-      of.  Addresses are restricted based on the forwarding rule's load
-      balancing scheme (EXTERNAL or INTERNAL) and scope (global or regional).
-      When the load balancing scheme is EXTERNAL, for global forwarding rules,
-      the address must be a global IP, and for regional forwarding rules, the
-      address must live in the same region as the forwarding rule. If this
-      field is empty, an ephemeral IPv4 address from the same scope (global or
-      regional) will be assigned. A regional forwarding rule supports IPv4
-      only. A global forwarding rule supports either IPv4 or IPv6.  When the
-      load balancing scheme is INTERNAL_SELF_MANAGED, this must be a URL
-      reference to an existing Address resource ( internal regional static IP
-      address), with a purpose of GCE_END_POINT and address_type of INTERNAL.
-      When the load balancing scheme is INTERNAL, this can only be an RFC 1918
-      IP address belonging to the network/subnet configured for the forwarding
-      rule. By default, if this field is empty, an ephemeral internal IP
-      address will be automatically allocated from the IP range of the subnet
-      or network configured for this forwarding rule.  An address can be
-      specified either by a literal IP address or a URL reference to an
-      existing Address resource. The following examples are all valid:   -
-      100.1.2.3  - https://www.googleapis.com/compute/v1/projects/project/regi
-      ons/region/addresses/address  -
-      projects/project/regions/region/addresses/address  -
-      regions/region/addresses/address  - global/addresses/address  - address
+    IPAddress: IP address that this forwarding rule serves. When a client
+      sends traffic to this IP address, the forwarding rule directs the
+      traffic to the target that you specify in the forwarding rule.  If you
+      don't specify a reserved IP address, an ephemeral IP address is
+      assigned. Methods for specifying an IP address:  * IPv4 dotted decimal,
+      as in `100.1.2.3` * Full URL, as in https://www.googleapis.com/compute/v
+      1/projects/project_id/regions/region/addresses/address-name * Partial
+      URL or by name, as in: * projects/project_id/regions/region/addresses
+      /address-name * regions/region/addresses/address-name * global/addresses
+      /address-name * address-name   The loadBalancingScheme and the
+      forwarding rule's target determine the type of IP address that you can
+      use. For detailed information, refer to [IP address specifications
+      ](/load-balancing/docs/forwarding-rule-
+      concepts#ip_address_specifications).
     IPProtocol: The IP protocol to which this rule applies. Valid options are
       TCP, UDP, ESP, AH, SCTP or ICMP.  When the load balancing scheme is
       INTERNAL, only TCP and UDP are valid. When the load balancing scheme is
@@ -24563,23 +24591,30 @@ class ForwardingRule(_messages.Message):
       STANDARD. For GlobalForwardingRule, the valid value is PREMIUM.  If this
       field is not specified, it is assumed to be PREMIUM. If IPAddress is
       specified, this value must be equal to the networkTier of the Address.
-    portRange: This field is used along with the target field for
-      TargetHttpProxy, TargetHttpsProxy, TargetSslProxy, TargetTcpProxy,
-      TargetVpnGateway, TargetPool, TargetInstance.  Applicable only when
-      IPProtocol is TCP, UDP, or SCTP, only packets addressed to ports in the
-      specified range will be forwarded to target. Forwarding rules with the
-      same [IPAddress, IPProtocol] pair must have disjoint port ranges.  Some
-      types of forwarding target have constraints on the acceptable ports:   -
-      TargetHttpProxy: 80, 8080  - TargetHttpsProxy: 443  - TargetTcpProxy:
-      25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 1688, 1883, 5222  -
-      TargetSslProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995,
-      1688, 1883, 5222  - TargetVpnGateway: 500, 4500
-    ports: This field is used along with the backend_service field for
-      internal load balancing.  When the load balancing scheme is INTERNAL, a
-      list of ports can be configured, for example, ['80'], ['8000','9000']
-      etc. Only packets addressed to these ports will be forwarded to the
-      backends configured with this forwarding rule.  You may specify a
-      maximum of up to 5 ports.
+    portRange: This field is deprecated. See the port field.
+    ports: List of comma-separated ports. The forwarding rule forwards packets
+      with matching destination ports. If the forwarding rule's
+      loadBalancingScheme is EXTERNAL, and the forwarding rule references a
+      target pool, specifying ports is optional. You can specify an unlimited
+      number of ports, but they must be contiguous. If you omit ports, GCP
+      forwards traffic on any port of the forwarding rule's protocol.  If the
+      forwarding rule's loadBalancingScheme is EXTERNAL, and the forwarding
+      rule references a target HTTP proxy, target HTTPS proxy, target TCP
+      proxy, target SSL proxy, or target VPN gateway, you must specify ports
+      using the following constraints:    - TargetHttpProxy: 80, 8080  -
+      TargetHttpsProxy: 443  - TargetTcpProxy: 25, 43, 110, 143, 195, 443,
+      465, 587, 700, 993, 995, 1688, 1883, 5222  - TargetSslProxy: 25, 43,
+      110, 143, 195, 443, 465, 587, 700, 993, 995, 1688, 1883, 5222  -
+      TargetVpnGateway: 500, 4500    If the forwarding rule's
+      loadBalancingScheme is INTERNAL, you must specify ports in one of the
+      following ways:  * A list of up to five ports, which can be non-
+      contiguous * Keyword ALL, which causes the forwarding rule to forward
+      traffic on any port of the forwarding rule's protocol.  The ports field
+      is used along with the target field for TargetHttpProxy,
+      TargetHttpsProxy, TargetSslProxy, TargetTcpProxy, TargetVpnGateway,
+      TargetPool, TargetInstance.  Applicable only when IPProtocol is TCP,
+      UDP, or SCTP. Forwarding rules with the same [IPAddress, IPProtocol]
+      pair must have disjoint port ranges.
     region: [Output Only] URL of the region where the regional forwarding rule
       resides. This field is not applicable to global forwarding rules. You
       must specify this field as part of the HTTP request URL. It is not
@@ -25812,31 +25847,12 @@ class HealthCheckLogConfig(_messages.Message):
   r"""Configuration of logging on a health check. If logging is enabled, logs
   will be exported to Stackdriver.
 
-  Enums:
-    FilterValueValuesEnum: Specifies the desired filtering of logs on this
-      health check. If this is unspecified and enable is true, logs are
-      exported with LOG_TRANSITION filter.
-
   Fields:
     enable: Indicates whether or not to export logs. This is false by default,
       which means no health check logging will be done.
-    filter: Specifies the desired filtering of logs on this health check. If
-      this is unspecified and enable is true, logs are exported with
-      LOG_TRANSITION filter.
   """
 
-  class FilterValueValuesEnum(_messages.Enum):
-    r"""Specifies the desired filtering of logs on this health check. If this
-    is unspecified and enable is true, logs are exported with LOG_TRANSITION
-    filter.
-
-    Values:
-      LOG_TRANSITION: <no description>
-    """
-    LOG_TRANSITION = 0
-
   enable = _messages.BooleanField(1)
-  filter = _messages.EnumField('FilterValueValuesEnum', 2)
 
 
 class HealthCheckReference(_messages.Message):
@@ -27350,8 +27366,8 @@ class Image(_messages.Message):
       create other resources, such as instances, only after the image has been
       successfully created and the status is set to READY. Possible values are
       FAILED, PENDING, or READY.
-    storageLocations: GCS bucket storage location of the image (regional or
-      multi-regional).
+    storageLocations: Cloud Storage bucket storage location of the image
+      (regional or multi-regional).
   """
 
   class SourceTypeValueValuesEnum(_messages.Enum):
@@ -31234,6 +31250,9 @@ class InterconnectAttachment(_messages.Message):
     labels: Labels to apply to this InterconnectAttachment resource. These can
       be later modified by the setLabels method. Each label key/value must
       comply with RFC1035. Label values may be empty.
+    mtu: Maximum Transmission Unit (MTU), in bytes, of packets passing through
+      this interconnect attachment. Only 1440 and 1500 are allowed. If not
+      specified, the value will default to 1440.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -31458,19 +31477,20 @@ class InterconnectAttachment(_messages.Message):
   kind = _messages.StringField(12, default=u'compute#interconnectAttachment')
   labelFingerprint = _messages.BytesField(13)
   labels = _messages.MessageField('LabelsValue', 14)
-  name = _messages.StringField(15)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 16)
-  pairingKey = _messages.StringField(17)
-  partnerAsn = _messages.IntegerField(18)
-  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 19)
-  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 20)
-  region = _messages.StringField(21)
-  router = _messages.StringField(22)
-  selfLink = _messages.StringField(23)
-  selfLinkWithId = _messages.StringField(24)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
-  type = _messages.EnumField('TypeValueValuesEnum', 26)
-  vlanTag8021q = _messages.IntegerField(27, variant=_messages.Variant.INT32)
+  mtu = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  name = _messages.StringField(16)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 17)
+  pairingKey = _messages.StringField(18)
+  partnerAsn = _messages.IntegerField(19)
+  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 20)
+  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 21)
+  region = _messages.StringField(22)
+  router = _messages.StringField(23)
+  selfLink = _messages.StringField(24)
+  selfLinkWithId = _messages.StringField(25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  type = _messages.EnumField('TypeValueValuesEnum', 27)
+  vlanTag8021q = _messages.IntegerField(28, variant=_messages.Variant.INT32)
 
 
 class InterconnectAttachmentAggregatedList(_messages.Message):
@@ -33353,6 +33373,8 @@ class MachineImage(_messages.Message):
       following values: INVALID, CREATING, READY, DELETING, and UPLOADING.
     storageLocations: GCS bucket storage location of the machine image
       (regional or multi-regional).
+    totalStorageBytes: [Output Only] Total size of the storage used by the
+      machine image.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -33386,6 +33408,7 @@ class MachineImage(_messages.Message):
   sourceInstanceProperties = _messages.MessageField('SourceInstanceProperties', 12)
   status = _messages.EnumField('StatusValueValuesEnum', 13)
   storageLocations = _messages.StringField(14, repeated=True)
+  totalStorageBytes = _messages.IntegerField(15)
 
 
 class MachineImageList(_messages.Message):
@@ -34112,14 +34135,18 @@ class ManagedInstanceInstanceHealth(_messages.Message):
     DetailedHealthStateValueValuesEnum: [Output Only] The current detailed
       instance health state.
     HealthStateValueValuesEnum: [Output Only] The current instance health
-      state.
+      state. This field will not get promoted to beta/GA and might be removed
+      from alpha APIs after 01/12/2019. Please use detailed_health_state field
+      instead.
 
   Fields:
     detailedHealthState: [Output Only] The current detailed instance health
       state.
     healthCheck: [Output Only] The URL for the health check that verifies
       whether the instance is healthy.
-    healthState: [Output Only] The current instance health state.
+    healthState: [Output Only] The current instance health state. This field
+      will not get promoted to beta/GA and might be removed from alpha APIs
+      after 01/12/2019. Please use detailed_health_state field instead.
   """
 
   class DetailedHealthStateValueValuesEnum(_messages.Enum):
@@ -34139,7 +34166,9 @@ class ManagedInstanceInstanceHealth(_messages.Message):
     UNKNOWN = 4
 
   class HealthStateValueValuesEnum(_messages.Enum):
-    r"""[Output Only] The current instance health state.
+    r"""[Output Only] The current instance health state. This field will not
+    get promoted to beta/GA and might be removed from alpha APIs after
+    01/12/2019. Please use detailed_health_state field instead.
 
     Values:
       HEALTHY: <no description>
@@ -34517,10 +34546,10 @@ class NetworkEndpoint(_messages.Message):
       instance must be in the same zone of network endpoint group.  The name
       must be 1-63 characters long, and comply with RFC1035.
     ipAddress: Optional IPv4 address of network endpoint. The IP address must
-      belong to a VM in GCE (either the primary IP or as part of an aliased IP
-      range). If the IP address is not specified, then the primary IP address
-      for the VM instance in the network that the network endpoint group
-      belongs to will be used.
+      belong to a VM in Compute Engine (either the primary IP or as part of an
+      aliased IP range). If the IP address is not specified, then the primary
+      IP address for the VM instance in the network that the network endpoint
+      group belongs to will be used.
     port: Optional port number of network endpoint. If not specified and the
       NetworkEndpointGroup.network_endpoint_type is GCE_IP_PORT, the
       defaultPort for the network endpoint group will be used.
@@ -34617,14 +34646,16 @@ class NetworkEndpointGroup(_messages.Message):
 
     Values:
       GCE_VM_IP_PORT: <no description>
+      GCE_VM_PRIMARY_IP: <no description>
       INTERNET_FQDN_PORT: <no description>
       INTERNET_IP_PORT: <no description>
       NON_GCP_PRIVATE_IP_PORT: <no description>
     """
     GCE_VM_IP_PORT = 0
-    INTERNET_FQDN_PORT = 1
-    INTERNET_IP_PORT = 2
-    NON_GCP_PRIVATE_IP_PORT = 3
+    GCE_VM_PRIMARY_IP = 1
+    INTERNET_FQDN_PORT = 2
+    INTERNET_IP_PORT = 3
+    NON_GCP_PRIVATE_IP_PORT = 4
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Specify the type of this network endpoint group. Only LOAD_BALANCING
@@ -36110,7 +36141,7 @@ class NodeGroupsDeleteNodesRequest(_messages.Message):
   r"""A NodeGroupsDeleteNodesRequest object.
 
   Fields:
-    nodes: A string attribute.
+    nodes: Names of the nodes to delete.
   """
 
   nodes = _messages.StringField(1, repeated=True)
@@ -37560,13 +37591,13 @@ class Operation(_messages.Message):
     httpErrorStatusCode: [Output Only] If the operation fails, this field
       contains the HTTP error status code that was returned. For example, a
       404 means the resource was not found.
-    id: [Output Only] The unique identifier for the resource. This identifier
+    id: [Output Only] The unique identifier for the operation. This identifier
       is defined by the server.
     insertTime: [Output Only] The time that this operation was requested. This
       value is in RFC3339 text format.
     kind: [Output Only] Type of the resource. Always compute#operation for
       Operation resources.
-    name: [Output Only] Name of the resource.
+    name: [Output Only] Name of the operation.
     operationType: [Output Only] The type of operation, such as insert,
       update, or delete, and so on.
     progress: [Output Only] An optional progress indicator that ranges from 0
@@ -40283,6 +40314,7 @@ class Quota(_messages.Message):
       INTERCONNECTS: <no description>
       INTERCONNECT_ATTACHMENTS_PER_REGION: <no description>
       INTERCONNECT_ATTACHMENTS_TOTAL_MBPS: <no description>
+      INTERCONNECT_TOTAL_GBPS: <no description>
       INTERNAL_ADDRESSES: <no description>
       INTERNAL_FORWARDING_RULES_PER_NETWORK: <no description>
       INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK: <no
@@ -40378,63 +40410,64 @@ class Quota(_messages.Message):
     INTERCONNECTS = 31
     INTERCONNECT_ATTACHMENTS_PER_REGION = 32
     INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 33
-    INTERNAL_ADDRESSES = 34
-    INTERNAL_FORWARDING_RULES_PER_NETWORK = 35
-    INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK = 36
-    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 37
-    INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK = 38
-    IN_USE_ADDRESSES = 39
-    IN_USE_BACKUP_SCHEDULES = 40
-    IN_USE_MAINTENANCE_WINDOWS = 41
-    IN_USE_SNAPSHOT_SCHEDULES = 42
-    LOCAL_SSD_TOTAL_GB = 43
-    MACHINE_IMAGES = 44
-    N2_CPUS = 45
-    NETWORKS = 46
-    NETWORK_ENDPOINT_GROUPS = 47
-    NVIDIA_K80_GPUS = 48
-    NVIDIA_P100_GPUS = 49
-    NVIDIA_P100_VWS_GPUS = 50
-    NVIDIA_P4_GPUS = 51
-    NVIDIA_P4_VWS_GPUS = 52
-    NVIDIA_T4_GPUS = 53
-    NVIDIA_T4_VWS_GPUS = 54
-    NVIDIA_V100_GPUS = 55
-    PREEMPTIBLE_CPUS = 56
-    PREEMPTIBLE_LOCAL_SSD_GB = 57
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 58
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 59
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 60
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 61
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 62
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 63
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 64
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 65
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 66
-    REGIONAL_AUTOSCALERS = 67
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 68
-    RESERVATIONS = 69
-    RESOURCE_POLICIES = 70
-    ROUTERS = 71
-    ROUTES = 72
-    SECURITY_POLICIES = 73
-    SECURITY_POLICY_RULES = 74
-    SNAPSHOTS = 75
-    SSD_TOTAL_GB = 76
-    SSL_CERTIFICATES = 77
-    STATIC_ADDRESSES = 78
-    SUBNETWORKS = 79
-    TARGET_HTTPS_PROXIES = 80
-    TARGET_HTTP_PROXIES = 81
-    TARGET_INSTANCES = 82
-    TARGET_POOLS = 83
-    TARGET_SSL_PROXIES = 84
-    TARGET_TCP_PROXIES = 85
-    TARGET_VPN_GATEWAYS = 86
-    URL_MAPS = 87
-    VPN_GATEWAYS = 88
-    VPN_TUNNELS = 89
-    XPN_SERVICE_PROJECTS = 90
+    INTERCONNECT_TOTAL_GBPS = 34
+    INTERNAL_ADDRESSES = 35
+    INTERNAL_FORWARDING_RULES_PER_NETWORK = 36
+    INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK = 37
+    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 38
+    INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK = 39
+    IN_USE_ADDRESSES = 40
+    IN_USE_BACKUP_SCHEDULES = 41
+    IN_USE_MAINTENANCE_WINDOWS = 42
+    IN_USE_SNAPSHOT_SCHEDULES = 43
+    LOCAL_SSD_TOTAL_GB = 44
+    MACHINE_IMAGES = 45
+    N2_CPUS = 46
+    NETWORKS = 47
+    NETWORK_ENDPOINT_GROUPS = 48
+    NVIDIA_K80_GPUS = 49
+    NVIDIA_P100_GPUS = 50
+    NVIDIA_P100_VWS_GPUS = 51
+    NVIDIA_P4_GPUS = 52
+    NVIDIA_P4_VWS_GPUS = 53
+    NVIDIA_T4_GPUS = 54
+    NVIDIA_T4_VWS_GPUS = 55
+    NVIDIA_V100_GPUS = 56
+    PREEMPTIBLE_CPUS = 57
+    PREEMPTIBLE_LOCAL_SSD_GB = 58
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 59
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 60
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 61
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 62
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 63
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 64
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 65
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 66
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 67
+    REGIONAL_AUTOSCALERS = 68
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 69
+    RESERVATIONS = 70
+    RESOURCE_POLICIES = 71
+    ROUTERS = 72
+    ROUTES = 73
+    SECURITY_POLICIES = 74
+    SECURITY_POLICY_RULES = 75
+    SNAPSHOTS = 76
+    SSD_TOTAL_GB = 77
+    SSL_CERTIFICATES = 78
+    STATIC_ADDRESSES = 79
+    SUBNETWORKS = 80
+    TARGET_HTTPS_PROXIES = 81
+    TARGET_HTTP_PROXIES = 82
+    TARGET_INSTANCES = 83
+    TARGET_POOLS = 84
+    TARGET_SSL_PROXIES = 85
+    TARGET_TCP_PROXIES = 86
+    TARGET_VPN_GATEWAYS = 87
+    URL_MAPS = 88
+    VPN_GATEWAYS = 89
+    VPN_TUNNELS = 90
+    XPN_SERVICE_PROJECTS = 91
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -43029,8 +43062,8 @@ class ResourcePolicySnapshotSchedulePolicySnapshotProperties(_messages.Message):
     guestFlush: Indication to perform a ?guest aware? snapshot.
     labels: Labels to apply to scheduled snapshots. These can be later
       modified by the setLabels method. Label values may be empty.
-    storageLocations: GCS bucket storage location of the auto snapshot
-      (regional or multi-regional).
+    storageLocations: Cloud Storage bucket storage location of the auto
+      snapshot (regional or multi-regional).
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -43799,8 +43832,12 @@ class RouterBgpPeer(_messages.Message):
       InterconnectAttachment of type PARTNER. Google automatically creates,
       updates, and deletes this type of BGP peer when the PARTNER
       InterconnectAttachment is created, updated, or deleted.
-    name: Name of this BGP peer. The name must be 1-63 characters long and
-      comply with RFC1035.
+    name: Name of this BGP peer. The name must be 1-63 characters long, and
+      comply with RFC1035. Specifically, the name must be 1-63 characters long
+      and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which
+      means the first character must be a lowercase letter, and all following
+      characters must be a dash, lowercase letter, or digit, except the last
+      character, which cannot be a dash.
     peerAsn: Peer BGP Autonomous System Number (ASN). Each BGP interface may
       use a different value.
     peerIpAddress: IP address of the BGP interface outside Google Cloud
@@ -43899,23 +43936,15 @@ class RouterBgpPeerBfd(_messages.Message):
 
   Fields:
     minReceiveInterval: The minimum interval, in milliseconds, between BFD
-      packets received from the peer router. The actual value is negotiated
-      between the two routers and is equal to the greater of this value and
-      the transmit interval of the other router. If BFD echo mode is enabled
-      on this router and the peer router, this value is used to negotiate the
-      interval between BFD echo packets transmitted by the peer router.
-      Otherwise, it will be used to determine the interval between BFD control
-      packets. If set, this value must be between 100 and 30000. The default
-      is 300.
+      control packets received from the peer router. The actual value is
+      negotiated between the two routers and is equal to the greater of this
+      value and the transmit interval of the other router. If set, this value
+      must be between 100 and 30000. The default is 300.
     minTransmitInterval: The minimum interval, in milliseconds, between BFD
-      packets transmitted to the peer router. The actual value is negotiated
-      between the two routers and is equal to the greater of this value and
-      the corresponding receive interval of the other router. If BFD echo mode
-      is enabled on this router and the peer router, this value is used to
-      negotiate the interval between BFD echo packets transmitted by this
-      router. Otherwise, it will be used to determine the interval between BFD
-      control packets. If set, this value must be between 100 and 30000. The
-      default is 300.
+      control packets transmitted to the peer router. The actual value is
+      negotiated between the two routers and is equal to the greater of this
+      value and the corresponding receive interval of the other router. If
+      set, this value must be between 100 and 30000. The default is 300.
     mode: The BFD session initialization mode for this BGP peer. If set to
       ACTIVE, the Cloud Router will initiate the BFD session for this BGP
       peer. If set to PASSIVE, the Cloud Router will wait for the peer router
@@ -44038,8 +44067,12 @@ class RouterInterface(_messages.Message):
       InterconnectAttachment of type PARTNER. Google automatically creates,
       updates, and deletes this type of interface when the PARTNER
       InterconnectAttachment is created, updated, or deleted.
-    name: Name of this interface entry. The name must be 1-63 characters long
-      and comply with RFC1035.
+    name: Name of this interface entry. The name must be 1-63 characters long,
+      and comply with RFC1035. Specifically, the name must be 1-63 characters
+      long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which
+      means the first character must be a lowercase letter, and all following
+      characters must be a dash, lowercase letter, or digit, except the last
+      character, which cannot be a dash.
   """
 
   class ManagementTypeValueValuesEnum(_messages.Enum):
@@ -45772,8 +45805,8 @@ class Snapshot(_messages.Message):
       reallocation. This status can either be UPDATING, meaning the size of
       the snapshot is being updated, or UP_TO_DATE, meaning the size of the
       snapshot is up-to-date.
-    storageLocations: GCS bucket storage location of the snapshot (regional or
-      multi-regional).
+    storageLocations: Cloud Storage bucket storage location of the snapshot
+      (regional or multi-regional).
   """
 
   class StatusValueValuesEnum(_messages.Enum):

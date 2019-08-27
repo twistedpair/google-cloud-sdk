@@ -1000,7 +1000,7 @@ def GetTreeSizeBytes(path, predicate=None):
   result = 0
   if predicate is None:
     predicate = lambda x: True
-  for directory in os.walk(path):
+  for directory in os.walk(six.text_type(path)):
     for file_name in directory[2]:
       file_path = os.path.join(directory[0], file_name)
       if predicate(file_path):

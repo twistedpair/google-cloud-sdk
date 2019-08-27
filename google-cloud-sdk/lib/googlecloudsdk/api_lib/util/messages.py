@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding as _encoding
-from googlecloudsdk.command_lib.container.binauthz import exceptions
+from googlecloudsdk.core import exceptions
 
 import six
 

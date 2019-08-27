@@ -214,7 +214,7 @@
     },
     "GoogleCloudDatacatalogV1beta1Entry": {
       "id": "GoogleCloudDatacatalogV1beta1Entry",
-      "description": "Entry Metadata. \nA Data Catalog Entry resource represents another resource in Google\nCloud Platform, such as a BigQuery dataset or a Cloud Pub\/Sub topic. Clients\ncan use the `linked_resource` field in the Entry resource to refer to the\noriginal resource ID of the source system.\n\nAn Entry resource contains resource details, such as its schema. An Entry can\nalso be used to attach flexible metadata, such as a\nTag.",
+      "description": "Entry Metadata. \nA Data Catalog Entry resource represents another resource in Google\nCloud Platform, such as a BigQuery dataset or a Cloud Pub\/Sub topic.\nClients can use the `linked_resource` field in the Entry resource to refer to\nthe original resource ID of the source system.\n\nAn Entry resource contains resource details, such as its schema. An Entry can\nalso be used to attach flexible metadata, such as a\nTag.",
       "type": "object",
       "properties": {
         "name": {
@@ -260,7 +260,7 @@
           "$ref": "GoogleCloudDatacatalogV1beta1Schema"
         },
         "sourceSystemTimestamps": {
-          "description": "Output only. Timestamps about the underlying Google Cloud Platform resource\n-- not about this Data Catalog Entry.",
+          "description": "Output only. Timestamps about the underlying Google Cloud Platform\nresource, not about this Data Catalog Entry.",
           "$ref": "GoogleCloudDatacatalogV1beta1SystemTimestamps"
         }
       }
@@ -386,17 +386,17 @@
       "type": "object",
       "properties": {
         "createTime": {
-          "description": "Output only. The creation time of the resource within the given system.",
+          "description": "The creation time of the resource within the given system.",
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. The last-modified time of the resource within the given\nsystem.",
+          "description": "The last-modified time of the resource within the given system.",
           "type": "string",
           "format": "google-datetime"
         },
         "expireTime": {
-          "description": "Output only. The expiration time of the resource within the given system.",
+          "description": "Output only. The expiration time of the resource within the given system.\nCurrently only apllicable to BigQuery resources.",
           "type": "string",
           "format": "google-datetime"
         }

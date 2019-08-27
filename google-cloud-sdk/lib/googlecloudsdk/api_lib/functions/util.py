@@ -389,10 +389,9 @@ def CreateFunction(function, location):
 def GetFunctionIamPolicy(function_resource_name):
   client = GetApiClientInstance()
   messages = client.MESSAGES_MODULE
-  request = messages.CloudfunctionsProjectsLocationsFunctionsGetIamPolicyRequest(
-      resource=function_resource_name,
-      options_requestedPolicyVersion=iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION)
-  return client.projects_locations_functions.GetIamPolicy(request)
+  return client.projects_locations_functions.GetIamPolicy(
+      messages.CloudfunctionsProjectsLocationsFunctionsGetIamPolicyRequest(
+          resource=function_resource_name))
 
 
 @CatchHTTPErrorRaiseHTTPException

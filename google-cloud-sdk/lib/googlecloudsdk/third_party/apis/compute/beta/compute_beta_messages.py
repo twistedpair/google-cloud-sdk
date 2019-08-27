@@ -29315,8 +29315,6 @@ class ManagedInstance(_messages.Message):
       empty when instance does not exist.
     instance: [Output Only] The URL of the instance. The URL can exist even if
       the instance has not yet been created.
-    instanceHealth: [Output Only] Health state of the instance per health-
-      check.
     instanceStatus: [Output Only] The status of the instance. This field is
       empty when the instance does not exist.
     lastAttempt: [Output Only] Information about the last attempt to create or
@@ -29394,44 +29392,9 @@ class ManagedInstance(_messages.Message):
   currentAction = _messages.EnumField('CurrentActionValueValuesEnum', 1)
   id = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
   instance = _messages.StringField(3)
-  instanceHealth = _messages.MessageField('ManagedInstanceInstanceHealth', 4, repeated=True)
-  instanceStatus = _messages.EnumField('InstanceStatusValueValuesEnum', 5)
-  lastAttempt = _messages.MessageField('ManagedInstanceLastAttempt', 6)
-  version = _messages.MessageField('ManagedInstanceVersion', 7)
-
-
-class ManagedInstanceInstanceHealth(_messages.Message):
-  r"""A ManagedInstanceInstanceHealth object.
-
-  Enums:
-    DetailedHealthStateValueValuesEnum: [Output Only] The current detailed
-      instance health state.
-
-  Fields:
-    detailedHealthState: [Output Only] The current detailed instance health
-      state.
-    healthCheck: [Output Only] The URL for the health check that verifies
-      whether the instance is healthy.
-  """
-
-  class DetailedHealthStateValueValuesEnum(_messages.Enum):
-    r"""[Output Only] The current detailed instance health state.
-
-    Values:
-      DRAINING: <no description>
-      HEALTHY: <no description>
-      TIMEOUT: <no description>
-      UNHEALTHY: <no description>
-      UNKNOWN: <no description>
-    """
-    DRAINING = 0
-    HEALTHY = 1
-    TIMEOUT = 2
-    UNHEALTHY = 3
-    UNKNOWN = 4
-
-  detailedHealthState = _messages.EnumField('DetailedHealthStateValueValuesEnum', 1)
-  healthCheck = _messages.StringField(2)
+  instanceStatus = _messages.EnumField('InstanceStatusValueValuesEnum', 4)
+  lastAttempt = _messages.MessageField('ManagedInstanceLastAttempt', 5)
+  version = _messages.MessageField('ManagedInstanceVersion', 6)
 
 
 class ManagedInstanceLastAttempt(_messages.Message):
