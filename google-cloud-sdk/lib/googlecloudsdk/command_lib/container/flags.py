@@ -23,9 +23,9 @@ from googlecloudsdk.api_lib.container import api_adapter
 from googlecloudsdk.api_lib.container import util
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.container import constants
-from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
@@ -540,11 +540,7 @@ def AddZoneAndRegionFlags(parser):
 
 def AddAsyncFlag(parser):
   """Adds the --async flags to the given parser."""
-  parser.add_argument(
-      '--async',
-      action='store_true',
-      default=None,
-      help='Don\'t wait for the operation to complete.')
+  base.ASYNC_FLAG.AddToParser(parser)
 
 
 def AddEnableKubernetesAlphaFlag(parser):
@@ -1014,7 +1010,27 @@ invalidate old credentials."""
       help=help_text)
 
 
-def AddMaintenanceWindowFlag(parser, hidden=False, add_unset_text=False):
+def AddMaintenanceWindowGroup(parser,
+                              hidden=False,
+                              emw_hidden=False,
+                              add_emw_flags=True):
+  """Adds a mutex for --maintenance-window and --maintenance-window-*."""
+  maintenance_group = parser.add_group(hidden=hidden, mutex=True)
+  AddDailyMaintenanceWindowFlag(maintenance_group, add_emw_text=not emw_hidden)
+  help_text = """\
+One of either maintenance-window or the group of maintenance-window-* flags can
+be set.
+"""
+  if add_emw_flags:
+    if not emw_hidden:
+      maintenance_group.help = help_text
+    AddRecurringMaintenanceWindowFlags(maintenance_group, hidden=emw_hidden)
+
+
+def AddDailyMaintenanceWindowFlag(parser,
+                                  hidden=False,
+                                  add_unset_text=False,
+                                  add_emw_text=False):
   """Adds a --maintenance-window flag to parser."""
   help_text = """\
 Set a time of day when you prefer maintenance to start on this cluster. \
@@ -1025,8 +1041,16 @@ For example:
 The time corresponds to the UTC time zone, and must be in HH:MM format.
 """
   unset_text = """\
-  To remove an existing maintenance window from the cluster, use \
-\'--maintenance-window=None\'
+To remove an existing maintenance window from the cluster, use
+'--maintenance-window=None'.
+"""
+  emw_text = """
+Non-emergency maintenance will occur in the 4 hour block starting at the
+specified time.
+
+This is mutually exclusive with the recurring maintenance windows
+and will overwrite any existing window. Compatible with maintenance
+exclusions.
 """
   description = 'Maintenance windows must be passed in using HH:MM format.'
   unset_description = ' They can also be removed by using the word \"None\".'
@@ -1034,6 +1058,8 @@ The time corresponds to the UTC time zone, and must be in HH:MM format.
   if add_unset_text:
     help_text += unset_text
     description += unset_description
+  if add_emw_text:
+    help_text += emw_text
 
   type_ = arg_parsers.RegexpValidator(
       r'^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$|^None$', description)
@@ -1042,7 +1068,144 @@ The time corresponds to the UTC time zone, and must be in HH:MM format.
       default=None,
       hidden=hidden,
       type=type_,
+      metavar='START_TIME',
       help=help_text)
+
+
+def AddRecurringMaintenanceWindowFlags(parser, hidden=False, is_update=False):
+  """Adds flags related to recurring maintenance windows to the parser."""
+  hidden_for_create = hidden and not is_update  # for surface spec validation
+  if is_update:
+    group = parser.add_group(hidden=hidden, mutex=True)
+  else:
+    group = parser
+  set_window_group = group.add_group(
+      hidden=hidden_for_create,
+      help="""\
+Set a flexible maintenance window by specifying a window that recurs per an
+RFC 5545 RRULE. Non-emergency maintenance will occur in the recurring windows.
+
+## EXAMPLES
+For a 9-5 M-F UTC-4 maintenance window:
+
+  $ {command} example-cluster \
+    --maintenance-window-start=2000-01-01T09:00:00-04:00 \
+    --maintenance-window-end=2000-01-01T17:00:00-04:00 \
+    --maintenance-window-recurrence='FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR'
+
+For a daily window from 22:00 - 04:00 UTC:
+
+  $ {command} example-cluster \
+    --maintenance-window-start=2000-01-01T22:00:00Z \
+    --maintenance-window-end=2000-01-02T04:00:00Z \
+    --maintenance-window-recurrence=FREQ=DAILY
+
+For the first weekend of every month from midnight Saturday till the last minute
+of Sunday, local time:
+
+  $ {command} example-cluster \
+    --maintenance-window-start=2019-01-05T00:00:00 \
+    --maintenance-window-end=2019-01-07T23:59:00 \
+    --maintenance-window-recurrence='FREQ=MONTHLY;BYSETPOS=1;BYDAY=SA'
+""")
+
+  set_window_group.add_argument(
+      '--maintenance-window-start',
+      type=arg_parsers.Datetime.Parse,
+      required=True,
+      hidden=hidden_for_create,
+      metavar='TIME_STAMP',
+      help="""\
+Start time of the first window (can occur in the past). The start time
+influences when the window will start for recurrences. See $ gcloud topic
+datetimes for information on time formats.
+""")
+
+  set_window_group.add_argument(
+      '--maintenance-window-end',
+      type=arg_parsers.Datetime.Parse,
+      required=True,
+      hidden=hidden_for_create,
+      metavar='TIME_STAMP',
+      help="""\
+End time of the first window (can occur in the past). Must take place after the
+start time. The difference in start and end time specifies the length of each
+recurrence. See $ gcloud topic datetimes for information on time formats.
+""")
+
+  set_window_group.add_argument(
+      '--maintenance-window-recurrence',
+      type=str,
+      required=True,
+      hidden=hidden_for_create,
+      metavar='RRULE',
+      help="""\
+An RFC 5545 RRULE, specifying how the window will recur. Note that minimum
+requirements for maintenance periods will be enforced. Note that FREQ=SECONDLY,
+MINUTELY, and HOURLY are not supported.
+""")
+
+  if is_update:
+    group.add_argument(
+        '--clear-maintenance-window',
+        action='store_true',
+        default=False,
+        help="""\
+If set, remove the maintenance window that was set with --maintenance-window-*.
+""")
+    AddMaintenanceExclusionFlags(group)
+
+
+def AddMaintenanceExclusionFlags(parser, hidden=False):
+  """Adds flags related to adding a maintenance exclusion to the parser."""
+  group = parser.add_group(
+      hidden=hidden,
+      help="""\
+Sets a period of time in which maintenance should not occur. This is compatible
+with both daily and recurring maintenance windows.
+
+Example:
+
+  $ {command} example-cluster --add-maintenance-exclusion-name=holidays-2000 --add-maintenance-exclusion-start=2000-11-20T00:00:00 --add-maintenance-exclusion-end=2000-12-31T23:59:59
+""")
+
+  group.add_argument(
+      '--add-maintenance-exclusion-name',
+      type=str,
+      help="""\
+A descriptor for the exclusion that can be used to remove it. If not specified,
+it will be autogenerated.
+""")
+
+  group.add_argument(
+      '--add-maintenance-exclusion-start',
+      type=arg_parsers.Datetime.Parse,
+      metavar='TIME_STAMP',
+      help="""\
+Start time of the exclusion window (can occur in the past). If not specified,
+the current time will be used. See $ gcloud topic datetimes for information on
+time formats.
+""")
+
+  group.add_argument(
+      '--add-maintenance-exclusion-end',
+      type=arg_parsers.Datetime.Parse,
+      required=True,
+      metavar='TIME_STAMP',
+      help="""\
+End time of the exclusion window. Must take place after the start time. See
+$ gcloud topic datetimes for information on time formats.
+""")
+
+  parser.add_argument(
+      '--remove-maintenance-exclusion',
+      type=str,
+      hidden=hidden,
+      metavar='NAME',
+      help="""\
+Name of a maintenance exclusion to remove. If you hadn't specified a name, one
+was auto-generated. Get it with $ gcloud container clusters describe.
+""")
 
 
 def AddLabelsFlag(parser, suppressed=False):
@@ -2432,14 +2595,23 @@ def AddShieldedInstanceFlags(parser):
 
 def AddDatabaseEncryptionFlag(parser):
   """Adds Database Encryption flags to the given parser."""
-  kms_flag_overrides = {
-      'kms-key': '--database-encryption-key',
-      'kms-keyring': '--database-encryption-key-keyring',
-      'kms-location': '--database-encryption-key-location',
-      'kms-project': '--database-encryption-key-project'
-  }
-  kms_resource_args.AddKmsKeyResourceArg(
-      parser, 'cluster', flag_overrides=kms_flag_overrides)
+  parser.add_argument(
+      '--database-encryption-key',
+      default=None,
+      help="""
+Enable Database Encryption.
+
+Enable database encryption that will be used to encrypt Kubernetes Secrets at
+the application layer. The key provided should be the resource ID in the format of
+`projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]/cryptoKeys/[KEY_NAME]`.
+For more information, see
+<https://cloud.google.com/kubernetes-engine/docs/how-to/encrypting-secrets>.
+""",
+      required=False,
+      type=arg_parsers.RegexpValidator(
+          r'^projects/[^/]+/locations/[^/]+/keyRings/[^/]+/cryptoKeys/[^/]+$',
+          'Must be in format of \'projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]/cryptoKeys/[KEY_NAME]\''
+      ))
 
 
 def AddDisableDatabaseEncryptionFlag(parser):
@@ -2456,29 +2628,64 @@ the application layer. For more information, see
       """)
 
 
-def GetDatabaseEncryptionOption(args):
-  """Gets kms key from the flags specifying Database Encryption config.
+def AddNodeConfigFlag(parser):
+  """Adds node config flag to the given parser."""
+  parser.add_argument(
+      '--node-config',
+      type=arg_parsers.FileContents(),
+      hidden=False,
+      help="""
+Path of the YAML/JSON file that contains the node configuration, including
+Linux kernel parameters (sysctls) and kubelet configs.
 
-  Args:
-    args: an argparse namespace. All the arguments that were provided to this
-      command invocation.
+Example:
 
-  Raises:
-    InvalidArgumentException: when provided kms_key is not fully specified.
+    kubeletConfig:
+      cpuManagerPolicy: static
+    linuxConfig:
+      sysctl:
+        net.core.somaxconn: '2048'
+        net.ipv4.tcp_rmem: '4096 87380 6291456'
 
-  Returns:
-    String: the name of database encryption key.
-  """
-  kms_ref = args.CONCEPTS.kms_key.Parse()
-  if kms_ref:
-    return kms_ref.RelativeName()
-  else:
-    # Check for partially specified database-encryption-key.
-    keywords = [
-        'database-encryption-key', 'database-encryption-key-keyring',
-        'database-encryption-key-location', 'database-encryption-key-project'
-    ]
-    for keyword in keywords:
-      if getattr(args, keyword.replace('-', '_'), None):
-        raise exceptions.InvalidArgumentException('--database-encryption-key',
-                                                  'not fully specified.')
+List of supported kubelet configs in 'kubeletConfig'.
+
+KEY               | VALUE
+----------------- | ----------------------------------
+cpuManagerPolicy  | either 'static' or 'default'
+cpuCFSQuota       | true or false (enabled by default)
+cpuCFSQuotaPeriod | interval (e.g., '100ms')
+
+List of supported sysctls in 'linuxConfig'.
+
+KEY                                        | VALUE
+------------------------------------------ | ----------------------------------
+kernel.pid_max                             | Must be [32768, 4194304]
+fs.inotify.max_queued_events               | Must be [16384, 4194304]
+fs.inotify.max_user_instances              | Must be [128, 4194304]
+fs.inotify.max_user_watches                | Must be [12288, 4194304]
+net.core.netdev_budget                     | Any positive integer
+net.core.netdev_budget_usecs               | Any positive integer
+net.core.netdev_max_backlog                | Any positive integer
+net.core.rmem_default                      | Any positive integer
+net.core.rmem_max                          | Any positive integer
+net.core.wmem_default                      | Any positive integer
+net.core.wmem_max                          | Any positive integer
+net.core.optmem_max                        | Any positive integer
+net.core.somaxconn                         | Must be [128, 4194304]
+net.ipv4.tcp_rmem                          | Any positive integer
+net.ipv4.tcp_wmem                          | Any positive integer tuple
+net.ipv4.tcp_mem                           | Any positive integer
+net.ipv4.tcp_fin_timeout                   | Any positive integer
+net.ipv4.tcp_keepalive_intvl               | Any positive integer
+net.ipv4.tcp_keepalive_probes              | Any positive integer
+net.ipv4.tcp_keepalive_time                | Any positive integer
+net.ipv4.tcp_max_orphans                   | Any positive integer
+net.ipv4.tcp_max_syn_backlog               | Any positive integer
+net.ipv4.tcp_max_tw_buckets                | Any positive integer
+net.ipv4.tcp_syn_retries                   | Any positive integer
+net.ipv4.tcp_tw_reuse                      | Must be {0, 1}
+net.ipv4.udp_mem                           | Any positive integer tuple
+net.ipv4.udp_rmem_min                      | Any positive integer
+net.ipv4.udp_wmem_min                      | Any positive integer
+net.netfilter.nf_conntrack_generic_timeout | Any positive integer
+""")

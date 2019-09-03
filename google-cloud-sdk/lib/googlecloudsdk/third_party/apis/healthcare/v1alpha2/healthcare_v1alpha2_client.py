@@ -1383,8 +1383,11 @@ may "fail open" without warning.
 search criteria specified as query parameters, grouped by
 `Observation.code`, sorted from most recent to oldest.
 
-Implements the FHIR extended operation
-[Observation-lastn](http://hl7.org/implement/standards/fhir/STU3/observation-operations.html#lastn).
+Implements the FHIR extended operation Observation-lastn
+([STU3](http://hl7.org/implement/standards/fhir/STU3/observation-operations.html#lastn)).
+
+DSTU2 doesn't define the Observation-lastn method, but the server supports
+it the same way it supports STU3.
 
 Search terms are provided as query parameters following the same pattern as
 the search method. This operation accepts an additional
@@ -1427,8 +1430,9 @@ GCP error might be returned instead.
       r"""Retrieves all the resources directly referenced by a patient, as well as.
 all of the resources in the patient compartment.
 
-Implements the FHIR extended operation
-[Patient-everything](http://hl7.org/implement/standards/fhir/STU3/patient-operations.html#everything).
+Implements the FHIR extended operation Patient-everything
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/patient-operations.html#everything),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/patient-operations.html#everything)).
 
 On success, the response body will contain a JSON-encoded representation
 of a `Bundle` resource of type `searchset`, containing the results of the
@@ -1494,13 +1498,18 @@ This is not a FHIR standard operation.
     )
 
     def Capabilities(self, request, global_params=None):
-      r"""Gets the FHIR [capability.
-statement](http://hl7.org/implement/standards/fhir/STU3/capabilitystatement.html)
-for the store, which contains a description of functionality supported by
-the server.
+      r"""Gets the FHIR capability statement.
+([STU3](http://hl7.org/implement/standards/fhir/STU3/capabilitystatement.html)),
+or the [conformance
+statement](http://hl7.org/implement/standards/fhir/DSTU2/conformance.html)
+in the DSTU2 case for the store, which contains a description of
+functionality supported by the server.
 
-Implements the FHIR standard [capabilities
-interaction](http://hl7.org/implement/standards/fhir/STU3/http.html#capabilities).
+Implements the FHIR standard capabilities interaction
+([STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#capabilities)),
+or the [conformance
+interaction](http://hl7.org/implement/standards/fhir/DSTU2/http.html#conformance)
+in the DSTU2 case.
 
 On success, the response body will contain a JSON-encoded representation
 of a `CapabilityStatement` resource.
@@ -1532,8 +1541,9 @@ of a `CapabilityStatement` resource.
     def ConditionalDelete(self, request, global_params=None):
       r"""Deletes FHIR resources that match a search query.
 
-Implements the FHIR standard [conditional delete
-interaction](http://hl7.org/implement/standards/fhir/STU3/http.html#2.21.0.13.1).
+Implements the FHIR standard conditional delete interaction
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#2.1.0.12.1),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#2.21.0.13.1)).
 If multiple resources match, all of them will be deleted.
 
 Search terms are provided as query parameters following the same pattern as
@@ -1575,8 +1585,11 @@ purge method.
 parameters, updates part of that resource by applying the operations
 specified in a [JSON Patch](http://jsonpatch.com/) document.
 
-Implements the FHIR standard [conditional patch
-interaction](http://hl7.org/implement/standards/fhir/STU3/http.html#patch).
+Implements the FHIR standard conditional patch interaction
+([STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#patch)).
+
+DSTU2 doesn't define a conditional patch method, but the server supports it
+in the same way it supports STU3.
 
 Search terms are provided as query parameters following the same pattern as
 the search method.
@@ -1622,8 +1635,9 @@ GCP error might be returned instead.
       r"""If a resource is found based on the search criteria specified in the query.
 parameters, updates the entire contents of that resource.
 
-Implements the FHIR standard [conditional update
-interaction](http://hl7.org/implement/standards/fhir/STU3/http.html#cond-update).
+Implements the FHIR standard conditional update interaction
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#2.1.0.10.2),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#cond-update)).
 
 Search terms are provided as query parameters following the same pattern as
 the search method.
@@ -1675,12 +1689,14 @@ GCP error might be returned instead.
     def Create(self, request, global_params=None):
       r"""Creates a FHIR resource.
 
-Implements the FHIR standard [create
-interaction](http://hl7.org/implement/standards/fhir/STU3/http.html#create),
+Implements the FHIR standard create interaction
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#create),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#create)),
 which creates a new resource with a server-assigned resource ID.
 
-Also supports the FHIR standard [conditional create
-interaction](http://hl7.org/implement/standards/fhir/STU3/http.html#ccreate),
+Also supports the FHIR standard conditional create interaction
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#ccreate),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#ccreate)),
 specified by supplying an `If-None-Exist` header containing a FHIR search
 query. If no resources match this search query, the server processes the
 create operation as normal.
@@ -1723,8 +1739,9 @@ GCP error might be returned instead.
     def Delete(self, request, global_params=None):
       r"""Deletes a FHIR resource.
 
-Implements the FHIR standard [delete
-interaction](http://hl7.org/implement/standards/fhir/STU3/http.html#delete).
+Implements the FHIR standard delete interaction
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#delete),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#delete)).
 
 Note: Unless resource versioning is disabled by setting the
 disable_resource_versioning flag
@@ -1760,15 +1777,18 @@ purge method.
     def ExecuteBundle(self, request, global_params=None):
       r"""Executes all the requests in the given Bundle.
 
-Implements the FHIR standard [batch/transaction
-interaction](http://hl7.org/implement/standards/fhir/STU3/http.html#transaction).
+Implements the FHIR standard batch/transaction interaction
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#transaction),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#transaction)).
 
 Supports all interactions within a bundle, except search. This method
 accepts Bundles of type `batch` and `transaction`, processing them
-according to the [batch processing
-rules](http://hl7.org/implement/standards/fhir/STU3/http.html#2.21.0.17.1)
-and [transaction processing
-rules](http://hl7.org/implement/standards/fhir/STU3/http.html#2.21.0.17.2).
+according to the batch processing rules
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#2.1.0.16.1),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#2.21.0.17.1))
+and transaction processing rules
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#2.1.0.16.2),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#2.21.0.17.2)).
 
 The request body must contain a JSON-encoded FHIR `Bundle` resource, and
 the request headers must contain `Content-Type: application/fhir+json`.
@@ -1810,8 +1830,9 @@ store, a generic GCP error might be returned instead.
       r"""Lists all the versions of a resource (including the current version and.
 deleted versions) from the FHIR store.
 
-Implements the per-resource form of the FHIR standard [history
-interaction](http://hl7.org/implement/standards/fhir/STU3/http.html#history).
+Implements the per-resource form of the FHIR standard history interaction
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#history),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#history)).
 
 On success, the response body will contain a JSON-encoded representation
 of a `Bundle` resource of type `history`, containing the version history
@@ -1837,7 +1858,7 @@ GCP error might be returned instead.
         method_id=u'healthcare.projects.locations.datasets.fhirStores.fhir.history',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'at', u'count', u'page', u'since'],
+        query_params=[u'_at', u'_count', u'_page', u'_since'],
         relative_path=u'v1alpha2/{+name}/_history',
         request_field='',
         request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresFhirHistoryRequest',
@@ -1849,8 +1870,11 @@ GCP error might be returned instead.
       r"""Updates part of an existing resource by applying the operations specified.
 in a [JSON Patch](http://jsonpatch.com/) document.
 
-Implements the FHIR standard [patch
-interaction](http://hl7.org/implement/standards/fhir/STU3/http.html#patch).
+Implements the FHIR standard patch interaction
+([STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#patch)).
+
+DSTU2 doesn't define a patch method, but the server supports it in the same
+way it supports STU3.
 
 The request body must contain a JSON Patch document, and the request
 headers must contain `Content-Type: application/json-patch+json`.
@@ -1889,11 +1913,13 @@ GCP error might be returned instead.
     def Read(self, request, global_params=None):
       r"""Gets the contents of a FHIR resource.
 
-Implements the FHIR standard [read
-interaction](http://hl7.org/implement/standards/fhir/STU3/http.html#read).
+Implements the FHIR standard read interaction
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#read),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#read)).
 
-Also supports the FHIR standard [conditional read
-interaction](http://hl7.org/implement/standards/fhir/STU3/http.html#cread)
+Also supports the FHIR standard conditional read interaction
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#cread),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#cread))
 specified by supplying an `If-Modified-Since` header with a date/time value
 or an `If-None-Match` header with an ETag value.
 
@@ -1932,10 +1958,12 @@ GCP error might be returned instead.
       r"""Searches for resources in the given FHIR store according to criteria.
 specified as query parameters.
 
-Implements the FHIR standard [search
-interaction](http://hl7.org/implement/standards/fhir/STU3/http.html#search)
-using the search semantics described in the [FHIR Search
-specification](http://hl7.org/implement/standards/fhir/STU3/search.html).
+Implements the FHIR standard search interaction
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#search),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#search))
+using the search semantics described in the FHIR Search specification
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/search.html),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/search.html)).
 
 Supports three methods of search defined by the specification:
 
@@ -1959,8 +1987,11 @@ GCP error might be returned instead.
 The server's capability statement, retrieved through
 capabilities, indicates what search parameters
 are supported on each FHIR resource. A list of all search parameters
-defined by the specification can be found in the [FHIR Search Parameter
-Registry](http://hl7.org/implement/standards/fhir/STU3/searchparameter-registry.html).
+defined by the specification can be found in the FHIR Search Parameter
+Registry
+([STU3](http://hl7.org/implement/standards/fhir/STU3/searchparameter-registry.html)).
+FHIR search parameters for DSTU2 can be found on each resource's definition
+page.
 
 Supported search modifiers: `:missing`, `:exact`, `:contains`, `:text`,
 `:in`, `:not-in`, `:above`, `:below`, `:[type]`, `:not`, and `:recurse`.
@@ -2008,8 +2039,9 @@ is reflected in search results.
     def Update(self, request, global_params=None):
       r"""Updates the entire contents of a resource.
 
-Implements the FHIR standard [update
-interaction](http://hl7.org/implement/standards/fhir/STU3/http.html#update).
+Implements the FHIR standard update interaction
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#update),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#update)).
 
 If the specified resource does
 not exist and the FHIR store has
@@ -2056,8 +2088,9 @@ GCP error might be returned instead.
       r"""Gets the contents of a version (current or historical) of a FHIR resource.
 by version ID.
 
-Implements the FHIR standard [vread
-interaction](http://hl7.org/implement/standards/fhir/STU3/http.html#vread).
+Implements the FHIR standard vread interaction
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#vread),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#vread).
 
 On success, the response body will contain a JSON-encoded representation
 of the resource.
@@ -2101,13 +2134,18 @@ GCP error might be returned instead.
           }
 
     def Capabilities(self, request, global_params=None):
-      r"""Gets the FHIR [capability.
-statement](http://hl7.org/implement/standards/fhir/STU3/capabilitystatement.html)
-for the store, which contains a description of functionality supported by
-the server.
+      r"""Gets the FHIR capability statement.
+([STU3](http://hl7.org/implement/standards/fhir/STU3/capabilitystatement.html)),
+or the [conformance
+statement](http://hl7.org/implement/standards/fhir/DSTU2/conformance.html)
+in the DSTU2 case for the store, which contains a description of
+functionality supported by the server.
 
-Implements the FHIR standard [capabilities
-interaction](http://hl7.org/implement/standards/fhir/STU3/http.html#capabilities).
+Implements the FHIR standard capabilities interaction
+([STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#capabilities)),
+or the [conformance
+interaction](http://hl7.org/implement/standards/fhir/DSTU2/http.html#conformance)
+in the DSTU2 case.
 
 On success, the response body will contain a JSON-encoded representation
 of a `CapabilityStatement` resource.
@@ -2198,7 +2236,9 @@ be used to track the status of the export by calling
 GetOperation.
 
 Immediate fatal errors appear in the
-error field.
+error field, errors are also logged
+to Stackdriver (see [Viewing
+logs](/healthcare/docs/how-tos/stackdriver-logging)).
 Otherwise, when the operation finishes, a detailed response of type
 ExportResourcesResponse is returned in the
 response field.
@@ -3056,6 +3096,8 @@ DeidentifySummary.
 If errors occur,
 details field type is
 DeidentifyErrorDetails.
+Errors are also logged to Stackdriver
+(see [Viewing logs](/healthcare/docs/how-tos/stackdriver-logging)).
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDeidentifyRequest) input message

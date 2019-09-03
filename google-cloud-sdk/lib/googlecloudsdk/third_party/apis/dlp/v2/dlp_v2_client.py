@@ -1408,6 +1408,41 @@ be all types, but may change over time as detectors are updated.
         supports_download=False,
     )
 
+    def Inspect(self, request, global_params=None):
+      r"""Finds potentially sensitive info in content.
+This method has limits on input size, processing time, and output size.
+
+When no InfoTypes or CustomInfoTypes are specified in this request, the
+system will automatically choose what detectors to run. By default this may
+be all types, but may change over time as detectors are updated.
+
+For how to guides, see https://cloud.google.com/dlp/docs/inspecting-images
+and https://cloud.google.com/dlp/docs/inspecting-text,
+
+      Args:
+        request: (DlpProjectsLocationsContentInspectRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2InspectContentResponse) The response message.
+      """
+      config = self.GetMethodConfig('Inspect')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Inspect.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/locations/{location}/content:inspect',
+        http_method=u'POST',
+        method_id=u'dlp.projects.locations.content.inspect',
+        ordered_params=[u'parent', u'location'],
+        path_params=[u'location', u'parent'],
+        query_params=[],
+        relative_path=u'v2/{+parent}/locations/{location}/content:inspect',
+        request_field=u'googlePrivacyDlpV2InspectContentRequest',
+        request_type_name=u'DlpProjectsLocationsContentInspectRequest',
+        response_type_name=u'GooglePrivacyDlpV2InspectContentResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 

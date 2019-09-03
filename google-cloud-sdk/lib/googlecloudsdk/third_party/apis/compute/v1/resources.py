@@ -300,6 +300,13 @@ class Collections(enum.Enum):
       [u'project', u'region', u'disk'],
       True
   )
+  REGIONHEALTHCHECKS = (
+      'regionHealthChecks',
+      'projects/{project}/regions/{region}/healthChecks/{healthCheck}',
+      {},
+      [u'project', u'region', u'healthCheck'],
+      True
+  )
   REGIONINSTANCEGROUPMANAGERS = (
       'regionInstanceGroupManagers',
       'projects/{project}/regions/{region}/instanceGroupManagers/'
@@ -320,6 +327,36 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/operations/{operation}',
       {},
       [u'project', u'region', u'operation'],
+      True
+  )
+  REGIONSSLCERTIFICATES = (
+      'regionSslCertificates',
+      'projects/{project}/regions/{region}/sslCertificates/{sslCertificate}',
+      {},
+      [u'project', u'region', u'sslCertificate'],
+      True
+  )
+  REGIONTARGETHTTPPROXIES = (
+      'regionTargetHttpProxies',
+      'projects/{project}/regions/{region}/targetHttpProxies/'
+      '{targetHttpProxy}',
+      {},
+      [u'project', u'region', u'targetHttpProxy'],
+      True
+  )
+  REGIONTARGETHTTPSPROXIES = (
+      'regionTargetHttpsProxies',
+      'projects/{project}/regions/{region}/targetHttpsProxies/'
+      '{targetHttpsProxy}',
+      {},
+      [u'project', u'region', u'targetHttpsProxy'],
+      True
+  )
+  REGIONURLMAPS = (
+      'regionUrlMaps',
+      'projects/{project}/regions/{region}/urlMaps/{urlMap}',
+      {},
+      [u'project', u'region', u'urlMap'],
       True
   )
   REGIONS = (

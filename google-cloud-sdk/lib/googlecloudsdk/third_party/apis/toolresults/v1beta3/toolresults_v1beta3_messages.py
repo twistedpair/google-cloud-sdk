@@ -1086,7 +1086,7 @@ class Step(_messages.Message):
   xml logs and returns a TestExecutionStep with updated TestResult(s). - user
   update the status of TestExecutionStep with id 100 to COMPLETE  A Step can
   be updated until its state is set to COMPLETE at which points it becomes
-  immutable.
+  immutable.  Next tag: 23
 
   Enums:
     StateValueValuesEnum: The initial state is IN_PROGRESS. The only legal
@@ -1413,6 +1413,7 @@ class TestIssue(_messages.Message):
     Values:
       anr: <no description>
       availableDeepLinks: <no description>
+      blankScreen: <no description>
       compatibleWithOrchestrator: <no description>
       completeRoboScriptExecution: <no description>
       crashDialogError: <no description>
@@ -1429,9 +1430,11 @@ class TestIssue(_messages.Message):
       nativeCrash: <no description>
       nonSdkApiUsageReport: <no description>
       nonSdkApiUsageViolation: <no description>
+      overlappingUiElements: <no description>
       performedGoogleLogin: <no description>
       performedMonkeyActions: <no description>
       startActivityNotFound: <no description>
+      uiElementsTooDeep: <no description>
       unspecifiedType: <no description>
       unusedRoboDirective: <no description>
       usedRoboDirective: <no description>
@@ -1439,29 +1442,32 @@ class TestIssue(_messages.Message):
     """
     anr = 0
     availableDeepLinks = 1
-    compatibleWithOrchestrator = 2
-    completeRoboScriptExecution = 3
-    crashDialogError = 4
-    encounteredLoginScreen = 5
-    encounteredNonAndroidUiWidgetScreen = 6
-    failedToInstall = 7
-    fatalException = 8
-    inAppPurchases = 9
-    incompleteRoboScriptExecution = 10
-    insufficientCoverage = 11
-    iosCrash = 12
-    iosException = 13
-    launcherActivityNotFound = 14
-    nativeCrash = 15
-    nonSdkApiUsageReport = 16
-    nonSdkApiUsageViolation = 17
-    performedGoogleLogin = 18
-    performedMonkeyActions = 19
-    startActivityNotFound = 20
-    unspecifiedType = 21
-    unusedRoboDirective = 22
-    usedRoboDirective = 23
-    usedRoboIgnoreDirective = 24
+    blankScreen = 2
+    compatibleWithOrchestrator = 3
+    completeRoboScriptExecution = 4
+    crashDialogError = 5
+    encounteredLoginScreen = 6
+    encounteredNonAndroidUiWidgetScreen = 7
+    failedToInstall = 8
+    fatalException = 9
+    inAppPurchases = 10
+    incompleteRoboScriptExecution = 11
+    insufficientCoverage = 12
+    iosCrash = 13
+    iosException = 14
+    launcherActivityNotFound = 15
+    nativeCrash = 16
+    nonSdkApiUsageReport = 17
+    nonSdkApiUsageViolation = 18
+    overlappingUiElements = 19
+    performedGoogleLogin = 20
+    performedMonkeyActions = 21
+    startActivityNotFound = 22
+    uiElementsTooDeep = 23
+    unspecifiedType = 24
+    unusedRoboDirective = 25
+    usedRoboDirective = 26
+    usedRoboIgnoreDirective = 27
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   errorMessage = _messages.StringField(2)

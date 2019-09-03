@@ -220,6 +220,10 @@
         "gcsDestination": {
           "description": "Destination on Cloud Storage.",
           "$ref": "GcsDestination"
+        },
+        "bigqueryDestination": {
+          "description": "Destination on BigQuery. The output table stores the fields in asset\nproto as columns in BigQuery. The resource\/iam_policy field is converted\nto a record with each field to a column, except metadata to a single JSON\nstring.",
+          "$ref": "BigQueryDestination"
         }
       }
     },
@@ -235,6 +239,25 @@
         "uriPrefix": {
           "description": "The uri prefix of all generated Cloud Storage objects. For example:\n\"gs:\/\/bucket_name\/object_name_prefix\". Each object uri is in format:\n\"gs:\/\/bucket_name\/object_name_prefix\/<asset type>\/<shard number> and only\ncontains assets for that type. <shard number> starts from 0. For example:\n\"gs:\/\/bucket_name\/object_name_prefix\/compute.googleapis.com\/Disk\/0\" is\nthe first shard of output objects containing all\ncompute.googleapis.com\/Disk assets. An INVALID_ARGUMENT error will be\nreturned if file with the same name \"gs:\/\/bucket_name\/object_name_prefix\"\nalready exists.",
           "type": "string"
+        }
+      }
+    },
+    "BigQueryDestination": {
+      "id": "BigQueryDestination",
+      "description": "A BigQuery destination.",
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "description": "Required. The BigQuery dataset in format\n\"projects\/projectId\/datasets\/datasetId\", to which the snapshot result\nshould be exported. If this dataset does not exist, the export call returns\nan error.",
+          "type": "string"
+        },
+        "table": {
+          "description": "Required. The BigQuery table to which the snapshot result should be\nwritten. If this table does not exist, a new table with the given name\nwill be created.",
+          "type": "string"
+        },
+        "force": {
+          "description": "If the destination table already exists and this flag is `TRUE`, the\ntable will be overwritten by the contents of assets snapshot. If the flag\nis not set and the destination table already exists, the export call\nreturns an error.",
+          "type": "boolean"
         }
       }
     },
@@ -368,7 +391,7 @@
       "type": "object",
       "properties": {
         "version": {
-          "description": "Deprecated.",
+          "description": "Specifies the format of the policy.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nPolicies with any conditional bindings must specify version 3. Policies\nwithout any conditional bindings may specify any valid value or leave the\nfield unset.",
           "type": "integer",
           "format": "int32"
         },

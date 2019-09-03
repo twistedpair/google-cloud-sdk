@@ -85,6 +85,8 @@ class APIAdapter(object):
         ('connectAgent.proxy', option.proxy),
         ('isUpgrade', option.is_upgrade),
         ('version', option.version),
+        ('registry', option.registry),
+        ('image_pull_secret_content', option.image_pull_secret_content)
     ]
     base_url = self.client.url
     url = '{}/v1beta1/projects/{}/locations/global/connectAgents:generateManifest?{}'.format(
@@ -112,9 +114,13 @@ class ConnectAgentOption(object):
                proxy,
                namespace,
                is_upgrade,
-               version):
+               version,
+               registry,
+               image_pull_secret_content):
     self.name = name
     self.proxy = proxy
     self.namespace = namespace
     self.is_upgrade = is_upgrade
     self.version = version
+    self.registry = registry
+    self.image_pull_secret_content = image_pull_secret_content

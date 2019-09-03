@@ -86,8 +86,9 @@ class Dataset(_messages.Message):
       custom models.
     languageCode: Required. The language of the supplied audio as a
       [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
-      Example: "en-US". See [Language Support](/speech-to-text/docs/languages)
-      for a list of the currently supported language codes.
+      Example: "en-US". See [Language Support](https://cloud.google.com
+      /speech-to-text/docs/languages) for a list of the currently supported
+      language codes.
     lastError: Output only. The error status, if any, of the last operation
       performed on this dataset. Empty if there is still pending operation, or
       if the last operation completed with success.
@@ -465,7 +466,7 @@ class RecognitionAudio(_messages.Message):
   r"""Contains audio data in the encoding specified in the
   `RecognitionConfig`. Either `content` or `uri` must be supplied. Supplying
   both or neither returns google.rpc.Code.INVALID_ARGUMENT. See [content
-  limits](/speech-to-text/quotas#content).
+  limits](https://cloud.google.com/speech-to-text/quotas#content).
 
   Fields:
     content: The audio data bytes encoded as specified in `RecognitionConfig`.
@@ -498,14 +499,14 @@ class RecognitionConfig(_messages.Message):
     alternativeLanguageCodes: *Optional* A list of up to 3 additional
       [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tags,
       listing possible alternative languages of the supplied audio. See
-      [Language Support](/speech-to-text/docs/languages) for a list of the
-      currently supported language codes. If alternative languages are listed,
-      recognition result will contain recognition in the most likely language
-      detected including the main language_code. The recognition result will
-      include the language tag of the language detected in the audio. Note:
-      This feature is only supported for Voice Command and Voice Search use
-      cases and performance may vary for other use cases (e.g., phone call
-      transcription).
+      [Language Support](https://cloud.google.com/speech-to-
+      text/docs/languages) for a list of the currently supported language
+      codes. If alternative languages are listed, recognition result will
+      contain recognition in the most likely language detected including the
+      main language_code. The recognition result will include the language tag
+      of the language detected in the audio. Note: This feature is only
+      supported for Voice Command and Voice Search use cases and performance
+      may vary for other use cases (e.g., phone call transcription).
     audioChannelCount: *Optional* The number of channels in the input audio
       data. ONLY set this for MULTI-CHANNEL recognition. Valid values for
       LINEAR16 and FLAC are `1`-`8`. Valid values for OGG_OPUS are '1'-'254'.
@@ -557,8 +558,9 @@ class RecognitionConfig(_messages.Message):
       all other audio formats. For details, see AudioEncoding.
     languageCode: *Required* The language of the supplied audio as a
       [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
-      Example: "en-US". See [Language Support](/speech-to-text/docs/languages)
-      for a list of the currently supported language codes.
+      Example: "en-US". See [Language Support](https://cloud.google.com
+      /speech-to-text/docs/languages) for a list of the currently supported
+      language codes.
     maxAlternatives: *Optional* Maximum number of recognition hypotheses to be
       returned. Specifically, the maximum number of
       `SpeechRecognitionAlternative` messages within each
@@ -596,7 +598,8 @@ class RecognitionConfig(_messages.Message):
       details, see AudioEncoding.
     speechContexts: *Optional* array of SpeechContext. A means to provide
       context to assist the speech recognition. For more information, see
-      [speech adaptation](/speech-to-text/docs/context-strength).
+      [speech adaptation](https://cloud.google.com/speech-to-text/docs
+      /context-strength).
     useEnhanced: *Optional* Set to true to use an enhanced model for speech
       recognition. If `use_enhanced` is set to true and the `model` field is
       not set, then an appropriate enhanced model is chosen if an enhanced
@@ -905,12 +908,12 @@ class SpeechContext(_messages.Message):
       can be used to improve the accuracy for specific words and phrases, for
       example, if specific commands are typically spoken by the user. This can
       also be used to add additional words to the vocabulary of the
-      recognizer. See [usage limits](/speech-to-text/quotas#content).  List
-      items can also be set to classes for groups of words that represent
-      common concepts that occur in natural language. For example, rather than
-      providing phrase hints for every month of the year, using the $MONTH
-      class improves the likelihood of correctly transcribing audio that
-      includes months.
+      recognizer. See [usage limits](https://cloud.google.com/speech-to-
+      text/quotas#content).  List items can also be set to classes for groups
+      of words that represent common concepts that occur in natural language.
+      For example, rather than providing phrase hints for every month of the
+      year, using the $MONTH class improves the likelihood of correctly
+      transcribing audio that includes months.
   """
 
   boost = _messages.FloatField(1, variant=_messages.Variant.FLOAT)

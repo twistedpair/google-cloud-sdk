@@ -1358,11 +1358,11 @@ class AttachedDisk(_messages.Message):
       stored on disk
     source: Specifies a valid partial or full URL to an existing Persistent
       Disk resource. When creating a new instance, one of
-      initializeParams.sourceImage or disks.source is required except for
-      local SSD.  If desired, you can also attach existing non-root persistent
-      disks using this property. This field is only applicable for persistent
-      disks.  Note that for InstanceTemplate, specify the disk name, not the
-      URL for the disk.
+      initializeParams.sourceImage or initializeParams.sourceSnapshot or
+      disks.source is required except for local SSD.  If desired, you can also
+      attach existing non-root persistent disks using this property. This
+      field is only applicable for persistent disks.  Note that for
+      InstanceTemplate, specify the disk name, not the URL for the disk.
     type: Specifies the type of the disk, either SCRATCH or PERSISTENT. If not
       specified, the default is PERSISTENT.
   """
@@ -1483,12 +1483,13 @@ class AttachedDiskInitializeParams(_messages.Message):
       snapshot creations. Specified using the full or partial URL. For
       instance template, specify only the resource policy name.
     sourceImage: The source image to create this disk. When creating a new
-      instance, one of initializeParams.sourceImage or disks.source is
-      required except for local SSD.  To create a disk with one of the public
-      operating system images, specify the image by its family name. For
-      example, specify family/debian-9 to use the latest Debian 9 image:
-      projects/debian-cloud/global/images/family/debian-9   Alternatively, use
-      a specific version of a public operating system image: projects/debian-
+      instance, one of initializeParams.sourceImage or
+      initializeParams.sourceSnapshot or disks.source is required except for
+      local SSD.  To create a disk with one of the public operating system
+      images, specify the image by its family name. For example, specify
+      family/debian-9 to use the latest Debian 9 image: projects/debian-
+      cloud/global/images/family/debian-9   Alternatively, use a specific
+      version of a public operating system image: projects/debian-
       cloud/global/images/debian-9-stretch-vYYYYMMDD   To create a disk with a
       custom image that you created, specify the image name in the following
       format: global/images/my-custom-image   You can also specify a custom
@@ -1503,11 +1504,11 @@ class AttachedDiskInitializeParams(_messages.Message):
       managed instance group if the source images are encrypted with your own
       keys.
     sourceSnapshot: The source snapshot to create this disk. When creating a
-      new instance, one of initializeParams.sourceSnapshot or disks.source is
-      required except for local SSD.  To create a disk with a snapshot that
-      you created, specify the snapshot name in the following format:
-      global/snapshots/my-backup   If the source snapshot is deleted later,
-      this field will not be set.
+      new instance, one of initializeParams.sourceSnapshot or
+      initializeParams.sourceImage or disks.source is required except for
+      local SSD.  To create a disk with a snapshot that you created, specify
+      the snapshot name in the following format: global/snapshots/my-backup
+      If the source snapshot is deleted later, this field will not be set.
     sourceSnapshotEncryptionKey: The customer-supplied encryption key of the
       source snapshot.
   """
@@ -4323,6 +4324,7 @@ class Commitment(_messages.Message):
       GENERAL_PURPOSE: <no description>
       GENERAL_PURPOSE_E2: <no description>
       GENERAL_PURPOSE_N2: <no description>
+      GENERAL_PURPOSE_N2D: <no description>
       MEMORY_OPTIMIZED: <no description>
       TYPE_UNSPECIFIED: <no description>
     """
@@ -4330,8 +4332,9 @@ class Commitment(_messages.Message):
     GENERAL_PURPOSE = 1
     GENERAL_PURPOSE_E2 = 2
     GENERAL_PURPOSE_N2 = 3
-    MEMORY_OPTIMIZED = 4
-    TYPE_UNSPECIFIED = 5
+    GENERAL_PURPOSE_N2D = 4
+    MEMORY_OPTIMIZED = 5
+    TYPE_UNSPECIFIED = 6
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
@@ -25876,6 +25879,14 @@ class HealthCheckService(_messages.Message):
   changes in the health status of the backends.
 
   Enums:
+    HealthStatusAggregationPolicyValueValuesEnum: Optional. Policy for how the
+      results from multiple health checks for the same endpoint are
+      aggregated. Defaults to NO_AGGREGATION if unspecified.   -
+      NO_AGGREGATION. An EndpointHealth message is returned for each backend
+      in the health check service.  - AND. If any backend's health check
+      reports UNHEALTHY, then UNHEALTHY is the HealthState of the entire
+      health check service. If all backend's are healthy, the HealthState of
+      the health check service is HEALTHY. .
     HealthStatusAggregationStrategyValueValuesEnum: Policy for how the results
       from multiple health checks for the same endpoint are aggregated.   -
       NO_AGGREGATION. An EndpointHealth message is returned for each backend
@@ -25897,6 +25908,13 @@ class HealthCheckService(_messages.Message):
       of regional and global HealthChecks is not supported. Multiple regional
       HealthChecks must belong to the same region. Regional
       HealthChecks</code? must belong to the same region as zones of NEGs.
+    healthStatusAggregationPolicy: Optional. Policy for how the results from
+      multiple health checks for the same endpoint are aggregated. Defaults to
+      NO_AGGREGATION if unspecified.   - NO_AGGREGATION. An EndpointHealth
+      message is returned for each backend in the health check service.  -
+      AND. If any backend's health check reports UNHEALTHY, then UNHEALTHY is
+      the HealthState of the entire health check service. If all backend's are
+      healthy, the HealthState of the health check service is HEALTHY. .
     healthStatusAggregationStrategy: Policy for how the results from multiple
       health checks for the same endpoint are aggregated.   - NO_AGGREGATION.
       An EndpointHealth message is returned for each backend in the health
@@ -25931,6 +25949,22 @@ class HealthCheckService(_messages.Message):
     selfLinkWithId: [Output Only] Server-defined URL with id for the resource.
   """
 
+  class HealthStatusAggregationPolicyValueValuesEnum(_messages.Enum):
+    r"""Optional. Policy for how the results from multiple health checks for
+    the same endpoint are aggregated. Defaults to NO_AGGREGATION if
+    unspecified.   - NO_AGGREGATION. An EndpointHealth message is returned for
+    each backend in the health check service.  - AND. If any backend's health
+    check reports UNHEALTHY, then UNHEALTHY is the HealthState of the entire
+    health check service. If all backend's are healthy, the HealthState of the
+    health check service is HEALTHY. .
+
+    Values:
+      AND: <no description>
+      NO_AGGREGATION: <no description>
+    """
+    AND = 0
+    NO_AGGREGATION = 1
+
   class HealthStatusAggregationStrategyValueValuesEnum(_messages.Enum):
     r"""Policy for how the results from multiple health checks for the same
     endpoint are aggregated.   - NO_AGGREGATION. An EndpointHealth message is
@@ -25949,15 +25983,16 @@ class HealthCheckService(_messages.Message):
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   healthChecks = _messages.StringField(3, repeated=True)
-  healthStatusAggregationStrategy = _messages.EnumField('HealthStatusAggregationStrategyValueValuesEnum', 4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default=u'compute#healthCheckService')
-  name = _messages.StringField(7)
-  networkEndpointGroups = _messages.StringField(8, repeated=True)
-  notificationEndpoints = _messages.StringField(9, repeated=True)
-  region = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  selfLinkWithId = _messages.StringField(12)
+  healthStatusAggregationPolicy = _messages.EnumField('HealthStatusAggregationPolicyValueValuesEnum', 4)
+  healthStatusAggregationStrategy = _messages.EnumField('HealthStatusAggregationStrategyValueValuesEnum', 5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default=u'compute#healthCheckService')
+  name = _messages.StringField(8)
+  networkEndpointGroups = _messages.StringField(9, repeated=True)
+  notificationEndpoints = _messages.StringField(10, repeated=True)
+  region = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
+  selfLinkWithId = _messages.StringField(13)
 
 
 class HealthCheckServiceReference(_messages.Message):
@@ -35952,10 +35987,12 @@ class NodeGroupAutoscalingPolicy(_messages.Message):
 
     Values:
       MODE_UNSPECIFIED: <no description>
+      OFF: <no description>
       ON: <no description>
     """
     MODE_UNSPECIFIED = 0
-    ON = 1
+    OFF = 1
+    ON = 2
 
   maxSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   minSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
@@ -50413,7 +50450,7 @@ class TargetTcpProxiesSetProxyHeaderRequest(_messages.Message):
 
 class TargetTcpProxy(_messages.Message):
   r"""Represents a Target TCP Proxy resource.  A target TCP proxy is a
-  component of a TCP Proxy load balancer. Global forwarding rules reference ta
+  component of a TCP Proxy load balancer. Global forwarding rules reference
   target TCP proxy, and the target proxy then references an external backend
   service. For more information, read TCP Proxy Load Balancing Concepts. (==
   resource_for beta.targetTcpProxies ==) (== resource_for v1.targetTcpProxies

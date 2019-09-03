@@ -95,6 +95,10 @@ apis:
       resources:
         projects.policy:
           path: projects/{projectsId}/policy
+  billingbudgets:
+    v1alpha1:
+      discovery_doc: billingbudgets_v1alpha1.json
+      default: true
   bio:
     v1:
       discovery_doc: bio_v1.json
@@ -399,6 +403,9 @@ apis:
     v1beta1:
       discovery_doc: gkehub_v1beta1.json
       default: true
+      resources:
+        projects.locations.memberships:
+          path: projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}
   healthcare:
     v1alpha2:
       discovery_doc: healthcare_v1alpha2.json
@@ -496,6 +503,9 @@ apis:
       unelidable_request_methods:
         - monitoring.projects.alertPolicies.create
         - monitoring.projects.notificationChannels.create
+  orgpolicy:
+    v2alpha1:
+      discovery_doc: orgpolicy_v2alpha1.json
   policytroubleshooter:
     v1beta:
       resources:

@@ -3688,6 +3688,9 @@ class ResourceUtilizationReportResponse(_messages.Message):
 class RuntimeEnvironment(_messages.Message):
   r"""The environment values to set at runtime.
 
+  Enums:
+    IpConfigurationValueValuesEnum: Configuration for VM IPs.
+
   Messages:
     AdditionalUserLabelsValue: Additional user labels to be specified for the
       job. Keys and values should follow the restrictions specified in the
@@ -3702,6 +3705,7 @@ class RuntimeEnvironment(_messages.Message):
       resources#restrictions) page.
     bypassTempDirValidation: Whether to bypass the safety checks for the job's
       temporary directory. Use with caution.
+    ipConfiguration: Configuration for VM IPs.
     kmsKeyName: Optional. Name for the Cloud KMS key for the job. Key format
       is: projects/<project>/locations/<location>/keyRings/<keyring>/cryptoKey
       s/<key>
@@ -3719,12 +3723,22 @@ class RuntimeEnvironment(_messages.Message):
       Expected to be of the form "regions/REGION/subnetworks/SUBNETWORK".
     tempLocation: The Cloud Storage path to use for temporary files. Must be a
       valid Cloud Storage URL, beginning with `gs://`.
-    usePrivateIps: Optional. Specifies whether worker pools should be started
-      with private IP addresses. False by default.
     zone: The Compute Engine [availability
       zone](https://cloud.google.com/compute/docs/regions-zones/regions-zones)
       for launching worker instances to run your pipeline.
   """
+
+  class IpConfigurationValueValuesEnum(_messages.Enum):
+    r"""Configuration for VM IPs.
+
+    Values:
+      WORKER_IP_UNSPECIFIED: The configuration is unknown, or unspecified.
+      WORKER_IP_PUBLIC: Workers should have public IP addresses.
+      WORKER_IP_PRIVATE: Workers should have private IP addresses.
+    """
+    WORKER_IP_UNSPECIFIED = 0
+    WORKER_IP_PUBLIC = 1
+    WORKER_IP_PRIVATE = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalUserLabelsValue(_messages.Message):
@@ -3758,15 +3772,15 @@ class RuntimeEnvironment(_messages.Message):
   additionalExperiments = _messages.StringField(1, repeated=True)
   additionalUserLabels = _messages.MessageField('AdditionalUserLabelsValue', 2)
   bypassTempDirValidation = _messages.BooleanField(3)
-  kmsKeyName = _messages.StringField(4)
-  machineType = _messages.StringField(5)
-  maxWorkers = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  network = _messages.StringField(7)
-  numWorkers = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  serviceAccountEmail = _messages.StringField(9)
-  subnetwork = _messages.StringField(10)
-  tempLocation = _messages.StringField(11)
-  usePrivateIps = _messages.BooleanField(12)
+  ipConfiguration = _messages.EnumField('IpConfigurationValueValuesEnum', 4)
+  kmsKeyName = _messages.StringField(5)
+  machineType = _messages.StringField(6)
+  maxWorkers = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  network = _messages.StringField(8)
+  numWorkers = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  serviceAccountEmail = _messages.StringField(10)
+  subnetwork = _messages.StringField(11)
+  tempLocation = _messages.StringField(12)
   zone = _messages.StringField(13)
 
 

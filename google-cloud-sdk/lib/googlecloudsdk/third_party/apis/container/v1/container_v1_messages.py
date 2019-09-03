@@ -157,6 +157,7 @@ class Cluster(_messages.Message):
       instead. The current version of the node software components. If they
       are currently at multiple versions because they're in the process of
       being upgraded, this reflects the minimum version of all nodes.
+    databaseEncryption: Configuration of etcd encryption.
     defaultMaxPodsConstraint: The default constraint on the maximum number of
       pods that can be run simultaneously on a node in the node pool of this
       cluster. Only honored if cluster created with IP Alias support.
@@ -331,42 +332,43 @@ class Cluster(_messages.Message):
   currentMasterVersion = _messages.StringField(5)
   currentNodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   currentNodeVersion = _messages.StringField(7)
-  defaultMaxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 8)
-  description = _messages.StringField(9)
-  enableKubernetesAlpha = _messages.BooleanField(10)
-  enableTpu = _messages.BooleanField(11)
-  endpoint = _messages.StringField(12)
-  expireTime = _messages.StringField(13)
-  initialClusterVersion = _messages.StringField(14)
-  initialNodeCount = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(16, repeated=True)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 17)
-  labelFingerprint = _messages.StringField(18)
-  legacyAbac = _messages.MessageField('LegacyAbac', 19)
-  location = _messages.StringField(20)
-  locations = _messages.StringField(21, repeated=True)
-  loggingService = _messages.StringField(22)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 23)
-  masterAuth = _messages.MessageField('MasterAuth', 24)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 25)
-  monitoringService = _messages.StringField(26)
-  name = _messages.StringField(27)
-  network = _messages.StringField(28)
-  networkConfig = _messages.MessageField('NetworkConfig', 29)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 30)
-  nodeConfig = _messages.MessageField('NodeConfig', 31)
-  nodeIpv4CidrSize = _messages.IntegerField(32, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 33, repeated=True)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 34)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 35)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 36)
-  selfLink = _messages.StringField(37)
-  servicesIpv4Cidr = _messages.StringField(38)
-  status = _messages.EnumField('StatusValueValuesEnum', 39)
-  statusMessage = _messages.StringField(40)
-  subnetwork = _messages.StringField(41)
-  tpuIpv4CidrBlock = _messages.StringField(42)
-  zone = _messages.StringField(43)
+  databaseEncryption = _messages.MessageField('DatabaseEncryption', 8)
+  defaultMaxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 9)
+  description = _messages.StringField(10)
+  enableKubernetesAlpha = _messages.BooleanField(11)
+  enableTpu = _messages.BooleanField(12)
+  endpoint = _messages.StringField(13)
+  expireTime = _messages.StringField(14)
+  initialClusterVersion = _messages.StringField(15)
+  initialNodeCount = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(17, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 18)
+  labelFingerprint = _messages.StringField(19)
+  legacyAbac = _messages.MessageField('LegacyAbac', 20)
+  location = _messages.StringField(21)
+  locations = _messages.StringField(22, repeated=True)
+  loggingService = _messages.StringField(23)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 24)
+  masterAuth = _messages.MessageField('MasterAuth', 25)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 26)
+  monitoringService = _messages.StringField(27)
+  name = _messages.StringField(28)
+  network = _messages.StringField(29)
+  networkConfig = _messages.MessageField('NetworkConfig', 30)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 31)
+  nodeConfig = _messages.MessageField('NodeConfig', 32)
+  nodeIpv4CidrSize = _messages.IntegerField(33, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 34, repeated=True)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 35)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 36)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 37)
+  selfLink = _messages.StringField(38)
+  servicesIpv4Cidr = _messages.StringField(39)
+  status = _messages.EnumField('StatusValueValuesEnum', 40)
+  statusMessage = _messages.StringField(41)
+  subnetwork = _messages.StringField(42)
+  tpuIpv4CidrBlock = _messages.StringField(43)
+  zone = _messages.StringField(44)
 
 
 class ClusterUpdate(_messages.Message):
@@ -377,6 +379,7 @@ class ClusterUpdate(_messages.Message):
   Fields:
     desiredAddonsConfig: Configurations for the various addons available to
       run in the cluster.
+    desiredDatabaseEncryption: Configuration of etcd encryption.
     desiredImage: The desired name of the image to use for this node. This is
       used to create clusters using a custom image. NOTE: Set the
       "desired_node_pool" field as well.
@@ -435,19 +438,20 @@ class ClusterUpdate(_messages.Message):
   """
 
   desiredAddonsConfig = _messages.MessageField('AddonsConfig', 1)
-  desiredImage = _messages.StringField(2)
-  desiredImageProject = _messages.StringField(3)
-  desiredImageType = _messages.StringField(4)
-  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 5)
-  desiredLocations = _messages.StringField(6, repeated=True)
-  desiredLoggingService = _messages.StringField(7)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 8)
-  desiredMasterVersion = _messages.StringField(9)
-  desiredMonitoringService = _messages.StringField(10)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 11)
-  desiredNodePoolId = _messages.StringField(12)
-  desiredNodeVersion = _messages.StringField(13)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 14)
+  desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 2)
+  desiredImage = _messages.StringField(3)
+  desiredImageProject = _messages.StringField(4)
+  desiredImageType = _messages.StringField(5)
+  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 6)
+  desiredLocations = _messages.StringField(7, repeated=True)
+  desiredLoggingService = _messages.StringField(8)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 9)
+  desiredMasterVersion = _messages.StringField(10)
+  desiredMonitoringService = _messages.StringField(11)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 12)
+  desiredNodePoolId = _messages.StringField(13)
+  desiredNodeVersion = _messages.StringField(14)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 15)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1026,6 +1030,36 @@ class DailyMaintenanceWindow(_messages.Message):
   startTime = _messages.StringField(2)
 
 
+class DatabaseEncryption(_messages.Message):
+  r"""Configuration of etcd encryption.
+
+  Enums:
+    StateValueValuesEnum: Denotes the state of etcd encryption.
+
+  Fields:
+    keyName: Name of CloudKMS key to use for the encryption of secrets in
+      etcd. Ex. projects/my-project/locations/global/keyRings/my-
+      ring/cryptoKeys/my-key
+    state: Denotes the state of etcd encryption.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Denotes the state of etcd encryption.
+
+    Values:
+      UNKNOWN: Should never be set
+      ENCRYPTED: Secrets in etcd are encrypted.
+      DECRYPTED: Secrets in etcd are stored in plain text (at etcd level) -
+        this is unrelated to GCE level full disk encryption.
+    """
+    UNKNOWN = 0
+    ENCRYPTED = 1
+    DECRYPTED = 2
+
+  keyName = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1549,6 +1583,7 @@ class NodeConfig(_messages.Message):
     serviceAccount: The Google Cloud Platform Service Account to be used by
       the node VMs. If no Service Account is specified, the "default" service
       account is used.
+    shieldedInstanceConfig: Shielded Instance options.
     tags: The list of instance tags applied to all nodes. Tags are used to
       identify valid sources or targets for network firewalls and are
       specified by the client during cluster or node pool creation. Each tag
@@ -1638,8 +1673,9 @@ class NodeConfig(_messages.Message):
   oauthScopes = _messages.StringField(11, repeated=True)
   preemptible = _messages.BooleanField(12)
   serviceAccount = _messages.StringField(13)
-  tags = _messages.StringField(14, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 15, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 14)
+  tags = _messages.StringField(15, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 16, repeated=True)
 
 
 class NodeManagement(_messages.Message):
@@ -2368,6 +2404,25 @@ class SetNodePoolSizeRequest(_messages.Message):
   zone = _messages.StringField(6)
 
 
+class ShieldedInstanceConfig(_messages.Message):
+  r"""A set of Shielded Instance options.
+
+  Fields:
+    enableIntegrityMonitoring: Defines whether the instance has integrity
+      monitoring enabled.  Enables monitoring and attestation of the boot
+      integrity of the instance. The attestation is performed against the
+      integrity policy baseline. This baseline is initially derived from the
+      implicitly trusted boot image when the instance is created.
+    enableSecureBoot: Defines whether the instance has Secure Boot enabled.
+      Secure Boot helps ensure that the system only runs authentic software by
+      verifying the digital signature of all boot components, and halting the
+      boot process if signature verification fails.
+  """
+
+  enableIntegrityMonitoring = _messages.BooleanField(1)
+  enableSecureBoot = _messages.BooleanField(2)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -2479,13 +2534,16 @@ class StatusCondition(_messages.Message):
         the user deleted their robot service account.
       GCE_QUOTA_EXCEEDED: Google Compute Engine quota was exceeded.
       SET_BY_OPERATOR: Cluster state was manually changed by an SRE due to a
-        system logic error. More codes TBA
+        system logic error.
+      CLOUD_KMS_KEY_ERROR: Unable to perform an encrypt operation against the
+        CloudKMS key used for etcd level encryption. More codes TBA
     """
     UNKNOWN = 0
     GCE_STOCKOUT = 1
     GKE_SERVICE_ACCOUNT_DELETED = 2
     GCE_QUOTA_EXCEEDED = 3
     SET_BY_OPERATOR = 4
+    CLOUD_KMS_KEY_ERROR = 5
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)

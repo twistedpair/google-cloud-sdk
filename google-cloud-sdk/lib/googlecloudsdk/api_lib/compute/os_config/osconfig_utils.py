@@ -24,6 +24,7 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.util.args import common_args
 from googlecloudsdk.core import yaml
 import six
 
@@ -141,15 +142,23 @@ class Poller(waiter.OperationPoller):
     return patch_job
 
 
-def AddFolderAndOrgArgs(parser, noun, verb):
+def AddResourceParentArgs(parser, noun, verb):
+  """Add project, folder, and organization flags to the parser."""
   parent_resource_group = parser.add_group(
       help='The scope of the {} which defaults to project if unspecified.'
       .format(noun),
       mutex=True)
+  common_args.ProjectArgument(
+      help_text_to_prepend='The project of the {} {}.'.format(
+          noun, verb)).AddToParser(parent_resource_group)
   parent_resource_group.add_argument(
-      '--folder', type=str, help='The folder of the {} {}.'.format(noun, verb))
+      '--folder',
+      metavar='FOLDER_ID',
+      type=str,
+      help='The folder of the {} {}.'.format(noun, verb))
   parent_resource_group.add_argument(
       '--organization',
+      metavar='ORGANIZATION_ID',
       type=str,
       help='The organization of the {} {}.'.format(noun, verb))
 

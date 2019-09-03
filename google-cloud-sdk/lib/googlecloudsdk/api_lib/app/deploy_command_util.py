@@ -55,7 +55,6 @@ import six
 from six.moves import filter  # pylint: disable=redefined-builtin
 from six.moves import zip  # pylint: disable=redefined-builtin
 
-DEFAULT_DOMAIN = 'appspot.com'
 DEFAULT_SERVICE = 'default'
 ALT_SEPARATOR = '-dot-'
 MAX_DNS_LABEL_LENGTH = 63  # http://tools.ietf.org/html/rfc2181#section-11
@@ -611,8 +610,7 @@ def GetAppHostname(app=None, app_id=None, service=None, version=None,
   if service == DEFAULT_SERVICE:
     service_name = ''
 
-  domain = DEFAULT_DOMAIN
-  if not app and ':' in app_id:
+  if not app:
     api_client = appengine_api_client.AppengineApiClient.GetApiClient()
     app = api_client.GetApplication()
   if app:

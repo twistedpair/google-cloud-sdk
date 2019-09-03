@@ -440,8 +440,12 @@
           "description": "A policy that specifies the conditions for this subscription's expiration.\nA subscription is considered active as long as any connected subscriber is\nsuccessfully consuming messages from the subscription or is issuing\noperations on the subscription. If `expiration_policy` is not set, a\n*default policy* with `ttl` of 31 days will be used. The minimum allowed\nvalue for `expiration_policy.ttl` is 1 day.",
           "$ref": "ExpirationPolicy"
         },
+        "filter": {
+          "description": "An expression written in the Cloud Pub\/Sub filter language.",
+          "type": "string"
+        },
         "deadLetterPolicy": {
-          "description": "A policy that specifies the conditions for dead lettering messages in\nthis subscription. If dead_letter_policy is not set, dead lettering\nis disabled.\n\nThe Cloud Pub\/Sub service account associated with this subscriptions's\nparent project (i.e.,\nservice-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com) must have\npermission to Acknowledge() messages on this subscription. This is needed\nin order for Cloud Pub\/Sub to Acknowledge() messages on the subscription\nonce it has successfully published them to the dead letter topic.\n<b>EXPERIMENTAL:<\/b> This feature is part of a closed alpha release. This\nAPI might be changed in backward-incompatible ways and is not recommended\nfor production use. It is not subject to any SLA or deprecation policy.",
+          "description": "A policy that specifies the conditions for dead lettering messages in\nthis subscription. If dead_letter_policy is not set, dead lettering\nis disabled.\n\nThe Cloud Pub\/Sub service account associated with this subscriptions's\nparent project (i.e.,\nservice-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com) must have\npermission to Acknowledge() messages on this subscription.\n<b>EXPERIMENTAL:<\/b> This feature is part of a closed alpha release. This\nAPI might be changed in backward-incompatible ways and is not recommended\nfor production use. It is not subject to any SLA or deprecation policy.",
           "$ref": "DeadLetterPolicy"
         }
       }
@@ -501,11 +505,11 @@
       "type": "object",
       "properties": {
         "deadLetterTopic": {
-          "description": "The name of the topic to which dead letter messages should be published.\nFormat is `projects\/{project}\/topics\/{topic}`.The Cloud Pub\/Sub service\naccount associated with the enclosing subscription's parent project (i.e.,\nservice-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com) must have\npermission to Publish() to this topic.\n\nUsers should ensure that the topic exists.\nUsers should ensure that there is a subscription attached to this topic.\nOtherwise, dead letter messages published to this topic will be lost.",
+          "description": "The name of the topic to which dead letter messages should be published.\nFormat is `projects\/{project}\/topics\/{topic}`.The Cloud Pub\/Sub service\naccount associated with the enclosing subscription's parent project (i.e.,\nservice-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com) must have\npermission to Publish() to this topic.\n\nThe operation will fail if the topic does not exist.\nUsers should ensure that there is a subscription attached to this topic\nsince messages published to a topic with no subscriptions are lost.",
           "type": "string"
         },
         "maxDeliveryAttempts": {
-          "description": "The maximum number of delivery attempts for any message.\n\nThe number of delivery attempts is defined as 1 + (the sum of number of\nNACKs and number of ack_deadline exceeds).\n\nA NACK is any call to ModifyAckDeadline with a 0 deadline. An ack_deadline\nexceeds event is whenever a message is not acknowledged within\nSubscription.ackDeadlineSeconds. Note that client libraries may\nautomatically extend ack_deadlines.\n\nThis field will be honored on a best effort basis. The minimum value\nallowed is 5 to reduce unintentional dead lettering because of the best\neffort nature of this field. The maximum value allowed is 100.\n\nIf this parameter is 0, a default value of 5 is used.",
+          "description": "The maximum number of delivery attempts for any message. The value must be\nbetween 5 and 100.\n\nThe number of delivery attempts is defined as 1 + (the sum of number of\nNACKs and number of times the acknowledgement deadline has been exceeded\nfor the message).\n\nA NACK is any call to ModifyAckDeadline with a 0 deadline. Note that\nclient libraries may automatically extend ack_deadlines.\n\nThis field will be honored on a best effort basis.\n\nIf this parameter is 0, a default value of 5 is used.",
           "type": "integer",
           "format": "int32"
         }
@@ -620,6 +624,11 @@
         "message": {
           "description": "The message.",
           "$ref": "PubsubMessage"
+        },
+        "deliveryAttempt": {
+          "description": "Delivery attempt counter is 1 + (the sum of number of NACKs and number of\nack_deadline exceeds) for this message.\n\nA NACK is any call to ModifyAckDeadline with a 0 deadline. An ack_deadline\nexceeds event is whenever a message is not acknowledged within\nack_deadline. Note that ack_deadline is initially\nSubscription.ackDeadlineSeconds, but may get extended automatically by\nthe client library.\n\nThe first delivery of a given message will have this value as 1. The value\nis calculated at best effort and is approximate.\n\nIf a DeadLetterPolicy is not set on the subscription, this will be 0.\n<b>EXPERIMENTAL:<\/b> This feature is part of a closed alpha release. This\nAPI might be changed in backward-incompatible ways and is not recommended\nfor production use. It is not subject to any SLA or deprecation policy.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

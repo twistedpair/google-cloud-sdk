@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.deployment_manager import dm_api_util
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.apis import arg_utils
 
 
@@ -109,14 +110,7 @@ def AddPropertiesFlag(parser):
 
 def AddAsyncFlag(parser):
   """Add the async argument."""
-  parser.add_argument(
-      '--async',
-      help='Return immediately and print information about the Operation in '
-      'progress rather than waiting for the Operation to complete. '
-      '(default=False)',
-      dest='async',
-      default=False,
-      action='store_true')
+  base.ASYNC_FLAG.AddToParser(parser)
 
 
 def AddFingerprintFlag(parser):

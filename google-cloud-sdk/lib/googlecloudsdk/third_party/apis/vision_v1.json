@@ -484,6 +484,36 @@
         }
       }
     },
+    "PurgeProductsRequest": {
+      "id": "PurgeProductsRequest",
+      "description": "Request message for the `PurgeProducts` method.",
+      "type": "object",
+      "properties": {
+        "productSetPurgeConfig": {
+          "description": "Specify which ProductSet contains the Products to be deleted.",
+          "$ref": "ProductSetPurgeConfig"
+        },
+        "deleteOrphanProducts": {
+          "description": "If delete_orphan_products is true, all Products that are not in any\nProductSet will be deleted.",
+          "type": "boolean"
+        },
+        "force": {
+          "description": "The default value is false. Override this value to true to actually perform\nthe purge.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ProductSetPurgeConfig": {
+      "id": "ProductSetPurgeConfig",
+      "description": "Config to control which ProductSet contains the Products to be deleted.",
+      "type": "object",
+      "properties": {
+        "productSetId": {
+          "description": "The ProductSet that contains the Products to delete. If a Product is a\nmember of product_set_id in addition to other ProductSets, the Product will\nstill be deleted.",
+          "type": "string"
+        }
+      }
+    },
     "BatchAnnotateImagesRequest": {
       "id": "BatchAnnotateImagesRequest",
       "description": "Multiple image annotation requests are batched into a single service call.",
@@ -1904,6 +1934,37 @@
           "items": {
             "$ref": "Result"
           }
+        },
+        "objectAnnotations": {
+          "description": "List of generic predictions for the object in the bounding box.",
+          "type": "array",
+          "items": {
+            "$ref": "ObjectAnnotation"
+          }
+        }
+      }
+    },
+    "ObjectAnnotation": {
+      "id": "ObjectAnnotation",
+      "description": "Prediction for what the object in the bounding box is.",
+      "type": "object",
+      "properties": {
+        "mid": {
+          "description": "Object ID that should align with EntityAnnotation mid.",
+          "type": "string"
+        },
+        "languageCode": {
+          "description": "The BCP-47 language code, such as \"en-US\" or \"sr-Latn\". For more\ninformation, see\nhttp:\/\/www.unicode.org\/reports\/tr35\/#Unicode_locale_identifier.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Object name, expressed in its `language_code` language.",
+          "type": "string"
+        },
+        "score": {
+          "description": "Score of the result. Range [0, 1].",
+          "type": "number",
+          "format": "float"
         }
       }
     },
@@ -2036,6 +2097,10 @@
           "description": "This field gives the total number of pages in the file.",
           "type": "integer",
           "format": "int32"
+        },
+        "error": {
+          "description": "If set, represents the error message for the failed request. The\n`responses` field will not be set in this case.",
+          "$ref": "Status"
         }
       }
     },
@@ -2279,6 +2344,10 @@
           "description": "This field gives the total number of pages in the file.",
           "type": "integer",
           "format": "int32"
+        },
+        "error": {
+          "description": "If set, represents the error message for the failed request. The\n`responses` field will not be set in this case.",
+          "$ref": "Status"
         }
       }
     },
@@ -3527,6 +3596,37 @@
           "items": {
             "$ref": "GoogleCloudVisionV1p1beta1ProductSearchResultsResult"
           }
+        },
+        "objectAnnotations": {
+          "description": "List of generic predictions for the object in the bounding box.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVisionV1p1beta1ProductSearchResultsObjectAnnotation"
+          }
+        }
+      }
+    },
+    "GoogleCloudVisionV1p1beta1ProductSearchResultsObjectAnnotation": {
+      "id": "GoogleCloudVisionV1p1beta1ProductSearchResultsObjectAnnotation",
+      "description": "Prediction for what the object in the bounding box is.",
+      "type": "object",
+      "properties": {
+        "mid": {
+          "description": "Object ID that should align with EntityAnnotation mid.",
+          "type": "string"
+        },
+        "languageCode": {
+          "description": "The BCP-47 language code, such as \"en-US\" or \"sr-Latn\". For more\ninformation, see\nhttp:\/\/www.unicode.org\/reports\/tr35\/#Unicode_locale_identifier.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Object name, expressed in its `language_code` language.",
+          "type": "string"
+        },
+        "score": {
+          "description": "Score of the result. Range [0, 1].",
+          "type": "number",
+          "format": "float"
         }
       }
     },
@@ -3653,6 +3753,10 @@
           "description": "This field gives the total number of pages in the file.",
           "type": "integer",
           "format": "int32"
+        },
+        "error": {
+          "description": "If set, represents the error message for the failed request. The\n`responses` field will not be set in this case.",
+          "$ref": "Status"
         }
       }
     },
@@ -4901,6 +5005,37 @@
           "items": {
             "$ref": "GoogleCloudVisionV1p2beta1ProductSearchResultsResult"
           }
+        },
+        "objectAnnotations": {
+          "description": "List of generic predictions for the object in the bounding box.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVisionV1p2beta1ProductSearchResultsObjectAnnotation"
+          }
+        }
+      }
+    },
+    "GoogleCloudVisionV1p2beta1ProductSearchResultsObjectAnnotation": {
+      "id": "GoogleCloudVisionV1p2beta1ProductSearchResultsObjectAnnotation",
+      "description": "Prediction for what the object in the bounding box is.",
+      "type": "object",
+      "properties": {
+        "mid": {
+          "description": "Object ID that should align with EntityAnnotation mid.",
+          "type": "string"
+        },
+        "languageCode": {
+          "description": "The BCP-47 language code, such as \"en-US\" or \"sr-Latn\". For more\ninformation, see\nhttp:\/\/www.unicode.org\/reports\/tr35\/#Unicode_locale_identifier.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Object name, expressed in its `language_code` language.",
+          "type": "string"
+        },
+        "score": {
+          "description": "Score of the result. Range [0, 1].",
+          "type": "number",
+          "format": "float"
         }
       }
     },
@@ -5160,6 +5295,10 @@
           "description": "This field gives the total number of pages in the file.",
           "type": "integer",
           "format": "int32"
+        },
+        "error": {
+          "description": "If set, represents the error message for the failed request. The\n`responses` field will not be set in this case.",
+          "$ref": "Status"
         }
       }
     },
@@ -6353,6 +6492,37 @@
           "items": {
             "$ref": "GoogleCloudVisionV1p3beta1ProductSearchResultsResult"
           }
+        },
+        "objectAnnotations": {
+          "description": "List of generic predictions for the object in the bounding box.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVisionV1p3beta1ProductSearchResultsObjectAnnotation"
+          }
+        }
+      }
+    },
+    "GoogleCloudVisionV1p3beta1ProductSearchResultsObjectAnnotation": {
+      "id": "GoogleCloudVisionV1p3beta1ProductSearchResultsObjectAnnotation",
+      "description": "Prediction for what the object in the bounding box is.",
+      "type": "object",
+      "properties": {
+        "mid": {
+          "description": "Object ID that should align with EntityAnnotation mid.",
+          "type": "string"
+        },
+        "languageCode": {
+          "description": "The BCP-47 language code, such as \"en-US\" or \"sr-Latn\". For more\ninformation, see\nhttp:\/\/www.unicode.org\/reports\/tr35\/#Unicode_locale_identifier.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Object name, expressed in its `language_code` language.",
+          "type": "string"
+        },
+        "score": {
+          "description": "Score of the result. Range [0, 1].",
+          "type": "number",
+          "format": "float"
         }
       }
     },
@@ -6612,6 +6782,10 @@
           "description": "This field gives the total number of pages in the file.",
           "type": "integer",
           "format": "int32"
+        },
+        "error": {
+          "description": "If set, represents the error message for the failed request. The\n`responses` field will not be set in this case.",
+          "$ref": "Status"
         }
       }
     },
@@ -7843,6 +8017,37 @@
           "items": {
             "$ref": "GoogleCloudVisionV1p4beta1ProductSearchResultsResult"
           }
+        },
+        "objectAnnotations": {
+          "description": "List of generic predictions for the object in the bounding box.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVisionV1p4beta1ProductSearchResultsObjectAnnotation"
+          }
+        }
+      }
+    },
+    "GoogleCloudVisionV1p4beta1ProductSearchResultsObjectAnnotation": {
+      "id": "GoogleCloudVisionV1p4beta1ProductSearchResultsObjectAnnotation",
+      "description": "Prediction for what the object in the bounding box is.",
+      "type": "object",
+      "properties": {
+        "mid": {
+          "description": "Object ID that should align with EntityAnnotation mid.",
+          "type": "string"
+        },
+        "languageCode": {
+          "description": "The BCP-47 language code, such as \"en-US\" or \"sr-Latn\". For more\ninformation, see\nhttp:\/\/www.unicode.org\/reports\/tr35\/#Unicode_locale_identifier.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Object name, expressed in its `language_code` language.",
+          "type": "string"
+        },
+        "score": {
+          "description": "Score of the result. Range [0, 1].",
+          "type": "number",
+          "format": "float"
         }
       }
     },
@@ -8171,6 +8376,10 @@
           "description": "This field gives the total number of pages in the file.",
           "type": "integer",
           "format": "int32"
+        },
+        "error": {
+          "description": "If set, represents the error message for the failed request. The\n`responses` field will not be set in this case.",
+          "$ref": "Status"
         }
       }
     },
@@ -9507,6 +9716,37 @@
           "items": {
             "$ref": "GoogleCloudVisionV1p5beta1ProductSearchResultsResult"
           }
+        },
+        "objectAnnotations": {
+          "description": "List of generic predictions for the object in the bounding box.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVisionV1p5beta1ProductSearchResultsObjectAnnotation"
+          }
+        }
+      }
+    },
+    "GoogleCloudVisionV1p5beta1ProductSearchResultsObjectAnnotation": {
+      "id": "GoogleCloudVisionV1p5beta1ProductSearchResultsObjectAnnotation",
+      "description": "Prediction for what the object in the bounding box is.",
+      "type": "object",
+      "properties": {
+        "mid": {
+          "description": "Object ID that should align with EntityAnnotation mid.",
+          "type": "string"
+        },
+        "languageCode": {
+          "description": "The BCP-47 language code, such as \"en-US\" or \"sr-Latn\". For more\ninformation, see\nhttp:\/\/www.unicode.org\/reports\/tr35\/#Unicode_locale_identifier.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Object name, expressed in its `language_code` language.",
+          "type": "string"
+        },
+        "score": {
+          "description": "Score of the result. Range [0, 1].",
+          "type": "number",
+          "format": "float"
         }
       }
     },
@@ -10283,6 +10523,35 @@
                     "https://www.googleapis.com/auth/cloud-vision"
                   ],
                   "description": "Permanently deletes a product and its reference images.\n\nMetadata of the product and all its images will be deleted right away, but\nsearch queries against ProductSets containing the product may still work\nuntil all related caches are refreshed."
+                },
+                "purge": {
+                  "id": "vision.projects.locations.products.purge",
+                  "path": "v1/{+parent}/products:purge",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/products:purge",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "The project and location in which the Products should be deleted.\n\nFormat is `projects\/PROJECT_ID\/locations\/LOC_ID`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "PurgeProductsRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-vision"
+                  ],
+                  "description": "Asynchronous API to delete all Products in a ProductSet or all Products\nthat are in no ProductSet.\n\nIf a Product is a member of the specified ProductSet in addition to other\nProductSets, the Product will still be deleted.\n\nIt is recommended to not delete the specified ProductSet until after this\noperation has completed. It is also recommended to not add any of the\nProducts involved in the batch delete to a new ProductSet while this\noperation is running because those Products may still end up deleted.\n\nIt's not possible to undo the PurgeProducts operation. Therefore, it is\nrecommended to keep the csv files used in ImportProductSets (if that was\nhow you originally built the Product Set) before starting PurgeProducts, in\ncase you need to re-import the data after deletion.\n\nIf the plan is to purge all of the Products from a ProductSet and then\nre-use the empty ProductSet to re-import new Products into the empty\nProductSet, you must wait until the PurgeProducts operation has finished\nfor that ProductSet.\n\nThe google.longrunning.Operation API can be used to keep track of the\nprogress and results of the request.\n`Operation.metadata` contains `BatchOperationMetadata`. (progress)"
                 }
               }
               ,

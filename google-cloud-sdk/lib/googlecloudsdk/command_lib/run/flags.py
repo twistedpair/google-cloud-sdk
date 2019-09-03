@@ -28,12 +28,12 @@ from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.functions.deploy import env_vars_util
 from googlecloudsdk.command_lib.run import config_changes
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import pretty_print
-from googlecloudsdk.command_lib.run import resourcemanager_operations
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.command_lib.util.args import repeated
@@ -154,11 +154,7 @@ def AddAllowUnauthenticatedFlag(parser):
 
 def AddAsyncFlag(parser):
   """Add an async flag."""
-  parser.add_argument(
-      '--async',
-      default=False,
-      action='store_true',
-      help='True to return immediately without waiting for success.')
+  base.ASYNC_FLAG.AddToParser(parser)
 
 
 def AddEndpointVisibilityEnum(parser):
@@ -213,8 +209,8 @@ def AddFunctionArg(parser):
       """)
 
 
-def AddSetTrafficFlags(parser):
-  """Add flags for setting a traffic assignments for a service."""
+def AddUpdateTrafficFlags(parser):
+  """Add flags for updating traffic assignments for a service."""
 
   @staticmethod
   def TrafficTargetKey(key):
@@ -413,7 +409,6 @@ def AddKubeconfigFlags(parser):
 def AddRevisionSuffixArg(parser):
   parser.add_argument(
       '--revision-suffix',
-      hidden=True,
       help='Specify the suffix of the revision name. Revision names always '
       'start with the service name automatically. For example, specifying '
       '[--revision-suffix=v1] for a service named \'helloworld\', '
@@ -624,7 +619,7 @@ def _GetScalingChanges(args):
 
 
 def _GetSecretsChanges(args):
-  """Return config_changes.VolumeChanges for given args."""
+  """Return config_changes.SecretVolumeChanges for given args."""
   kwargs = {}
 
   update = args.update_secrets or args.set_secrets
@@ -638,11 +633,11 @@ def _GetSecretsChanges(args):
   if args.set_secrets or args.clear_secrets:
     kwargs['clear_others'] = True
 
-  return config_changes.VolumeChanges('secrets', **kwargs)
+  return config_changes.SecretVolumeChanges(**kwargs)
 
 
 def _GetConfigMapsChanges(args):
-  """Return config_changes.VolumeChanges for given args."""
+  """Return config_changes.ConfigMapVolumeChanges for given args."""
   kwargs = {}
 
   update = args.update_config_maps or args.set_config_maps
@@ -656,7 +651,7 @@ def _GetConfigMapsChanges(args):
   if args.set_config_maps or args.clear_config_maps:
     kwargs['clear_others'] = True
 
-  return config_changes.VolumeChanges('config_maps', **kwargs)
+  return config_changes.ConfigMapVolumeChanges(**kwargs)
 
 
 def PromptToEnableApi(service_name):
@@ -858,7 +853,7 @@ def GetRegion(args, prompt=False):
       return region
 
 
-def GetAllowUnauthenticated(args, service_ref=None, prompt=False):
+def GetAllowUnauthenticated(args, client=None, service_ref=None, prompt=False):
   """Return bool for the explicit intent to allow unauth invocations or None.
 
   If --[no-]allow-unauthenticated is set, return that value. If not set,
@@ -867,6 +862,8 @@ def GetAllowUnauthenticated(args, service_ref=None, prompt=False):
 
   Args:
     args: Namespace, The args namespace
+    client: from googlecloudsdk.command_lib.run import serverless_operations
+      serverless_operations.ServerlessOperations object
     service_ref: service resource reference (e.g. args.CONCEPTS.service.Parse())
     prompt: bool, whether to attempt to prompt.
 
@@ -877,8 +874,9 @@ def GetAllowUnauthenticated(args, service_ref=None, prompt=False):
     return args.allow_unauthenticated
 
   if prompt:
-    project = properties.VALUES.core.project.Get(required=True)
-    if resourcemanager_operations.CanSetProjectIamPolicyBinding(project):
+    # Need to check if the user has permissions before we prompt
+    assert client is not None and service_ref is not None
+    if client.CanSetIamPolicyBinding(service_ref):
       return console_io.PromptContinue(
           prompt_string=('Allow unauthenticated invocations '
                          'to [{}]'.format(service_ref.servicesId)),

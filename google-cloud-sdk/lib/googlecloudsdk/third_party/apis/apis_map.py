@@ -141,6 +141,14 @@ MAP = {
             default_version=True
         ),
     },
+    'billingbudgets': {
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.billingbudgets.v1alpha1',
+            client_classpath='billingbudgets_v1alpha1_client.BillingbudgetsV1alpha1',
+            messages_modulepath='billingbudgets_v1alpha1_messages',
+            default_version=True
+        ),
+    },
     'binaryauthorization': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.binaryauthorization.v1',
@@ -786,6 +794,14 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.monitoring.v3',
             client_classpath='monitoring_v3_client.MonitoringV3',
             messages_modulepath='monitoring_v3_messages',
+            default_version=True
+        ),
+    },
+    'orgpolicy': {
+        'v2alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.orgpolicy.v2alpha1',
+            client_classpath='orgpolicy_v2alpha1_client.OrgpolicyV2alpha1',
+            messages_modulepath='orgpolicy_v2alpha1_messages',
             default_version=True
         ),
     },

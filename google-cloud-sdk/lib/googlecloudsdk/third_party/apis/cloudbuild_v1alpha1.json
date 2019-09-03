@@ -452,11 +452,11 @@
           "type": "string"
         },
         "branchName": {
-          "description": "Name of the branch to build.",
+          "description": "Regex matching branches to build.\n\nThe syntax of the regular expressions accepted is the syntax accepted by\nRE2 and described at https:\/\/github.com\/google\/re2\/wiki\/Syntax",
           "type": "string"
         },
         "tagName": {
-          "description": "Name of the tag to build.",
+          "description": "Regex matching tags to build.\n\nThe syntax of the regular expressions accepted is the syntax accepted by\nRE2 and described at https:\/\/github.com\/google\/re2\/wiki\/Syntax",
           "type": "string"
         },
         "commitSha": {

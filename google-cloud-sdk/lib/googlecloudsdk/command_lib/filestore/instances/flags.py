@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.filestore import filestore_client
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.filestore import flags
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
@@ -61,12 +62,8 @@ FILE_SHARE_ARG_SPEC = {
 }
 
 
-def AddAsyncFlag(parser, operation):
-  parser.add_argument(
-      '--async',
-      action='store_true',
-      default=False,
-      help='Do not wait for the {} operation to complete.'.format(operation))
+def AddAsyncFlag(parser):
+  base.ASYNC_FLAG.AddToParser(parser)
 
 
 def AddLocationArg(parser):
@@ -176,7 +173,7 @@ def AddInstanceCreateArgs(parser, api_version):
   AddLocationArg(parser)
   messages = filestore_client.GetMessages(version=api_version)
   GetTierArg(messages).choice_arg.AddToParser(parser)
-  AddAsyncFlag(parser, 'create')
+  AddAsyncFlag(parser)
   AddFileShareArg(parser, include_snapshot_flags=
                   (api_version == filestore_client.ALPHA_API_VERSION))
   AddNetworkArg(parser)
@@ -189,6 +186,6 @@ def AddInstanceUpdateArgs(parser):
       'The instance to update.')]).AddToParser(parser)
   AddDescriptionArg(parser)
   AddLocationArg(parser)
-  AddAsyncFlag(parser, 'update')
+  AddAsyncFlag(parser)
   labels_util.AddUpdateLabelsFlags(parser)
   AddFileShareArg(parser, required=False)

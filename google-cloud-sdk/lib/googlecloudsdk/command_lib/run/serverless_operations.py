@@ -65,6 +65,8 @@ MAX_WAIT_MS = 660000
 ALLOW_UNAUTH_POLICY_BINDING_MEMBER = 'allUsers'
 ALLOW_UNAUTH_POLICY_BINDING_ROLE = 'roles/run.invoker'
 
+NEEDED_IAM_PERMISSIONS = ['run.services.setIamPolicy']
+
 
 class UnknownAPIError(exceptions.Error):
   pass
@@ -466,7 +468,7 @@ class ServerlessOperations(object):
     self._region = region
 
   @property
-  def _messages_module(self):
+  def messages_module(self):
     return self._client.MESSAGES_MODULE
 
   def GetRevision(self, revision_ref):
@@ -478,7 +480,7 @@ class ServerlessOperations(object):
     Returns:
       A revision.Revision object.
     """
-    messages = self._messages_module
+    messages = self.messages_module
     revision_name = revision_ref.RelativeName()
     request = messages.RunNamespacesRevisionsGetRequest(
         name=revision_name)
@@ -495,7 +497,7 @@ class ServerlessOperations(object):
 
   def _GetRoute(self, service_ref):
     """Return the relevant Route from the server, or None if 404."""
-    messages = self._messages_module
+    messages = self.messages_module
     # GET the Route
     route_name = self._registry.Parse(
         service_ref.servicesId,
@@ -565,7 +567,7 @@ class ServerlessOperations(object):
     return serv_route.active_revisions
 
   def ListServices(self, namespace_ref):
-    messages = self._messages_module
+    messages = self.messages_module
     request = messages.RunNamespacesServicesListRequest(
         parent=namespace_ref.RelativeName())
     with metrics.RecordDuration(metric_names.LIST_SERVICES):
@@ -573,7 +575,7 @@ class ServerlessOperations(object):
     return [service.Service(item, messages) for item in response.items]
 
   def ListConfigurations(self, namespace_ref):
-    messages = self._messages_module
+    messages = self.messages_module
     request = messages.RunNamespacesConfigurationsListRequest(
         parent=namespace_ref.RelativeName())
     with metrics.RecordDuration(metric_names.LIST_CONFIGURATIONS):
@@ -582,7 +584,7 @@ class ServerlessOperations(object):
             for item in response.items]
 
   def ListRoutes(self, namespace_ref):
-    messages = self._messages_module
+    messages = self.messages_module
     request = messages.RunNamespacesRoutesListRequest(
         parent=namespace_ref.RelativeName())
     with metrics.RecordDuration(metric_names.LIST_ROUTES):
@@ -591,7 +593,7 @@ class ServerlessOperations(object):
 
   def GetService(self, service_ref):
     """Return the relevant Service from the server, or None if 404."""
-    messages = self._messages_module
+    messages = self.messages_module
     service_get_request = messages.RunNamespacesServicesGetRequest(
         name=service_ref.RelativeName())
 
@@ -605,7 +607,7 @@ class ServerlessOperations(object):
 
   def GetConfiguration(self, service_or_configuration_ref):
     """Return the relevant Configuration from the server, or None if 404."""
-    messages = self._messages_module
+    messages = self.messages_module
     if hasattr(service_or_configuration_ref, 'servicesId'):
       name = self._registry.Parse(
           service_or_configuration_ref.servicesId,
@@ -629,7 +631,7 @@ class ServerlessOperations(object):
 
   def GetRoute(self, service_or_route_ref):
     """Return the relevant Route from the server, or None if 404."""
-    messages = self._messages_module
+    messages = self.messages_module
     if hasattr(service_or_route_ref, 'servicesId'):
       name = self._registry.Parse(
           service_or_route_ref.servicesId,
@@ -660,7 +662,7 @@ class ServerlessOperations(object):
     Raises:
       ServiceNotFoundError: if provided service is not found.
     """
-    messages = self._messages_module
+    messages = self.messages_module
     service_name = service_ref.RelativeName()
     service_delete_request = messages.RunNamespacesServicesDeleteRequest(
         name=service_name,
@@ -682,7 +684,7 @@ class ServerlessOperations(object):
     Raises:
       RevisionNotFoundError: if provided revision is not found.
     """
-    messages = self._messages_module
+    messages = self.messages_module
     revision_name = revision_ref.RelativeName()
     request = messages.RunNamespacesRevisionsDeleteRequest(
         name=revision_name)
@@ -695,7 +697,7 @@ class ServerlessOperations(object):
 
   def GetRevisionsByNonce(self, namespace_ref, nonce):
     """Return all revisions with the given nonce."""
-    messages = self._messages_module
+    messages = self.messages_module
     request = messages.RunNamespacesRevisionsListRequest(
         parent=namespace_ref.RelativeName(),
         labelSelector='{} = {}'.format(revision.NONCE_LABEL, nonce))
@@ -775,7 +777,7 @@ class ServerlessOperations(object):
     Returns:
       The Service object we created or modified.
     """
-    messages = self._messages_module
+    messages = self.messages_module
     config_changes = [_SetClientNameAndVersion()] + config_changes
     try:
       if serv:
@@ -867,13 +869,14 @@ class ServerlessOperations(object):
       raise serverless_exceptions.KubernetesError('Error{}:\n{}\n'.format(
           's' if len(k8s_error.causes) > 1 else '', causes))
 
-  def SetTraffic(self, service_ref, config_changes, tracker, asyn, is_managed):
-    """Set traffic splits for service."""
+  def UpdateTraffic(
+      self, service_ref, config_changes, tracker, asyn, is_managed):
+    """Update traffic splits for service."""
     if tracker is None:
       tracker = progress_tracker.NoOpStagedProgressTracker(
-          stages.ServiceStages(False),
+          stages.UpdateTrafficStages(),
           interruptable=True,
-          abortde_message='aborted')
+          aborted_message='aborted')
     serv = self.GetService(service_ref)
     if not serv:
       raise serverless_exceptions.ServiceNotFoundError(
@@ -882,11 +885,11 @@ class ServerlessOperations(object):
     if not serv.spec.template:
       if is_managed:
         raise serverless_exceptions.UnsupportedOperationError(
-            'Your provider does not support setting traffic for this service.')
+            'Your provider does not support updating traffic for this service.')
       else:
         raise serverless_exceptions.UnsupportedOperationError(
             'You must upgrade your cluster to version 0.61 or greater '
-            'to set traffic.')
+            'to update traffic.')
     self._UpdateOrCreateService(service_ref, config_changes, False, serv)
 
     if not asyn:
@@ -894,7 +897,7 @@ class ServerlessOperations(object):
       self.WaitForCondition(ServiceConditionPoller(getter, tracker))
 
   def ReleaseService(self, service_ref, config_changes, tracker=None,
-                     asyn=False, allow_unauthenticated=None):
+                     asyn=False, allow_unauthenticated=None, for_replace=False):
     """Change the given service in prod using the given config_changes.
 
     Ensures a new revision is always created, even if the spec of the revision
@@ -909,16 +912,19 @@ class ServerlessOperations(object):
         service which should also have its IAM policy set to allow
         unauthenticated access. False if removing the IAM policy to allow
         unauthenticated access from a service.
+      for_replace: bool, If the change is for a replacing the service from a
+        YAML specification.
     """
     if tracker is None:
       tracker = progress_tracker.NoOpStagedProgressTracker(
           stages.ServiceStages(allow_unauthenticated is not None),
           interruptable=True, aborted_message='aborted')
-    with_image = any(
-        isinstance(c, config_changes_mod.ImageChange) for c in config_changes)
-    config_changes = [
-        _NewRevisionForcingChange(_Nonce()),
-    ] + config_changes
+    if for_replace:
+      with_image = True
+    else:
+      with_image = any(
+          isinstance(c, config_changes_mod.ImageChange) for c in config_changes)
+      config_changes = [_NewRevisionForcingChange(_Nonce())] + config_changes
     serv = self.GetService(service_ref)
     self._UpdateOrCreateService(
         service_ref, config_changes, with_image, serv)
@@ -961,7 +967,7 @@ class ServerlessOperations(object):
     Returns:
       A list of revisions for the given service.
     """
-    messages = self._messages_module
+    messages = self.messages_module
     request = messages.RunNamespacesRevisionsListRequest(
         parent=namespace_ref.RelativeName(),
     )
@@ -989,7 +995,7 @@ class ServerlessOperations(object):
     Returns:
       A list of domain mappings.
     """
-    messages = self._messages_module
+    messages = self.messages_module
     request = messages.RunNamespacesDomainmappingsListRequest(
         parent=namespace_ref.RelativeName())
     with metrics.RecordDuration(metric_names.LIST_DOMAIN_MAPPINGS):
@@ -1008,7 +1014,7 @@ class ServerlessOperations(object):
       A domain_mapping.DomainMapping object.
     """
 
-    messages = self._messages_module
+    messages = self.messages_module
     new_mapping = domain_mapping.DomainMapping.New(
         self._client, domain_mapping_ref.namespacesId)
     new_mapping.name = domain_mapping_ref.domainmappingsId
@@ -1047,7 +1053,7 @@ class ServerlessOperations(object):
     Args:
       domain_mapping_ref: Resource, domainmapping resource.
     """
-    messages = self._messages_module
+    messages = self.messages_module
 
     request = messages.RunNamespacesDomainmappingsDeleteRequest(
         name=domain_mapping_ref.RelativeName())
@@ -1063,7 +1069,7 @@ class ServerlessOperations(object):
     Returns:
       A domain_mapping.DomainMapping object.
     """
-    messages = self._messages_module
+    messages = self.messages_module
     request = messages.RunNamespacesDomainmappingsGetRequest(
         name=domain_mapping_ref.RelativeName())
     with metrics.RecordDuration(metric_names.GET_DOMAIN_MAPPING):
@@ -1072,7 +1078,7 @@ class ServerlessOperations(object):
 
   def _GetIamPolicy(self, service_name):
     """Gets the IAM policy for the service."""
-    messages = self._messages_module
+    messages = self.messages_module
     request = messages.RunProjectsLocationsServicesGetIamPolicyRequest(
         resource=six.text_type(service_name))
     response = self._op_client.projects_locations_services.GetIamPolicy(request)
@@ -1095,7 +1101,7 @@ class ServerlessOperations(object):
     Returns:
       A google.iam.v1.TestIamPermissionsResponse.
     """
-    messages = self._messages_module
+    messages = self.messages_module
     oneplatform_service = resource_name_conversion.K8sToOnePlatform(
         service_ref, self._region)
     policy = self._GetIamPolicy(oneplatform_service)
@@ -1110,3 +1116,16 @@ class ServerlessOperations(object):
         setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy))
     result = self._op_client.projects_locations_services.SetIamPolicy(request)
     return result
+
+  def CanSetIamPolicyBinding(self, service_ref):
+    """Check if user has permission to set the iam policy on the service."""
+    messages = self.messages_module
+    oneplatform_service = resource_name_conversion.K8sToOnePlatform(
+        service_ref, self._region)
+    request = messages.RunProjectsLocationsServicesTestIamPermissionsRequest(
+        resource=six.text_type(oneplatform_service),
+        testIamPermissionsRequest=messages.TestIamPermissionsRequest(
+            permissions=NEEDED_IAM_PERMISSIONS))
+    response = self._op_client.projects_locations_services.TestIamPermissions(
+        request)
+    return set(NEEDED_IAM_PERMISSIONS).issubset(set(response.permissions))

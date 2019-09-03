@@ -204,17 +204,25 @@ class GoogleCloudRecommenderV1beta1Operation(_messages.Message):
   Extended path values for describing nested arrays. * Custom fields for
   describing the resource for which the operation is being   described. *
   Allows extension to custom operations not natively supported by RFC6902. See
-  https://tools.ietf.org/html/rfc6902 for details on the original RFC.
+  https://tools.ietf.org/html/rfc6902 for details on the original RFC. Next
+  Id: 12
 
   Messages:
     PathFiltersValue: Set of filters to apply if `path` refers to array
       elements or nested array elements in order to narrow down to a single
-      unique element that is being tested/modified. Note that this is intended
-      to be an exact match per filter. Example: {   "/versions/*/name" :
-      "it-123"   "/versions/*/targetSize/percent": 20 } Example: {
-      "/bindings/*/role": "roles/admin"   "/bindings/*/condition" : null }
-      Example: {   "/bindings/*/role": "roles/admin"   "/bindings/*/members/*"
-      : ["x@google.com", "y@google.com"] }
+      unique element that is being tested/modified. This is intended to be an
+      exact match per filter. To perform advanced matching, use
+      path_value_matchers. Example: {   "/versions/*/name" : "it-123"
+      "/versions/*/targetSize/percent": 20 } Example: {   "/bindings/*/role":
+      "roles/admin"   "/bindings/*/condition" : null } Example: {
+      "/bindings/*/role": "roles/admin"   "/bindings/*/members/*" :
+      ["x@google.com", "y@google.com"] } When both path_filters and
+      path_value_matchers are set, an implicit AND must be performed.
+    PathValueMatchersValue: Similar to path_filters, this contains set of
+      filters to apply if `path` field referes to array elements. This is
+      meant to support value matching beyond exact match. To perform exact
+      match, use path_filters. When both path_filters and path_value_matchers
+      are set, an implicit AND must be performed.
 
   Fields:
     action: Type of this operation. Contains one of 'and', 'remove',
@@ -225,12 +233,19 @@ class GoogleCloudRecommenderV1beta1Operation(_messages.Message):
       populated.
     pathFilters: Set of filters to apply if `path` refers to array elements or
       nested array elements in order to narrow down to a single unique element
-      that is being tested/modified. Note that this is intended to be an exact
-      match per filter. Example: {   "/versions/*/name" : "it-123"
-      "/versions/*/targetSize/percent": 20 } Example: {   "/bindings/*/role":
-      "roles/admin"   "/bindings/*/condition" : null } Example: {
-      "/bindings/*/role": "roles/admin"   "/bindings/*/members/*" :
-      ["x@google.com", "y@google.com"] }
+      that is being tested/modified. This is intended to be an exact match per
+      filter. To perform advanced matching, use path_value_matchers. Example:
+      {   "/versions/*/name" : "it-123"   "/versions/*/targetSize/percent": 20
+      } Example: {   "/bindings/*/role": "roles/admin"
+      "/bindings/*/condition" : null } Example: {   "/bindings/*/role":
+      "roles/admin"   "/bindings/*/members/*" : ["x@google.com",
+      "y@google.com"] } When both path_filters and path_value_matchers are
+      set, an implicit AND must be performed.
+    pathValueMatchers: Similar to path_filters, this contains set of filters
+      to apply if `path` field referes to array elements. This is meant to
+      support value matching beyond exact match. To perform exact match, use
+      path_filters. When both path_filters and path_value_matchers are set, an
+      implicit AND must be performed.
     resource: Contains the fully qualified resource name. This field is always
       populated. ex: //cloudresourcemanager.googleapis.com/projects/foo.
     resourceType: Type of GCP resource being modified/tested. This field is
@@ -244,20 +259,27 @@ class GoogleCloudRecommenderV1beta1Operation(_messages.Message):
       resource clone can be done via action = 'copy', path = "/", from = "/",
       source_resource = <source> and resource_name = <target>. This field is
       empty for all other values of `action`.
-    value: Value for the `path` field. Set if action is
-      'add'/'replace'/'test'.
+    value: Value for the `path` field. Will be set for
+      actions:'add'/'replace'. Maybe set for action: 'test'. Either this or
+      `value_matcher` will be set for 'test' operation. An exact match must be
+      performed.
+    valueMatcher: Can be set for action 'test' for advanced matching for the
+      value of 'path' field. Either this or `value` will be set for 'test'
+      operation.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PathFiltersValue(_messages.Message):
     r"""Set of filters to apply if `path` refers to array elements or nested
     array elements in order to narrow down to a single unique element that is
-    being tested/modified. Note that this is intended to be an exact match per
-    filter. Example: {   "/versions/*/name" : "it-123"
-    "/versions/*/targetSize/percent": 20 } Example: {   "/bindings/*/role":
-    "roles/admin"   "/bindings/*/condition" : null } Example: {
-    "/bindings/*/role": "roles/admin"   "/bindings/*/members/*" :
-    ["x@google.com", "y@google.com"] }
+    being tested/modified. This is intended to be an exact match per filter.
+    To perform advanced matching, use path_value_matchers. Example: {
+    "/versions/*/name" : "it-123"   "/versions/*/targetSize/percent": 20 }
+    Example: {   "/bindings/*/role": "roles/admin"   "/bindings/*/condition" :
+    null } Example: {   "/bindings/*/role": "roles/admin"
+    "/bindings/*/members/*" : ["x@google.com", "y@google.com"] } When both
+    path_filters and path_value_matchers are set, an implicit AND must be
+    performed.
 
     Messages:
       AdditionalProperty: An additional property for a PathFiltersValue
@@ -280,14 +302,46 @@ class GoogleCloudRecommenderV1beta1Operation(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PathValueMatchersValue(_messages.Message):
+    r"""Similar to path_filters, this contains set of filters to apply if
+    `path` field referes to array elements. This is meant to support value
+    matching beyond exact match. To perform exact match, use path_filters.
+    When both path_filters and path_value_matchers are set, an implicit AND
+    must be performed.
+
+    Messages:
+      AdditionalProperty: An additional property for a PathValueMatchersValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        PathValueMatchersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PathValueMatchersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudRecommenderV1beta1ValueMatcher attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudRecommenderV1beta1ValueMatcher', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   action = _messages.StringField(1)
   path = _messages.StringField(2)
   pathFilters = _messages.MessageField('PathFiltersValue', 3)
-  resource = _messages.StringField(4)
-  resourceType = _messages.StringField(5)
-  sourcePath = _messages.StringField(6)
-  sourceResource = _messages.StringField(7)
-  value = _messages.MessageField('extra_types.JsonValue', 8)
+  pathValueMatchers = _messages.MessageField('PathValueMatchersValue', 4)
+  resource = _messages.StringField(5)
+  resourceType = _messages.StringField(6)
+  sourcePath = _messages.StringField(7)
+  sourceResource = _messages.StringField(8)
+  value = _messages.MessageField('extra_types.JsonValue', 9)
+  valueMatcher = _messages.MessageField('GoogleCloudRecommenderV1beta1ValueMatcher', 10)
 
 
 class GoogleCloudRecommenderV1beta1OperationGroup(_messages.Message):
@@ -428,6 +482,17 @@ class GoogleCloudRecommenderV1beta1RecommendationStateInfo(_messages.Message):
 
   state = _messages.EnumField('StateValueValuesEnum', 1)
   stateMetadata = _messages.MessageField('StateMetadataValue', 2)
+
+
+class GoogleCloudRecommenderV1beta1ValueMatcher(_messages.Message):
+  r"""Contains various matching options for values for a GCP resource field.
+
+  Fields:
+    matchesPattern: To be used for regex matching. The regular expression is
+      using the Google RE2 syntax (https://github.com/google/re2/wiki/Syntax).
+  """
+
+  matchesPattern = _messages.StringField(1)
 
 
 class GoogleTypeMoney(_messages.Message):

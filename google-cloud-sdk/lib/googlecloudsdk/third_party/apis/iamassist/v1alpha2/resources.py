@@ -26,7 +26,7 @@ class Collections(enum.Enum):
 
   OPERATIONS = (
       'operations',
-      'operations/{+name}',
+      '{+name}',
       {
           '':
               'operations/{operationsId}',

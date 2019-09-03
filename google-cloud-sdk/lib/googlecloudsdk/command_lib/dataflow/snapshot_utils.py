@@ -19,14 +19,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.dataflow import apis
 from googlecloudsdk.calliope import arg_parsers
 
+from googlecloudsdk.command_lib.dataflow import dataflow_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-import six
 
-DATAFLOW_API_DEFAULT_REGION = apis.DATAFLOW_API_DEFAULT_REGION
+import six
 
 
 def ArgsForSnapshotRef(parser):
@@ -39,11 +38,12 @@ def ArgsForSnapshotRef(parser):
       'snapshot',
       metavar='SNAPSHOT_ID',
       help='ID of the Cloud Dataflow snapshot.')
+  # TODO(b/139889563): Mark as required when default region is removed
   parser.add_argument(
       '--region',
-      default='us-central1',
       metavar='REGION_ID',
-      help='Region ID of the snapshot regional endpoint.')
+      help=('Region ID of the snapshot regional endpoint. ' +
+            dataflow_util.DEFAULT_REGION_MESSAGE))
 
 
 def ArgsForSnapshotJobRef(parser):
@@ -57,11 +57,12 @@ def ArgsForSnapshotJobRef(parser):
       required=True,
       metavar='JOB_ID',
       help='The job ID to snapshot.')
+  # TODO(b/139889563): Mark as required when default region is removed
   parser.add_argument(
       '--region',
-      default='us-central1',
       metavar='REGION_ID',
-      help="The region ID of the snapshot and job's regional endpoint.")
+      help=('The region ID of the snapshot and job\'s regional endpoint. ' +
+            dataflow_util.DEFAULT_REGION_MESSAGE))
 
 
 def ArgsForListSnapshot(parser):
@@ -75,11 +76,12 @@ def ArgsForListSnapshot(parser):
       required=False,
       metavar='JOB_ID',
       help='The job ID to use to filter the snapshots list.')
+  # TODO(b/139889563): Mark as required when default region is removed
   parser.add_argument(
       '--region',
-      default='us-central1',
       metavar='REGION_ID',
-      help="The region ID of the snapshot and job's regional endpoint.")
+      help=('The region ID of the snapshot and job\'s regional endpoint. ' +
+            dataflow_util.DEFAULT_REGION_MESSAGE))
 
 
 def ArgsForSnapshotTtl(parser):
@@ -105,7 +107,7 @@ def ExtractSnapshotRef(args):
     A Snapshot resource.
   """
   snapshot = args.snapshot
-  region = args.region or DATAFLOW_API_DEFAULT_REGION
+  region = dataflow_util.GetRegion(args)
   return resources.REGISTRY.Parse(
       snapshot,
       params={
@@ -124,7 +126,7 @@ def ExtractSnapshotJobRef(args):
     A Job resource.
   """
   job = args.job_id
-  region = args.region or DATAFLOW_API_DEFAULT_REGION
+  region = dataflow_util.GetRegion(args)
   return resources.REGISTRY.Parse(
       job,
       params={

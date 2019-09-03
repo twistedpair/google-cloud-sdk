@@ -315,6 +315,10 @@
           "description": "Configuration for the use of k8s Service Accounts in GCP IAM policies.",
           "$ref": "WorkloadIdentityConfig"
         },
+        "costManagementConfig": {
+          "description": "Configuration for the fine-grained cost management feature.",
+          "$ref": "CostManagementConfig"
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -851,6 +855,10 @@
         "gcePersistentDiskCsiDriverConfig": {
           "description": "Configuration for the GCE PD CSI driver. This option can only be enabled\nat cluster creation time.",
           "$ref": "GcePersistentDiskCsiDriverConfig"
+        },
+        "kalmConfig": {
+          "description": "Configuration for the KALM addon, which manages the lifecycle of k8s\napplications.",
+          "$ref": "KalmConfig"
         }
       }
     },
@@ -969,6 +977,17 @@
         }
       }
     },
+    "KalmConfig": {
+      "id": "KalmConfig",
+      "description": "Configuration options for the KALM addon.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether KALM is enabled for this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
     "NodePool": {
       "id": "NodePool",
       "description": "NodePool contains the name and configuration for a cluster's node pool.\nNode pools are a set of nodes (i.e. VM's), with a common configuration and\nspecification, under the control of the cluster master. They may have a set\nof Kubernetes labels applied to them, which may be used to reference them\nduring pod scheduling. They may also be resized up or down, to accommodate\nthe workload.",
@@ -1064,7 +1083,7 @@
           "type": "string"
         },
         "upgradeSettings": {
-          "description": "Upgrade settings (disruption budget and speed).",
+          "description": "Upgrade settings control disruption and speed of the upgrade.",
           "$ref": "UpgradeSettings"
         }
       }
@@ -1173,16 +1192,16 @@
     },
     "UpgradeSettings": {
       "id": "UpgradeSettings",
-      "description": "Upgrade settings. When provided, enables Cluster API on the pool.\nMirrors the fields and defaults of MachineRollingUpdateDeployment\nhttps:\/\/github.com\/kubernetes-sigs\/cluster-api\/blob\/302479ecef8149c5a05e0a4955b0871f85b7d991\/pkg\/apis\/cluster\/v1alpha1\/machinedeployment_types.go#L93",
+      "description": "These upgrade settings control the level of parallelism and the level of\ndisruption caused by an upgrade.\n\nmaxUnavailable controls the number of nodes that can be simultaneously\nunavailable.\n\nmaxSurge controls the number of additional nodes that can be added to the\nnode pool temporarily for the time of the upgrade to increase the number of\navailable nodes.\n\n(maxUnavailable + maxSurge) determines the level of parallelism (how many\nnodes are being upgraded at the same time).\n\nNote: upgrades inevitably introduce some disruption since workloads need to\nbe moved from old nodes to new, upgraded ones. Even if maxUnavailable=0,\nthis holds true. (Disruption stays within the limits of\nPodDisruptionBudget, if it is configured.)\n\nConsider a hypothetical node pool with 5 nodes having maxSurge=2,\nmaxUnavailable=1. This means the upgrade process upgrades 3 nodes\nsimultaneously. It creates 2 additional (upgraded) nodes, then it brings\ndown 3 old (not yet upgraded) nodes at the same time. This ensures that\nthere are always at least 4 nodes available.",
       "type": "object",
       "properties": {
         "maxSurge": {
-          "description": "Disruption budget: how many machines to create before upgrading a node.",
+          "description": "The maximum number of nodes that can be created beyond the current size\nof the node pool during the upgrade process.",
           "type": "integer",
           "format": "int32"
         },
         "maxUnavailable": {
-          "description": "Speed\/concurrency: how many nodes at a time to upgrade.",
+          "description": "The maximum number of nodes that can be simultaneously unavailable during\nthe upgrade process. A node is considered available if its status is\nReady.",
           "type": "integer",
           "format": "int32"
         }
@@ -1764,6 +1783,17 @@
         }
       }
     },
+    "CostManagementConfig": {
+      "id": "CostManagementConfig",
+      "description": "Configuration for fine-grained cost management feature.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether the feature is enabled or not.",
+          "type": "boolean"
+        }
+      }
+    },
     "CreateClusterRequest": {
       "id": "CreateClusterRequest",
       "description": "CreateClusterRequest creates a cluster.",
@@ -2125,6 +2155,10 @@
         "desiredShieldedNodes": {
           "description": "Configuration for Shielded Nodes.",
           "$ref": "ShieldedNodes"
+        },
+        "desiredCostManagementConfig": {
+          "description": "The desired configuration for the fine-grained cost management feature.",
+          "$ref": "CostManagementConfig"
         }
       }
     },

@@ -53,6 +53,8 @@ class AnnotateFileResponse(_messages.Message):
   more images, which individually have their own responses.
 
   Fields:
+    error: If set, represents the error message for the failed request. The
+      `responses` field will not be set in this case.
     inputConfig: Information about the file for which this response is
       generated.
     responses: Individual responses to images found within the file. This
@@ -60,9 +62,10 @@ class AnnotateFileResponse(_messages.Message):
     totalPages: This field gives the total number of pages in the file.
   """
 
-  inputConfig = _messages.MessageField('InputConfig', 1)
-  responses = _messages.MessageField('AnnotateImageResponse', 2, repeated=True)
-  totalPages = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  error = _messages.MessageField('Status', 1)
+  inputConfig = _messages.MessageField('InputConfig', 2)
+  responses = _messages.MessageField('AnnotateImageResponse', 3, repeated=True)
+  totalPages = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class AnnotateImageRequest(_messages.Message):
@@ -915,6 +918,8 @@ class GoogleCloudVisionV1p1beta1AnnotateFileResponse(_messages.Message):
   more images, which individually have their own responses.
 
   Fields:
+    error: If set, represents the error message for the failed request. The
+      `responses` field will not be set in this case.
     inputConfig: Information about the file for which this response is
       generated.
     responses: Individual responses to images found within the file. This
@@ -922,9 +927,10 @@ class GoogleCloudVisionV1p1beta1AnnotateFileResponse(_messages.Message):
     totalPages: This field gives the total number of pages in the file.
   """
 
-  inputConfig = _messages.MessageField('GoogleCloudVisionV1p1beta1InputConfig', 1)
-  responses = _messages.MessageField('GoogleCloudVisionV1p1beta1AnnotateImageResponse', 2, repeated=True)
-  totalPages = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  error = _messages.MessageField('Status', 1)
+  inputConfig = _messages.MessageField('GoogleCloudVisionV1p1beta1InputConfig', 2)
+  responses = _messages.MessageField('GoogleCloudVisionV1p1beta1AnnotateImageResponse', 3, repeated=True)
+  totalPages = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudVisionV1p1beta1AnnotateImageResponse(_messages.Message):
@@ -1745,11 +1751,32 @@ class GoogleCloudVisionV1p1beta1ProductSearchResultsGroupedResult(_messages.Mess
   Fields:
     boundingPoly: The bounding polygon around the product detected in the
       query image.
+    objectAnnotations: List of generic predictions for the object in the
+      bounding box.
     results: List of results, one for each product match.
   """
 
   boundingPoly = _messages.MessageField('GoogleCloudVisionV1p1beta1BoundingPoly', 1)
-  results = _messages.MessageField('GoogleCloudVisionV1p1beta1ProductSearchResultsResult', 2, repeated=True)
+  objectAnnotations = _messages.MessageField('GoogleCloudVisionV1p1beta1ProductSearchResultsObjectAnnotation', 2, repeated=True)
+  results = _messages.MessageField('GoogleCloudVisionV1p1beta1ProductSearchResultsResult', 3, repeated=True)
+
+
+class GoogleCloudVisionV1p1beta1ProductSearchResultsObjectAnnotation(_messages.Message):
+  r"""Prediction for what the object in the bounding box is.
+
+  Fields:
+    languageCode: The BCP-47 language code, such as "en-US" or "sr-Latn". For
+      more information, see
+      http://www.unicode.org/reports/tr35/#Unicode_locale_identifier.
+    mid: Object ID that should align with EntityAnnotation mid.
+    name: Object name, expressed in its `language_code` language.
+    score: Score of the result. Range [0, 1].
+  """
+
+  languageCode = _messages.StringField(1)
+  mid = _messages.StringField(2)
+  name = _messages.StringField(3)
+  score = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudVisionV1p1beta1ProductSearchResultsResult(_messages.Message):
@@ -2149,6 +2176,8 @@ class GoogleCloudVisionV1p2beta1AnnotateFileResponse(_messages.Message):
   more images, which individually have their own responses.
 
   Fields:
+    error: If set, represents the error message for the failed request. The
+      `responses` field will not be set in this case.
     inputConfig: Information about the file for which this response is
       generated.
     responses: Individual responses to images found within the file. This
@@ -2156,9 +2185,10 @@ class GoogleCloudVisionV1p2beta1AnnotateFileResponse(_messages.Message):
     totalPages: This field gives the total number of pages in the file.
   """
 
-  inputConfig = _messages.MessageField('GoogleCloudVisionV1p2beta1InputConfig', 1)
-  responses = _messages.MessageField('GoogleCloudVisionV1p2beta1AnnotateImageResponse', 2, repeated=True)
-  totalPages = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  error = _messages.MessageField('Status', 1)
+  inputConfig = _messages.MessageField('GoogleCloudVisionV1p2beta1InputConfig', 2)
+  responses = _messages.MessageField('GoogleCloudVisionV1p2beta1AnnotateImageResponse', 3, repeated=True)
+  totalPages = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudVisionV1p2beta1AnnotateImageResponse(_messages.Message):
@@ -2979,11 +3009,32 @@ class GoogleCloudVisionV1p2beta1ProductSearchResultsGroupedResult(_messages.Mess
   Fields:
     boundingPoly: The bounding polygon around the product detected in the
       query image.
+    objectAnnotations: List of generic predictions for the object in the
+      bounding box.
     results: List of results, one for each product match.
   """
 
   boundingPoly = _messages.MessageField('GoogleCloudVisionV1p2beta1BoundingPoly', 1)
-  results = _messages.MessageField('GoogleCloudVisionV1p2beta1ProductSearchResultsResult', 2, repeated=True)
+  objectAnnotations = _messages.MessageField('GoogleCloudVisionV1p2beta1ProductSearchResultsObjectAnnotation', 2, repeated=True)
+  results = _messages.MessageField('GoogleCloudVisionV1p2beta1ProductSearchResultsResult', 3, repeated=True)
+
+
+class GoogleCloudVisionV1p2beta1ProductSearchResultsObjectAnnotation(_messages.Message):
+  r"""Prediction for what the object in the bounding box is.
+
+  Fields:
+    languageCode: The BCP-47 language code, such as "en-US" or "sr-Latn". For
+      more information, see
+      http://www.unicode.org/reports/tr35/#Unicode_locale_identifier.
+    mid: Object ID that should align with EntityAnnotation mid.
+    name: Object name, expressed in its `language_code` language.
+    score: Score of the result. Range [0, 1].
+  """
+
+  languageCode = _messages.StringField(1)
+  mid = _messages.StringField(2)
+  name = _messages.StringField(3)
+  score = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudVisionV1p2beta1ProductSearchResultsResult(_messages.Message):
@@ -3383,6 +3434,8 @@ class GoogleCloudVisionV1p3beta1AnnotateFileResponse(_messages.Message):
   more images, which individually have their own responses.
 
   Fields:
+    error: If set, represents the error message for the failed request. The
+      `responses` field will not be set in this case.
     inputConfig: Information about the file for which this response is
       generated.
     responses: Individual responses to images found within the file. This
@@ -3390,9 +3443,10 @@ class GoogleCloudVisionV1p3beta1AnnotateFileResponse(_messages.Message):
     totalPages: This field gives the total number of pages in the file.
   """
 
-  inputConfig = _messages.MessageField('GoogleCloudVisionV1p3beta1InputConfig', 1)
-  responses = _messages.MessageField('GoogleCloudVisionV1p3beta1AnnotateImageResponse', 2, repeated=True)
-  totalPages = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  error = _messages.MessageField('Status', 1)
+  inputConfig = _messages.MessageField('GoogleCloudVisionV1p3beta1InputConfig', 2)
+  responses = _messages.MessageField('GoogleCloudVisionV1p3beta1AnnotateImageResponse', 3, repeated=True)
+  totalPages = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudVisionV1p3beta1AnnotateImageResponse(_messages.Message):
@@ -4271,11 +4325,32 @@ class GoogleCloudVisionV1p3beta1ProductSearchResultsGroupedResult(_messages.Mess
   Fields:
     boundingPoly: The bounding polygon around the product detected in the
       query image.
+    objectAnnotations: List of generic predictions for the object in the
+      bounding box.
     results: List of results, one for each product match.
   """
 
   boundingPoly = _messages.MessageField('GoogleCloudVisionV1p3beta1BoundingPoly', 1)
-  results = _messages.MessageField('GoogleCloudVisionV1p3beta1ProductSearchResultsResult', 2, repeated=True)
+  objectAnnotations = _messages.MessageField('GoogleCloudVisionV1p3beta1ProductSearchResultsObjectAnnotation', 2, repeated=True)
+  results = _messages.MessageField('GoogleCloudVisionV1p3beta1ProductSearchResultsResult', 3, repeated=True)
+
+
+class GoogleCloudVisionV1p3beta1ProductSearchResultsObjectAnnotation(_messages.Message):
+  r"""Prediction for what the object in the bounding box is.
+
+  Fields:
+    languageCode: The BCP-47 language code, such as "en-US" or "sr-Latn". For
+      more information, see
+      http://www.unicode.org/reports/tr35/#Unicode_locale_identifier.
+    mid: Object ID that should align with EntityAnnotation mid.
+    name: Object name, expressed in its `language_code` language.
+    score: Score of the result. Range [0, 1].
+  """
+
+  languageCode = _messages.StringField(1)
+  mid = _messages.StringField(2)
+  name = _messages.StringField(3)
+  score = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudVisionV1p3beta1ProductSearchResultsResult(_messages.Message):
@@ -4699,6 +4774,8 @@ class GoogleCloudVisionV1p4beta1AnnotateFileResponse(_messages.Message):
   more images, which individually have their own responses.
 
   Fields:
+    error: If set, represents the error message for the failed request. The
+      `responses` field will not be set in this case.
     inputConfig: Information about the file for which this response is
       generated.
     responses: Individual responses to images found within the file. This
@@ -4706,9 +4783,10 @@ class GoogleCloudVisionV1p4beta1AnnotateFileResponse(_messages.Message):
     totalPages: This field gives the total number of pages in the file.
   """
 
-  inputConfig = _messages.MessageField('GoogleCloudVisionV1p4beta1InputConfig', 1)
-  responses = _messages.MessageField('GoogleCloudVisionV1p4beta1AnnotateImageResponse', 2, repeated=True)
-  totalPages = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  error = _messages.MessageField('Status', 1)
+  inputConfig = _messages.MessageField('GoogleCloudVisionV1p4beta1InputConfig', 2)
+  responses = _messages.MessageField('GoogleCloudVisionV1p4beta1AnnotateImageResponse', 3, repeated=True)
+  totalPages = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudVisionV1p4beta1AnnotateImageResponse(_messages.Message):
@@ -5629,11 +5707,32 @@ class GoogleCloudVisionV1p4beta1ProductSearchResultsGroupedResult(_messages.Mess
   Fields:
     boundingPoly: The bounding polygon around the product detected in the
       query image.
+    objectAnnotations: List of generic predictions for the object in the
+      bounding box.
     results: List of results, one for each product match.
   """
 
   boundingPoly = _messages.MessageField('GoogleCloudVisionV1p4beta1BoundingPoly', 1)
-  results = _messages.MessageField('GoogleCloudVisionV1p4beta1ProductSearchResultsResult', 2, repeated=True)
+  objectAnnotations = _messages.MessageField('GoogleCloudVisionV1p4beta1ProductSearchResultsObjectAnnotation', 2, repeated=True)
+  results = _messages.MessageField('GoogleCloudVisionV1p4beta1ProductSearchResultsResult', 3, repeated=True)
+
+
+class GoogleCloudVisionV1p4beta1ProductSearchResultsObjectAnnotation(_messages.Message):
+  r"""Prediction for what the object in the bounding box is.
+
+  Fields:
+    languageCode: The BCP-47 language code, such as "en-US" or "sr-Latn". For
+      more information, see
+      http://www.unicode.org/reports/tr35/#Unicode_locale_identifier.
+    mid: Object ID that should align with EntityAnnotation mid.
+    name: Object name, expressed in its `language_code` language.
+    score: Score of the result. Range [0, 1].
+  """
+
+  languageCode = _messages.StringField(1)
+  mid = _messages.StringField(2)
+  name = _messages.StringField(3)
+  score = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudVisionV1p4beta1ProductSearchResultsResult(_messages.Message):
@@ -6116,6 +6215,8 @@ class GoogleCloudVisionV1p5beta1AnnotateFileResponse(_messages.Message):
   more images, which individually have their own responses.
 
   Fields:
+    error: If set, represents the error message for the failed request. The
+      `responses` field will not be set in this case.
     inputConfig: Information about the file for which this response is
       generated.
     responses: Individual responses to images found within the file. This
@@ -6123,9 +6224,10 @@ class GoogleCloudVisionV1p5beta1AnnotateFileResponse(_messages.Message):
     totalPages: This field gives the total number of pages in the file.
   """
 
-  inputConfig = _messages.MessageField('GoogleCloudVisionV1p5beta1InputConfig', 1)
-  responses = _messages.MessageField('GoogleCloudVisionV1p5beta1AnnotateImageResponse', 2, repeated=True)
-  totalPages = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  error = _messages.MessageField('Status', 1)
+  inputConfig = _messages.MessageField('GoogleCloudVisionV1p5beta1InputConfig', 2)
+  responses = _messages.MessageField('GoogleCloudVisionV1p5beta1AnnotateImageResponse', 3, repeated=True)
+  totalPages = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudVisionV1p5beta1AnnotateImageResponse(_messages.Message):
@@ -7075,11 +7177,32 @@ class GoogleCloudVisionV1p5beta1ProductSearchResultsGroupedResult(_messages.Mess
   Fields:
     boundingPoly: The bounding polygon around the product detected in the
       query image.
+    objectAnnotations: List of generic predictions for the object in the
+      bounding box.
     results: List of results, one for each product match.
   """
 
   boundingPoly = _messages.MessageField('GoogleCloudVisionV1p5beta1BoundingPoly', 1)
-  results = _messages.MessageField('GoogleCloudVisionV1p5beta1ProductSearchResultsResult', 2, repeated=True)
+  objectAnnotations = _messages.MessageField('GoogleCloudVisionV1p5beta1ProductSearchResultsObjectAnnotation', 2, repeated=True)
+  results = _messages.MessageField('GoogleCloudVisionV1p5beta1ProductSearchResultsResult', 3, repeated=True)
+
+
+class GoogleCloudVisionV1p5beta1ProductSearchResultsObjectAnnotation(_messages.Message):
+  r"""Prediction for what the object in the bounding box is.
+
+  Fields:
+    languageCode: The BCP-47 language code, such as "en-US" or "sr-Latn". For
+      more information, see
+      http://www.unicode.org/reports/tr35/#Unicode_locale_identifier.
+    mid: Object ID that should align with EntityAnnotation mid.
+    name: Object name, expressed in its `language_code` language.
+    score: Score of the result. Range [0, 1].
+  """
+
+  languageCode = _messages.StringField(1)
+  mid = _messages.StringField(2)
+  name = _messages.StringField(3)
+  score = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudVisionV1p5beta1ProductSearchResultsResult(_messages.Message):
@@ -7567,11 +7690,14 @@ class GroupedResult(_messages.Message):
   Fields:
     boundingPoly: The bounding polygon around the product detected in the
       query image.
+    objectAnnotations: List of generic predictions for the object in the
+      bounding box.
     results: List of results, one for each product match.
   """
 
   boundingPoly = _messages.MessageField('BoundingPoly', 1)
-  results = _messages.MessageField('Result', 2, repeated=True)
+  objectAnnotations = _messages.MessageField('ObjectAnnotation', 2, repeated=True)
+  results = _messages.MessageField('Result', 3, repeated=True)
 
 
 class Image(_messages.Message):
@@ -8013,6 +8139,24 @@ class NormalizedVertex(_messages.Message):
   y = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
+class ObjectAnnotation(_messages.Message):
+  r"""Prediction for what the object in the bounding box is.
+
+  Fields:
+    languageCode: The BCP-47 language code, such as "en-US" or "sr-Latn". For
+      more information, see
+      http://www.unicode.org/reports/tr35/#Unicode_locale_identifier.
+    mid: Object ID that should align with EntityAnnotation mid.
+    name: Object name, expressed in its `language_code` language.
+    score: Score of the result. Range [0, 1].
+  """
+
+  languageCode = _messages.StringField(1)
+  mid = _messages.StringField(2)
+  name = _messages.StringField(3)
+  score = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -8346,6 +8490,18 @@ class ProductSet(_messages.Message):
   name = _messages.StringField(4)
 
 
+class ProductSetPurgeConfig(_messages.Message):
+  r"""Config to control which ProductSet contains the Products to be deleted.
+
+  Fields:
+    productSetId: The ProductSet that contains the Products to delete. If a
+      Product is a member of product_set_id in addition to other ProductSets,
+      the Product will still be deleted.
+  """
+
+  productSetId = _messages.StringField(1)
+
+
 class Property(_messages.Message):
   r"""A `Property` consists of a user-supplied name/value pair.
 
@@ -8358,6 +8514,23 @@ class Property(_messages.Message):
   name = _messages.StringField(1)
   uint64Value = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
   value = _messages.StringField(3)
+
+
+class PurgeProductsRequest(_messages.Message):
+  r"""Request message for the `PurgeProducts` method.
+
+  Fields:
+    deleteOrphanProducts: If delete_orphan_products is true, all Products that
+      are not in any ProductSet will be deleted.
+    force: The default value is false. Override this value to true to actually
+      perform the purge.
+    productSetPurgeConfig: Specify which ProductSet contains the Products to
+      be deleted.
+  """
+
+  deleteOrphanProducts = _messages.BooleanField(1)
+  force = _messages.BooleanField(2)
+  productSetPurgeConfig = _messages.MessageField('ProductSetPurgeConfig', 3)
 
 
 class ReferenceImage(_messages.Message):
@@ -9020,6 +9193,20 @@ class VisionProjectsLocationsProductsPatchRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
   product = _messages.MessageField('Product', 2)
   updateMask = _messages.StringField(3)
+
+
+class VisionProjectsLocationsProductsPurgeRequest(_messages.Message):
+  r"""A VisionProjectsLocationsProductsPurgeRequest object.
+
+  Fields:
+    parent: The project and location in which the Products should be deleted.
+      Format is `projects/PROJECT_ID/locations/LOC_ID`.
+    purgeProductsRequest: A PurgeProductsRequest resource to be passed as the
+      request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  purgeProductsRequest = _messages.MessageField('PurgeProductsRequest', 2)
 
 
 class VisionProjectsLocationsProductsReferenceImagesCreateRequest(_messages.Message):

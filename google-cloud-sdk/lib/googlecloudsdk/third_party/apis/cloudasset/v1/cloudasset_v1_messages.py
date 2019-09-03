@@ -124,6 +124,28 @@ class BatchGetAssetsHistoryResponse(_messages.Message):
   assets = _messages.MessageField('TemporalAsset', 1, repeated=True)
 
 
+class BigQueryDestination(_messages.Message):
+  r"""A BigQuery destination.
+
+  Fields:
+    dataset: Required. The BigQuery dataset in format
+      "projects/projectId/datasets/datasetId", to which the snapshot result
+      should be exported. If this dataset does not exist, the export call
+      returns an error.
+    force: If the destination table already exists and this flag is `TRUE`,
+      the table will be overwritten by the contents of assets snapshot. If the
+      flag is not set and the destination table already exists, the export
+      call returns an error.
+    table: Required. The BigQuery table to which the snapshot result should be
+      written. If this table does not exist, a new table with the given name
+      will be created.
+  """
+
+  dataset = _messages.StringField(1)
+  force = _messages.BooleanField(2)
+  table = _messages.StringField(3)
+
+
 class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
@@ -970,10 +992,15 @@ class OutputConfig(_messages.Message):
   r"""Output configuration for export assets destination.
 
   Fields:
+    bigqueryDestination: Destination on BigQuery. The output table stores the
+      fields in asset proto as columns in BigQuery. The resource/iam_policy
+      field is converted to a record with each field to a column, except
+      metadata to a single JSON string.
     gcsDestination: Destination on Cloud Storage.
   """
 
-  gcsDestination = _messages.MessageField('GcsDestination', 1)
+  bigqueryDestination = _messages.MessageField('BigQueryDestination', 1)
+  gcsDestination = _messages.MessageField('GcsDestination', 2)
 
 
 class Policy(_messages.Message):
@@ -1009,7 +1036,11 @@ class Policy(_messages.Message):
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten.
-    version: Deprecated.
+    version: Specifies the format of the policy.  Valid values are 0, 1, and
+      3. Requests specifying an invalid value will be rejected.  Policies with
+      any conditional bindings must specify version 3. Policies without any
+      conditional bindings may specify any valid value or leave the field
+      unset.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)

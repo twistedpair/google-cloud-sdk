@@ -30,7 +30,6 @@ import stat
 import sys
 import tempfile
 import time
-import traceback
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import encoding as encoding_util
@@ -574,17 +573,9 @@ class TemporaryDirectory(object):
     try:
       self.Close()
     except:  # pylint: disable=bare-except
-      if not prev_exc_type:
-        raise
-      message = (
-          'Got exception {0}'
-          'while another exception was active {1} [{2}]'
-          .format(
-              encoding_util.Decode(traceback.format_exc()),
-              prev_exc_type,
-              encoding_util.Decode(prev_exc_val)))
-      exceptions.reraise(prev_exc_type(message), tb=prev_exc_trace)
-    # always return False so any exceptions will be re-raised
+      exceptions.RaiseWithContext(
+          prev_exc_type, prev_exc_val, prev_exc_trace, *sys.exc_info())
+    # Always return False so any previous exception will be re-raised.
     return False
 
   def Close(self):

@@ -229,7 +229,9 @@ auth_token_openid:
         Connect token to be included in the request sent to the target
         when executing the job. The service account must be within the
         same project as the job. The caller must have
-        iam.serviceAccounts.actAs permission for the service account.
+        iam.serviceAccounts.actAs permission for the service account. The
+        OIDC token is generally used *except* for Google APIs hosted on
+        `*.googleapis.com`: these APIs expect an OAuth token.
     - api_field: job.httpTarget.oidcToken.audience
       arg_name: oidc-token-audience
       help_text: |
@@ -250,7 +252,9 @@ auth_token_oauth:
         access token to be included in the request sent to the target
         when executing the job. The service account must be within the
         same project as the job. The caller must have
-        iam.serviceAccounts.actAs permission for the service account.
+        iam.serviceAccounts.actAs permission for the service account. The
+        token must be OAuth if the target is a Google APIs service
+        with URL `*.googleapis.com`.
     - api_field: job.httpTarget.oauthToken.scope
       arg_name: oauth-token-scope
       help_text: |

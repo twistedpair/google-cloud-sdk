@@ -29,6 +29,8 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.resource import resource_printer
 
+import six
+
 
 COMPUTE_ALPHA_API_VERSION = 'alpha'
 COMPUTE_BETA_API_VERSION = 'beta'
@@ -203,6 +205,14 @@ def WarnIfDiskSizeIsTooSmall(size_gb, disk_type):
         'poor I/O performance. For more information, see: '
         'https://developers.google.com/compute/docs/disks#performance.',
         warning_threshold_gb)
+
+
+def WarnIfPartialRequestFail(problems):
+  errors = []
+  for _, message in problems:
+    errors.append(six.text_type(message))
+
+  log.warning(ConstructList('Some requests did not succeed.', errors))
 
 
 def IsValidIPV4(ip):

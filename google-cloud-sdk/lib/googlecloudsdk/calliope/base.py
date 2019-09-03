@@ -349,8 +349,8 @@ ASYNC_FLAG = Argument(
     '--async',
     action='store_true',
     help="""\
-    Display information about the operation in progress, without waiting for
-    the operation to complete.""")
+    Return immediately, without waiting for the operation in progress to
+    complete.""")
 
 FILTER_FLAG = Argument(
     '--filter',

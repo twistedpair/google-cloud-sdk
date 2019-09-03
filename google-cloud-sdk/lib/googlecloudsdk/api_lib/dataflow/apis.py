@@ -27,6 +27,7 @@ import six
 
 DATAFLOW_API_NAME = 'dataflow'
 DATAFLOW_API_VERSION = 'v1b3'
+# TODO(b/139889563): Remove when dataflow args region is changed to required
 DATAFLOW_API_DEFAULT_REGION = 'us-central1'
 
 
@@ -71,6 +72,7 @@ class Jobs(object):
       (Job)
     """
     project_id = project_id or GetProject()
+    # TODO(b/139889563): Remove default when args region is changed to required
     region_id = region_id or DATAFLOW_API_DEFAULT_REGION
     request = GetMessagesModule().DataflowProjectsLocationsJobsGetRequest(
         jobId=job_id, location=region_id, projectId=project_id, view=view)
@@ -92,6 +94,7 @@ class Jobs(object):
       (Job)
     """
     project_id = project_id or GetProject()
+    # TODO(b/139889563): Remove default when args region is changed to required
     region_id = region_id or DATAFLOW_API_DEFAULT_REGION
     job = GetMessagesModule().Job(
         requestedState=(GetMessagesModule().Job.RequestedStateValueValuesEnum
@@ -116,6 +119,7 @@ class Jobs(object):
       (Job)
     """
     project_id = project_id or GetProject()
+    # TODO(b/139889563): Remove default when args region is changed to required
     region_id = region_id or DATAFLOW_API_DEFAULT_REGION
     job = GetMessagesModule().Job(
         requestedState=(GetMessagesModule().Job.RequestedStateValueValuesEnum
@@ -146,6 +150,7 @@ class Jobs(object):
       (Snapshot)
     """
     project_id = project_id or GetProject()
+    # TODO(b/139889563): Remove default when args region is changed to required
     region_id = region_id or DATAFLOW_API_DEFAULT_REGION
     request = GetMessagesModule().DataflowProjectsLocationsJobsSnapshotRequest(
         jobId=job_id,
@@ -185,6 +190,7 @@ class Metrics(object):
       (MetricUpdate)
     """
     project_id = project_id or GetProject()
+    # TODO(b/139889563): Remove default when args region is changed to required
     region_id = region_id or DATAFLOW_API_DEFAULT_REGION
     request = GetMessagesModule(
     ).DataflowProjectsLocationsJobsGetMetricsRequest(
@@ -249,6 +255,7 @@ class Templates(object):
       params_list.append(
           Templates.PARAMETERS_VALUE.AdditionalProperty(key=k, value=v))
 
+    # TODO(b/139889563): Remove default when args region is changed to required
     region_id = region_id or DATAFLOW_API_DEFAULT_REGION
     body = Templates.CREATE_REQUEST(
         gcsPath=gcs_location,
@@ -320,6 +327,7 @@ class Messages(object):
       (ListJobMessagesResponse)
     """
     project_id = project_id or GetProject()
+    # TODO(b/139889563): Remove default when args region is changed to required
     region_id = region_id or DATAFLOW_API_DEFAULT_REGION
     request = GetMessagesModule(
     ).DataflowProjectsLocationsJobsMessagesListRequest(
@@ -357,6 +365,7 @@ class Snapshots(object):
       (DeleteSnapshotResponse)
     """
     project_id = project_id or GetProject()
+    # TODO(b/139889563): Remove default when args region is changed to required
     region_id = region_id or DATAFLOW_API_DEFAULT_REGION
     request = GetMessagesModule(
     ).DataflowProjectsLocationsSnapshotsDeleteRequest(
@@ -379,6 +388,7 @@ class Snapshots(object):
       (GetSnapshotResponse)
     """
     project_id = project_id or GetProject()
+    # TODO(b/139889563): Remove default when args region is changed to required
     region_id = region_id or DATAFLOW_API_DEFAULT_REGION
     request = GetMessagesModule().DataflowProjectsLocationsSnapshotsGetRequest(
         snapshotId=snapshot_id, location=region_id, projectId=project_id)
@@ -401,6 +411,7 @@ class Snapshots(object):
       (ListSnapshotsResponse)
     """
     project_id = project_id or GetProject()
+    # TODO(b/139889563): Remove default when args region is changed to required
     region_id = region_id or DATAFLOW_API_DEFAULT_REGION
     request = GetMessagesModule().DataflowProjectsLocationsSnapshotsListRequest(
         jobId=job_id, location=region_id, projectId=project_id)

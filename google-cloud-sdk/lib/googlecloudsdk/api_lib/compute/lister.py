@@ -357,7 +357,7 @@ class AllScopes(object):
 
 
 class ListException(exceptions.Error):
-  """Base exception for lister exceptions"""
+  """Base exception for lister exceptions."""
 
 
 # TODO(b/38256601) - Drop these flags
@@ -569,7 +569,7 @@ def _TranslateZonesFlag(args, resources, message=None):
   """Translates --zones flag into filter expression and scope set."""
   default = args.filter  # must preserve '' and None for default processing
   scope_set = ZoneSet([
-      resources.Parse(
+      resources.Parse(  # pylint: disable=g-complex-comprehension
           z,
           params={'project': properties.VALUES.core.project.GetOrFail},
           collection='compute.zones') for z in args.zones
@@ -621,7 +621,7 @@ def _TranslateRegionsFlag(args, resources, message=None):
   """Translates --regions flag into filter expression and scope set."""
   default = args.filter  # must preserve '' and None for default processing
   scope_set = RegionSet([
-      resources.Parse(
+      resources.Parse(  # pylint: disable=g-complex-comprehension
           region,
           params={'project': properties.VALUES.core.project.GetOrFail},
           collection='compute.regions') for region in args.regions
@@ -918,6 +918,7 @@ class GlobalLister(object):
       utils.RaiseException(errors, ListException)
 
 
+# TODO(b/139816191) Update all usages to use allow_partial_server_failure
 class MultiScopeLister(object):
   """General purpose lister implementation.
 
@@ -953,6 +954,8 @@ class MultiScopeLister(object):
     be listed using List call.
     aggregation_service: base_api.BaseApiService, Aggregation service whose
     resources will be listed using AggregatedList call.
+    allow_partial_server_failure: Allows Lister to continue presenting items
+    from scopes that return succesfully while logging failures as a warning.
   """
 
   def __init__(self,
@@ -960,38 +963,44 @@ class MultiScopeLister(object):
                zonal_service=None,
                regional_service=None,
                global_service=None,
-               aggregation_service=None):
+               aggregation_service=None,
+               allow_partial_server_failure=False):
     self.client = client
     self.zonal_service = zonal_service
     self.regional_service = regional_service
     self.global_service = global_service
     self.aggregation_service = aggregation_service
+    self.allow_partial_server_failure = allow_partial_server_failure
 
   def __deepcopy__(self, memodict=None):
     return self  # MultiScopeLister is immutable
 
   def __eq__(self, other):
     # MultiScopeLister is not suited for inheritance
-    return (isinstance(other, MultiScopeLister) and
-            self.client == other.client and
-            self.zonal_service == other.zonal_service and
-            self.regional_service == other.regional_service and
-            self.global_service == other.global_service and
-            self.aggregation_service == other.aggregation_service)
+    return (
+        isinstance(other, MultiScopeLister) and self.client == other.client and
+        self.zonal_service == other.zonal_service and
+        self.regional_service == other.regional_service and
+        self.global_service == other.global_service and
+        self.aggregation_service == other.aggregation_service and
+        self.allow_partial_server_failure == other.allow_partial_server_failure)
 
   def __ne__(self, other):
     return not self == other
 
   def __hash__(self):
     return hash((self.client, self.zonal_service, self.regional_service,
-                 self.global_service, self.aggregation_service))
+                 self.global_service, self.aggregation_service,
+                 self.allow_partial_server_failure))
 
   def __repr__(self):
-    return 'MultiScopeLister({}, {}, {}, {}, {})'.format(
+    return 'MultiScopeLister({}, {}, {}, {}, {}, {})'.format(
         repr(self.client),
         repr(self.zonal_service),
         repr(self.regional_service),
-        repr(self.global_service), repr(self.aggregation_service))
+        repr(self.global_service),
+        repr(self.aggregation_service),
+        repr(self.allow_partial_server_failure))
 
   def __call__(self, frontend):
     scope_set = frontend.scope_set
@@ -1035,15 +1044,24 @@ class MultiScopeLister(object):
                  project=project_ref.project)))
 
     errors = []
+    response_count = 0
     for item in request_helper.ListJson(
         requests=requests,
         http=self.client.apitools_client.http,
         batch_url=self.client.batch_url,
         errors=errors):
+      response_count += 1
+
       yield item
 
     if errors:
-      utils.RaiseException(errors, ListException)
+      # If the command allows partial server errors, instead of raising an
+      # exception to show something went wrong, we show a warning message that
+      # contains the error messages instead.
+      if self.allow_partial_server_failure and response_count > 0:
+        utils.WarnIfPartialRequestFail(errors)
+      else:
+        utils.RaiseException(errors, ListException)
 
 
 class ZonalParallelLister(object):
@@ -1057,12 +1075,16 @@ class ZonalParallelLister(object):
     client: The compute client.
     service: Zonal service whose resources will be listed.
     resources: The compute resource registry.
+    allow_partial_server_failure: Allows Lister to continue presenting items
+    from scopes that return succesfully while logging failures as a warning.
   """
 
-  def __init__(self, client, service, resources):
+  def __init__(self, client, service, resources,
+               allow_partial_server_failure=False):
     self.client = client
     self.service = service
     self.resources = resources
+    self.allow_partial_server_failure = allow_partial_server_failure
 
   def __deepcopy__(self, memodict=None):
     return self  # ZonalParallelLister is immutable
@@ -1108,6 +1130,7 @@ class ZonalParallelLister(object):
         maxResults=frontend.max_results,
         scopeSet=zones)
     service_list_implementation = MultiScopeLister(
-        self.client, zonal_service=self.service)
+        self.client, zonal_service=self.service,
+        allow_partial_server_failure=self.allow_partial_server_failure)
 
     return Invoke(service_list_data, service_list_implementation)

@@ -207,6 +207,11 @@ class StorageClient(object):
           .format(code=err.status_code, local_file=local_path, gcs=gsc_path,
                   message=http_exc.HttpException(
                       err, error_format='{status_message}')))
+    finally:
+      # If the upload fails with an error, apitools (for whatever reason)
+      # doesn't close the file object, so we have to call this ourselves to
+      # force it to happen.
+      del upload
 
     if response.size != file_size:
       log.debug('Response size: {0} bytes, but local file is {1} bytes.'.format(

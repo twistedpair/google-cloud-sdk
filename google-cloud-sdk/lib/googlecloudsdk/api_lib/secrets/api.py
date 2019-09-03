@@ -54,6 +54,12 @@ class Locations(Client):
     super(Locations, self).__init__(client, messages)
     self.service = self.client.projects_locations
 
+  def Get(self, location_ref):
+    """Get the location with the given name."""
+    return self.service.Get(
+        self.messages.SecretmanagerProjectsLocationsGetRequest(
+            name=location_ref.RelativeName()))
+
   def ListWithPager(self, project_ref, limit):
     """List secrets returning a pager object."""
     request = self.messages.SecretmanagerProjectsLocationsListRequest(

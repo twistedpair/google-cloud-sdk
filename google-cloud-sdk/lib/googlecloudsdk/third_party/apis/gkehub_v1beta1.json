@@ -218,6 +218,13 @@
         "nextPageToken": {
           "description": "A token to request the next page of resources from the\n`ListMemberships` method. The value of an empty string means that\nthere are no more resources to return.",
           "type": "string"
+        },
+        "unreachable": {
+          "description": "List of locations that could not be reached while fetching this list.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -791,56 +798,147 @@
                 }
               }
             },
+            "memberships": {
+              "methods": {
+                "list": {
+                  "id": "gkehub.projects.locations.memberships.list",
+                  "path": "v1beta1/{+parent}/memberships",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/memberships",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "The parent in whose context the memberships are listed. The parent value\nis in the format: `projects\/[project_id]\/locations\/global`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "When requesting a 'page' of resources, `page_size` specifies number of\nresources to return. If unspecified or set to 0, all resources will\nbe returned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Token returned by previous call to `ListMemberships` which\nspecifies the position in the list from where to continue listing the\nresources.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Lists the Memberships that match the filter expression. A filter expression\nfilters the resources listed in the response. The expression must be of\nthe form `<field> <operator> <value>` where operators: `<`, `>`, `<=`,\n`>=`,\n`!=`, `=`, `:` are supported (colon `:` represents a HAS operator which is\nroughly synonymous with equality). <field> can refer to a proto or JSON\nfield, or a synthetic field. Field names can be camelCase or snake_case.\n\nExamples:\n- Filter by name:\n  name = \"projects\/foo-proj\/locations\/global\/membership\/bar\n\n- Filter by labels:\n  - Resources that have a key called `foo`\n    labels.foo:*\n  - Resources that have a key called `foo` whose value is `bar`\n    labels.foo = bar\n\n - Filter by state:\n   - Members in CREATING state.\n     state = CREATING",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Field to use to sort the list.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListMembershipsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists Memberships in a given project and location."
+                },
+                "setIamPolicy": {
+                  "id": "gkehub.projects.locations.memberships.setIamPolicy",
+                  "path": "v1beta1/{+resource}:setIamPolicy",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:setIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "SetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy."
+                },
+                "getIamPolicy": {
+                  "id": "gkehub.projects.locations.memberships.getIamPolicy",
+                  "path": "v1beta1/{+resource}:getIamPolicy",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:getIamPolicy",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "options.requestedPolicyVersion": {
+                      "description": "Optional. The policy format version to be returned.\nAcceptable values are 0, 1, and 3.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset."
+                },
+                "testIamPermissions": {
+                  "id": "gkehub.projects.locations.memberships.testIamPermissions",
+                  "path": "v1beta1/{+resource}:testIamPermissions",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "TestIamPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "TestIamPermissionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning."
+                }
+              }
+            },
             "global": {
               "resources": {
                 "memberships": {
                   "methods": {
-                    "list": {
-                      "id": "gkehub.projects.locations.global.memberships.list",
-                      "path": "v1beta1/{+parent}/memberships",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/global/memberships",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "parent": {
-                          "description": "The parent in whose context the memberships are listed. The parent value\nis in the format: `projects\/[project_id]\/locations\/global`.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global$",
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "When requesting a 'page' of resources, `page_size` specifies number of\nresources to return. If unspecified or set to 0, all resources will\nbe returned.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "description": "Token returned by previous call to `ListMemberships` which\nspecifies the position in the list from where to continue listing the\nresources.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "filter": {
-                          "description": "Lists the Memberships that match the filter expression. A filter expression\nfilters the resources listed in the response. The expression must be of\nthe form `<field> <operator> <value>` where operators: `<`, `>`, `<=`,\n`>=`,\n`!=`, `=`, `:` are supported (colon `:` represents a HAS operator which is\nroughly synonymous with equality). <field> can refer to a proto or JSON\nfield, or a synthetic field. Field names can be camelCase or snake_case.\n\nExamples:\n- Filter by name:\n  name = \"projects\/foo-proj\/locations\/global\/membership\/bar\n\n- Filter by labels:\n  - Resources that have a key called `foo`\n    labels.foo:*\n  - Resources that have a key called `foo` whose value is `bar`\n    labels.foo = bar\n\n - Filter by state:\n   - Members in CREATING state.\n     state = CREATING",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "orderBy": {
-                          "description": "Field to use to sort the list.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "response": {
-                        "$ref": "ListMembershipsResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Lists Memberships in a given project and location."
-                    },
                     "get": {
                       "id": "gkehub.projects.locations.global.memberships.get",
                       "path": "v1beta1/{+name}",
@@ -974,32 +1072,6 @@
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/global\/connectAgents$",
                           "type": "string"
-                        },
-                        "connectAgent.name": {
-                          "description": "Name is the unique identifier for a connect agent per project.\nLimited to 1024 characters.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "connectAgent.proxy": {
-                          "description": "Optional connection name of the proxy, format must be in the form\nhttp(s):\/\/{proxy_address}, depends on HTTP\/HTTPS protocol\nsupported by the proxy.\nThis will direct connect agent's outbound traffic through a HTTP(S) proxy.",
-                          "location": "query",
-                          "type": "string",
-                          "format": "byte"
-                        },
-                        "connectAgent.namespace": {
-                          "description": "Namespace for GKE Connect agent resources.\nOptional; if empty, use gke-connect-{project-number}",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "version": {
-                          "description": "The version to use for connect agent.\nOptional; if empty, the current default version will be used.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "isUpgrade": {
-                          "description": "If true, generate the resources for upgrade only. Some resources\n(e.g. secrets) generated for installation will be excluded.",
-                          "location": "query",
-                          "type": "boolean"
                         }
                       },
                       "parameterOrder": [
@@ -1014,97 +1086,6 @@
                       "description": "Generate the manifest for deployment of GKE connect agent."
                     }
                   }
-                }
-              }
-            },
-            "memberships": {
-              "methods": {
-                "setIamPolicy": {
-                  "id": "gkehub.projects.locations.memberships.setIamPolicy",
-                  "path": "v1beta1/{+resource}:setIamPolicy",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:setIamPolicy",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "request": {
-                    "$ref": "SetIamPolicyRequest"
-                  },
-                  "response": {
-                    "$ref": "Policy"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy."
-                },
-                "getIamPolicy": {
-                  "id": "gkehub.projects.locations.memberships.getIamPolicy",
-                  "path": "v1beta1/{+resource}:getIamPolicy",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:getIamPolicy",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "options.requestedPolicyVersion": {
-                      "description": "Optional. The policy format version to be returned.\nAcceptable values are 0, 1, and 3.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "response": {
-                    "$ref": "Policy"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset."
-                },
-                "testIamPermissions": {
-                  "id": "gkehub.projects.locations.memberships.testIamPermissions",
-                  "path": "v1beta1/{+resource}:testIamPermissions",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:testIamPermissions",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "request": {
-                    "$ref": "TestIamPermissionsRequest"
-                  },
-                  "response": {
-                    "$ref": "TestIamPermissionsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning."
                 }
               }
             }

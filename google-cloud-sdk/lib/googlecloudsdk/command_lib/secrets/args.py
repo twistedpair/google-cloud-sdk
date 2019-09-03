@@ -53,6 +53,14 @@ def AddProject(parser, positional=False, **kwargs):
       **kwargs).AddToParser(parser)
 
 
+def AddLocation(parser, purpose, positional=False, **kwargs):
+  concept_parsers.ConceptParser.ForResource(
+      name=_ArgOrFlag('location', positional),
+      resource_spec=GetLocationResourceSpec(),
+      group_help='The location {}.'.format(purpose),
+      **kwargs).AddToParser(parser)
+
+
 # TODO(b/135570696): may want to convert to resource arg & add fallthrough
 def AddLocations(parser, resource, positional=False, **kwargs):
   parser.add_argument(

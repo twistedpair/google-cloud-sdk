@@ -122,15 +122,12 @@ def _CheckTLSSupport():
   """Provide a useful error message if the user's doesn't have TLS 1.2."""
   if re.match('OpenSSL 0\\.', ssl.OPENSSL_VERSION):
     # User's OpenSSL is too old.
-    min_required_version = ('2.7.15' if sys.version_info.major == 2 else '3.4')
     raise serverless_exceptions.NoTLSError(
         'Your Python installation is using the SSL library {}, '
-        'which does not support TLS 1.2. '
-        'TLS 1.2 is required to connect to Cloud Run on Kubernetes Engine. '
-        'Please upgrade to '
-        'Python {} or greater, which comes bundled with OpenSSL >1.0.'.format(
-            ssl.OPENSSL_VERSION,
-            min_required_version))
+        'which does not support TLS 1.2. TLS 1.2 is required to connect to '
+        'Cloud Run on Kubernetes Engine. Please use python with '
+        'OpenSSL >1.0'.format(
+            ssl.OPENSSL_VERSION))
   # PROTOCOL_TLSv1_2 applies to [2.7.9, 2.7.13) or [3.4, 3.6).
   # PROTOCOL_TLS applies to 2.7.13 and above, or 3.6 and above.
   if not (hasattr(ssl, 'PROTOCOL_TLS') or hasattr(ssl, 'PROTOCOL_TLSv1_2')):

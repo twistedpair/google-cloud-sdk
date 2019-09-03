@@ -1430,7 +1430,7 @@ GCP error might be returned instead.
         method_id=u'healthcare.projects.locations.datasets.fhirStores.fhir.history',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'at', u'count', u'page', u'since'],
+        query_params=[u'_at', u'_count', u'_page', u'_since'],
         relative_path=u'v1beta1/{+name}/_history',
         request_field='',
         request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresFhirHistoryRequest',
@@ -1755,7 +1755,9 @@ be used to track the status of the export by calling
 GetOperation.
 
 Immediate fatal errors appear in the
-error field.
+error field, errors are also logged
+to Stackdriver (see [Viewing
+logs](/healthcare/docs/how-tos/stackdriver-logging)).
 Otherwise, when the operation finishes, a detailed response of type
 ExportResourcesResponse is returned in the
 response field.
@@ -2613,6 +2615,8 @@ DeidentifySummary.
 If errors occur,
 details field type is
 DeidentifyErrorDetails.
+Errors are also logged to Stackdriver
+(see [Viewing logs](/healthcare/docs/how-tos/stackdriver-logging)).
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDeidentifyRequest) input message

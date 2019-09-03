@@ -244,6 +244,10 @@
           "description": "Configuration for private cluster.",
           "$ref": "PrivateClusterConfig"
         },
+        "databaseEncryption": {
+          "description": "Configuration of etcd encryption.",
+          "$ref": "DatabaseEncryption"
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -428,6 +432,10 @@
           "items": {
             "$ref": "NodeTaint"
           }
+        },
+        "shieldedInstanceConfig": {
+          "description": "Shielded Instance options.",
+          "$ref": "ShieldedInstanceConfig"
         }
       }
     },
@@ -494,6 +502,21 @@
             "PREFER_NO_SCHEDULE",
             "NO_EXECUTE"
           ]
+        }
+      }
+    },
+    "ShieldedInstanceConfig": {
+      "id": "ShieldedInstanceConfig",
+      "description": "A set of Shielded Instance options.",
+      "type": "object",
+      "properties": {
+        "enableSecureBoot": {
+          "description": "Defines whether the instance has Secure Boot enabled.\n\nSecure Boot helps ensure that the system only runs authentic software by\nverifying the digital signature of all boot components, and halting the\nboot process if signature verification fails.",
+          "type": "boolean"
+        },
+        "enableIntegrityMonitoring": {
+          "description": "Defines whether the instance has integrity monitoring enabled.\n\nEnables monitoring and attestation of the boot integrity of the instance.\nThe attestation is performed against the integrity policy baseline. This\nbaseline is initially derived from the implicitly trusted boot image when\nthe instance is created.",
+          "type": "boolean"
         }
       }
     },
@@ -770,7 +793,8 @@
             "GCE_STOCKOUT indicates a Google Compute Engine stockout.",
             "GKE_SERVICE_ACCOUNT_DELETED indicates that the user deleted their robot\nservice account.",
             "Google Compute Engine quota was exceeded.",
-            "Cluster state was manually changed by an SRE due to a system logic error.\nMore codes TBA"
+            "Cluster state was manually changed by an SRE due to a system logic error.",
+            "Unable to perform an encrypt operation against the CloudKMS key used for\netcd level encryption.\nMore codes TBA"
           ],
           "type": "string",
           "enum": [
@@ -778,7 +802,8 @@
             "GCE_STOCKOUT",
             "GKE_SERVICE_ACCOUNT_DELETED",
             "GCE_QUOTA_EXCEEDED",
-            "SET_BY_OPERATOR"
+            "SET_BY_OPERATOR",
+            "CLOUD_KMS_KEY_ERROR"
           ]
         },
         "message": {
@@ -1033,6 +1058,31 @@
         }
       }
     },
+    "DatabaseEncryption": {
+      "id": "DatabaseEncryption",
+      "description": "Configuration of etcd encryption.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Denotes the state of etcd encryption.",
+          "enumDescriptions": [
+            "Should never be set",
+            "Secrets in etcd are encrypted.",
+            "Secrets in etcd are stored in plain text (at etcd level) - this is\nunrelated to GCE level full disk encryption."
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "ENCRYPTED",
+            "DECRYPTED"
+          ]
+        },
+        "keyName": {
+          "description": "Name of CloudKMS key to use for the encryption of secrets in etcd.\nEx. projects\/my-project\/locations\/global\/keyRings\/my-ring\/cryptoKeys\/my-key",
+          "type": "string"
+        }
+      }
+    },
     "CreateClusterRequest": {
       "id": "CreateClusterRequest",
       "description": "CreateClusterRequest creates a cluster.",
@@ -1232,6 +1282,10 @@
         "desiredImageProject": {
           "description": "The project containing the desired image to use for this node.\nThis is used to create clusters using a custom image.\nNOTE: Set the \"desired_node_pool\" field as well.",
           "type": "string"
+        },
+        "desiredDatabaseEncryption": {
+          "description": "Configuration of etcd encryption.",
+          "$ref": "DatabaseEncryption"
         },
         "desiredNodePoolAutoscaling": {
           "description": "Autoscaler configuration for the node pool specified in\ndesired_node_pool_id. If there is only one pool in the\ncluster and desired_node_pool_id is not provided then\nthe change applies to that single node pool.",

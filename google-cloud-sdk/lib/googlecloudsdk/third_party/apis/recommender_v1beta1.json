@@ -268,7 +268,7 @@
     },
     "GoogleCloudRecommenderV1beta1Operation": {
       "id": "GoogleCloudRecommenderV1beta1Operation",
-      "description": "Contains an operation for a resource inspired by the JSON-PATCH format with\nsupport for:\n* Custom filters for describing partial array patch.\n* Extended path values for describing nested arrays.\n* Custom fields for describing the resource for which the operation is being\n  described.\n* Allows extension to custom operations not natively supported by RFC6902.\nSee https:\/\/tools.ietf.org\/html\/rfc6902 for details on the original RFC.",
+      "description": "Contains an operation for a resource inspired by the JSON-PATCH format with\nsupport for:\n* Custom filters for describing partial array patch.\n* Extended path values for describing nested arrays.\n* Custom fields for describing the resource for which the operation is being\n  described.\n* Allows extension to custom operations not natively supported by RFC6902.\nSee https:\/\/tools.ietf.org\/html\/rfc6902 for details on the original RFC.\nNext Id: 12",
       "type": "object",
       "properties": {
         "action": {
@@ -296,15 +296,37 @@
           "type": "string"
         },
         "value": {
-          "description": "Value for the `path` field. Set if action is 'add'\/'replace'\/'test'.",
+          "description": "Value for the `path` field. Will be set for actions:'add'\/'replace'.\nMaybe set for action: 'test'. Either this or `value_matcher` will be set\nfor 'test' operation. An exact match must be performed.",
           "type": "any"
         },
+        "valueMatcher": {
+          "description": "Can be set for action 'test' for advanced matching for the value of\n'path' field. Either this or `value` will be set for 'test' operation.",
+          "$ref": "GoogleCloudRecommenderV1beta1ValueMatcher"
+        },
         "pathFilters": {
-          "description": "Set of filters to apply if `path` refers to array elements or nested array\nelements in order to narrow down to a single unique element that is being\ntested\/modified.\nNote that this is intended to be an exact match per filter.\nExample: {\n  \"\/versions\/*\/name\" : \"it-123\"\n  \"\/versions\/*\/targetSize\/percent\": 20\n}\nExample: {\n  \"\/bindings\/*\/role\": \"roles\/admin\"\n  \"\/bindings\/*\/condition\" : null\n}\nExample: {\n  \"\/bindings\/*\/role\": \"roles\/admin\"\n  \"\/bindings\/*\/members\/*\" : [\"x@google.com\", \"y@google.com\"]\n}",
+          "description": "Set of filters to apply if `path` refers to array elements or nested array\nelements in order to narrow down to a single unique element that is being\ntested\/modified.\nThis is intended to be an exact match per filter. To perform advanced\nmatching, use path_value_matchers.\nExample: {\n  \"\/versions\/*\/name\" : \"it-123\"\n  \"\/versions\/*\/targetSize\/percent\": 20\n}\nExample: {\n  \"\/bindings\/*\/role\": \"roles\/admin\"\n  \"\/bindings\/*\/condition\" : null\n}\nExample: {\n  \"\/bindings\/*\/role\": \"roles\/admin\"\n  \"\/bindings\/*\/members\/*\" : [\"x@google.com\", \"y@google.com\"]\n}\nWhen both path_filters and path_value_matchers are set, an implicit AND\nmust be performed.",
           "type": "object",
           "additionalProperties": {
             "type": "any"
           }
+        },
+        "pathValueMatchers": {
+          "description": "Similar to path_filters, this contains set of filters to apply if `path`\nfield referes to array elements. This is meant to support value matching\nbeyond exact match. To perform exact match, use path_filters.\nWhen both path_filters and path_value_matchers are set, an implicit AND\nmust be performed.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudRecommenderV1beta1ValueMatcher"
+          }
+        }
+      }
+    },
+    "GoogleCloudRecommenderV1beta1ValueMatcher": {
+      "id": "GoogleCloudRecommenderV1beta1ValueMatcher",
+      "description": "Contains various matching options for values for a GCP resource field.",
+      "type": "object",
+      "properties": {
+        "matchesPattern": {
+          "description": "To be used for regex matching. The regular expression is using the Google\nRE2 syntax (https:\/\/github.com\/google\/re2\/wiki\/Syntax).",
+          "type": "string"
         }
       }
     },

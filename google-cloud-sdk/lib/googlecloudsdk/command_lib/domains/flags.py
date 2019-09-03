@@ -89,12 +89,8 @@ def AddValidateOnlyFlagToParser(parser, verb):
       action='store_true').AddToParser(parser)
 
 
-def AddAsyncFlagToParser(parser, verb):
-  base.Argument(
-      '--async',
-      help='Don\'t wait for {} operation to finish.'.format(verb),
-      default=False,
-      action='store_true').AddToParser(parser)
+def AddAsyncFlagToParser(parser):
+  base.ASYNC_FLAG.AddToParser(parser)
 
 
 def _GetWhoisPrivacyEnum():

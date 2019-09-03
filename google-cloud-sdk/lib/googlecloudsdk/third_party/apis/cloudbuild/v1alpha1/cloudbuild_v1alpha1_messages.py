@@ -648,7 +648,9 @@ class RepoSource(_messages.Message):
   r"""Location of the source in a Google Cloud Source Repository.
 
   Fields:
-    branchName: Name of the branch to build.
+    branchName: Regex matching branches to build.  The syntax of the regular
+      expressions accepted is the syntax accepted by RE2 and described at
+      https://github.com/google/re2/wiki/Syntax
     commitSha: Explicit commit SHA to build.
     dir: Directory, relative to the source root, in which to run the build.
       This must be a relative path. If a step's `dir` is specified and is an
@@ -657,7 +659,9 @@ class RepoSource(_messages.Message):
       omitted, the project ID requesting the build is assumed.
     repoName: Name of the Cloud Source Repository. If omitted, the name
       "default" is assumed.
-    tagName: Name of the tag to build.
+    tagName: Regex matching tags to build.  The syntax of the regular
+      expressions accepted is the syntax accepted by RE2 and described at
+      https://github.com/google/re2/wiki/Syntax
   """
 
   branchName = _messages.StringField(1)

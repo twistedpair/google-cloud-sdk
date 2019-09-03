@@ -524,6 +524,8 @@ class BuildTrigger(_messages.Message):
       altered in the commit pass the ignored_files filter and included_files
       is not empty, then we make sure that at least one of those files matches
       a included_files glob. If not, then we do not trigger a build.
+    name: User assigned name of the trigger. Must be unique within the
+      project.
     substitutions: Substitutions data for Build resource.
     tags: Tags for annotation of a `BuildTrigger`
     triggerTemplate: Template describing the types of source changes to
@@ -566,9 +568,10 @@ class BuildTrigger(_messages.Message):
   id = _messages.StringField(7)
   ignoredFiles = _messages.StringField(8, repeated=True)
   includedFiles = _messages.StringField(9, repeated=True)
-  substitutions = _messages.MessageField('SubstitutionsValue', 10)
-  tags = _messages.StringField(11, repeated=True)
-  triggerTemplate = _messages.MessageField('RepoSource', 12)
+  name = _messages.StringField(10)
+  substitutions = _messages.MessageField('SubstitutionsValue', 11)
+  tags = _messages.StringField(12, repeated=True)
+  triggerTemplate = _messages.MessageField('RepoSource', 13)
 
 
 class BuiltImage(_messages.Message):
@@ -1036,11 +1039,11 @@ class PushFilter(_messages.Message):
   r"""Push contains filter properties for matching GitHub git pushes.
 
   Fields:
-    branch: Regexes of branches to match.  The syntax of the regular
+    branch: Regexes matching branches to build.  The syntax of the regular
       expressions accepted is the syntax accepted by RE2 and described at
       https://github.com/google/re2/wiki/Syntax
-    tag: Regexes of tags to match.  The syntax of the regular expressions
-      accepted is the syntax accepted by RE2 and described at
+    tag: Regexes matching tags to build.  The syntax of the regular
+      expressions accepted is the syntax accepted by RE2 and described at
       https://github.com/google/re2/wiki/Syntax
   """
 
@@ -1052,7 +1055,9 @@ class RepoSource(_messages.Message):
   r"""Location of the source in a Google Cloud Source Repository.
 
   Fields:
-    branchName: Name of the branch to build.
+    branchName: Regex matching branches to build.  The syntax of the regular
+      expressions accepted is the syntax accepted by RE2 and described at
+      https://github.com/google/re2/wiki/Syntax
     commitSha: Explicit commit SHA to build.
     dir: Directory, relative to the source root, in which to run the build.
       This must be a relative path. If a step's `dir` is specified and is an
@@ -1061,7 +1066,9 @@ class RepoSource(_messages.Message):
       omitted, the project ID requesting the build is assumed.
     repoName: Name of the Cloud Source Repository. If omitted, the name
       "default" is assumed.
-    tagName: Name of the tag to build.
+    tagName: Regex matching tags to build.  The syntax of the regular
+      expressions accepted is the syntax accepted by RE2 and described at
+      https://github.com/google/re2/wiki/Syntax
   """
 
   branchName = _messages.StringField(1)

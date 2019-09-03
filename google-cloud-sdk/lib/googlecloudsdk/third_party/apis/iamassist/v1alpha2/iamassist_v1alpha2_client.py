@@ -109,7 +109,7 @@ service.
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1alpha2/operations/{+name}',
+        relative_path=u'v1alpha2/{+name}',
         request_field='',
         request_type_name=u'IamassistOperationsGetRequest',
         response_type_name=u'GoogleLongrunningOperation',

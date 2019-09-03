@@ -1235,10 +1235,9 @@ class GoogleSheetsOptions(_messages.Message):
   r"""A GoogleSheetsOptions object.
 
   Fields:
-    range: [Beta] [Optional] Range of a sheet to query from. Only used when
-      non-empty. Typical format:
-      sheet_name!top_left_cell_id:bottom_right_cell_id For example:
-      sheet1!A1:B20
+    range: [Optional] Range of a sheet to query from. Only used when non-
+      empty. Typical format: sheet_name!top_left_cell_id:bottom_right_cell_id
+      For example: sheet1!A1:B20
     skipLeadingRows: [Optional] The number of rows at the top of a sheet that
       BigQuery will skip when reading the data. The default value is 0. This
       property is useful if you have header rows that should be skipped. When
@@ -1417,6 +1416,10 @@ class JobConfigurationExtract(_messages.Message):
       Default is true.
     sourceModel: A reference to the model being exported.
     sourceTable: A reference to the table being exported.
+    useAvroLogicalTypes: [Optional] If destinationFormat is set to "AVRO",
+      this flag indicates whether to enable extracting applicable column types
+      (such as TIMESTAMP) to their corresponding AVRO logical types
+      (timestamp-micros), instead of only using their raw types (avro-long).
   """
 
   compression = _messages.StringField(1)
@@ -1427,6 +1430,7 @@ class JobConfigurationExtract(_messages.Message):
   printHeader = _messages.BooleanField(6, default=True)
   sourceModel = _messages.MessageField('ModelReference', 7)
   sourceTable = _messages.MessageField('TableReference', 8)
+  useAvroLogicalTypes = _messages.BooleanField(9)
 
 
 class JobConfigurationLoad(_messages.Message):

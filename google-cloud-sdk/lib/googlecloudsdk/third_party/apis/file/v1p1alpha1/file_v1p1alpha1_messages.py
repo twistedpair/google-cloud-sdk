@@ -628,12 +628,16 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messag
       true and API needs to do explicitly check whether it's set, if it's set
       as false explicitly, it's false
     endTime: The scheduled end time for the maintenance.
+    rolloutManagementPolicy: The rollout management policy this maintenance
+      schedule is associated with. When doing reschedule update request, the
+      reschedule should be against this given policy.
     startTime: The scheduled start time for the maintenance.
   """
 
   canReschedule = _messages.BooleanField(1)
   endTime = _messages.StringField(2)
-  startTime = _messages.StringField(3)
+  rolloutManagementPolicy = _messages.StringField(3)
+  startTime = _messages.StringField(4)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata(_messages.Message):

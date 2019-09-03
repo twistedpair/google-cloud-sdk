@@ -1833,9 +1833,19 @@
           "description": "Optional. Name for the Cloud KMS key for the job.\nKey format is:\nprojects\/<project>\/locations\/<location>\/keyRings\/<keyring>\/cryptoKeys\/<key>",
           "type": "string"
         },
-        "usePrivateIps": {
-          "description": "Optional. Specifies whether worker pools should be started with private IP addresses.\nFalse by default.",
-          "type": "boolean"
+        "ipConfiguration": {
+          "description": "Configuration for VM IPs.",
+          "enumDescriptions": [
+            "The configuration is unknown, or unspecified.",
+            "Workers should have public IP addresses.",
+            "Workers should have private IP addresses."
+          ],
+          "type": "string",
+          "enum": [
+            "WORKER_IP_UNSPECIFIED",
+            "WORKER_IP_PUBLIC",
+            "WORKER_IP_PRIVATE"
+          ]
         }
       }
     },

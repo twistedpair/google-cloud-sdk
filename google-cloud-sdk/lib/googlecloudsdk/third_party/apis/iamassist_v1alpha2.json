@@ -920,7 +920,7 @@
         },
         "get": {
           "id": "iamassist.operations.get",
-          "path": "v1alpha2/operations/{+name}",
+          "path": "v1alpha2/{+name}",
           "flatPath": "v1alpha2/operations/{operationsId}",
           "httpMethod": "GET",
           "parameters": {
@@ -928,7 +928,7 @@
               "description": "The name of the operation resource.",
               "location": "path",
               "required": true,
-              "pattern": "^[^\/]+$",
+              "pattern": "^operations\/[^\/]+$",
               "type": "string"
             }
           },

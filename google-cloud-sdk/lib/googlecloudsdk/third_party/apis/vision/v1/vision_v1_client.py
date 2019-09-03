@@ -1359,6 +1359,56 @@ Possible errors:
         supports_download=False,
     )
 
+    def Purge(self, request, global_params=None):
+      r"""Asynchronous API to delete all Products in a ProductSet or all Products.
+that are in no ProductSet.
+
+If a Product is a member of the specified ProductSet in addition to other
+ProductSets, the Product will still be deleted.
+
+It is recommended to not delete the specified ProductSet until after this
+operation has completed. It is also recommended to not add any of the
+Products involved in the batch delete to a new ProductSet while this
+operation is running because those Products may still end up deleted.
+
+It's not possible to undo the PurgeProducts operation. Therefore, it is
+recommended to keep the csv files used in ImportProductSets (if that was
+how you originally built the Product Set) before starting PurgeProducts, in
+case you need to re-import the data after deletion.
+
+If the plan is to purge all of the Products from a ProductSet and then
+re-use the empty ProductSet to re-import new Products into the empty
+ProductSet, you must wait until the PurgeProducts operation has finished
+for that ProductSet.
+
+The google.longrunning.Operation API can be used to keep track of the
+progress and results of the request.
+`Operation.metadata` contains `BatchOperationMetadata`. (progress)
+
+      Args:
+        request: (VisionProjectsLocationsProductsPurgeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Purge')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Purge.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/products:purge',
+        http_method=u'POST',
+        method_id=u'vision.projects.locations.products.purge',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1/{+parent}/products:purge',
+        request_field=u'purgeProductsRequest',
+        request_type_name=u'VisionProjectsLocationsProductsPurgeRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 

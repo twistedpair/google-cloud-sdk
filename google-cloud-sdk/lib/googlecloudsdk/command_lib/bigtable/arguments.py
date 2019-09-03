@@ -98,10 +98,7 @@ class ArgAdder(object):
     self.parser = parser
 
   def AddAsync(self):
-    self.parser.add_argument(
-        '--async',
-        help='Return immediately, without waiting for operation to complete.',
-        action='store_true')
+    base.ASYNC_FLAG.AddToParser(self.parser)
     return self
 
   def AddCluster(self):

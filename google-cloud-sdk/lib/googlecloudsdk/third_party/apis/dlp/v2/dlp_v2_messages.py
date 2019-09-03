@@ -727,6 +727,23 @@ class DlpProjectsLocationsContentDeidentifyRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class DlpProjectsLocationsContentInspectRequest(_messages.Message):
+  r"""A DlpProjectsLocationsContentInspectRequest object.
+
+  Fields:
+    googlePrivacyDlpV2InspectContentRequest: A
+      GooglePrivacyDlpV2InspectContentRequest resource to be passed as the
+      request body.
+    location: The geographic location to process content inspection. Reserved
+      for future extensions.
+    parent: The parent resource name, for example projects/my-project-id.
+  """
+
+  googlePrivacyDlpV2InspectContentRequest = _messages.MessageField('GooglePrivacyDlpV2InspectContentRequest', 1)
+  location = _messages.StringField(2, required=True)
+  parent = _messages.StringField(3, required=True)
+
+
 class DlpProjectsStoredInfoTypesCreateRequest(_messages.Message):
   r"""A DlpProjectsStoredInfoTypesCreateRequest object.
 
@@ -2662,11 +2679,14 @@ class GooglePrivacyDlpV2InspectContentRequest(_messages.Message):
       corresponding fields in the template. Repeated fields are appended.
       Singular sub-messages and groups are recursively merged.
     item: The item to inspect.
+    location: The geographic location to process content inspection. Reserved
+      for future extensions.
   """
 
   inspectConfig = _messages.MessageField('GooglePrivacyDlpV2InspectConfig', 1)
   inspectTemplateName = _messages.StringField(2)
   item = _messages.MessageField('GooglePrivacyDlpV2ContentItem', 3)
+  location = _messages.StringField(4)
 
 
 class GooglePrivacyDlpV2InspectContentResponse(_messages.Message):

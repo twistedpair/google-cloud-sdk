@@ -38,6 +38,14 @@ from googlecloudsdk.core.util import files
 import six
 
 msgs = core_apis.GetMessagesModule('iam', 'v1')
+
+# TODO: (b/124063772) Kluge for fixing inconsistency in python message
+# generation from proto.
+encoding.AddCustomJsonFieldMapping(
+    msgs.IamProjectsServiceAccountsGetIamPolicyRequest,
+    'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+
+
 MANAGED_BY = (msgs.IamProjectsServiceAccountsKeysListRequest
               .KeyTypesValueValuesEnum)
 CREATE_KEY_TYPES = (msgs.CreateServiceAccountKeyRequest

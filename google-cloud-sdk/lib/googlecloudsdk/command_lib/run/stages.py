@@ -32,7 +32,7 @@ def _NewRoutingTrafficStage():
       'Routing traffic...', key=SERVICE_ROUTES_READY)
 
 
-def SetTrafficStages():
+def UpdateTrafficStages():
   return [_NewRoutingTrafficStage()]
 
 

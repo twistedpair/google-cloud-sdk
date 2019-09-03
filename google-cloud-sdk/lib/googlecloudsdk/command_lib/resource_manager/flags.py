@@ -54,12 +54,7 @@ def OperationIdArg(use_description):
 
 
 def OperationAsyncFlag():
-  return base.Argument(
-      '--async',
-      action='store_true',
-      help=(
-          'Whether to return an asynchronous long-running operation immediately'
-          ' instead of waiting for the operation to finish'))
+  return base.ASYNC_FLAG
 
 
 def LienIdArg(use_description):

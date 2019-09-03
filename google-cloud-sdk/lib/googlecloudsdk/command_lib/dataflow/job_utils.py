@@ -19,12 +19,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.dataflow import apis
-
+from googlecloudsdk.command_lib.dataflow import dataflow_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-
-DATAFLOW_API_DEFAULT_REGION = apis.DATAFLOW_API_DEFAULT_REGION
 
 
 def ArgsForJobRef(parser):
@@ -34,10 +31,12 @@ def ArgsForJobRef(parser):
     parser: The argparse.ArgParser to configure with job-filtering arguments.
   """
   parser.add_argument('job', metavar='JOB_ID', help='The job ID to operate on.')
+  # TODO(b/139889563): Mark as required when default region is removed
   parser.add_argument(
       '--region',
       metavar='REGION_ID',
-      help='The region ID of the job\'s regional endpoint.')
+      help=('The region ID of the job\'s regional endpoint. ' +
+            dataflow_util.DEFAULT_REGION_MESSAGE))
 
 
 def ArgsForJobRefs(parser, **kwargs):
@@ -49,10 +48,12 @@ def ArgsForJobRefs(parser, **kwargs):
   """
   parser.add_argument(
       'jobs', metavar='JOB_ID', help='The job IDs to operate on.', **kwargs)
+  # TODO(b/139889563): Mark as required when default region is removed
   parser.add_argument(
       '--region',
       metavar='REGION_ID',
-      help='The region ID of the jobs\' regional endpoint.')
+      help=('The region ID of the jobs\' regional endpoint. ' +
+            dataflow_util.DEFAULT_REGION_MESSAGE))
 
 
 def ExtractJobRef(args):
@@ -64,7 +65,7 @@ def ExtractJobRef(args):
     A Job resource.
   """
   job = args.job
-  region = args.region or DATAFLOW_API_DEFAULT_REGION
+  region = dataflow_util.GetRegion(args)
   return resources.REGISTRY.Parse(
       job,
       params={
@@ -83,7 +84,7 @@ def ExtractJobRefs(args):
     A list of job resources.
   """
   jobs = args.jobs
-  region = args.region or DATAFLOW_API_DEFAULT_REGION
+  region = dataflow_util.GetRegion(args)
   return [
       resources.REGISTRY.Parse(
           job,

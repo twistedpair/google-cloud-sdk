@@ -5,6 +5,57 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 261.0.0 (2019-09-03)
+
+### Breaking Changes
+
+*   **(Cloud Datastore Emulator)** Deprecated `--legacy` flag from `gcloud <alpha|beta> emulators datastore
+*   **(Cloud Datastore Emulator)** start`. This is due to the legacy Datastore emulator no longer being supported.
+*   **(Cloud Datastore Emulator)** The flag will be removed in early October 2019.
+*   **(Kubernetes Engine)** Removed deprecated PGP-specific flags from `gcloud beta container binauthz`
+    command group.
+
+
+### Cloud Bigtable
+
+* Fixed issue where the ColumnFamilies and timestamp granularity was missing in
+  the emulator's CreateTableResponse. This issue can be tracked at
+  <https://github.com/googleapis/google-cloud-go/issues/1512>.
+* Fixed issue where the emulator would return partial matches for a regex that
+  contained alternation operator. This issue can be tracked at
+  <https://github.com/googleapis/google-cloud-go/issues/1499>.
+* Fixed issue where the emulator would ignore the result of a `PredicateFilter`.
+  This issue can be tracked at <https://github.com/googleapis/google-cloud-go/issues/1435>.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.8.1.
+  * Fixed bug where committing a transaction with no writes would not release locks.
+* Release Cloud Firestore emulator v1.8.2.
+  * Fixed bug where transactions that timed out could still modify data.
+
+### Compute Engine
+
+* Promoted `gcloud compute networks peerings update` to GA.
+* Added `--family` flag to `gcloud beta compute images import`.
+* Added `--description` flag to `gcloud beta compute images import`.
+
+### Kubernetes Engine
+
+*   Removed the following flags from `gcloud beta container clusters create` and
+    `gcloud beta container clusters update`:
+    *   `--database-encryption-key-location`
+    *   `--database-encryption-key-keyring`
+    *   `--database-encryption-key-project`.
+*   Deprecated `--enable-cloud-monitoring` and `--enable-cloud-logging` flags
+    and moved default selection for Stackdriver monitoring and logging to the
+    GKE API.
+*   Promoted `gcloud container binauthz` KMS and PKIX key type support to beta.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 260.0.0 (2019-08-27)
 
 ### Breaking Changes

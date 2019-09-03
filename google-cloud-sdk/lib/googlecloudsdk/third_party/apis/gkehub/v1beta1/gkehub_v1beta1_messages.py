@@ -200,28 +200,11 @@ class GkehubProjectsLocationsGlobalConnectAgentsGenerateManifestRequest(_message
   object.
 
   Fields:
-    connectAgent_name: Name is the unique identifier for a connect agent per
-      project. Limited to 1024 characters.
-    connectAgent_namespace: Namespace for GKE Connect agent resources.
-      Optional; if empty, use gke-connect-{project-number}
-    connectAgent_proxy: Optional connection name of the proxy, format must be
-      in the form http(s)://{proxy_address}, depends on HTTP/HTTPS protocol
-      supported by the proxy. This will direct connect agent's outbound
-      traffic through a HTTP(S) proxy.
-    isUpgrade: If true, generate the resources for upgrade only. Some
-      resources (e.g. secrets) generated for installation will be excluded.
     parent: The parent project the connect agent is associated with.
       `projects/[project_id]/locations/global/connectAgents`.
-    version: The version to use for connect agent. Optional; if empty, the
-      current default version will be used.
   """
 
-  connectAgent_name = _messages.StringField(1)
-  connectAgent_namespace = _messages.StringField(2)
-  connectAgent_proxy = _messages.BytesField(3)
-  isUpgrade = _messages.BooleanField(4)
-  parent = _messages.StringField(5, required=True)
-  version = _messages.StringField(6)
+  parent = _messages.StringField(1, required=True)
 
 
 class GkehubProjectsLocationsGlobalMembershipsCreateRequest(_messages.Message):
@@ -264,39 +247,6 @@ class GkehubProjectsLocationsGlobalMembershipsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class GkehubProjectsLocationsGlobalMembershipsListRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsGlobalMembershipsListRequest object.
-
-  Fields:
-    filter: Lists the Memberships that match the filter expression. A filter
-      expression filters the resources listed in the response. The expression
-      must be of the form `<field> <operator> <value>` where operators: `<`,
-      `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents a
-      HAS operator which is roughly synonymous with equality). <field> can
-      refer to a proto or JSON field, or a synthetic field. Field names can be
-      camelCase or snake_case.  Examples: - Filter by name:   name = "projects
-      /foo-proj/locations/global/membership/bar  - Filter by labels:   -
-      Resources that have a key called `foo`     labels.foo:*   - Resources
-      that have a key called `foo` whose value is `bar`     labels.foo = bar
-      - Filter by state:    - Members in CREATING state.      state = CREATING
-    orderBy: Field to use to sort the list.
-    pageSize: When requesting a 'page' of resources, `page_size` specifies
-      number of resources to return. If unspecified or set to 0, all resources
-      will be returned.
-    pageToken: Token returned by previous call to `ListMemberships` which
-      specifies the position in the list from where to continue listing the
-      resources.
-    parent: The parent in whose context the memberships are listed. The parent
-      value is in the format: `projects/[project_id]/locations/global`.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
 
 
 class GkehubProjectsLocationsGlobalMembershipsPatchRequest(_messages.Message):
@@ -345,6 +295,39 @@ class GkehubProjectsLocationsMembershipsGetIamPolicyRequest(_messages.Message):
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class GkehubProjectsLocationsMembershipsListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsListRequest object.
+
+  Fields:
+    filter: Lists the Memberships that match the filter expression. A filter
+      expression filters the resources listed in the response. The expression
+      must be of the form `<field> <operator> <value>` where operators: `<`,
+      `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents a
+      HAS operator which is roughly synonymous with equality). <field> can
+      refer to a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case.  Examples: - Filter by name:   name = "projects
+      /foo-proj/locations/global/membership/bar  - Filter by labels:   -
+      Resources that have a key called `foo`     labels.foo:*   - Resources
+      that have a key called `foo` whose value is `bar`     labels.foo = bar
+      - Filter by state:    - Members in CREATING state.      state = CREATING
+    orderBy: Field to use to sort the list.
+    pageSize: When requesting a 'page' of resources, `page_size` specifies
+      number of resources to return. If unspecified or set to 0, all resources
+      will be returned.
+    pageToken: Token returned by previous call to `ListMemberships` which
+      specifies the position in the list from where to continue listing the
+      resources.
+    parent: The parent in whose context the memberships are listed. The parent
+      value is in the format: `projects/[project_id]/locations/global`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class GkehubProjectsLocationsMembershipsSetIamPolicyRequest(_messages.Message):
@@ -499,10 +482,13 @@ class ListMembershipsResponse(_messages.Message):
       `ListMemberships` method. The value of an empty string means that there
       are no more resources to return.
     resources: The list of Memberships contained within the parent.
+    unreachable: List of locations that could not be reached while fetching
+      this list.
   """
 
   nextPageToken = _messages.StringField(1)
   resources = _messages.MessageField('Membership', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListOperationsResponse(_messages.Message):

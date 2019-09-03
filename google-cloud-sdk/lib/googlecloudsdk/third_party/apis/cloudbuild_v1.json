@@ -389,11 +389,11 @@
           "type": "string"
         },
         "branchName": {
-          "description": "Name of the branch to build.",
+          "description": "Regex matching branches to build.\n\nThe syntax of the regular expressions accepted is the syntax accepted by\nRE2 and described at https:\/\/github.com\/google\/re2\/wiki\/Syntax",
           "type": "string"
         },
         "tagName": {
-          "description": "Name of the tag to build.",
+          "description": "Regex matching tags to build.\n\nThe syntax of the regular expressions accepted is the syntax accepted by\nRE2 and described at https:\/\/github.com\/google\/re2\/wiki\/Syntax",
           "type": "string"
         },
         "commitSha": {
@@ -880,6 +880,10 @@
           "description": "Human-readable description of this trigger.",
           "type": "string"
         },
+        "name": {
+          "description": "User assigned name of the trigger. Must be unique within the project.",
+          "type": "string"
+        },
         "tags": {
           "description": "Tags for annotation of a `BuildTrigger`",
           "type": "array",
@@ -992,11 +996,11 @@
       "type": "object",
       "properties": {
         "branch": {
-          "description": "Regexes of branches to match.\n\nThe syntax of the regular expressions accepted is the syntax accepted by\nRE2 and described at https:\/\/github.com\/google\/re2\/wiki\/Syntax",
+          "description": "Regexes matching branches to build.\n\nThe syntax of the regular expressions accepted is the syntax accepted by\nRE2 and described at https:\/\/github.com\/google\/re2\/wiki\/Syntax",
           "type": "string"
         },
         "tag": {
-          "description": "Regexes of tags to match.\n\nThe syntax of the regular expressions accepted is the syntax accepted by\nRE2 and described at https:\/\/github.com\/google\/re2\/wiki\/Syntax",
+          "description": "Regexes matching tags to build.\n\nThe syntax of the regular expressions accepted is the syntax accepted by\nRE2 and described at https:\/\/github.com\/google\/re2\/wiki\/Syntax",
           "type": "string"
         }
       }

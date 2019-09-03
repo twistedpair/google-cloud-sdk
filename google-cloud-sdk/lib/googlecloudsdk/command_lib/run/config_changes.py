@@ -76,6 +76,27 @@ class LabelChanges(ConfigChanger):
     return resource
 
 
+class ReplaceServiceChange(ConfigChanger):
+  """Represents the user intent to replace the service."""
+
+  def __init__(self, new_service):
+    self._service = new_service
+
+  def Adjust(self, resource):
+    """Returns a replacement for resource.
+
+    The returned service is the service provided to the constructor. If
+    resource.metadata.resourceVersion is not empty to None returned service
+    has metadata.resourceVersion set to this value.
+
+    Args:
+      resource: service.Service, The service to adjust.
+    """
+    if resource.metadata.resourceVersion:
+      self._service.metadata.resourceVersion = resource.metadata.resourceVersion
+    return self._service
+
+
 class EndpointVisibilityChange(LabelChanges):
   """Represents the user intent to modify the endpoint visibility."""
 
@@ -351,80 +372,123 @@ class VolumeChanges(ConfigChanger):
   """Represents the user intent to modify volumes and mounts."""
 
   def __init__(self,
-               volume_type,
                mounts_to_update=None,
                mounts_to_remove=None,
                clear_others=False):
     """Initialize a new VolumeChanges object.
 
     Args:
-      volume_type: str, The field name of the volume type we care about.
       mounts_to_update: {str, str}, Update mount path and volume fields.
       mounts_to_remove: [str], List of mount paths to remove.
       clear_others: bool, If true, clear all non-updated volumes and mounts of
         the given [volume_type].
     """
-    self._type = volume_type
     self._to_update = None
     self._to_remove = None
     self._clear_others = clear_others
     if mounts_to_update:
       self._to_update = {
+          # Split the given values into 2 parts:
+          #    [volume source name, volume name]
           k.strip(): v.split(':', 1) for k, v in mounts_to_update.items()
       }
     if mounts_to_remove:
       self._to_remove = [k.lstrip() for k in mounts_to_remove]
 
-  def _VolumeNotOfType(self, volume_name, resource):
-    return (volume_name not in getattr(resource.template.volumes, self._type)
-            and volume_name in resource.template.volumes)
+  @abc.abstractmethod
+  def _MakeVolumeSource(self, messages, name):
+    """Returns an instance of a volume source."""
+    pass
+
+  @abc.abstractmethod
+  def _GetVolumes(self, resource):
+    """Returns a revision.VolumesAsDictionaryWrapper."""
+    pass
+
+  @abc.abstractmethod
+  def _GetVolumeMounts(self, resource):
+    """Returns a revision.VolumeMountsAsDictionaryWrapper."""
+    pass
 
   def Adjust(self, resource):
-    """Mutates the given config's volumes to match the desired changes."""
-    volumes_of_type = getattr(resource.template.volumes, self._type)
+    """Mutates the given config's volumes to match the desired changes.
+
+    Args:
+      resource: k8s_object to adjust
+
+    Returns:
+      The adjusted resource
+
+    Raises:
+      ConfigurationError if there's an attempt to replace a volume source
+        whose existing source is not the same type as the replacement
+        (e.g. volume with secret source can't be replaced with a config map
+        source), or if there's an attempt to replace the volume a mount points
+        to whose existing volume has a source of a different type than the
+        new volume (e.g. mount that points to a volume with a secret source
+        can't be replaced with a volume that has a config map source).
+    """
+    volume_mounts = self._GetVolumeMounts(resource)
+    volumes = self._GetVolumes(resource)
+
     if self._clear_others:
-      # Delete all mounts that are mounting the volumes we're deleting
-      for path, name in list(resource.template.volume_mounts.items()):
-        if name in volumes_of_type:
-          del resource.template.volume_mounts[path]
+      volume_mounts.clear()
     elif self._to_remove:
       for path in self._to_remove:
-        if path in resource.template.volume_mounts:
-          volume_name = resource.template.volume_mounts[path]
-          # Ensure the mount is mounting a volume of the right type
-          if self._VolumeNotOfType(volume_name, resource):
-            raise exceptions.ConfigurationError(
-                'Cannot remove mount [{}] with volume [{}] because the volume '
-                'is in use with a different type.'.format(path, volume_name))
-          del resource.template.volume_mounts[path]
+        if path in volume_mounts:
+          del volume_mounts[path]
 
     if self._to_update:
       for path, split_name in self._to_update.items():
-        volume_name = split_name[-1]
-        reference_name = split_name[0]
-        existing_volume_name = None
-        # Ensure if exists, volume currently mounted is of the right type
-        if path in resource.template.volume_mounts:
-          existing_volume_name = resource.template.volume_mounts[path]
-          if self._VolumeNotOfType(existing_volume_name, resource):
-            raise exceptions.ConfigurationError(
-                'Cannot update mount [{}] with volume [{}] because the volume '
-                'is in use with a different type.'.format(
-                    path, existing_volume_name))
-        # Ensure if exists, volume we want to mount is of the right type
-        if self._VolumeNotOfType(volume_name, resource):
-          raise exceptions.ConfigurationError(
-              'Cannot update mount [{}] to volume [{}] because the volume '
-              'is already is in use with a different type.'.format(
-                  path, volume_name))
-        resource.template.volume_mounts[path] = volume_name
-        volumes_of_type[volume_name] = reference_name
+        source_name = split_name[0]
+        volume_name = split_name[-1]  # Default to source_name if not given
+
+        error_msg = None
+        try:
+          # Set the mount and volume
+          error_msg = ('Cannot update mount [{}] because its mounted volume '
+                       'is of a different source type.'.format(path))
+          volume_mounts[path] = volume_name
+
+          error_msg = ('Cannot update volume [{}] because its '
+                       'source is of a different type.'.format(volume_name))
+          volumes[volume_name] = self._MakeVolumeSource(
+              resource.MessagesModule(), source_name)
+        except KeyError:
+          raise exceptions.ConfigurationError(error_msg)
 
     # Delete all volumes no longer being mounted
-    for volume in list(volumes_of_type):
-      if not any(n == volume for n in resource.template.volume_mounts.values()):
-        del volumes_of_type[volume]
+    for volume in list(volumes):
+      if volume not in volume_mounts.values():
+        del volumes[volume]
+
     return resource
+
+
+class SecretVolumeChanges(VolumeChanges):
+  """Represents the user intent to change volumes with secret source types."""
+
+  def _MakeVolumeSource(self, messages, name):
+    return messages.SecretVolumeSource(secretName=name)
+
+  def _GetVolumes(self, resource):
+    return resource.template.volumes.secrets
+
+  def _GetVolumeMounts(self, resource):
+    return resource.template.volume_mounts.secrets
+
+
+class ConfigMapVolumeChanges(VolumeChanges):
+  """Represents the user intent to change volumes with config map source types."""
+
+  def _MakeVolumeSource(self, messages, name):
+    return messages.ConfigMapVolumeSource(name=name)
+
+  def _GetVolumes(self, resource):
+    return resource.template.volumes.config_maps
+
+  def _GetVolumeMounts(self, resource):
+    return resource.template.volume_mounts.config_maps
 
 
 class TrafficChanges(ConfigChanger):

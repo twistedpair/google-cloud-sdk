@@ -115,19 +115,16 @@ class DeadLetterPolicy(_messages.Message):
       Cloud Pub/Sub service account associated with the enclosing
       subscription's parent project (i.e., service-{project_number}@gcp-sa-
       pubsub.iam.gserviceaccount.com) must have permission to Publish() to
-      this topic.  Users should ensure that the topic exists. Users should
-      ensure that there is a subscription attached to this topic. Otherwise,
-      dead letter messages published to this topic will be lost.
+      this topic.  The operation will fail if the topic does not exist. Users
+      should ensure that there is a subscription attached to this topic since
+      messages published to a topic with no subscriptions are lost.
     maxDeliveryAttempts: The maximum number of delivery attempts for any
-      message.  The number of delivery attempts is defined as 1 + (the sum of
-      number of NACKs and number of ack_deadline exceeds).  A NACK is any call
-      to ModifyAckDeadline with a 0 deadline. An ack_deadline exceeds event is
-      whenever a message is not acknowledged within
-      Subscription.ackDeadlineSeconds. Note that client libraries may
-      automatically extend ack_deadlines.  This field will be honored on a
-      best effort basis. The minimum value allowed is 5 to reduce
-      unintentional dead lettering because of the best effort nature of this
-      field. The maximum value allowed is 100.  If this parameter is 0, a
+      message. The value must be between 5 and 100.  The number of delivery
+      attempts is defined as 1 + (the sum of number of NACKs and number of
+      times the acknowledgement deadline has been exceeded for the message).
+      A NACK is any call to ModifyAckDeadline with a 0 deadline. Note that
+      client libraries may automatically extend ack_deadlines.  This field
+      will be honored on a best effort basis.  If this parameter is 0, a
       default value of 5 is used.
   """
 
@@ -1018,11 +1015,24 @@ class ReceivedMessage(_messages.Message):
 
   Fields:
     ackId: This ID can be used to acknowledge the received message.
+    deliveryAttempt: Delivery attempt counter is 1 + (the sum of number of
+      NACKs and number of ack_deadline exceeds) for this message.  A NACK is
+      any call to ModifyAckDeadline with a 0 deadline. An ack_deadline exceeds
+      event is whenever a message is not acknowledged within ack_deadline.
+      Note that ack_deadline is initially Subscription.ackDeadlineSeconds, but
+      may get extended automatically by the client library.  The first
+      delivery of a given message will have this value as 1. The value is
+      calculated at best effort and is approximate.  If a DeadLetterPolicy is
+      not set on the subscription, this will be 0. <b>EXPERIMENTAL:</b> This
+      feature is part of a closed alpha release. This API might be changed in
+      backward-incompatible ways and is not recommended for production use. It
+      is not subject to any SLA or deprecation policy.
     message: The message.
   """
 
   ackId = _messages.StringField(1)
-  message = _messages.MessageField('PubsubMessage', 2)
+  deliveryAttempt = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  message = _messages.MessageField('PubsubMessage', 3)
 
 
 class SeekRequest(_messages.Message):
@@ -1218,12 +1228,10 @@ class Subscription(_messages.Message):
       set, dead lettering is disabled.  The Cloud Pub/Sub service account
       associated with this subscriptions's parent project (i.e.,
       service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com) must
-      have permission to Acknowledge() messages on this subscription. This is
-      needed in order for Cloud Pub/Sub to Acknowledge() messages on the
-      subscription once it has successfully published them to the dead letter
-      topic. <b>EXPERIMENTAL:</b> This feature is part of a closed alpha
-      release. This API might be changed in backward-incompatible ways and is
-      not recommended for production use. It is not subject to any SLA or
+      have permission to Acknowledge() messages on this subscription.
+      <b>EXPERIMENTAL:</b> This feature is part of a closed alpha release.
+      This API might be changed in backward-incompatible ways and is not
+      recommended for production use. It is not subject to any SLA or
       deprecation policy.
     enableMessageOrdering: If true, messages published with the same
       `ordering_key` in `PubsubMessage` will be delivered to the subscribers
@@ -1239,6 +1247,7 @@ class Subscription(_messages.Message):
       `expiration_policy` is not set, a *default policy* with `ttl` of 31 days
       will be used. The minimum allowed value for `expiration_policy.ttl` is 1
       day.
+    filter: An expression written in the Cloud Pub/Sub filter language.
     labels: See <a href="https://cloud.google.com/pubsub/docs/labels">
       Creating and managing labels</a>.
     messageRetentionDuration: How long to retain unacknowledged messages in
@@ -1296,12 +1305,13 @@ class Subscription(_messages.Message):
   deadLetterPolicy = _messages.MessageField('DeadLetterPolicy', 2)
   enableMessageOrdering = _messages.BooleanField(3)
   expirationPolicy = _messages.MessageField('ExpirationPolicy', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  messageRetentionDuration = _messages.StringField(6)
-  name = _messages.StringField(7)
-  pushConfig = _messages.MessageField('PushConfig', 8)
-  retainAckedMessages = _messages.BooleanField(9)
-  topic = _messages.StringField(10)
+  filter = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  messageRetentionDuration = _messages.StringField(7)
+  name = _messages.StringField(8)
+  pushConfig = _messages.MessageField('PushConfig', 9)
+  retainAckedMessages = _messages.BooleanField(10)
+  topic = _messages.StringField(11)
 
 
 class TestIamPermissionsRequest(_messages.Message):

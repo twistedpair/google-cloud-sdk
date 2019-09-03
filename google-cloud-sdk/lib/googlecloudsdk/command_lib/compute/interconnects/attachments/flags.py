@@ -25,8 +25,8 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
-# TODO(b/130816096): Clean up when large IA bandwidth API is promoted to Beta
-_BANDWIDTH_CHOICES_ALPHA = OrderedDict([
+# TODO(b/130817246): Clean up when large IA bandwidth API is promoted to GA
+_BANDWIDTH_CHOICES = OrderedDict([
     ('50m', '50 Mbit/s'),
     ('100m', '100 Mbit/s'),
     ('200m', '200 Mbit/s'),
@@ -39,20 +39,6 @@ _BANDWIDTH_CHOICES_ALPHA = OrderedDict([
     ('10g', '10 Gbit/s'),
     ('20g', '20 Gbit/s'),
     ('50g', '50 Gbit/s'),
-])
-
-# TODO(b/130817246): Clean up when large IA bandwidth API is promoted to GA
-_BANDWIDTH_CHOICES_BETA = OrderedDict([
-    ('50m', '50 Mbit/s'),
-    ('100m', '100 Mbit/s'),
-    ('200m', '200 Mbit/s'),
-    ('300m', '300 Mbit/s'),
-    ('400m', '400 Mbit/s'),
-    ('500m', '500 Mbit/s'),
-    ('1g', '1 Gbit/s'),
-    ('2g', '2 Gbit/s'),
-    ('5g', '5 Gbit/s'),
-    ('10g', '10 Gbit/s'),
 ])
 
 _BANDWIDTH_CHOICES_GA = OrderedDict([
@@ -156,10 +142,8 @@ def AddBandwidth(parser, required, track):
   help_text = """\
       Provisioned capacity of the attachment.
       """
-  if track == base.ReleaseTrack.ALPHA:
-    choices = _BANDWIDTH_CHOICES_ALPHA
-  elif track == base.ReleaseTrack.BETA:
-    choices = _BANDWIDTH_CHOICES_BETA
+  if track == base.ReleaseTrack.ALPHA or track == base.ReleaseTrack.BETA:
+    choices = _BANDWIDTH_CHOICES
   else:
     choices = _BANDWIDTH_CHOICES_GA
 
@@ -286,5 +270,4 @@ def AddDryRun(parser):
       '--dry-run',
       default=None,
       action='store_true',
-      help='If supplied, validates the attachment without creating it.'
-  )
+      help='If supplied, validates the attachment without creating it.')

@@ -707,12 +707,14 @@ class Address(_messages.Message):
       DNS_RESOLVER: <no description>
       GCE_ENDPOINT: <no description>
       NAT_AUTO: <no description>
+      SHARED_LOADBALANCER_VIP: <no description>
       VPC_PEERING: <no description>
     """
     DNS_RESOLVER = 0
     GCE_ENDPOINT = 1
     NAT_AUTO = 2
-    VPC_PEERING = 3
+    SHARED_LOADBALANCER_VIP = 3
+    VPC_PEERING = 4
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the address, which can be one of
@@ -1324,11 +1326,11 @@ class AttachedDisk(_messages.Message):
       READ_WRITE mode.
     source: Specifies a valid partial or full URL to an existing Persistent
       Disk resource. When creating a new instance, one of
-      initializeParams.sourceImage or disks.source is required except for
-      local SSD.  If desired, you can also attach existing non-root persistent
-      disks using this property. This field is only applicable for persistent
-      disks.  Note that for InstanceTemplate, specify the disk name, not the
-      URL for the disk.
+      initializeParams.sourceImage or initializeParams.sourceSnapshot or
+      disks.source is required except for local SSD.  If desired, you can also
+      attach existing non-root persistent disks using this property. This
+      field is only applicable for persistent disks.  Note that for
+      InstanceTemplate, specify the disk name, not the URL for the disk.
     type: Specifies the type of the disk, either SCRATCH or PERSISTENT. If not
       specified, the default is PERSISTENT.
   """
@@ -1429,12 +1431,13 @@ class AttachedDiskInitializeParams(_messages.Message):
       snapshot creations. Specified using the full or partial URL. For
       instance template, specify only the resource policy name.
     sourceImage: The source image to create this disk. When creating a new
-      instance, one of initializeParams.sourceImage or disks.source is
-      required except for local SSD.  To create a disk with one of the public
-      operating system images, specify the image by its family name. For
-      example, specify family/debian-9 to use the latest Debian 9 image:
-      projects/debian-cloud/global/images/family/debian-9   Alternatively, use
-      a specific version of a public operating system image: projects/debian-
+      instance, one of initializeParams.sourceImage or
+      initializeParams.sourceSnapshot or disks.source is required except for
+      local SSD.  To create a disk with one of the public operating system
+      images, specify the image by its family name. For example, specify
+      family/debian-9 to use the latest Debian 9 image: projects/debian-
+      cloud/global/images/family/debian-9   Alternatively, use a specific
+      version of a public operating system image: projects/debian-
       cloud/global/images/debian-9-stretch-vYYYYMMDD   To create a disk with a
       custom image that you created, specify the image name in the following
       format: global/images/my-custom-image   You can also specify a custom
@@ -1449,11 +1452,11 @@ class AttachedDiskInitializeParams(_messages.Message):
       managed instance group if the source images are encrypted with your own
       keys.
     sourceSnapshot: The source snapshot to create this disk. When creating a
-      new instance, one of initializeParams.sourceSnapshot or disks.source is
-      required except for local SSD.  To create a disk with a snapshot that
-      you created, specify the snapshot name in the following format:
-      global/snapshots/my-backup   If the source snapshot is deleted later,
-      this field will not be set.
+      new instance, one of initializeParams.sourceSnapshot or
+      initializeParams.sourceImage or disks.source is required except for
+      local SSD.  To create a disk with a snapshot that you created, specify
+      the snapshot name in the following format: global/snapshots/my-backup
+      If the source snapshot is deleted later, this field will not be set.
     sourceSnapshotEncryptionKey: The customer-supplied encryption key of the
       source snapshot.
   """
@@ -3889,6 +3892,7 @@ class Commitment(_messages.Message):
       GENERAL_PURPOSE: <no description>
       GENERAL_PURPOSE_E2: <no description>
       GENERAL_PURPOSE_N2: <no description>
+      GENERAL_PURPOSE_N2D: <no description>
       MEMORY_OPTIMIZED: <no description>
       TYPE_UNSPECIFIED: <no description>
     """
@@ -3896,8 +3900,9 @@ class Commitment(_messages.Message):
     GENERAL_PURPOSE = 1
     GENERAL_PURPOSE_E2 = 2
     GENERAL_PURPOSE_N2 = 3
-    MEMORY_OPTIMIZED = 4
-    TYPE_UNSPECIFIED = 5
+    GENERAL_PURPOSE_N2D = 4
+    MEMORY_OPTIMIZED = 5
+    TYPE_UNSPECIFIED = 6
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
@@ -29315,6 +29320,8 @@ class ManagedInstance(_messages.Message):
       empty when instance does not exist.
     instance: [Output Only] The URL of the instance. The URL can exist even if
       the instance has not yet been created.
+    instanceHealth: [Output Only] Health state of the instance per health-
+      check.
     instanceStatus: [Output Only] The status of the instance. This field is
       empty when the instance does not exist.
     lastAttempt: [Output Only] Information about the last attempt to create or
@@ -29392,9 +29399,44 @@ class ManagedInstance(_messages.Message):
   currentAction = _messages.EnumField('CurrentActionValueValuesEnum', 1)
   id = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
   instance = _messages.StringField(3)
-  instanceStatus = _messages.EnumField('InstanceStatusValueValuesEnum', 4)
-  lastAttempt = _messages.MessageField('ManagedInstanceLastAttempt', 5)
-  version = _messages.MessageField('ManagedInstanceVersion', 6)
+  instanceHealth = _messages.MessageField('ManagedInstanceInstanceHealth', 4, repeated=True)
+  instanceStatus = _messages.EnumField('InstanceStatusValueValuesEnum', 5)
+  lastAttempt = _messages.MessageField('ManagedInstanceLastAttempt', 6)
+  version = _messages.MessageField('ManagedInstanceVersion', 7)
+
+
+class ManagedInstanceInstanceHealth(_messages.Message):
+  r"""A ManagedInstanceInstanceHealth object.
+
+  Enums:
+    DetailedHealthStateValueValuesEnum: [Output Only] The current detailed
+      instance health state.
+
+  Fields:
+    detailedHealthState: [Output Only] The current detailed instance health
+      state.
+    healthCheck: [Output Only] The URL for the health check that verifies
+      whether the instance is healthy.
+  """
+
+  class DetailedHealthStateValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The current detailed instance health state.
+
+    Values:
+      DRAINING: <no description>
+      HEALTHY: <no description>
+      TIMEOUT: <no description>
+      UNHEALTHY: <no description>
+      UNKNOWN: <no description>
+    """
+    DRAINING = 0
+    HEALTHY = 1
+    TIMEOUT = 2
+    UNHEALTHY = 3
+    UNKNOWN = 4
+
+  detailedHealthState = _messages.EnumField('DetailedHealthStateValueValuesEnum', 1)
+  healthCheck = _messages.StringField(2)
 
 
 class ManagedInstanceLastAttempt(_messages.Message):
@@ -42245,7 +42287,7 @@ class TargetTcpProxiesSetProxyHeaderRequest(_messages.Message):
 
 class TargetTcpProxy(_messages.Message):
   r"""Represents a Target TCP Proxy resource.  A target TCP proxy is a
-  component of a TCP Proxy load balancer. Global forwarding rules reference ta
+  component of a TCP Proxy load balancer. Global forwarding rules reference
   target TCP proxy, and the target proxy then references an external backend
   service. For more information, read TCP Proxy Load Balancing Concepts. (==
   resource_for beta.targetTcpProxies ==) (== resource_for v1.targetTcpProxies

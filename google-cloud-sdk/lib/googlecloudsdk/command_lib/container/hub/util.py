@@ -379,9 +379,9 @@ def ProjectForClusterUUID(uuid, projects):
   for project in projects:
     if project:
       parent = 'projects/{}/locations/global'.format(project)
-      membership_response = client.projects_locations_global_memberships.List(
+      membership_response = client.projects_locations_memberships.List(
           client.MESSAGES_MODULE
-          .GkehubProjectsLocationsGlobalMembershipsListRequest(parent=parent))
+          .GkehubProjectsLocationsMembershipsListRequest(parent=parent))
       for membership in membership_response.resources:
         membership_uuid = _ClusterUUIDForMembershipName(membership.name)
         if membership_uuid == uuid:
@@ -570,19 +570,6 @@ def _DeleteNamespaceForReinstall(kube_client, namespace):
     exceptions.Error: if failed to delete the namespace
   """
   if kube_client.NamespaceExists(namespace):
-    console_io.PromptContinue(
-        message='Namespace [{namespace}] already exists in the cluster. This '
-        'may be from a previous installation of the agent. If you want to '
-        'investigate, enter "n" and run\n\n'
-        '  kubectl \\\n'
-        '    --kubeconfig={kubeconfig} \\\n'
-        '    --context={context} \\\n'
-        '    get all -n {namespace}\n\n'
-        'Continuing will delete namespace [{namespace}].'.format(
-            namespace=namespace,
-            kubeconfig=kube_client.kubeconfig,
-            context=kube_client.context),
-        cancel_on_no=True)
     try:
       succeeded, error = waiter.WaitFor(
           KubernetesPoller(),
@@ -604,22 +591,27 @@ def _DeleteNamespaceForReinstall(kube_client, namespace):
               namespace, error))
 
 
-def _GetConnectAgentOptions(args, upgrade, namespace):
+def _GetConnectAgentOptions(args, upgrade, namespace, image_pull_secret_data):
   return api_adapter.ConnectAgentOption(
       name=args.CLUSTER_NAME,
       proxy=args.proxy or '',
       namespace=namespace,
       is_upgrade=upgrade,
-      version=args.version or '')
+      version=args.version or '',
+      registry=args.docker_registry or '',
+      image_pull_secret_content=image_pull_secret_data or '')
 
 
-def _GenerateManifest(args, service_account_key_data, upgrade, namespace):
+def _GenerateManifest(args, service_account_key_data, image_pull_secret_data,
+                      upgrade, namespace):
   """Generate the manifest for connect agent from API.
 
   Args:
     args: arguments of the command.
     service_account_key_data: The contents of a Google IAM service account JSON
       file.
+    image_pull_secret_data: The image pull secret content to use for private
+      registries.
     upgrade: if this is an upgrade operation.
     namespace: namespace to deploy the connect agent.
 
@@ -627,7 +619,10 @@ def _GenerateManifest(args, service_account_key_data, upgrade, namespace):
     The full manifest to deploy the connect agent resources.
   """
   adapter = api_adapter.NewV1Beta1APIAdapter()
-  connect_agent_ref = _GetConnectAgentOptions(args, upgrade, namespace)
+  connect_agent_ref = _GetConnectAgentOptions(args,
+                                              upgrade,
+                                              namespace,
+                                              image_pull_secret_data)
   manifest_resources = adapter.GenerateConnectAgentManifest(connect_agent_ref)
   delimeter = '---\n'
   full_manifest = ''
@@ -680,14 +675,15 @@ def _PurgeAlphaInstaller(kube_client, namespace, project_id):
 
 def DeployConnectAgent(args,
                        service_account_key_data,
-                       upgrade=False):
+                       image_pull_secret_data):
   """Deploys the GKE Connect agent to the cluster.
 
   Args:
     args: arguments of the command.
     service_account_key_data: The contents of a Google IAM service account JSON
       file
-    upgrade: whether to attempt to upgrade the agent, rather than replacing it.
+    image_pull_secret_data: The contents of image pull secret to use for
+      private registries.
 
   Raises:
     exceptions.Error: If the agent cannot be deployed properly
@@ -702,7 +698,8 @@ def DeployConnectAgent(args,
 
   full_manifest = _GenerateManifest(args,
                                     service_account_key_data,
-                                    upgrade,
+                                    image_pull_secret_data,
+                                    False,
                                     namespace)
 
   # Generate a manifest file if necessary.
@@ -720,10 +717,8 @@ def DeployConnectAgent(args,
 
   log.status.Print('Deploying GKE Connect agent to cluster...')
 
-  # During an upgrade, the namespace should not be deleted.
-  if not upgrade:
-    # Delete the ns if necessary
-    _DeleteNamespaceForReinstall(kube_client, namespace)
+  # Delete the ns if necessary
+  _DeleteNamespaceForReinstall(kube_client, namespace)
 
   # TODO(b/138816749): add check for cluster-admin permissions
   _PurgeAlphaInstaller(kube_client, namespace, project_id)
@@ -797,17 +792,10 @@ def DeployConnectAgentAlpha(args,
     # Delete the ns if necessary
     if kube_client.NamespaceExists(namespace):
       console_io.PromptContinue(
-          message='Namespace [{namespace}] already exists in the cluster. This '
-          'may be from a previous installation of the agent. If you want to '
-          'investigate, enter "n" and run\n\n'
-          '  kubectl \\\n'
-          '    --kubeconfig={kubeconfig} \\\n'
-          '    --context={context} \\\n'
-          '    get all -n {namespace}\n\n'
-          'Continuing will delete namespace [{namespace}].'.format(
-              namespace=namespace,
-              kubeconfig=kube_client.kubeconfig,
-              context=kube_client.context),
+          message='Namespace [{namespace}] already exists in the cluster.'
+          'Continuing will delete namespace [{namespace}] and '
+          'reinstall GKE Connect.'.format(
+              namespace=namespace),
           cancel_on_no=True)
       try:
         succeeded, error = waiter.WaitFor(

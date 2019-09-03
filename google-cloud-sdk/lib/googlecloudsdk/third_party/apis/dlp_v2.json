@@ -125,6 +125,10 @@
         "inspectTemplateName": {
           "description": "Optional template to use. Any configuration directly specified in\ninspect_config will override those set in the template. Singular fields\nthat are set in this request will replace their corresponding fields in the\ntemplate. Repeated fields are appended. Singular sub-messages and groups\nare recursively merged.",
           "type": "string"
+        },
+        "location": {
+          "description": "The geographic location to process content inspection. Reserved for future\nextensions.",
+          "type": "string"
         }
       }
     },
@@ -3908,42 +3912,45 @@
             }
           }
         },
-        "image": {
-          "methods": {
-            "redact": {
-              "id": "dlp.projects.image.redact",
-              "path": "v2/{+parent}/image:redact",
-              "flatPath": "v2/projects/{projectsId}/image:redact",
-              "httpMethod": "POST",
-              "parameters": {
-                "parent": {
-                  "description": "The parent resource name, for example projects\/my-project-id.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^projects\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "request": {
-                "$ref": "GooglePrivacyDlpV2RedactImageRequest"
-              },
-              "response": {
-                "$ref": "GooglePrivacyDlpV2RedactImageResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Redacts potentially sensitive info from an image.\nThis method has limits on input size, processing time, and output size.\nSee https:\/\/cloud.google.com\/dlp\/docs\/redacting-sensitive-data-images to\nlearn more.\n\nWhen no InfoTypes or CustomInfoTypes are specified in this request, the\nsystem will automatically choose what detectors to run. By default this may\nbe all types, but may change over time as detectors are updated."
-            }
-          }
-        },
         "locations": {
           "resources": {
             "content": {
               "methods": {
+                "inspect": {
+                  "id": "dlp.projects.locations.content.inspect",
+                  "path": "v2/{+parent}/locations/{location}/content:inspect",
+                  "flatPath": "v2/projects/{projectsId}/locations/{location}/content:inspect",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "The parent resource name, for example projects\/my-project-id.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "location": {
+                      "description": "The geographic location to process content inspection. Reserved for future\nextensions.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent",
+                    "location"
+                  ],
+                  "request": {
+                    "$ref": "GooglePrivacyDlpV2InspectContentRequest"
+                  },
+                  "response": {
+                    "$ref": "GooglePrivacyDlpV2InspectContentResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Finds potentially sensitive info in content.\nThis method has limits on input size, processing time, and output size.\n\nWhen no InfoTypes or CustomInfoTypes are specified in this request, the\nsystem will automatically choose what detectors to run. By default this may\nbe all types, but may change over time as detectors are updated.\n\nFor how to guides, see https:\/\/cloud.google.com\/dlp\/docs\/inspecting-images\nand https:\/\/cloud.google.com\/dlp\/docs\/inspecting-text,"
+                },
                 "deidentify": {
                   "id": "dlp.projects.locations.content.deidentify",
                   "path": "v2/{+parent}/locations/{location}/content:deidentify",
@@ -3980,6 +3987,38 @@
                   "description": "De-identifies potentially sensitive info from a ContentItem.\nThis method has limits on input size and output size.\nSee https:\/\/cloud.google.com\/dlp\/docs\/deidentify-sensitive-data to\nlearn more.\n\nWhen no InfoTypes or CustomInfoTypes are specified in this request, the\nsystem will automatically choose what detectors to run. By default this may\nbe all types, but may change over time as detectors are updated."
                 }
               }
+            }
+          }
+        },
+        "image": {
+          "methods": {
+            "redact": {
+              "id": "dlp.projects.image.redact",
+              "path": "v2/{+parent}/image:redact",
+              "flatPath": "v2/projects/{projectsId}/image:redact",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "The parent resource name, for example projects\/my-project-id.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "GooglePrivacyDlpV2RedactImageRequest"
+              },
+              "response": {
+                "$ref": "GooglePrivacyDlpV2RedactImageResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Redacts potentially sensitive info from an image.\nThis method has limits on input size, processing time, and output size.\nSee https:\/\/cloud.google.com\/dlp\/docs\/redacting-sensitive-data-images to\nlearn more.\n\nWhen no InfoTypes or CustomInfoTypes are specified in this request, the\nsystem will automatically choose what detectors to run. By default this may\nbe all types, but may change over time as detectors are updated."
             }
           }
         },

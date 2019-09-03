@@ -34,6 +34,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources as cloud_resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import progress_tracker
+from googlecloudsdk.core.util import times
 import six
 from six.moves import range  # pylint: disable=redefined-builtin
 import six.moves.http_client
@@ -213,6 +214,7 @@ HPA = 'HorizontalPodAutoscaling'
 DASHBOARD = 'KubernetesDashboard'
 CLOUDRUN = 'CloudRun'
 CONFIGCONNECTOR = 'ConfigConnector'
+GCEPDCSIDRIVER = 'GcePersistentDiskCsiDriver'
 ISTIO = 'Istio'
 NETWORK_POLICY = 'NetworkPolicy'
 NODELOCALDNS = 'NodeLocalDNS'
@@ -223,7 +225,9 @@ AUTOPROVISIONING_LOCATIONS = 'autoprovisioningLocations'
 DEFAULT_ADDONS = [INGRESS, HPA]
 ADDONS_OPTIONS = DEFAULT_ADDONS + [DASHBOARD, NETWORK_POLICY]
 BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [ISTIO, CLOUDRUN]
-ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS + [NODELOCALDNS, CONFIGCONNECTOR]
+ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS + [
+    NODELOCALDNS, CONFIGCONNECTOR, GCEPDCSIDRIVER
+]
 
 
 def CheckResponse(response):
@@ -416,7 +420,7 @@ class CreateClusterOptions(object):
                enable_vertical_pod_autoscaling=None,
                security_profile=None,
                security_profile_runtime_rules=None,
-               database_encryption=None,
+               database_encryption_key=None,
                metadata=None,
                enable_network_egress_metering=None,
                enable_resource_consumption_metering=None,
@@ -428,7 +432,11 @@ class CreateClusterOptions(object):
                disable_default_snat=None,
                autoprovisioning_locations=None,
                shielded_secure_boot=None,
-               shielded_integrity_monitoring=None):
+               shielded_integrity_monitoring=None,
+               node_config=None,
+               maintenance_window_start=None,
+               maintenance_window_end=None,
+               maintenance_window_recurrence=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -505,7 +513,7 @@ class CreateClusterOptions(object):
     self.enable_vertical_pod_autoscaling = enable_vertical_pod_autoscaling
     self.security_profile = security_profile
     self.security_profile_runtime_rules = security_profile_runtime_rules
-    self.database_encryption = database_encryption
+    self.database_encryption_key = database_encryption_key
     self.metadata = metadata
     self.enable_network_egress_metering = enable_network_egress_metering
     self.enable_resource_consumption_metering = enable_resource_consumption_metering
@@ -518,6 +526,10 @@ class CreateClusterOptions(object):
     self.autoprovisioning_locations = autoprovisioning_locations
     self.shielded_secure_boot = shielded_secure_boot
     self.shielded_integrity_monitoring = shielded_integrity_monitoring
+    self.node_config = node_config
+    self.maintenance_window_start = maintenance_window_start
+    self.maintenance_window_end = maintenance_window_end
+    self.maintenance_window_recurrence = maintenance_window_recurrence
 
 
 class UpdateClusterOptions(object):
@@ -664,7 +676,8 @@ class CreateNodePoolOptions(object):
                max_unavailable_upgrade=None,
                node_locations=None,
                shielded_secure_boot=None,
-               shielded_integrity_monitoring=None):
+               shielded_integrity_monitoring=None,
+               node_config=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -700,6 +713,7 @@ class CreateNodePoolOptions(object):
     self.node_locations = node_locations
     self.shielded_secure_boot = shielded_secure_boot
     self.shielded_integrity_monitoring = shielded_integrity_monitoring
+    self.node_config = node_config
 
 
 class UpdateNodePoolOptions(object):
@@ -930,16 +944,27 @@ class APIAdapter(object):
       cluster.network = options.network
     if options.cluster_ipv4_cidr:
       cluster.clusterIpv4Cidr = options.cluster_ipv4_cidr
-    if options.enable_stackdriver_kubernetes:
-      if options.enable_cloud_logging and options.enable_cloud_monitoring:
+    if options.enable_stackdriver_kubernetes is not None:
+      # When "enable-stackdriver-kubernetes" is specified, either true or false
+      if options.enable_stackdriver_kubernetes:
         cluster.loggingService = 'logging.googleapis.com/kubernetes'
         cluster.monitoringService = 'monitoring.googleapis.com/kubernetes'
       else:
-        raise util.Error(CLOUD_LOGGING_OR_MONITORING_DISABLED_ERROR_MSG)
-    if not options.enable_cloud_logging:
-      cluster.loggingService = 'none'
-    if not options.enable_cloud_monitoring:
-      cluster.monitoringService = 'none'
+        cluster.loggingService = 'none'
+        cluster.monitoringService = 'none'
+    # When "enable-stackdriver-kubernetes" is unspecified, checks whether legacy
+    # "enable-cloud-logging" or "enable-cloud-monitoring" flags are specified.
+    else:
+      if options.enable_cloud_logging is not None:
+        if options.enable_cloud_logging:
+          cluster.loggingService = 'logging.googleapis.com'
+        else:
+          cluster.loggingService = 'none'
+      if options.enable_cloud_monitoring is not None:
+        if options.enable_cloud_monitoring:
+          cluster.monitoringService = 'monitoring.googleapis.com'
+        else:
+          cluster.monitoringService = 'none'
     if options.subnetwork:
       cluster.subnetwork = options.subnetwork
     if options.addons:
@@ -950,6 +975,7 @@ class APIAdapter(object):
           disable_network_policy=(NETWORK_POLICY not in options.addons),
           enable_node_local_dns=(NODELOCALDNS in options.addons),
           enable_config_connector=(CONFIGCONNECTOR in options.addons),
+          enable_gcepd_csi_driver=(GCEPDCSIDRIVER in options.addons),
       )
       cluster.addonsConfig = addons
 
@@ -990,11 +1016,19 @@ class APIAdapter(object):
           enabled=options.enable_binauthz)
 
     if options.maintenance_window is not None:
-      policy = self.messages.MaintenancePolicy(
+      cluster.maintenancePolicy = self.messages.MaintenancePolicy(
           window=self.messages.MaintenanceWindow(
               dailyMaintenanceWindow=self.messages.DailyMaintenanceWindow(
                   startTime=options.maintenance_window)))
-      cluster.maintenancePolicy = policy
+    elif options.maintenance_window_start is not None:
+      window_start = options.maintenance_window_start.isoformat()
+      window_end = options.maintenance_window_end.isoformat()
+      cluster.maintenancePolicy = self.messages.MaintenancePolicy(
+          window=self.messages.MaintenanceWindow(
+              recurringWindow=self.messages.RecurringTimeWindow(
+                  window=self.messages.TimeWindow(
+                      startTime=window_start, endTime=window_end),
+                  recurrence=options.maintenance_window_recurrence)))
 
     self.ParseResourceLabels(options, cluster)
 
@@ -1100,6 +1134,10 @@ class APIAdapter(object):
     _AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
     _AddLinuxNodeConfigToNodeConfig(node_config, options, self.messages)
     _AddShieldedInstanceConfigToNodeConfig(node_config, options, self.messages)
+
+    if options.node_config is not None:
+      util.LoadNodeConfigFromYAML(node_config, options.node_config,
+                                  self.messages)
 
     return node_config
 
@@ -1518,7 +1556,8 @@ class APIAdapter(object):
                     disable_dashboard=None,
                     disable_network_policy=None,
                     enable_node_local_dns=None,
-                    enable_config_connector=None):
+                    enable_config_connector=None,
+                    enable_gcepd_csi_driver=None):
     """Generates an AddonsConfig object given specific parameters.
 
     Args:
@@ -1528,6 +1567,7 @@ class APIAdapter(object):
       disable_network_policy: whether to disable NetworkPolicy enforcement.
       enable_node_local_dns: whether to enable NodeLocalDNS cache.
       enable_config_connector: whether to enable ConfigConnector.
+      enable_gcepd_csi_driver: whether to enable GcePersistentDiskCsiDriver.
 
     Returns:
       An AddonsConfig object that contains the options defining what addons to
@@ -1552,6 +1592,10 @@ class APIAdapter(object):
     if enable_config_connector:
       addons.configConnectorConfig = self.messages.ConfigConnectorConfig(
           enabled=True)
+    if enable_gcepd_csi_driver:
+      addons.gcePersistentDiskCsiDriverConfig = self.messages.GcePersistentDiskCsiDriverConfig(
+          enabled=True)
+
     return addons
 
   def _AddLocalSSDVolumeConfigsToNodeConfig(self, node_config, options):
@@ -1661,23 +1705,35 @@ class APIAdapter(object):
                                         cluster_ref.clusterId)))
     return self.ParseOperation(operation.name, cluster_ref.zone)
 
-  def SetMaintenanceWindow(self, cluster_ref, maintenance_window):
-    """Updates maintenance window for a cluster."""
-    policy = self.messages.MaintenancePolicy(
-        window=self.messages.MaintenanceWindow(
-            dailyMaintenanceWindow=self.messages.DailyMaintenanceWindow(
-                startTime=maintenance_window)))
+  def _SendMaintenancePolicyRequest(self, cluster_ref, policy):
+    """Given a policy, sends a SetMaintenancePolicy request and returns the operation."""
     req = self.messages.SetMaintenancePolicyRequest(
         name=ProjectLocationCluster(cluster_ref.projectId, cluster_ref.zone,
                                     cluster_ref.clusterId),
         maintenancePolicy=policy)
-    if maintenance_window == 'None':
-      req.maintenancePolicy = None
-
     operation = self.client.projects_locations_clusters.SetMaintenancePolicy(
         req)
-
     return self.ParseOperation(operation.name, cluster_ref.zone)
+
+  def SetDailyMaintenanceWindow(self, cluster_ref, existing_policy,
+                                maintenance_window):
+    """Sets the daily maintenance window for a cluster."""
+    # Special behavior for removing the window. This actually removes the
+    # recurring window too, if set (since anyone using this command if there's
+    # actually a recurring window probably intends that!).
+    if maintenance_window == 'None':
+      daily_window = None
+    else:
+      daily_window = self.messages.DailyMaintenanceWindow(
+          startTime=maintenance_window)
+
+    if existing_policy is None:
+      existing_policy = self.messages.MaintenancePolicy()
+    if existing_policy.window is None:
+      existing_policy.window = self.messages.MaintenanceWindow()
+    existing_policy.window.dailyMaintenanceWindow = daily_window
+
+    return self._SendMaintenancePolicyRequest(cluster_ref, existing_policy)
 
   def DeleteCluster(self, cluster_ref):
     """Delete a running cluster.
@@ -1809,6 +1865,11 @@ class APIAdapter(object):
 
     if options.node_locations is not None:
       pool.locations = sorted(options.node_locations)
+
+    if options.node_config is not None:
+      util.LoadNodeConfigFromYAML(node_config, options.node_config,
+                                  self.messages)
+
     return pool
 
   def CreateNodePool(self, node_pool_ref, options):
@@ -2081,6 +2142,141 @@ class APIAdapter(object):
   def SetIamPolicy(self, cluster_ref):
     raise NotImplementedError('GetIamPolicy is not overridden')
 
+  def SetRecurringMaintenanceWindow(self, cluster_ref, existing_policy,
+                                    window_start, window_end,
+                                    window_recurrence):
+    """Sets a recurring maintenance window as the maintenance policy for a cluster.
+
+    Args:
+      cluster_ref: The cluster to update.
+      existing_policy: The existing maintenance policy, if any.
+      window_start: Start time of the window as a datetime.datetime.
+      window_end: End time of the window as a datetime.datetime.
+      window_recurrence: RRULE str defining how the window will recur.
+
+    Returns:
+      The operation from this cluster update.
+    """
+    recurring_window = self.messages.MaintenanceWindow(
+        recurringWindow=self.messages.RecurringTimeWindow(
+            window=self.messages.TimeWindow(
+                startTime=window_start.isoformat(),
+                endTime=window_end.isoformat()),
+            recurrence=window_recurrence))
+    if existing_policy is not None:
+      existing_policy.window = recurring_window
+    else:
+      existing_policy = self.messages.MaintenancePolicy(window=recurring_window)
+    return self._SendMaintenancePolicyRequest(cluster_ref, existing_policy)
+
+  def RemoveMaintenanceWindow(self, cluster_ref, existing_policy):
+    """Removes the recurring or daily maintenance policy."""
+    if (existing_policy is None or existing_policy.window is None or
+        (existing_policy.window.dailyMaintenanceWindow is None
+         and existing_policy.window.recurringWindow is None)):
+      raise util.Error(NOTHING_TO_UPDATE_ERROR_MSG)
+    existing_policy.window.dailyMaintenanceWindow = None
+    existing_policy.window.recurringWindow = None
+    return self._SendMaintenancePolicyRequest(cluster_ref, existing_policy)
+
+  def _NormalizeMaintenanceExclusionsForPolicy(self, policy):
+    """Given a maintenance policy (can be None), return a normalized form.
+
+    This makes it easier to add and remove blackouts because the blackouts
+    list will definitely exist.
+
+    Args:
+      policy: The policy to normalize.
+
+    Returns:
+      The modified policy (note: modifies in place, but there might not have
+      even been an existing policy).
+    """
+    empty_excl = self.messages.MaintenanceWindow.MaintenanceExclusionsValue()
+    if policy is None:
+      policy = self.messages.MaintenancePolicy(
+          window=self.messages.MaintenanceWindow(
+              maintenanceExclusions=empty_excl))
+    elif policy.window is None:
+      # Shouldn't happen due to defaulting on the server, but easy enough to
+      # handle.
+      policy.window = self.messages.MaintenanceWindow(
+          maintenanceExclusions=empty_excl)
+    return policy
+
+  def _GetMaintenanceExclusionNames(self, maintenance_policy):
+    """Returns a list of maintenance exclusion names from the policy."""
+    return [
+        p.key for p in
+        maintenance_policy.window.maintenanceExclusions.additionalProperties
+    ]
+
+  def AddMaintenanceExclusion(self, cluster_ref, existing_policy, window_name,
+                              window_start, window_end):
+    """Adds a maintenance exclusion to the cluster's maintenance policy.
+
+    Args:
+      cluster_ref: The cluster to update.
+      existing_policy: The existing maintenance policy, if any.
+      window_name: Unique name for the exclusion. Can be None (will be
+        autogenerated if so).
+      window_start: Start time of the window as a datetime.datetime. Can be
+        None.
+      window_end: End time of the window as a datetime.datetime.
+
+    Returns:
+      Operation from this cluster update.
+
+    Raises:
+      Error if a maintenance exclusion of that name already exists.
+    """
+    existing_policy = self._NormalizeMaintenanceExclusionsForPolicy(
+        existing_policy)
+
+    if window_start is None:
+      window_start = times.Now(times.UTC)
+    if window_name is None:
+      # Collisions from this shouldn't be an issue because this has millisecond
+      # resolution.
+      window_name = 'generated-exclusion-' + times.Now(times.UTC).isoformat()
+
+    if window_name in self._GetMaintenanceExclusionNames(existing_policy):
+      raise util.Error(
+          'A maintenance exclusion named {0} already exists.'.format(
+              window_name))
+
+    # Note: we're using external/python/gcloud_deps/apitools/base/protorpclite
+    # which does *not* handle maps very nicely. We actually have a
+    # MaintenanceExclusionsValue field that has a repeated additionalProperties
+    # field that has key and value fields. See
+    # third_party/apis/container/v1alpha1/container_v1alpha1_messages.py.
+    exclusions = existing_policy.window.maintenanceExclusions
+    window = self.messages.TimeWindow(
+        startTime=window_start.isoformat(), endTime=window_end.isoformat())
+    exclusions.additionalProperties.append(
+        exclusions.AdditionalProperty(key=window_name, value=window))
+    return self._SendMaintenancePolicyRequest(cluster_ref, existing_policy)
+
+  def RemoveMaintenanceExclusion(self, cluster_ref, existing_policy,
+                                 exclusion_name):
+    """Removes a maintenance exclusion from the maintenance policy by name."""
+    existing_policy = self._NormalizeMaintenanceExclusionsForPolicy(
+        existing_policy)
+    existing_exclusions = self._GetMaintenanceExclusionNames(existing_policy)
+    if exclusion_name not in existing_exclusions:
+      message = ('No maintenance exclusion with name {0} exists. Existing '
+                 'exclusions: {1}.').format(exclusion_name,
+                                            ', '.join(existing_exclusions))
+      raise util.Error(message)
+
+    props = []
+    for ex in existing_policy.window.maintenanceExclusions.additionalProperties:
+      if ex.key != exclusion_name:
+        props.append(ex)
+    existing_policy.window.maintenanceExclusions.additionalProperties = props
+
+    return self._SendMaintenancePolicyRequest(cluster_ref, existing_policy)
+
   def ListUsableSubnets(self, project_ref, network_project, filter_arg):
     """List usable subnets for a given project.
 
@@ -2145,9 +2341,9 @@ class V1Beta1Adapter(V1Adapter):
     if options.enable_autoprovisioning is not None:
       cluster.autoscaling = self.CreateClusterAutoscalingCommon(
           cluster_ref, options, False)
-    if options.database_encryption:
+    if options.database_encryption_key:
       cluster.databaseEncryption = self.messages.DatabaseEncryption(
-          keyName=options.database_encryption,
+          keyName=options.database_encryption_key,
           state=self.messages.DatabaseEncryption.StateValueValuesEnum.ENCRYPTED)
     if options.identity_namespace is not None:
       cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
@@ -2277,7 +2473,7 @@ class V1Beta1Adapter(V1Adapter):
       Error if the new configuration is invalid.
     """
     if autoscaling.enableNodeAutoprovisioning:
-      if  not for_update or autoscaling.resourceLimits:
+      if not for_update or autoscaling.resourceLimits:
         cpu_found, mem_found = False, False
         for limit in autoscaling.resourceLimits:
           if limit.resourceType == 'cpu':
@@ -2400,8 +2596,8 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     cluster = self.CreateClusterCommon(cluster_ref, options)
     if (options.enable_autoprovisioning is not None or
         options.autoscaling_profile is not None):
-      cluster.autoscaling = self.CreateClusterAutoscalingCommon(None, options,
-                                                                False)
+      cluster.autoscaling = self.CreateClusterAutoscalingCommon(
+          None, options, False)
     if options.local_ssd_volume_configs:
       for pool in cluster.nodePools:
         self._AddLocalSSDVolumeConfigsToNodeConfig(pool.config, options)
@@ -2443,9 +2639,9 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       if options.security_profile_runtime_rules is not None:
         cluster.securityProfile.disableRuntimeRules = \
           not options.security_profile_runtime_rules
-    if options.database_encryption:
+    if options.database_encryption_key:
       cluster.databaseEncryption = self.messages.DatabaseEncryption(
-          keyName=options.database_encryption,
+          keyName=options.database_encryption_key,
           state=self.messages.DatabaseEncryption.StateValueValuesEnum.ENCRYPTED)
     if options.enable_private_ipv6_access is not None:
       if cluster.networkConfig is None:
@@ -2580,11 +2776,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if cluster and cluster.autoscaling:
       autoscaling.enableNodeAutoprovisioning = \
           cluster.autoscaling.enableNodeAutoprovisioning
-      # TODO(b/131216098): Remove when passing resourceLimits and
-      # autoprovisioning locations are not overridden by empty list.
-      autoscaling.resourceLimits = cluster.autoscaling.resourceLimits
-      autoscaling.autoprovisioningLocations = \
-          cluster.autoscaling.autoprovisioningLocations
 
     resource_limits = []
     if options.autoprovisioning_config_file is not None:
@@ -2629,7 +2820,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           .AutoscalingProfileValueValuesEnum.OPTIMIZE_UTILIZATION
     if options.autoscaling_profile == 'balanced':
       return self.messages.ClusterAutoscaling \
-          .AutoscalingProfileValueValuesEnum.PROFILE_UNSPECIFIED
+          .AutoscalingProfileValueValuesEnum.BALANCED
     raise util.Error(UNKNOWN_AUTOSCALING_PROFILE_MSG \
                        .format(profile=options.autoscaling_profile))
 

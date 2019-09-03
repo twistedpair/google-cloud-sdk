@@ -42,6 +42,8 @@ class DialogflowV2(base_api.BaseApiClient):
     self.projects_agent_sessions_entityTypes = self.ProjectsAgentSessionsEntityTypesService(self)
     self.projects_agent_sessions = self.ProjectsAgentSessionsService(self)
     self.projects_agent = self.ProjectsAgentService(self)
+    self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_operations = self.ProjectsOperationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -1097,6 +1099,91 @@ Operation <response: google.protobuf.Empty>
         response_type_name=u'GoogleLongrunningOperation',
         supports_download=False,
     )
+
+  class ProjectsLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_operations resource."""
+
+    _NAME = u'projects_locations_operations'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
+method to poll the operation result at intervals as recommended by the API
+service.
+
+      Args:
+        request: (DialogflowProjectsLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method=u'GET',
+        method_id=u'dialogflow.projects.locations.operations.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}',
+        request_field='',
+        request_type_name=u'DialogflowProjectsLocationsOperationsGetRequest',
+        response_type_name=u'GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the.
+server doesn't support this method, it returns `UNIMPLEMENTED`.
+
+NOTE: the `name` binding allows API services to override the binding
+to use different resource name schemes, such as `users/*/operations`. To
+override the binding, API services can add a binding such as
+`"/v1/{name=users/*}/operations"` to their service configuration.
+For backwards compatibility, the default name includes the operations
+collection id, however overriding users must ensure the name binding
+is the parent resource, without the operations collection id.
+
+      Args:
+        request: (DialogflowProjectsLocationsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method=u'GET',
+        method_id=u'dialogflow.projects.locations.operations.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v2/{+name}/operations',
+        request_field='',
+        request_type_name=u'DialogflowProjectsLocationsOperationsListRequest',
+        response_type_name=u'GoogleLongrunningListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsService(base_api.BaseApiService):
+    """Service class for the projects_locations resource."""
+
+    _NAME = u'projects_locations'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsOperationsService(base_api.BaseApiService):
     """Service class for the projects_operations resource."""

@@ -72,7 +72,7 @@ class GkehubV1beta1(base_api.BaseApiClient):
         method_id=u'gkehub.projects.locations.global.connectAgents.generateManifest',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'connectAgent_name', u'connectAgent_namespace', u'connectAgent_proxy', u'isUpgrade', u'version'],
+        query_params=[],
         relative_path=u'v1beta1/{+parent}:generateManifest',
         request_field='',
         request_type_name=u'GkehubProjectsLocationsGlobalConnectAgentsGenerateManifestRequest',
@@ -171,33 +171,6 @@ class GkehubV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def List(self, request, global_params=None):
-      r"""Lists Memberships in a given project and location.
-
-      Args:
-        request: (GkehubProjectsLocationsGlobalMembershipsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListMembershipsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/global/memberships',
-        http_method=u'GET',
-        method_id=u'gkehub.projects.locations.global.memberships.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{+parent}/memberships',
-        request_field='',
-        request_type_name=u'GkehubProjectsLocationsGlobalMembershipsListRequest',
-        response_type_name=u'ListMembershipsResponse',
-        supports_download=False,
-    )
-
     def Patch(self, request, global_params=None):
       r"""Updates an existing Membership.
 
@@ -271,6 +244,33 @@ set.
         request_field='',
         request_type_name=u'GkehubProjectsLocationsMembershipsGetIamPolicyRequest',
         response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Memberships in a given project and location.
+
+      Args:
+        request: (GkehubProjectsLocationsMembershipsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMembershipsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/memberships',
+        http_method=u'GET',
+        method_id=u'gkehub.projects.locations.memberships.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
+        relative_path=u'v1beta1/{+parent}/memberships',
+        request_field='',
+        request_type_name=u'GkehubProjectsLocationsMembershipsListRequest',
+        response_type_name=u'ListMembershipsResponse',
         supports_download=False,
     )
 

@@ -22,6 +22,7 @@ from apitools.base.py import encoding
 
 from googlecloudsdk.api_lib.accesscontextmanager import util
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.accesscontextmanager import common
 from googlecloudsdk.command_lib.accesscontextmanager import levels
@@ -74,6 +75,28 @@ class InvalidFormatError(ParseError):
                '    restrictedServices:\n'
                '    - storage.googleapis.com').format(reason,
                                                       ', '.join(valid_fields)))
+
+
+def _GetConfig(perimeter_result, dry_run):
+  """Returns the appropriate config for a Service Perimeter.
+
+  Args:
+    perimeter_result: The perimeter resource.
+    dry_run: Whether the requested config is the dry-run config or the enforced
+      config.
+
+  Returns:
+    Either the 'status' (enforced) or the 'spec' (dry-run) Perimeter config.
+  """
+  perimeter = perimeter_result.Get()
+  if not dry_run:
+    if perimeter.status is None:
+      perimeter.status = type(perimeter).status.type()
+    return perimeter.status
+  else:
+    if perimeter.spec is None:
+      perimeter.spec = type(perimeter).spec.type()
+    return perimeter.spec
 
 
 def _ValidateAllFieldsRecognized(path, conditions):
@@ -285,22 +308,48 @@ def AddPerimeterUpdateArgs(parser, version=None, track=None):
     _AddBridgeRestrictionArgs(parser)
 
 
-def _AddResources(parser):
+def AddPerimeterUpdateDryRunConfigArgs(parser):
+  """Add args for perimeters update-dry-run-config command."""
+  # The fields 'description', 'title', 'perimeter_type' are not editable through
+  # the dry-run process.
+  update_dry_run_group = parser.add_mutually_exclusive_group()
+  _AddClearDryRunConfigArg(update_dry_run_group)
+  config_group = update_dry_run_group.add_argument_group()
+  _AddResources(config_group, include_set=False)
+  _AddRestrictedServices(config_group, include_set=False)
+  _AddLevelsUpdate(config_group, include_set=False)
+  _AddIngressRestrictionArgs(config_group)
+  _AddVpcRestrictionArgs(config_group)
+  _AddBridgeRestrictionArgs(config_group)
+
+
+def _AddClearDryRunConfigArg(parser):
+  arg = base.Argument(
+      '--clear',
+      action='store_true',
+      help='If set, clear all dry run config values on the perimeter and set `dry_run` to `false`.',
+  )
+  arg.AddToParser(parser)
+
+
+def _AddResources(parser, include_set=True):
   repeated.AddPrimitiveArgs(
       parser,
       'perimeter',
       'resources',
       'resources',
       additional_help=('Resources must be projects, in the form '
-                       '`projects/<projectnumber>`.'))
+                       '`projects/<projectnumber>`.'),
+      include_set=include_set)
 
 
-def ParseResources(args, perimeter_result):
+def ParseResources(args, perimeter_result, dry_run=False):
   return repeated.ParsePrimitiveArgs(
-      args, 'resources', lambda: perimeter_result.Get().status.resources)
+      args, 'resources',
+      lambda: _GetConfig(perimeter_result, dry_run).resources)
 
 
-def _AddRestrictedServices(parser):
+def _AddRestrictedServices(parser, include_set=True):
   repeated.AddPrimitiveArgs(
       parser,
       'perimeter',
@@ -309,13 +358,14 @@ def _AddRestrictedServices(parser):
       metavar='SERVICE',
       additional_help=(
           'The perimeter boundary DOES apply to these services (for example, '
-          '`storage.googleapis.com`).'))
+          '`storage.googleapis.com`).'),
+      include_set=include_set)
 
 
-def ParseRestrictedServices(args, perimeter_result):
+def ParseRestrictedServices(args, perimeter_result, dry_run=False):
   return repeated.ParsePrimitiveArgs(
-      args, 'restricted_services', lambda: perimeter_result.Get().status.
-      restrictedServices)
+      args, 'restricted_services',
+      lambda: _GetConfig(perimeter_result, dry_run).restrictedServices)
 
 
 # Checks if the given filter_type string has an update argument specified in
@@ -349,22 +399,24 @@ def _AddServiceRestrictionArgs(parser, restriction_type, list_help,
       help=enable_help)
 
 
-def _ParseRestriction(args, perimeter_result, version, restriction_type):
+def _ParseRestriction(args, perimeter_result, version, restriction_type,
+                      dry_run):
   """Parse service restriction related arguments."""
   if _IsServiceFilterUpdateSpecified(args, restriction_type):
     # If there is no service restriction message in the request, make an empty
     # one to populate.
-    if getattr(perimeter_result.Get().status,
-               restriction_type + 'ServiceRestriction', None) is None:
+    config = _GetConfig(perimeter_result, dry_run)
+    if getattr(config, restriction_type + 'ServiceRestriction', None) is None:
       restriction_message = getattr(
           apis.GetMessagesModule('accesscontextmanager', version),
           restriction_type.capitalize() + 'ServiceRestriction')()
-      setattr(perimeter_result.Get().status,
-              restriction_type + 'ServiceRestriction', restriction_message)
+      setattr(config, restriction_type + 'ServiceRestriction',
+              restriction_message)
 
   def FetchAllowed():
-    return getattr(perimeter_result.Get().status,
-                   restriction_type + 'ServiceRestriction').allowedServices
+    return getattr(
+        _GetConfig(perimeter_result, dry_run),
+        restriction_type + 'ServiceRestriction').allowedServices
 
   return repeated.ParsePrimitiveArgs(args,
                                      restriction_type + '_allowed_services',
@@ -378,16 +430,19 @@ def _AddIngressRestrictionArgs(parser):
       restriction_type='ingress',
       list_help='Services allowed to use Access Levels for access when '
       'Ingress Service Restriction is enabled.',
-      enable_help='Restrict services able to use Access Levels for access to '
-      'those in \'ingress-allowed-services\'.')
+      enable_help=('When specified restrict API callable outside the Service '
+                   'Perimeter via Access Levels to the set of ingress allowed '
+                   'services. To disable use '
+                   '\'--no-enable-ingress-service-restriction\'.'))
 
 
-def ParseIngressRestriction(args, perimeter_result, version):
+def ParseIngressRestriction(args, perimeter_result, version, dry_run=False):
   return _ParseRestriction(
       args=args,
       perimeter_result=perimeter_result,
       version=version,
-      restriction_type='ingress')
+      restriction_type='ingress',
+      dry_run=dry_run)
 
 
 def _AddVpcRestrictionArgs(parser):
@@ -397,16 +452,18 @@ def _AddVpcRestrictionArgs(parser):
       restriction_type='vpc',
       list_help='Services allowed to be called within the Perimeter when '
       'VPC Service Restriction is enabled',
-      enable_help='Restrict API calls within the Perimeter to the list '
-      'specified in \'vpc-allowed-services\'.')
+      enable_help=('When specified restrict API calls within the Service '
+                   'Perimeter to the set of vpc allowed services. To disable '
+                   'use \'--no-enable-vpc-service-restriction\'.'))
 
 
-def ParseVpcRestriction(args, perimeter_result, version):
+def ParseVpcRestriction(args, perimeter_result, version, dry_run=False):
   return _ParseRestriction(
       args=args,
       perimeter_result=perimeter_result,
       version=version,
-      restriction_type='vpc')
+      restriction_type='vpc',
+      dry_run=dry_run)
 
 
 def _AddBridgeRestrictionArgs(parser):
@@ -415,19 +472,22 @@ def _AddBridgeRestrictionArgs(parser):
       parser=parser,
       restriction_type='bridge',
       list_help='List of services allowed through the Bridge Service Perimeter.',
-      enable_help='Restrict APIs callable through the Bridge Perimeter to those in '
-      ' \'bridge-allowed-services\'.')
+      enable_help=('When specified restrict API callable through the Bridge '
+                   'Service Perimeter to the set of bridge allowed services. '
+                   'To disable use '
+                   '\'--no-enable-bridge-service-restriction\'.'))
 
 
-def ParseBridgeRestriction(args, perimeter_result, version):
+def ParseBridgeRestriction(args, perimeter_result, version, dry_run=False):
   return _ParseRestriction(
       args=args,
       perimeter_result=perimeter_result,
       version=version,
-      restriction_type='bridge')
+      restriction_type='bridge',
+      dry_run=dry_run)
 
 
-def _AddLevelsUpdate(parser):
+def _AddLevelsUpdate(parser, include_set=True):
   repeated.AddPrimitiveArgs(
       parser,
       'perimeter',
@@ -437,20 +497,21 @@ def _AddLevelsUpdate(parser):
       additional_help=(
           'An intra-perimeter request must satisfy these access levels (for '
           'example, `MY_LEVEL`; must be in the same access policy as this '
-          'perimeter) to be allowed.'))
+          'perimeter) to be allowed.'),
+      include_set=include_set)
 
 
 def _GetLevelIdFromLevelName(level_name):
   return REGISTRY.Parse(level_name, collection=levels.COLLECTION).accessLevelsId
 
 
-def ParseLevels(args, perimeter_result, policy_id):
+def ParseLevels(args, perimeter_result, policy_id, dry_run=False):
   """Process repeated level changes."""
 
   def GetLevelIds():
     return [
         _GetLevelIdFromLevelName(l)
-        for l in perimeter_result.Get().status.accessLevels
+        for l in _GetConfig(perimeter_result, dry_run).accessLevels
     ]
 
   level_ids = repeated.ParsePrimitiveArgs(args, 'access_levels', GetLevelIds)

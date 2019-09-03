@@ -38,14 +38,14 @@ class Action(_messages.Message):
 
   Messages:
     EnvironmentValue: The environment to pass into the container. This
-      environment is merged with any values specified in the `Pipeline`
-      message. These values overwrite any in the `Pipeline` message.  In
-      addition to the values passed here, a few other values are automatically
-      injected into the environment. These cannot be hidden or overwritten.
-      `GOOGLE_PIPELINE_FAILED` will be set to "1" if the pipeline failed
-      because an action has exited with a non-zero status (and did not have
-      the `IGNORE_EXIT_STATUS` flag set). This can be used to determine if
-      additional debug or logging actions should execute.
+      environment is merged with values specified in the
+      google.genomics.v2alpha1.Pipeline message, overwriting any duplicate
+      values.  In addition to the values passed here, a few other values are
+      automatically injected into the environment. These cannot be hidden or
+      overwritten.  `GOOGLE_PIPELINE_FAILED` will be set to "1" if the
+      pipeline failed because an action has exited with a non-zero status (and
+      did not have the `IGNORE_EXIT_STATUS` flag set). This can be used to
+      determine if additional debug or logging actions should execute.
       `GOOGLE_LAST_EXIT_STATUS` will be set to the exit status of the last
       non-background action that executed. This can be used by workflow engine
       authors to determine whether an individual action has succeeded or
@@ -75,10 +75,10 @@ class Action(_messages.Message):
     entrypoint: If specified, overrides the `ENTRYPOINT` specified in the
       container.
     environment: The environment to pass into the container. This environment
-      is merged with any values specified in the `Pipeline` message. These
-      values overwrite any in the `Pipeline` message.  In addition to the
-      values passed here, a few other values are automatically injected into
-      the environment. These cannot be hidden or overwritten.
+      is merged with values specified in the google.genomics.v2alpha1.Pipeline
+      message, overwriting any duplicate values.  In addition to the values
+      passed here, a few other values are automatically injected into the
+      environment. These cannot be hidden or overwritten.
       `GOOGLE_PIPELINE_FAILED` will be set to "1" if the pipeline failed
       because an action has exited with a non-zero status (and did not have
       the `IGNORE_EXIT_STATUS` flag set). This can be used to determine if
@@ -88,11 +88,18 @@ class Action(_messages.Message):
       authors to determine whether an individual action has succeeded or
       failed.
     flags: The set of flags to apply to this action.
-    imageUri: The URI to pull the container image from. Note that all images
-      referenced by actions in the pipeline are pulled before the first action
-      runs. If multiple actions reference the same image, it is only pulled
-      once, ensuring that the same image is used for all actions in a single
-      pipeline.
+    imageUri: Required. The URI to pull the container image from. Note that
+      all images referenced by actions in the pipeline are pulled before the
+      first action runs. If multiple actions reference the same image, it is
+      only pulled once, ensuring that the same image is used for all actions
+      in a single pipeline.  The image URI can be either a complete host and
+      image specification (e.g., quay.io/biocontainers/samtools), a library
+      and image name (e.g., google/cloud-sdk) or a bare image name ('bash') to
+      pull from the default library.  No schema is required in any of these
+      cases.  If the specified image is not public, the service account
+      specified for the Virtual Machine must have access to pull the images
+      from GCR, or appropriate credentials must be specified in the
+      google.genomics.v2alpha1.Action.credentials field.
     labels: Labels to associate with the action. This field is provided to
       assist workflow engine authors in identifying actions (for example, to
       indicate what sort of action they perform, such as localization or
@@ -154,17 +161,16 @@ class Action(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class EnvironmentValue(_messages.Message):
     r"""The environment to pass into the container. This environment is merged
-    with any values specified in the `Pipeline` message. These values
-    overwrite any in the `Pipeline` message.  In addition to the values passed
-    here, a few other values are automatically injected into the environment.
-    These cannot be hidden or overwritten.  `GOOGLE_PIPELINE_FAILED` will be
-    set to "1" if the pipeline failed because an action has exited with a non-
-    zero status (and did not have the `IGNORE_EXIT_STATUS` flag set). This can
-    be used to determine if additional debug or logging actions should
-    execute.  `GOOGLE_LAST_EXIT_STATUS` will be set to the exit status of the
-    last non-background action that executed. This can be used by workflow
-    engine authors to determine whether an individual action has succeeded or
-    failed.
+    with values specified in the google.genomics.v2alpha1.Pipeline message,
+    overwriting any duplicate values.  In addition to the values passed here,
+    a few other values are automatically injected into the environment. These
+    cannot be hidden or overwritten.  `GOOGLE_PIPELINE_FAILED` will be set to
+    "1" if the pipeline failed because an action has exited with a non-zero
+    status (and did not have the `IGNORE_EXIT_STATUS` flag set). This can be
+    used to determine if additional debug or logging actions should execute.
+    `GOOGLE_LAST_EXIT_STATUS` will be set to the exit status of the last non-
+    background action that executed. This can be used by workflow engine
+    authors to determine whether an individual action has succeeded or failed.
 
     Messages:
       AdditionalProperty: An additional property for a EnvironmentValue
@@ -1197,7 +1203,7 @@ class RunPipelineRequest(_messages.Message):
       used by the operation, and can be modified at any time.  To associate
       labels with resources created while executing the operation, see the
       appropriate resource message (for example, `VirtualMachine`).
-    pipeline: The description of the pipeline to run.
+    pipeline: Required. The description of the pipeline to run.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1416,10 +1422,11 @@ class VirtualMachine(_messages.Message):
 
   Messages:
     LabelsValue: Optional set of labels to apply to the VM and any attached
-      disk resources. These labels must adhere to the name and value
-      restrictions on VM labels imposed by Compute Engine.  Labels keys with
-      the prefix 'google-' are reserved for use by Google.  Labels applied at
-      creation time to the VM. Applied on a best-effort basis to attached disk
+      disk resources. These labels must adhere to the [name and value
+      restrictions](https://cloud.google.com/compute/docs/labeling-resources)
+      on VM labels imposed by Compute Engine.  Labels keys with the prefix
+      'google-' are reserved for use by Google.  Labels applied at creation
+      time to the VM. Applied on a best-effort basis to attached disk
       resources shortly after VM creation.
 
   Fields:
@@ -1449,16 +1456,17 @@ class VirtualMachine(_messages.Message):
     enableStackdriverMonitoring: Whether Stackdriver monitoring should be
       enabled on the VM.
     labels: Optional set of labels to apply to the VM and any attached disk
-      resources. These labels must adhere to the name and value restrictions
+      resources. These labels must adhere to the [name and value
+      restrictions](https://cloud.google.com/compute/docs/labeling-resources)
       on VM labels imposed by Compute Engine.  Labels keys with the prefix
       'google-' are reserved for use by Google.  Labels applied at creation
       time to the VM. Applied on a best-effort basis to attached disk
       resources shortly after VM creation.
-    machineType: The machine type of the virtual machine to create. Must be
-      the short name of a standard machine type (such as "n1-standard-1") or a
-      custom machine type (such as "custom-1-4096", where "1" indicates the
-      number of vCPUs and "4096" indicates the memory in MB). See [Creating an
-      instance with a custom machine
+    machineType: Required. The machine type of the virtual machine to create.
+      Must be the short name of a standard machine type (such as
+      "n1-standard-1") or a custom machine type (such as "custom-1-4096",
+      where "1" indicates the number of vCPUs and "4096" indicates the memory
+      in MB). See [Creating an instance with a custom machine
       type](https://cloud.google.com/compute/docs/instances/creating-instance-
       with-custom-machine-type#create) for more specifications on creating a
       custom machine type.
@@ -1476,7 +1484,8 @@ class VirtualMachine(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional set of labels to apply to the VM and any attached disk
-    resources. These labels must adhere to the name and value restrictions on
+    resources. These labels must adhere to the [name and value
+    restrictions](https://cloud.google.com/compute/docs/labeling-resources) on
     VM labels imposed by Compute Engine.  Labels keys with the prefix
     'google-' are reserved for use by Google.  Labels applied at creation time
     to the VM. Applied on a best-effort basis to attached disk resources
