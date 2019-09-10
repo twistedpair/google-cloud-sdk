@@ -37,10 +37,23 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files
 import six
 
-msgs = core_apis.GetMessagesModule('iam', 'v1')
 
 # TODO: (b/124063772) Kluge for fixing inconsistency in python message
 # generation from proto.
+kms_message = core_apis.GetMessagesModule('cloudkms', 'v1')
+encoding.AddCustomJsonFieldMapping(
+    kms_message.CloudkmsProjectsLocationsKeyRingsGetIamPolicyRequest,
+    'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+
+encoding.AddCustomJsonFieldMapping(
+    kms_message.CloudkmsProjectsLocationsKeyRingsCryptoKeysGetIamPolicyRequest,
+    'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+
+encoding.AddCustomJsonFieldMapping(
+    kms_message.CloudkmsProjectsLocationsKeyRingsImportJobsGetIamPolicyRequest,
+    'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+
+msgs = core_apis.GetMessagesModule('iam', 'v1')
 encoding.AddCustomJsonFieldMapping(
     msgs.IamProjectsServiceAccountsGetIamPolicyRequest,
     'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
@@ -550,10 +563,12 @@ def _AddBindingToIamPolicyWithCondition(binding_message_type,
         binding.members.append(member)
       return
 
-  condition_message = None if condition is None else condition_message_type(
-      expression=condition.get('expression'),
-      title=condition.get('title'),
-      description=condition.get('description'))
+  condition_message = None
+  if condition is not None:
+    condition_message = condition_message_type(
+        expression=condition.get('expression'),
+        title=condition.get('title'),
+        description=condition.get('description'))
   policy.bindings.append(
       binding_message_type(
           members=[member], role='{}'.format(role),

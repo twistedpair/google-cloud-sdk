@@ -111,6 +111,31 @@ def UseMaxRequestedPolicyVersion(api_field):
   return Process
 
 
+def AddVersionToUpdateMaskIfNotPresent(update_mask_path):
+  """Add ',version' to update_mask if it is not present."""
+  def Process(ref, args, request):
+    """The implementation of Process for the hook."""
+    del ref, args  # Unused.
+
+    # TODO(b/140482809) use GetFieldValueFromMessage
+    update_mask = ''
+    message = request
+    for p in update_mask_path.split('.'):
+      message = getattr(message, p)
+    update_mask = message
+
+    if 'version' not in update_mask:
+      if update_mask is None:
+        update_mask = 'version'
+      else:
+        update_mask += ',version'
+
+    arg_utils.SetFieldInMessage(
+        request, update_mask_path, update_mask)
+    return request
+  return Process
+
+
 def CreateFullServiceAccountNameFromId(account_id):
   if not account_id.isdigit():
     raise gcloud_exceptions.InvalidArgumentException(

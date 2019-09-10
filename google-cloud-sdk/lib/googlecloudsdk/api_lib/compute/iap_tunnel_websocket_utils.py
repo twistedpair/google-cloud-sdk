@@ -35,6 +35,7 @@ import socks
 
 URL_SCHEME = 'wss'
 URL_HOST = 'tunnel.cloudproxy.app'
+MTLS_URL_HOST = 'mtls.tunnel.cloudproxy.app'
 URL_PATH_ROOT = '/v4'
 CONNECT_ENDPOINT = 'connect'
 RECONNECT_ENDPOINT = 'reconnect'
@@ -120,7 +121,7 @@ def CheckPythonVersion(ignore_certs):
          sys.version_info.micro))
 
 
-def CreateWebSocketConnectUrl(tunnel_target):
+def CreateWebSocketConnectUrl(tunnel_target, use_mtls=False):
   """Create Connect URL for WebSocket connection."""
   return _CreateWebSocketUrl(CONNECT_ENDPOINT,
                              {'project': tunnel_target.project,
@@ -128,19 +129,24 @@ def CreateWebSocketConnectUrl(tunnel_target):
                               'instance': tunnel_target.instance,
                               'interface': tunnel_target.interface,
                               'port': tunnel_target.port},
-                             tunnel_target.url_override)
+                             tunnel_target.url_override,
+                             use_mtls)
 
 
-def CreateWebSocketReconnectUrl(tunnel_target, sid, ack_bytes):
+def CreateWebSocketReconnectUrl(tunnel_target, sid, ack_bytes, use_mtls=False):
   """Create Reconnect URL for WebSocket connection."""
   return _CreateWebSocketUrl(RECONNECT_ENDPOINT,
                              {'sid': sid, 'ack': ack_bytes},
-                             tunnel_target.url_override)
+                             tunnel_target.url_override,
+                             use_mtls)
 
 
-def _CreateWebSocketUrl(endpoint, url_query_pieces, url_override):
+def _CreateWebSocketUrl(endpoint, url_query_pieces, url_override,
+                        use_mtls=False):
   """Create URL for WebSocket connection."""
-  scheme, hostname, path_root = (URL_SCHEME, URL_HOST, URL_PATH_ROOT)
+  scheme = URL_SCHEME
+  hostname = MTLS_URL_HOST if use_mtls else URL_HOST
+  path_root = URL_PATH_ROOT
   if url_override:
     url_override_parts = parse.urlparse(url_override)
     scheme, hostname, path_override = url_override_parts[:3]

@@ -160,8 +160,7 @@ def _IssueAIPlatformAliasWarning(command_path=None):
 
 
 def main(gcloud_cli=None, credential_providers=None):
-  if not platforms.PythonVersion().IsCompatible(
-      allow_py3=properties.VALUES.core.allow_py3.GetBool()):
+  if not platforms.PythonVersion().IsCompatible():
     sys.exit(1)
   metrics.Started(START_TIME)
   # TODO(b/36049857): Put a real version number here

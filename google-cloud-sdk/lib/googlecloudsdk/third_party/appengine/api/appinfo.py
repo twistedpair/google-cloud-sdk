@@ -603,7 +603,7 @@ _SUPPORTED_LIBRARIES = [
         ),
     _VersionedLibrary(
         'protorpc',
-        'https://code.google.com/p/google-protorpc/',
+        'https://github.com/google/protorpc',
         'A framework for implementing HTTP-based remote procedure call (RPC) '
         'services.',
         ['1.0'],

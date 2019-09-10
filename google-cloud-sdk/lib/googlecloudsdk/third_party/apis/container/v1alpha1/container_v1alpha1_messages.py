@@ -1558,8 +1558,10 @@ class GoogleIamV1GetPolicyOptions(_messages.Message):
 
   Fields:
     requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
-      field is omitted, policy format version 1 will be returned.
+      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.  Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.
   """
 
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1597,7 +1599,11 @@ class GoogleIamV1Policy(_messages.Message):
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten.
-    version: Deprecated.
+    version: Specifies the format of the policy.  Valid values are 0, 1, and
+      3. Requests specifying an invalid value will be rejected.  Policies with
+      any conditional bindings must specify version 3. Policies without any
+      conditional bindings may specify any valid value or leave the field
+      unset.
   """
 
   bindings = _messages.MessageField('GoogleIamV1Binding', 1, repeated=True)
@@ -3888,6 +3894,8 @@ class UpdateNodePoolRequest(_messages.Message):
     updatedNodePool: The updated node pool object. This field must be empty if
       any other node pool field is set (e.g. 'node_version', 'image_type',
       'locations', etc.)
+    upgradeSettings: Upgrade settings control disruption and speed of the
+      upgrade.
     workloadMetadataConfig: The desired image type for the node pool.
     zone: Deprecated. The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides. This
@@ -3904,8 +3912,9 @@ class UpdateNodePoolRequest(_messages.Message):
   nodeVersion = _messages.StringField(8)
   projectId = _messages.StringField(9)
   updatedNodePool = _messages.MessageField('NodePool', 10)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 11)
-  zone = _messages.StringField(12)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 11)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 12)
+  zone = _messages.StringField(13)
 
 
 class UpgradeSettings(_messages.Message):

@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.util.apis import arg_utils
+import six
 
 _MAINTENANCE_POLICY_CHOICES = {
     'default': 'VM instances on the host are live migrated to a new '
@@ -37,6 +38,23 @@ _MAINTENANCE_POLICY_MAPPINGS = {
     'RESTART_IN_PLACE': 'restart-in-place',
     'MIGRATE_WITHIN_NODE_GROUP': 'migrate-within-node-group',
 }
+
+_AUTOSCALING_MODES = ['off', 'on']
+_AUTOSCALING_MODE_MAPPINGS = {
+    'OFF': 'off',
+    'ON': 'on',
+}
+
+
+def _ModeChoice():
+  def _Parse(value):
+    value = six.text_type(value.lower())
+    if value not in _AUTOSCALING_MODES:
+      raise arg_parsers.ArgumentTypeError(
+          '[mode] must be one of [{0}]'.format(
+              ','.join(_AUTOSCALING_MODES)))
+    return value
+  return _Parse
 
 
 def MakeNodeGroupArg():
@@ -100,3 +118,38 @@ def GetMaintenancePolicyEnumMapper(messages):
   )
 
 
+def AddAutoscalingPolicyArgToParser(parser):
+  parser.add_argument(
+      '--autoscaling-policy',
+      type=arg_parsers.ArgDict(
+          spec={
+              'mode': _ModeChoice(),
+              'min-size': int,
+              'max-size': int,
+          },
+          required_keys=[
+              'mode'
+          ]),
+      help="""\
+Option to specify the autoscaling policy for node groups.
+
+*mode*::: Options for mode are 'on' or 'off'. When set to 'on', the autoscaler
+will increase or decrease the size of the node group in response to capacity
+needs. If set to 'off', the autoscaler will not update the size of the node
+group.
+
+*min-size*::: The minimum size of the node group. Default is 0 and must be
+an integer value smaller than or equal to max-size.
+
+*max-size*::: The maximum size of the node group. Default is 100 and must be
+smaller or equal to 100 and larger than or equal to min-size.
+
+""")
+
+
+def GetAutoscalingModeEnumMapper(messages):
+  return arg_utils.ChoiceEnumMapper(
+      'mode',
+      messages.NodeGroupAutoscalingPolicy.ModeValueValuesEnum,
+      custom_mappings=_AUTOSCALING_MODE_MAPPINGS,
+  )

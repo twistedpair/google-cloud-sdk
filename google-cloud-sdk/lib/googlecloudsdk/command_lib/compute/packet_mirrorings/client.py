@@ -91,18 +91,21 @@ class PacketMirroring(object):
   def Update(self,
              packet_mirroring=None,
              only_generate_request=False,
-             is_async=False):
+             is_async=False,
+             cleared_fields=None):
     """Sends requests to update the packet mirroring."""
     requests = [self._MakeUpdateRequestTuple(packet_mirroring)]
 
     if only_generate_request:
       return requests
 
-    if not is_async:
-      return self._compute_client.MakeRequests(requests)
-
     errors_to_collect = []
-    result = self._compute_client.BatchRequests(requests, errors_to_collect)[0]
+
+    with self._client.IncludeFields(cleared_fields or []):
+      if not is_async:
+        return self._compute_client.MakeRequests(requests)
+      result = self._compute_client.BatchRequests(requests,
+                                                  errors_to_collect)[0]
 
     if errors_to_collect:
       raise exceptions.MultiError(errors_to_collect)

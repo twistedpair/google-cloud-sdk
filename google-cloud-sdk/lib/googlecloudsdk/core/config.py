@@ -412,6 +412,19 @@ class Paths(object):
     return os.path.join(self.global_config_dir, 'config_sentinel')
 
   @property
+  def valid_ppk_sentinel_file(self):
+    """Gets the path to the sentinel used to check for PPK encoding validity.
+
+    The presence of this file is simply used to indicate whether or not we've
+    correctly encoded the PPK used for ssh on Windows (re-encoding may be
+    necessary in order to fix a bug in an older version of winkeygen.exe).
+
+    Returns:
+      str, The path to the sentinel file.
+    """
+    return os.path.join(self.global_config_dir, '.valid_ppk_sentinel')
+
+  @property
   def container_config_path(self):
     return os.path.join(self.global_config_dir, 'kubernetes')
 

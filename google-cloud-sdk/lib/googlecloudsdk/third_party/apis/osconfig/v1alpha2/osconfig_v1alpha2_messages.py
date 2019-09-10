@@ -79,26 +79,6 @@ class AptSettings(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
 
-class Artifact(_messages.Message):
-  r"""Specifies a resource to be used in the recipe.
-
-  Fields:
-    allowInsecure: Defaults to false. When false, recipes will be subject to
-      validations based on the artifact type:  Remote: A checksum must be
-      specified, and only protocols with         transport-layer security will
-      be permitted. GCS:    An object generation number must be specified.
-    gcs: A GCS artifact.
-    id: Id of the artifact, which the installation and update steps of this
-      recipe can reference. Artifacts in a recipe cannot have the same id.
-    remote: A generic remote artifact.
-  """
-
-  allowInsecure = _messages.BooleanField(1)
-  gcs = _messages.MessageField('Gcs', 2)
-  id = _messages.StringField(3)
-  remote = _messages.MessageField('Remote', 4)
-
-
 class Assignment(_messages.Message):
   r"""An Assignment represents the group or groups of VMs that the policy
   applies to.  If an Assignment is empty, it applies to all VMs. Otherwise,
@@ -132,7 +112,7 @@ class Assignment(_messages.Message):
       facilitate orchestrating changes by zone.
   """
 
-  groupLabels = _messages.MessageField('GroupLabel', 1, repeated=True)
+  groupLabels = _messages.MessageField('AssignmentGroupLabel', 1, repeated=True)
   instanceNamePrefixes = _messages.StringField(2, repeated=True)
   instances = _messages.StringField(3, repeated=True)
   osArchitectures = _messages.StringField(4, repeated=True)
@@ -141,33 +121,49 @@ class Assignment(_messages.Message):
   zones = _messages.StringField(7, repeated=True)
 
 
-class CancelPatchJobRequest(_messages.Message):
-  r"""Message for canceling a patch job."""
+class AssignmentGroupLabel(_messages.Message):
+  r"""Represents a group of VMs that can be identified as having all these
+  labels, for example "env=prod and app=web".
 
-
-class CopyFile(_messages.Message):
-  r"""Copies the artifact to the specified path on the instance.
+  Messages:
+    LabelsValue: GCE instance labels that must be present for an instance to
+      be included in this assignment group.
 
   Fields:
-    artifactId: The id of the relevant artifact in the recipe.
-    destination: The absolute path on the instance to put the file.
-    overwrite: Whether to allow this step to overwrite existing files. If this
-      is false and the file already exists the file will not be overwritten
-      and the step will be considered a success. Defaults to false.
-    permissions: Consists of three octal digits which represent, in order, the
-      permissions of the owner, group, and other users for the file (similarly
-      to the numeric mode used in the linux chmod utility). Each digit
-      represents a three bit number with the 4 bit corresponding to the read
-      permissions, the 2 bit corresponds to the write bit, and the one bit
-      corresponds to the execute permission. Default behavior is 755.  Below
-      are some examples of permissions and their associated values: read,
-      write, and execute: 7 read and execute: 5 read and write: 6 read only: 4
+    labels: GCE instance labels that must be present for an instance to be
+      included in this assignment group.
   """
 
-  artifactId = _messages.StringField(1)
-  destination = _messages.StringField(2)
-  overwrite = _messages.BooleanField(3)
-  permissions = _messages.StringField(4)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""GCE instance labels that must be present for an instance to be
+    included in this assignment group.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+
+
+class CancelPatchJobRequest(_messages.Message):
+  r"""Message for canceling a patch job."""
 
 
 class Empty(_messages.Message):
@@ -178,23 +174,6 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
-
-
-class ExecFile(_messages.Message):
-  r"""Executes an artifact or local file.
-
-  Fields:
-    allowedExitCodes: Defaults to [0]. A list of possible return values that
-      the program can return to indicate a success.
-    args: Arguments to be passed to the provided executable.
-    artifactId: The id of the relevant artifact in the recipe.
-    localPath: The absolute path of the file on the local filesystem.
-  """
-
-  allowedExitCodes = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
-  args = _messages.StringField(2, repeated=True)
-  artifactId = _messages.StringField(3)
-  localPath = _messages.StringField(4)
 
 
 class ExecStep(_messages.Message):
@@ -263,9 +242,10 @@ class ExecutePatchJobRequest(_messages.Message):
       but they will do nothing.
     duration: Optional. Duration of the patch job. After the duration ends,
       the patch job will time out.
-    filter: Required. There must be at least one instance to patch for this
-      job to succeed. This is the same filter used when listing compute
-      instances.
+    filter: Instances to patch. This is the same filter used when listing
+      compute instances. Use instance_filter instead.
+    instanceFilter: Instances to patch, either explicitly or filtered by some
+      criteria like zone or labels.
     patchConfig: Optional. Patch configuration being applied. If omitted,
       instances will be patched using the default configurations.
   """
@@ -274,64 +254,8 @@ class ExecutePatchJobRequest(_messages.Message):
   dryRun = _messages.BooleanField(2)
   duration = _messages.StringField(3)
   filter = _messages.StringField(4)
-  patchConfig = _messages.MessageField('PatchConfig', 5)
-
-
-class ExtractArchive(_messages.Message):
-  r"""Extracts an archive of the type specified in the specified directory.
-
-  Enums:
-    TypeValueValuesEnum: The type of the archive to extract.
-
-  Fields:
-    artifactId: The id of the relevant artifact in the recipe.
-    destination: Directory to extract archive to. Defaults to / on Linux or
-      C:\ on Windows.
-    type: The type of the archive to extract.
-  """
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""The type of the archive to extract.
-
-    Values:
-      ARCHIVE_TYPE_UNSPECIFIED: Indicates that the archive type isn't
-        specified.
-      TAR: Indicates that the archive is a tar archive with no encryption.
-      TAR_GZIP: Indicates that the archive is a tar archive with gzip
-        encryption.
-      TAR_BZIP: Indicates that the archive is a tar archive with bzip
-        encryption.
-      TAR_LZMA: Indicates that the archive is a tar archive with lzma
-        encryption.
-      TAR_XZ: Indicates that the archive is a tar archive with xz encryption.
-      ZIP: Indicates that the archive is a zip archive.
-    """
-    ARCHIVE_TYPE_UNSPECIFIED = 0
-    TAR = 1
-    TAR_GZIP = 2
-    TAR_BZIP = 3
-    TAR_LZMA = 4
-    TAR_XZ = 5
-    ZIP = 6
-
-  artifactId = _messages.StringField(1)
-  destination = _messages.StringField(2)
-  type = _messages.EnumField('TypeValueValuesEnum', 3)
-
-
-class Gcs(_messages.Message):
-  r"""Specifies an artifact available as a GCS Object.
-
-  Fields:
-    bucket: Bucket of the GCS object.
-    generation: Optional if allow_insecure is true. Generation number of the
-      GCS object.
-    object: Name of the GCS object.
-  """
-
-  bucket = _messages.StringField(1)
-  generation = _messages.IntegerField(2)
-  object = _messages.StringField(3)
+  instanceFilter = _messages.MessageField('PatchInstanceFilter', 5)
+  patchConfig = _messages.MessageField('PatchConfig', 6)
 
 
 class GcsObject(_messages.Message):
@@ -364,47 +288,6 @@ class GooRepository(_messages.Message):
 
 class GooSettings(_messages.Message):
   r"""Googet patching is performed by running `googet update`."""
-
-
-class GroupLabel(_messages.Message):
-  r"""Represents a group of VMs that can be identified as having all these
-  labels, for example "env=prod and app=web".
-
-  Messages:
-    LabelsValue: GCE instance labels that must be present for an instance to
-      be included in this assignment group.
-
-  Fields:
-    labels: GCE instance labels that must be present for an instance to be
-      included in this assignment group.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""GCE instance labels that must be present for an instance to be
-    included in this assignment group.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  labels = _messages.MessageField('LabelsValue', 1)
 
 
 class GuestPolicy(_messages.Message):
@@ -461,86 +344,6 @@ class GuestPolicy(_messages.Message):
   packages = _messages.MessageField('Package', 7, repeated=True)
   recipes = _messages.MessageField('SoftwareRecipe', 8, repeated=True)
   updateTime = _messages.StringField(9)
-
-
-class InstallDpkg(_messages.Message):
-  r"""Installs a deb via dpkg.
-
-  Fields:
-    artifactId: The id of the relevant artifact in the recipe.
-  """
-
-  artifactId = _messages.StringField(1)
-
-
-class InstallMsi(_messages.Message):
-  r"""Installs an MSI file.
-
-  Fields:
-    allowedExitCodes: Return codes that indicate that the software installed
-      or updated successfully. Behaviour defaults to [0]
-    artifactId: The id of the relevant artifact in the recipe.
-    flags: The flags to use when installing the MSI defaults to ["/i"] (i.e.
-      the install flag).
-  """
-
-  allowedExitCodes = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
-  artifactId = _messages.StringField(2)
-  flags = _messages.StringField(3, repeated=True)
-
-
-class InstallRpm(_messages.Message):
-  r"""Installs an rpm file via the rpm utility.
-
-  Fields:
-    artifactId: The id of the relevant artifact in the recipe.
-  """
-
-  artifactId = _messages.StringField(1)
-
-
-class InstanceDetailsSummary(_messages.Message):
-  r"""A summary of the current patch state across all instances this patch job
-  affects. Contains counts of instances in different states. These states map
-  to InstancePatchState. List patch job instance details to see the specific
-  states of each instance.
-
-  Fields:
-    instancesAcked: Number of instances that have acked and will start
-      shortly.
-    instancesApplyingPatches: Number of instances that are applying patches.
-    instancesDownloadingPatches: Number of instances that are downloading
-      patches.
-    instancesFailed: Number of instances that failed.
-    instancesInactive: Number of instances that are inactive.
-    instancesNotified: Number of instances notified about patch job.
-    instancesPending: Number of instances pending patch job.
-    instancesRebooting: Number of instances rebooting.
-    instancesRunningPostPatchStep: Number of instances that are running the
-      post-patch step.
-    instancesRunningPrePatchStep: Number of instances that are running the
-      pre-patch step.
-    instancesStarted: Number of instances that have started.
-    instancesSucceeded: Number of instances that have completed successfully.
-    instancesSucceededRebootRequired: Number of instances that require reboot.
-    instancesTimedOut: Number of instances that exceeded the time out while
-      applying the patch.
-  """
-
-  instancesAcked = _messages.IntegerField(1)
-  instancesApplyingPatches = _messages.IntegerField(2)
-  instancesDownloadingPatches = _messages.IntegerField(3)
-  instancesFailed = _messages.IntegerField(4)
-  instancesInactive = _messages.IntegerField(5)
-  instancesNotified = _messages.IntegerField(6)
-  instancesPending = _messages.IntegerField(7)
-  instancesRebooting = _messages.IntegerField(8)
-  instancesRunningPostPatchStep = _messages.IntegerField(9)
-  instancesRunningPrePatchStep = _messages.IntegerField(10)
-  instancesStarted = _messages.IntegerField(11)
-  instancesSucceeded = _messages.IntegerField(12)
-  instancesSucceededRebootRequired = _messages.IntegerField(13)
-  instancesTimedOut = _messages.IntegerField(14)
 
 
 class ListGuestPoliciesResponse(_messages.Message):
@@ -615,10 +418,48 @@ class LookupEffectiveGuestPoliciesResponse(_messages.Message):
     packageRepositories: List of package repository configurations assigned to
       the VM.
     packages: List of package configurations assigned to the VM
+    softwareRecipes: List of recipes assigned to the VM
   """
 
-  packageRepositories = _messages.MessageField('SourcedPackageRepository', 1, repeated=True)
-  packages = _messages.MessageField('SourcedPackage', 2, repeated=True)
+  packageRepositories = _messages.MessageField('LookupEffectiveGuestPoliciesResponseSourcedPackageRepository', 1, repeated=True)
+  packages = _messages.MessageField('LookupEffectiveGuestPoliciesResponseSourcedPackage', 2, repeated=True)
+  softwareRecipes = _messages.MessageField('LookupEffectiveGuestPoliciesResponseSourcedSoftwareRecipe', 3, repeated=True)
+
+
+class LookupEffectiveGuestPoliciesResponseSourcedPackage(_messages.Message):
+  r"""A GuestPolicy package including its source.
+
+  Fields:
+    package: A software package to configure on the VM.
+    source: Name of the GuestPolicy providing this config.
+  """
+
+  package = _messages.MessageField('Package', 1)
+  source = _messages.StringField(2)
+
+
+class LookupEffectiveGuestPoliciesResponseSourcedPackageRepository(_messages.Message):
+  r"""A GuestPolicy package repository including its source.
+
+  Fields:
+    packageRepository: A software package repository to configure on the VM.
+    source: Name of the GuestPolicy providing this config.
+  """
+
+  packageRepository = _messages.MessageField('PackageRepository', 1)
+  source = _messages.StringField(2)
+
+
+class LookupEffectiveGuestPoliciesResponseSourcedSoftwareRecipe(_messages.Message):
+  r"""A GuestPolicy recipe including its source.
+
+  Fields:
+    softwareRecipe: A software recipe to configure on the VM.
+    source: Name of the GuestPolicy providing this config.
+  """
+
+  softwareRecipe = _messages.MessageField('SoftwareRecipe', 1)
+  source = _messages.StringField(2)
 
 
 class OsconfigFoldersGuestPoliciesCreateRequest(_messages.Message):
@@ -1083,6 +924,78 @@ class PatchConfig(_messages.Message):
   zypper = _messages.MessageField('ZypperSettings', 9)
 
 
+class PatchInstanceFilter(_messages.Message):
+  r"""A filter to target VM instances for patching. The targeted VMs must meet
+  all criteria specified. So if both labels and zones are specified, the patch
+  job will target only VMs with those labels AND in those zones.
+
+  Fields:
+    all: Target all instances in the project. If true, no other criteria is
+      permitted.
+    groupLabels: Targets VM instances matching at least one of these label
+      sets. This allows targeting of disparate groups, for example "env=prod
+      or env=staging".
+    instanceNamePrefixes: Targets VMs whose name starts with one of these
+      prefixes. Like labels, this is another way to group VMs when targeting
+      configs, for example prefix="prod-".
+    instances: Targets any of the VM instances specified. Instances are
+      specified by their URI in the form
+      `zones/[ZONE]/instances/[INSTANCE_NAME],
+      `projects/[PROJECT_ID]/zones/[ZONE]/instances/[INSTANCE_NAME]`, or `http
+      s://www.googleapis.com/compute/v1/projects/[PROJECT_ID]/zones/[ZONE]/ins
+      tances/[INSTANCE_NAME]`
+    zones: Targets VM instances in ANY of these zones. Leave empty to target
+      instances in any zone.
+  """
+
+  all = _messages.BooleanField(1)
+  groupLabels = _messages.MessageField('PatchInstanceFilterGroupLabel', 2, repeated=True)
+  instanceNamePrefixes = _messages.StringField(3, repeated=True)
+  instances = _messages.StringField(4, repeated=True)
+  zones = _messages.StringField(5, repeated=True)
+
+
+class PatchInstanceFilterGroupLabel(_messages.Message):
+  r"""Represents a group of VMs that can be identified as having all these
+  labels, for example "env=prod and app=web".
+
+  Messages:
+    LabelsValue: GCE instance labels that must be present for an instance to
+      be targeted by this filter.
+
+  Fields:
+    labels: GCE instance labels that must be present for an instance to be
+      targeted by this filter.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""GCE instance labels that must be present for an instance to be
+    targeted by this filter.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+
+
 class PatchJob(_messages.Message):
   r"""A high level representation of a patch job that is either in progress or
   has completed.  Instances' details are not included in the job. To paginate
@@ -1101,10 +1014,10 @@ class PatchJob(_messages.Message):
       job will time out.
     errorMessage: If this patch job failed, this message will provide
       information about the failure.
-    filter: Required. There must be at least one instance to patch for this
-      job to succeed. This is the same filter used when listing compute
-      instances.
+    filter: Instances to patch. This is the same filter used when listing
+      compute instances. Use instance_filter instead.
     instanceDetailsSummary: Summary of instance details.
+    instanceFilter: Instances to patch.
     name: Output only. Unique identifier for this patch job in the form
       `projects/*/patchJobs/*`
     patchConfig: Patch configuration being applied.
@@ -1143,12 +1056,13 @@ class PatchJob(_messages.Message):
   duration = _messages.StringField(4)
   errorMessage = _messages.StringField(5)
   filter = _messages.StringField(6)
-  instanceDetailsSummary = _messages.MessageField('InstanceDetailsSummary', 7)
-  name = _messages.StringField(8)
-  patchConfig = _messages.MessageField('PatchConfig', 9)
-  percentComplete = _messages.FloatField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
+  instanceDetailsSummary = _messages.MessageField('PatchJobInstanceDetailsSummary', 7)
+  instanceFilter = _messages.MessageField('PatchInstanceFilter', 8)
+  name = _messages.StringField(9)
+  patchConfig = _messages.MessageField('PatchConfig', 10)
+  percentComplete = _messages.FloatField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  updateTime = _messages.StringField(13)
 
 
 class PatchJobInstanceDetails(_messages.Message):
@@ -1210,24 +1124,52 @@ class PatchJobInstanceDetails(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
-class Remote(_messages.Message):
-  r"""Specifies an artifact available via some URI.
+class PatchJobInstanceDetailsSummary(_messages.Message):
+  r"""A summary of the current patch state across all instances this patch job
+  affects. Contains counts of instances in different states. These states map
+  to InstancePatchState. List patch job instance details to see the specific
+  states of each instance.
 
   Fields:
-    checksum: Optional if allow_insecure is true. SHA256 checksum to compare
-      to the checksum of the artifact. If the checksum is not empty and it
-      doesn't match the artifact then the recipe installation will fail before
-      running any of the steps.
-    uri: URI from which to fetch the object. It should contain both the
-      protocol and path following the format {protocol}://{location}.
+    instancesAcked: Number of instances that have acked and will start
+      shortly.
+    instancesApplyingPatches: Number of instances that are applying patches.
+    instancesDownloadingPatches: Number of instances that are downloading
+      patches.
+    instancesFailed: Number of instances that failed.
+    instancesInactive: Number of instances that are inactive.
+    instancesNotified: Number of instances notified about patch job.
+    instancesPending: Number of instances pending patch job.
+    instancesRebooting: Number of instances rebooting.
+    instancesRunningPostPatchStep: Number of instances that are running the
+      post-patch step.
+    instancesRunningPrePatchStep: Number of instances that are running the
+      pre-patch step.
+    instancesStarted: Number of instances that have started.
+    instancesSucceeded: Number of instances that have completed successfully.
+    instancesSucceededRebootRequired: Number of instances that require reboot.
+    instancesTimedOut: Number of instances that exceeded the time out while
+      applying the patch.
   """
 
-  checksum = _messages.StringField(1)
-  uri = _messages.StringField(2)
+  instancesAcked = _messages.IntegerField(1)
+  instancesApplyingPatches = _messages.IntegerField(2)
+  instancesDownloadingPatches = _messages.IntegerField(3)
+  instancesFailed = _messages.IntegerField(4)
+  instancesInactive = _messages.IntegerField(5)
+  instancesNotified = _messages.IntegerField(6)
+  instancesPending = _messages.IntegerField(7)
+  instancesRebooting = _messages.IntegerField(8)
+  instancesRunningPostPatchStep = _messages.IntegerField(9)
+  instancesRunningPrePatchStep = _messages.IntegerField(10)
+  instancesStarted = _messages.IntegerField(11)
+  instancesSucceeded = _messages.IntegerField(12)
+  instancesSucceededRebootRequired = _messages.IntegerField(13)
+  instancesTimedOut = _messages.IntegerField(14)
 
 
 class ReportPatchJobInstanceDetailsRequest(_messages.Message):
-  r"""Request to report the patch status for an instance.
+  r"""Deprecated.  Use AgentEndpointProto.ReportTaskExecutionRequest instead.
 
   Enums:
     StateValueValuesEnum: State of current patch execution on the instance.
@@ -1240,11 +1182,11 @@ class ReportPatchJobInstanceDetailsRequest(_messages.Message):
       identity where the audience is 'osconfig.googleapis.com' and the format
       is 'full'.
     instanceSystemId: Required. The unique, system-generated identifier for
-      the instance.  This is the immutable, auto-generated ID assigned to the
-      instance upon creation. This is needed here because GCE instance names
-      are not tombstoned; it is possible to delete an instance and create a
-      new one with the same name; this provides a mechanism for this API to
-      identify distinct instances in this case.
+      the instance.  This is the auto-generated ID assigned to the instance
+      upon creation. This is needed here because GCE instance names are not
+      tombstoned; it is possible to delete an instance and create a new one
+      with the same name; this provides a mechanism for this API to identify
+      distinct instances in this case.
     patchJob: Unique identifier of the patch job this request applies to.
     state: State of current patch execution on the instance.
   """
@@ -1295,8 +1237,7 @@ class ReportPatchJobInstanceDetailsRequest(_messages.Message):
 
 
 class ReportPatchJobInstanceDetailsResponse(_messages.Message):
-  r"""Response from reporting instance patch details. Includes information the
-  agent needs to continue or stop patching.
+  r"""Deprecated.  Use AgentEndpointProto.ReportTaskExecutionResponse instead.
 
   Enums:
     PatchJobStateValueValuesEnum: State of the overall patch. If the patch is
@@ -1341,48 +1282,6 @@ class RetryStrategy(_messages.Message):
   """
 
   enabled = _messages.BooleanField(1)
-
-
-class RunScript(_messages.Message):
-  r"""Runs a script through an interpreter.
-
-  Enums:
-    InterpreterValueValuesEnum: The script interpreter to use to run the
-      script. If no interpreter is specified the script will be executed
-      directly, which will likely only succeed for scripts with shebang lines.
-      [Wikipedia shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)).
-
-  Fields:
-    allowedExitCodes: Return codes that indicate that the software installed
-      or updated successfully. Behaviour defaults to [0]
-    args: Arguments to be passed to the provided script.
-    interpreter: The script interpreter to use to run the script. If no
-      interpreter is specified the script will be executed directly, which
-      will likely only succeed for scripts with shebang lines. [Wikipedia
-      shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)).
-    script: The shell script to be executed.
-  """
-
-  class InterpreterValueValuesEnum(_messages.Enum):
-    r"""The script interpreter to use to run the script. If no interpreter is
-    specified the script will be executed directly, which will likely only
-    succeed for scripts with shebang lines. [Wikipedia
-    shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)).
-
-    Values:
-      INTERPRETER_UNSPECIFIED: Default value for ScriptType.
-      SHELL: Indicates that the script will be run with /bin/sh on Linux and
-        cmd on windows.
-      POWERSHELL: Indicates that the script will be run with powershell.
-    """
-    INTERPRETER_UNSPECIFIED = 0
-    SHELL = 1
-    POWERSHELL = 2
-
-  allowedExitCodes = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
-  args = _messages.StringField(2, repeated=True)
-  interpreter = _messages.EnumField('InterpreterValueValuesEnum', 3)
-  script = _messages.StringField(4)
 
 
 class SoftwareRecipe(_messages.Message):
@@ -1464,36 +1363,247 @@ class SoftwareRecipe(_messages.Message):
     UPDATED = 2
     REMOVED = 3
 
-  artifacts = _messages.MessageField('Artifact', 1, repeated=True)
+  artifacts = _messages.MessageField('SoftwareRecipeArtifact', 1, repeated=True)
   desiredState = _messages.EnumField('DesiredStateValueValuesEnum', 2)
-  installSteps = _messages.MessageField('Step', 3, repeated=True)
+  installSteps = _messages.MessageField('SoftwareRecipeStep', 3, repeated=True)
   name = _messages.StringField(4)
-  updateSteps = _messages.MessageField('Step', 5, repeated=True)
+  updateSteps = _messages.MessageField('SoftwareRecipeStep', 5, repeated=True)
   version = _messages.StringField(6)
 
 
-class SourcedPackage(_messages.Message):
-  r"""A GuestPolicy package including its source.
+class SoftwareRecipeArtifact(_messages.Message):
+  r"""Specifies a resource to be used in the recipe.
 
   Fields:
-    package: A software package to configure on the VM.
-    source: Name of the GuestPolicy providing this config.
+    allowInsecure: Defaults to false. When false, recipes will be subject to
+      validations based on the artifact type:  Remote: A checksum must be
+      specified, and only protocols with         transport-layer security will
+      be permitted. GCS:    An object generation number must be specified.
+    gcs: A GCS artifact.
+    id: Id of the artifact, which the installation and update steps of this
+      recipe can reference. Artifacts in a recipe cannot have the same id.
+    remote: A generic remote artifact.
   """
 
-  package = _messages.MessageField('Package', 1)
-  source = _messages.StringField(2)
+  allowInsecure = _messages.BooleanField(1)
+  gcs = _messages.MessageField('SoftwareRecipeArtifactGcs', 2)
+  id = _messages.StringField(3)
+  remote = _messages.MessageField('SoftwareRecipeArtifactRemote', 4)
 
 
-class SourcedPackageRepository(_messages.Message):
-  r"""A GuestPolicy package repository including its source.
+class SoftwareRecipeArtifactGcs(_messages.Message):
+  r"""Specifies an artifact available as a GCS Object.
 
   Fields:
-    packageRepository: A software package repository to configure on the VM.
-    source: Name of the GuestPolicy providing this config.
+    bucket: Bucket of the GCS object.
+    generation: Optional if allow_insecure is true. Generation number of the
+      GCS object.
+    object: Name of the GCS object.
   """
 
-  packageRepository = _messages.MessageField('PackageRepository', 1)
-  source = _messages.StringField(2)
+  bucket = _messages.StringField(1)
+  generation = _messages.IntegerField(2)
+  object = _messages.StringField(3)
+
+
+class SoftwareRecipeArtifactRemote(_messages.Message):
+  r"""Specifies an artifact available via some URI.
+
+  Fields:
+    checksum: Optional if allow_insecure is true. SHA256 checksum to compare
+      to the checksum of the artifact. If the checksum is not empty and it
+      doesn't match the artifact then the recipe installation will fail before
+      running any of the steps.
+    uri: URI from which to fetch the object. It should contain both the
+      protocol and path following the format {protocol}://{location}.
+  """
+
+  checksum = _messages.StringField(1)
+  uri = _messages.StringField(2)
+
+
+class SoftwareRecipeStep(_messages.Message):
+  r"""An action that can be taken as part of installing or updating a recipe.
+
+  Fields:
+    archiveExtraction: Extracts an archive into the specified directory.
+    dpkgInstallation: Installs a deb file via dpkg.
+    fileCopy: Copies a file onto the instance.
+    fileExec: Executes an artifact or local file.
+    msiInstallation: Installs an MSI file.
+    rpmInstallation: Installs an rpm file via the rpm utility.
+    scriptRun: Runs commands in a shell.
+  """
+
+  archiveExtraction = _messages.MessageField('SoftwareRecipeStepExtractArchive', 1)
+  dpkgInstallation = _messages.MessageField('SoftwareRecipeStepInstallDpkg', 2)
+  fileCopy = _messages.MessageField('SoftwareRecipeStepCopyFile', 3)
+  fileExec = _messages.MessageField('SoftwareRecipeStepExecFile', 4)
+  msiInstallation = _messages.MessageField('SoftwareRecipeStepInstallMsi', 5)
+  rpmInstallation = _messages.MessageField('SoftwareRecipeStepInstallRpm', 6)
+  scriptRun = _messages.MessageField('SoftwareRecipeStepRunScript', 7)
+
+
+class SoftwareRecipeStepCopyFile(_messages.Message):
+  r"""Copies the artifact to the specified path on the instance.
+
+  Fields:
+    artifactId: The id of the relevant artifact in the recipe.
+    destination: The absolute path on the instance to put the file.
+    overwrite: Whether to allow this step to overwrite existing files. If this
+      is false and the file already exists the file will not be overwritten
+      and the step will be considered a success. Defaults to false.
+    permissions: Consists of three octal digits which represent, in order, the
+      permissions of the owner, group, and other users for the file (similarly
+      to the numeric mode used in the linux chmod utility). Each digit
+      represents a three bit number with the 4 bit corresponding to the read
+      permissions, the 2 bit corresponds to the write bit, and the one bit
+      corresponds to the execute permission. Default behavior is 755.  Below
+      are some examples of permissions and their associated values: read,
+      write, and execute: 7 read and execute: 5 read and write: 6 read only: 4
+  """
+
+  artifactId = _messages.StringField(1)
+  destination = _messages.StringField(2)
+  overwrite = _messages.BooleanField(3)
+  permissions = _messages.StringField(4)
+
+
+class SoftwareRecipeStepExecFile(_messages.Message):
+  r"""Executes an artifact or local file.
+
+  Fields:
+    allowedExitCodes: Defaults to [0]. A list of possible return values that
+      the program can return to indicate a success.
+    args: Arguments to be passed to the provided executable.
+    artifactId: The id of the relevant artifact in the recipe.
+    localPath: The absolute path of the file on the local filesystem.
+  """
+
+  allowedExitCodes = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
+  args = _messages.StringField(2, repeated=True)
+  artifactId = _messages.StringField(3)
+  localPath = _messages.StringField(4)
+
+
+class SoftwareRecipeStepExtractArchive(_messages.Message):
+  r"""Extracts an archive of the type specified in the specified directory.
+
+  Enums:
+    TypeValueValuesEnum: The type of the archive to extract.
+
+  Fields:
+    artifactId: The id of the relevant artifact in the recipe.
+    destination: Directory to extract archive to. Defaults to / on Linux or
+      C:\ on Windows.
+    type: The type of the archive to extract.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of the archive to extract.
+
+    Values:
+      ARCHIVE_TYPE_UNSPECIFIED: Indicates that the archive type isn't
+        specified.
+      TAR: Indicates that the archive is a tar archive with no encryption.
+      TAR_GZIP: Indicates that the archive is a tar archive with gzip
+        encryption.
+      TAR_BZIP: Indicates that the archive is a tar archive with bzip
+        encryption.
+      TAR_LZMA: Indicates that the archive is a tar archive with lzma
+        encryption.
+      TAR_XZ: Indicates that the archive is a tar archive with xz encryption.
+      ZIP: Indicates that the archive is a zip archive.
+    """
+    ARCHIVE_TYPE_UNSPECIFIED = 0
+    TAR = 1
+    TAR_GZIP = 2
+    TAR_BZIP = 3
+    TAR_LZMA = 4
+    TAR_XZ = 5
+    ZIP = 6
+
+  artifactId = _messages.StringField(1)
+  destination = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
+class SoftwareRecipeStepInstallDpkg(_messages.Message):
+  r"""Installs a deb via dpkg.
+
+  Fields:
+    artifactId: The id of the relevant artifact in the recipe.
+  """
+
+  artifactId = _messages.StringField(1)
+
+
+class SoftwareRecipeStepInstallMsi(_messages.Message):
+  r"""Installs an MSI file.
+
+  Fields:
+    allowedExitCodes: Return codes that indicate that the software installed
+      or updated successfully. Behaviour defaults to [0]
+    artifactId: The id of the relevant artifact in the recipe.
+    flags: The flags to use when installing the MSI defaults to ["/i"] (i.e.
+      the install flag).
+  """
+
+  allowedExitCodes = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
+  artifactId = _messages.StringField(2)
+  flags = _messages.StringField(3, repeated=True)
+
+
+class SoftwareRecipeStepInstallRpm(_messages.Message):
+  r"""Installs an rpm file via the rpm utility.
+
+  Fields:
+    artifactId: The id of the relevant artifact in the recipe.
+  """
+
+  artifactId = _messages.StringField(1)
+
+
+class SoftwareRecipeStepRunScript(_messages.Message):
+  r"""Runs a script through an interpreter.
+
+  Enums:
+    InterpreterValueValuesEnum: The script interpreter to use to run the
+      script. If no interpreter is specified the script will be executed
+      directly, which will likely only succeed for scripts with shebang lines.
+      [Wikipedia shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)).
+
+  Fields:
+    allowedExitCodes: Return codes that indicate that the software installed
+      or updated successfully. Behaviour defaults to [0]
+    args: Arguments to be passed to the provided script.
+    interpreter: The script interpreter to use to run the script. If no
+      interpreter is specified the script will be executed directly, which
+      will likely only succeed for scripts with shebang lines. [Wikipedia
+      shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)).
+    script: The shell script to be executed.
+  """
+
+  class InterpreterValueValuesEnum(_messages.Enum):
+    r"""The script interpreter to use to run the script. If no interpreter is
+    specified the script will be executed directly, which will likely only
+    succeed for scripts with shebang lines. [Wikipedia
+    shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)).
+
+    Values:
+      INTERPRETER_UNSPECIFIED: Default value for ScriptType.
+      SHELL: Indicates that the script will be run with /bin/sh on Linux and
+        cmd on windows.
+      POWERSHELL: Indicates that the script will be run with powershell.
+    """
+    INTERPRETER_UNSPECIFIED = 0
+    SHELL = 1
+    POWERSHELL = 2
+
+  allowedExitCodes = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
+  args = _messages.StringField(2, repeated=True)
+  interpreter = _messages.EnumField('InterpreterValueValuesEnum', 3)
+  script = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1557,28 +1667,6 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
-
-
-class Step(_messages.Message):
-  r"""An action that can be taken as part of installing or updating a recipe.
-
-  Fields:
-    archiveExtraction: Extracts an archive into the specified directory.
-    dpkgInstallation: Installs a deb file via dpkg.
-    fileCopy: Copies a file onto the instance.
-    fileExec: Executes an artifact or local file.
-    msiInstallation: Installs an MSI file.
-    rpmInstallation: Installs an rpm file via the rpm utility.
-    scriptRun: Runs commands in a shell.
-  """
-
-  archiveExtraction = _messages.MessageField('ExtractArchive', 1)
-  dpkgInstallation = _messages.MessageField('InstallDpkg', 2)
-  fileCopy = _messages.MessageField('CopyFile', 3)
-  fileExec = _messages.MessageField('ExecFile', 4)
-  msiInstallation = _messages.MessageField('InstallMsi', 5)
-  rpmInstallation = _messages.MessageField('InstallRpm', 6)
-  scriptRun = _messages.MessageField('RunScript', 7)
 
 
 class WindowsUpdateSettings(_messages.Message):

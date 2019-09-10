@@ -50,7 +50,9 @@ class WebSocketSendError(exceptions.Error):
 class IapTunnelWebSocketHelper(object):
   """Helper class for common operations on websocket and related metadata."""
 
-  def __init__(self, url, headers, ignore_certs, proxy_info, on_data, on_close):
+  def __init__(
+      self, url, headers, ignore_certs, proxy_info, on_data, on_close,
+      caa_config=None):
     self._on_data = on_data
     self._on_close = on_close
     self._proxy_info = proxy_info
@@ -62,6 +64,12 @@ class IapTunnelWebSocketHelper(object):
     if ignore_certs:
       self._sslopt['cert_reqs'] = ssl.CERT_NONE
       self._sslopt['check_hostname'] = False
+
+    if caa_config is not None:
+      if caa_config.use_client_certificate:
+        cert_path = caa_config.client_cert_path
+        log.debug('Using client certificate %s', cert_path)
+        self._sslopt['certfile'] = cert_path
 
     # Disable most of random logging in websocket library itself
     logging.getLogger('websocket').setLevel(logging.CRITICAL)

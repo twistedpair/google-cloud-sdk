@@ -24,6 +24,74 @@ DOCS_URL = 'https://cloud.google.com/run/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  NAMESPACES = (
+      'namespaces',
+      'namespaces/{namespacesId}',
+      {},
+      [u'namespacesId'],
+      True
+  )
+  NAMESPACES_AUTODOMAINMAPPINGS = (
+      'namespaces.autodomainmappings',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/autodomainmappings/'
+              '{autodomainmappingsId}',
+      },
+      [u'name'],
+      True
+  )
+  NAMESPACES_CONFIGURATIONS = (
+      'namespaces.configurations',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/configurations/{configurationsId}',
+      },
+      [u'name'],
+      True
+  )
+  NAMESPACES_DOMAINMAPPINGS = (
+      'namespaces.domainmappings',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/domainmappings/{domainmappingsId}',
+      },
+      [u'name'],
+      True
+  )
+  NAMESPACES_REVISIONS = (
+      'namespaces.revisions',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/revisions/{revisionsId}',
+      },
+      [u'name'],
+      True
+  )
+  NAMESPACES_ROUTES = (
+      'namespaces.routes',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/routes/{routesId}',
+      },
+      [u'name'],
+      True
+  )
+  NAMESPACES_SERVICES = (
+      'namespaces.services',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/services/{servicesId}',
+      },
+      [u'name'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
@@ -37,6 +105,72 @@ class Collections(enum.Enum):
       {
           '':
               'projects/{projectsId}/locations/{locationsId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_AUTODOMAINMAPPINGS = (
+      'projects.locations.autodomainmappings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'autodomainmappings/{autodomainmappingsId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_CONFIGURATIONS = (
+      'projects.locations.configurations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/configurations/'
+              '{configurationsId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_DOMAINMAPPINGS = (
+      'projects.locations.domainmappings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/domainmappings/'
+              '{domainmappingsId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_REVISIONS = (
+      'projects.locations.revisions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/revisions/'
+              '{revisionsId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_ROUTES = (
+      'projects.locations.routes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/routes/'
+              '{routesId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SERVICES = (
+      'projects.locations.services',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/services/'
+              '{servicesId}',
       },
       [u'name'],
       True

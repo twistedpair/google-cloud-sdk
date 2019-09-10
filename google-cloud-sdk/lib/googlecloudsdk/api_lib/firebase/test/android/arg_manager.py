@@ -72,7 +72,7 @@ def SharedArgRules():
       'optional': [
           'additional_apks',
           'app_package',
-          'async',
+          'async_',
           'auto_google_login',
           'client_details',
           'device',
@@ -94,7 +94,7 @@ def SharedArgRules():
           'timeout',
       ],
       'defaults': {
-          'async': False,
+          'async_': False,
           'auto_google_login': True,
           'num_flaky_test_attempts': 0,
           'performance_metrics': True,

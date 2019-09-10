@@ -94,7 +94,7 @@ def ModifyImportOrRestoreRequest(unused_instance_ref, args, request):
 
 def LogImportSuccess(response, args):
   path = args.source
-  if not args.async:
+  if not args.async_:
     if path != '-':
       log.status.Print('Successfully imported agent from [{}].'.format(path))
     else:

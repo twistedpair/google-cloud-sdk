@@ -228,6 +228,10 @@
           "description": "Configure the maintenance policy for this cluster.",
           "$ref": "MaintenancePolicy"
         },
+        "binaryAuthorization": {
+          "description": "Configuration for Binary Authorization.",
+          "$ref": "BinaryAuthorization"
+        },
         "networkConfig": {
           "description": "Configuration for cluster networking.",
           "$ref": "NetworkConfig"
@@ -971,6 +975,17 @@
         }
       }
     },
+    "BinaryAuthorization": {
+      "id": "BinaryAuthorization",
+      "description": "Configuration for Binary Authorization.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enable Binary Authorization for this cluster. If enabled, all container\nimages will be validated by Binary Authorization.",
+          "type": "boolean"
+        }
+      }
+    },
     "NetworkConfig": {
       "id": "NetworkConfig",
       "description": "NetworkConfig reports the relative names of network & subnetwork.",
@@ -1301,6 +1316,10 @@
         "desiredMasterAuthorizedNetworksConfig": {
           "description": "The desired configuration options for master authorized networks feature.",
           "$ref": "MasterAuthorizedNetworksConfig"
+        },
+        "desiredBinaryAuthorization": {
+          "description": "The desired configuration options for the Binary Authorization feature.",
+          "$ref": "BinaryAuthorization"
         },
         "desiredLoggingService": {
           "description": "The logging service the cluster should use to write logs.\nCurrently available options:\n\n* \"logging.googleapis.com\/kubernetes\" - the Google Cloud Logging\nservice with Kubernetes-native resource model in Stackdriver\n* \"logging.googleapis.com\" - the Google Cloud Logging service\n* \"none\" - no logs will be exported from the cluster",

@@ -51,7 +51,7 @@ import six
 
 # The maximum amount of time to wait for a newly-added SSH key to
 # propagate before giving up.
-SSH_KEY_PROPAGATION_TIMEOUT_SEC = 60
+SSH_KEY_PROPAGATION_TIMEOUT_MS = 60 * 1000
 
 _TROUBLESHOOTING_URL = (
     'https://cloud.google.com/compute/docs/troubleshooting#ssherrors')
@@ -914,7 +914,7 @@ def CreateSSHPoller(remote, identity_file, options, iap_tunnel_args,
                      'options': options,
                      'iap_tunnel_args': iap_tunnel_args,
                      'extra_flags': extra_flags,
-                     'max_wait_ms': SSH_KEY_PROPAGATION_TIMEOUT_SEC}
+                     'max_wait_ms': SSH_KEY_PROPAGATION_TIMEOUT_MS}
 
   # Do not include default port since that will prevent users from
   # specifying a custom port (b/121998342).

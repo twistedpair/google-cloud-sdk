@@ -32,6 +32,7 @@ import time
 
 from googlecloudsdk.api_lib.compute import iap_tunnel_websocket
 from googlecloudsdk.api_lib.compute import iap_tunnel_websocket_utils as utils
+from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import http_proxy
@@ -408,6 +409,7 @@ class _BaseIapTunnelHelper(object):
     self._ignore_certs = args.iap_tunnel_insecure_disable_websocket_cert_check
     # Means that a ctrl-c was seen in server mode (never true in Stdin mode).
     self._shutdown = False
+    self._caa_config = context_aware.Config()
 
   def _InitiateWebSocketConnection(self, local_conn, get_access_token_callback):
     tunnel_target = self._GetTunnelTargetInfo()
@@ -415,7 +417,8 @@ class _BaseIapTunnelHelper(object):
         tunnel_target, get_access_token_callback,
         functools.partial(_SendLocalDataCallback, local_conn),
         functools.partial(_CloseLocalConnectionCallback, local_conn),
-        ignore_certs=self._ignore_certs)
+        ignore_certs=self._ignore_certs,
+        caa_config=self._caa_config)
     new_websocket.InitiateConnection()
     return new_websocket
 

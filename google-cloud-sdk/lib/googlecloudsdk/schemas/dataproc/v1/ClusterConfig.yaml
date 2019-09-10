@@ -25,14 +25,20 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  autoscalingConfig:
+    description: |-
+      Autoscaling config for the policy associated with the cluster. Cluster
+      does not autoscale if this field is unset.
+    $ref: AutoscalingConfig.yaml
   configBucket:
     description: |-
-      A Cloud Storage staging bucket used for sharing generated SSH keys and
-      config. If you do not specify a staging bucket, Cloud Dataproc will
-      determine an appropriate Cloud Storage location (US, ASIA, or EU) for your
-      cluster's staging bucket according to the Google Compute Engine zone where
-      your cluster is deployed, and then it will create and manage this project-
-      level, per-location bucket for you.
+      A Google Cloud Storage bucket used to stage job dependencies, config
+      files, and job driver console output. If you do not specify a staging
+      bucket, Cloud Dataproc will determine a Cloud Storage location (US, ASIA,
+      or EU) for your cluster's staging bucket according to the Google Compute
+      Engine zone where your cluster is deployed, and then create and manage
+      this project-level, per-location bucket (see Cloud Dataproc staging
+      bucket).
     type: string
   encryptionConfig:
     description: Encryption settings for the cluster.
@@ -53,6 +59,9 @@ properties:
     type: array
     items:
       $ref: NodeInitializationAction.yaml
+  lifecycleConfig:
+    description: Lifecycle setting for the cluster.
+    $ref: LifecycleConfig.yaml
   masterConfig:
     description: |-
       The Compute Engine config settings for the master instance in a
@@ -63,6 +72,9 @@ properties:
       The Compute Engine config settings for additional worker instances in
       a cluster.
     $ref: InstanceGroupConfig.yaml
+  securityConfig:
+    description: Security settings for the cluster.
+    $ref: SecurityConfig.yaml
   softwareConfig:
     description: The config settings for software inside the cluster.
     $ref: SoftwareConfig.yaml

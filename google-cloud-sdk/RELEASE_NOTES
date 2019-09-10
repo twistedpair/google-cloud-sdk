@@ -5,15 +5,68 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 262.0.0 (2019-09-10)
+
+### Cloud SDK
+
+* Added 'context_aware' configuration, to specify the usage of client
+  certificate. Please see `gcloud config set --help` for more details.
+* Updated the winkeygen.exe executable on Windows to include a fix that will
+  re-encode .ppk key files created with an incorrect encoding.
+
+### Cloud Healthcare
+
+* Promoted `gcloud healthcare` command group to beta.
+
+### Cloud Run
+
+* Added log warning that shows the list of regions that did not respond
+  to `gcloud run beta services list`.
+* Promoted `--labels` and related flags for `gcloud beta run update` and
+  `gcloud beta run deploy` to beta.
+
+### Cloud Speech API
+
+* Promoted `--additional-language-codes`, `--include-word-confidence`,
+  `--enable-speaker-diarization`, `--diarization-speaker-count` flags of
+  `gcloud ml speech recognize` to beta.
+* Promoted `--additional-language-codes`, `--include-word-confidence`,
+  `--enable-speaker-diarization`, `--diarization-speaker-count` flags of
+  `gcloud ml speech recognize-long-running` to beta.
+
+### Compute Engine
+
+* Promoted `gcloud compute networks peerings update` to GA.
+* Added `--family` flag to `gcloud beta compute images import`.
+* Added `--description` flag to `gcloud beta compute images import`.
+* Added Mutual TLS support for context aware access users to access VMs(ssh/tcp) using IAP tunnel.
+* Updated Windows PuTTY executables to version 0.71.
+* Promoted `gcloud beta compute routers nats update` to beta.
+* Promoted `enable-display-device` flag for `gcloud compute instances create` to GA.
+* Promoted `enable-display-device` and `no-enable-display-device` flags for `gcloud compute instances update` to GA.
+
+### Kubernetes Engine
+
+* Flag `--allow-route-overlap` now needs either `--enable-ip-alias` or
+  `--no-enable-ip-alias` to be set.
+* Added `--enable-intra-node-visibility` to `gcloud container clusters create`.
+* Added `--release-channel` flag to `gcloud beta container clusters create`
+  for subscribing a cluster to a release channel.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 261.0.0 (2019-09-03)
 
 ### Breaking Changes
 
-*   **(Cloud Datastore Emulator)** Deprecated `--legacy` flag from `gcloud <alpha|beta> emulators datastore
-*   **(Cloud Datastore Emulator)** start`. This is due to the legacy Datastore emulator no longer being supported.
-*   **(Cloud Datastore Emulator)** The flag will be removed in early October 2019.
-*   **(Kubernetes Engine)** Removed deprecated PGP-specific flags from `gcloud beta container binauthz`
-    command group.
+*   **(Cloud Datastore Emulator)** Deprecated `--legacy` flag from
+    `gcloud beta emulators datastore start`. This is due to the legacy
+    Datastore emulator no longer being supported. The flag will be removed
+    in early October 2019.
+*   **(Kubernetes Engine)** Removed deprecated PGP-specific flags from
+    `gcloud beta container binauthz` command group.
 
 
 ### Cloud Bigtable
@@ -89,7 +142,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Cloud Run
 
 * Updated success message for synchronous `gcloud run alpha/beta deploy`
-to indicate if and how much traffic the new revision is serving.
+  to indicate if and how much traffic the new revision is serving.
 
 ### Compute Engine
 
@@ -7280,7 +7333,7 @@ disabled on existing clusters via the
 
 * Fixed issue in which some downloads of the Cloud SDK were missing critical
   libraries.
-  * https://code.google.com/p/google-cloud-sdk/issues/detail?id=1525
+  * https://issuetracker.google.com/issues/35907794
 
 ## 143.0.0 (2017-02-08)
 
@@ -10118,9 +10171,7 @@ command surface.
 
 ## 0.9.78 (2015-09-16)
 
-*   App Engine components updated to 1.9.26. Please visit
-    <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes> for
-    details.
+*   App Engine components updated to 1.9.26.
 *   Increase the default boot disk size for remote build VMs in
     `gcloud preview app deploy`.
 *   The `--instance` flag to the `gcloud preview app modules set-managed-by`
@@ -10242,9 +10293,7 @@ command surface.
     *   Added `--no-enable-cloud-monitoring` to turn off cloud monitoring
         (on by default).
     *   Added `--disk-size` option for specifying boot disk size of node vms.
-*   App Engine components updated to 1.9.24. Please visit
-    <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes> for
-    details.
+*   App Engine components updated to 1.9.24.
 
     For several months on the Managed VMs team we've been testing a new mode of
     `dockerless` local development on gcloud that makes developing a module for
@@ -10318,9 +10367,7 @@ command surface.
 
 ## 0.9.67 (2015-07-01)
 
-*   App Engine components updated to 1.9.23. Please visit
-    <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes> for
-    details.
+*   App Engine components updated to 1.9.23.
 *   Added the "gen-config" command to app surface to generate configuration
     files for node.js apps.
 *   New `compute instance-groups unmanaged` commands group for Instance Groups
@@ -10628,8 +10675,6 @@ command surface.
 *   Updated gsutil to 4.1
 *   Updated gcutil to 1.16.0
 *   Updated all App Engine tools to 1.9.6
-    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
-    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
 
 
 ## 0.9.25 (2014-05-21)
@@ -10637,8 +10682,6 @@ command surface.
 *   `gcloud preview app deploy` and `... run` argument updates.
 *   `gcloud config ...` argument updates.
 *   Updated all App Engine tools to 1.9.5
-    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
-    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
 
 
 ## 0.9.24 (2014-05-07)
@@ -10654,8 +10697,6 @@ command surface.
     *   Run `gcloud components update compute` to install
     *   Run `gcloud help compute` for more information
 *   Updated all App Engine tools to 1.9.4
-    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
-    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
 *   Added color to error and warning messages (on Linux and Mac)
     *   To disable, run `gcloud config set disable_color true`
 
@@ -10696,8 +10737,6 @@ command surface.
 ## 0.9.17 (2014-02-11)
 
 *   Updated all App Engine tools to 1.9.0
-    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
-    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
 *   Cloud SDK now distributed under the Apache v2.0 license.  Please see LICENSE
     for more information.
 
@@ -10713,8 +10752,6 @@ command surface.
 
 *   Updated gsutil to 3.40
 *   Updated all App Engine tools to 1.8.9
-    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
-    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
 *   Fixed broken PHP runtimes on Mac and Windows installs when running
     the dev_appserver.
 *   Adding sh/cmd wrapper scripts for bq, gcutil, and gsutil for better PATH
@@ -10742,16 +10779,12 @@ command surface.
 ## 0.9.13 (2013-11-19)
 
 *   Updated all App Engine tools to 1.8.8
-    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
-    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
 *   Disabling site packages when running commands, to avoid library conflicts.
 
 
 ## 0.9.12 (2013-11-06)
 
 *   Updated all App Engine tools to 1.8.7
-    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
-    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
 *   Updated bq to 2.0.17
 *   A few usability improvements in the component manager and install flow.
 
@@ -10777,8 +10810,6 @@ command surface.
 ## 0.9.10 (2013-10-20)
 
 *   Upgraded all App Engine tools to 1.8.6.
-    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
-    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
 *   Upgraded bq to 2.0.16.
 *   Upgraded gcutil to 1.9.1.
 *   A few improvements to the gauth web flow.
@@ -10787,8 +10818,6 @@ command surface.
 ## 0.9.9 (2013-09-26)
 
 *   Upgraded all App Engine tools to 1.8.5.
-    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
-    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
 *   Upgraded bq to 2.0.15.
 *   Upgraded gcutil to 1.8.4.
 *   Upgraded gsutil to 3.37.
@@ -10797,8 +10826,6 @@ command surface.
 ## 0.9.8 (2013-08-27)
 
 *   Upgraded all App Engine tools to 1.8.4.
-    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
-    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
 *   Upgraded gcutil to 1.8.3.
 *   Upgraded gsutil to 3.35.
 
@@ -10806,16 +10833,12 @@ command surface.
 ## 0.9.7 (2013-08-06)
 
 *   Upgraded all App Engine tools to 1.8.3
-    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
-    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
 *   Upgraded gsutil to 3.34
 
 
 ## 0.9.6 (2013-07-17)
 
 *   Upgraded all App Engine tools to 1.8.2
-    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
-    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
 *   Upgraded bq to 2.0.14
 *   Upgraded gcutil to 1.8.2
 *   Upgraded gsutil to 3.33

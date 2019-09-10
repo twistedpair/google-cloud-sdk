@@ -102,7 +102,7 @@ to learn about all available accelerator types.
       type=arg_parsers.ArgDict(spec={
           'count': int,
           'type': str,
-      }),
+      }, required_keys=['count', 'type']),
       action='append',
       help=help_text)
 

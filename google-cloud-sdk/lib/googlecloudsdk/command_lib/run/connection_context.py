@@ -325,7 +325,13 @@ class _KubeconfigConnectionContext(ConnectionInfo):
       self.client_key = client_key
       self.client_cert = client_cert
       if self.client_cert:
-        self.client_cert_domain = 'kubernetes.default'
+        # The "domain" we're connecting to is different between PY2 and PY3
+        # (TLS address checking is handled differently) so compensate for that
+        # here.p
+        if six.PY2:
+          self.client_cert_domain = 'kubernetes.default'
+        else:
+          self.client_cert_domain = self.raw_hostname
       yield
 
 

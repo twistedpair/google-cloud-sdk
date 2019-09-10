@@ -50,7 +50,7 @@ class CommandData(object):
     if self.command_type == CommandType.WAIT and not async_data:
       raise util.InvalidSchemaError(
           'Wait commands must include an async section.')
-    self.async = Async(async_data) if async_data else None
+    self.async_ = Async(async_data) if async_data else None
     self.iam = IamData(iam_data) if iam_data else None
     self.arguments = Arguments(data['arguments'])
     self.input = Input(self.command_type, data.get('input', {}))
@@ -172,6 +172,10 @@ class IamData(object):
     self.message_type_overrides = data.get('message_type_overrides', {})
     self.set_iam_policy_request_path = data.get('set_iam_policy_request_path')
     self.enable_condition = data.get('enable_condition', False)
+    self.policy_version = data.get('policy_version', None)
+    self.get_iam_policy_version_path = data.get(
+        'get_iam_policy_version_path',
+        'options.requestedPolicyVersion')
 
 
 class AsyncStateField(object):

@@ -95,7 +95,7 @@ class JobSubmitter(base.Command):
 
     log.status.Print('Job [{0}] submitted.'.format(job_id))
 
-    if not args.async:
+    if not args.async_:
       job = util.WaitForJobTermination(
           dataproc,
           job,

@@ -131,6 +131,10 @@ class Displayer(object):
     Returns:
       The flag value or None if it is unknown or unset.
     """
+    if flag_name == 'async':
+      # The async flag has a special destination since 'async' is a reserved
+      # keyword as of Python 3.7.
+      return getattr(self._args, 'async_', None)
     return getattr(self._args, flag_name, None)
 
   def _AddUriCacheTap(self):

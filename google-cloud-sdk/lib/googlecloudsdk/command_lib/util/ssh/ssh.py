@@ -524,6 +524,27 @@ class Keys(object):
       cmd = KeygenCommand(self.key_file, allow_passphrase=allow_passphrase)
       cmd.Run(self.env)
 
+    if self.env.suite is Suite.PUTTY:
+      # This is to fix an encoding issue with PPK's we generated that was
+      # ignored in versions of PuTTY <=0.70, but became invalid in version 0.71.
+      # Since this only affects the PPK, we don't need to generate a new key; we
+      # can just correct the encoding of the PPK if necessary. We use a sentinel
+      # file in the config dir to check if the encoding is already correct.
+      valid_ppk_sentinel = config.Paths().valid_ppk_sentinel_file
+      if not os.path.exists(valid_ppk_sentinel):
+        if key_files_validity is KeyFileStatus.PRESENT:  # Initial validity
+          cmd = KeygenCommand(
+              self.key_file, allow_passphrase=False, reencode_ppk=True)
+          cmd.Run(self.env)
+        try:
+          files.WriteFileContents(valid_ppk_sentinel, '')
+        except files.Error as e:
+          # It's possible that writing the sentinel file fails, which means
+          # we'll potentially have to re-encode the PPK again the next time an
+          # SSH/SCP command is run. But we shouldn't let this prevent the user
+          # from running their current command.
+          log.debug('Failed to create sentinel file: [{}]'.format(e))
+
 
 class KnownHosts(object):
   """Represents known hosts file, supports read, write and basic key management.
@@ -1029,12 +1050,16 @@ class KeygenCommand(object):
       - Running in an OpenSSH environment (Linux and Mac)
       - Running in interactive mode (from an actual TTY)
       - Prompts are enabled in gcloud
+    reencode_ppk: bool, If True, reencode the PPK file if it was generated with
+      a bad encoding, instead of generating a new key. This is only valid for
+      PuTTY.
   """
 
-  def __init__(self, identity_file, allow_passphrase=True):
+  def __init__(self, identity_file, allow_passphrase=True, reencode_ppk=False):
     """Construct a suite independent `ssh-keygen` command."""
     self.identity_file = identity_file
     self.allow_passphrase = allow_passphrase
+    self.reencode_ppk = reencode_ppk
 
   def Build(self, env=None):
     """Construct the actual command according to the given environment.
@@ -1059,6 +1084,8 @@ class KeygenCommand(object):
         args.extend(['-N', ''])  # Empty passphrase
       args.extend(['-t', 'rsa', '-f', self.identity_file])
     else:
+      if self.reencode_ppk:
+        args.append('--reencode-ppk')
       args.append(self.identity_file)
 
     return args

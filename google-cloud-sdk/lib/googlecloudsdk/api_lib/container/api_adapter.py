@@ -124,6 +124,10 @@ UNKNOWN_WORKLOAD_METADATA_FROM_NODE_ERROR_MSG = """\
 Invalid option '{option}' for '--workload-metadata-from-node' (must be one of 'unspecified', 'secure', 'exposed').
 """
 
+ALLOW_ROUTE_OVERLAP_WITHOUT_EXPLICIT_NETWORK_MODE = """\
+Flag --allow-route-overlap must be used with either --enable-ip-alias or --no-enable-ip-alias.
+"""
+
 ALLOW_ROUTE_OVERLAP_WITHOUT_CLUSTER_CIDR_ERROR_MSG = """\
 Flag --cluster-ipv4-cidr must be fully specified (e.g. `10.96.0.0/14`, but not `/14`) with --allow-route-overlap.
 """
@@ -178,21 +182,6 @@ Cannot use --[no-]enable-network-egress-metering without --resource-usage-bigque
 
 ENABLE_RESOURCE_CONSUMPTION_METERING_ERROR_MSG = """\
 Cannot use --[no-]enable-resource-consumption-metering without --resource-usage-bigquery-dataset.
-"""
-
-# TODO(b/132353882): move this check to the server side.
-SURGE_AND_AUTOSCALING_ERROR_MSG = """\
-Cannot use cluster autoscaling with alpha surge upgrades.
-"""
-
-# TODO(b/132353882): move this check to the server side.
-SURGE_AND_MAX_UNAVAILABLE_BOTH_ZERO_ERROR_MSG = """\
-Cannot set both --max-unavailable-upgrade and --max-surge-upgrade to 0.
-"""
-
-# TODO(b/132353882): move this check to the server side.
-SURGE_REQUIRED_TO_CHANGE_MAX_UNAVAILABLE_ERROR_MSG = """\
-At present changing --max-unavailable-upgrade requires setting --max-surge-upgrade to at least 1.
 """
 
 DISABLE_DEFAULT_SNAT_WITHOUT_IP_ALIAS_ERROR_MSG = """\
@@ -727,7 +716,9 @@ class UpdateNodePoolOptions(object):
                min_nodes=None,
                enable_autoprovisioning=None,
                workload_metadata_from_node=None,
-               node_locations=None):
+               node_locations=None,
+               max_surge_upgrade=None,
+               max_unavailable_upgrade=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.enable_autoscaling = enable_autoscaling
@@ -736,6 +727,8 @@ class UpdateNodePoolOptions(object):
     self.enable_autoprovisioning = enable_autoprovisioning
     self.workload_metadata_from_node = workload_metadata_from_node
     self.node_locations = node_locations
+    self.max_surge_upgrade = max_surge_upgrade
+    self.max_unavailable_upgrade = max_unavailable_upgrade
 
   def IsAutoscalingUpdate(self):
     return (self.enable_autoscaling is not None or self.max_nodes is not None or
@@ -748,7 +741,9 @@ class UpdateNodePoolOptions(object):
 
   def IsUpdateNodePoolRequest(self):
     return (self.workload_metadata_from_node is not None or
-            self.node_locations is not None)
+            self.node_locations is not None or
+            self.max_surge_upgrade is not None or
+            self.max_unavailable_upgrade is not None)
 
 
 class APIAdapter(object):
@@ -1268,6 +1263,8 @@ class APIAdapter(object):
     """Parse the options for allow route overlap."""
     if not options.allow_route_overlap:
       return
+    if options.enable_ip_alias is None:
+      raise util.Error(ALLOW_ROUTE_OVERLAP_WITHOUT_EXPLICIT_NETWORK_MODE)
     # Validate required flags are set.
     if options.cluster_ipv4_cidr is None:
       raise util.Error(ALLOW_ROUTE_OVERLAP_WITHOUT_CLUSTER_CIDR_ERROR_MSG)
@@ -1843,22 +1840,8 @@ class APIAdapter(object):
       pool.maxPodsConstraint = self.messages.MaxPodsConstraint(
           maxPodsPerNode=options.max_pods_per_node)
 
-    # When both flags are default, don't write UpgradeSettings.
-    # TODO(b/130107095): remove this condition and always create
-    # UppgradeSettings.
-    if ((options.max_surge_upgrade is not None) and
-        (options.max_surge_upgrade != 0)) or (
-            (options.max_unavailable_upgrade is not None) and
-            (options.max_unavailable_upgrade != 1)):
-      # TODO(b/130103224): remove this condition.
-      if options.enable_autoscaling:
-        raise util.Error(SURGE_AND_AUTOSCALING_ERROR_MSG)
-      if (options.max_surge_upgrade == 0 and
-          options.max_unavailable_upgrade == 0):
-        raise util.Error(SURGE_AND_MAX_UNAVAILABLE_BOTH_ZERO_ERROR_MSG)
-      # TODO(b/130107094): remove this condition.
-      if options.max_surge_upgrade == 0:
-        raise util.Error(SURGE_REQUIRED_TO_CHANGE_MAX_UNAVAILABLE_ERROR_MSG)
+    if (options.max_surge_upgrade is not None or
+        options.max_unavailable_upgrade is not None):
       pool.upgradeSettings = self.messages.UpgradeSettings()
       pool.upgradeSettings.maxSurge = options.max_surge_upgrade
       pool.upgradeSettings.maxUnavailable = options.max_unavailable_upgrade
@@ -1948,6 +1931,18 @@ class APIAdapter(object):
     if options.min_nodes is not None:
       autoscaling.minNodeCount = options.min_nodes
     return autoscaling
+
+  def UpdateUpgradeSettings(self, node_pool_ref, options):
+    """Updates node pool's upgrade setting."""
+    pool = self.GetNodePool(node_pool_ref)
+    upgrade_settings = pool.upgradeSettings
+    if upgrade_settings is None:
+      upgrade_settings = self.messages.UpgradeSettings()
+    if options.max_surge_upgrade is not None:
+      upgrade_settings.maxSurge = options.max_surge_upgrade
+    if options.max_unavailable_upgrade is not None:
+      upgrade_settings.maxUnavailable = options.max_unavailable_upgrade
+    return upgrade_settings
 
   def UpdateNodePool(self, node_pool_ref, options):
     """Updates nodePool on a cluster."""
@@ -2348,6 +2343,8 @@ class V1Beta1Adapter(V1Adapter):
     if options.identity_namespace is not None:
       cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
           identityNamespace=options.identity_namespace)
+    _AddReleaseChannelToCluster(cluster, options, self.messages)
+
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)
@@ -2553,6 +2550,10 @@ class V1Beta1Adapter(V1Adapter):
       _AddWorkloadMetadataToNodeConfig(update_request, options, self.messages)
     elif options.node_locations is not None:
       update_request.locations = sorted(options.node_locations)
+    elif (options.max_surge_upgrade is not None or
+          options.max_unavailable_upgrade is not None):
+      update_request.upgradeSettings = self.UpdateUpgradeSettings(
+          node_pool_ref, options)
 
     return update_request
 
@@ -2658,12 +2659,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
                 opt='enable-peering-route-sharing'))
       cluster.privateClusterConfig.enablePeeringRouteSharing = \
         options.enable_peering_route_sharing
-    if options.release_channel is not None:
-      channels = {
-          'rapid': self.messages.ReleaseChannel.ChannelValueValuesEnum.RAPID,
-      }
-      cluster.releaseChannel = self.messages.ReleaseChannel(
-          channel=channels[options.release_channel])
+    _AddReleaseChannelToCluster(cluster, options, self.messages)
 
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
@@ -2870,20 +2866,8 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           raise util.Error(MAX_PODS_PER_NODE_WITHOUT_IP_ALIAS_ERROR_MSG)
         pool.maxPodsConstraint = self.messages.MaxPodsConstraint(
             maxPodsPerNode=options.max_pods_per_node)
-      # When both flags are default, don't write UpgradeSettings.
-      # TODO(b/130107095): remove this condition and always create
-      # UppgradeSettings.
-      if (options.max_surge_upgrade != 0 or
-          options.max_unavailable_upgrade != 1):
-        # TODO(b/130103224): remove this condition.
-        if options.enable_autoscaling:
-          raise util.Error(SURGE_AND_AUTOSCALING_ERROR_MSG)
-        if (options.max_surge_upgrade == 0 and
-            options.max_unavailable_upgrade == 0):
-          raise util.Error(SURGE_AND_MAX_UNAVAILABLE_BOTH_ZERO_ERROR_MSG)
-        # TODO(b/130107094): remove this condition.
-        if options.max_surge_upgrade == 0:
-          raise util.Error(SURGE_REQUIRED_TO_CHANGE_MAX_UNAVAILABLE_ERROR_MSG)
+      if (options.max_surge_upgrade is not None or
+          options.max_unavailable_upgrade is not None):
         pool.upgradeSettings = self.messages.UpgradeSettings()
         pool.upgradeSettings.maxSurge = options.max_surge_upgrade
         pool.upgradeSettings.maxUnavailable = options.max_unavailable_upgrade
@@ -2981,6 +2965,18 @@ def _AddShieldedInstanceConfigToNodeConfig(node_config, options, messages):
     if options.shielded_integrity_monitoring is not None:
       node_config.shieldedInstanceConfig.enableIntegrityMonitoring = (
           options.shielded_integrity_monitoring)
+
+
+def _AddReleaseChannelToCluster(cluster, options, messages):
+  """Adds ReleaseChannel to Cluster."""
+  if options.release_channel is not None:
+    channels = {
+        'rapid': messages.ReleaseChannel.ChannelValueValuesEnum.RAPID,
+        'regular': messages.ReleaseChannel.ChannelValueValuesEnum.REGULAR,
+        'stable': messages.ReleaseChannel.ChannelValueValuesEnum.STABLE,
+    }
+    cluster.releaseChannel = messages.ReleaseChannel(
+        channel=channels[options.release_channel])
 
 
 def ProjectLocation(project, location):

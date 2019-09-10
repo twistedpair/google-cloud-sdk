@@ -257,6 +257,14 @@ MAP = {
             default_version=True
         ),
     },
+    'cloudidentity': {
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.cloudidentity.v1alpha1',
+            client_classpath='cloudidentity_v1alpha1_client.CloudidentityV1alpha1',
+            messages_modulepath='cloudidentity_v1alpha1_messages',
+            default_version=True
+        ),
+    },
     'cloudiot': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.cloudiot.v1',
@@ -977,6 +985,12 @@ MAP = {
             client_classpath='serviceusage_v1_client.ServiceusageV1',
             messages_modulepath='serviceusage_v1_messages',
             default_version=True
+        ),
+        'v1alpha': APIDef(
+            class_path='googlecloudsdk.third_party.apis.serviceusage.v1alpha',
+            client_classpath='serviceusage_v1alpha_client.ServiceusageV1alpha',
+            messages_modulepath='serviceusage_v1alpha_messages',
+            default_version=False
         ),
         'v1beta1': APIDef(
             class_path='googlecloudsdk.third_party.apis.serviceusage.v1beta1',

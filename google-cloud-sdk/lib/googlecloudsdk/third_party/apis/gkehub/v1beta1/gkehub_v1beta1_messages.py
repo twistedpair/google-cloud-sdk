@@ -172,6 +172,17 @@ class GenerateConnectAgentManifestResponse(_messages.Message):
   manifest = _messages.MessageField('ConnectAgentResource', 1, repeated=True)
 
 
+class GenerateConnectManifestResponse(_messages.Message):
+  r"""Response message for `GkeHubService.GenerateConnectManifest` method.
+
+  Fields:
+    manifest: The ordered list of Kubernetes resources that need to be applied
+      to the cluster for GKE Connect agent installation/upgrade.
+  """
+
+  manifest = _messages.MessageField('ConnectAgentResource', 1, repeated=True)
+
+
 class GkeCluster(_messages.Message):
   r"""GkeCluster represents a k8s cluster on GKE.
 
@@ -238,6 +249,18 @@ class GkehubProjectsLocationsGlobalMembershipsDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class GkehubProjectsLocationsGlobalMembershipsGenerateConnectManifestRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsGlobalMembershipsGenerateConnectManifestRequest
+  object.
+
+  Fields:
+    name: The membership resource the connect agent is associated with.
+      `projects/[project_id]/locations/global/memberships/[membership_id]`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class GkehubProjectsLocationsGlobalMembershipsGetRequest(_messages.Message):
   r"""A GkehubProjectsLocationsGlobalMembershipsGetRequest object.
 
@@ -286,8 +309,10 @@ class GkehubProjectsLocationsMembershipsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
-      field is omitted, policy format version 1 will be returned.
+      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.  Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -594,7 +619,7 @@ class Membership(_messages.Message):
     createTime: Output only. Timestamp for when the Membership was created.
     deleteTime: Output only. Timestamp for when the Membership was deleted.
     description: A required description of this membership, limited to 63
-      characters.
+      characters. description must match the regex: `a-zA-Z0-9*`
     endpoint: A MembershipEndpoint attribute.
     labels: GCP labels for this membership.
     name: Output only. The unique name of this domain resource in the format:
@@ -836,7 +861,11 @@ class Policy(_messages.Message):
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten.
-    version: Deprecated.
+    version: Specifies the format of the policy.  Valid values are 0, 1, and
+      3. Requests specifying an invalid value will be rejected.  Policies with
+      any conditional bindings must specify version 3. Policies without any
+      conditional bindings may specify any valid value or leave the field
+      unset.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)

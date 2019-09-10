@@ -30,7 +30,7 @@ properties:
       The version of software inside the cluster. It must be one of the
       supported Cloud Dataproc Versions, such as "1.2" (including a subminor
       version, such as "1.2.29"), or the "preview" version. If unspecified, it
-      defaults to the latest version.
+      defaults to the latest Debian version.
     type: string
   optionalComponents:
     description: The set of optional components to activate on the cluster.
@@ -39,18 +39,19 @@ properties:
       type: string
       enum:
       - ANACONDA
+      - COMPONENT_UNSPECIFIED
+      - DRUID
+      - HBASE
       - HIVE_WEBHCAT
       - JUPYTER
       - KERBEROS
       - PRESTO
+      - SOLR
       - ZEPPELIN
       - ZOOKEEPER
   properties:
     description: |-
-      The properties to set on daemon config files.Property keys are specified
-      in prefix:property format, such as core:fs.defaultFS. The following are
-      supported prefixes and their
-    type: object
-    additionalProperties:
-      description: Additional properties of type string
-      type: string
+      The properties to set on daemon config files.Property keys are
+      specified in prefix:property format, for example core:hadoop.tmp.dir.
+      The following are supported prefixes and their
+    $ref: PropertiesValue.yaml

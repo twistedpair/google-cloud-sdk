@@ -164,6 +164,11 @@ apis:
           path: providers/{triggerProvider}/eventTypes/{triggerEvent}
         projects.buckets:
           path: projects/_/buckets/{bucketId}
+  cloudidentity:
+    v1alpha1:
+      discovery_doc: cloudidentity_v1alpha1.json
+      default: true
+      resources:
   cloudiot:
     v1:
       discovery_doc: cloudiot_v1.json
@@ -569,6 +574,8 @@ apis:
       discovery_doc: servicenetworking_v1.json
       default: true
   serviceusage:
+    v1alpha:
+      discovery_doc: serviceusage_v1alpha.json
     v1beta1:
       discovery_doc: serviceusage_v1beta1.json
     v1:

@@ -57,7 +57,7 @@ def SharedArgRules():
   return {
       'required': ['type', 'test'],
       'optional': [
-          'async',
+          'async_',
           'client_details',
           'device',
           'network_profile',
@@ -69,7 +69,7 @@ def SharedArgRules():
           'timeout',
       ],
       'defaults': {
-          'async': False,
+          'async_': False,
           'device': [{}],  # Default dimensions will come from the iOS catalog.
           'num_flaky_test_attempts': 0,
           'record_video': True,

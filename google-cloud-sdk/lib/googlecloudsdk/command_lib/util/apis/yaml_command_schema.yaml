@@ -685,6 +685,10 @@ properties:
       # The indicator for IAM condition. If True, the command can accept condition
       # as part of a IAM policy binding. Default is False.
       enable_condition: {type: boolean}
+      # Override policy version. Default is None.
+      policy_version: {type: number}
+      # Path to the policy_version field for APIs that use non-standard mapping.
+      get_iam_policy_version_path: {type: string}
 
   # Additional information for handling the update commands.
   update:

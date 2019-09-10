@@ -122,8 +122,12 @@
           "type": "string"
         },
         "filter": {
-          "description": "Required. There must be at least one instance to patch for this job\nto succeed. This is the same filter used when listing compute instances.",
+          "description": "Instances to patch. This is the same filter used when listing compute\ninstances. Use instance_filter instead.",
           "type": "string"
+        },
+        "instanceFilter": {
+          "description": "Instances to patch, either explicitly or filtered by some criteria like\nzone or labels.",
+          "$ref": "PatchInstanceFilter"
         },
         "patchConfig": {
           "description": "Optional. Patch configuration being applied. If omitted, instances will be\npatched using the default configurations.",
@@ -137,6 +141,59 @@
         "dryRun": {
           "description": "Should this patch be a dry-run only.  Instances will be contacted, but\nthey will do nothing.",
           "type": "boolean"
+        }
+      }
+    },
+    "PatchInstanceFilter": {
+      "id": "PatchInstanceFilter",
+      "description": "A filter to target VM instances for patching. The targeted\nVMs must meet all criteria specified. So if both labels and zones are\nspecified, the patch job will target only VMs with those labels AND in those\nzones.",
+      "type": "object",
+      "properties": {
+        "all": {
+          "description": "Target all instances in the project. If true, no other criteria is\npermitted.",
+          "type": "boolean"
+        },
+        "groupLabels": {
+          "description": "Targets VM instances matching at least one of these label sets. This allows\ntargeting of disparate groups, for example \"env=prod or env=staging\".",
+          "type": "array",
+          "items": {
+            "$ref": "PatchInstanceFilterGroupLabel"
+          }
+        },
+        "zones": {
+          "description": "Targets VM instances in ANY of these zones. Leave empty to target instances\nin any zone.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "instances": {
+          "description": "Targets any of the VM instances specified. Instances are specified by their\nURI in the form `zones\/[ZONE]\/instances\/[INSTANCE_NAME],\n`projects\/[PROJECT_ID]\/zones\/[ZONE]\/instances\/[INSTANCE_NAME]`, or\n`https:\/\/www.googleapis.com\/compute\/v1\/projects\/[PROJECT_ID]\/zones\/[ZONE]\/instances\/[INSTANCE_NAME]`",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "instanceNamePrefixes": {
+          "description": "Targets VMs whose name starts with one of these prefixes. Like labels, this\nis another way to group VMs when targeting configs, for example\nprefix=\u201Dprod-\u201D.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "PatchInstanceFilterGroupLabel": {
+      "id": "PatchInstanceFilterGroupLabel",
+      "description": "Represents a group of VMs that can be identified as having all these\nlabels, for example \"env=prod and app=web\".",
+      "type": "object",
+      "properties": {
+        "labels": {
+          "description": "GCE instance labels that must be present for an instance to be targeted\nby this filter.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -448,8 +505,12 @@
           ]
         },
         "filter": {
-          "description": "Required. There must be at least one instance to patch for this job\nto succeed. This is the same filter used when listing compute instances.",
+          "description": "Instances to patch. This is the same filter used when listing compute\ninstances. Use instance_filter instead.",
           "type": "string"
+        },
+        "instanceFilter": {
+          "description": "Instances to patch.",
+          "$ref": "PatchInstanceFilter"
         },
         "patchConfig": {
           "description": "Patch configuration being applied.",
@@ -462,7 +523,7 @@
         },
         "instanceDetailsSummary": {
           "description": "Summary of instance details.",
-          "$ref": "InstanceDetailsSummary"
+          "$ref": "PatchJobInstanceDetailsSummary"
         },
         "dryRun": {
           "description": "If this patch job is a dry run, the agent will report that it has\nfinished without running any updates on the VM.",
@@ -479,8 +540,8 @@
         }
       }
     },
-    "InstanceDetailsSummary": {
-      "id": "InstanceDetailsSummary",
+    "PatchJobInstanceDetailsSummary": {
+      "id": "PatchJobInstanceDetailsSummary",
       "description": "A summary of the current patch state across all instances this patch job\naffects. Contains counts of instances in different states. These states map\nto InstancePatchState. List patch job instance details to see the specific\nstates of each instance.",
       "type": "object",
       "properties": {
@@ -583,11 +644,11 @@
     },
     "ReportPatchJobInstanceDetailsRequest": {
       "id": "ReportPatchJobInstanceDetailsRequest",
-      "description": "Request to report the patch status for an instance.",
+      "description": "Deprecated.  Use AgentEndpointProto.ReportTaskExecutionRequest instead.",
       "type": "object",
       "properties": {
         "instanceSystemId": {
-          "description": "Required. The unique, system-generated identifier for the instance.\n\nThis is the immutable, auto-generated ID assigned to the instance upon\ncreation. This is needed here because GCE instance names are not\ntombstoned; it is possible to delete an instance and create a new one with\nthe same name; this provides a mechanism for this API to identify distinct\ninstances in this case.",
+          "description": "Required. The unique, system-generated identifier for the instance.\n\nThis is the auto-generated ID assigned to the instance upon\ncreation. This is needed here because GCE instance names are not\ntombstoned; it is possible to delete an instance and create a new one with\nthe same name; this provides a mechanism for this API to identify distinct\ninstances in this case.",
           "type": "string"
         },
         "patchJob": {
@@ -649,7 +710,7 @@
     },
     "ReportPatchJobInstanceDetailsResponse": {
       "id": "ReportPatchJobInstanceDetailsResponse",
-      "description": "Response from reporting instance patch details. Includes information the\nagent needs to continue or stop patching.",
+      "description": "Deprecated.  Use AgentEndpointProto.ReportTaskExecutionResponse instead.",
       "type": "object",
       "properties": {
         "patchJob": {
@@ -823,7 +884,7 @@
           "description": "Targets instances matching at least one of these label sets. This allows\nan assignment to target disparate groups, for example \"env=prod or\nenv=staging\".",
           "type": "array",
           "items": {
-            "$ref": "GroupLabel"
+            "$ref": "AssignmentGroupLabel"
           }
         },
         "zones": {
@@ -870,8 +931,8 @@
         }
       }
     },
-    "GroupLabel": {
-      "id": "GroupLabel",
+    "AssignmentGroupLabel": {
+      "id": "AssignmentGroupLabel",
       "description": "Represents a group of VMs that can be identified as having all these\nlabels, for example \"env=prod and app=web\".",
       "type": "object",
       "properties": {
@@ -1078,21 +1139,21 @@
           "description": "Resources available to be used in the steps in the recipe.",
           "type": "array",
           "items": {
-            "$ref": "Artifact"
+            "$ref": "SoftwareRecipeArtifact"
           }
         },
         "installSteps": {
           "description": "Actions to be taken for installing this recipe. On failure it will stop\nexecuting steps and not attempt another installation. Any steps taken\n(including partially completed steps) will not be rolled back.",
           "type": "array",
           "items": {
-            "$ref": "Step"
+            "$ref": "SoftwareRecipeStep"
           }
         },
         "updateSteps": {
           "description": "Actions to be taken for updating this recipe. On failure it will stop\nexecuting steps and not attempt another update for this recipe. Any steps\ntaken (including partially completed steps) will not be rolled back.",
           "type": "array",
           "items": {
-            "$ref": "Step"
+            "$ref": "SoftwareRecipeStep"
           }
         },
         "desiredState": {
@@ -1113,8 +1174,8 @@
         }
       }
     },
-    "Artifact": {
-      "id": "Artifact",
+    "SoftwareRecipeArtifact": {
+      "id": "SoftwareRecipeArtifact",
       "description": "Specifies a resource to be used in the recipe.",
       "type": "object",
       "properties": {
@@ -1124,11 +1185,11 @@
         },
         "remote": {
           "description": "A generic remote artifact.",
-          "$ref": "Remote"
+          "$ref": "SoftwareRecipeArtifactRemote"
         },
         "gcs": {
           "description": "A GCS artifact.",
-          "$ref": "Gcs"
+          "$ref": "SoftwareRecipeArtifactGcs"
         },
         "allowInsecure": {
           "description": "Defaults to false. When false, recipes will be subject to validations\nbased on the artifact type:\n\nRemote: A checksum must be specified, and only protocols with\n        transport-layer security will be permitted.\nGCS:    An object generation number must be specified.",
@@ -1136,8 +1197,8 @@
         }
       }
     },
-    "Remote": {
-      "id": "Remote",
+    "SoftwareRecipeArtifactRemote": {
+      "id": "SoftwareRecipeArtifactRemote",
       "description": "Specifies an artifact available via some URI.",
       "type": "object",
       "properties": {
@@ -1151,8 +1212,8 @@
         }
       }
     },
-    "Gcs": {
-      "id": "Gcs",
+    "SoftwareRecipeArtifactGcs": {
+      "id": "SoftwareRecipeArtifactGcs",
       "description": "Specifies an artifact available as a GCS Object.",
       "type": "object",
       "properties": {
@@ -1171,43 +1232,43 @@
         }
       }
     },
-    "Step": {
-      "id": "Step",
+    "SoftwareRecipeStep": {
+      "id": "SoftwareRecipeStep",
       "description": "An action that can be taken as part of installing or updating a recipe.",
       "type": "object",
       "properties": {
         "fileCopy": {
           "description": "Copies a file onto the instance.",
-          "$ref": "CopyFile"
+          "$ref": "SoftwareRecipeStepCopyFile"
         },
         "archiveExtraction": {
           "description": "Extracts an archive into the specified directory.",
-          "$ref": "ExtractArchive"
+          "$ref": "SoftwareRecipeStepExtractArchive"
         },
         "msiInstallation": {
           "description": "Installs an MSI file.",
-          "$ref": "InstallMsi"
+          "$ref": "SoftwareRecipeStepInstallMsi"
         },
         "dpkgInstallation": {
           "description": "Installs a deb file via dpkg.",
-          "$ref": "InstallDpkg"
+          "$ref": "SoftwareRecipeStepInstallDpkg"
         },
         "rpmInstallation": {
           "description": "Installs an rpm file via the rpm utility.",
-          "$ref": "InstallRpm"
+          "$ref": "SoftwareRecipeStepInstallRpm"
         },
         "fileExec": {
           "description": "Executes an artifact or local file.",
-          "$ref": "ExecFile"
+          "$ref": "SoftwareRecipeStepExecFile"
         },
         "scriptRun": {
           "description": "Runs commands in a shell.",
-          "$ref": "RunScript"
+          "$ref": "SoftwareRecipeStepRunScript"
         }
       }
     },
-    "CopyFile": {
-      "id": "CopyFile",
+    "SoftwareRecipeStepCopyFile": {
+      "id": "SoftwareRecipeStepCopyFile",
       "description": "Copies the artifact to the specified path on the instance.",
       "type": "object",
       "properties": {
@@ -1229,8 +1290,8 @@
         }
       }
     },
-    "ExtractArchive": {
-      "id": "ExtractArchive",
+    "SoftwareRecipeStepExtractArchive": {
+      "id": "SoftwareRecipeStepExtractArchive",
       "description": "Extracts an archive of the type specified in the specified directory.",
       "type": "object",
       "properties": {
@@ -1266,8 +1327,8 @@
         }
       }
     },
-    "InstallMsi": {
-      "id": "InstallMsi",
+    "SoftwareRecipeStepInstallMsi": {
+      "id": "SoftwareRecipeStepInstallMsi",
       "description": "Installs an MSI file.",
       "type": "object",
       "properties": {
@@ -1292,8 +1353,8 @@
         }
       }
     },
-    "InstallDpkg": {
-      "id": "InstallDpkg",
+    "SoftwareRecipeStepInstallDpkg": {
+      "id": "SoftwareRecipeStepInstallDpkg",
       "description": "Installs a deb via dpkg.",
       "type": "object",
       "properties": {
@@ -1303,8 +1364,8 @@
         }
       }
     },
-    "InstallRpm": {
-      "id": "InstallRpm",
+    "SoftwareRecipeStepInstallRpm": {
+      "id": "SoftwareRecipeStepInstallRpm",
       "description": "Installs an rpm file via the rpm utility.",
       "type": "object",
       "properties": {
@@ -1314,8 +1375,8 @@
         }
       }
     },
-    "ExecFile": {
-      "id": "ExecFile",
+    "SoftwareRecipeStepExecFile": {
+      "id": "SoftwareRecipeStepExecFile",
       "description": "Executes an artifact or local file.",
       "type": "object",
       "properties": {
@@ -1344,8 +1405,8 @@
         }
       }
     },
-    "RunScript": {
-      "id": "RunScript",
+    "SoftwareRecipeStepRunScript": {
+      "id": "SoftwareRecipeStepRunScript",
       "description": "Runs a script through an interpreter.",
       "type": "object",
       "properties": {
@@ -1441,20 +1502,27 @@
           "description": "List of package configurations assigned to the VM",
           "type": "array",
           "items": {
-            "$ref": "SourcedPackage"
+            "$ref": "LookupEffectiveGuestPoliciesResponseSourcedPackage"
           }
         },
         "packageRepositories": {
           "description": "List of package repository configurations assigned to the VM.",
           "type": "array",
           "items": {
-            "$ref": "SourcedPackageRepository"
+            "$ref": "LookupEffectiveGuestPoliciesResponseSourcedPackageRepository"
+          }
+        },
+        "softwareRecipes": {
+          "description": "List of recipes assigned to the VM",
+          "type": "array",
+          "items": {
+            "$ref": "LookupEffectiveGuestPoliciesResponseSourcedSoftwareRecipe"
           }
         }
       }
     },
-    "SourcedPackage": {
-      "id": "SourcedPackage",
+    "LookupEffectiveGuestPoliciesResponseSourcedPackage": {
+      "id": "LookupEffectiveGuestPoliciesResponseSourcedPackage",
       "description": "A GuestPolicy package including its source.",
       "type": "object",
       "properties": {
@@ -1468,8 +1536,8 @@
         }
       }
     },
-    "SourcedPackageRepository": {
-      "id": "SourcedPackageRepository",
+    "LookupEffectiveGuestPoliciesResponseSourcedPackageRepository": {
+      "id": "LookupEffectiveGuestPoliciesResponseSourcedPackageRepository",
       "description": "A GuestPolicy package repository including its source.",
       "type": "object",
       "properties": {
@@ -1480,6 +1548,21 @@
         "packageRepository": {
           "description": "A software package repository to configure on the VM.",
           "$ref": "PackageRepository"
+        }
+      }
+    },
+    "LookupEffectiveGuestPoliciesResponseSourcedSoftwareRecipe": {
+      "id": "LookupEffectiveGuestPoliciesResponseSourcedSoftwareRecipe",
+      "description": "A GuestPolicy recipe including its source.",
+      "type": "object",
+      "properties": {
+        "source": {
+          "description": "Name of the GuestPolicy providing this config.",
+          "type": "string"
+        },
+        "softwareRecipe": {
+          "description": "A software recipe to configure on the VM.",
+          "$ref": "SoftwareRecipe"
         }
       }
     }
@@ -1692,7 +1775,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/compute"
                   ],
-                  "description": "Endpoint used by the agent to report back its state during a patch\njob. This endpoint will also return the patch job's state and\nconfigurations that the agent needs to know in order to run or stop\npatching.\n\nThis endpoint is only used by the agent. Using it in other ways may\naffect the state of the active patch job and prevent the patches from\nbeing correctly applied to this instance."
+                  "description": "Deprecated:  Should use AgentEndpoint API going forward.  Will be removed\nin v1beta1.\n\nEndpoint used by the agent to report back its state during a patch\njob. This endpoint will also return the patch job's state and\nconfigurations that the agent needs to know in order to run or stop\npatching.\n\nThis endpoint is only used by the agent. Using it in other ways may\naffect the state of the active patch job and prevent the patches from\nbeing correctly applied to this instance."
                 },
                 "lookupGuestPolicies": {
                   "id": "osconfig.projects.zones.instances.lookupGuestPolicies",

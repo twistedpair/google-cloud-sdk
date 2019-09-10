@@ -24,16 +24,16 @@ class AuditConfig(_messages.Message):
   multiple AuditConfigs:      {       "audit_configs": [         {
   "service": "allServices"           "audit_log_configs": [             {
   "log_type": "DATA_READ",               "exempted_members": [
-  "user:foo@gmail.com"               ]             },             {
+  "user:jose@example.com"               ]             },             {
   "log_type": "DATA_WRITE",             },             {
   "log_type": "ADMIN_READ",             }           ]         },         {
-  "service": "fooservice.googleapis.com"           "audit_log_configs": [
+  "service": "sampleservice.googleapis.com"           "audit_log_configs": [
   {               "log_type": "DATA_READ",             },             {
   "log_type": "DATA_WRITE",               "exempted_members": [
-  "user:bar@gmail.com"               ]             }           ]         }
-  ]     }  For fooservice, this policy enables DATA_READ, DATA_WRITE and
-  ADMIN_READ logging. It also exempts foo@gmail.com from DATA_READ logging,
-  and bar@gmail.com from DATA_WRITE logging.
+  "user:aliya@example.com"               ]             }           ]         }
+  ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
+  ADMIN_READ logging. It also exempts jose@example.com from DATA_READ logging,
+  and aliya@example.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -49,10 +49,10 @@ class AuditConfig(_messages.Message):
 class AuditLogConfig(_messages.Message):
   r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
-  "exempted_members": [             "user:foo@gmail.com"           ]
+  "exempted_members": [             "user:jose@example.com"           ]
   },         {           "log_type": "DATA_WRITE",         }       ]     }
   This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
-  foo@gmail.com from DATA_READ logging.
+  jose@example.com from DATA_READ logging.
 
   Enums:
     LogTypeValueValuesEnum: The log type that this config enables.
@@ -85,23 +85,23 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: Unimplemented. The condition that is associated with this
-      binding. NOTE: an unsatisfied condition will not allow user access via
-      current binding. Different bindings, including their conditions, are
-      examined independently.
+    condition: The condition that is associated with this binding. NOTE: An
+      unsatisfied condition will not allow user access via current binding.
+      Different bindings, including their conditions, are examined
+      independently.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
       with or without a Google account.  * `allAuthenticatedUsers`: A special
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
-      represents a specific Google    account. For example, `alice@gmail.com`
-      .   * `serviceAccount:{emailid}`: An email address that represents a
-      service    account. For example, `my-other-
+      represents a specific Google    account. For example,
+      `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
+      that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: A Google Apps domain name that represents all the
-      users of that domain. For example, `google.com` or `example.com`.
+      * `domain:{domain}`: The G Suite domain (primary) that represents all
+      the    users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -287,7 +287,7 @@ class Folder(_messages.Message):
   Organization's resources.
 
   Enums:
-    LifecycleStateValueValuesEnum: Output only.  The lifecycle state of the
+    LifecycleStateValueValuesEnum: Output only. The lifecycle state of the
       folder. Updates to the lifecycle_state must be performed via
       DeleteFolder and UndeleteFolder.
 
@@ -301,8 +301,8 @@ class Folder(_messages.Message):
       underscores and can be no longer than 30 characters. This is captured by
       the regular expression: [\p{L}\p{N}]([\p{L}\p{N}_-
       ]{0,28}[\p{L}\p{N}])?.
-    lifecycleState: Output only.  The lifecycle state of the folder. Updates
-      to the lifecycle_state must be performed via DeleteFolder and
+    lifecycleState: Output only. The lifecycle state of the folder. Updates to
+      the lifecycle_state must be performed via DeleteFolder and
       UndeleteFolder.
     name: Output only. The resource name of the Folder. Its format is
       `folders/{folder_id}`, for example: "folders/1234".
@@ -311,7 +311,7 @@ class Folder(_messages.Message):
   """
 
   class LifecycleStateValueValuesEnum(_messages.Enum):
-    r"""Output only.  The lifecycle state of the folder. Updates to the
+    r"""Output only. The lifecycle state of the folder. Updates to the
     lifecycle_state must be performed via DeleteFolder and UndeleteFolder.
 
     Values:
@@ -411,7 +411,28 @@ class FolderOperationError(_messages.Message):
 
 
 class GetIamPolicyRequest(_messages.Message):
-  r"""Request message for `GetIamPolicy` method."""
+  r"""Request message for `GetIamPolicy` method.
+
+  Fields:
+    options: OPTIONAL: A `GetPolicyOptions` object for specifying options to
+      `GetIamPolicy`. This field is only used by Cloud IAM.
+  """
+
+  options = _messages.MessageField('GetPolicyOptions', 1)
+
+
+class GetPolicyOptions(_messages.Message):
+  r"""Encapsulates settings provided to GetIamPolicy.
+
+  Fields:
+    requestedPolicyVersion: Optional. The policy format version to be
+      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.  Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.
+  """
+
+  requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class ListFoldersResponse(_messages.Message):
@@ -580,8 +601,12 @@ class Policy(_messages.Message):
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten blindly.
-    version: Deprecated.
+      the existing policy is overwritten.
+    version: Specifies the format of the policy.  Valid values are 0, 1, and
+      3. Requests specifying an invalid value will be rejected.  Policies with
+      any conditional bindings must specify version 3. Policies without any
+      conditional bindings may specify any valid value or leave the field
+      unset.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -624,13 +649,15 @@ class SearchFoldersRequest(_messages.Message):
       `AND` and `OR` can be used along with the suffix wildcard symbol `*`.
       The displayName field in a query expression should use escaped quotes
       for values that include whitespace to prevent unexpected behavior.  Some
-      example queries are:  |Query | Description| |----- | -----------|
-      |displayName=Test* | Folders whose display name starts with "Test".|
-      |lifecycleState=ACTIVE | Folders whose lifecycleState is ACTIVE.|
-      |parent=folders/123 | Folders whose parent is "folders/123".|
-      |parent=folders/123 AND lifecycleState=ACTIVE | Active folders whose
-      parent is "folders/123".| |displayName=\\"Test String\\"|Folders whose
-      display name includes both "Test" and "String".|
+      example queries are:  * Query `displayName=Test*` returns Folder
+      resources whose display name starts with "Test". * Query
+      `lifecycleState=ACTIVE` returns Folder resources with `lifecycleState`
+      set to `ACTIVE`. * Query `parent=folders/123` returns Folder resources
+      that have `folders/123` as a parent resource. * Query
+      `parent=folders/123 AND lifecycleState=ACTIVE` returns active Folder
+      resources that have `folders/123` as a parent resource. * Query
+      `displayName=\\"Test String\\"` returns Folder resources with display
+      names that include both "Test" and "String".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -737,37 +764,10 @@ class StandardQueryParameters(_messages.Message):
 class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
-  used by [gRPC](https://github.com/grpc). The error model is designed to be:
-  - Simple to use and understand for most users - Flexible enough to meet
-  unexpected needs  # Overview  The `Status` message contains three pieces of
-  data: error code, error message, and error details. The error code should be
-  an enum value of google.rpc.Code, but it may accept additional error codes
-  if needed.  The error message should be a developer-facing English message
-  that helps developers *understand* and *resolve* the error. If a localized
-  user-facing error message is needed, put the localized message in the error
-  details or localize it in the client. The optional error details may contain
-  arbitrary information about the error. There is a predefined set of error
-  detail types in the package `google.rpc` that can be used for common error
-  conditions.  # Language mapping  The `Status` message is the logical
-  representation of the error model, but it is not necessarily the actual wire
-  format. When the `Status` message is exposed in different client libraries
-  and different wire protocols, it can be mapped differently. For example, it
-  will likely be mapped to some exceptions in Java, but more likely mapped to
-  some error codes in C.  # Other uses  The error model and the `Status`
-  message can be used in a variety of environments, either with or without
-  APIs, to provide a consistent developer experience across different
-  environments.  Example uses of this error model include:  - Partial errors.
-  If a service needs to return partial errors to the client,     it may embed
-  the `Status` in the normal response to indicate the partial     errors.  -
-  Workflow errors. A typical workflow has multiple steps. Each step may
-  have a `Status` message for error reporting.  - Batch operations. If a
-  client uses batch request and batch response, the     `Status` message
-  should be used directly inside batch response, one for     each error sub-
-  response.  - Asynchronous operations. If an API call embeds asynchronous
-  operation     results in its response, the status of those operations should
-  be     represented directly using the `Status` message.  - Logging. If some
-  API errors are stored in logs, the message `Status` could     be used
-  directly after any stripping needed for security/privacy reasons.
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details.  You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
 
   Messages:
     DetailsValueListEntry: A DetailsValueListEntry object.

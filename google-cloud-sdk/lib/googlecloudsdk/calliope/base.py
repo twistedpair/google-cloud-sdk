@@ -348,6 +348,7 @@ LIST_COMMAND_FLAGS = 'LIST COMMAND'
 ASYNC_FLAG = Argument(
     '--async',
     action='store_true',
+    dest='async_',
     help="""\
     Return immediately, without waiting for the operation in progress to
     complete.""")

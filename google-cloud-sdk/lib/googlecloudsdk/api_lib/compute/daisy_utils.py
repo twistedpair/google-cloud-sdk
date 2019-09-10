@@ -73,11 +73,13 @@ class FilteredLogTailer(cb_logs.LogTailer):
 class CloudBuildClientWithFiltering(cb_logs.CloudBuildClient):
   """Subclass of CloudBuildClient that allows filtering."""
 
-  def StreamWithFilter(self, build_ref, output_filter=None):
+  def StreamWithFilter(self, build_ref, backoff, output_filter=None):
     """Stream the logs for a build using whitelist filter.
 
     Args:
       build_ref: Build reference, The build whose logs shall be streamed.
+      backoff: A function that takes the current elapsed time
+        and returns the next sleep length. Both are in seconds.
       output_filter: List of strings, The output will only be shown if the line
         starts with one of the strings in the list.
 
@@ -98,10 +100,15 @@ class CloudBuildClientWithFiltering(cb_logs.CloudBuildClient):
         statuses.WORKING,
     ]
 
+    seconds_between_poll = backoff(0)
+    seconds_elapsed = 0
+
     while build.status in working_statuses:
       log_tailer.Poll()
-      time.sleep(1)
+      time.sleep(seconds_between_poll)
       build = self.GetBuild(build_ref)
+      seconds_elapsed += seconds_between_poll
+      seconds_between_poll = backoff(seconds_elapsed)
 
     # Poll the logs one final time to ensure we have everything. We know this
     # final poll will get the full log contents because GCS is strongly
@@ -137,9 +144,9 @@ def AddCommonDaisyArgs(parser, add_log_location=True):
   if add_log_location:
     parser.add_argument(
         '--log-location',
-        help='Directory in Google Cloud Storage to hold build logs. If not '
+        help='Directory in Cloud Storage to hold build logs. If not '
         'set, ```gs://<project num>.cloudbuild-logs.googleusercontent.com/``` '
-        'will be created and used.',
+        'is created and used.',
     )
 
   parser.add_argument(
@@ -147,9 +154,9 @@ def AddCommonDaisyArgs(parser, add_log_location=True):
       type=arg_parsers.Duration(),
       default='2h',
       help="""\
-          Maximum time a build can last before it is failed as "TIMEOUT".
-          For example, specifying ``2h'' will fail the process after  2 hours.
-          See $ gcloud topic datetimes for information on duration formats.
+          Maximum time a build can last before it fails as "TIMEOUT".
+          For example, specifying `2h` fails the process after  2 hours.
+          See $ gcloud topic datetimes for information about duration formats.
           """)
   base.ASYNC_FLAG.AddToParser(parser)
 
@@ -414,7 +421,8 @@ def _RunCloudBuild(args,
                    build_args,
                    build_tags=None,
                    output_filter=None,
-                   log_location=None):
+                   log_location=None,
+                   backoff=lambda elapsed: 1):
   """Run a build with a specific builder on Google Cloud Builder.
 
   Args:
@@ -427,6 +435,8 @@ def _RunCloudBuild(args,
       be output. Only lines that start with one of the strings in output_filter
       will be displayed.
     log_location: GCS path to directory where logs will be stored.
+    backoff: A function that takes the current elapsed time and returns
+      the next sleep length. Both are in seconds.
 
   Returns:
     A build object that either streams the output or is displayed as a
@@ -460,7 +470,7 @@ def _RunCloudBuild(args,
   build, build_ref = _CreateCloudBuild(build_config, client, messages)
 
   # If the command is run --async, we just print out a reference to the build.
-  if args.async:
+  if args.async_:
     return build
 
   mash_handler = execution.MashHandler(
@@ -469,7 +479,7 @@ def _RunCloudBuild(args,
   # Otherwise, logs are streamed from GCS.
   with execution_utils.CtrlCSection(mash_handler):
     build = CloudBuildClientWithFiltering(client, messages).StreamWithFilter(
-        build_ref, output_filter=output_filter)
+        build_ref, backoff, output_filter=output_filter)
 
   if build.status == messages.Build.StatusValueValuesEnum.TIMEOUT:
     log.status.Print(
@@ -569,8 +579,11 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
 
   build_tags = ['gce-ovf-import']
 
+  backoff = lambda elapsed: 2 if elapsed < 30 else 15
+
   return _RunCloudBuild(args, _OVF_IMPORT_BUILDER.format(args.docker_image_tag),
-                        ovf_importer_args, build_tags, output_filter)
+                        ovf_importer_args, build_tags, output_filter,
+                        backoff=backoff)
 
 
 def _AppendNodeAffinityLabelArgs(

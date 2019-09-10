@@ -106,6 +106,16 @@ def Stringize(value):
   return str(value)
 
 
+def ExistingAbsoluteFilepathValidator(file_path):
+  """Checks to see if the file path exists and is an absolute path."""
+  if file_path is None:
+    return
+  if not os.path.isfile(file_path):
+    raise InvalidValueError('The provided path must exist.')
+  if not os.path.isabs(file_path):
+    raise InvalidValueError('The provided path must be absolute.')
+
+
 def _LooksLikeAProjectName(project):
   """Heuristics testing if a string looks like a project name, but an id."""
 
@@ -252,6 +262,8 @@ class _Sections(object):
       SDK.
     container: Section, The section containing container properties for the
       Cloud SDK.
+    context_aware: Section, The section containing context aware access
+      configurations for the Cloud SDK.
     core: Section, The section containing core properties for the Cloud SDK.
     scc: Section, The section containing scc properties for the Cloud SDK.
     dataproc: Section, The section containing dataproc properties for the Cloud
@@ -319,6 +331,7 @@ class _Sections(object):
     self.composer = _SectionComposer()
     self.compute = _SectionCompute()
     self.container = _SectionContainer()
+    self.context_aware = _SectionContextAware()
     self.core = _SectionCore()
     self.scc = _SectionScc()
     self.dataproc = _SectionDataproc()
@@ -360,6 +373,7 @@ class _Sections(object):
         self.composer,
         self.compute,
         self.container,
+        self.context_aware,
         self.core,
         self.scc,
         self.dataproc,
@@ -1146,11 +1160,6 @@ class _SectionCore(_Section):
         hidden=True,
         help_text='If true, will prompt to enable an API if a command fails due'
         ' to the API not being enabled.')
-    self.allow_py3 = self._AddBool(
-        'allow_py3',
-        default=True,
-        hidden=True,
-        help_text='If true, allow a Python 3 interpreter to run gcloud.')
     self.color_theme = self._Add(
         'color_theme',
         help_text='Color palette for output.',
@@ -1206,15 +1215,6 @@ class _SectionCore(_Section):
         default=False,
         help_text='If True, `gcloud` will not store logs to a file. This may '
         'be useful if disk space is limited.')
-
-    def ExistingAbsoluteFilepathValidator(file_path):
-      """Checks to see if the file path exists and is an absolute path."""
-      if file_path is None:
-        return
-      if not os.path.isfile(file_path):
-        raise InvalidValueError('The provided path must exist.')
-      if not os.path.isabs(file_path):
-        raise InvalidValueError('The provided path must be absolute.')
 
     self.custom_ca_certs_file = self._Add(
         'custom_ca_certs_file',
@@ -1779,6 +1779,22 @@ class _SectionAccessContextManager(_Section):
         help_text=('ID of the policy resource to operate on. Can be found '
                    'by running the `access-context-manager policies list` '
                    'command.'))
+
+
+class _SectionContextAware(_Section):
+  """Contains the properties for the 'context_aware' section."""
+
+  def __init__(self):
+    super(_SectionContextAware, self).__init__('context_aware')
+    self.use_client_certificate = self._AddBool(
+        'use_client_certificate',
+        help_text='If True, use client certificate to assert client identity.',
+        hidden=True)
+    self.auto_discovery_file_path = self._Add(
+        'auto_discovery_file_path',
+        validator=ExistingAbsoluteFilepathValidator,
+        help_text='File path for auto discovery configuration file.',
+        hidden=True)
 
 
 class _SectionRedis(_Section):

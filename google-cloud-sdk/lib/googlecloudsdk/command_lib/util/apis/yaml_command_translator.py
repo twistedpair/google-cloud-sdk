@@ -238,12 +238,12 @@ class CommandBuilder(object):
       @staticmethod
       def Args(parser):
         self._CommonArgs(parser)
-        if self.spec.async:
+        if self.spec.async_:
           base.ASYNC_FLAG.AddToParser(parser)
 
       def Run(self_, args):
         ref, response = self._CommonRun(args)
-        if self.spec.async:
+        if self.spec.async_:
           response = self._HandleAsync(
               args,
               ref,
@@ -251,7 +251,7 @@ class CommandBuilder(object):
               request_string='Delete request issued for: [{{{}}}]'
               .format(yaml_command_schema.NAME_FORMAT_KEY),
               extract_resource_result=False)
-          if args.async:
+          if args.async_:
             return self._HandleResponse(response, args)
 
         response = self._HandleResponse(response, args)
@@ -284,7 +284,7 @@ class CommandBuilder(object):
       @staticmethod
       def Args(parser):
         self._CommonArgs(parser)
-        if self.spec.async:
+        if self.spec.async_:
           base.ASYNC_FLAG.AddToParser(parser)
         if self.spec.arguments.labels:
           labels_util.AddCreateLabelsFlags(parser)
@@ -293,7 +293,7 @@ class CommandBuilder(object):
         ref, response = self._CommonRun(args)
         is_parent_resource = (self.spec.arguments.resource and
                               self.spec.arguments.resource.is_parent_resource)
-        if self.spec.async:
+        if self.spec.async_:
           if ref is not None and not is_parent_resource:
             request_string = 'Create request issued for: [{{{}}}]'.format(
                 yaml_command_schema.NAME_FORMAT_KEY)
@@ -302,7 +302,7 @@ class CommandBuilder(object):
           response = self._HandleAsync(
               args, ref, response,
               request_string=request_string)
-          if args.async:
+          if args.async_:
             return self._HandleResponse(response, args)
 
         if is_parent_resource:
@@ -506,6 +506,11 @@ class CommandBuilder(object):
 
         policy = self._GetModifiedIamPolicyAddIamBinding(
             args, add_condition=self._add_condition)
+
+        # override policy version
+        if self.spec.iam and self.spec.iam.policy_version:
+          policy.version = self.spec.iam.policy_version
+
         self.spec.request.static_fields[policy_field_path] = policy
 
         try:
@@ -563,6 +568,11 @@ class CommandBuilder(object):
 
         policy = self._GetModifiedIamPolicyRemoveIamBinding(
             args, add_condition=self._add_condition)
+
+        # override policy version
+        if self.spec.iam and self.spec.iam.policy_version:
+          policy.version = self.spec.iam.policy_version
+
         self.spec.request.static_fields[policy_field_path] = policy
 
         ref, response = self._CommonRun(args)
@@ -593,12 +603,12 @@ class CommandBuilder(object):
       @staticmethod
       def Args(parser):
         self._CommonArgs(parser)
-        if self.spec.async:
+        if self.spec.async_:
           base.ASYNC_FLAG.AddToParser(parser)
 
       def Run(self_, args):
         ref, response = self._CommonRun(args)
-        if self.spec.async:
+        if self.spec.async_:
           request_string = None
           if ref:
             request_string = 'Request issued for: [{{{}}}]'.format(
@@ -633,7 +643,7 @@ class CommandBuilder(object):
       @staticmethod
       def Args(parser):
         self._CommonArgs(parser)
-        if self.spec.async:
+        if self.spec.async_:
           base.ASYNC_FLAG.AddToParser(parser)
         if self.spec.arguments.labels:
           labels_util.AddUpdateLabelsFlags(parser)
@@ -658,7 +668,7 @@ class CommandBuilder(object):
             existing_message = self._GetExistingResource(args)
 
         ref, response = self._CommonRun(args, existing_message)
-        if self.spec.async:
+        if self.spec.async_:
           request_string = None
           if ref:
             request_string = 'Request issued for: [{{{}}}]'.format(
@@ -777,6 +787,7 @@ class CommandBuilder(object):
       self.spec.request.static_fields[mask_field_path] = update_mask
 
   def _GetIamPolicy(self, args):
+    """GetIamPolicy helper function for add/remove binding."""
     get_iam_method = registry.GetMethod(self.spec.request.collection,
                                         'getIamPolicy',
                                         self.spec.request.api_version)
@@ -784,6 +795,13 @@ class CommandBuilder(object):
         args,
         use_relative_name=self.spec.request.use_relative_name,
         override_method=get_iam_method)
+
+    if self.spec.iam and self.spec.iam.policy_version:
+      arg_utils.SetFieldInMessage(
+          get_iam_request,
+          self.spec.iam.get_iam_policy_version_path,
+          self.spec.iam.policy_version)
+
     policy = get_iam_method.Call(get_iam_request)
     return policy
 
@@ -860,13 +878,13 @@ class CommandBuilder(object):
       The response (either the operation or the original resource).
     """
     operation_ref = resources.REGISTRY.Parse(
-        getattr(operation, self.spec.async.response_name_field),
-        collection=self.spec.async.collection)
-    request_string = self.spec.async.request_issued_message or request_string
+        getattr(operation, self.spec.async_.response_name_field),
+        collection=self.spec.async_.collection)
+    request_string = self.spec.async_.request_issued_message or request_string
     if request_string:
       log.status.Print(self._Format(request_string, resource_ref,
                                     self._GetDisplayName(resource_ref, args)))
-    if args.async:
+    if args.async_:
       log.status.Print(self._Format(
           'Check operation [{{{}}}] for status.'
           .format(yaml_command_schema.REL_NAME_FORMAT_KEY), operation_ref))
@@ -1038,23 +1056,23 @@ class AsyncOperationPoller(waiter.OperationPoller):
     """
     self.spec = spec
     self.resource_ref = resource_ref
-    if not self.spec.async.extract_resource_result:
+    if not self.spec.async_.extract_resource_result:
       self.resource_ref = None
     self.method = registry.GetMethod(
-        spec.async.collection, spec.async.method,
-        api_version=spec.async.api_version or spec.request.api_version)
+        spec.async_.collection, spec.async_.method,
+        api_version=spec.async_.api_version or spec.request.api_version)
     self.args = args
 
   def IsDone(self, operation):
     """Overrides."""
-    result = getattr(operation, self.spec.async.state.field)
+    result = getattr(operation, self.spec.async_.state.field)
     if isinstance(result, apitools_messages.Enum):
       result = result.name
-    if (result in self.spec.async.state.success_values or
-        result in self.spec.async.state.error_values):
+    if (result in self.spec.async_.state.success_values or
+        result in self.spec.async_.state.error_values):
       # We found a value that means it is done.
-      error = getattr(operation, self.spec.async.error.field)
-      if not error and result in self.spec.async.state.error_values:
+      error = getattr(operation, self.spec.async_.error.field)
+      if not error and result in self.spec.async_.state.error_values:
         error = 'The operation failed.'
       # If we succeeded but there is an error, or if an error was detected.
       if error:
@@ -1077,11 +1095,11 @@ class AsyncOperationPoller(waiter.OperationPoller):
     fields = {
         f.name: getattr(
             operation_ref,
-            self.spec.async.operation_get_method_params.get(f.name, f.name),
+            self.spec.async_.operation_get_method_params.get(f.name, f.name),
             relative_name)
         for f in request_type.all_fields()}
     request = request_type(**fields)
-    for hook in self.spec.async.modify_request_hooks:
+    for hook in self.spec.async_.modify_request_hooks:
       request = hook(operation_ref, self.args, request)
     return self.method.Call(request)
 
@@ -1100,11 +1118,11 @@ class AsyncOperationPoller(waiter.OperationPoller):
       request = method.GetRequestType()()
       arg_utils.ParseResourceIntoMessage(self.resource_ref, method, request)
       result = method.Call(request)
-    return _GetAttribute(result, self.spec.async.result_attribute)
+    return _GetAttribute(result, self.spec.async_.result_attribute)
 
   def _ResourceGetMethod(self):
     return registry.GetMethod(
-        self.spec.request.collection, self.spec.async.resource_get_method,
+        self.spec.request.collection, self.spec.async_.resource_get_method,
         api_version=self.spec.request.api_version)
 
 

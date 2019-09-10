@@ -49,6 +49,91 @@ class AutoscalingConfig(_messages.Message):
   policyUri = _messages.StringField(1)
 
 
+class AutoscalingPolicy(_messages.Message):
+  r"""Describes an autoscaling policy for Dataproc cluster autoscaler.
+
+  Fields:
+    basicAlgorithm: A BasicAutoscalingAlgorithm attribute.
+    id: Required. The policy id.The id must contain only letters (a-z, A-Z),
+      numbers (0-9), underscores (_), and hyphens (-). Cannot begin or end
+      with underscore or hyphen. Must consist of between 3 and 50 characters.
+    name: Output only. The "resource name" of the autoscaling policy, as
+      described in https://cloud.google.com/apis/design/resource_names. For
+      projects.regions.autoscalingPolicies, the resource name of the  policy
+      has the following format:
+      projects/{project_id}/regions/{region}/autoscalingPolicies/{policy_id}
+      For projects.locations.autoscalingPolicies, the resource name of the
+      policy has the following format:  projects/{project_id}/locations/{locat
+      ion}/autoscalingPolicies/{policy_id}
+    secondaryWorkerConfig: Optional. Describes how the autoscaler will operate
+      for secondary workers.
+    workerConfig: Required. Describes how the autoscaler will operate for
+      primary workers.
+  """
+
+  basicAlgorithm = _messages.MessageField('BasicAutoscalingAlgorithm', 1)
+  id = _messages.StringField(2)
+  name = _messages.StringField(3)
+  secondaryWorkerConfig = _messages.MessageField('InstanceGroupAutoscalingPolicyConfig', 4)
+  workerConfig = _messages.MessageField('InstanceGroupAutoscalingPolicyConfig', 5)
+
+
+class BasicAutoscalingAlgorithm(_messages.Message):
+  r"""Basic algorithm for autoscaling.
+
+  Fields:
+    cooldownPeriod: Optional. Duration between scaling events. A scaling
+      period starts after the update operation from the previous event has
+      completed.Bounds: 2m, 1d. Default: 2m.
+    yarnConfig: Required. YARN autoscaling configuration.
+  """
+
+  cooldownPeriod = _messages.StringField(1)
+  yarnConfig = _messages.MessageField('BasicYarnAutoscalingConfig', 2)
+
+
+class BasicYarnAutoscalingConfig(_messages.Message):
+  r"""Basic autoscaling configurations for YARN.
+
+  Fields:
+    gracefulDecommissionTimeout: Required. Timeout for YARN graceful
+      decommissioning of Node Managers. Specifies the duration to wait for
+      jobs to complete before forcefully removing workers (and potentially
+      interrupting jobs). Only applicable to downscaling operations.Bounds:
+      0s, 1d.
+    scaleDownFactor: Required. Fraction of average pending memory in the last
+      cooldown period for which to remove workers. A scale-down factor of 1
+      will result in scaling down so that there is no available memory
+      remaining after the update (more aggressive scaling). A scale-down
+      factor of 0 disables removing workers, which can be beneficial for
+      autoscaling a single job.Bounds: 0.0, 1.0.
+    scaleDownMinWorkerFraction: Optional. Minimum scale-down threshold as a
+      fraction of total cluster size before scaling occurs. For example, in a
+      20-worker cluster, a threshold of 0.1 means the autoscaler must
+      recommend at least a 2 worker scale-down for the cluster to scale. A
+      threshold of 0 means the autoscaler will scale down on any recommended
+      change.Bounds: 0.0, 1.0. Default: 0.0.
+    scaleUpFactor: Required. Fraction of average pending memory in the last
+      cooldown period for which to add workers. A scale-up factor of 1.0 will
+      result in scaling up so that there is no pending memory remaining after
+      the update (more aggressive scaling). A scale-up factor closer to 0 will
+      result in a smaller magnitude of scaling up (less aggressive
+      scaling).Bounds: 0.0, 1.0.
+    scaleUpMinWorkerFraction: Optional. Minimum scale-up threshold as a
+      fraction of total cluster size before scaling occurs. For example, in a
+      20-worker cluster, a threshold of 0.1 means the autoscaler must
+      recommend at least a 2-worker scale-up for the cluster to scale. A
+      threshold of 0 means the autoscaler will scale up on any recommended
+      change.Bounds: 0.0, 1.0. Default: 0.0.
+  """
+
+  gracefulDecommissionTimeout = _messages.StringField(1)
+  scaleDownFactor = _messages.FloatField(2)
+  scaleDownMinWorkerFraction = _messages.FloatField(3)
+  scaleUpFactor = _messages.FloatField(4)
+  scaleUpMinWorkerFraction = _messages.FloatField(5)
+
+
 class Binding(_messages.Message):
   r"""Associates members with a role.
 
@@ -483,6 +568,129 @@ class ClusterStatus(_messages.Message):
   substate = _messages.EnumField('SubstateValueValuesEnum', 4)
 
 
+class DataprocProjectsLocationsAutoscalingPoliciesCreateRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsAutoscalingPoliciesCreateRequest object.
+
+  Fields:
+    autoscalingPolicy: A AutoscalingPolicy resource to be passed as the
+      request body.
+    parent: Required. The "resource name" of the region or location, as
+      described in https://cloud.google.com/apis/design/resource_names. For
+      projects.regions.autoscalingPolicies.create, the resource name  of the
+      region has the following format:  projects/{project_id}/regions/{region}
+      For projects.locations.autoscalingPolicies.create, the resource name  of
+      the location has the following format:
+      projects/{project_id}/locations/{location}
+  """
+
+  autoscalingPolicy = _messages.MessageField('AutoscalingPolicy', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DataprocProjectsLocationsAutoscalingPoliciesDeleteRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsAutoscalingPoliciesDeleteRequest object.
+
+  Fields:
+    name: Required. The "resource name" of the autoscaling policy, as
+      described in https://cloud.google.com/apis/design/resource_names. For
+      projects.regions.autoscalingPolicies.delete, the resource name  of the
+      policy has the following format:
+      projects/{project_id}/regions/{region}/autoscalingPolicies/{policy_id}
+      For projects.locations.autoscalingPolicies.delete, the resource name  of
+      the policy has the following format:  projects/{project_id}/locations/{l
+      ocation}/autoscalingPolicies/{policy_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataprocProjectsLocationsAutoscalingPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsAutoscalingPoliciesGetIamPolicyRequest
+  object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataprocProjectsLocationsAutoscalingPoliciesGetRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsAutoscalingPoliciesGetRequest object.
+
+  Fields:
+    name: Required. The "resource name" of the autoscaling policy, as
+      described in https://cloud.google.com/apis/design/resource_names. For
+      projects.regions.autoscalingPolicies.get, the resource name  of the
+      policy has the following format:
+      projects/{project_id}/regions/{region}/autoscalingPolicies/{policy_id}
+      For projects.locations.autoscalingPolicies.get, the resource name  of
+      the policy has the following format:  projects/{project_id}/locations/{l
+      ocation}/autoscalingPolicies/{policy_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataprocProjectsLocationsAutoscalingPoliciesListRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsAutoscalingPoliciesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return in each
+      response. Must be less than or equal to 1000. Defaults to 100.
+    pageToken: Optional. The page token, returned by a previous call, to
+      request the next page of results.
+    parent: Required. The "resource name" of the region or location, as
+      described in https://cloud.google.com/apis/design/resource_names. For
+      projects.regions.autoscalingPolicies.list, the resource name  of the
+      region has the following format:  projects/{project_id}/regions/{region}
+      For projects.locations.autoscalingPolicies.list, the resource name  of
+      the location has the following format:
+      projects/{project_id}/locations/{location}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DataprocProjectsLocationsAutoscalingPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsAutoscalingPoliciesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DataprocProjectsLocationsAutoscalingPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsAutoscalingPoliciesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class DataprocProjectsLocationsWorkflowTemplatesCreateRequest(_messages.Message):
   r"""A DataprocProjectsLocationsWorkflowTemplatesCreateRequest object.
 
@@ -647,6 +855,127 @@ class DataprocProjectsLocationsWorkflowTemplatesSetIamPolicyRequest(_messages.Me
 
 class DataprocProjectsLocationsWorkflowTemplatesTestIamPermissionsRequest(_messages.Message):
   r"""A DataprocProjectsLocationsWorkflowTemplatesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class DataprocProjectsRegionsAutoscalingPoliciesCreateRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsAutoscalingPoliciesCreateRequest object.
+
+  Fields:
+    autoscalingPolicy: A AutoscalingPolicy resource to be passed as the
+      request body.
+    parent: Required. The "resource name" of the region or location, as
+      described in https://cloud.google.com/apis/design/resource_names. For
+      projects.regions.autoscalingPolicies.create, the resource name  of the
+      region has the following format:  projects/{project_id}/regions/{region}
+      For projects.locations.autoscalingPolicies.create, the resource name  of
+      the location has the following format:
+      projects/{project_id}/locations/{location}
+  """
+
+  autoscalingPolicy = _messages.MessageField('AutoscalingPolicy', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DataprocProjectsRegionsAutoscalingPoliciesDeleteRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsAutoscalingPoliciesDeleteRequest object.
+
+  Fields:
+    name: Required. The "resource name" of the autoscaling policy, as
+      described in https://cloud.google.com/apis/design/resource_names. For
+      projects.regions.autoscalingPolicies.delete, the resource name  of the
+      policy has the following format:
+      projects/{project_id}/regions/{region}/autoscalingPolicies/{policy_id}
+      For projects.locations.autoscalingPolicies.delete, the resource name  of
+      the policy has the following format:  projects/{project_id}/locations/{l
+      ocation}/autoscalingPolicies/{policy_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataprocProjectsRegionsAutoscalingPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsAutoscalingPoliciesGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataprocProjectsRegionsAutoscalingPoliciesGetRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsAutoscalingPoliciesGetRequest object.
+
+  Fields:
+    name: Required. The "resource name" of the autoscaling policy, as
+      described in https://cloud.google.com/apis/design/resource_names. For
+      projects.regions.autoscalingPolicies.get, the resource name  of the
+      policy has the following format:
+      projects/{project_id}/regions/{region}/autoscalingPolicies/{policy_id}
+      For projects.locations.autoscalingPolicies.get, the resource name  of
+      the policy has the following format:  projects/{project_id}/locations/{l
+      ocation}/autoscalingPolicies/{policy_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataprocProjectsRegionsAutoscalingPoliciesListRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsAutoscalingPoliciesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return in each
+      response. Must be less than or equal to 1000. Defaults to 100.
+    pageToken: Optional. The page token, returned by a previous call, to
+      request the next page of results.
+    parent: Required. The "resource name" of the region or location, as
+      described in https://cloud.google.com/apis/design/resource_names. For
+      projects.regions.autoscalingPolicies.list, the resource name  of the
+      region has the following format:  projects/{project_id}/regions/{region}
+      For projects.locations.autoscalingPolicies.list, the resource name  of
+      the location has the following format:
+      projects/{project_id}/locations/{location}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DataprocProjectsRegionsAutoscalingPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsAutoscalingPoliciesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DataprocProjectsRegionsAutoscalingPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsAutoscalingPoliciesTestIamPermissionsRequest
   object.
 
   Fields:
@@ -1541,8 +1870,10 @@ class GetPolicyOptions(_messages.Message):
 
   Fields:
     requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
-      field is omitted, policy format version 1 will be returned.
+      returned.Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.
   """
 
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1716,6 +2047,41 @@ class HiveJob(_messages.Message):
   queryFileUri = _messages.StringField(4)
   queryList = _messages.MessageField('QueryList', 5)
   scriptVariables = _messages.MessageField('ScriptVariablesValue', 6)
+
+
+class InstanceGroupAutoscalingPolicyConfig(_messages.Message):
+  r"""Configuration for the size bounds of an instance group, including its
+  proportional size to other groups.
+
+  Fields:
+    maxInstances: Optional. Maximum number of instances for this group.
+      Required for primary workers. Note that by default, clusters will not
+      use secondary workers. Required for secondary workers if the minimum
+      secondary instances is set.Primary workers - Bounds: [min_instances, ).
+      Required. Secondary workers - Bounds: [min_instances, ). Default: 0.
+    minInstances: Optional. Minimum number of instances for this group.Primary
+      workers - Bounds: 2, max_instances. Default: 2. Secondary workers -
+      Bounds: 0, max_instances. Default: 0.
+    weight: Optional. Weight for the instance group, which is used to
+      determine the fraction of total workers in the cluster from this
+      instance group. For example, if primary workers have weight 2, and
+      secondary workers have weight 1, the cluster will have approximately 2
+      primary workers for each secondary worker.The cluster may not reach the
+      specified balance if constrained by min/max bounds or other autoscaling
+      settings. For example, if max_instances for secondary workers is 0, then
+      only primary workers will be added. The cluster can also be out of
+      balance when created.If weight is not set on any instance group, the
+      cluster will default to equal weight for all groups: the cluster will
+      attempt to maintain an equal number of workers in each group within the
+      configured size bounds for each group. If weight is set for one group
+      only, the cluster will default to zero weight on the unset group. For
+      example if weight is set only on primary workers, the cluster will use
+      primary workers only and no secondary workers.
+  """
+
+  maxInstances = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minInstances = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  weight = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class InstanceGroupConfig(_messages.Message):
@@ -2113,6 +2479,19 @@ class LifecycleConfig(_messages.Message):
   autoDeleteTtl = _messages.StringField(2)
   idleDeleteTtl = _messages.StringField(3)
   idleStartTime = _messages.StringField(4)
+
+
+class ListAutoscalingPoliciesResponse(_messages.Message):
+  r"""A response to a request to list autoscaling policies in a project.
+
+  Fields:
+    nextPageToken: Output only. This token is included in the response if
+      there are more results to fetch.
+    policies: Output only. Autoscaling policies list.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  policies = _messages.MessageField('AutoscalingPolicy', 2, repeated=True)
 
 
 class ListClustersResponse(_messages.Message):
@@ -2654,7 +3033,11 @@ class Policy(_messages.Message):
       ensure that their change will be applied to the same version of the
       policy.If no etag is provided in the call to setIamPolicy, then the
       existing policy is overwritten.
-    version: Deprecated.
+    version: Specifies the format of the policy.Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected.Policies with any
+      conditional bindings must specify version 3. Policies without any
+      conditional bindings may specify any valid value or leave the field
+      unset.
   """
 
   bindings = _messages.MessageField('Binding', 1, repeated=True)

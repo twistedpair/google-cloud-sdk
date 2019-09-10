@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
@@ -58,6 +59,7 @@ def SetPolicy(instance_ref, policy, field_mask=None):
   """Saves the given policy on the instance, overwriting whatever exists."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
+  policy.version = iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION
   req = msgs.SpannerProjectsInstancesSetIamPolicyRequest(
       resource=instance_ref.RelativeName(),
       setIamPolicyRequest=msgs.SetIamPolicyRequest(policy=policy,
@@ -70,7 +72,11 @@ def GetIamPolicy(instance_ref):
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
   req = msgs.SpannerProjectsInstancesGetIamPolicyRequest(
-      resource=instance_ref.RelativeName())
+      resource=instance_ref.RelativeName(),
+      getIamPolicyRequest=msgs.GetIamPolicyRequest(
+          options=msgs.GetPolicyOptions(
+              requestedPolicyVersion=
+              iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION)))
   return client.projects_instances.GetIamPolicy(req)
 
 

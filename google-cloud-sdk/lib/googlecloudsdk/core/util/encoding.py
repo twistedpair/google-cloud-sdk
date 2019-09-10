@@ -197,9 +197,11 @@ def EncodeEnv(env, encoding=None):
     {bytes: bytes}, The environment to pass to subprocess.
   """
   encoding = encoding or _GetEncoding()
-  return {
-      Encode(k, encoding=encoding): Encode(v, encoding=encoding)
-      for k, v in six.iteritems(env)}
+  encoded_env = {}
+
+  for k, v in six.iteritems(env):
+    SetEncodedValue(encoded_env, k, v, encoding=encoding)
+  return encoded_env
 
 
 def _GetEncoding():

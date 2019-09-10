@@ -54,6 +54,7 @@ def AddCommonTestRunArgs(parser):
       '--async',
       action='store_true',
       default=None,
+      dest='async_',
       help='Invoke a test asynchronously without waiting for test results.')
   parser.add_argument(
       '--num-flaky-test-attempts',

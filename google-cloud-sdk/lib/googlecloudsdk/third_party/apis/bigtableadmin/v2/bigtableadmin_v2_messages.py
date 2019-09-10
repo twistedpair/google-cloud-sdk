@@ -107,6 +107,79 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class Backup(_messages.Message):
+  r"""A backup of a Cloud Bigtable table.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the backup.
+
+  Fields:
+    endTime: Output only. `end_time` is the time that the backup was finished.
+      The row data in the backup will be no newer than this timestamp.
+    expireTime: Required for the CreateBackup operation. The expiration time
+      of the backup, with microseconds granularity that must be at least 6
+      hours and at most 30 days from the time the request is received. Once
+      the `expire_time` has passed, Cloud Bigtable will delete the backup and
+      free the resources used by the backup.
+    name: Output only. A globally unique identifier for the backup which
+      cannot be changed. Values are of the form
+      `projects/<project>/instances/<instance>/clusters/<cluster>/    backups
+      /_a-zA-Z0-9*` The final segment of the name must be between 1 and 50
+      characters in length.  The backup is stored in the cluster identified by
+      the prefix of the backup name of the form
+      `projects/<project>/instances/<instance>/clusters/<cluster>`.
+    sizeBytes: Output only. Size of the backup in bytes.
+    sourceTable: Immutable. Required for the CreateBackup operation. Name of
+      the table from which this backup was created. This needs to be in the
+      same instance as the backup. Values are of the form
+      `projects/<project>/instances/<instance>/tables/<source_table>`.
+    startTime: Output only. `start_time` is the time that the backup was
+      started (i.e. approximately the time the CreateBackup request is
+      received).  The row data in this backup will be no older than this
+      timestamp.
+    state: Output only. The current state of the backup.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the backup.
+
+    Values:
+      STATE_UNSPECIFIED: Not specified.
+      CREATING: The pending backup is still being created. Operations on the
+        backup may fail with `FAILED_PRECONDITION` in this state.
+      READY: The backup is complete and ready for use.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+
+  endTime = _messages.StringField(1)
+  expireTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  sizeBytes = _messages.IntegerField(4)
+  sourceTable = _messages.StringField(5)
+  startTime = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+
+
+class BackupInfo(_messages.Message):
+  r"""Information about a backup.
+
+  Fields:
+    backup: Output only. Name of the backup.
+    endTime: Output only. This time that the backup was finished. Row data in
+      the backup will be no newer than this timestamp.
+    sourceTable: Output only. Name of the table the backup was created from.
+    startTime: Output only. The time that the backup was started. Row data in
+      the backup will be no older than this timestamp.
+  """
+
+  backup = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  sourceTable = _messages.StringField(3)
+  startTime = _messages.StringField(4)
+
+
 class BigtableadminOperationsCancelRequest(_messages.Message):
   r"""A BigtableadminOperationsCancelRequest object.
 
@@ -241,6 +314,130 @@ class BigtableadminProjectsInstancesAppProfilesPatchRequest(_messages.Message):
   ignoreWarnings = _messages.BooleanField(2)
   name = _messages.StringField(3, required=True)
   updateMask = _messages.StringField(4)
+
+
+class BigtableadminProjectsInstancesClustersBackupsCreateRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesClustersBackupsCreateRequest object.
+
+  Fields:
+    backup: A Backup resource to be passed as the request body.
+    backupId: Required. The id of the backup to be created. The `backup_id`
+      along with the parent `parent` are combined as
+      <parent>/backups/<backup_id> to create the full backup name, of the
+      form: `projects/<project>/instances/<instance>/clusters/<cluster>/backup
+      s/<backup_id>`. This string must be between 1 and 50 characters in
+      length and match the regex _a-zA-Z0-9*.
+    parent: Required. This must be one of the clusters in the instance in
+      which this table is located. The backup will be stored in this cluster.
+      Values are of the form
+      `projects/<project>/instances/<instance>/clusters/<cluster>`.
+  """
+
+  backup = _messages.MessageField('Backup', 1)
+  backupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class BigtableadminProjectsInstancesClustersBackupsDeleteRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesClustersBackupsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the backup to delete. Values are of the form `proj
+      ects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>`
+      .
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BigtableadminProjectsInstancesClustersBackupsGetRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesClustersBackupsGetRequest object.
+
+  Fields:
+    name: Required. Name of the backup. Values are of the form `projects/<proj
+      ect>/instances/<instance>/clusters/<cluster>/backups/<backup>`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BigtableadminProjectsInstancesClustersBackupsListRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesClustersBackupsListRequest object.
+
+  Fields:
+    filter: A filter expression that filters backups listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be <, >,
+      <=, >=, !=, =, or :. Colon ':' represents a HAS operator which is
+      roughly synonymous with equality. Filter rules are case insensitive.
+      The fields eligible for filtering are:   * `name`   * `source_table`   *
+      `state`   * `start_time` (and values are of the format YYYY-MM-
+      DDTHH:MM:SSZ)   * `end_time` (and values are of the format YYYY-MM-
+      DDTHH:MM:SSZ)   * `expire_time` (and values are of the format YYYY-MM-
+      DDTHH:MM:SSZ)   * `size_bytes`  To filter on multiple expressions,
+      provide each separate expression within parentheses. By default, each
+      expression is an AND expression. However, you can include AND, OR, and
+      NOT expressions explicitly.  Some examples of using filters are:    *
+      `name:"exact"` --> The backup's name is the string "exact".   *
+      `name:howl` --> The backup's name contains the string "howl".   *
+      `source_table:prod`          --> The source_table's name contains the
+      string "prod".   * `state:CREATING` --> The backup is pending creation.
+      * `state:READY` --> The backup is fully created and ready for use.   *
+      `(name:howl) AND (start_time < \"2018-03-28T14:50:00Z\")`          -->
+      The backup name contains the string "howl" and start_time
+      of the backup is before 2018-03-28T14:50:00Z.   * `size_bytes >
+      10000000000` --> The backup's size is greater than 10GB
+    orderBy: An expression for specifying the sort order of the results of the
+      request. The string value should specify only one field in Backup.
+      Fields supported are:    * name    * source_table    * expire_time    *
+      start_time    * end_time    * size_bytes    * state  For example,
+      "start_time". The default sorting order is ascending. To specify
+      descending order for the field, a suffix " desc" should be appended to
+      the field name. For example, "start_time desc". Redundant space
+      characters in the syntax are insigificant.  If order_by is empty,
+      results will be sorted by `start_time` in descending order starting from
+      the most recently created backup.
+    pageSize: Number of backups to be returned in the response. If 0 or less,
+      defaults to the server's maximum allowed page size.
+    pageToken: If non-empty, `page_token` should contain a next_page_token
+      from a previous ListBackupsResponse to the same `parent` and with the
+      same `filter`.
+    parent: Required. The cluster to list backups from.  Values are of the
+      form `projects/<project>/instances/<instance>/clusters/<cluster>`. Use
+      `<cluster> = '-'` to list backups for all clusters in an instance, e.g.,
+      `projects/<project>/instances/<instance>/clusters/-`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class BigtableadminProjectsInstancesClustersBackupsPatchRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesClustersBackupsPatchRequest object.
+
+  Fields:
+    backup: A Backup resource to be passed as the request body.
+    name: Output only. A globally unique identifier for the backup which
+      cannot be changed. Values are of the form
+      `projects/<project>/instances/<instance>/clusters/<cluster>/    backups
+      /_a-zA-Z0-9*` The final segment of the name must be between 1 and 50
+      characters in length.  The backup is stored in the cluster identified by
+      the prefix of the backup name of the form
+      `projects/<project>/instances/<instance>/clusters/<cluster>`.
+    updateMask: Required. A mask specifying which fields (e.g. `expire_time`)
+      in the Backup resource should be updated. This mask is relative to the
+      Backup resource, not to the request message. The field mask must always
+      be specified; this prevents any future fields from being erased
+      accidentally by clients that do not know about them.
+  """
+
+  backup = _messages.MessageField('Backup', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class BigtableadminProjectsInstancesClustersCreateRequest(_messages.Message):
@@ -563,6 +760,21 @@ class BigtableadminProjectsInstancesTablesModifyColumnFamiliesRequest(_messages.
   name = _messages.StringField(2, required=True)
 
 
+class BigtableadminProjectsInstancesTablesRestoreRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesRestoreRequest object.
+
+  Fields:
+    parent: Required. The name of the instance in which to create the restored
+      table. This instance must be the parent of the source backup. Values are
+      of the form `projects/<project>/instances/<instance>`.
+    restoreTableRequest: A RestoreTableRequest resource to be passed as the
+      request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  restoreTableRequest = _messages.MessageField('RestoreTableRequest', 2)
+
+
 class BigtableadminProjectsInstancesTablesSetIamPolicyRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesTablesSetIamPolicyRequest object.
 
@@ -787,12 +999,16 @@ class ClusterState(_messages.Message):
       READY: The table can serve Data API requests from this cluster.
         Depending on replication delay, reads may not immediately reflect the
         state of the table in other clusters.
+      READY_OPTIMIZING: The table is fully created and ready for use after a
+        restore, and is being optimized for performance. When optimizations
+        are complete, the table will transition to `READY` state.
     """
     STATE_NOT_KNOWN = 0
     INITIALIZING = 1
     PLANNED_MAINTENANCE = 2
     UNPLANNED_MAINTENANCE = 3
     READY = 4
+    READY_OPTIMIZING = 5
 
   replicationState = _messages.EnumField('ReplicationStateValueValuesEnum', 1)
 
@@ -808,6 +1024,22 @@ class ColumnFamily(_messages.Message):
   """
 
   gcRule = _messages.MessageField('GcRule', 1)
+
+
+class CreateBackupMetadata(_messages.Message):
+  r"""Metadata type for the operation returned by CreateBackup.
+
+  Fields:
+    endTime: If set, the time at which this operation finished.
+    name: The name of the backup being created.
+    sourceTable: The name of the table the backup is created from.
+    startTime: The time at which this operation started.
+  """
+
+  endTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  sourceTable = _messages.StringField(3)
+  startTime = _messages.StringField(4)
 
 
 class CreateClusterMetadata(_messages.Message):
@@ -1245,6 +1477,19 @@ class ListAppProfilesResponse(_messages.Message):
   nextPageToken = _messages.StringField(3)
 
 
+class ListBackupsResponse(_messages.Message):
+  r"""The response for ListBackups.
+
+  Fields:
+    backups: The list of matching backups.
+    nextPageToken: `next_page_token` can be sent in a subsequent ListBackups
+      call to fetch more of the matching backups.
+  """
+
+  backups = _messages.MessageField('Backup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListClustersResponse(_messages.Message):
   r"""Response message for BigtableInstanceAdmin.ListClusters.
 
@@ -1554,6 +1799,38 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class OperationProgress(_messages.Message):
+  r"""Encapsulates progress related information for a Cloud Bigtable long
+  running operation.
+
+  Fields:
+    endTime: If set, the time at which this operation failed or was completed
+      successfully.
+    progressPercent: Percent completion of the operation. Values are between 0
+      and 100 inclusive.
+    startTime: Time the request was received.
+  """
+
+  endTime = _messages.StringField(1)
+  progressPercent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(3)
+
+
+class OptimizeRestoredTableMetadata(_messages.Message):
+  r"""Metadata type for the long-running operation used to track the progress
+  of optimizations performed on a newly restored table. This long-running
+  operation is automatically created by the system after the successful
+  completion of a table restore, and cannot be cancelled.
+
+  Fields:
+    name: Name of the restored table being optimized.
+    progress: The progress of the post-restore optimizations.
+  """
+
+  name = _messages.StringField(1)
+  progress = _messages.MessageField('OperationProgress', 2)
+
+
 class PartialUpdateInstanceRequest(_messages.Message):
   r"""Request message for BigtableInstanceAdmin.PartialUpdateInstance.
 
@@ -1611,6 +1888,85 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class RestoreInfo(_messages.Message):
+  r"""Information about a table restore.
+
+  Enums:
+    SourceTypeValueValuesEnum: The type of the restore source.
+
+  Fields:
+    backupInfo: Information about the backup used to restore the table. The
+      backup may no longer exist.
+    sourceType: The type of the restore source.
+  """
+
+  class SourceTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the restore source.
+
+    Values:
+      RESTORE_SOURCE_TYPE_UNSPECIFIED: No restore associated.
+      BACKUP: A backup was used as the source of the restore.
+    """
+    RESTORE_SOURCE_TYPE_UNSPECIFIED = 0
+    BACKUP = 1
+
+  backupInfo = _messages.MessageField('BackupInfo', 1)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 2)
+
+
+class RestoreTableMetadata(_messages.Message):
+  r"""Metadata type for the long-running operation returned by RestoreTable.
+
+  Enums:
+    SourceTypeValueValuesEnum: The type of the restore source.
+
+  Fields:
+    backupInfo: A BackupInfo attribute.
+    name: Name of the table being created and restored to.
+    optimizeTableOperationName: If exists, the name of the long-running
+      operation that will be used to track the post-restore optimization
+      process to optimize the performance of the restored table. The metadata
+      type of the long-running operation is OptimizeRestoreTableMetadata. The
+      response type is Empty. This long-running operation will be
+      automatically created by the system after the RestoreTable long-running
+      operation completes successfully. This operation will not be created if
+      the restore was not successful.
+    sourceType: The type of the restore source.
+  """
+
+  class SourceTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the restore source.
+
+    Values:
+      RESTORE_SOURCE_TYPE_UNSPECIFIED: No restore associated.
+      BACKUP: A backup was used as the source of the restore.
+    """
+    RESTORE_SOURCE_TYPE_UNSPECIFIED = 0
+    BACKUP = 1
+
+  backupInfo = _messages.MessageField('BackupInfo', 1)
+  name = _messages.StringField(2)
+  optimizeTableOperationName = _messages.StringField(3)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 4)
+
+
+class RestoreTableRequest(_messages.Message):
+  r"""The request for RestoreTable.
+
+  Fields:
+    backup: Name of the backup from which to restore.  Values are of the form
+      `projects/<project>/instances/<instance>/clusters/<cluster>/backups/<bac
+      kup>`.
+    tableId: Required. The id of the table to create and restore to. This
+      table must not already exist. The `table_id` appended to `parent` forms
+      the full table name of the form
+      `projects/<project>/instances/<instance>/tables/<table_id>`.
+  """
+
+  backup = _messages.StringField(1)
+  tableId = _messages.StringField(2)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -1806,6 +2162,9 @@ class Table(_messages.Message):
     name: Output only. The unique name of the table. Values are of the form
       `projects/<project>/instances/<instance>/tables/_a-zA-Z0-9*`. Views:
       `NAME_ONLY`, `SCHEMA_VIEW`, `REPLICATION_VIEW`, `FULL`
+    restoreInfo: Output only. If this table was restored from another data
+      source (e.g. a backup), this field will be populated with information
+      about the restore.
   """
 
   class GranularityValueValuesEnum(_messages.Enum):
@@ -1882,6 +2241,7 @@ class Table(_messages.Message):
   columnFamilies = _messages.MessageField('ColumnFamiliesValue', 2)
   granularity = _messages.EnumField('GranularityValueValuesEnum', 3)
   name = _messages.StringField(4)
+  restoreInfo = _messages.MessageField('RestoreInfo', 5)
 
 
 class TableProgress(_messages.Message):

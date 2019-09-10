@@ -73,6 +73,17 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  PROJECTS_INSTANCES_CLUSTERS_BACKUPS = (
+      'projects.instances.clusters.backups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/instances/{instancesId}/clusters/'
+              '{clustersId}/backups/{backupsId}',
+      },
+      [u'name'],
+      True
+  )
   PROJECTS_INSTANCES_TABLES = (
       'projects.instances.tables',
       '{+name}',

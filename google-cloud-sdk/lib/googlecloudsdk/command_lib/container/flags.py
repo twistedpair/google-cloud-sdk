@@ -198,9 +198,28 @@ return an error.
       choices={
           'rapid':
               """\
-'rapid' channel clusters are the first to receive the latest releases of
-Kubernetes and other components.
-"""
+WARNING: 'rapid' is recommended for testing, and not for production workloads.
+Clusters on 'rapid' are not covered by GKE SLA.
+
+Clusters subscribed to 'rapid' receive the latest qualified
+components, before any other channel. 'rapid' is intended for early testers
+and developers who require new features. New upgrades will occur roughly
+weekly.
+""",
+          'regular':
+              """\
+Clusters subscribed to 'regular' receive versions that are considered GA
+quality. 'regular' is intended for production users who want to take
+advantage of new features. New upgrades will occur roughly every few
+weeks.
+""",
+          'stable':
+              """\
+Clusters subscribed to 'stable' receive versions that are known to be
+stable and reliable in production. 'stable' is intended for production
+users who need stability above all else, or for whom frequent upgrades
+are too risky. New upgrades will occur roughly every few months.
+""",
       },
       help=help_text,
       hidden=False)
@@ -1709,6 +1728,8 @@ that are less specific and do not terminate at a VM.
 When enabled, `--cluster-ipv4-cidr` must be fully specified (e.g. `10.96.0.0/14`
 , but not `/14`). If `--enable-ip-alias` is also specified, both
 `--cluster-ipv4-cidr` and `--services-ipv4-cidr` must be fully specified.
+
+Must be used in conjunction with '--enable-ip-alias' or '--no-enable-ip-alias'.
 """
   parser.add_argument(
       '--allow-route-overlap',
@@ -2144,12 +2165,12 @@ def AddEnableIntraNodeVisibilityFlag(parser, hidden=False):
       help="""\
 Enable Intra-node visibility for this cluster.
 
-Enabling intra-node visibility makes your intra-node pod to pod traffic
+Enabling intra-node visibility makes your intra-node pod-to-pod traffic
 visible to the networking fabric. With this feature, you can use VPC flow
 logging or other VPC features for intra-node traffic.
 
-This is a beta feature, enabling it on existing cluster causes the cluster
-master and the cluster nodes to restart, which might cause disruption.
+Enabling it on an existing cluster causes the cluster
+master and the cluster nodes to restart, which might cause a disruption.
 """)
 
 
@@ -2435,7 +2456,7 @@ creating an extra node each time the node pool is upgraded:
   parser.add_argument(
       '--max-surge-upgrade',
       type=int,
-      default=0,
+      default=None,
       help=max_surge_help,
       hidden=hidden)
 
@@ -2476,7 +2497,7 @@ always at least 3 (5 - 2) available each time the node pool is upgraded:
   parser.add_argument(
       '--max-unavailable-upgrade',
       type=int,
-      default=1,
+      default=None,
       help=max_unavailable_upgrade_help,
       hidden=hidden)
 

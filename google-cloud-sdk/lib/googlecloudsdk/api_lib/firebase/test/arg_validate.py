@@ -261,7 +261,7 @@ def _ValidateListOfStringToStringDicts(arg_internal_name, arg_value):
 # Any arg not appearing in this map is assumed to be a simple string.
 _FILE_ARG_VALIDATORS = {
     'additional_apks': _ValidateAdditionalApksList,
-    'async': _ValidateBool,
+    'async_': _ValidateBool,
     'auto_google_login': _ValidateBool,
     'client_details': _ValidateKeyValueStringPairs,
     'device': _ValidateListOfStringToStringDicts,
@@ -288,6 +288,10 @@ _FILE_ARG_VALIDATORS = {
 
 def InternalArgNameFrom(arg_external_name):
   """Converts a user-visible arg name into its corresponding internal name."""
+  if arg_external_name == 'async':
+    # The async flag has a special destination in the argparse namespace since
+    # 'async' is a reserved keyword as of Python 3.7.
+    return 'async_'
   return arg_external_name.replace('-', '_')
 
 

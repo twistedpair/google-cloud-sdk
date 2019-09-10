@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2017 Google LLC. All Rights Reserved.
+# Copyright 2019 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""General utilties for Cloud IoT commands."""
+"""General utilties for Cloud Healthcare commands."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -22,9 +22,12 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.util import apis
 
 
-# Inserts an empty FHIR config object when the flag is set to true.
-def InsertEmptyFhirConfig(flag):
-  if not flag:
-    return None
-  messages = apis.GetMessagesModule('healthcare', 'v1alpha2')
-  return messages.FhirConfig()
+# Returns a function that inserts an empty FHIR config object (of the given API
+# version) when the flag is set to true.
+def InsertEmptyFhirConfig(api_version):
+  def VersionedInsertEmptyFhirConfig(flag):
+    if not flag:
+      return None
+    messages = apis.GetMessagesModule('healthcare', api_version)
+    return messages.FhirConfig()
+  return VersionedInsertEmptyFhirConfig

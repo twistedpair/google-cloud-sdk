@@ -1858,7 +1858,7 @@ GCP error might be returned instead.
         method_id=u'healthcare.projects.locations.datasets.fhirStores.fhir.history',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'_at', u'_count', u'_page', u'_since'],
+        query_params=[u'at', u'count', u'page', u'since'],
         relative_path=u'v1alpha2/{+name}/_history',
         request_field='',
         request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresFhirHistoryRequest',
@@ -2374,7 +2374,7 @@ successfully imported resources are not rolled back.
 The location and format of the input data is specified by the parameters
 below. Note that if no format is specified, this method assumes the
 `BUNDLE` format. When using the `BUNDLE` format this method ignores the
-`Bundle.type` field, except for the special case of `history`, and does
+`Bundle.type` field, except that `history` bundles are rejected, and does
 not apply any of the bundle processing semantics for batch or transaction
 bundles. Unlike in ExecuteBundle, transaction bundles are not executed
 as a single transaction and bundle-internal references are not rewritten.
@@ -2383,17 +2383,6 @@ provided in `Bundle.entry.resource`, ignoring `Bundle.entry.request`. As
 an example, this allows the import of `searchset` bundles produced by a
 FHIR search or
 Patient-everything operation.
-
-If history imports are enabled by setting
-enable_history_import in the FHIR
-store's configuration, this method can import historical versions
-of a resource by supplying a bundle of type `history` and using the
-`BUNDLE` format. The historical versions in the bundle must have
-`lastUpdated` timestamps, and the resulting resource history on the server
-will appear as if the versions had been created at those timestamps. If a
-current or historical version with the supplied resource ID already
-exists, the bundle is rejected to avoid creating an inconsistent sequence
-of resource versions.
 
 This method returns an Operation that can
 be used to track the status of the import by calling

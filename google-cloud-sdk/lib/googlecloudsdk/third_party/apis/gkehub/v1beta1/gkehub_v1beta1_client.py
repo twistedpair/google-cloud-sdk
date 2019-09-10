@@ -144,6 +144,33 @@ class GkehubV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GenerateConnectManifest(self, request, global_params=None):
+      r"""Generate the manifest for deployment of GKE connect agent.
+
+      Args:
+        request: (GkehubProjectsLocationsGlobalMembershipsGenerateConnectManifestRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GenerateConnectManifestResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateConnectManifest')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateConnectManifest.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/global/memberships/{membershipsId}:generateConnectManifest',
+        http_method=u'GET',
+        method_id=u'gkehub.projects.locations.global.memberships.generateConnectManifest',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:generateConnectManifest',
+        request_field='',
+        request_type_name=u'GkehubProjectsLocationsGlobalMembershipsGenerateConnectManifestRequest',
+        response_type_name=u'GenerateConnectManifestResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single Membership.
 

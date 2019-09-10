@@ -18,7 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from collections import OrderedDict
+import collections
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -26,7 +26,7 @@ from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 # TODO(b/130817246): Clean up when large IA bandwidth API is promoted to GA
-_BANDWIDTH_CHOICES = OrderedDict([
+_BANDWIDTH_CHOICES = collections.OrderedDict([
     ('50m', '50 Mbit/s'),
     ('100m', '100 Mbit/s'),
     ('200m', '200 Mbit/s'),
@@ -41,7 +41,7 @@ _BANDWIDTH_CHOICES = OrderedDict([
     ('50g', '50 Gbit/s'),
 ])
 
-_BANDWIDTH_CHOICES_GA = OrderedDict([
+_BANDWIDTH_CHOICES_GA = collections.OrderedDict([
     ('50m', '50 Mbit/s'),
     ('100m', '100 Mbit/s'),
     ('200m', '200 Mbit/s'),
@@ -271,3 +271,15 @@ def AddDryRun(parser):
       default=None,
       action='store_true',
       help='If supplied, validates the attachment without creating it.')
+
+
+def AddMtu(parser):
+  """Adds mtu flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--mtu',
+      type=int,
+      help="""\
+      Maximum transmission unit(MTU) is the size of the largest frame passing
+      through this interconnect attachment. Only 1440 and 1500 are allowed.
+      If not specified, the value will default to 1440.
+      """)

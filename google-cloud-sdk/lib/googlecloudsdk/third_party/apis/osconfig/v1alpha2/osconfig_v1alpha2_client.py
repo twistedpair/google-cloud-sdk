@@ -699,7 +699,10 @@ called by users to see what configs are assigned to this instance.
     )
 
     def ReportPatchJobInstanceDetails(self, request, global_params=None):
-      r"""Endpoint used by the agent to report back its state during a patch.
+      r"""Deprecated:  Should use AgentEndpoint API going forward.  Will be removed.
+in v1beta1.
+
+Endpoint used by the agent to report back its state during a patch
 job. This endpoint will also return the patch job's state and
 configurations that the agent needs to know in order to run or stop
 patching.
