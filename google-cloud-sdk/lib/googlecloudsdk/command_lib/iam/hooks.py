@@ -117,13 +117,7 @@ def AddVersionToUpdateMaskIfNotPresent(update_mask_path):
     """The implementation of Process for the hook."""
     del ref, args  # Unused.
 
-    # TODO(b/140482809) use GetFieldValueFromMessage
-    update_mask = ''
-    message = request
-    for p in update_mask_path.split('.'):
-      message = getattr(message, p)
-    update_mask = message
-
+    update_mask = arg_utils.GetFieldValueFromMessage(request, update_mask_path)
     if 'version' not in update_mask:
       if update_mask is None:
         update_mask = 'version'

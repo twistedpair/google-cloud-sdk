@@ -621,7 +621,7 @@
       "type": "object",
       "properties": {
         "version": {
-          "description": "Deprecated.",
+          "description": "Specifies the format of the policy.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nPolicies with any conditional bindings must specify version 3. Policies\nwithout any conditional bindings may specify any valid value or leave the\nfield unset.",
           "type": "integer",
           "format": "int32"
         },
@@ -701,7 +701,7 @@
       "type": "object",
       "properties": {
         "requestedPolicyVersion": {
-          "description": "Optional. The policy format version to be returned.\nAcceptable values are 0, 1, and 3.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+          "description": "Optional. The policy format version to be returned.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nRequests for policies with any conditional bindings must specify version 3.\nPolicies without any conditional bindings may specify any valid value or\nleave the field unset.",
           "type": "integer",
           "format": "int32"
         }
@@ -765,203 +765,6 @@
       "resources": {
         "locations": {
           "resources": {
-            "entryGroups": {
-              "resources": {
-                "entries": {
-                  "methods": {
-                    "patch": {
-                      "id": "datacatalog.projects.locations.entryGroups.entries.patch",
-                      "path": "v1beta1/{+name}",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}",
-                      "httpMethod": "PATCH",
-                      "parameters": {
-                        "name": {
-                          "description": "Required when used in\nUpdateEntryRequest.\nThe Data Catalog resource name of the entry in URL format. Example:\n\n* projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id}\n\nNote that this Entry and its child resources may not actually be stored in\nthe location in this name.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",
-                          "type": "string"
-                        },
-                        "updateMask": {
-                          "description": "Optional. The fields to update on the entry. If absent or empty, all\nmodifiable fields are updated.\n\nCurrently only `schema` field in Cloud Pub\/Sub topic entries is modifiable.",
-                          "location": "query",
-                          "type": "string",
-                          "format": "google-fieldmask"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "request": {
-                        "$ref": "GoogleCloudDatacatalogV1beta1Entry"
-                      },
-                      "response": {
-                        "$ref": "GoogleCloudDatacatalogV1beta1Entry"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Updates an existing entry.\nThe user should enable the Data Catalog API in the project identified by\nthe `entry.name` parameter (see [Data Catalog Resource Project]\n(\/data-catalog\/docs\/concepts\/resource-project) for more information)."
-                    },
-                    "get": {
-                      "id": "datacatalog.projects.locations.entryGroups.entries.get",
-                      "path": "v1beta1/{+name}",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. The name of the entry. Example:\n\n* projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id}\n\nEntry groups are logical groupings of entries. Currently, users cannot\ncreate\/modify entry groups. They are created by Data Catalog; they include\n`@bigquery` for all BigQuery entries, and `@pubsub` for all Cloud Pub\/Sub\nentries.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleCloudDatacatalogV1beta1Entry"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets an entry."
-                    }
-                  }
-                  ,
-                  "resources": {
-                    "tags": {
-                      "methods": {
-                        "create": {
-                          "id": "datacatalog.projects.locations.entryGroups.entries.tags.create",
-                          "path": "v1beta1/{+parent}/tags",
-                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags",
-                          "httpMethod": "POST",
-                          "parameters": {
-                            "parent": {
-                              "description": "Required. The name of the resource to attach this tag to. Tags can be attached to\nEntries. Example:\n\n* projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id}\n\nNote that this Tag and its child resources may not actually be stored in\nthe location in this name.",
-                              "location": "path",
-                              "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "parent"
-                          ],
-                          "request": {
-                            "$ref": "GoogleCloudDatacatalogV1beta1Tag"
-                          },
-                          "response": {
-                            "$ref": "GoogleCloudDatacatalogV1beta1Tag"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Creates a tag on an Entry.\nNote: The project identified by the `parent` parameter for the\n[tag](\/data-catalog\/docs\/reference\/rest\/v1beta1\/projects.locations.entryGroups.entries.tags\/create#path-parameters)\nand the\n[tag\ntemplate](\/data-catalog\/docs\/reference\/rest\/v1beta1\/projects.locations.tagTemplates\/create#path-parameters)\nused to create the tag must be from the same organization."
-                        },
-                        "patch": {
-                          "id": "datacatalog.projects.locations.entryGroups.entries.tags.patch",
-                          "path": "v1beta1/{+name}",
-                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags/{tagsId}",
-                          "httpMethod": "PATCH",
-                          "parameters": {
-                            "name": {
-                              "description": "Required when used in\nUpdateTagRequest. The\nresource name of the tag in URL format. Example:\n\n* projects\/{project_id}\/locations\/{location}\/entrygroups\/{entry_group_id}\/entries\/{entry_id}\/tags\/{tag_id}\n\nwhere `tag_id` is a system-generated identifier.\nNote that this Tag may not actually be stored in the location in this name.",
-                              "location": "path",
-                              "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+\/tags\/[^\/]+$",
-                              "type": "string"
-                            },
-                            "updateMask": {
-                              "description": "Optional. The fields to update on the Tag. If absent or empty, all\nmodifiable fields are updated. Currently the only modifiable field is the\nfield `fields`.",
-                              "location": "query",
-                              "type": "string",
-                              "format": "google-fieldmask"
-                            }
-                          },
-                          "parameterOrder": [
-                            "name"
-                          ],
-                          "request": {
-                            "$ref": "GoogleCloudDatacatalogV1beta1Tag"
-                          },
-                          "response": {
-                            "$ref": "GoogleCloudDatacatalogV1beta1Tag"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Updates an existing tag."
-                        },
-                        "delete": {
-                          "id": "datacatalog.projects.locations.entryGroups.entries.tags.delete",
-                          "path": "v1beta1/{+name}",
-                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags/{tagsId}",
-                          "httpMethod": "DELETE",
-                          "parameters": {
-                            "name": {
-                              "description": "Required. The name of the tag to delete. Example:\n\n* projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id}\/tags\/{tag_id}",
-                              "location": "path",
-                              "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+\/tags\/[^\/]+$",
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "name"
-                          ],
-                          "response": {
-                            "$ref": "Empty"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Deletes a tag."
-                        },
-                        "list": {
-                          "id": "datacatalog.projects.locations.entryGroups.entries.tags.list",
-                          "path": "v1beta1/{+parent}/tags",
-                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags",
-                          "httpMethod": "GET",
-                          "parameters": {
-                            "parent": {
-                              "description": "Required. The name of the Data Catalog resource to list the tags of. The\nresource could be an Entry.",
-                              "location": "path",
-                              "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",
-                              "type": "string"
-                            },
-                            "pageSize": {
-                              "description": "Optional. The maximum number of tags to return. Default is 10. Max limit is\n1000.",
-                              "location": "query",
-                              "type": "integer",
-                              "format": "int32"
-                            },
-                            "pageToken": {
-                              "description": "Optional. Token that specifies which page is requested. If empty, the first\npage is returned.",
-                              "location": "query",
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "parent"
-                          ],
-                          "response": {
-                            "$ref": "GoogleCloudDatacatalogV1beta1ListTagsResponse"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Lists the tags on an Entry."
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            },
             "tagTemplates": {
               "methods": {
                 "create": {
@@ -1112,7 +915,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the access control policy for a resource. Replaces any existing\npolicy.\nSupported resources are:\n  - Tag templates.\nNote, this method cannot be used to manage policies for BigQuery, Cloud\nPub\/Sub and any external Google Cloud Platform resources synced to Cloud\nData Catalog.\n\nCallers must have following Google IAM permission\n`datacatalog.tagTemplates.setIamPolicy` to set policies on tag templates."
+                  "description": "Sets the access control policy for a resource. Replaces any existing\npolicy.\nSupported resources are:\n  - Tag templates.\nNote, this method cannot be used to manage policies for BigQuery, Cloud\nPub\/Sub and any external Google Cloud Platform resources synced to Cloud\nData Catalog.\n\nCallers must have following Google IAM permission\n  - `datacatalog.tagTemplates.setIamPolicy` to set policies on tag\n    templates."
                 },
                 "getIamPolicy": {
                   "id": "datacatalog.projects.locations.tagTemplates.getIamPolicy",
@@ -1140,7 +943,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets the access control policy for a resource. A `NOT_FOUND` error\nis returned if the resource does not exist. An empty policy is returned\nif the resource exists but does not have a policy set on it.\n\nSupported resources are:\n  - Tag templates.\nNote, this method cannot be used to manage policies for BigQuery, Cloud\nPub\/Sub and any external Google Cloud Platform resources synced to Cloud\nData Catalog.\n\nCallers must have following Google IAM permission\n`datacatalog.tagTemplates.getIamPolicy` to get policies on tag templates."
+                  "description": "Gets the access control policy for a resource. A `NOT_FOUND` error\nis returned if the resource does not exist. An empty policy is returned\nif the resource exists but does not have a policy set on it.\n\nSupported resources are:\n  - Tag templates.\nNote, this method cannot be used to manage policies for BigQuery, Cloud\nPub\/Sub and any external Google Cloud Platform resources synced to Cloud\nData Catalog.\n\nCallers must have following Google IAM permission\n  - `datacatalog.tagTemplates.getIamPolicy` to get policies on tag\n    templates."
                 },
                 "testIamPermissions": {
                   "id": "datacatalog.projects.locations.tagTemplates.testIamPermissions",
@@ -1299,6 +1102,318 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Deletes a field in a tag template and all uses of that field.\nThe user should enable the Data Catalog API in the project identified by\nthe `name` parameter (see [Data Catalog Resource Project]\n(\/data-catalog\/docs\/concepts\/resource-project) for more information)."
+                    }
+                  }
+                }
+              }
+            },
+            "entryGroups": {
+              "methods": {
+                "setIamPolicy": {
+                  "id": "datacatalog.projects.locations.entryGroups.setIamPolicy",
+                  "path": "v1beta1/{+resource}:setIamPolicy",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}:setIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "SetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Sets the access control policy for a resource. Replaces any existing\npolicy.\nSupported resources are:\n  - Tag templates.\nNote, this method cannot be used to manage policies for BigQuery, Cloud\nPub\/Sub and any external Google Cloud Platform resources synced to Cloud\nData Catalog.\n\nCallers must have following Google IAM permission\n  - `datacatalog.tagTemplates.setIamPolicy` to set policies on tag\n    templates."
+                },
+                "getIamPolicy": {
+                  "id": "datacatalog.projects.locations.entryGroups.getIamPolicy",
+                  "path": "v1beta1/{+resource}:getIamPolicy",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}:getIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "GetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the access control policy for a resource. A `NOT_FOUND` error\nis returned if the resource does not exist. An empty policy is returned\nif the resource exists but does not have a policy set on it.\n\nSupported resources are:\n  - Tag templates.\nNote, this method cannot be used to manage policies for BigQuery, Cloud\nPub\/Sub and any external Google Cloud Platform resources synced to Cloud\nData Catalog.\n\nCallers must have following Google IAM permission\n  - `datacatalog.tagTemplates.getIamPolicy` to get policies on tag\n    templates."
+                }
+              }
+              ,
+              "resources": {
+                "entries": {
+                  "methods": {
+                    "patch": {
+                      "id": "datacatalog.projects.locations.entryGroups.entries.patch",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Required when used in\nUpdateEntryRequest.\nThe Data Catalog resource name of the entry in URL format. Example:\n\n* projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id}\n\nNote that this Entry and its child resources may not actually be stored in\nthe location in this name.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Optional. The fields to update on the entry. If absent or empty, all\nmodifiable fields are updated.\n\nCurrently only `schema` field in Cloud Pub\/Sub topic entries is modifiable.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudDatacatalogV1beta1Entry"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudDatacatalogV1beta1Entry"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates an existing entry.\nThe user should enable the Data Catalog API in the project identified by\nthe `entry.name` parameter (see [Data Catalog Resource Project]\n(\/data-catalog\/docs\/concepts\/resource-project) for more information)."
+                    },
+                    "get": {
+                      "id": "datacatalog.projects.locations.entryGroups.entries.get",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the entry. Example:\n\n* projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id}\n\nEntry groups are logical groupings of entries. Currently, users cannot\ncreate\/modify entry groups. They are created by Data Catalog; they include\n`@bigquery` for all BigQuery entries, and `@pubsub` for all Cloud Pub\/Sub\nentries.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudDatacatalogV1beta1Entry"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets an entry."
+                    },
+                    "setIamPolicy": {
+                      "id": "datacatalog.projects.locations.entryGroups.entries.setIamPolicy",
+                      "path": "v1beta1/{+resource}:setIamPolicy",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:setIamPolicy",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "SetIamPolicyRequest"
+                      },
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Sets the access control policy for a resource. Replaces any existing\npolicy.\nSupported resources are:\n  - Tag templates.\nNote, this method cannot be used to manage policies for BigQuery, Cloud\nPub\/Sub and any external Google Cloud Platform resources synced to Cloud\nData Catalog.\n\nCallers must have following Google IAM permission\n  - `datacatalog.tagTemplates.setIamPolicy` to set policies on tag\n    templates."
+                    },
+                    "getIamPolicy": {
+                      "id": "datacatalog.projects.locations.entryGroups.entries.getIamPolicy",
+                      "path": "v1beta1/{+resource}:getIamPolicy",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:getIamPolicy",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "GetIamPolicyRequest"
+                      },
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the access control policy for a resource. A `NOT_FOUND` error\nis returned if the resource does not exist. An empty policy is returned\nif the resource exists but does not have a policy set on it.\n\nSupported resources are:\n  - Tag templates.\nNote, this method cannot be used to manage policies for BigQuery, Cloud\nPub\/Sub and any external Google Cloud Platform resources synced to Cloud\nData Catalog.\n\nCallers must have following Google IAM permission\n  - `datacatalog.tagTemplates.getIamPolicy` to get policies on tag\n    templates."
+                    }
+                  }
+                  ,
+                  "resources": {
+                    "tags": {
+                      "methods": {
+                        "create": {
+                          "id": "datacatalog.projects.locations.entryGroups.entries.tags.create",
+                          "path": "v1beta1/{+parent}/tags",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The name of the resource to attach this tag to. Tags can be attached to\nEntries. Example:\n\n* projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id}\n\nNote that this Tag and its child resources may not actually be stored in\nthe location in this name.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "request": {
+                            "$ref": "GoogleCloudDatacatalogV1beta1Tag"
+                          },
+                          "response": {
+                            "$ref": "GoogleCloudDatacatalogV1beta1Tag"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Creates a tag on an Entry.\nNote: The project identified by the `parent` parameter for the\n[tag](\/data-catalog\/docs\/reference\/rest\/v1beta1\/projects.locations.entryGroups.entries.tags\/create#path-parameters)\nand the\n[tag\ntemplate](\/data-catalog\/docs\/reference\/rest\/v1beta1\/projects.locations.tagTemplates\/create#path-parameters)\nused to create the tag must be from the same organization."
+                        },
+                        "patch": {
+                          "id": "datacatalog.projects.locations.entryGroups.entries.tags.patch",
+                          "path": "v1beta1/{+name}",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags/{tagsId}",
+                          "httpMethod": "PATCH",
+                          "parameters": {
+                            "name": {
+                              "description": "Required when used in\nUpdateTagRequest. The\nresource name of the tag in URL format. Example:\n\n* projects\/{project_id}\/locations\/{location}\/entrygroups\/{entry_group_id}\/entries\/{entry_id}\/tags\/{tag_id}\n\nwhere `tag_id` is a system-generated identifier.\nNote that this Tag may not actually be stored in the location in this name.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+\/tags\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "updateMask": {
+                              "description": "Optional. The fields to update on the Tag. If absent or empty, all\nmodifiable fields are updated. Currently the only modifiable field is the\nfield `fields`.",
+                              "location": "query",
+                              "type": "string",
+                              "format": "google-fieldmask"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "GoogleCloudDatacatalogV1beta1Tag"
+                          },
+                          "response": {
+                            "$ref": "GoogleCloudDatacatalogV1beta1Tag"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Updates an existing tag."
+                        },
+                        "delete": {
+                          "id": "datacatalog.projects.locations.entryGroups.entries.tags.delete",
+                          "path": "v1beta1/{+name}",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags/{tagsId}",
+                          "httpMethod": "DELETE",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. The name of the tag to delete. Example:\n\n* projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id}\/tags\/{tag_id}",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+\/tags\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Empty"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Deletes a tag."
+                        },
+                        "list": {
+                          "id": "datacatalog.projects.locations.entryGroups.entries.tags.list",
+                          "path": "v1beta1/{+parent}/tags",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The name of the Data Catalog resource to list the tags of. The\nresource could be an Entry.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "Optional. The maximum number of tags to return. Default is 10. Max limit is\n1000.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "Optional. Token that specifies which page is requested. If empty, the first\npage is returned.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "GoogleCloudDatacatalogV1beta1ListTagsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists the tags on an Entry."
+                        }
+                      }
                     }
                   }
                 }

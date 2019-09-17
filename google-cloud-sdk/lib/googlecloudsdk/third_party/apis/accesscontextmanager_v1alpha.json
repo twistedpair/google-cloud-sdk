@@ -173,7 +173,7 @@
     },
     "ListAccessPoliciesResponse": {
       "id": "ListAccessPoliciesResponse",
-      "description": "[Deprecated] A response to `ListAccessPoliciesRequest`.",
+      "description": "A response to `ListAccessPoliciesRequest`.",
       "type": "object",
       "properties": {
         "accessPolicies": {
@@ -191,7 +191,7 @@
     },
     "AccessPolicy": {
       "id": "AccessPolicy",
-      "description": "`AccessPolicy` is a container for `AccessLevels` (which define the necessary\nattributes to use GCP services) and `AccessZones` (which define regions of\nservices able to freely pass data within a zone). An access policy is\nglobally visible within an organization, and the restrictions it specifies\napply to all projects within an organization.",
+      "description": "`AccessPolicy` is a container for `AccessLevels` (which define the necessary\nattributes to use GCP services) and `ServicePerimeters` (which define regions\nof services able to freely pass data within a perimeter). An access policy is\nglobally visible within an organization, and the restrictions it specifies\napply to all projects within an organization.",
       "type": "object",
       "properties": {
         "name": {
@@ -203,7 +203,7 @@
           "type": "string"
         },
         "title": {
-          "description": "Human readable title. Does not affect behavior.",
+          "description": "Required. Human readable title. Does not affect behavior.",
           "type": "string"
         },
         "createTime": {
@@ -220,7 +220,7 @@
     },
     "ListAccessLevelsResponse": {
       "id": "ListAccessLevelsResponse",
-      "description": "[Deprecated] A response to `ListAccessLevelsRequest`.",
+      "description": "A response to `ListAccessLevelsRequest`.",
       "type": "object",
       "properties": {
         "accessLevels": {
@@ -238,7 +238,7 @@
     },
     "AccessLevel": {
       "id": "AccessLevel",
-      "description": "An `AccessLevel` is a label that can be applied to requests to GCP services,\nalong with a list of requirements necessary for the label to be applied.\n`AccessLevels` can be referenced in `AccessZones` and in the `Cloud Org\nPolicy` API.",
+      "description": "An `AccessLevel` is a label that can be applied to requests to GCP services,\nalong with a list of requirements necessary for the label to be applied.",
       "type": "object",
       "properties": {
         "name": {
@@ -435,16 +435,16 @@
         }
       }
     },
-    "ListAccessZonesResponse": {
-      "id": "ListAccessZonesResponse",
-      "description": "[Deprecated] A response to `ListAccessZonesRequest`.",
+    "ListServicePerimetersResponse": {
+      "id": "ListServicePerimetersResponse",
+      "description": "A response to `ListServicePerimetersRequest`.",
       "type": "object",
       "properties": {
-        "accessZones": {
-          "description": "List of the Access Zone instances.",
+        "servicePerimeters": {
+          "description": "List of the Service Perimeter instances.",
           "type": "array",
           "items": {
-            "$ref": "AccessZone"
+            "$ref": "ServicePerimeter"
           }
         },
         "nextPageToken": {
@@ -453,13 +453,13 @@
         }
       }
     },
-    "AccessZone": {
-      "id": "AccessZone",
-      "description": "`AccessZone` describes a set of GCP resources which can freely import and\nexport data amongst themselves, but not export outside of the `AccessZone`.\nIf a request with a source within this `AccessZone` has a target outside of\nthe `AccessZone`, the request will be blocked. Otherwise the request is\nallowed. Access Zones cannot overlap, a single GCP project can only belong to\na single Access Zone. The restriction against overlapping zones may be lifted\nin the future.",
+    "ServicePerimeter": {
+      "id": "ServicePerimeter",
+      "description": "`ServicePerimeter` describes a set of GCP resources which can freely import\nand export data amongst themselves, but not export outside of the\n`ServicePerimeter`. If a request with a source within this `ServicePerimeter`\nhas a target outside of the `ServicePerimeter`, the request will be blocked.\nOtherwise the request is allowed. There are two types of Service Perimeter -\nRegular and Bridge. Regular Service Perimeters cannot overlap, a single GCP\nproject can only belong to a single regular Service Perimeter. Service\nPerimeter Bridges can contain only GCP projects as members, a single GCP\nproject may belong to multiple Service Perimeter Bridges.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Resource name for the Access Zone.  The `short_name` component\nmust begin with a letter and only include alphanumeric and '_'. Format:\n`accessPolicies\/{policy_id}\/accessZones\/{short_name}`",
+          "description": "Required. Resource name for the ServicePerimeter.  The `short_name`\ncomponent must begin with a letter and only include alphanumeric and '_'.\nFormat: `accessPolicies\/{policy_id}\/servicePerimeters\/{short_name}`",
           "type": "string"
         },
         "title": {
@@ -467,58 +467,62 @@
           "type": "string"
         },
         "description": {
-          "description": "Description of the `AccessZone` and its use. Does not affect behavior.",
+          "description": "Description of the `ServicePerimeter` and its use. Does not affect\nbehavior.",
           "type": "string"
         },
+        "createTime": {
+          "description": "Output only. Time the `ServicePerimeter` was created in UTC.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Time the `ServicePerimeter` was updated in UTC.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "perimeterType": {
+          "description": "Perimeter type indicator. A single project is\nallowed to be a member of single regular perimeter, but multiple service\nperimeter bridges. A project cannot be a included in a perimeter bridge\nwithout being included in regular perimeter. For perimeter bridges,\nthe restricted service list as well as access level lists must be\nempty.",
+          "enumDescriptions": [
+            "Regular Perimeter.",
+            "Perimeter Bridge."
+          ],
+          "type": "string",
+          "enum": [
+            "PERIMETER_TYPE_REGULAR",
+            "PERIMETER_TYPE_BRIDGE"
+          ]
+        },
+        "status": {
+          "description": "Current ServicePerimeter configuration. Specifies sets of resources,\nrestricted services and access levels that determine perimeter\ncontent and boundaries.",
+          "$ref": "ServicePerimeterConfig"
+        }
+      }
+    },
+    "ServicePerimeterConfig": {
+      "id": "ServicePerimeterConfig",
+      "description": "`ServicePerimeterConfig` specifies a set of GCP resources that describe\nspecific Service Perimeter configuration.",
+      "type": "object",
+      "properties": {
         "resources": {
-          "description": "A list of GCP resources that are inside of the access zone.\nCurrently only projects are allowed. Format: `projects\/{project_number}`",
+          "description": "A list of GCP resources that are inside of the service perimeter.\nCurrently only projects are allowed. Format: `projects\/{project_number}`",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "accessLevels": {
-          "description": "A list of `AccessLevel` resource names that allow resources within the\n`AccessZone` to be accessed from the internet. `AccessLevels` listed must\nbe in the same policy as this `AccessZone`. Referencing a nonexistent\n`AccessLevel` is a syntax error. If no `AccessLevel` names are listed,\nresources within the zone can only be accessed via GCP calls with request\norigins within the zone. Example:\n`\"accessPolicies\/MY_POLICY\/accessLevels\/MY_LEVEL\"`.\nFor bridge access zones, must be empty.",
+          "description": "A list of `AccessLevel` resource names that allow resources within the\n`ServicePerimeter` to be accessed from the internet. `AccessLevels` listed\nmust be in the same policy as this `ServicePerimeter`. Referencing a\nnonexistent `AccessLevel` is a syntax error. If no `AccessLevel` names are\nlisted, resources within the perimeter can only be accessed via GCP calls\nwith request origins within the perimeter. Example:\n`\"accessPolicies\/MY_POLICY\/accessLevels\/MY_LEVEL\"`.\nFor Service Perimeter Bridge, must be empty.",
           "type": "array",
           "items": {
             "type": "string"
           }
-        },
-        "unrestrictedServices": {
-          "description": "GCP services exempt from the Access Zone restrictions. Deprecated. Must be\nthe single wildcard \"*\". Services matching the unrestricted_services are\nexcluded from Access Zone restrictions.  Wildcard means that unless\nexplicitly specified by \"restricted_services\" list, any service is treated\nas unrestricted.\n\nFor bridge access zones, must be empty.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "createTime": {
-          "description": "Output only. Time the `AccessZone` was created in UTC.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. Time the `AccessZone` was updated in UTC.",
-          "type": "string",
-          "format": "google-datetime"
         },
         "restrictedServices": {
-          "description": "GCP services that Access Zone restrictions will be applied to. Must contain\nlist of services. Only resources for services matching the\nrestricted_services will be subject to access zone protection. For example,\nif `storage.googleapis.com` is specified, then storage buckets that belong\nto the access zone could be accessed through Storage service only if access\nconditions are met.\n\nFor bridge access zones, must be empty.",
+          "description": "GCP services that are subject to the Service Perimeter restrictions. For\nexample, if `storage.googleapis.com` is specified, access to the storage\nbuckets inside the perimeter must meet the perimeter's access restrictions.",
           "type": "array",
           "items": {
             "type": "string"
           }
-        },
-        "zoneType": {
-          "description": "Zone type indicator. A single project is\nallowed to be a member of single regular access zone, but multiple bridge\naccess zones. A project cannot be a included in a bridge access zone\nwithout being included in regular access zone. For bridge access zones,\nrestricted\/unrestricted service lists as well as access lists must be\nempty.",
-          "enumDescriptions": [
-            "Regular zone.",
-            "Bridge zone."
-          ],
-          "type": "string",
-          "enum": [
-            "ZONE_TYPE_REGULAR",
-            "ZONE_TYPE_BRIDGE"
-          ]
         }
       }
     }
@@ -586,7 +590,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "[Deprecated] List all AccessPolicies under a\ncontainer."
+          "description": "List all AccessPolicies under a\ncontainer."
         },
         "get": {
           "id": "accesscontextmanager.accessPolicies.get",
@@ -611,7 +615,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "[Deprecated] Get an AccessPolicy by name."
+          "description": "Get an AccessPolicy by name."
         },
         "create": {
           "id": "accesscontextmanager.accessPolicies.create",
@@ -631,7 +635,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "[Deprecated] Create an `AccessPolicy`. Fails if this organization already\nhas a `AccessPolicy`. The longrunning Operation will have a successful\nstatus once the `AccessPolicy` has propagated to long-lasting storage.\nSyntactic and basic semantic errors will be returned in `metadata` as a\nBadRequest proto."
+          "description": "Create an `AccessPolicy`. Fails if this organization already has a\n`AccessPolicy`. The longrunning Operation will have a successful status\nonce the `AccessPolicy` has propagated to long-lasting storage.\nSyntactic and basic semantic errors will be returned in `metadata` as a\nBadRequest proto."
         },
         "patch": {
           "id": "accesscontextmanager.accessPolicies.patch",
@@ -665,7 +669,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "[Deprecated] Update an AccessPolicy. The\nlongrunning Operation from this RPC will have a successful status once the\nchanges to the AccessPolicy have propagated\nto long-lasting storage. Syntactic and basic semantic errors will be\nreturned in `metadata` as a BadRequest proto."
+          "description": "Update an AccessPolicy. The\nlongrunning Operation from this RPC will have a successful status once the\nchanges to the AccessPolicy have propagated\nto long-lasting storage. Syntactic and basic semantic errors will be\nreturned in `metadata` as a BadRequest proto."
         },
         "delete": {
           "id": "accesscontextmanager.accessPolicies.delete",
@@ -690,7 +694,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "[Deprecated] Delete an AccessPolicy by resource\nname. The longrunning Operation will have a successful status once the\nAccessPolicy\nhas been removed from long-lasting storage."
+          "description": "Delete an AccessPolicy by resource\nname. The longrunning Operation will have a successful status once the\nAccessPolicy\nhas been removed from long-lasting storage."
         }
       }
       ,
@@ -741,7 +745,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "[Deprecated] List all Access Levels for an access\npolicy."
+              "description": "List all Access Levels for an access\npolicy."
             },
             "get": {
               "id": "accesscontextmanager.accessPolicies.accessLevels.get",
@@ -776,7 +780,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "[Deprecated] Get an Access Level by resource\nname."
+              "description": "Get an Access Level by resource\nname."
             },
             "create": {
               "id": "accesscontextmanager.accessPolicies.accessLevels.create",
@@ -804,7 +808,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "[Deprecated] Create an Access Level. The longrunning\noperation from this RPC will have a successful status once the Access\nLevel has\npropagated to long-lasting storage. Access Levels containing\nerrors will result in an error response for the first error encountered."
+              "description": "Create an Access Level. The longrunning\noperation from this RPC will have a successful status once the Access\nLevel has\npropagated to long-lasting storage. Access Levels containing\nerrors will result in an error response for the first error encountered."
             },
             "patch": {
               "id": "accesscontextmanager.accessPolicies.accessLevels.patch",
@@ -838,7 +842,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "[Deprecated] Update an Access Level. The longrunning\noperation from this RPC will have a successful status once the changes to\nthe Access Level have propagated\nto long-lasting storage. Access Levels containing\nerrors will result in an error response for the first error encountered."
+              "description": "Update an Access Level. The longrunning\noperation from this RPC will have a successful status once the changes to\nthe Access Level have propagated\nto long-lasting storage. Access Levels containing\nerrors will result in an error response for the first error encountered."
             },
             "delete": {
               "id": "accesscontextmanager.accessPolicies.accessLevels.delete",
@@ -863,33 +867,33 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "[Deprecated] Delete an Access Level by resource\nname. The longrunning operation from this RPC will have a successful status\nonce the Access Level has been removed\nfrom long-lasting storage."
+              "description": "Delete an Access Level by resource\nname. The longrunning operation from this RPC will have a successful status\nonce the Access Level has been removed\nfrom long-lasting storage."
             }
           }
         },
-        "accessZones": {
+        "servicePerimeters": {
           "methods": {
             "list": {
-              "id": "accesscontextmanager.accessPolicies.accessZones.list",
-              "path": "v1alpha/{+parent}/accessZones",
-              "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/accessZones",
+              "id": "accesscontextmanager.accessPolicies.servicePerimeters.list",
+              "path": "v1alpha/{+parent}/servicePerimeters",
+              "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/servicePerimeters",
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. Resource name for the access policy to list Access Zones from.\n\nFormat:\n`accessPolicies\/{policy_id}`",
+                  "description": "Required. Resource name for the access policy to list Service Perimeters from.\n\nFormat:\n`accessPolicies\/{policy_id}`",
                   "location": "path",
                   "required": true,
                   "pattern": "^accessPolicies\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "Number of Access Zones to include in the\nlist. Default 100.",
+                  "description": "Number of Service Perimeters to include\nin the list. Default 100.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "Next page token for the next batch of Access Zone instances.\nDefaults to the first page of results.",
+                  "description": "Next page token for the next batch of Service Perimeter instances.\nDefaults to the first page of results.",
                   "location": "query",
                   "type": "string"
                 }
@@ -898,24 +902,24 @@
                 "parent"
               ],
               "response": {
-                "$ref": "ListAccessZonesResponse"
+                "$ref": "ListServicePerimetersResponse"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "[Deprecated] List all Access Zones for an access\npolicy."
+              "description": "List all Service Perimeters for an\naccess policy."
             },
             "get": {
-              "id": "accesscontextmanager.accessPolicies.accessZones.get",
+              "id": "accesscontextmanager.accessPolicies.servicePerimeters.get",
               "path": "v1alpha/{+name}",
-              "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/accessZones/{accessZonesId}",
+              "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/servicePerimeters/{servicePerimetersId}",
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. Resource name for the Access Zone.\n\nFormat:\n`accessPolicies\/{policy_id}\/accessZones\/{access_zones_id}`",
+                  "description": "Required. Resource name for the Service Perimeter.\n\nFormat:\n`accessPolicies\/{policy_id}\/servicePerimeters\/{service_perimeters_id}`",
                   "location": "path",
                   "required": true,
-                  "pattern": "^accessPolicies\/[^\/]+\/accessZones\/[^\/]+$",
+                  "pattern": "^accessPolicies\/[^\/]+\/servicePerimeters\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -923,21 +927,21 @@
                 "name"
               ],
               "response": {
-                "$ref": "AccessZone"
+                "$ref": "ServicePerimeter"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "[Deprecated] Get an Access Zone by resource name."
+              "description": "Get an Service Perimeter by resource\nname."
             },
             "create": {
-              "id": "accesscontextmanager.accessPolicies.accessZones.create",
-              "path": "v1alpha/{+parent}/accessZones",
-              "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/accessZones",
+              "id": "accesscontextmanager.accessPolicies.servicePerimeters.create",
+              "path": "v1alpha/{+parent}/servicePerimeters",
+              "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/servicePerimeters",
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. Resource name for the access policy which owns this Access Zone.\n\nFormat: `accessPolicies\/{policy_id}`",
+                  "description": "Required. Resource name for the access policy which owns this Service\nPerimeter.\n\nFormat: `accessPolicies\/{policy_id}`",
                   "location": "path",
                   "required": true,
                   "pattern": "^accessPolicies\/[^\/]+$",
@@ -948,7 +952,7 @@
                 "parent"
               ],
               "request": {
-                "$ref": "AccessZone"
+                "$ref": "ServicePerimeter"
               },
               "response": {
                 "$ref": "Operation"
@@ -956,19 +960,19 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "[Deprecated] Create an Access Zone. The longrunning\noperation from this RPC will have a successful status once the Access\nZone has\npropagated to long-lasting storage. Access Zones containing errors\nwill result in an error response for the first error encountered."
+              "description": "Create an Service Perimeter. The\nlongrunning operation from this RPC will have a successful status once the\nService Perimeter has\npropagated to long-lasting storage. Service Perimeters containing\nerrors will result in an error response for the first error encountered."
             },
             "patch": {
-              "id": "accesscontextmanager.accessPolicies.accessZones.patch",
+              "id": "accesscontextmanager.accessPolicies.servicePerimeters.patch",
               "path": "v1alpha/{+name}",
-              "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/accessZones/{accessZonesId}",
+              "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/servicePerimeters/{servicePerimetersId}",
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "Required. Resource name for the Access Zone.  The `short_name` component\nmust begin with a letter and only include alphanumeric and '_'. Format:\n`accessPolicies\/{policy_id}\/accessZones\/{short_name}`",
+                  "description": "Required. Resource name for the ServicePerimeter.  The `short_name`\ncomponent must begin with a letter and only include alphanumeric and '_'.\nFormat: `accessPolicies\/{policy_id}\/servicePerimeters\/{short_name}`",
                   "location": "path",
                   "required": true,
-                  "pattern": "^accessPolicies\/[^\/]+\/accessZones\/[^\/]+$",
+                  "pattern": "^accessPolicies\/[^\/]+\/servicePerimeters\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -982,7 +986,7 @@
                 "name"
               ],
               "request": {
-                "$ref": "AccessZone"
+                "$ref": "ServicePerimeter"
               },
               "response": {
                 "$ref": "Operation"
@@ -990,19 +994,19 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "[Deprecated] Update an Access Zone. The longrunning\noperation from this RPC will have a successful status once the changes to\nthe Access Zone\nhave propagated to long-lasting storage. Access Zone containing errors\nwill result in an error response for the first error encountered."
+              "description": "Update an Service Perimeter. The\nlongrunning operation from this RPC will have a successful status once the\nchanges to the Service Perimeter have\npropagated to long-lasting storage. Service Perimeter containing\nerrors will result in an error response for the first error encountered."
             },
             "delete": {
-              "id": "accesscontextmanager.accessPolicies.accessZones.delete",
+              "id": "accesscontextmanager.accessPolicies.servicePerimeters.delete",
               "path": "v1alpha/{+name}",
-              "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/accessZones/{accessZonesId}",
+              "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/servicePerimeters/{servicePerimetersId}",
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "Required. Resource name for the Access Zone.\n\nFormat:\n`accessPolicies\/{policy_id}\/accessZones\/{access_zone_id}`",
+                  "description": "Required. Resource name for the Service Perimeter.\n\nFormat:\n`accessPolicies\/{policy_id}\/servicePerimeters\/{service_perimeter_id}`",
                   "location": "path",
                   "required": true,
-                  "pattern": "^accessPolicies\/[^\/]+\/accessZones\/[^\/]+$",
+                  "pattern": "^accessPolicies\/[^\/]+\/servicePerimeters\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1015,7 +1019,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "[Deprecated] Delete an Access Zone by resource name.\nThe longrunning operation from this RPC will have a successful status once\nthe Access Zone\nhas been removed from long-lasting storage."
+              "description": "Delete an Service Perimeter by resource\nname. The longrunning operation from this RPC will have a successful status\nonce the Service Perimeter has been\nremoved from long-lasting storage."
             }
           }
         }

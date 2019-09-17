@@ -192,6 +192,13 @@
         }
       }
     },
+    "GoogleProtobufEmpty": {
+      "id": "GoogleProtobufEmpty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GoogleCloudDialogflowV2Agent": {
       "id": "GoogleCloudDialogflowV2Agent",
       "description": "Represents a conversational agent.",
@@ -285,13 +292,6 @@
         }
       }
     },
-    "GoogleProtobufEmpty": {
-      "id": "GoogleProtobufEmpty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "GoogleCloudDialogflowV2SearchAgentsResponse": {
       "id": "GoogleCloudDialogflowV2SearchAgentsResponse",
       "description": "The response message for Agents.SearchAgents.",
@@ -338,7 +338,7 @@
           "type": "string"
         },
         "agentContent": {
-          "description": "The agent to import.\n\nExample for how to import an agent via the command line:\n<pre>curl \\\n  'https:\/\/dialogflow.googleapis.com\/v2\/projects\/&lt;project_name&gt;\/agent:import\\\n   -X POST \\\n   -H 'Authorization: Bearer '$(gcloud auth application-default\n   print-access-token) \\\n   -H 'Accept: application\/json' \\\n   -H 'Content-Type: application\/json' \\\n   --compressed \\\n   --data-binary \"{\n      'agentContent': '$(cat &lt;agent zip file&gt; | base64 -w 0)'\n   }\"<\/pre>",
+          "description": "The agent to import.\n\nExample for how to import an agent via the command line:\n<pre>curl \\\n  'https:\/\/dialogflow.googleapis.com\/v2\/projects\/&lt;project_id&gt;\/agent:import'\\\n   -X POST \\\n   -H 'Authorization: Bearer'\\\n   $(gcloud auth application-default print-access-token) \\\n   -H 'Accept: application\/json' \\\n   -H 'Content-Type: application\/json' \\\n   --data-binary \"{\n      'agentContent': '$(cat &lt;agent zip file&gt; | base64 -w 0)'\n   }\"<\/pre>",
           "type": "string",
           "format": "byte"
         }
@@ -354,7 +354,7 @@
           "type": "string"
         },
         "agentContent": {
-          "description": "The agent to restore.\n\nExample for how to restore an agent via the command line:\n<pre>curl \\\n  'https:\/\/dialogflow.googleapis.com\/v2\/projects\/&lt;project_name&gt;\/agent:restore\\\n   -X POST \\\n   -H 'Authorization: Bearer '$(gcloud auth application-default\n   print-access-token) \\\n   -H 'Accept: application\/json' \\\n   -H 'Content-Type: application\/json' \\\n   --compressed \\\n   --data-binary \"{\n       'agentContent': '$(cat &lt;agent zip file&gt; | base64 -w 0)'\n   }\"<\/pre>",
+          "description": "The agent to restore.\n\nExample for how to restore an agent via the command line:\n<pre>curl \\\n  'https:\/\/dialogflow.googleapis.com\/v2\/projects\/&lt;project_id&gt;\/agent:restore'\\\n   -X POST \\\n   -H 'Authorization: Bearer' \\\n   $(gcloud auth application-default print-access-token) \\\n   -H 'Accept: application\/json' \\\n   -H 'Content-Type: application\/json' \\\n   --data-binary \"{\n       'agentContent': '$(cat &lt;agent zip file&gt; | base64 -w 0)'\n   }\"<\/pre>",
           "type": "string",
           "format": "byte"
         }
@@ -438,13 +438,15 @@
           "enumDescriptions": [
             "Not specified. This value should be never used.",
             "Map entity types allow mapping of a group of synonyms to a canonical\nvalue.",
-            "List entity types contain a set of entries that do not map to canonical\nvalues. However, list entity types can contain references to other entity\ntypes (with or without aliases)."
+            "List entity types contain a set of entries that do not map to canonical\nvalues. However, list entity types can contain references to other entity\ntypes (with or without aliases).",
+            "Regexp entity types allow to specify regular expressions in entries\nvalues."
           ],
           "type": "string",
           "enum": [
             "KIND_UNSPECIFIED",
             "KIND_MAP",
-            "KIND_LIST"
+            "KIND_LIST",
+            "KIND_REGEXP"
           ]
         },
         "autoExpansionMode": {
@@ -465,6 +467,10 @@
           "items": {
             "$ref": "GoogleCloudDialogflowV2EntityTypeEntity"
           }
+        },
+        "enableFuzzyExtraction": {
+          "description": "Optional. Enables fuzzy entity extraction during classification.",
+          "type": "boolean"
         }
       }
     },
@@ -1846,7 +1852,7 @@
           "type": "string"
         },
         "agentContent": {
-          "description": "The exported agent.\n\nExample for how to export an agent to a zip file via a command line:\n<pre>curl \\\n  'https:\/\/dialogflow.googleapis.com\/v2\/projects\/&lt;project_name&gt;\/agent:export'\\\n  -X POST \\\n  -H 'Authorization: Bearer '$(gcloud auth application-default\n  print-access-token) \\\n  -H 'Accept: application\/json' \\\n  -H 'Content-Type: application\/json' \\\n  --compressed \\\n  --data-binary '{}' \\\n| grep agentContent | sed -e 's\/.*\"agentContent\": \"\\([^\"]*\\)\".*\/\\1\/' \\\n| base64 --decode > &lt;agent zip file&gt;<\/pre>",
+          "description": "The exported agent.\n\nExample for how to export an agent to a zip file via a command line:\n<pre>curl \\\n  'https:\/\/dialogflow.googleapis.com\/v2\/projects\/&lt;project_id&gt;\/agent:export'\\\n  -X POST \\\n  -H 'Authorization: Bearer' \\\n  $(gcloud auth application-default print-access-token) \\\n  -H 'Accept: application\/json'\n  --compressed \\\n  | grep agentContent | sed -e 's\/.*\"agentContent\": \"\\([^\"]*\\)\".*\/\\1\/' \\\n  | base64 --decode > &lt;agent zip file&gt;<\/pre>",
           "type": "string",
           "format": "byte"
         }
@@ -1999,13 +2005,15 @@
           "enumDescriptions": [
             "Not specified. This value should be never used.",
             "Map entity types allow mapping of a group of synonyms to a canonical\nvalue.",
-            "List entity types contain a set of entries that do not map to canonical\nvalues. However, list entity types can contain references to other entity\ntypes (with or without aliases)."
+            "List entity types contain a set of entries that do not map to canonical\nvalues. However, list entity types can contain references to other entity\ntypes (with or without aliases).",
+            "Regexp entity types allow to specify regular expressions in entries\nvalues."
           ],
           "type": "string",
           "enum": [
             "KIND_UNSPECIFIED",
             "KIND_MAP",
-            "KIND_LIST"
+            "KIND_LIST",
+            "KIND_REGEXP"
           ]
         },
         "autoExpansionMode": {
@@ -2026,6 +2034,10 @@
           "items": {
             "$ref": "GoogleCloudDialogflowV2beta1EntityTypeEntity"
           }
+        },
+        "enableFuzzyExtraction": {
+          "description": "Optional. Enables fuzzy entity extraction during classification.",
+          "type": "boolean"
         }
       }
     },
@@ -3047,7 +3059,7 @@
           "type": "string"
         },
         "agentContent": {
-          "description": "The exported agent.\n\nExample for how to export an agent to a zip file via a command line:\n<pre>curl \\\n  'https:\/\/dialogflow.googleapis.com\/v2beta1\/projects\/&lt;project_name&gt;\/agent:export'\\\n  -X POST \\\n  -H 'Authorization: Bearer '$(gcloud auth application-default\n  print-access-token) \\\n  -H 'Accept: application\/json' \\\n  -H 'Content-Type: application\/json' \\\n  --compressed \\\n  --data-binary '{}' \\\n| grep agentContent | sed -e 's\/.*\"agentContent\": \"\\([^\"]*\\)\".*\/\\1\/' \\\n| base64 --decode > &lt;agent zip file&gt;<\/pre>",
+          "description": "The exported agent.\n\nExample for how to export an agent to a zip file via a command line:\n<pre>curl \\\n  'https:\/\/dialogflow.googleapis.com\/v2beta1\/projects\/&lt;project_id&gt;\/agent:export'\\\n  -X POST \\\n  -H 'Authorization: Bearer' \\\n  $(gcloud auth application-default print-access-token) \\\n  -H 'Accept: application\/json'\n  --compressed \\\n  | grep agentContent | sed -e 's\/.*\"agentContent\": \"\\([^\"]*\\)\".*\/\\1\/' \\\n  | base64 --decode > &lt;agent zip file&gt;<\/pre>",
           "type": "string",
           "format": "byte"
         }
@@ -3471,6 +3483,10 @@
         "articleSuggestionModelMetadata": {
           "description": "Metadata for article suggestion models.",
           "$ref": "GoogleCloudDialogflowV2beta1ArticleSuggestionModelMetadata"
+        },
+        "smartReplyModelMetadata": {
+          "description": "Metadata for smart reply models.",
+          "$ref": "GoogleCloudDialogflowV2beta1SmartReplyModelMetadata"
         }
       }
     },
@@ -3496,285 +3512,30 @@
         }
       }
     },
-    "GoogleCloudDialogflowV3alpha1WebhookRequest": {
-      "id": "GoogleCloudDialogflowV3alpha1WebhookRequest",
-      "description": "The request message for a webhook call.",
+    "GoogleCloudDialogflowV2beta1SmartReplyModelMetadata": {
+      "id": "GoogleCloudDialogflowV2beta1SmartReplyModelMetadata",
+      "description": "Metadata for smart reply models.",
       "type": "object",
       "properties": {
-        "detectIntentResponseId": {
-          "description": "Always present. The unique identifier of the DetectIntentResponse that\nwill be returned to the API caller.",
-          "type": "string"
-        },
-        "fulfillmentInfo": {
-          "description": "Always present. Information about the fulfillment that triggered this\nwebhook call.",
-          "$ref": "GoogleCloudDialogflowV3alpha1WebhookRequestFulfillmentInfo"
-        },
-        "intentInfo": {
-          "description": "Information about the last matched intent.",
-          "$ref": "GoogleCloudDialogflowV3alpha1WebhookRequestIntentInfo"
-        },
-        "pageInfo": {
-          "description": "Information about page status.",
-          "$ref": "GoogleCloudDialogflowV3alpha1PageInfo"
-        },
-        "sessionInfo": {
-          "description": "Information about session status.",
-          "$ref": "GoogleCloudDialogflowV3alpha1SessionInfo"
-        }
-      }
-    },
-    "GoogleCloudDialogflowV3alpha1WebhookRequestFulfillmentInfo": {
-      "id": "GoogleCloudDialogflowV3alpha1WebhookRequestFulfillmentInfo",
-      "description": "Represents fulfillment information communicated to the webhook.",
-      "type": "object",
-      "properties": {
-        "tag": {
-          "description": "Always present. The tag used to identify which fulfillment is being\ncalled.",
+        "modelType": {
+          "description": "Optional. Type of the article suggestion model. The available values are:\n*  `smart-reply-dual-encoder-model-1` - (default) Smart Reply Dual Encoder\nmodel.",
           "type": "string"
         }
       }
     },
-    "GoogleCloudDialogflowV3alpha1WebhookRequestIntentInfo": {
-      "id": "GoogleCloudDialogflowV3alpha1WebhookRequestIntentInfo",
-      "description": "Represents intent information communicated to the webhook.",
+    "GoogleCloudDialogflowV3alpha1ExportAgentResponse": {
+      "id": "GoogleCloudDialogflowV3alpha1ExportAgentResponse",
+      "description": "The response message for Agents.ExportAgent.",
       "type": "object",
       "properties": {
-        "lastMatchedIntent": {
-          "description": "Always present. The unique identifier of the last matched\nintent. Format: `projects\/<Project ID>\/locations\/<Location\nID>\/agents\/<Agent ID>\/intents\/<Intent ID>`.",
+        "agentUri": {
+          "description": "The URI to a file containing the exported agent. This field is populated\nonly if `agent_uri` is specified in ExportAgentRequest.",
           "type": "string"
         },
-        "parameters": {
-          "description": "Parameters identified as a result of intent matching. This is a map of\nthe name of the identified parameter to the value of the parameter\nidentified from the user's utterance. All parameters defined in the\nmatched intent that are identified will be surfaced here.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "GoogleCloudDialogflowV3alpha1WebhookRequestIntentInfoIntentParameterValue"
-          }
-        }
-      }
-    },
-    "GoogleCloudDialogflowV3alpha1WebhookRequestIntentInfoIntentParameterValue": {
-      "id": "GoogleCloudDialogflowV3alpha1WebhookRequestIntentInfoIntentParameterValue",
-      "description": "Represents a value for an intent parameter.",
-      "type": "object",
-      "properties": {
-        "originalValue": {
-          "description": "Always present. Original text value extracted from user utterance.",
-          "type": "string"
-        },
-        "resolvedValue": {
-          "description": "Always present. Structured value for the parameter extracted from user\nutterance.",
-          "type": "any"
-        }
-      }
-    },
-    "GoogleCloudDialogflowV3alpha1PageInfo": {
-      "id": "GoogleCloudDialogflowV3alpha1PageInfo",
-      "description": "Represents page information communicated to and from the webhook.",
-      "type": "object",
-      "properties": {
-        "currentPage": {
-          "description": "Always present for WebhookRequest. Ignored for WebhookResponse.\nThe unique identifier of the current page.\nFormat: `projects\/<Project ID>\/locations\/<Location ID>\/agents\/<Agent\nID>\/pages\/<Page ID>`.",
-          "type": "string"
-        },
-        "nextPage": {
-          "description": "Optional for both WebhookRequest and WebhookResponse.\nThe unique identifier of the next page. This field can be set by the\nwebhook to immediately transition to a page different from `current_page`.\nFormat: `projects\/<Project ID>\/locations\/<Location ID>\/agents\/<Agent\nID>\/pages\/<Page ID>`.",
-          "type": "string"
-        },
-        "formInfo": {
-          "description": "Optional for both WebhookRequest and WebhookResponse.\nInformation about the form.",
-          "$ref": "GoogleCloudDialogflowV3alpha1PageInfoFormInfo"
-        }
-      }
-    },
-    "GoogleCloudDialogflowV3alpha1PageInfoFormInfo": {
-      "id": "GoogleCloudDialogflowV3alpha1PageInfoFormInfo",
-      "description": "Represents form information.",
-      "type": "object",
-      "properties": {
-        "state": {
-          "description": "Always present for WebhookRequest. Ignored for WebhookResponse.\nThe current state of the form.",
-          "enumDescriptions": [
-            "Not specified. This value should be never used.",
-            "The server is initializing the form. The webhook can process the form\nbefore parameter collection begins.",
-            "The server is collecting form parameters from the user. The webhook can\nmodify form parameters that have been collected or are to be collected.",
-            "The server has collected all required form parameters from the user.\nThe webhook can modify collected form parameters. If any required\nparameter is invalidated by the webhook, the form will return to the\nparameter collection state; otherwise, parameter collection will\nconclude."
-          ],
+        "agentContent": {
+          "description": "The exported agent.\n\nExample for how to export an agent to a zip file via a command line:\n<pre>curl \\\n  'https:\/\/dialogflow.googleapis.com\/v3alpha1\/projects\/&lt;project-id&gt;\/locations\/&lt;location-id&gt;\/agents\/&lt;agent-id&gt;:export'\\\n  -X POST \\\n  -H 'Authorization: Bearer' \\\n  $(gcloud auth application-default print-access-token) \\\n  -H 'Accept: application\/json'<\/pre>\n<pre>curl \\\n  'https:\/\/dialogflow.googleapis.com\/v3alpha1\/projects\/&lt;project-id&gt;\/locations\/&lt;location-id&gt;\/operations\/&lt;operation-id&gt;'\\\n  -H 'Authorization: Bearer' \\\n  $(gcloud auth application-default print-access-token) \\\n  -H 'Accept: application\/json' \\\n  --compressed \\\n  | grep agentContent | sed -e 's\/.*\"agentContent\": \"\\([^\"]*\\)\".*\/\\1\/' \\\n| base64 --decode > &lt;agent zip file&gt;<\/pre>",
           "type": "string",
-          "enum": [
-            "FORM_STATE_UNSPECIFIED",
-            "INITIALIZING",
-            "COLLECTING",
-            "FINALIZED"
-          ]
-        },
-        "parameterInfo": {
-          "description": "Optional for both WebhookRequest and WebhookResponse.\nThe parameters contained in the form. Note that the webhook cannot add\nor remove any form parameter.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudDialogflowV3alpha1PageInfoFormInfoParameterInfo"
-          }
-        }
-      }
-    },
-    "GoogleCloudDialogflowV3alpha1PageInfoFormInfoParameterInfo": {
-      "id": "GoogleCloudDialogflowV3alpha1PageInfoFormInfoParameterInfo",
-      "description": "Represents parameter information.",
-      "type": "object",
-      "properties": {
-        "displayName": {
-          "description": "Always present for WebhookRequest. Required for\nWebhookResponse.\nThe human-readable name of the parameter, unique within the form. This\nfield cannot be modified by the webhook.",
-          "type": "string"
-        },
-        "required": {
-          "description": "Optional for both WebhookRequest and WebhookResponse.\nIndicates whether the parameter is required. Optional parameters will\nnot trigger prompts; however, they are filled if the user specifies\nthem. Required parameters must be filled before form filling concludes.",
-          "type": "boolean"
-        },
-        "state": {
-          "description": "Always present for WebhookRequest. Required for\nWebhookResponse.\nThe state of the parameter. This field can be set to\nINVALID by\nthe webhook to invalidate the parameter; other values set by the\nwebhook will be ignored.",
-          "enumDescriptions": [
-            "Not specified. This value should be never used.",
-            "Indicates that the parameter does not have a value.",
-            "Indicates that the parameter value is invalid. This field can be used\nby the webhook to invalidate the parameter and ask the server to\ncollect it from the user again.",
-            "Indicates that the parameter has a value."
-          ],
-          "type": "string",
-          "enum": [
-            "PARAMETER_STATE_UNSPECIFIED",
-            "EMPTY",
-            "INVALID",
-            "FILLED"
-          ]
-        },
-        "value": {
-          "description": "Optional for both WebhookRequest and WebhookResponse.\nThe value of the parameter. This field can be set by the webhook to\nchange the parameter value.",
-          "type": "any"
-        },
-        "justCollected": {
-          "description": "Optional for WebhookRequest. Ignored for WebhookResponse.\nIndicates if the parameter value was just collected on the last\nconversation turn.",
-          "type": "boolean"
-        },
-        "prompt": {
-          "description": "Not set for WebhookRequest. Optional for WebhookResponse.\nThe prompt to send to the user to fill a required form parameter. This\nfield can be set by the webhook. If set, this field overrides the\nprompt defined for the form parameter.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudDialogflowV3alpha1ResponseMessage"
-          }
-        }
-      }
-    },
-    "GoogleCloudDialogflowV3alpha1ResponseMessage": {
-      "id": "GoogleCloudDialogflowV3alpha1ResponseMessage",
-      "description": "Represents a response message that can be returned by a conversational agent.",
-      "type": "object",
-      "properties": {
-        "text": {
-          "description": "Returns a text response.",
-          "$ref": "GoogleCloudDialogflowV3alpha1ResponseMessageText"
-        },
-        "payload": {
-          "description": "Returns a response containing a custom, platform-specific payload.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object."
-          }
-        },
-        "platform": {
-          "description": "The platform that the response message is intended for.",
-          "enumDescriptions": [
-            "Not specified."
-          ],
-          "type": "string",
-          "enum": [
-            "PLATFORM_UNSPECIFIED"
-          ]
-        }
-      }
-    },
-    "GoogleCloudDialogflowV3alpha1ResponseMessageText": {
-      "id": "GoogleCloudDialogflowV3alpha1ResponseMessageText",
-      "description": "The text response message.",
-      "type": "object",
-      "properties": {
-        "text": {
-          "description": "A collection of text responses.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "GoogleCloudDialogflowV3alpha1SessionInfo": {
-      "id": "GoogleCloudDialogflowV3alpha1SessionInfo",
-      "description": "Represents session information communicated to and from the webhook.",
-      "type": "object",
-      "properties": {
-        "session": {
-          "description": "Always present for WebhookRequest. Ignored for WebhookResponse.\nThe unique identifier of the session. This\nfield can be used by the webhook to identify an user.\nFormat: `projects\/<Project ID>\/locations\/<Location ID>\/agents\/<Agent\nID>\/sessions\/<Session ID>`.",
-          "type": "string"
-        },
-        "parameters": {
-          "description": "Optional for WebhookRequest. Optional for WebhookResponse.\nAll parameters collected from forms and intents during the session.\nParameters can be created, updated, or removed by the webhook. To remove a\nparameter from the session, the webhook should explictly set the parameter\nvalue to null in WebhookResponse. The map is keyed by parameters'\ndisplay names.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any"
-          }
-        }
-      }
-    },
-    "GoogleCloudDialogflowV3alpha1WebhookResponse": {
-      "id": "GoogleCloudDialogflowV3alpha1WebhookResponse",
-      "description": "The response message for a webhook call.",
-      "type": "object",
-      "properties": {
-        "fulfillmentResponse": {
-          "description": "The fulfillment response to send to the user. This field can be omitted by\nthe webhook if it does not intend to send any response to the user.",
-          "$ref": "GoogleCloudDialogflowV3alpha1WebhookResponseFulfillmentResponse"
-        },
-        "pageInfo": {
-          "description": "Information about page status. This field can be omitted by the webhook if\nit does not intend to modify page status.",
-          "$ref": "GoogleCloudDialogflowV3alpha1PageInfo"
-        },
-        "sessionInfo": {
-          "description": "Information about session status. This field can be omitted by the webhook\nif it does not intend to modify session status.",
-          "$ref": "GoogleCloudDialogflowV3alpha1SessionInfo"
-        },
-        "payload": {
-          "description": "Value to append directly to `QueryResult.webhook_payloads`.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object."
-          }
-        }
-      }
-    },
-    "GoogleCloudDialogflowV3alpha1WebhookResponseFulfillmentResponse": {
-      "id": "GoogleCloudDialogflowV3alpha1WebhookResponseFulfillmentResponse",
-      "description": "Represents a fulfillment response to the user.",
-      "type": "object",
-      "properties": {
-        "messages": {
-          "description": "A static response in the form of rich messages.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudDialogflowV3alpha1ResponseMessage"
-          }
-        },
-        "mergeBehavior": {
-          "description": "Merge behavior for `messages`.",
-          "enumDescriptions": [
-            "Not specified. `APPEND` will be used.",
-            "`messages` will be appended to the list of messages waiting to be sent\nto the user.",
-            "`messages` will replace the list of messages waiting to be sent to the\nuser."
-          ],
-          "type": "string",
-          "enum": [
-            "MERGE_BEHAVIOR_UNSPECIFIED",
-            "APPEND",
-            "REPLACE"
-          ]
+          "format": "byte"
         }
       }
     }
@@ -3941,6 +3702,32 @@
                 "https://www.googleapis.com/auth/dialogflow"
               ],
               "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+            },
+            "cancel": {
+              "id": "dialogflow.projects.operations.cancel",
+              "path": "v2/{+name}:cancel",
+              "flatPath": "v2/projects/{projectsId}/operations/{operationsId}:cancel",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "The name of the operation resource to be cancelled.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleProtobufEmpty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/dialogflow"
+              ],
+              "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`."
             }
           }
         },
@@ -4015,6 +3802,32 @@
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
                   "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+                },
+                "cancel": {
+                  "id": "dialogflow.projects.locations.operations.cancel",
+                  "path": "v2/{+name}:cancel",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be cancelled.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleProtobufEmpty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/dialogflow"
+                  ],
+                  "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`."
                 }
               }
             }

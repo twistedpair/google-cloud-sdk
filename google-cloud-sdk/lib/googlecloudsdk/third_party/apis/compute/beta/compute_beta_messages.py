@@ -1544,9 +1544,7 @@ class AuditLogConfig(_messages.Message):
   Fields:
     exemptedMembers: Specifies the identities that do not cause logging for
       this type of permission. Follows the same format of [Binding.members][].
-    ignoreChildExemptions: Specifies whether principals can be exempted for
-      the same LogType in lower-level resource policies. If true, any lower-
-      level exemptions will be ignored.
+    ignoreChildExemptions:
     logType: The log type that this config enables.
   """
 
@@ -1634,6 +1632,11 @@ class Autoscaler(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    recommendedSize: [Output Only] Target recommended MIG size (number of
+      instances) computed by autoscaler. Autoscaler calculates recommended MIG
+      size even when autoscaling policy mode is different from ON. This field
+      is empty when autoscaler is not connected to the existing managed
+      instance group or autoscaler did not generate its prediction.
     region: [Output Only] URL of the region where the instance group resides
       (for autoscalers living in regional scope).
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -1666,12 +1669,13 @@ class Autoscaler(_messages.Message):
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default=u'compute#autoscaler')
   name = _messages.StringField(6)
-  region = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
-  statusDetails = _messages.MessageField('AutoscalerStatusDetails', 10, repeated=True)
-  target = _messages.StringField(11)
-  zone = _messages.StringField(12)
+  recommendedSize = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  region = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  statusDetails = _messages.MessageField('AutoscalerStatusDetails', 11, repeated=True)
+  target = _messages.StringField(12)
+  zone = _messages.StringField(13)
 
 
 class AutoscalerAggregatedList(_messages.Message):
@@ -2122,6 +2126,9 @@ class AutoscalersScopedList(_messages.Message):
 class AutoscalingPolicy(_messages.Message):
   r"""Cloud Autoscaler policy.
 
+  Enums:
+    ModeValueValuesEnum: Defines operating mode for this policy.
+
   Fields:
     coolDownPeriodSec: The number of seconds that the autoscaler should wait
       before it starts collecting information from a new instance. This
@@ -2146,7 +2153,20 @@ class AutoscalingPolicy(_messages.Message):
       scale down to. This cannot be less than 0. If not provided, autoscaler
       will choose a default value depending on maximum number of instances
       allowed.
+    mode: Defines operating mode for this policy.
   """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Defines operating mode for this policy.
+
+    Values:
+      OFF: <no description>
+      ON: <no description>
+      ONLY_UP: <no description>
+    """
+    OFF = 0
+    ON = 1
+    ONLY_UP = 2
 
   coolDownPeriodSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   cpuUtilization = _messages.MessageField('AutoscalingPolicyCpuUtilization', 2)
@@ -2154,6 +2174,7 @@ class AutoscalingPolicy(_messages.Message):
   loadBalancingUtilization = _messages.MessageField('AutoscalingPolicyLoadBalancingUtilization', 4)
   maxNumReplicas = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   minNumReplicas = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  mode = _messages.EnumField('ModeValueValuesEnum', 7)
 
 
 class AutoscalingPolicyCpuUtilization(_messages.Message):
@@ -2627,16 +2648,10 @@ class BackendBucketList(_messages.Message):
 
 
 class BackendService(_messages.Message):
-  r"""Represents a Backend Service resource.    Backend services must have an
-  associated health check. Backend services also store information about
-  session affinity. For more information, read Backend Services.  A
-  backendServices resource represents a global backend service. Global backend
-  services are used for HTTP(S), SSL Proxy, TCP Proxy load balancing and
-  Traffic Director.  A regionBackendServices resource represents a regional
-  backend service. Regional backend services are used for internal TCP/UDP
-  load balancing. For more information, read Internal TCP/UDP Load balancing.
-  (== resource_for v1.backendService ==) (== resource_for beta.backendService
-  ==)
+  r"""Represents a Backend Service resource.  A backend service contains
+  configuration values for Google Cloud Platform load balancing services.  For
+  more information, read Backend Services.  (== resource_for v1.backendService
+  ==) (== resource_for beta.backendService ==)
 
   Enums:
     LoadBalancingSchemeValueValuesEnum: Indicates whether the backend service
@@ -2665,10 +2680,10 @@ class BackendService(_messages.Message):
       INTERNAL_MANAGED.  - A global backend service with the
       load_balancing_scheme set to INTERNAL_SELF_MANAGED.
     ProtocolValueValuesEnum: The protocol this BackendService uses to
-      communicate with backends.  Possible values are HTTP, HTTPS, TCP, SSL,
-      or UDP, depending on the chosen load balancer or Traffic Director
+      communicate with backends.  Possible values are HTTP, HTTPS, HTTP2, TCP,
+      SSL, or UDP, depending on the chosen load balancer or Traffic Director
       configuration. Refer to the documentation for the load balancer or for
-      Traffic director for more information.
+      Traffic Director for more information.
     SessionAffinityValueValuesEnum: Type of session affinity to use. The
       default is NONE. Session affinity is not applicable if the --protocol is
       UDP.  When the loadBalancingScheme is EXTERNAL, possible values are
@@ -2787,10 +2802,10 @@ class BackendService(_messages.Message):
       when the loadBalancingScheme is INTERNAL (Internal TCP/UDP Load
       Blaancing).
     protocol: The protocol this BackendService uses to communicate with
-      backends.  Possible values are HTTP, HTTPS, TCP, SSL, or UDP, depending
-      on the chosen load balancer or Traffic Director configuration. Refer to
-      the documentation for the load balancer or for Traffic director for more
-      information.
+      backends.  Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP,
+      depending on the chosen load balancer or Traffic Director configuration.
+      Refer to the documentation for the load balancer or for Traffic Director
+      for more information.
     region: [Output Only] URL of the region where the regional backend service
       resides. This field is not applicable to global backend services. You
       must specify this field as part of the HTTP request URL. It is not
@@ -2872,9 +2887,9 @@ class BackendService(_messages.Message):
 
   class ProtocolValueValuesEnum(_messages.Enum):
     r"""The protocol this BackendService uses to communicate with backends.
-    Possible values are HTTP, HTTPS, TCP, SSL, or UDP, depending on the chosen
-    load balancer or Traffic Director configuration. Refer to the
-    documentation for the load balancer or for Traffic director for more
+    Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP, depending on the
+    chosen load balancer or Traffic Director configuration. Refer to the
+    documentation for the load balancer or for Traffic Director for more
     information.
 
     Values:
@@ -7700,6 +7715,36 @@ class ComputeInstanceGroupManagersApplyUpdatesToInstancesRequest(_messages.Messa
   instanceGroupManagersApplyUpdatesRequest = _messages.MessageField('InstanceGroupManagersApplyUpdatesRequest', 2)
   project = _messages.StringField(3, required=True)
   zone = _messages.StringField(4, required=True)
+
+
+class ComputeInstanceGroupManagersCreateInstancesRequest(_messages.Message):
+  r"""A ComputeInstanceGroupManagersCreateInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group. It should
+      conform to RFC1035.
+    instanceGroupManagersCreateInstancesRequest: A
+      InstanceGroupManagersCreateInstancesRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request.  The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone where the managed instance group is located. It
+      should conform to RFC1035.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagersCreateInstancesRequest = _messages.MessageField('InstanceGroupManagersCreateInstancesRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
@@ -13166,6 +13211,36 @@ class ComputeRegionInstanceGroupManagersApplyUpdatesToInstancesRequest(_messages
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   regionInstanceGroupManagersApplyUpdatesRequest = _messages.MessageField('RegionInstanceGroupManagersApplyUpdatesRequest', 4)
+
+
+class ComputeRegionInstanceGroupManagersCreateInstancesRequest(_messages.Message):
+  r"""A ComputeRegionInstanceGroupManagersCreateInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group. It should
+      conform to RFC1035.
+    project: Project ID for this request.
+    region: The name of the region where the managed instance group is
+      located. It should conform to RFC1035.
+    regionInstanceGroupManagersCreateInstancesRequest: A
+      RegionInstanceGroupManagersCreateInstancesRequest resource to be passed
+      as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request.  The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersCreateInstancesRequest = _messages.MessageField('RegionInstanceGroupManagersCreateInstancesRequest', 4)
+  requestId = _messages.StringField(5)
 
 
 class ComputeRegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
@@ -21129,27 +21204,15 @@ class FixedOrPercent(_messages.Message):
 
 
 class ForwardingRule(_messages.Message):
-  r"""Represents a Forwarding Rule resource.    A forwardingRules resource
-  represents a regional forwarding rule.  Regional external forwarding rules
-  can reference any of the following resources:   - A target instance  - A
-  Cloud VPN Classic gateway (targetVpnGateway),   - A target pool for a
-  Network Load Balancer  - A global target HTTP(S) proxy for an HTTP(S) load
-  balancer using Standard Tier  - A target SSL proxy for a SSL Proxy load
-  balancer using Standard Tier  - A target TCP proxy for a TCP Proxy load
-  balancer using Standard Tier.    Regional internal forwarding rules can
-  reference the backend service of an internal TCP/UDP load balancer.  For
-  regional internal forwarding rules, the following applies:   - If the
-  loadBalancingScheme for the load balancer is INTERNAL, then the forwarding
-  rule references a regional internal backend service.  - If the
-  loadBalancingScheme for the load balancer is INTERNAL_MANAGED, then the
-  forwarding rule must reference a regional target HTTP(S) proxy.    For more
-  information, read Using Forwarding rules.  A globalForwardingRules resource
-  represents a global forwarding rule.  Global forwarding rules are only used
-  by load balancers that use Premium Tier. (== resource_for
-  beta.forwardingRules ==) (== resource_for v1.forwardingRules ==) (==
-  resource_for beta.globalForwardingRules ==) (== resource_for
-  v1.globalForwardingRules ==) (== resource_for beta.regionForwardingRules ==)
-  (== resource_for v1.regionForwardingRules ==)
+  r"""Represents a Forwarding Rule resource.  A forwarding rule and its
+  corresponding IP address represent the frontend configuration of a Google
+  Cloud Platform load balancer. Forwarding rules can also reference target
+  instances and Cloud VPN Classic gateways (targetVpnGateway).  For more
+  information, read Forwarding rule concepts and Using protocol forwarding.
+  (== resource_for beta.forwardingRules ==) (== resource_for
+  v1.forwardingRules ==) (== resource_for beta.globalForwardingRules ==) (==
+  resource_for v1.globalForwardingRules ==) (== resource_for
+  beta.regionForwardingRules ==) (== resource_for v1.regionForwardingRules ==)
 
   Enums:
     IPProtocolValueValuesEnum: The IP protocol to which this rule applies.
@@ -25411,6 +25474,16 @@ class InstanceGroupManagersApplyUpdatesRequest(_messages.Message):
   instances = _messages.StringField(1, repeated=True)
   minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 2)
   mostDisruptiveAllowedAction = _messages.EnumField('MostDisruptiveAllowedActionValueValuesEnum', 3)
+
+
+class InstanceGroupManagersCreateInstancesRequest(_messages.Message):
+  r"""InstanceGroupManagers.createInstances
+
+  Fields:
+    instances: [Required] List of specifications of per-instance configs.
+  """
+
+  instances = _messages.MessageField('PerInstanceConfig', 1, repeated=True)
 
 
 class InstanceGroupManagersDeleteInstancesRequest(_messages.Message):
@@ -33080,13 +33153,14 @@ class PathMatcher(_messages.Message):
       order by which path rules are specified does not matter. Matches are
       always done on the longest-path-first basis. For example: a pathRule
       with a path /a/b/c/* will match before /a/b/* irrespective of the order
-      in which those paths appear in this list. Only one of pathRules or
-      routeRules must be set.
+      in which those paths appear in this list. Within a given pathMatcher,
+      only one of pathRules or routeRules must be set.
     routeRules: The list of ordered HTTP route rules. Use this list instead of
       pathRules when advanced route matching and routing actions are desired.
       The order of specifying routeRules matters: the first rule that matches
-      will cause its specified routing action to take effect. Only one of
-      pathRules or routeRules must be set.
+      will cause its specified routing action to take effect. Within a given
+      pathMatcher, only one of pathRules or routeRules must be set. routeRules
+      are not supported in UrlMaps intended for External Load balancers.
   """
 
   defaultRouteAction = _messages.MessageField('HttpRouteAction', 1)
@@ -33134,6 +33208,27 @@ class PathRule(_messages.Message):
   urlRedirect = _messages.MessageField('HttpRedirectAction', 4)
 
 
+class PerInstanceConfig(_messages.Message):
+  r"""A PerInstanceConfig object.
+
+  Fields:
+    fingerprint: Fingerprint of this per-instance config. This field may be
+      used in optimistic locking. It will be ignored when inserting a per-
+      instance config. An up-to-date fingerprint must be provided in order to
+      update an existing per-instance config or the field needs to be unset.
+    name: The name of the per-instance config and the corresponding instance.
+      Serves as a merge key during UpdatePerInstanceConfigs operation, i.e. if
+      per-instance config with the same name exists then it will be updated,
+      otherwise a new one will be created for the VM instance with the same
+      name. An attempt to create a per-instance config for a VM instance that
+      either doesn't exist or is not part of the group will result in a
+      failure.
+  """
+
+  fingerprint = _messages.BytesField(1)
+  name = _messages.StringField(2)
+
+
 class Policy(_messages.Message):
   r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.    A `Policy`
@@ -33172,7 +33267,11 @@ class Policy(_messages.Message):
       any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
       will be applied if one or more matching rule requires logging. -
       Otherwise, if no rule applies, permission is denied.
-    version: Deprecated.
+    version: Specifies the format of the policy.  Valid values are 0, 1, and
+      3. Requests specifying an invalid value will be rejected.  Policies with
+      any conditional bindings must specify version 3. Policies without any
+      conditional bindings may specify any valid value or leave the field
+      unset.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -34241,6 +34340,16 @@ class RegionInstanceGroupManagersApplyUpdatesRequest(_messages.Message):
   instances = _messages.StringField(1, repeated=True)
   minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 2)
   mostDisruptiveAllowedAction = _messages.EnumField('MostDisruptiveAllowedActionValueValuesEnum', 3)
+
+
+class RegionInstanceGroupManagersCreateInstancesRequest(_messages.Message):
+  r"""RegionInstanceGroupManagers.createInstances
+
+  Fields:
+    instances: [Required] List of specifications of per-instance configs.
+  """
+
+  instances = _messages.MessageField('PerInstanceConfig', 1, repeated=True)
 
 
 class RegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message):

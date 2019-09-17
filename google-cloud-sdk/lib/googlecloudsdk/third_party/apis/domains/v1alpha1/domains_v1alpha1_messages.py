@@ -61,9 +61,7 @@ class AuditLogConfig(_messages.Message):
   Fields:
     exemptedMembers: Specifies the identities that do not cause logging for
       this type of permission. Follows the same format of Binding.members.
-    ignoreChildExemptions: Specifies whether principals can be exempted for
-      the same LogType in lower-level resource policies. If true, any lower-
-      level exemptions will be ignored.
+    ignoreChildExemptions: A boolean attribute.
     logType: The log type that this config enables.
   """
 
@@ -379,10 +377,12 @@ class DnsConfig(_messages.Message):
   r"""Defines DNS configuration of the Registration.
 
   Fields:
+    glueRecords: A list of glue records this registration has.
     nameServers: Name servers that store the configuration of the domain.
   """
 
-  nameServers = _messages.StringField(1, repeated=True)
+  glueRecords = _messages.MessageField('GlueRecord', 1, repeated=True)
+  nameServers = _messages.StringField(2, repeated=True)
 
 
 class DomainAvailability(_messages.Message):
@@ -595,8 +595,10 @@ class DomainsProjectsLocationsRegistrationsGetIamPolicyRequest(_messages.Message
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
-      field is omitted, policy format version 1 will be returned.
+      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.  Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -656,20 +658,6 @@ class DomainsProjectsLocationsRegistrationsPatchRequest(_messages.Message):
   registration = _messages.MessageField('Registration', 2)
   updateMask = _messages.StringField(3)
   validateOnly = _messages.BooleanField(4)
-
-
-class DomainsProjectsLocationsRegistrationsReattachRequest(_messages.Message):
-  r"""A DomainsProjectsLocationsRegistrationsReattachRequest object.
-
-  Fields:
-    name: Required. A name of the Registration to reattach. Must be in the
-      format `projects/*/locations/*/registrations/*`.
-    reattachRegistrationRequest: A ReattachRegistrationRequest resource to be
-      passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  reattachRegistrationRequest = _messages.MessageField('ReattachRegistrationRequest', 2)
 
 
 class DomainsProjectsLocationsRegistrationsSearchAvailabilityRequest(_messages.Message):
@@ -738,6 +726,29 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class GlueRecord(_messages.Message):
+  r"""Defines a GlueRecord. Glue Records or "Registered Hosts" are a way of
+  making the IP address of the name server known when it is a subdomain of the
+  domain for which it serves. For example, If your domain is example.com and
+  your name servers are ns1.example.com, ns2.example.com, ns3.example.com, and
+  ns4.example.com, you would create four registered host records linking each
+  name server to its IP address. Use glue records when your name servers are
+  subdomains of your domain.
+
+  Fields:
+    hostName: Fully qualified host name, from least to most significant order.
+      Required to be set. e.g. subdomain.domain.com
+    ipv4Addresses: List of IPv4 addresses corresponding to this host. At least
+      one of ipv4_address and ipv6_address must be set.
+    ipv6Addresses: List of IPv6 addresses corresponding to this host. At least
+      one of ipv4_address and ipv6_address must be set.
+  """
+
+  hostName = _messages.StringField(1)
+  ipv4Addresses = _messages.StringField(2, repeated=True)
+  ipv6Addresses = _messages.StringField(3, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -1065,7 +1076,11 @@ class Policy(_messages.Message):
       any ALLOW/ALLOW_WITH_LOG rule matches, permission is   granted.
       Logging will be applied if one or more matching rule requires logging. -
       Otherwise, if no rule applies, permission is denied.
-    version: Deprecated.
+    version: Specifies the format of the policy.  Valid values are 0, 1, and
+      3. Requests specifying an invalid value will be rejected.  Policies with
+      any conditional bindings must specify version 3. Policies without any
+      conditional bindings may specify any valid value or leave the field
+      unset.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -1165,25 +1180,17 @@ class PostalAddress(_messages.Message):
   sublocality = _messages.StringField(11)
 
 
-class ReattachRegistrationRequest(_messages.Message):
-  r"""Request for the `ReattachRegistration` method."""
-
-
 class Registration(_messages.Message):
   r"""Defines a domain registration.
 
   Enums:
-    BillingMethodValueValuesEnum: The billing method for this Registration.
     NoticesValueListEntryValuesEnum:
-    RenewalMethodValueValuesEnum: Output only. The renewal method for this
-      Registration.
     StateValueValuesEnum: Output only. The State of the Registration.
 
   Messages:
     LabelsValue: Set of labels associated with the Registration.
 
   Fields:
-    billingMethod: The billing method for this Registration.
     createTime: Output only. The creation timestamp of the Registration.
     detachTime: Output only. The detach timestamp of the Registration. Set
       only for Registrations in state DETACHED.
@@ -1204,7 +1211,6 @@ class Registration(_messages.Message):
       confirmation of the price when creating new registration. Price that
       should be put here can be obtained from CheckAvailability or
       SearchAvailability calls. Deprecated, use yearly_price.
-    renewalMethod: Output only. The renewal method for this Registration.
     renewalPrice: [Create only] Renewal price. Required for confirmation of
       the price when creating new registration. Renewal price that should be
       put here can be obtained from CheckAvailability or SearchAvailability
@@ -1218,30 +1224,6 @@ class Registration(_messages.Message):
       CheckAvailability or SearchAvailability calls.
   """
 
-  class BillingMethodValueValuesEnum(_messages.Enum):
-    r"""The billing method for this Registration.
-
-    Values:
-      BILLING_METHOD_UNSPECIFIED: The billing relationship is undefined.
-      GOOGLE_CLOUD: Google Cloud will charge you for this registration. The
-        registration will automatically renew until you delete this resource.
-        Note that registrations are usually in increments of one year, so you
-        may continue to see charges on your monthly bill until the full year
-        elapses.  Setting the `billing_method` field to this value will cancel
-        any alternate payment arrangements and enable automatic renewals.
-        Billing will begin when the domain is next renewed, on or around its
-        current expiration date.
-      OTHER: Billing is handled through some other method. Visit
-        https://domains.google.com/m/registrar/[domain-name] to manage the
-        domain's current billing & renewal settings.  Setting the
-        `billing_method` field to this value will disable automatic renewals
-        and require you to visit Google Domains to set up billing at some
-        point before the domain's expiration.
-    """
-    BILLING_METHOD_UNSPECIFIED = 0
-    GOOGLE_CLOUD = 1
-    OTHER = 2
-
   class NoticesValueListEntryValuesEnum(_messages.Enum):
     r"""NoticesValueListEntryValuesEnum enum type.
 
@@ -1251,26 +1233,6 @@ class Registration(_messages.Message):
     """
     NOTICE_UNSPECIFIED = 0
     HSTS_PRELOADED = 1
-
-  class RenewalMethodValueValuesEnum(_messages.Enum):
-    r"""Output only. The renewal method for this Registration.
-
-    Values:
-      RENEWAL_METHOD_UNSPECIFIED: The renewal method is undefined.
-      AUTOMATIC_RENEWAL: Your domain will be automatically renewed each year,
-        and will be billed according to the billing method specified in the
-        `billed_by` field. If your billing method is `BILLED_BY_GOOGLE_CLOUD`,
-        automatic renewal is the only supported renewal method.
-      MANUAL_RENEWAL: To keep your domain, you must explicitly renew it each
-        year before its expiration date. The manual renewal option is only
-        available when your Registration is billed through a separate service
-        such as Google Domains. Visit https://domains.google.com/m/registrar
-        /[domain-name] to manage the domain's current billing & renewal
-        settings.
-    """
-    RENEWAL_METHOD_UNSPECIFIED = 0
-    AUTOMATIC_RENEWAL = 1
-    MANUAL_RENEWAL = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The State of the Registration.
@@ -1323,22 +1285,20 @@ class Registration(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  billingMethod = _messages.EnumField('BillingMethodValueValuesEnum', 1)
-  createTime = _messages.StringField(2)
-  detachTime = _messages.StringField(3)
-  dnsConfig = _messages.MessageField('DnsConfig', 4)
-  domainName = _messages.StringField(5)
-  expireTime = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  notices = _messages.EnumField('NoticesValueListEntryValuesEnum', 9, repeated=True)
-  registrationPrice = _messages.MessageField('Money', 10)
-  renewalMethod = _messages.EnumField('RenewalMethodValueValuesEnum', 11)
-  renewalPrice = _messages.MessageField('Money', 12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  updateTime = _messages.StringField(14)
-  whoisConfig = _messages.MessageField('WhoisConfig', 15)
-  yearlyPrice = _messages.MessageField('Money', 16)
+  createTime = _messages.StringField(1)
+  detachTime = _messages.StringField(2)
+  dnsConfig = _messages.MessageField('DnsConfig', 3)
+  domainName = _messages.StringField(4)
+  expireTime = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  notices = _messages.EnumField('NoticesValueListEntryValuesEnum', 8, repeated=True)
+  registrationPrice = _messages.MessageField('Money', 9)
+  renewalPrice = _messages.MessageField('Money', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
+  whoisConfig = _messages.MessageField('WhoisConfig', 13)
+  yearlyPrice = _messages.MessageField('Money', 14)
 
 
 class ResetAuthorizationCodeRequest(_messages.Message):

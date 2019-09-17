@@ -579,6 +579,110 @@ class DnsManagedZonesUpdateRequest(_messages.Message):
   project = _messages.StringField(4, required=True)
 
 
+class DnsPoliciesCreateRequest(_messages.Message):
+  r"""A DnsPoliciesCreateRequest object.
+
+  Fields:
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    policy: A Policy resource to be passed as the request body.
+    project: Identifies the project addressed by this request.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  policy = _messages.MessageField('Policy', 2)
+  project = _messages.StringField(3, required=True)
+
+
+class DnsPoliciesDeleteRequest(_messages.Message):
+  r"""A DnsPoliciesDeleteRequest object.
+
+  Fields:
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    policy: User given friendly name of the policy addressed by this request.
+    project: Identifies the project addressed by this request.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  policy = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+
+
+class DnsPoliciesDeleteResponse(_messages.Message):
+  r"""An empty DnsPoliciesDelete response."""
+
+
+class DnsPoliciesGetRequest(_messages.Message):
+  r"""A DnsPoliciesGetRequest object.
+
+  Fields:
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    policy: User given friendly name of the policy addressed by this request.
+    project: Identifies the project addressed by this request.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  policy = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+
+
+class DnsPoliciesListRequest(_messages.Message):
+  r"""A DnsPoliciesListRequest object.
+
+  Fields:
+    maxResults: Optional. Maximum number of results to be returned. If
+      unspecified, the server will decide how many results to return.
+    pageToken: Optional. A tag returned by a previous list request that was
+      truncated. Use this parameter to continue a previous list request.
+    project: Identifies the project addressed by this request.
+  """
+
+  maxResults = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  project = _messages.StringField(3, required=True)
+
+
+class DnsPoliciesPatchRequest(_messages.Message):
+  r"""A DnsPoliciesPatchRequest object.
+
+  Fields:
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    policy: User given friendly name of the policy addressed by this request.
+    policyResource: A Policy resource to be passed as the request body.
+    project: Identifies the project addressed by this request.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  policy = _messages.StringField(2, required=True)
+  policyResource = _messages.MessageField('Policy', 3)
+  project = _messages.StringField(4, required=True)
+
+
+class DnsPoliciesUpdateRequest(_messages.Message):
+  r"""A DnsPoliciesUpdateRequest object.
+
+  Fields:
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    policy: User given friendly name of the policy addressed by this request.
+    policyResource: A Policy resource to be passed as the request body.
+    project: Identifies the project addressed by this request.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  policy = _messages.StringField(2, required=True)
+  policyResource = _messages.MessageField('Policy', 3)
+  project = _messages.StringField(4, required=True)
+
+
 class DnsProjectsGetRequest(_messages.Message):
   r"""A DnsProjectsGetRequest object.
 
@@ -639,6 +743,9 @@ class ManagedZone(_messages.Message):
       zone's function.
     dnsName: The DNS name of this managed zone, for instance "example.com.".
     dnssecConfig: DNSSEC configuration.
+    forwardingConfig: The presence for this field indicates that outbound
+      forwarding is enabled for this zone. The value of this field contains
+      the set of destinations to forward to.
     id: Unique identifier for the resource; defined by the server (output
       only)
     kind: Identifies what kind of resource this is. Value: the fixed string
@@ -699,14 +806,15 @@ class ManagedZone(_messages.Message):
   description = _messages.StringField(2)
   dnsName = _messages.StringField(3)
   dnssecConfig = _messages.MessageField('ManagedZoneDnsSecConfig', 4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default=u'dns#managedZone')
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  nameServerSet = _messages.StringField(9)
-  nameServers = _messages.StringField(10, repeated=True)
-  privateVisibilityConfig = _messages.MessageField('ManagedZonePrivateVisibilityConfig', 11)
-  visibility = _messages.EnumField('VisibilityValueValuesEnum', 12)
+  forwardingConfig = _messages.MessageField('ManagedZoneForwardingConfig', 5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default=u'dns#managedZone')
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  nameServerSet = _messages.StringField(10)
+  nameServers = _messages.StringField(11, repeated=True)
+  privateVisibilityConfig = _messages.MessageField('ManagedZonePrivateVisibilityConfig', 12)
+  visibility = _messages.EnumField('VisibilityValueValuesEnum', 13)
 
 
 class ManagedZoneDnsSecConfig(_messages.Message):
@@ -756,6 +864,34 @@ class ManagedZoneDnsSecConfig(_messages.Message):
   kind = _messages.StringField(2, default=u'dns#managedZoneDnsSecConfig')
   nonExistence = _messages.EnumField('NonExistenceValueValuesEnum', 3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
+
+
+class ManagedZoneForwardingConfig(_messages.Message):
+  r"""A ManagedZoneForwardingConfig object.
+
+  Fields:
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#managedZoneForwardingConfig".
+    targetNameServers: List of target name servers to forward to. Cloud DNS
+      will select the best available name server if more than one target is
+      given.
+  """
+
+  kind = _messages.StringField(1, default=u'dns#managedZoneForwardingConfig')
+  targetNameServers = _messages.MessageField('ManagedZoneForwardingConfigNameServerTarget', 2, repeated=True)
+
+
+class ManagedZoneForwardingConfigNameServerTarget(_messages.Message):
+  r"""A ManagedZoneForwardingConfigNameServerTarget object.
+
+  Fields:
+    ipv4Address: IPv4 address of a target name server.
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#managedZoneForwardingConfigNameServerTarget".
+  """
+
+  ipv4Address = _messages.StringField(1)
+  kind = _messages.StringField(2, default=u'dns#managedZoneForwardingConfigNameServerTarget')
 
 
 class ManagedZoneOperationsListResponse(_messages.Message):
@@ -917,6 +1053,132 @@ class OperationManagedZoneContext(_messages.Message):
   oldValue = _messages.MessageField('ManagedZone', 2)
 
 
+class PoliciesListResponse(_messages.Message):
+  r"""A PoliciesListResponse object.
+
+  Fields:
+    header: A ResponseHeader attribute.
+    kind: Type of resource.
+    nextPageToken: The presence of this field indicates that there exist more
+      results following your last page of results in pagination order. To
+      fetch them, make another list request using this value as your page
+      token.  In this way you can retrieve the complete contents of even very
+      large collections one page at a time. However, if the contents of the
+      collection change between the first and last paginated list request, the
+      set of all elements returned will be an inconsistent view of the
+      collection. There is no way to retrieve a consistent snapshot of a
+      collection larger than the maximum page size.
+    policies: The policy resources.
+  """
+
+  header = _messages.MessageField('ResponseHeader', 1)
+  kind = _messages.StringField(2, default=u'dns#policiesListResponse')
+  nextPageToken = _messages.StringField(3)
+  policies = _messages.MessageField('Policy', 4, repeated=True)
+
+
+class PoliciesPatchResponse(_messages.Message):
+  r"""A PoliciesPatchResponse object.
+
+  Fields:
+    header: A ResponseHeader attribute.
+    policy: A Policy attribute.
+  """
+
+  header = _messages.MessageField('ResponseHeader', 1)
+  policy = _messages.MessageField('Policy', 2)
+
+
+class PoliciesUpdateResponse(_messages.Message):
+  r"""A PoliciesUpdateResponse object.
+
+  Fields:
+    header: A ResponseHeader attribute.
+    policy: A Policy attribute.
+  """
+
+  header = _messages.MessageField('ResponseHeader', 1)
+  policy = _messages.MessageField('Policy', 2)
+
+
+class Policy(_messages.Message):
+  r"""A policy is a collection of DNS rules applied to one or more Virtual
+  Private Cloud resources.
+
+  Fields:
+    alternativeNameServerConfig: Sets an alternative name server for the
+      associated networks. When specified, all DNS queries are forwarded to a
+      name server that you choose. Names such as .internal are not available
+      when an alternative name server is specified.
+    description: A mutable string of at most 1024 characters associated with
+      this resource for the user's convenience. Has no effect on the policy's
+      function.
+    enableInboundForwarding: Allows networks bound to this policy to receive
+      DNS queries sent by VMs or applications over VPN connections. When
+      enabled, a virtual IP address will be allocated from each of the sub-
+      networks that are bound to this policy.
+    id: Unique identifier for the resource; defined by the server (output
+      only).
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#policy".
+    name: User assigned name for this policy.
+    networks: List of network names specifying networks to which this policy
+      is applied.
+  """
+
+  alternativeNameServerConfig = _messages.MessageField('PolicyAlternativeNameServerConfig', 1)
+  description = _messages.StringField(2)
+  enableInboundForwarding = _messages.BooleanField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'dns#policy')
+  name = _messages.StringField(6)
+  networks = _messages.MessageField('PolicyNetwork', 7, repeated=True)
+
+
+class PolicyAlternativeNameServerConfig(_messages.Message):
+  r"""A PolicyAlternativeNameServerConfig object.
+
+  Fields:
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#policyAlternativeNameServerConfig".
+    targetNameServers: Sets an alternative name server for the associated
+      networks. When specified, all DNS queries are forwarded to a name server
+      that you choose. Names such as .internal are not available when an
+      alternative name server is specified.
+  """
+
+  kind = _messages.StringField(1, default=u'dns#policyAlternativeNameServerConfig')
+  targetNameServers = _messages.MessageField('PolicyAlternativeNameServerConfigTargetNameServer', 2, repeated=True)
+
+
+class PolicyAlternativeNameServerConfigTargetNameServer(_messages.Message):
+  r"""A PolicyAlternativeNameServerConfigTargetNameServer object.
+
+  Fields:
+    ipv4Address: IPv4 address to forward to.
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#policyAlternativeNameServerConfigTargetNameServer".
+  """
+
+  ipv4Address = _messages.StringField(1)
+  kind = _messages.StringField(2, default=u'dns#policyAlternativeNameServerConfigTargetNameServer')
+
+
+class PolicyNetwork(_messages.Message):
+  r"""A PolicyNetwork object.
+
+  Fields:
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#policyNetwork".
+    networkUrl: The fully qualified URL of the VPC network to bind to. This
+      should be formatted like https://www.googleapis.com/compute/v1/projects/
+      {project}/global/networks/{network}
+  """
+
+  kind = _messages.StringField(1, default=u'dns#policyNetwork')
+  networkUrl = _messages.StringField(2)
+
+
 class Project(_messages.Message):
   r"""A project resource. The project is a top level container for resources
   including Cloud DNS ManagedZones. Projects can be created only in the APIs
@@ -949,6 +1211,8 @@ class Quota(_messages.Message):
       be attached to a network.
     networksPerManagedZone: Maximum allowed number of networks to which a
       privately scoped zone can be attached.
+    networksPerPolicy: Maximum allowed number of networks per policy.
+    policies: Maximum allowed number of policies per project.
     resourceRecordsPerRrset: Maximum allowed number of ResourceRecords per
       ResourceRecordSet.
     rrsetAdditionsPerChange: Maximum allowed number of ResourceRecordSets to
@@ -957,6 +1221,10 @@ class Quota(_messages.Message):
       delete per ChangesCreateRequest.
     rrsetsPerManagedZone: Maximum allowed number of ResourceRecordSets per
       zone in the project.
+    targetNameServersPerManagedZone: Maximum allowed number of target name
+      servers per managed forwarding zone.
+    targetNameServersPerPolicy: Maximum allowed number of alternative target
+      name servers per policy.
     totalRrdataSizePerChange: Maximum allowed size for total rrdata in one
       ChangesCreateRequest in bytes.
     whitelistedKeySpecs: DNSSEC algorithm and key length types that can be
@@ -968,12 +1236,16 @@ class Quota(_messages.Message):
   managedZones = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   managedZonesPerNetwork = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   networksPerManagedZone = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  resourceRecordsPerRrset = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  rrsetAdditionsPerChange = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  rrsetDeletionsPerChange = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  rrsetsPerManagedZone = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  totalRrdataSizePerChange = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  whitelistedKeySpecs = _messages.MessageField('DnsKeySpec', 11, repeated=True)
+  networksPerPolicy = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  policies = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  resourceRecordsPerRrset = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  rrsetAdditionsPerChange = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  rrsetDeletionsPerChange = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  rrsetsPerManagedZone = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  targetNameServersPerManagedZone = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  targetNameServersPerPolicy = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  totalRrdataSizePerChange = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  whitelistedKeySpecs = _messages.MessageField('DnsKeySpec', 15, repeated=True)
 
 
 class ResourceRecordSet(_messages.Message):

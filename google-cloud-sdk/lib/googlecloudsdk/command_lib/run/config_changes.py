@@ -28,6 +28,7 @@ from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import service
 from googlecloudsdk.command_lib.run import exceptions
+from googlecloudsdk.command_lib.run import name_generator
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import repeated
 
@@ -368,6 +369,11 @@ class RevisionNameChanges(ConfigChanger):
     return resource
 
 
+def _GenerateVolumeName(prefix):
+  """Randomly generated name with the given prefix."""
+  return name_generator.GenerateName(sections=3, separator='-', prefix=prefix)
+
+
 class VolumeChanges(ConfigChanger):
   """Represents the user intent to modify volumes and mounts."""
 
@@ -387,27 +393,31 @@ class VolumeChanges(ConfigChanger):
     self._to_remove = None
     self._clear_others = clear_others
     if mounts_to_update:
-      self._to_update = {
-          # Split the given values into 2 parts:
-          #    [volume source name, volume name]
-          k.strip(): v.split(':', 1) for k, v in mounts_to_update.items()
-      }
+      self._to_update = {}
+      for k, v in mounts_to_update.items():
+        # Split the given values into 2 parts:
+        #    [volume source name, data item key]
+        update_value = v.split(':', 1)
+        # Pad with None if no data item key specified
+        if len(update_value) < 2:
+          update_value.append(None)
+        self._to_update[k.strip()] = update_value
     if mounts_to_remove:
       self._to_remove = [k.lstrip() for k in mounts_to_remove]
 
   @abc.abstractmethod
-  def _MakeVolumeSource(self, messages, name):
+  def _MakeVolumeSource(self, messages, name, key=None):
     """Returns an instance of a volume source."""
     pass
 
   @abc.abstractmethod
   def _GetVolumes(self, resource):
-    """Returns a revision.VolumesAsDictionaryWrapper."""
+    """Returns a k8s_object.ListAsDictionaryWrapper to manage volumes."""
     pass
 
   @abc.abstractmethod
   def _GetVolumeMounts(self, resource):
-    """Returns a revision.VolumeMountsAsDictionaryWrapper."""
+    """Returns a k8s_object.ListAsDictionaryWrapper to manage volume mounts."""
     pass
 
   def Adjust(self, resource):
@@ -420,12 +430,9 @@ class VolumeChanges(ConfigChanger):
       The adjusted resource
 
     Raises:
-      ConfigurationError if there's an attempt to replace a volume source
-        whose existing source is not the same type as the replacement
-        (e.g. volume with secret source can't be replaced with a config map
-        source), or if there's an attempt to replace the volume a mount points
-        to whose existing volume has a source of a different type than the
-        new volume (e.g. mount that points to a volume with a secret source
+      ConfigurationError if there's an attempt to replace the volume a mount
+        points to whose existing volume has a source of a different type than
+        the new volume (e.g. mount that points to a volume with a secret source
         can't be replaced with a volume that has a config map source).
     """
     volume_mounts = self._GetVolumeMounts(resource)
@@ -439,23 +446,22 @@ class VolumeChanges(ConfigChanger):
           del volume_mounts[path]
 
     if self._to_update:
-      for path, split_name in self._to_update.items():
-        source_name = split_name[0]
-        volume_name = split_name[-1]  # Default to source_name if not given
+      for path, (source_name, source_key) in self._to_update.items():
+        # Generate unique volume name so that volume source configurations
+        # can be unique (e.g. different items) even if the source name matches
+        volume_name = None
+        while volume_name is None or volume_name in resource.template.volumes:
+          volume_name = _GenerateVolumeName(source_name)
 
-        error_msg = None
+        # Set the mount and volume
         try:
-          # Set the mount and volume
-          error_msg = ('Cannot update mount [{}] because its mounted volume '
-                       'is of a different source type.'.format(path))
           volume_mounts[path] = volume_name
-
-          error_msg = ('Cannot update volume [{}] because its '
-                       'source is of a different type.'.format(volume_name))
-          volumes[volume_name] = self._MakeVolumeSource(
-              resource.MessagesModule(), source_name)
         except KeyError:
-          raise exceptions.ConfigurationError(error_msg)
+          raise exceptions.ConfigurationError(
+              'Cannot update mount [{}] because its mounted volume '
+              'is of a different source type.'.format(path))
+        volumes[volume_name] = self._MakeVolumeSource(
+            resource.MessagesModule(), source_name, source_key)
 
     # Delete all volumes no longer being mounted
     for volume in list(volumes):
@@ -468,8 +474,11 @@ class VolumeChanges(ConfigChanger):
 class SecretVolumeChanges(VolumeChanges):
   """Represents the user intent to change volumes with secret source types."""
 
-  def _MakeVolumeSource(self, messages, name):
-    return messages.SecretVolumeSource(secretName=name)
+  def _MakeVolumeSource(self, messages, name, key=None):
+    source = messages.SecretVolumeSource(secretName=name)
+    if key is not None:
+      source.items.append(messages.KeyToPath(key=key, path=key))
+    return source
 
   def _GetVolumes(self, resource):
     return resource.template.volumes.secrets
@@ -481,8 +490,11 @@ class SecretVolumeChanges(VolumeChanges):
 class ConfigMapVolumeChanges(VolumeChanges):
   """Represents the user intent to change volumes with config map source types."""
 
-  def _MakeVolumeSource(self, messages, name):
-    return messages.ConfigMapVolumeSource(name=name)
+  def _MakeVolumeSource(self, messages, name, key=None):
+    source = messages.ConfigMapVolumeSource(name=name)
+    if key is not None:
+      source.items.append(messages.KeyToPath(key=key, path=key))
+    return source
 
   def _GetVolumes(self, resource):
     return resource.template.volumes.config_maps

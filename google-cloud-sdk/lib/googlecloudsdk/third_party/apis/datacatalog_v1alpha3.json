@@ -109,6 +109,315 @@
     }
   },
   "schemas": {
+    "GoogleCloudDatacatalogV1alpha3Taxonomy": {
+      "id": "GoogleCloudDatacatalogV1alpha3Taxonomy",
+      "description": "A taxonomy is a collection of categories of business significance, typically\nassociated with the substance of the category (e.g. credit card, SSN), or how\nit is used (e.g. account name, user ID).",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Resource name of the taxonomy, whose format is:\n\"projects\/project_number\/taxonomies\/{id}\".",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. Human readable name of this taxonomy. Max 200 bytes when encoded\nin UTF-8.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of the taxonomy. The length of the description is limited\nto 2000 bytes when encoded in UTF-8.",
+          "type": "string"
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudDatacatalogV1alpha3ListTaxonomiesResponse": {
+      "id": "GoogleCloudDatacatalogV1alpha3ListTaxonomiesResponse",
+      "description": "Response message for \"CategoryManager.ListTaxonomies\".",
+      "type": "object",
+      "properties": {
+        "taxonomies": {
+          "description": "Taxonomies that the project contains.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1alpha3Taxonomy"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no\nmore results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1alpha3Category": {
+      "id": "GoogleCloudDatacatalogV1alpha3Category",
+      "description": "Denotes one category in a taxonomy (e.g. ssn). Categories can be defined in a\nhierarchy. For example, consider the following hierachy:\n              Geolocation\n                   |\n  ------------------------------------\n  |                |                 |\nLatLong          City              ZipCode\nCategory \"Geolocation\" contains three child categories: \"LatLong\",\n\"City\", and \"ZipCode\".",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Resource name of the category, whose format is:\n\"projects\/project_number\/taxonomies\/{taxonomy_id}\/categories\/{id}\".",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. Human readable name of this category. Max 200 bytes when encoded\nin UTF-8.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of the category. The length of the description is limited\nto 2000 bytes when encoded in UTF-8.",
+          "type": "string"
+        },
+        "parentCategoryId": {
+          "description": "Id of the parent category to this category (e.g. for category \"LatLong\" in\nthe example above, this field contains the id of category \"Geolocation\").\nIf empty, it means this category is a top level category (e.g. this field\nis empty for category \"Geolocation\" in the example above).",
+          "type": "string"
+        },
+        "childCategoryIds": {
+          "description": "Output only. Ids of child categories of this category.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1alpha3ListCategoriesResponse": {
+      "id": "GoogleCloudDatacatalogV1alpha3ListCategoriesResponse",
+      "description": "Response message for \"CategoryManager.ListCategories\".",
+      "type": "object",
+      "properties": {
+        "categories": {
+          "description": "Categories that are in this taxonomy.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1alpha3Category"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no\nmore results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "GetIamPolicyRequest": {
+      "id": "GetIamPolicyRequest",
+      "description": "Request message for `GetIamPolicy` method.",
+      "type": "object",
+      "properties": {
+        "options": {
+          "description": "OPTIONAL: A `GetPolicyOptions` object for specifying options to\n`GetIamPolicy`. This field is only used by Cloud IAM.",
+          "$ref": "GetPolicyOptions"
+        }
+      }
+    },
+    "GetPolicyOptions": {
+      "id": "GetPolicyOptions",
+      "description": "Encapsulates settings provided to GetIamPolicy.",
+      "type": "object",
+      "properties": {
+        "requestedPolicyVersion": {
+          "description": "Optional. The policy format version to be returned.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nRequests for policies with any conditional bindings must specify version 3.\nPolicies without any conditional bindings may specify any valid value or\nleave the field unset.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "Policy": {
+      "id": "Policy",
+      "description": "Defines an Identity and Access Management (IAM) policy. It is used to\nspecify access control policies for Cloud Platform resources.\n\n\nA `Policy` consists of a list of `bindings`. A `binding` binds a list of\n`members` to a `role`, where the members can be user accounts, Google groups,\nGoogle domains, and service accounts. A `role` is a named list of permissions\ndefined by IAM.\n\n**JSON Example**\n\n    {\n      \"bindings\": [\n        {\n          \"role\": \"roles\/owner\",\n          \"members\": [\n            \"user:mike@example.com\",\n            \"group:admins@example.com\",\n            \"domain:google.com\",\n            \"serviceAccount:my-other-app@appspot.gserviceaccount.com\"\n          ]\n        },\n        {\n          \"role\": \"roles\/viewer\",\n          \"members\": [\"user:sean@example.com\"]\n        }\n      ]\n    }\n\n**YAML Example**\n\n    bindings:\n    - members:\n      - user:mike@example.com\n      - group:admins@example.com\n      - domain:google.com\n      - serviceAccount:my-other-app@appspot.gserviceaccount.com\n      role: roles\/owner\n    - members:\n      - user:sean@example.com\n      role: roles\/viewer\n\n\nFor a description of IAM and its features, see the\n[IAM developer's guide](https:\/\/cloud.google.com\/iam\/docs).",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "Specifies the format of the policy.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nPolicies with any conditional bindings must specify version 3. Policies\nwithout any conditional bindings may specify any valid value or leave the\nfield unset.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "bindings": {
+          "description": "Associates a list of `members` to a `role`.\n`bindings` with no members will result in an error.",
+          "type": "array",
+          "items": {
+            "$ref": "Binding"
+          }
+        },
+        "etag": {
+          "description": "`etag` is used for optimistic concurrency control as a way to help\nprevent simultaneous updates of a policy from overwriting each other.\nIt is strongly suggested that systems make use of the `etag` in the\nread-modify-write cycle to perform policy updates in order to avoid race\nconditions: An `etag` is returned in the response to `getIamPolicy`, and\nsystems are expected to put that etag in the request to `setIamPolicy` to\nensure that their change will be applied to the same version of the policy.\n\nIf no `etag` is provided in the call to `setIamPolicy`, then the existing\npolicy is overwritten.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "Binding": {
+      "id": "Binding",
+      "description": "Associates `members` with a `role`.",
+      "type": "object",
+      "properties": {
+        "role": {
+          "description": "Role that is assigned to `members`.\nFor example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
+          "type": "string"
+        },
+        "members": {
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "condition": {
+          "description": "The condition that is associated with this binding.\nNOTE: An unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.",
+          "$ref": "Expr"
+        }
+      }
+    },
+    "Expr": {
+      "id": "Expr",
+      "description": "Represents an expression text. Example:\n\n    title: \"User account presence\"\n    description: \"Determines whether the request has a user account\"\n    expression: \"size(request.user) > 0\"",
+      "type": "object",
+      "properties": {
+        "expression": {
+          "description": "Textual representation of an expression in\nCommon Expression Language syntax.\n\nThe application context of the containing message determines which\nwell-known feature set of CEL is supported.",
+          "type": "string"
+        },
+        "title": {
+          "description": "An optional title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
+          "type": "string"
+        },
+        "description": {
+          "description": "An optional description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
+          "type": "string"
+        },
+        "location": {
+          "description": "An optional string indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
+          "type": "string"
+        }
+      }
+    },
+    "SetIamPolicyRequest": {
+      "id": "SetIamPolicyRequest",
+      "description": "Request message for `SetIamPolicy` method.",
+      "type": "object",
+      "properties": {
+        "policy": {
+          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of\nthe policy is limited to a few 10s of KB. An empty policy is a\nvalid policy but certain Cloud Platform services (such as Projects)\nmight reject them.",
+          "$ref": "Policy"
+        }
+      }
+    },
+    "TestIamPermissionsRequest": {
+      "id": "TestIamPermissionsRequest",
+      "description": "Request message for `TestIamPermissions` method.",
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "description": "The set of permissions to check for the `resource`. Permissions with\nwildcards (such as '*' or 'storage.*') are not allowed. For more\ninformation see\n[IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "TestIamPermissionsResponse": {
+      "id": "TestIamPermissionsResponse",
+      "description": "Response message for `TestIamPermissions` method.",
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "description": "A subset of `TestPermissionsRequest.permissions` that the caller is\nallowed.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1alpha3ImportTaxonomiesRequest": {
+      "id": "GoogleCloudDatacatalogV1alpha3ImportTaxonomiesRequest",
+      "description": "Request message for \"CategoryManagerSerialization.ImportTaxonomies\".",
+      "type": "object",
+      "properties": {
+        "taxonomies": {
+          "description": "Required. Taxonomies to be imported in a tree structure.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1alpha3SerializedTaxonomy"
+          }
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1alpha3SerializedTaxonomy": {
+      "id": "GoogleCloudDatacatalogV1alpha3SerializedTaxonomy",
+      "description": "Message capturing a taxonomy and its category hierachy as a nested proto.\nUsed for taxonomy import\/export and mutation.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "Required. Display name of the taxonomy. Max 200 bytes when encoded in\nUTF-8.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of the taxonomy. The length of the description is limited\nto 2000 bytes when encoded in UTF-8.",
+          "type": "string"
+        },
+        "categories": {
+          "description": "Top level categories associated with the taxonomy if any.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1alpha3SerializedCategory"
+          }
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1alpha3SerializedCategory": {
+      "id": "GoogleCloudDatacatalogV1alpha3SerializedCategory",
+      "description": "Message representing one category when exported as a nested proto.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "Required. Display name of the category. Max 200 bytes when encoded in\nUTF-8.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of the category. The length of the description is limited\nto 2000 bytes when encoded in UTF-8.",
+          "type": "string"
+        },
+        "childCategories": {
+          "description": "Children of the category if any.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1alpha3SerializedCategory"
+          }
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1alpha3ImportTaxonomiesResponse": {
+      "id": "GoogleCloudDatacatalogV1alpha3ImportTaxonomiesResponse",
+      "description": "Response message for \"CategoryManagerSerialization.ImportTaxonomies\".",
+      "type": "object",
+      "properties": {
+        "taxonomies": {
+          "description": "Required. Taxonomies that were imported.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1alpha3Taxonomy"
+          }
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1alpha3ExportTaxonomiesResponse": {
+      "id": "GoogleCloudDatacatalogV1alpha3ExportTaxonomiesResponse",
+      "description": "Response message for \"CategoryManagerSerialization.ExportTaxonomies\".",
+      "type": "object",
+      "properties": {
+        "taxonomies": {
+          "description": "Required. List of taxonomies and categories in a tree structure.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1alpha3SerializedTaxonomy"
+          }
+        }
+      }
+    },
     "GoogleCloudDatacatalogV1alpha3Crawler": {
       "id": "GoogleCloudDatacatalogV1alpha3Crawler",
       "description": "Crawler Metadata.",
@@ -251,13 +560,6 @@
         }
       }
     },
-    "Empty": {
-      "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "GoogleCloudDatacatalogV1alpha3RunCrawlerRequest": {
       "id": "GoogleCloudDatacatalogV1alpha3RunCrawlerRequest",
       "description": "Request to run a crawler manually.",
@@ -360,6 +662,540 @@
   "resources": {
     "projects": {
       "resources": {
+        "taxonomies": {
+          "methods": {
+            "create": {
+              "id": "datacatalog.projects.taxonomies.create",
+              "path": "v1alpha3/{+parent}/taxonomies",
+              "flatPath": "v1alpha3/projects/{projectsId}/taxonomies",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. Resource name of the project that the newly created taxonomy\nbelongs to.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "GoogleCloudDatacatalogV1alpha3Taxonomy"
+              },
+              "response": {
+                "$ref": "GoogleCloudDatacatalogV1alpha3Taxonomy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Creates a new taxonomy in a given project."
+            },
+            "delete": {
+              "id": "datacatalog.projects.taxonomies.delete",
+              "path": "v1alpha3/{+name}",
+              "flatPath": "v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "Required. Resource name of the taxonomy to be deleted. All categories in\nthis taxonomy will also be deleted.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Deletes a taxonomy. This operation will also delete all\ncategories in this taxonomy."
+            },
+            "patch": {
+              "id": "datacatalog.projects.taxonomies.patch",
+              "path": "v1alpha3/{+name}",
+              "flatPath": "v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "Required. Resource name of the taxonomy to be updated.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "The update mask applies to the resource. For the `FieldMask` definition,\nsee\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GoogleCloudDatacatalogV1alpha3Taxonomy"
+              },
+              "response": {
+                "$ref": "GoogleCloudDatacatalogV1alpha3Taxonomy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Updates a taxonomy."
+            },
+            "list": {
+              "id": "datacatalog.projects.taxonomies.list",
+              "path": "v1alpha3/{+parent}/taxonomies",
+              "flatPath": "v1alpha3/projects/{projectsId}/taxonomies",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. Resource name of a project to list the taxonomies of.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of items to return.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "The next_page_token value returned from a previous list request, if any.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "GoogleCloudDatacatalogV1alpha3ListTaxonomiesResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists all taxonomies in a project."
+            },
+            "get": {
+              "id": "datacatalog.projects.taxonomies.get",
+              "path": "v1alpha3/{+name}",
+              "flatPath": "v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. Resource name of the taxonomy to be returned.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleCloudDatacatalogV1alpha3Taxonomy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets the taxonomy referred by name."
+            },
+            "getIamPolicy": {
+              "id": "datacatalog.projects.taxonomies.getIamPolicy",
+              "path": "v1alpha3/{+resource}:getIamPolicy",
+              "flatPath": "v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}:getIamPolicy",
+              "httpMethod": "POST",
+              "parameters": {
+                "resource": {
+                  "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "resource"
+              ],
+              "request": {
+                "$ref": "GetIamPolicyRequest"
+              },
+              "response": {
+                "$ref": "Policy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets the IAM policy for a taxonomy or a category."
+            },
+            "setIamPolicy": {
+              "id": "datacatalog.projects.taxonomies.setIamPolicy",
+              "path": "v1alpha3/{+resource}:setIamPolicy",
+              "flatPath": "v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}:setIamPolicy",
+              "httpMethod": "POST",
+              "parameters": {
+                "resource": {
+                  "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "resource"
+              ],
+              "request": {
+                "$ref": "SetIamPolicyRequest"
+              },
+              "response": {
+                "$ref": "Policy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Sets the IAM policy for a taxonomy or a category."
+            },
+            "testIamPermissions": {
+              "id": "datacatalog.projects.taxonomies.testIamPermissions",
+              "path": "v1alpha3/{+resource}:testIamPermissions",
+              "flatPath": "v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}:testIamPermissions",
+              "httpMethod": "POST",
+              "parameters": {
+                "resource": {
+                  "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "resource"
+              ],
+              "request": {
+                "$ref": "TestIamPermissionsRequest"
+              },
+              "response": {
+                "$ref": "TestIamPermissionsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Returns permissions that a caller has on specified resources."
+            },
+            "import": {
+              "id": "datacatalog.projects.taxonomies.import",
+              "path": "v1alpha3/{+parent}/taxonomies:import",
+              "flatPath": "v1alpha3/projects/{projectsId}/taxonomies:import",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. Resource name of project that the newly created taxonomies will\nbelong to.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "GoogleCloudDatacatalogV1alpha3ImportTaxonomiesRequest"
+              },
+              "response": {
+                "$ref": "GoogleCloudDatacatalogV1alpha3ImportTaxonomiesResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Imports all taxonomies and their categories to a project as new taxonomies.\n\nThis method provides a bulk taxonomy \/ category creation using nested\nproto structure."
+            },
+            "export": {
+              "id": "datacatalog.projects.taxonomies.export",
+              "path": "v1alpha3/{+parent}/taxonomies:export",
+              "flatPath": "v1alpha3/projects/{projectsId}/taxonomies:export",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. Resource name of the  project that taxonomies to be exported\nwill share.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                },
+                "taxonomyNames": {
+                  "description": "Required. Resource names of the taxonomies to be exported.",
+                  "location": "query",
+                  "repeated": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "GoogleCloudDatacatalogV1alpha3ExportTaxonomiesResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Exports all taxonomies and their categories in a project.\n\nThis method generates SerializedTaxonomy protos with nested categories that\ncan be used as an input for future ImportTaxonomies calls."
+            }
+          }
+          ,
+          "resources": {
+            "categories": {
+              "methods": {
+                "create": {
+                  "id": "datacatalog.projects.taxonomies.categories.create",
+                  "path": "v1alpha3/{+parent}/categories",
+                  "flatPath": "v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Resource name of the taxonomy that the newly created category\nbelongs to.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudDatacatalogV1alpha3Category"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudDatacatalogV1alpha3Category"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a category in a taxonomy."
+                },
+                "delete": {
+                  "id": "datacatalog.projects.taxonomies.categories.delete",
+                  "path": "v1alpha3/{+name}",
+                  "flatPath": "v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories/{categoriesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Resource name of the category to be deleted. All its descendant\ncategories will also be deleted.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+\/categories\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a category. Also deletes all of its descendant categories."
+                },
+                "patch": {
+                  "id": "datacatalog.projects.taxonomies.categories.patch",
+                  "path": "v1alpha3/{+name}",
+                  "flatPath": "v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories/{categoriesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Resource name of the category to be updated.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+\/categories\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "The update mask applies to the resource. Only display_name, description and\nparent_category_id can be updated and thus can be listed in the mask. If\nupdate_mask is not provided, all allowed fields (i.e. display_name,\ndescription and parent_id) will be updated. For more information including\nthe `FieldMask` definition, see\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudDatacatalogV1alpha3Category"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudDatacatalogV1alpha3Category"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates a category."
+                },
+                "list": {
+                  "id": "datacatalog.projects.taxonomies.categories.list",
+                  "path": "v1alpha3/{+parent}/categories",
+                  "flatPath": "v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Resource name of a taxonomy to list the categories of.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of items to return.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The next_page_token value returned from a previous List request, if any.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudDatacatalogV1alpha3ListCategoriesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists all categories in a taxonomy."
+                },
+                "get": {
+                  "id": "datacatalog.projects.taxonomies.categories.get",
+                  "path": "v1alpha3/{+name}",
+                  "flatPath": "v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories/{categoriesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Resource name of the category to be returned.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+\/categories\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudDatacatalogV1alpha3Category"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets a category."
+                },
+                "getIamPolicy": {
+                  "id": "datacatalog.projects.taxonomies.categories.getIamPolicy",
+                  "path": "v1alpha3/{+resource}:getIamPolicy",
+                  "flatPath": "v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories/{categoriesId}:getIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+\/categories\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "GetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the IAM policy for a taxonomy or a category."
+                },
+                "setIamPolicy": {
+                  "id": "datacatalog.projects.taxonomies.categories.setIamPolicy",
+                  "path": "v1alpha3/{+resource}:setIamPolicy",
+                  "flatPath": "v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories/{categoriesId}:setIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+\/categories\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "SetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Sets the IAM policy for a taxonomy or a category."
+                },
+                "testIamPermissions": {
+                  "id": "datacatalog.projects.taxonomies.categories.testIamPermissions",
+                  "path": "v1alpha3/{+resource}:testIamPermissions",
+                  "flatPath": "v1alpha3/projects/{projectsId}/taxonomies/{taxonomiesId}/categories/{categoriesId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+\/categories\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "TestIamPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "TestIamPermissionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns permissions that a caller has on specified resources."
+                }
+              }
+            }
+          }
+        },
         "crawlers": {
           "methods": {
             "create": {

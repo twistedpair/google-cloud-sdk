@@ -508,7 +508,7 @@
       "type": "object",
       "properties": {
         "requestedPolicyVersion": {
-          "description": "Optional. The policy format version to be returned.\nAcceptable values are 0, 1, and 3.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+          "description": "Optional. The policy format version to be returned.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nRequests for policies with any conditional bindings must specify version 3.\nPolicies without any conditional bindings may specify any valid value or\nleave the field unset.",
           "type": "integer",
           "format": "int32"
         }
@@ -520,7 +520,7 @@
       "type": "object",
       "properties": {
         "version": {
-          "description": "Deprecated.",
+          "description": "Specifies the format of the policy.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nPolicies with any conditional bindings must specify version 3. Policies\nwithout any conditional bindings may specify any valid value or leave the\nfield unset.",
           "type": "integer",
           "format": "int32"
         },
@@ -689,7 +689,7 @@
       "properties": {
         "osInfo": {
           "description": "Optional. OS info about the instance that can be used to filter its\nconfigs. If none is provided, the API will return the configs for this\ninstance regardless of its OS.",
-          "$ref": "OsInfo"
+          "$ref": "LookupConfigsRequestOsInfo"
         },
         "configTypes": {
           "description": "Types of configuration system the instance is using. Only configs relevant\nto these configuration types will be returned.",
@@ -716,8 +716,8 @@
         }
       }
     },
-    "OsInfo": {
-      "id": "OsInfo",
+    "LookupConfigsRequestOsInfo": {
+      "id": "LookupConfigsRequestOsInfo",
       "description": "Guest information provided to service by agent when requesting\nconfigurations.",
       "type": "object",
       "properties": {
@@ -1040,7 +1040,7 @@
         },
         "instanceDetailsSummary": {
           "description": "Summary of instance details.",
-          "$ref": "InstanceDetailsSummary"
+          "$ref": "PatchJobInstanceDetailsSummary"
         },
         "dryRun": {
           "description": "If this patch job is a dry run, the agent will report that it has\nfinished without running any updates on the VM.",
@@ -1057,8 +1057,8 @@
         }
       }
     },
-    "InstanceDetailsSummary": {
-      "id": "InstanceDetailsSummary",
+    "PatchJobInstanceDetailsSummary": {
+      "id": "PatchJobInstanceDetailsSummary",
       "description": "A summary of the current patch state across all instances this patch job\naffects. Contains counts of instances in different states. These states map\nto InstancePatchState. List patch job instance details to see the specific\nstates of each instance.",
       "type": "object",
       "properties": {

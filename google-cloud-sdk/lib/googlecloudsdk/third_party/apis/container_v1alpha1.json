@@ -546,6 +546,10 @@
         "kubeletConfig": {
           "description": "Node kubelet configs.",
           "$ref": "NodeKubeletConfig"
+        },
+        "bootDiskKmsKey": {
+          "description": "\nThe Customer Managed Encryption Key used to encrypt the boot disk attached\nto each node in the node pool. This should be of the form\nprojects\/[KEY_PROJECT_ID]\/locations\/[LOCATION]\/keyRings\/[RING_NAME]\/cryptoKeys\/[KEY_NAME].\nFor more information about protecting resources with Cloud KMS Keys please\nsee:\nhttps:\/\/cloud.google.com\/compute\/docs\/disks\/customer-managed-encryption",
+          "type": "string"
         }
       }
     },
@@ -2092,7 +2096,7 @@
           "$ref": "BinaryAuthorization"
         },
         "concurrentNodeCount": {
-          "description": "Controls how many nodes to upgrade in parallel. A maximum of 20 concurrent\nnodes is allowed.",
+          "description": "Controls how many nodes to upgrade in parallel. A maximum of 20 concurrent\nnodes is allowed.\nDeprecated. This feature will be replaced by an equivalent new feature that\ngives better control over concurrency. It is not planned to propagate this\nfield to GA and it will be eventually removed from the API.",
           "type": "integer",
           "format": "int32"
         },

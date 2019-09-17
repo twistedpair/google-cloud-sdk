@@ -47,8 +47,17 @@ class UnknownFieldError(Error):
   def __init__(self, field_name, message):
     super(UnknownFieldError, self).__init__(
         'Field [{}] not found in message [{}]. Available fields: [{}]'
-        .format(field_name, message.__name__,
+        .format(field_name, message.__class__.__name__,
                 ', '.join(f.name for f in message.all_fields())))
+
+
+class InvalidFieldPathError(Error):
+  """The referenced field path could not be found in the message object."""
+
+  def __init__(self, field_path, message, reason):
+    super(InvalidFieldPathError, self).__init__(
+        'Invalid field path [{}] for message [{}]. Details: [{}]'
+        .format(field_path, message.__class__.__name__, reason))
 
 
 class ArgumentGenerationError(Error):
@@ -61,16 +70,16 @@ class ArgumentGenerationError(Error):
 
 
 def GetFieldFromMessage(message, field_path):
-  """Digs into the given message to extract the dotted field.
+  """Extract the field object from the message using a dotted field path.
 
-  If the field does not exist, and error is logged.
+  If the field does not exist, an error is logged.
 
   Args:
     message: The apitools message to dig into.
     field_path: str, The dotted path of attributes and sub-attributes.
 
   Returns:
-    The Field type.
+    The Field object.
   """
   fields = field_path.split('.')
   for f in fields[:-1]:
@@ -78,8 +87,66 @@ def GetFieldFromMessage(message, field_path):
   return _GetField(message, fields[-1])
 
 
+def GetFieldValueFromMessage(message, field_path):
+  """Extract the value of the field given a dotted field path.
+
+  If the field_path does not exist, an error is logged.
+
+  Args:
+    message: The apitools message to dig into.
+    field_path: str, The dotted path of attributes and sub-attributes.
+
+  Raises:
+    InvalidFieldPathError: When the path is invalid.
+
+  Returns:
+    The value or if not set, None.
+  """
+  root_message = message
+  fields = field_path.split('.')
+  for i, f in enumerate(fields):
+    index_found = re.match(r'(.+)\[(\d+)\]$', f)
+    if index_found:
+      # Split field path segment (e.g. abc[1]) into abc and 1.
+      f, index = index_found.groups()
+      index = int(index)
+
+    try:
+      field = message.field_by_name(f)
+    except KeyError:
+      raise InvalidFieldPathError(field_path, root_message,
+                                  UnknownFieldError(f, message))
+    if index_found:
+      if not field.repeated:
+        raise InvalidFieldPathError(
+            field_path, root_message,
+            'Index cannot be specified for non-repeated field [{}]'.format(f))
+    else:
+      if field.repeated and i < len(fields) - 1:
+        raise InvalidFieldPathError(
+            field_path, root_message,
+            'Index needs to be specified for repeated field [{}]'.format(f))
+
+    message = getattr(message, f)
+    if message and index_found:
+      message = message[index] if index < len(message) else None
+
+    if not message and i < len(fields) - 1:
+      if isinstance(field, messages.MessageField):
+        # Create an instance of the message so we can continue down the path, to
+        # verify if the path is valid.
+        message = field.type()
+      else:
+        raise InvalidFieldPathError(
+            field_path, root_message,
+            '[{}] is not a valid field on field [{}]'
+            .format(f, field.type.__name__))
+
+  return message
+
+
 def SetFieldInMessage(message, field_path, value):
-  """Sets the given field field in the message object.
+  """Sets the given field in the message object.
 
   Args:
     message: A constructed apitools message object to inject the value into.

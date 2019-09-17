@@ -222,6 +222,15 @@ class RecognitionConfig(_messages.Message):
       recognize the first channel by default. To perform independent
       recognition on each channel set
       `enable_separate_recognition_per_channel` to 'true'.
+    diarizationConfig: *Optional* Config to enable speaker diarization and set
+      additional parameters to make diarization better suited for your
+      application. Note: When this is enabled, we send all the words from the
+      beginning of the audio for the top alternative in every consecutive
+      STREAMING responses. This is done in order to improve our speaker tags
+      as our models learn to identify the speakers in the conversation over
+      time. For non-streaming requests, the diarization results will be
+      provided only in the top alternative of the FINAL
+      SpeechRecognitionResult.
     enableAutomaticPunctuation: *Optional* If 'true', adds punctuation to
       recognition result hypotheses. This feature is only available in select
       languages. Setting this for requests in other languages has no effect at
@@ -341,18 +350,19 @@ class RecognitionConfig(_messages.Message):
     SPEEX_WITH_HEADER_BYTE = 7
 
   audioChannelCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  enableAutomaticPunctuation = _messages.BooleanField(2)
-  enableSeparateRecognitionPerChannel = _messages.BooleanField(3)
-  enableWordTimeOffsets = _messages.BooleanField(4)
-  encoding = _messages.EnumField('EncodingValueValuesEnum', 5)
-  languageCode = _messages.StringField(6)
-  maxAlternatives = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  metadata = _messages.MessageField('RecognitionMetadata', 8)
-  model = _messages.StringField(9)
-  profanityFilter = _messages.BooleanField(10)
-  sampleRateHertz = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  speechContexts = _messages.MessageField('SpeechContext', 12, repeated=True)
-  useEnhanced = _messages.BooleanField(13)
+  diarizationConfig = _messages.MessageField('SpeakerDiarizationConfig', 2)
+  enableAutomaticPunctuation = _messages.BooleanField(3)
+  enableSeparateRecognitionPerChannel = _messages.BooleanField(4)
+  enableWordTimeOffsets = _messages.BooleanField(5)
+  encoding = _messages.EnumField('EncodingValueValuesEnum', 6)
+  languageCode = _messages.StringField(7)
+  maxAlternatives = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  metadata = _messages.MessageField('RecognitionMetadata', 9)
+  model = _messages.StringField(10)
+  profanityFilter = _messages.BooleanField(11)
+  sampleRateHertz = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  speechContexts = _messages.MessageField('SpeechContext', 13, repeated=True)
+  useEnhanced = _messages.BooleanField(14)
 
 
 class RecognitionMetadata(_messages.Message):
@@ -509,6 +519,28 @@ class RecognizeResponse(_messages.Message):
   """
 
   results = _messages.MessageField('SpeechRecognitionResult', 1, repeated=True)
+
+
+class SpeakerDiarizationConfig(_messages.Message):
+  r"""*Optional* Config to enable speaker diarization.
+
+  Fields:
+    enableSpeakerDiarization: *Optional* If 'true', enables speaker detection
+      for each recognized word in the top alternative of the recognition
+      result using a speaker_tag provided in the WordInfo.
+    maxSpeakerCount: *Optional* Maximum number of speakers in the
+      conversation. This range gives you more flexibility by allowing the
+      system to automatically determine the correct number of speakers. If not
+      set, the default value is 6.
+    minSpeakerCount: *Optional* Minimum number of speakers in the
+      conversation. This range gives you more flexibility by allowing the
+      system to automatically determine the correct number of speakers. If not
+      set, the default value is 2.
+  """
+
+  enableSpeakerDiarization = _messages.BooleanField(1)
+  maxSpeakerCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  minSpeakerCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class SpeechContext(_messages.Message):
@@ -747,6 +779,11 @@ class WordInfo(_messages.Message):
       and corresponding to the end of the spoken word. This field is only set
       if `enable_word_time_offsets=true` and only in the top hypothesis. This
       is an experimental feature and the accuracy of the time offset can vary.
+    speakerTag: Output only. A distinct integer value is assigned for every
+      speaker within the audio. This field specifies which one of those
+      speakers was detected to have spoken this word. Value ranges from '1' to
+      diarization_speaker_count. speaker_tag is set if
+      enable_speaker_diarization = 'true' and only in the top alternative.
     startTime: Output only. Time offset relative to the beginning of the
       audio, and corresponding to the start of the spoken word. This field is
       only set if `enable_word_time_offsets=true` and only in the top
@@ -756,8 +793,9 @@ class WordInfo(_messages.Message):
   """
 
   endTime = _messages.StringField(1)
-  startTime = _messages.StringField(2)
-  word = _messages.StringField(3)
+  speakerTag = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(3)
+  word = _messages.StringField(4)
 
 
 encoding.AddCustomJsonFieldMapping(

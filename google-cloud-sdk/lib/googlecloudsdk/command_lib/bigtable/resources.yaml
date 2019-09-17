@@ -12,7 +12,45 @@ instance:
   collection: bigtableadmin.projects.instances
   attributes:
   - *project
-  - parameter_name: instancesId
+  - &instance
+    parameter_name: instancesId
     attribute_name: instance
     help: The name of the Cloud Bigtable instance.
+  disable_auto_completers: false
+
+cluster:
+  name: cluster
+  collection: bigtableadmin.projects.instances.clusters
+  attributes:
+  - *project
+  - *instance
+  - &cluster
+    parameter_name: clustersId
+    attribute_name: cluster
+    help: The name of the Cloud Bigtable cluster.
+  disable_auto_completers: false
+
+table:
+  name: table
+  collection: bigtableadmin.projects.instances.tables
+  attributes:
+  - *project
+  - *instance
+  - &table
+    parameter_name: tablesId
+    attribute_name: table
+    help: The name of the Cloud Bigtable table.
+  disable_auto_completers: false
+
+backup:
+  name: backup
+  collection: bigtableadmin.projects.instances.clusters.backups
+  attributes:
+  - *project
+  - *instance
+  - *cluster
+  - &backup
+    parameter_name: backupsId
+    attribute_name: backup
+    help: A Cloud Bigtable backup.
   disable_auto_completers: false

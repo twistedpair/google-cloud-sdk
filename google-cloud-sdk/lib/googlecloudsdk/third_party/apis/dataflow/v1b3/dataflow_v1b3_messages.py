@@ -1747,6 +1747,16 @@ class Environment(_messages.Message):
       service are required in order to run the job.
     workerPools: The worker pools. At least one "harness" worker pool must be
       specified in order for the job to have workers.
+    workerRegion: The Compute Engine region
+      (https://cloud.google.com/compute/docs/regions-zones/regions-zones) in
+      which worker processing should occur, e.g. "us-west1". Mutually
+      exclusive with worker_zone. If neither worker_region nor worker_zone is
+      specified, default to the control plane's region.
+    workerZone: The Compute Engine zone (https://cloud.google.com/compute/docs
+      /regions-zones/regions-zones) in which worker processing should occur,
+      e.g. "us-west1-a". Mutually exclusive with worker_region. If neither
+      worker_region nor worker_zone is specified, a zone in the control
+      plane's region is chosen based on available capacity.
   """
 
   class FlexResourceSchedulingGoalValueValuesEnum(_messages.Enum):
@@ -1876,6 +1886,8 @@ class Environment(_messages.Message):
   userAgent = _messages.MessageField('UserAgentValue', 10)
   version = _messages.MessageField('VersionValue', 11)
   workerPools = _messages.MessageField('WorkerPool', 12, repeated=True)
+  workerRegion = _messages.StringField(13)
+  workerZone = _messages.StringField(14)
 
 
 class ExecutionStageState(_messages.Message):
@@ -3723,9 +3735,21 @@ class RuntimeEnvironment(_messages.Message):
       Expected to be of the form "regions/REGION/subnetworks/SUBNETWORK".
     tempLocation: The Cloud Storage path to use for temporary files. Must be a
       valid Cloud Storage URL, beginning with `gs://`.
+    workerRegion: The Compute Engine region
+      (https://cloud.google.com/compute/docs/regions-zones/regions-zones) in
+      which worker processing should occur, e.g. "us-west1". Mutually
+      exclusive with worker_zone. If neither worker_region nor worker_zone is
+      specified, default to the control plane's region.
+    workerZone: The Compute Engine zone (https://cloud.google.com/compute/docs
+      /regions-zones/regions-zones) in which worker processing should occur,
+      e.g. "us-west1-a". Mutually exclusive with worker_region. If neither
+      worker_region nor worker_zone is specified, a zone in the control
+      plane's region is chosen based on available capacity. If both
+      `worker_zone` and `zone` are set, `worker_zone` takes precedence.
     zone: The Compute Engine [availability
       zone](https://cloud.google.com/compute/docs/regions-zones/regions-zones)
-      for launching worker instances to run your pipeline.
+      for launching worker instances to run your pipeline. In the future,
+      worker_zone will take precedence.
   """
 
   class IpConfigurationValueValuesEnum(_messages.Enum):
@@ -3781,7 +3805,9 @@ class RuntimeEnvironment(_messages.Message):
   serviceAccountEmail = _messages.StringField(10)
   subnetwork = _messages.StringField(11)
   tempLocation = _messages.StringField(12)
-  zone = _messages.StringField(13)
+  workerRegion = _messages.StringField(13)
+  workerZone = _messages.StringField(14)
+  zone = _messages.StringField(15)
 
 
 class SdkVersion(_messages.Message):

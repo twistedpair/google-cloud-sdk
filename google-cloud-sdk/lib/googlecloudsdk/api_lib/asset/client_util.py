@@ -135,9 +135,18 @@ class AssetExportClient(object):
     content_type = getattr(
         self.message_module.ExportAssetsRequest.ContentTypeValueValuesEnum,
         content_type)
-    output_config = self.message_module.OutputConfig(
-        gcsDestination=self.message_module.GcsDestination(
-            uri=args.output_path, uriPrefix=args.output_path_prefix))
+    if args.output_path or args.output_path_prefix:
+      output_config = self.message_module.OutputConfig(
+          gcsDestination=self.message_module.GcsDestination(
+              uri=args.output_path, uriPrefix=args.output_path_prefix))
+    else:
+      source_ref = args.CONCEPTS.bigquery_table.Parse()
+      output_config = self.message_module.OutputConfig(
+          bigqueryDestination=self.message_module.BigQueryDestination(
+              dataset='projects/' + source_ref.projectId + '/datasets/' +
+              source_ref.datasetId,
+              table=source_ref.tableId,
+              force=args.force_))
     snapshot_time = None
     if args.snapshot_time:
       snapshot_time = times.FormatDateTime(args.snapshot_time)

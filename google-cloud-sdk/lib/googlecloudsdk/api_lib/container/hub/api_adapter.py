@@ -89,9 +89,9 @@ class APIAdapter(object):
         ('image_pull_secret_content', option.image_pull_secret_content)
     ]
     base_url = self.client.url
-    url = '{}/v1beta1/projects/{}/locations/global/connectAgents:generateManifest?{}'.format(
+    url = '{}/v1beta1/{}:generateConnectManifest?{}'.format(
         base_url,
-        project,
+        option.membership_ref,
         urllib.parse.urlencode(query_params))
     response, raw_content = http.Http().request(uri=url)
     content = core_encoding.Decode(raw_content)
@@ -116,7 +116,8 @@ class ConnectAgentOption(object):
                is_upgrade,
                version,
                registry,
-               image_pull_secret_content):
+               image_pull_secret_content,
+               membership_ref):
     self.name = name
     self.proxy = proxy
     self.namespace = namespace
@@ -124,3 +125,4 @@ class ConnectAgentOption(object):
     self.version = version
     self.registry = registry
     self.image_pull_secret_content = image_pull_secret_content
+    self.membership_ref = membership_ref

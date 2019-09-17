@@ -1241,7 +1241,9 @@ class LoggingBillingAccountsLocationsBucketsListRequest(_messages.Message):
       "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
       "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" Note: The locations
+      portion of the resource is required, but supplying the character - in
+      place of LOCATION_ID will return all buckets.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1308,11 +1310,13 @@ class LoggingBillingAccountsLogsListRequest(_messages.Message):
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
+    resourceNames: A string attribute.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  resourceNames = _messages.StringField(4, repeated=True)
 
 
 class LoggingBillingAccountsSinksCreateRequest(_messages.Message):
@@ -1503,7 +1507,9 @@ class LoggingBucketsListRequest(_messages.Message):
       "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
       "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" Note: The locations
+      portion of the resource is required, but supplying the character - in
+      place of LOCATION_ID will return all buckets.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1787,7 +1793,9 @@ class LoggingFoldersLocationsBucketsListRequest(_messages.Message):
       "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
       "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" Note: The locations
+      portion of the resource is required, but supplying the character - in
+      place of LOCATION_ID will return all buckets.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1854,11 +1862,13 @@ class LoggingFoldersLogsListRequest(_messages.Message):
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
+    resourceNames: A string attribute.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  resourceNames = _messages.StringField(4, repeated=True)
 
 
 class LoggingFoldersSinksCreateRequest(_messages.Message):
@@ -2101,11 +2111,13 @@ class LoggingLogsListRequest(_messages.Message):
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
+    resourceNames: A string attribute.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  resourceNames = _messages.StringField(4, repeated=True)
 
 
 class LoggingMonitoredResourceDescriptorsListRequest(_messages.Message):
@@ -2300,7 +2312,9 @@ class LoggingOrganizationsLocationsBucketsListRequest(_messages.Message):
       "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
       "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" Note: The locations
+      portion of the resource is required, but supplying the character - in
+      place of LOCATION_ID will return all buckets.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2367,11 +2381,13 @@ class LoggingOrganizationsLogsListRequest(_messages.Message):
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
+    resourceNames: A string attribute.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  resourceNames = _messages.StringField(4, repeated=True)
 
 
 class LoggingOrganizationsSinksCreateRequest(_messages.Message):
@@ -2713,7 +2729,9 @@ class LoggingProjectsLocationsBucketsListRequest(_messages.Message):
       "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
       "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" Note: The locations
+      portion of the resource is required, but supplying the character - in
+      place of LOCATION_ID will return all buckets.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2780,11 +2798,13 @@ class LoggingProjectsLogsListRequest(_messages.Message):
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
+    resourceNames: A string attribute.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  resourceNames = _messages.StringField(4, repeated=True)
 
 
 class LoggingProjectsMetricsCreateRequest(_messages.Message):

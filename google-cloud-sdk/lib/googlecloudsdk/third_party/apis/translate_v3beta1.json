@@ -21,6 +21,7 @@
   "baseUrl": "https://translation.googleapis.com/",
   "batchPath": "batch",
   "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -248,6 +249,13 @@
         "glossaryConfig": {
           "description": "Optional. Glossary to be applied. The glossary must be\nwithin the same region (have the same location-id) as the model, otherwise\nan INVALID_ARGUMENT (400) error is returned.",
           "$ref": "TranslateTextGlossaryConfig"
+        },
+        "labels": {
+          "description": "Optional. The labels with user-defined metadata for the request.\n\nLabel keys and values can be no longer than 63 characters\n(Unicode codepoints), can only contain lowercase letters, numeric\ncharacters, underscores and dashes. International characters are allowed.\nLabel values are optional. Label keys must start with a letter.\n\nSee https:\/\/cloud.google.com\/translate\/docs\/labels for more information.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -325,6 +333,13 @@
         "mimeType": {
           "description": "Optional. The format of the source text, for example, \"text\/html\",\n\"text\/plain\". If left blank, the MIME type defaults to \"text\/html\".",
           "type": "string"
+        },
+        "labels": {
+          "description": "Optional. The labels with user-defined metadata for the request.\n\nLabel keys and values can be no longer than 63 characters\n(Unicode codepoints), can only contain lowercase letters, numeric\ncharacters, underscores and dashes. International characters are allowed.\nLabel values are optional. Label keys must start with a letter.\n\nSee https:\/\/cloud.google.com\/translate\/docs\/labels for more information.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -434,6 +449,13 @@
           "type": "object",
           "additionalProperties": {
             "$ref": "TranslateTextGlossaryConfig"
+          }
+        },
+        "labels": {
+          "description": "Optional. The labels with user-defined metadata for the request.\n\nLabel keys and values can be no longer than 63 characters\n(Unicode codepoints), can only contain lowercase letters, numeric\ncharacters, underscores and dashes. International characters are allowed.\nLabel values are optional. Label keys must start with a letter.\n\nSee https:\/\/cloud.google.com\/translate\/docs\/labels for more information.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
           }
         }
       }

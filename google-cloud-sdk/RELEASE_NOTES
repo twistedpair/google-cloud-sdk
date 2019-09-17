@@ -5,6 +5,64 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 263.0.0 (2019-09-17)
+
+### Breaking Changes
+
+*   **(Compute Engine)** `gcloud compute vpn-tunnels create` now requires either a `--target-vpn-gateway` or `--vpn_gateway` flag.
+*   **(Compute Engine)** `gcloud compute vpn-tunnels create` now requires one of the following three flags:
+   * `--peer_address`
+   * `--peer_gcp_gateway`
+   * `--peer_external_gateway`
+*   **(Compute Engine)** Promoted `--reservations-from-file`, `--reservation`, `--reservation-zone`, `--accelerator`, `-local-ssd`, `--machine-type`, `--machine-type`, `--min-cpu-platform`, `--require-specific-reservation`, and `--vm-count`  flags for `gcloud compute commitments create` to GA.
+*   **(Miscellaneous)** Fixed issue where `gcloud` table formats would sort numbers alphabetically,
+    rather than numerically.
+
+
+### Cloud Asset Inventory
+
+* Added `--bigquery-table` `--output-bigquery-force` flags to `gcloud asset export`.
+
+### Cloud Dataproc
+
+* Promoted accelerators and min cpu platform related flags to GA.
+   * Added `--preemptible-worker-accelerator` flag to `gcloud dataproc clusters create`, providing the capability for accelerators to be attached to preemptible workers.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.8.3.
+  * Fix bug where concurrent requests for the same transaction would sometimes hang.
+* Release Cloud Firestore emulator v1.8.4
+  * Fix bug where WriteResults for deletes had an `update_time` populated.
+
+### Cloud Pub/Sub
+
+* Promoted the following commands under `gcloud pubsub topics` and `gcloud
+  pubsub subscriptions` to GA to support iAM policy configuration:
+  * `add-iam-policy-binding`
+  * `get-iam-policy`
+  * `remove-iam-policy-binding`
+  * `set-iam-policy`
+
+### Cloud Run
+
+* Promoted `--platform=kubernetes`, `--kubeconfig`, and `--context` flags of `gcloud run` to beta.
+
+### Compute Engine
+
+* Promoted `gcloud compute external-vpn-gateways` to GA.
+* Promoted `gcloud compute vpn-gateways` to GA.
+* Promoted Highly Available related comands for `gcloud compute vpn-tunnels` to GA.
+* Promoted `--logging-aggregation-interval`, `--logging-flow-sampling`, and
+  `--logging-metadata` flags of
+  `gcloud compute networks subnets <create|update>` to GA.
+* Promoted `--reservation` and `--reservation-affinity` flags for `gcloud compute instance-templates create` to GA.
+* Promoted `--reservation` and `--reservation-affinity` flags for `gcloud compute instances create` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 262.0.0 (2019-09-10)
 
 ### Cloud SDK

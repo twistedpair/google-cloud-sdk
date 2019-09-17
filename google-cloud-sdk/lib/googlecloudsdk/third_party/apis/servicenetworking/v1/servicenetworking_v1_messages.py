@@ -1889,11 +1889,8 @@ class QuotaLimit(_messages.Message):
       set, the UI will provide a default display name based on the quota
       configuration. This field can be used to override the default display
       name generated from the configuration.
-    duration: Duration of this limit in textual notation. Example: "100s",
-      "24h", "1d". For duration longer than a day, only multiple of days is
-      supported. We support only "100s" and "1d" for now. Additional support
-      will be added in the future. "0" indicates indefinite duration.  Used by
-      group-based quotas only.
+    duration: Duration of this limit in textual notation. Must be "100s" or
+      "1d".  Used by group-based quotas only.
     freeTier: Free tier value displayed in the Developers Console for this
       limit. The free tier is the number of tokens that will be subtracted
       from the billed amount when billing is enabled. This field can only be

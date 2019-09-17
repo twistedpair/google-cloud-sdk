@@ -158,6 +158,10 @@ def GetIamPolicy(project_ref, api_version=DEFAULT_API_VERSION):
   messages = projects_util.GetMessages(api_version)
 
   policy_request = messages.CloudresourcemanagerProjectsGetIamPolicyRequest(
+      getIamPolicyRequest=messages.GetIamPolicyRequest(
+          options=messages.GetPolicyOptions(
+              requestedPolicyVersion=
+              iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION)),
       resource=project_ref.Name(),
   )
   return client.projects.GetIamPolicy(policy_request)
@@ -171,6 +175,7 @@ def SetIamPolicy(project_ref,
   client = projects_util.GetClient(api_version)
   messages = projects_util.GetMessages(api_version)
 
+  policy.version = iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION
   set_iam_policy_request = messages.SetIamPolicyRequest(policy=policy)
   # Only include update_mask if provided, otherwise, leave the field unset.
   if update_mask is not None:

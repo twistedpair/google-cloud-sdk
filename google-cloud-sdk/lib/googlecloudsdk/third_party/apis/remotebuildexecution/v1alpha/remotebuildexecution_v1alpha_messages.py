@@ -801,9 +801,9 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaAcceleratorConfig(_messages.
   r"""AcceleratorConfig defines the accelerator cards to attach to the VM.
 
   Fields:
-    acceleratorCount: The number of the guest accelerator cards exposed to
-      this VM.
-    acceleratorType: The type of accelerator to attach to this VM, e.g.
+    acceleratorCount: The number of guest accelerator cards exposed to each
+      VM.
+    acceleratorType: The type of accelerator to attach to each VM, e.g.
       "nvidia-tesla-k80" for nVidia Tesla K80.
   """
 
@@ -1048,6 +1048,12 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
       `g1-small` are not yet supported.
     minCpuPlatform: Minimum CPU platform to use when creating the worker. See
       [CPU Platforms](https://cloud.google.com/compute/docs/cpu-platforms).
+    networkAccess: Determines the type of network access granted to workers.
+      Possible values:  - "public": Workers can connect to the public
+      internet. - "private": Workers can only connect to Google APIs and
+      services. - "restricted-private": Workers can only connect to Google
+      APIs that are   reachable through `restricted.googleapis.com`
+      (`199.36.153.4/30`).
     reserved: Determines whether the worker is reserved (equivalent to a
       Compute Engine on-demand VM and therefore won't be preempted). See
       [Preemptible VMs](https://cloud.google.com/preemptible-vms/) for more
@@ -1088,7 +1094,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
   labels = _messages.MessageField('LabelsValue', 4)
   machineType = _messages.StringField(5)
   minCpuPlatform = _messages.StringField(6)
-  reserved = _messages.BooleanField(7)
+  networkAccess = _messages.StringField(7)
+  reserved = _messages.BooleanField(8)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool(_messages.Message):

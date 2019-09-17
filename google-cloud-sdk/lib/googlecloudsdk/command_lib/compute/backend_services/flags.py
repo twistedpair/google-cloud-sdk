@@ -211,7 +211,14 @@ def AddLoadBalancingScheme(parser, include_l7_ilb=False):
       (['INTERNAL_MANAGED'] if include_l7_ilb else []),
       type=lambda x: x.replace('-', '_').upper(),
       default='EXTERNAL',
-      help='Specifies if this is internal or external load balancer.')
+      help="""\
+      Specifies the load balancer type. Choose EXTERNAL for load balancers
+      that receive traffic from external clients. Choose INTERNAL for
+      Internal TCP/UDP Load Balancing. Choose INTERNAL_MANAGED for
+      Internal HTTP(S) Load Balancing. Choose INTERNAL_SELF_MANAGED for
+      Traffic Director. For more information, refer to this guide:
+      https://cloud.google.com/load-balancing/docs/choosing-load-balancer
+      """)
 
 
 def AddConnectionDrainingTimeout(parser):
@@ -383,7 +390,7 @@ def HttpHealthCheckArgument(required=False):
       Legacy health checks are not recommended for backend services. It is
       possible to use a legacy health check on a backend service for a HTTP(S)
       load balancer if that backend service uses instance groups. For more
-      information, see this guide:
+      information, refer to this guide:
       https://cloud.google.com/load-balancing/docs/health-check-concepts#lb_guide
       """)
 
@@ -403,7 +410,7 @@ def HttpsHealthCheckArgument(required=False):
       Legacy health checks are not recommended for backend services. It is
       possible to use a legacy health check on a backend service for a HTTP(S)
       load balancer if that backend service uses instance groups. For more
-      information, see this guide:
+      information, refer to this guide:
       https://cloud.google.com/load-balancing/docs/health-check-concepts#lb_guide
       """)
 

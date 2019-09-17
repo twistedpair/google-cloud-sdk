@@ -116,7 +116,7 @@ class Service(k8s_object.KubernetesObject):
 
   @property
   def ready_symbol(self):
-    if (self.ready is False and
+    if (self.ready is False and  # pylint: disable=g-bool-id-comparison
         self.latest_ready_revision and
         self.latest_created_revision != self.latest_ready_revision):
       return '!'

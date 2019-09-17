@@ -39,6 +39,7 @@ class DnsV1(base_api.BaseApiClient):
     self.dnsKeys = self.DnsKeysService(self)
     self.managedZoneOperations = self.ManagedZoneOperationsService(self)
     self.managedZones = self.ManagedZonesService(self)
+    self.policies = self.PoliciesService(self)
     self.projects = self.ProjectsService(self)
     self.resourceRecordSets = self.ResourceRecordSetsService(self)
 
@@ -417,6 +418,172 @@ class DnsV1(base_api.BaseApiClient):
         request_field=u'managedZoneResource',
         request_type_name=u'DnsManagedZonesUpdateRequest',
         response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class PoliciesService(base_api.BaseApiService):
+    """Service class for the policies resource."""
+
+    _NAME = u'policies'
+
+    def __init__(self, client):
+      super(DnsV1.PoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a new Policy.
+
+      Args:
+        request: (DnsPoliciesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'dns.policies.create',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'clientOperationId'],
+        relative_path=u'projects/{project}/policies',
+        request_field=u'policy',
+        request_type_name=u'DnsPoliciesCreateRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a previously created Policy. Will fail if the policy is still being referenced by a network.
+
+      Args:
+        request: (DnsPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DnsPoliciesDeleteResponse) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'dns.policies.delete',
+        ordered_params=[u'project', u'policy'],
+        path_params=[u'policy', u'project'],
+        query_params=[u'clientOperationId'],
+        relative_path=u'projects/{project}/policies/{policy}',
+        request_field='',
+        request_type_name=u'DnsPoliciesDeleteRequest',
+        response_type_name=u'DnsPoliciesDeleteResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Fetch the representation of an existing Policy.
+
+      Args:
+        request: (DnsPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'dns.policies.get',
+        ordered_params=[u'project', u'policy'],
+        path_params=[u'policy', u'project'],
+        query_params=[u'clientOperationId'],
+        relative_path=u'projects/{project}/policies/{policy}',
+        request_field='',
+        request_type_name=u'DnsPoliciesGetRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Enumerate all Policies associated with a project.
+
+      Args:
+        request: (DnsPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PoliciesListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'dns.policies.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'maxResults', u'pageToken'],
+        relative_path=u'projects/{project}/policies',
+        request_field='',
+        request_type_name=u'DnsPoliciesListRequest',
+        response_type_name=u'PoliciesListResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Apply a partial update to an existing Policy.
+
+      Args:
+        request: (DnsPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PoliciesPatchResponse) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'dns.policies.patch',
+        ordered_params=[u'project', u'policy'],
+        path_params=[u'policy', u'project'],
+        query_params=[u'clientOperationId'],
+        relative_path=u'projects/{project}/policies/{policy}',
+        request_field=u'policyResource',
+        request_type_name=u'DnsPoliciesPatchRequest',
+        response_type_name=u'PoliciesPatchResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Update an existing Policy.
+
+      Args:
+        request: (DnsPoliciesUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PoliciesUpdateResponse) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'dns.policies.update',
+        ordered_params=[u'project', u'policy'],
+        path_params=[u'policy', u'project'],
+        query_params=[u'clientOperationId'],
+        relative_path=u'projects/{project}/policies/{policy}',
+        request_field=u'policyResource',
+        request_type_name=u'DnsPoliciesUpdateRequest',
+        response_type_name=u'PoliciesUpdateResponse',
         supports_download=False,
     )
 

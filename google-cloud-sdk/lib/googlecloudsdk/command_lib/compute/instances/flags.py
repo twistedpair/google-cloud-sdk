@@ -286,7 +286,7 @@ def AddImageArgs(parser, enable_snapshots=False):
         will be created from. You can provide this as a full URL
         to the snapshot or just the snapshot name. For example, the following
         are valid values:
-          * https://www.googleapis.com/compute/v1/projects/myproject/global/snapshots/snapshot
+          * https://compute.googleapis.com/compute/v1/projects/myproject/global/snapshots/snapshot
           * snapshot
         """)
 
@@ -619,7 +619,7 @@ def AddCreateDiskArgs(parser, enable_kms=False, enable_snapshots=False,
       create the disk. You can provide this as a full URL
       to the snapshot or just the snapshot name. For example, the following
       are valid values:
-        * https://www.googleapis.com/compute/v1/projects/myproject/global/snapshots/snapshot
+        * https://compute.googleapis.com/compute/v1/projects/myproject/global/snapshots/snapshot
         * snapshot
       """
     spec['source-snapshot'] = str
@@ -1403,7 +1403,7 @@ def ValidatePublicPtrFlags(args):
 
   network_interface = getattr(args, 'network_interface', None)
   public_ptr = getattr(args, 'public_ptr', None)
-  if public_ptr is True:
+  if public_ptr is True:  # pylint:disable=g-bool-id-comparison
     if (network_interface is not None and
         network_interface != constants.DEFAULT_NETWORK_INTERFACE):
       raise exceptions.ToolException(
@@ -1411,7 +1411,7 @@ def ValidatePublicPtrFlags(args):
           '\'{0}\' rather than \'{1}\'.'.format(
               constants.DEFAULT_NETWORK_INTERFACE, network_interface))
 
-  if args.public_ptr_domain is not None and args.no_public_ptr is True:
+  if args.public_ptr_domain is not None and args.no_public_ptr is True:  # pylint:disable=g-bool-id-comparison
     raise exceptions.ConflictingArgumentsException('--public-ptr-domain',
                                                    '--no-public-ptr')
 

@@ -112,7 +112,7 @@ def _AddNetworkArg(parser):
         You can provide this as the full URL to the network, partial URL,
         or name.
         For example, the following are valid values:
-          * https://www.googleapis.com/compute/v1/projects/myproject/
+          * https://compute.googleapis.com/compute/v1/projects/myproject/
             global/networks/network-1
           * projects/myproject/global/networks/network-1
           * network-1
@@ -131,7 +131,7 @@ def _AddCollectorIlbArg(parser, is_for_update=False):
       You can provide this as the full URL to the forwarding rule, partial URL,
       or name.
       For example, the following are valid values:
-        * https://www.googleapis.com/compute/v1/projects/myproject/
+        * https://compute.googleapis.com/compute/v1/projects/myproject/
           regions/us-central1/forwardingRules/fr-1
         * projects/myproject/regions/us-central1/forwardingRules/fr-1
         * fr-1
@@ -177,7 +177,7 @@ def _AddMirroredInstancesArg(parser, is_for_update=False):
         List of instances to be mirrored.
         You can provide this as the full or valid partial URL to the instance.
         For example, the following are valid values:
-          * https://www.googleapis.com/compute/v1/projects/myproject/
+          * https://compute.googleapis.com/compute/v1/projects/myproject/
             zones/us-central1-a/instances/instance-
           * projects/myproject/zones/us-central1-a/instances/instance-1
         """)
@@ -223,7 +223,7 @@ def _AddMirroredSubnetsArg(parser, is_for_update=False):
         You can provide this as the full URL to the subnet, partial URL, or
         name.
         For example, the following are valid values:
-          * https://www.googleapis.com/compute/v1/projects/myproject/
+          * https://compute.googleapis.com/compute/v1/projects/myproject/
             regions/us-central1/subnetworks/subnet-1
           * projects/myproject/regions/us-central1/subnetworks/subnet-1
           * subnet-1

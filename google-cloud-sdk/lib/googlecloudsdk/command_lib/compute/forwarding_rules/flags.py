@@ -321,7 +321,7 @@ def AddressArgHelp(include_l7_internal_load_balancing):
     reference to an existing Address resource. The following examples are all
     valid:
     - 100.1.2.3
-    - https://www.googleapis.com/compute/v1/projects/project-1/regions/us-central1/addresses/address-1
+    - https://compute.googleapis.com/compute/v1/projects/project-1/regions/us-central1/addresses/address-1
     - projects/project-1/regions/us-central1/addresses/address-1
     - regions/us-central1/addresses/address-1
     - global/addresses/address-1

@@ -381,7 +381,7 @@ def _ValidateRemoveStackdriverMetricVsUpdateStackdriverMetric(args):
         '[--update-stackdriver-metric] flag.')
 
 
-def _ValidateRequiringUpdateStackdriverMetric(args):
+def _ValidateRequiringUpdateStackdriverMetric(args):  # pylint:disable=missing-docstring
   if not args.IsSpecified('update_stackdriver_metric'):
     requiring_flags = [
         'stackdriver_metric_filter',
@@ -396,7 +396,7 @@ def _ValidateRequiringUpdateStackdriverMetric(args):
             '[--update-stackdriver-metric] required to use this flag.')
 
 
-def _ValidateRequiredByUpdateStackdriverMetric(args):
+def _ValidateRequiredByUpdateStackdriverMetric(args):  # pylint:disable=missing-docstring
   if args.IsSpecified('update_stackdriver_metric'):
     one_of_required = [
         'stackdriver_metric_single_instance_assignment',
@@ -410,7 +410,7 @@ def _ValidateRequiredByUpdateStackdriverMetric(args):
           '--update-stackdriver-metric', msg)
 
 
-def _ValidateSingleInstanceAssignmentVsUtilizationTarget(args):
+def _ValidateSingleInstanceAssignmentVsUtilizationTarget(args):  # pylint:disable=missing-docstring
   if args.IsSpecified('stackdriver_metric_single_instance_assignment'):
     potential_conflicting = [
         'stackdriver_metric_utilization_target',
@@ -1081,18 +1081,18 @@ def _GetInstanceTemplatesSet(*versions_lists):
   return versions_set
 
 
-def ValidateVersions(igm_info, new_versions, force=False):
+def ValidateVersions(igm_info, new_versions, resources, force=False):
   """Validates whether versions provided by user are consistent.
 
   Args:
     igm_info: instance group manager resource.
     new_versions: list of new versions.
     force: if true, we allow any combination of instance templates, as long as
-    they are different. If false, only the following transitions are allowed:
-    X -> Y, X -> (X, Y), (X, Y) -> X, (X, Y) -> Y, (X, Y) -> (X, Y)
+    they are different. If false, only the following transitions are allowed: X
+      -> Y, X -> (X, Y), (X, Y) -> X, (X, Y) -> Y, (X, Y) -> (X, Y)
   """
-  if (len(new_versions) == 2
-      and new_versions[0].instanceTemplate == new_versions[1].instanceTemplate):
+  if (len(new_versions) == 2 and
+      new_versions[0].instanceTemplate == new_versions[1].instanceTemplate):
     raise calliope_exceptions.ToolException(
         'Provided instance templates must be different.')
   if force:
@@ -1102,15 +1102,24 @@ def ValidateVersions(igm_info, new_versions, force=False):
   # are allowed in gcloud (unless --force)
   # Equivalently, at most two versions in old and new versions set union
   if igm_info.versions:
-    igm_templates = [version.instanceTemplate for version in igm_info.versions]
+    igm_templates = [
+        resources.ParseURL(version.instanceTemplate).RelativeName()
+        for version in igm_info.versions
+    ]
   elif igm_info.instanceTemplate:
-    igm_templates = [igm_info.instanceTemplate]
+    igm_templates = [
+        resources.ParseURL(igm_info.instanceTemplate).RelativeName()
+    ]
   else:
     raise calliope_exceptions.ToolException(
         'Either versions or instance template must be specified for '
         'managed instance group.')
 
-  new_templates = [version.instanceTemplate for version in new_versions]
+  new_templates = [
+      resources.ParseURL(version.instanceTemplate).RelativeName()
+      for version in new_versions
+  ]
+
   version_count = len(_GetInstanceTemplatesSet(igm_templates, new_templates))
   if version_count > 2:
     raise calliope_exceptions.ToolException(

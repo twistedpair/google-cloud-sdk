@@ -24,7 +24,10 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util import completers
+from googlecloudsdk.command_lib.util.apis import yaml_data
+from googlecloudsdk.command_lib.util.args import resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core.util import text
 
 
@@ -262,6 +265,11 @@ def AppProfileAttributeConfig():
       help_text='Cloud Bigtable application profile for the {resource}.')
 
 
+def BackupAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='backup', help_text='Cloud Bigtable backup for the {resource}.')
+
+
 def GetInstanceResourceSpec():
   """Return the resource specification for a Bigtable instance."""
   return concepts.ResourceSpec(
@@ -350,3 +358,41 @@ def AddAppProfileResourceArg(parser, verb):
       GetAppProfileResourceSpec(),
       'The app profile {}.'.format(verb),
       required=True).AddToParser(parser)
+
+
+def AddBackupResourceArg(parser, verb):
+  """Add backup positional resource argument to the parser."""
+  concept_parsers.ConceptParser(
+      [presentation_specs.ResourcePresentationSpec(
+          '--instance',
+          GetInstanceResourceSpec(),
+          'The instance {}.'.format(verb),
+          required=False),
+       presentation_specs.ResourcePresentationSpec(
+           '--cluster',
+           GetClusterResourceSpec(),
+           'The cluster {}.'.format(verb),
+           required=False,
+           flag_name_overrides={'instance': ''})]).AddToParser(parser)
+
+
+def AddTableRestoreResourceArg(parser):
+  """Add Table resource args (source, destination) for restore command."""
+  table_spec_data = yaml_data.ResourceYAMLData.FromPath('bigtable.table')
+  backup_spec_data = yaml_data.ResourceYAMLData.FromPath('bigtable.backup')
+
+  arg_specs = [
+      resource_args.GetResourcePresentationSpec(
+          verb='to copy from', name='source', required=True, prefixes=True,
+          attribute_overrides={'table': 'source'}, positional=False,
+          resource_data=backup_spec_data.GetData()),
+      resource_args.GetResourcePresentationSpec(
+          verb='to copy to', name='destination',
+          required=True, prefixes=True,
+          attribute_overrides={'table': 'destination'}, positional=False,
+          resource_data=table_spec_data.GetData())]
+  fallthroughs = {
+      '--source.instance': ['--destination.instance'],
+      '--destination.instance': ['--source.instance']
+  }
+  concept_parsers.ConceptParser(arg_specs, fallthroughs).AddToParser(parser)

@@ -26,9 +26,10 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import http as http_creds
 
-
 _PROJECT_RESOURCE = 'projects/%s'
 _PROJECT_SERVICE_RESOURCE = 'projects/%s/services/%s'
+_V1_VERSION = 'v1'
+_V1ALPHA_VERSION = 'v1alpha'
 
 
 def EnableApiCall(project, service):
@@ -222,7 +223,43 @@ def GetOperation(name):
     exceptions.ReraiseError(e, exceptions.OperationErrorException)
 
 
-def _GetClientInstance():
+def GenerateServiceIdentity(project, service):
+  """Generate a service identity.
+
+  Args:
+    project: The project to generate a service identity for.
+    service: The service to generate a service identity for.
+
+  Raises:
+    exceptions.GenerateServiceIdentityPermissionDeniedException: when generating
+    service identity fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The email and uid of the generated service identity.
+  """
+  client = _GetClientInstance(version=_V1ALPHA_VERSION)
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageServicesGenerateIdentityRequest(
+      parent=_PROJECT_SERVICE_RESOURCE % (project, service))
+  try:
+    op = client.services.GenerateIdentity(request)
+    return _GetOperationResponseProperty(
+        op, 'email'), _GetOperationResponseProperty(op, 'unique_id')
+  except (apitools_exceptions.HttpForbiddenError,
+          apitools_exceptions.HttpNotFoundError) as e:
+    exceptions.ReraiseError(
+        e, exceptions.GenerateServiceIdentityPermissionDeniedException)
+
+
+def _GetOperationResponseProperty(op, key):
+  return next((p.value.string_value
+               for p in op.response.additionalProperties
+               if p.key == key), None)
+
+
+def _GetClientInstance(version='v1'):
   """Get a client instance for service usage."""
   # pylint:disable=protected-access
   # Specifically disable resource quota in all cases for service management.
@@ -236,4 +273,4 @@ def _GetClientInstance():
       response_encoding=http_creds.ENCODING,
       enable_resource_quota=enable_resource_quota)
   return apis_internal._GetClientInstance(
-      'serviceusage', 'v1', http_client=http_client)
+      'serviceusage', version, http_client=http_client)

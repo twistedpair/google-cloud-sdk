@@ -70,8 +70,8 @@ flag. For example:
 
 ```
 $ gcloud compute instances list --project prj --uri
-https://www.googleapis.com/compute/v1/projects/prj/zones/us-east1-c/instances/i1
-https://www.googleapis.com/compute/v1/projects/prj/zones/us-east1-d/instances/i2
+https://compute.googleapis.com/compute/v1/projects/prj/zones/us-east1-c/instances/i1
+https://compute.googleapis.com/compute/v1/projects/prj/zones/us-east1-d/instances/i2
 ```
 
 """

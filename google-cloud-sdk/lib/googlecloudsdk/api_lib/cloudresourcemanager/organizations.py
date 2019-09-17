@@ -24,6 +24,7 @@ from googlecloudsdk.api_lib.cloudresourcemanager import projects_util
 
 
 class Client(object):
+  """Client class for cloudresourcemanager organizations API."""
 
   def __init__(self, client=None, messages=None):
     self.client = client or projects_util.GetClient()
@@ -38,3 +39,16 @@ class Client(object):
         batch_size_attribute='pageSize',
         batch_size=page_size,
         field='organizations')
+
+  def Get(self, organization_id=None):
+    """Returns an Organization resource identified by the specified organization id.
+
+    Args:
+      organization_id: organization id
+
+    Returns:
+      An instance of Organization
+    """
+    return self.client.organizations.Get(
+        self.client.MESSAGES_MODULE.CloudresourcemanagerOrganizationsGetRequest(
+            organizationsId=organization_id))

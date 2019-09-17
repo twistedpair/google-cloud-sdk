@@ -331,8 +331,10 @@ class GetPolicyOptions(_messages.Message):
 
   Fields:
     requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
-      field is omitted, policy format version 1 will be returned.
+      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.  Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.
   """
 
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -372,44 +374,6 @@ class GooRepository(_messages.Message):
 
 class GooSettings(_messages.Message):
   r"""Googet patching is performed by running `googet update`."""
-
-
-class InstanceDetailsSummary(_messages.Message):
-  r"""A summary of the current patch state across all instances this patch job
-  affects. Contains counts of instances in different states. These states map
-  to InstancePatchState. List patch job instance details to see the specific
-  states of each instance.
-
-  Fields:
-    instancesAcked: Number of instances that have acked and will start
-      shortly.
-    instancesApplyingPatches: Number of instances that are applying patches.
-    instancesDownloadingPatches: Number of instances that are downloading
-      patches.
-    instancesFailed: Number of instances that failed.
-    instancesInactive: Number of instances that are inactive.
-    instancesNotified: Number of instances notified about patch job.
-    instancesPending: Number of instances pending patch job.
-    instancesRebooting: Number of instances rebooting.
-    instancesStarted: Number of instances that have started.
-    instancesSucceeded: Number of instances that have completed successfully.
-    instancesSucceededRebootRequired: Number of instances that require reboot.
-    instancesTimedOut: Number of instances that exceeded the time out while
-      applying the patch.
-  """
-
-  instancesAcked = _messages.IntegerField(1)
-  instancesApplyingPatches = _messages.IntegerField(2)
-  instancesDownloadingPatches = _messages.IntegerField(3)
-  instancesFailed = _messages.IntegerField(4)
-  instancesInactive = _messages.IntegerField(5)
-  instancesNotified = _messages.IntegerField(6)
-  instancesPending = _messages.IntegerField(7)
-  instancesRebooting = _messages.IntegerField(8)
-  instancesStarted = _messages.IntegerField(9)
-  instancesSucceeded = _messages.IntegerField(10)
-  instancesSucceededRebootRequired = _messages.IntegerField(11)
-  instancesTimedOut = _messages.IntegerField(12)
 
 
 class ListAssignmentsResponse(_messages.Message):
@@ -497,7 +461,26 @@ class LookupConfigsRequest(_messages.Message):
     ZYPPER = 5
 
   configTypes = _messages.EnumField('ConfigTypesValueListEntryValuesEnum', 1, repeated=True)
-  osInfo = _messages.MessageField('OsInfo', 2)
+  osInfo = _messages.MessageField('LookupConfigsRequestOsInfo', 2)
+
+
+class LookupConfigsRequestOsInfo(_messages.Message):
+  r"""Guest information provided to service by agent when requesting
+  configurations.
+
+  Fields:
+    osArchitecture: Architecture of the OS. Optional.
+    osKernel: OS kernel name. Optional.
+    osLongName: OS long name. Optional.
+    osShortName: OS short name. Optional.
+    osVersion: OS version. Optional.
+  """
+
+  osArchitecture = _messages.StringField(1)
+  osKernel = _messages.StringField(2)
+  osLongName = _messages.StringField(3)
+  osShortName = _messages.StringField(4)
+  osVersion = _messages.StringField(5)
 
 
 class LookupConfigsResponse(_messages.Message):
@@ -573,25 +556,6 @@ class OsConfig(_messages.Message):
   windowsUpdate = _messages.MessageField('WindowsUpdateConfig', 8)
   yum = _messages.MessageField('YumPackageConfig', 9)
   zypper = _messages.MessageField('ZypperPackageConfig', 10)
-
-
-class OsInfo(_messages.Message):
-  r"""Guest information provided to service by agent when requesting
-  configurations.
-
-  Fields:
-    osArchitecture: Architecture of the OS. Optional.
-    osKernel: OS kernel name. Optional.
-    osLongName: OS long name. Optional.
-    osShortName: OS short name. Optional.
-    osVersion: OS version. Optional.
-  """
-
-  osArchitecture = _messages.StringField(1)
-  osKernel = _messages.StringField(2)
-  osLongName = _messages.StringField(3)
-  osShortName = _messages.StringField(4)
-  osVersion = _messages.StringField(5)
 
 
 class OsconfigFoldersAssignmentsCreateRequest(_messages.Message):
@@ -1321,7 +1285,7 @@ class PatchJob(_messages.Message):
   duration = _messages.StringField(4)
   errorMessage = _messages.StringField(5)
   filter = _messages.StringField(6)
-  instanceDetailsSummary = _messages.MessageField('InstanceDetailsSummary', 7)
+  instanceDetailsSummary = _messages.MessageField('PatchJobInstanceDetailsSummary', 7)
   name = _messages.StringField(8)
   patchConfig = _messages.MessageField('PatchConfig', 9)
   percentComplete = _messages.FloatField(10)
@@ -1384,6 +1348,44 @@ class PatchJobInstanceDetails(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
+class PatchJobInstanceDetailsSummary(_messages.Message):
+  r"""A summary of the current patch state across all instances this patch job
+  affects. Contains counts of instances in different states. These states map
+  to InstancePatchState. List patch job instance details to see the specific
+  states of each instance.
+
+  Fields:
+    instancesAcked: Number of instances that have acked and will start
+      shortly.
+    instancesApplyingPatches: Number of instances that are applying patches.
+    instancesDownloadingPatches: Number of instances that are downloading
+      patches.
+    instancesFailed: Number of instances that failed.
+    instancesInactive: Number of instances that are inactive.
+    instancesNotified: Number of instances notified about patch job.
+    instancesPending: Number of instances pending patch job.
+    instancesRebooting: Number of instances rebooting.
+    instancesStarted: Number of instances that have started.
+    instancesSucceeded: Number of instances that have completed successfully.
+    instancesSucceededRebootRequired: Number of instances that require reboot.
+    instancesTimedOut: Number of instances that exceeded the time out while
+      applying the patch.
+  """
+
+  instancesAcked = _messages.IntegerField(1)
+  instancesApplyingPatches = _messages.IntegerField(2)
+  instancesDownloadingPatches = _messages.IntegerField(3)
+  instancesFailed = _messages.IntegerField(4)
+  instancesInactive = _messages.IntegerField(5)
+  instancesNotified = _messages.IntegerField(6)
+  instancesPending = _messages.IntegerField(7)
+  instancesRebooting = _messages.IntegerField(8)
+  instancesStarted = _messages.IntegerField(9)
+  instancesSucceeded = _messages.IntegerField(10)
+  instancesSucceededRebootRequired = _messages.IntegerField(11)
+  instancesTimedOut = _messages.IntegerField(12)
+
+
 class Policy(_messages.Message):
   r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
@@ -1417,7 +1419,11 @@ class Policy(_messages.Message):
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten.
-    version: Deprecated.
+    version: Specifies the format of the policy.  Valid values are 0, 1, and
+      3. Requests specifying an invalid value will be rejected.  Policies with
+      any conditional bindings must specify version 3. Policies without any
+      conditional bindings may specify any valid value or leave the field
+      unset.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)

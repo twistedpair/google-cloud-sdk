@@ -294,6 +294,45 @@ used to create the tag must be from the same organization.
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. A `NOT_FOUND` error.
+is returned if the resource does not exist. An empty policy is returned
+if the resource exists but does not have a policy set on it.
+
+Supported resources are:
+  - Tag templates.
+Note, this method cannot be used to manage policies for BigQuery, Cloud
+Pub/Sub and any external Google Cloud Platform resources synced to Cloud
+Data Catalog.
+
+Callers must have following Google IAM permission
+  - `datacatalog.tagTemplates.getIamPolicy` to get policies on tag
+    templates.
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsEntriesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:getIamPolicy',
+        http_method=u'POST',
+        method_id=u'datacatalog.projects.locations.entryGroups.entries.getIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1beta1/{+resource}:getIamPolicy',
+        request_field=u'getIamPolicyRequest',
+        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsEntriesGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates an existing entry.
 The user should enable the Data Catalog API in the project identified by
@@ -324,6 +363,43 @@ the `entry.name` parameter (see [Data Catalog Resource Project]
         supports_download=False,
     )
 
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy for a resource. Replaces any existing.
+policy.
+Supported resources are:
+  - Tag templates.
+Note, this method cannot be used to manage policies for BigQuery, Cloud
+Pub/Sub and any external Google Cloud Platform resources synced to Cloud
+Data Catalog.
+
+Callers must have following Google IAM permission
+  - `datacatalog.tagTemplates.setIamPolicy` to set policies on tag
+    templates.
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsEntriesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:setIamPolicy',
+        http_method=u'POST',
+        method_id=u'datacatalog.projects.locations.entryGroups.entries.setIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1beta1/{+resource}:setIamPolicy',
+        request_field=u'setIamPolicyRequest',
+        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsEntriesSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
   class ProjectsLocationsEntryGroupsService(base_api.BaseApiService):
     """Service class for the projects_locations_entryGroups resource."""
 
@@ -333,6 +409,82 @@ the `entry.name` parameter (see [Data Catalog Resource Project]
       super(DatacatalogV1beta1.ProjectsLocationsEntryGroupsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. A `NOT_FOUND` error.
+is returned if the resource does not exist. An empty policy is returned
+if the resource exists but does not have a policy set on it.
+
+Supported resources are:
+  - Tag templates.
+Note, this method cannot be used to manage policies for BigQuery, Cloud
+Pub/Sub and any external Google Cloud Platform resources synced to Cloud
+Data Catalog.
+
+Callers must have following Google IAM permission
+  - `datacatalog.tagTemplates.getIamPolicy` to get policies on tag
+    templates.
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}:getIamPolicy',
+        http_method=u'POST',
+        method_id=u'datacatalog.projects.locations.entryGroups.getIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1beta1/{+resource}:getIamPolicy',
+        request_field=u'getIamPolicyRequest',
+        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy for a resource. Replaces any existing.
+policy.
+Supported resources are:
+  - Tag templates.
+Note, this method cannot be used to manage policies for BigQuery, Cloud
+Pub/Sub and any external Google Cloud Platform resources synced to Cloud
+Data Catalog.
+
+Callers must have following Google IAM permission
+  - `datacatalog.tagTemplates.setIamPolicy` to set policies on tag
+    templates.
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}:setIamPolicy',
+        http_method=u'POST',
+        method_id=u'datacatalog.projects.locations.entryGroups.setIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1beta1/{+resource}:setIamPolicy',
+        request_field=u'setIamPolicyRequest',
+        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
 
   class ProjectsLocationsTagTemplatesFieldsService(base_api.BaseApiService):
     """Service class for the projects_locations_tagTemplates_fields resource."""
@@ -574,7 +726,8 @@ Pub/Sub and any external Google Cloud Platform resources synced to Cloud
 Data Catalog.
 
 Callers must have following Google IAM permission
-`datacatalog.tagTemplates.getIamPolicy` to get policies on tag templates.
+  - `datacatalog.tagTemplates.getIamPolicy` to get policies on tag
+    templates.
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesGetIamPolicyRequest) input message
@@ -642,7 +795,8 @@ Pub/Sub and any external Google Cloud Platform resources synced to Cloud
 Data Catalog.
 
 Callers must have following Google IAM permission
-`datacatalog.tagTemplates.setIamPolicy` to set policies on tag templates.
+  - `datacatalog.tagTemplates.setIamPolicy` to set policies on tag
+    templates.
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesSetIamPolicyRequest) input message

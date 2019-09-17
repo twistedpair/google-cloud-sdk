@@ -52,6 +52,13 @@ class Collections(enum.Enum):
       [u'project', u'managedZone'],
       True
   )
+  POLICIES = (
+      'policies',
+      'projects/{project}/policies/{policy}',
+      {},
+      [u'project', u'policy'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{project}',

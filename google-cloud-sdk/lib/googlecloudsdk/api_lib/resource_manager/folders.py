@@ -19,8 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import resources
-
 
 FOLDERS_API_VERSION = 'v2'
 
@@ -60,7 +60,10 @@ def GetFolder(folder_id):
 def GetIamPolicy(folder_id):
   messages = FoldersMessages()
   request = messages.CloudresourcemanagerFoldersGetIamPolicyRequest(
-      foldersId=folder_id)
+      foldersId=folder_id,
+      getIamPolicyRequest=messages.GetIamPolicyRequest(
+          options=messages.GetPolicyOptions(requestedPolicyVersion=iam_util.
+                                            MAX_LIBRARY_IAM_SUPPORTED_VERSION)))
   return FoldersService().GetIamPolicy(request)
 
 
@@ -79,6 +82,7 @@ def GetUri(resource):
   """Returns the uri for resource."""
   folder_id = FolderNameToId(resource.name)
   folder_ref = FoldersRegistry().Parse(
-      None, params={'foldersId': folder_id},
+      None,
+      params={'foldersId': folder_id},
       collection='cloudresourcemanager.folders')
   return folder_ref.SelfLink()

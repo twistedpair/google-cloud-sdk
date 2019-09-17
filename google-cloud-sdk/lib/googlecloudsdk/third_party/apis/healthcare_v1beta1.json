@@ -183,7 +183,7 @@
       "type": "object",
       "properties": {
         "version": {
-          "description": "Deprecated.",
+          "description": "Specifies the format of the policy.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nPolicies with any conditional bindings must specify version 3. Policies\nwithout any conditional bindings may specify any valid value or leave the\nfield unset.",
           "type": "integer",
           "format": "int32"
         },
@@ -419,7 +419,7 @@
           "type": "string"
         },
         "timeZone": {
-          "description": "The default timezone used by this dataset. Must be a either a valid IANA\ntime zone name such as \"America\/New_York\" or empty, which defaults to UTC.\nThis is used for parsing times in resources (e.g., HL7 messages) where no\nexplicit timezone is specified.",
+          "description": "The default timezone used by this dataset. Must be a either a valid IANA\ntime zone name such as \"America\/New_York\" or empty, which defaults to UTC.\nThis is used for parsing times in resources, such as HL7 messages, where no\nexplicit timezone is specified.",
           "type": "string"
         }
       }
@@ -455,7 +455,7 @@
       "type": "object",
       "properties": {
         "destinationDataset": {
-          "description": "The name of the dataset resource to create and write the redacted data to\n(e.g.,\n\n * The destination dataset must not exist.\n * The destination dataset must be in the same project as the source\n   dataset. De-identifying data across multiple projects is not supported.",
+          "description": "The name of the dataset resource to create and write the redacted data to.\n\n * The destination dataset must not exist.\n * The destination dataset must be in the same project as the source\n   dataset. De-identifying data across multiple projects is not supported.",
           "type": "string"
         },
         "config": {
@@ -540,11 +540,11 @@
     },
     "FhirConfig": {
       "id": "FhirConfig",
-      "description": "Specifies how de-identification of a FHIR store should be handled.",
+      "description": "Specifies how to handle de-identification of a FHIR store.",
       "type": "object",
       "properties": {
         "fieldMetadataList": {
-          "description": "Specifies FHIR paths to match and how to transform them. Any field that\nis not matched by a FieldMetadata will be passed through to the output\ndataset unmodified. All extensions are removed in the output.",
+          "description": "Specifies FHIR paths to match and how to transform them. Any field that\nis not matched by a FieldMetadata is passed through to the output\ndataset unmodified. All extensions are removed in the output.",
           "type": "array",
           "items": {
             "$ref": "FieldMetadata"
@@ -558,7 +558,7 @@
       "type": "object",
       "properties": {
         "paths": {
-          "description": "List of paths to FHIR fields to be redacted. Each path is a\nperiod-separated list where each component is either a field name or\nFHIR type name, for example: Patient, HumanName.\nFor \"choice\" types (those defined in the FHIR spec with the form:\nfield[x]) we use two separate components. e.g. \"deceasedAge.unit\" is\nmatched by \"Deceased.Age.unit\".\nSupported types are: AdministrativeGenderCode, Code, Date, DateTime,\nDecimal, HumanName, Id, LanguageCode, Markdown, MimeTypeCode, Oid,\nString, Uri, Uuid, Xhtml.",
+          "description": "List of paths to FHIR fields to be redacted. Each path is a\nperiod-separated list where each component is either a field name or\nFHIR type name, for example: Patient, HumanName.\nFor \"choice\" types (those defined in the FHIR spec with the form:\nfield[x]) we use two separate components. For example,\n\"deceasedAge.unit\" is matched by \"Deceased.Age.unit\".\nSupported types are: AdministrativeGenderCode, Code, Date, DateTime,\nDecimal, HumanName, Id, LanguageCode, Markdown, MimeTypeCode, Oid,\nString, Uri, Uuid, Xhtml.",
           "type": "array",
           "items": {
             "type": "string"
@@ -584,7 +584,7 @@
     },
     "ImageConfig": {
       "id": "ImageConfig",
-      "description": "Specifies how de-identification of image pixel should be handled.",
+      "description": "Specifies how to handle de-identification of image pixels.",
       "type": "object",
       "properties": {
         "textRedactionMode": {
@@ -654,7 +654,7 @@
     },
     "RedactConfig": {
       "id": "RedactConfig",
-      "description": "Define how to redact sensitive values. Default behaviour is erase,\ne.g. \"My name is Jake.\" becomes \"My name is .\"",
+      "description": "Define how to redact sensitive values. Default behaviour is erase.\nFor example, \"My name is Jake.\" becomes \"My name is .\"",
       "type": "object",
       "properties": {
       }
@@ -725,11 +725,11 @@
     },
     "NotificationConfig": {
       "id": "NotificationConfig",
-      "description": "Specifies where notifications should be sent upon changes to a data store.",
+      "description": "Specifies where to send notifications upon changes to a data store.",
       "type": "object",
       "properties": {
         "pubsubTopic": {
-          "description": "The [Cloud Pub\/Sub](https:\/\/cloud.google.com\/pubsub\/docs\/) topic that\nnotifications of changes are published on. Supplied by the client.\nPubsubMessage.Data will contain the resource name.\nPubsubMessage.MessageId is the ID of this message. It is guaranteed to be\nunique within the topic.\nPubsubMessage.PublishTime is the time at which the message was published.\nNotifications are only sent if the topic is\nnon-empty. [Topic\nnames](https:\/\/cloud.google.com\/pubsub\/docs\/overview#names) must be scoped\nto a project. cloud-healthcare@system.gserviceaccount.com must have\npublisher permissions on the given Cloud Pub\/Sub topic. Not having adequate\npermissions will cause the calls that send notifications to fail.",
+          "description": "The [Cloud Pub\/Sub](https:\/\/cloud.google.com\/pubsub\/docs\/) topic that\nnotifications of changes are published on. Supplied by the client.\nPubsubMessage.Data contains the resource name.\nPubsubMessage.MessageId is the ID of this message. It is guaranteed to be\nunique within the topic.\nPubsubMessage.PublishTime is the time at which the message was published.\nNotifications are only sent if the topic is\nnon-empty. [Topic\nnames](https:\/\/cloud.google.com\/pubsub\/docs\/overview#names) must be scoped\nto a project. cloud-healthcare@system.gserviceaccount.com must have\npublisher permissions on the given Cloud Pub\/Sub topic. Not having adequate\npermissions causes the calls that send notifications to fail.",
           "type": "string"
         }
       }
@@ -754,7 +754,7 @@
     },
     "ImportDicomDataRequest": {
       "id": "ImportDicomDataRequest",
-      "description": "Imports data into the specified DICOM store.\nReturns an error if any of the files to import are not DICOM files. This\nAPI will accept duplicate DICOM instances, by simply ignoring the newly\npushed instance (it will not overwrite).",
+      "description": "Imports data into the specified DICOM store.\nReturns an error if any of the files to import are not DICOM files. This\nAPI accepts duplicate DICOM instances by ignoring the newly-pushed instance.\nIt does not overwrite.",
       "type": "object",
       "properties": {
         "gcsSource": {
@@ -776,7 +776,7 @@
     },
     "ExportDicomDataRequest": {
       "id": "ExportDicomDataRequest",
-      "description": "Exports data from the specified DICOM store.\nIf a given resource (e.g., a DICOM object with the same SOPInstance UID)\nalready exists in the output, it is overwritten with the version\nin the source dataset.\nExported DICOM data will persist when the DICOM store from which it was\nexported is deleted.",
+      "description": "Exports data from the specified DICOM store.\nIf a given resource, such as a DICOM object with the same SOPInstance UID,\nalready exists in the output, it is overwritten with the version\nin the source dataset.\nExported DICOM data persists when the DICOM store from which it was\nexported is deleted.",
       "type": "object",
       "properties": {
         "gcsDestination": {
@@ -791,22 +791,22 @@
     },
     "GoogleCloudHealthcareV1beta1DicomGcsDestination": {
       "id": "GoogleCloudHealthcareV1beta1DicomGcsDestination",
-      "description": "The Cloud Storage location where the output should be written, and the export\nconfiguration.",
+      "description": "The Cloud Storage location where the server writes the output and the export\nconfiguration.",
       "type": "object",
       "properties": {
         "uriPrefix": {
-          "description": "The Cloud Storage destination to export to.\n\nURI for a Cloud Storage directory where result files should be written (in\nthe format `gs:\/\/{bucket-id}\/{path\/to\/destination\/dir}`). If there is no\ntrailing slash, the service will append one when composing the object path.\nThe user is responsible for creating the Cloud Storage bucket referenced in\n`uri_prefix`.",
+          "description": "The Cloud Storage destination to export to.\n\nURI for a Cloud Storage directory where the server writes the result files,\nin the format `gs:\/\/{bucket-id}\/{path\/to\/destination\/dir}`). If there is no\ntrailing slash, the service appends one when composing the object path.\nThe user is responsible for creating the Cloud Storage bucket referenced in\n`uri_prefix`.",
           "type": "string"
         },
         "mimeType": {
-          "description": "MIME types supported by DICOM spec.\nEach file will be written in the following format:\n`...\/{study_id}\/{series_id}\/{instance_id}[\/{frame_number}].{extension}`\nThe frame_number component will exist only for multi-frame instances.\n\nRefer to the DICOM conformance statement for permissible MIME types:\nhttps:\/\/cloud.google.com\/healthcare\/docs\/dicom#wado-rs\n\nThe following extensions will be used for output files:\n  application\/dicom -> .dcm\n  image\/jpeg -> .jpg\n  image\/png -> .png\n\nIf unspecified, the instances will be exported in their original\nDICOM format.",
+          "description": "MIME types supported by DICOM spec.\nEach file is written in the following format:\n`...\/{study_id}\/{series_id}\/{instance_id}[\/{frame_number}].{extension}`\nThe frame_number component exists only for multi-frame instances.\n\nRefer to the DICOM conformance statement for permissible MIME types:\nhttps:\/\/cloud.google.com\/healthcare\/docs\/dicom#wado-rs\n\nThe following extensions are used for output files:\n  application\/dicom -> .dcm\n  image\/jpeg -> .jpg\n  image\/png -> .png\n\nIf unspecified, the instances are exported in their original\nDICOM format.",
           "type": "string"
         }
       }
     },
     "GoogleCloudHealthcareV1beta1DicomBigQueryDestination": {
       "id": "GoogleCloudHealthcareV1beta1DicomBigQueryDestination",
-      "description": "The BigQuery table where the output should be written.",
+      "description": "The BigQuery table where the server writes the output.",
       "type": "object",
       "properties": {
         "tableUri": {
@@ -814,7 +814,7 @@
           "type": "string"
         },
         "force": {
-          "description": "If the destination table already exists and this flag is `TRUE`, the table\nwill be overwritten by the contents of the DICOM store. If the flag is not\nset and the destination table already exists, the export call returns an\nerror.",
+          "description": "If the destination table already exists and this flag is `TRUE`, the table\nis overwritten by the contents of the DICOM store. If the flag is not\nset and the destination table already exists, the export call returns an\nerror.",
           "type": "boolean"
         }
       }
@@ -856,7 +856,7 @@
           "type": "string"
         },
         "notificationConfig": {
-          "description": "The notification destination all messages (both Ingest & Create) are\npublished on. Only the message name is sent as part of the notification. If\nthis is unset, no notifications will be sent. Supplied by the client.",
+          "description": "The notification destination all messages (both Ingest & Create) are\npublished on. Only the message name is sent as part of the notification. If\nthis is unset, no notifications are sent. Supplied by the client.",
           "$ref": "NotificationConfig"
         },
         "parserConfig": {
@@ -882,7 +882,7 @@
           "type": "boolean"
         },
         "segmentTerminator": {
-          "description": "Byte(s) to be used as the segment terminator. If this is unset, '\\r' will\nbe used as segment terminator.",
+          "description": "Byte(s) to use as the segment terminator. If this is unset, '\\r' is\nused as segment terminator.",
           "type": "string",
           "format": "byte"
         }
@@ -979,7 +979,7 @@
           "type": "string"
         },
         "type": {
-          "description": "ID type, e.g. MRN or NHS.",
+          "description": "ID type. For example, MRN or NHS.",
           "type": "string"
         }
       }
@@ -1003,15 +1003,15 @@
       "type": "object",
       "properties": {
         "segmentId": {
-          "description": "A string that indicates the type of segment, e.g., EVN, PID.",
+          "description": "A string that indicates the type of segment. For example, EVN or PID.",
           "type": "string"
         },
         "setId": {
-          "description": "Set ID for segments that can be in a set. This can be empty if it is\nmissing or it is not applicable.",
+          "description": "Set ID for segments that can be in a set. This can be empty if it's\nmissing or isn't applicable.",
           "type": "string"
         },
         "fields": {
-          "description": "A mapping from the positional location to the value.\nThe key string uses zero-based indexes separated by dots to identify\nFields, components and sub-components. A bracket notation is also used to\nidentify different instances of a repeated field.\nRegex for key: (\\d+)(\\[\\d+\\])?(.\\d+)?(.\\d+)?\n\nExamples of (key, value) pairs:\n- (0.1, \"foo\"): Component 1 of Field 0 has the value \"foo\".\n- (1.1.2, \"bar\"): Sub-component 2 of Component 1 of field 1 has the value\n\"bar\".\n- (1[2].1, \"baz\"): Component 1 of Instance 2 of Field 1, which is repeated,\nhas the value \"baz\".",
+          "description": "A mapping from the positional location to the value.\nThe key string uses zero-based indexes separated by dots to identify\nFields, components and sub-components. A bracket notation is also used to\nidentify different instances of a repeated field.\nRegex for key: (\\d+)(\\[\\d+\\])?(.\\d+)?(.\\d+)?\n\nExamples of (key, value) pairs:\n\n* (0.1, \"hemoglobin\") denotes that the first component of Field 0 has the\n  value \"hemoglobin\".\n\n* (1.1.2, \"CBC\") denotes that the second sub-component of the first\n  component of Field 1 has the value \"CBC\".\n\n* (1[0].1, \"HbA1c\") denotes that the first component of the\n  first Instance of Field 1, which is repeated, has the value \"HbA1c\".",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -1196,19 +1196,19 @@
           "type": "string"
         },
         "enableUpdateCreate": {
-          "description": "Whether this FHIR store has the [updateCreate\ncapability](https:\/\/www.hl7.org\/fhir\/capabilitystatement-definitions.html#CapabilityStatement.rest.resource.updateCreate).\nThis determines if the client can use an Update operation to create a new\nresource with a client-specified ID. If false, all IDs are server-assigned\nthrough the Create operation and attempts to Update a non-existent resource\nwill return errors. Please treat the audit logs with appropriate levels of\ncare if client-specified resource IDs contain sensitive data such as\npatient identifiers, those IDs will be part of the FHIR resource path\nrecorded in Cloud audit logs and Cloud Pub\/Sub notifications.",
+          "description": "Whether this FHIR store has the [updateCreate\ncapability](https:\/\/www.hl7.org\/fhir\/capabilitystatement-definitions.html#CapabilityStatement.rest.resource.updateCreate).\nThis determines if the client can use an Update operation to create a new\nresource with a client-specified ID. If false, all IDs are server-assigned\nthrough the Create operation and attempts to update a non-existent resource\nreturn errors. Please treat the audit logs with appropriate levels of\ncare if client-specified resource IDs contain sensitive data such as\npatient identifiers, those IDs are part of the FHIR resource path\nrecorded in Cloud audit logs and Cloud Pub\/Sub notifications.",
           "type": "boolean"
         },
         "notificationConfig": {
-          "description": "If non-empty, publish all resource modifications of this FHIR store to\nthis destination. The Cloud Pub\/Sub message attributes will contain a map\nwith a string describing the action that has triggered the notification,\ne.g. \"action\":\"CreateResource\".",
+          "description": "If non-empty, publish all resource modifications of this FHIR store to\nthis destination. The Cloud Pub\/Sub message attributes contain a map\nwith a string describing the action that has triggered the notification.\nFor example, \"action\":\"CreateResource\".",
           "$ref": "NotificationConfig"
         },
         "disableReferentialIntegrity": {
-          "description": "Whether to disable referential integrity in this FHIR store. This field is\nimmutable after FHIR store creation.\nThe default value is false, meaning that the API will enforce referential\nintegrity and fail the requests that will result in inconsistent state in\nthe FHIR store.\nWhen this field is set to true, the API will skip referential integrity\ncheck. Consequently, operations that rely on references, such as\nGetPatientEverything, will not return all the results if broken references\nexist.",
+          "description": "Whether to disable referential integrity in this FHIR store. This field is\nimmutable after FHIR store creation.\nThe default value is false, meaning that the API enforces referential\nintegrity and fails the requests that result in inconsistent state in\nthe FHIR store.\nWhen this field is set to true, the API skips referential integrity\nchecks. Consequently, operations that rely on references, such as\nGetPatientEverything, do not return all the results if broken references\nexist.",
           "type": "boolean"
         },
         "disableResourceVersioning": {
-          "description": "Whether to disable resource versioning for this FHIR store. This field can\nnot be changed after the creation of FHIR store.\nIf set to false, which is the default behavior, all write operations will\ncause historical versions to be recorded automatically. The historical\nversions can be fetched through the history APIs, but cannot be updated.\nIf set to true, no historical versions will be kept. The server will send\nback errors for attempts to read the historical versions.",
+          "description": "Whether to disable resource versioning for this FHIR store. This field can\nnot be changed after the creation of FHIR store.\nIf set to false, which is the default behavior, all write operations\ncause historical versions to be recorded automatically. The historical\nversions can be fetched through the history APIs, but cannot be updated.\nIf set to true, no historical versions are kept. The server sends\nerrors for attempts to read the historical versions.",
           "type": "boolean"
         },
         "labels": {
@@ -1217,10 +1217,6 @@
           "additionalProperties": {
             "type": "string"
           }
-        },
-        "enableHistoryImport": {
-          "description": "Whether to allow the bulk import API to accept history bundles and directly\ninsert historical resource versions into the FHIR store. Importing resource\nhistories creates resource interactions that appear to have occurred in the\npast, which clients may not want to allow. If set to false, history bundles\nwithin an import will fail with an error.",
-          "type": "boolean"
         }
       }
     },
@@ -1299,7 +1295,7 @@
           "format": "int64"
         },
         "failureStoreCount": {
-          "description": "Number of stores failed to process.",
+          "description": "Number of stores that failed to process.",
           "type": "string",
           "format": "int64"
         },
@@ -1309,7 +1305,7 @@
           "format": "int64"
         },
         "failureResourceCount": {
-          "description": "Number of resources failed to process.",
+          "description": "Number of resources that failed to process.",
           "type": "string",
           "format": "int64"
         }
@@ -1329,6 +1325,11 @@
           "description": "Number of resources successfully processed.",
           "type": "string",
           "format": "int64"
+        },
+        "failureResourceCount": {
+          "description": "Number of resources that failed to process.\nThe failures might be caused by:\n  * Invalid user input data\n  * Transient errors that could be skipped",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -1338,7 +1339,7 @@
       "type": "object",
       "properties": {
         "sampleErrors": {
-          "description": "Deprecated. Use only for debugging purposes.\n\nContains sample errors encountered in imports of individual resources\n(for example, a Cloud Storage object).",
+          "description": "Deprecated. Use only for debugging purposes.\n\nContains sample errors encountered in imports of individual resources.\nFor example, a Cloud Storage object.",
           "type": "array",
           "items": {
             "$ref": "ErrorDetail"
@@ -1564,7 +1565,7 @@
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
-                      "description": "Optional. The policy format version to be returned.\nAcceptable values are 0, 1, and 3.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+                      "description": "Optional. The policy format version to be returned.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nRequests for policies with any conditional bindings must specify version 3.\nPolicies without any conditional bindings may specify any valid value or\nleave the field unset.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -1616,7 +1617,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "The name of the project in which the dataset should be created (e.g.,\n`projects\/{project_id}\/locations\/{location_id}`).",
+                      "description": "The name of the project where the server creates the dataset. For\nexample, `projects\/{project_id}\/locations\/{location_id}`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1649,7 +1650,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The name of the project whose datasets should be listed (e.g.,\n`projects\/{project_id}\/locations\/{location_id}`).",
+                      "description": "The name of the project whose datasets should be listed.\nFor example, `projects\/{project_id}\/locations\/{location_id}`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1685,7 +1686,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "The name of the dataset to delete (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}`).",
+                      "description": "The name of the dataset to delete. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
@@ -1710,7 +1711,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The name of the dataset to read (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}`).",
+                      "description": "The name of the dataset to read. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
@@ -1769,7 +1770,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "sourceDataset": {
-                      "description": "Source dataset resource name. (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}`).",
+                      "description": "Source dataset resource name. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
@@ -1788,7 +1789,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new dataset containing de-identified data from the source\ndataset. The metadata field type\nis OperationMetadata.\nIf the request is successful, the\nresponse field type is\nDeidentifySummary.\nIf errors occur,\ndetails field type is\nDeidentifyErrorDetails.\nErrors are also logged to Stackdriver\n(see [Viewing logs](\/healthcare\/docs\/how-tos\/stackdriver-logging))."
+                  "description": "Creates a new dataset containing de-identified data from the source\ndataset. The metadata field type\nis OperationMetadata.\nIf the request is successful, the\nresponse field type is\nDeidentifySummary.\nIf errors occur,\ndetails field type is\nDeidentifyErrorDetails.\nErrors are also logged to Stackdriver Logging. For more information,\nsee [Viewing logs](\/healthcare\/docs\/how-tos\/stackdriver-logging)."
                 }
               }
               ,
@@ -1837,7 +1838,7 @@
                           "type": "string"
                         },
                         "options.requestedPolicyVersion": {
-                          "description": "Optional. The policy format version to be returned.\nAcceptable values are 0, 1, and 3.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+                          "description": "Optional. The policy format version to be returned.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nRequests for policies with any conditional bindings must specify version 3.\nPolicies without any conditional bindings may specify any valid value or\nleave the field unset.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -2024,7 +2025,7 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Restricts stores returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\nOnly filtering on labels is supported, for example `labels.key=value`.",
+                          "description": "Restricts stores returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\nOnly filtering on labels is supported. For example, `labels.key=value`.",
                           "location": "query",
                           "type": "string"
                         }
@@ -2047,7 +2048,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "The name of the DICOM store resource into which the data is imported (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                          "description": "The name of the DICOM store resource into which the data is imported.\nFor example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
@@ -2066,7 +2067,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Imports data into the DICOM store by copying it from the specified source.\nFor errors, the Operation will be populated with error details (in the form\nof ImportDicomDataErrorDetails in error.details), which will hold\nfiner-grained error information. Errors are also logged to Stackdriver\n(see [Viewing logs](\/healthcare\/docs\/how-tos\/stackdriver-logging)).\nThe metadata field type is\nOperationMetadata."
+                      "description": "Imports data into the DICOM store by copying it from the specified source.\nFor errors, the Operation is populated with error details (in the form\nof ImportDicomDataErrorDetails in error.details), which hold\nfiner-grained error information. Errors are also logged to Stackdriver\nLogging. For more information,\nsee [Viewing logs](\/healthcare\/docs\/how-tos\/stackdriver-logging).\nThe metadata field type is\nOperationMetadata."
                     },
                     "export": {
                       "id": "healthcare.projects.locations.datasets.dicomStores.export",
@@ -2075,7 +2076,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "The DICOM store resource name from which the data should be exported (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                          "description": "The DICOM store resource name from which to export the data. For\nexample,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
@@ -2103,14 +2104,14 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "The name of the DICOM store that is being accessed (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                          "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                           "type": "string"
                         },
                         "dicomWebPath": {
-                          "description": "The path of the SearchForStudies DICOMweb request (e.g., `studies`).",
+                          "description": "The path of the SearchForStudies DICOMweb request (for example, `studies`).",
                           "location": "path",
                           "required": true,
                           "pattern": "^studies$",
@@ -2136,14 +2137,14 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "The name of the DICOM store that is being accessed (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                          "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                           "type": "string"
                         },
                         "dicomWebPath": {
-                          "description": "The path of the SearchForSeries DICOMweb request(e.g., `series` or\n`studies\/{study_uid}\/series`).",
+                          "description": "The path of the SearchForSeries DICOMweb request(for example, `series` or\n`studies\/{study_uid}\/series`).",
                           "location": "path",
                           "required": true,
                           "pattern": "^series$",
@@ -2169,14 +2170,14 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "The name of the DICOM store that is being accessed (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                          "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                           "type": "string"
                         },
                         "dicomWebPath": {
-                          "description": "The path of the SearchForInstancesRequest DICOMweb request (e.g.,\n`instances` or `series\/{series_uid}\/instances` or\n`studies\/{study_uid}\/instances`).",
+                          "description": "The path of the SearchForInstancesRequest DICOMweb request (for example,\n`instances` or `series\/{series_uid}\/instances` or\n`studies\/{study_uid}\/instances`).",
                           "location": "path",
                           "required": true,
                           "pattern": "^instances$",
@@ -2202,14 +2203,14 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "The name of the DICOM store that is being accessed (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                          "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                           "type": "string"
                         },
                         "dicomWebPath": {
-                          "description": "The path of the StoreInstances DICOMweb request (e.g.,\n`studies\/[{study_id}]`). Note that the `study_uid` is optional.",
+                          "description": "The path of the StoreInstances DICOMweb request (for example,\n`studies\/[{study_uid}]`). Note that the `study_uid` is optional.",
                           "location": "path",
                           "required": true,
                           "pattern": "^studies$",
@@ -2243,14 +2244,14 @@
                           "httpMethod": "GET",
                           "parameters": {
                             "parent": {
-                              "description": "The name of the DICOM store that is being accessed (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                              "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
                               "location": "path",
                               "required": true,
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                               "type": "string"
                             },
                             "dicomWebPath": {
-                              "description": "The path of the RetrieveStudy DICOMweb request (e.g.,\n`studies\/{study_id}`).",
+                              "description": "The path of the RetrieveStudy DICOMweb request (for example,\n`studies\/{study_uid}`).",
                               "location": "path",
                               "required": true,
                               "pattern": "^studies\/[^\/]+$",
@@ -2276,14 +2277,14 @@
                           "httpMethod": "GET",
                           "parameters": {
                             "parent": {
-                              "description": "The name of the DICOM store that is being accessed (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                              "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
                               "location": "path",
                               "required": true,
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                               "type": "string"
                             },
                             "dicomWebPath": {
-                              "description": "The path of the RetrieveStudyMetadata DICOMweb request (e.g.,\n`studies\/{study_id}\/metadata`).",
+                              "description": "The path of the RetrieveStudyMetadata DICOMweb request (for example,\n`studies\/{study_uid}\/metadata`).",
                               "location": "path",
                               "required": true,
                               "pattern": "^studies\/[^\/]+\/metadata$",
@@ -2309,14 +2310,14 @@
                           "httpMethod": "GET",
                           "parameters": {
                             "parent": {
-                              "description": "The name of the DICOM store that is being accessed (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                              "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
                               "location": "path",
                               "required": true,
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                               "type": "string"
                             },
                             "dicomWebPath": {
-                              "description": "The path of the SearchForSeries DICOMweb request(e.g., `series` or\n`studies\/{study_uid}\/series`).",
+                              "description": "The path of the SearchForSeries DICOMweb request(for example, `series` or\n`studies\/{study_uid}\/series`).",
                               "location": "path",
                               "required": true,
                               "pattern": "^studies\/[^\/]+\/series$",
@@ -2342,14 +2343,14 @@
                           "httpMethod": "GET",
                           "parameters": {
                             "parent": {
-                              "description": "The name of the DICOM store that is being accessed (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                              "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
                               "location": "path",
                               "required": true,
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                               "type": "string"
                             },
                             "dicomWebPath": {
-                              "description": "The path of the SearchForInstancesRequest DICOMweb request (e.g.,\n`instances` or `series\/{series_uid}\/instances` or\n`studies\/{study_uid}\/instances`).",
+                              "description": "The path of the SearchForInstancesRequest DICOMweb request (for example,\n`instances` or `series\/{series_uid}\/instances` or\n`studies\/{study_uid}\/instances`).",
                               "location": "path",
                               "required": true,
                               "pattern": "^studies\/[^\/]+\/instances$",
@@ -2375,14 +2376,14 @@
                           "httpMethod": "DELETE",
                           "parameters": {
                             "parent": {
-                              "description": "The name of the DICOM store that is being accessed (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                              "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
                               "location": "path",
                               "required": true,
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                               "type": "string"
                             },
                             "dicomWebPath": {
-                              "description": "The path of the DeleteStudy request (e.g., `studies\/{study_id}`).",
+                              "description": "The path of the DeleteStudy request (for example, `studies\/{study_uid}`).",
                               "location": "path",
                               "required": true,
                               "pattern": "^studies\/[^\/]+$",
@@ -2408,14 +2409,14 @@
                           "httpMethod": "POST",
                           "parameters": {
                             "parent": {
-                              "description": "The name of the DICOM store that is being accessed (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                              "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
                               "location": "path",
                               "required": true,
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                               "type": "string"
                             },
                             "dicomWebPath": {
-                              "description": "The path of the StoreInstances DICOMweb request (e.g.,\n`studies\/[{study_id}]`). Note that the `study_uid` is optional.",
+                              "description": "The path of the StoreInstances DICOMweb request (for example,\n`studies\/[{study_uid}]`). Note that the `study_uid` is optional.",
                               "location": "path",
                               "required": true,
                               "pattern": "^studies\/[^\/]+$",
@@ -2449,14 +2450,14 @@
                               "httpMethod": "GET",
                               "parameters": {
                                 "parent": {
-                                  "description": "The name of the DICOM store that is being accessed (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                                  "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
                                   "location": "path",
                                   "required": true,
                                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                                   "type": "string"
                                 },
                                 "dicomWebPath": {
-                                  "description": "The path of the RetrieveSeries DICOMweb request (e.g.,\n`studies\/{study_id}\/series\/{series_id}`).",
+                                  "description": "The path of the RetrieveSeries DICOMweb request (for example,\n`studies\/{study_uid}\/series\/{series_uid}`).",
                                   "location": "path",
                                   "required": true,
                                   "pattern": "^studies\/[^\/]+\/series\/[^\/]+$",
@@ -2482,14 +2483,14 @@
                               "httpMethod": "GET",
                               "parameters": {
                                 "parent": {
-                                  "description": "The name of the DICOM store that is being accessed (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                                  "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
                                   "location": "path",
                                   "required": true,
                                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                                   "type": "string"
                                 },
                                 "dicomWebPath": {
-                                  "description": "The path of the RetrieveSeriesMetadata DICOMweb request (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/metadata`).",
+                                  "description": "The path of the RetrieveSeriesMetadata DICOMweb request (for example,\n`studies\/{study_uid}\/series\/{series_uid}\/metadata`).",
                                   "location": "path",
                                   "required": true,
                                   "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/metadata$",
@@ -2515,14 +2516,14 @@
                               "httpMethod": "GET",
                               "parameters": {
                                 "parent": {
-                                  "description": "The name of the DICOM store that is being accessed (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                                  "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
                                   "location": "path",
                                   "required": true,
                                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                                   "type": "string"
                                 },
                                 "dicomWebPath": {
-                                  "description": "The path of the SearchForInstancesRequest DICOMweb request (e.g.,\n`instances` or `series\/{series_uid}\/instances` or\n`studies\/{study_uid}\/instances`).",
+                                  "description": "The path of the SearchForInstancesRequest DICOMweb request (for example,\n`instances` or `series\/{series_uid}\/instances` or\n`studies\/{study_uid}\/instances`).",
                                   "location": "path",
                                   "required": true,
                                   "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances$",
@@ -2548,14 +2549,14 @@
                               "httpMethod": "DELETE",
                               "parameters": {
                                 "parent": {
-                                  "description": "The name of the DICOM store that is being accessed (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                                  "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
                                   "location": "path",
                                   "required": true,
                                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                                   "type": "string"
                                 },
                                 "dicomWebPath": {
-                                  "description": "The path of the DeleteSeries request (e.g.,\n`studies\/{study_id}\/series\/{series_id}`).",
+                                  "description": "The path of the DeleteSeries request (for example,\n`studies\/{study_uid}\/series\/{series_uid}`).",
                                   "location": "path",
                                   "required": true,
                                   "pattern": "^studies\/[^\/]+\/series\/[^\/]+$",
@@ -2586,14 +2587,14 @@
                                   "httpMethod": "GET",
                                   "parameters": {
                                     "parent": {
-                                      "description": "The name of the DICOM store that is being accessed (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                                      "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
                                       "location": "path",
                                       "required": true,
                                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                                       "type": "string"
                                     },
                                     "dicomWebPath": {
-                                      "description": "The path of the RetrieveInstance DICOMweb request (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instances\/{instance_id}`).",
+                                      "description": "The path of the RetrieveInstance DICOMweb request (for example,\n`studies\/{study_uid}\/series\/{series_uid}\/instances\/{instance_uid}`).",
                                       "location": "path",
                                       "required": true,
                                       "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances\/[^\/]+$",
@@ -2619,14 +2620,14 @@
                                   "httpMethod": "GET",
                                   "parameters": {
                                     "parent": {
-                                      "description": "The name of the DICOM store that is being accessed (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                                      "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
                                       "location": "path",
                                       "required": true,
                                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                                       "type": "string"
                                     },
                                     "dicomWebPath": {
-                                      "description": "The path of the RetrieveRenderedInstance DICOMweb request (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instances\/{instance_id}\/rendered`).",
+                                      "description": "The path of the RetrieveRenderedInstance DICOMweb request (for example,\n`studies\/{study_uid}\/series\/{series_uid}\/instances\/{instance_uid}\/rendered`).",
                                       "location": "path",
                                       "required": true,
                                       "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances\/[^\/]+\/rendered$",
@@ -2652,14 +2653,14 @@
                                   "httpMethod": "GET",
                                   "parameters": {
                                     "parent": {
-                                      "description": "The name of the DICOM store that is being accessed (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                                      "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
                                       "location": "path",
                                       "required": true,
                                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                                       "type": "string"
                                     },
                                     "dicomWebPath": {
-                                      "description": "The path of the RetrieveInstanceMetadata DICOMweb request (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instances\/{instance_id}\/metadata`).",
+                                      "description": "The path of the RetrieveInstanceMetadata DICOMweb request (for example,\n`studies\/{study_uid}\/series\/{series_uid}\/instances\/{instance_uid}\/metadata`).",
                                       "location": "path",
                                       "required": true,
                                       "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances\/[^\/]+\/metadata$",
@@ -2685,14 +2686,14 @@
                                   "httpMethod": "DELETE",
                                   "parameters": {
                                     "parent": {
-                                      "description": "The name of the DICOM store that is being accessed (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                                      "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
                                       "location": "path",
                                       "required": true,
                                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                                       "type": "string"
                                     },
                                     "dicomWebPath": {
-                                      "description": "The path of the DeleteInstance request (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instances\/{instance_id}`).",
+                                      "description": "The path of the DeleteInstance request (for example,\n`studies\/{study_uid}\/series\/{series_uid}\/instances\/{instance_uid}`).",
                                       "location": "path",
                                       "required": true,
                                       "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances\/[^\/]+$",
@@ -2723,14 +2724,14 @@
                                       "httpMethod": "GET",
                                       "parameters": {
                                         "parent": {
-                                          "description": "The name of the DICOM store that is being accessed (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                                          "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
                                           "location": "path",
                                           "required": true,
                                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                                           "type": "string"
                                         },
                                         "dicomWebPath": {
-                                          "description": "The path of the RetrieveFrames DICOMweb request (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instances\/{instance_id}\/frames\/{frame_list}`).",
+                                          "description": "The path of the RetrieveFrames DICOMweb request (for example,\n`studies\/{study_uid}\/series\/{series_uid}\/instances\/{instance_uid}\/frames\/{frame_list}`).",
                                           "location": "path",
                                           "required": true,
                                           "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances\/[^\/]+\/frames\/[^\/]+$",
@@ -2756,14 +2757,14 @@
                                       "httpMethod": "GET",
                                       "parameters": {
                                         "parent": {
-                                          "description": "The name of the DICOM store that is being accessed (e.g.,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                                          "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
                                           "location": "path",
                                           "required": true,
                                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                                           "type": "string"
                                         },
                                         "dicomWebPath": {
-                                          "description": "The path of the RetrieveRenderedFrames DICOMweb request (e.g.,\n`studies\/{study_id}\/series\/{series_id}\/instances\/{instance_id}\/frames\/{frame_list}\/rendered`).",
+                                          "description": "The path of the RetrieveRenderedFrames DICOMweb request (for example,\n`studies\/{study_uid}\/series\/{series_uid}\/instances\/{instance_uid}\/frames\/{frame_list}\/rendered`).",
                                           "location": "path",
                                           "required": true,
                                           "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances\/[^\/]+\/frames\/[^\/]+\/rendered$",
@@ -2836,7 +2837,7 @@
                           "type": "string"
                         },
                         "options.requestedPolicyVersion": {
-                          "description": "Optional. The policy format version to be returned.\nAcceptable values are 0, 1, and 3.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+                          "description": "Optional. The policy format version to be returned.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nRequests for policies with any conditional bindings must specify version 3.\nPolicies without any conditional bindings may specify any valid value or\nleave the field unset.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -2989,7 +2990,7 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Restricts stores returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\nOnly filtering on labels is supported, for example `labels.key=value`.",
+                          "description": "Restricts stores returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\nOnly filtering on labels is supported. For example, `labels.key=value`.",
                           "location": "query",
                           "type": "string"
                         }
@@ -3114,7 +3115,7 @@
                               "type": "string"
                             },
                             "view": {
-                              "description": "Specifies which parts of the Message resource should be returned\nin the response.",
+                              "description": "Specifies which parts of the Message resource to return in the response.",
                               "location": "query",
                               "type": "string",
                               "enum": [
@@ -3186,7 +3187,7 @@
                               "type": "string"
                             },
                             "filter": {
-                              "description": "Restricts messages returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\n\nFields\/functions available for filtering are:\n\n*  `message_type`, from the MSH-9 segment; for example\n`NOT message_type = \"ADT\"`\n*  `send_date` or `sendDate`, the YYYY-MM-DD date the message was sent in\nthe dataset's time_zone, from the MSH-7 segment; for example\n`send_date < \"2017-01-02\"`\n*  `send_time`, the timestamp when the message was sent, using the\nRFC3339 time format for comparisons, from the MSH-7 segment; for example\n`send_time < \"2017-01-02T00:00:00-05:00\"`\n*  `send_facility`, the care center that the message came from, from the\nMSH-4 segment; for example `send_facility = \"ABC\"`\n*  `HL7RegExp(expr)`, which does regular expression matching of `expr`\nagainst the message payload using re2 (http:\/\/code.google.com\/p\/re2\/)\nsyntax; for example `HL7RegExp(\"^.*\\|.*\\|EMERG\")`\n*  `PatientId(value, type)`, which matches if the message lists a patient\nhaving an ID of the given value and type in the PID-2, PID-3, or PID-4\nsegments; for example `PatientId(\"123456\", \"MRN\")`\n*  `labels.x`, a string value of the label with key `x` as set using the\nMessage.labels\nmap, for example `labels.\"priority\"=\"high\"`. The operator `:*` can be used\nto assert the existence of a label, for example `labels.\"priority\":*`.\n\nLimitations on conjunctions:\n\n*  Negation on the patient ID function or the labels field is not\nsupported, for example these queries are invalid:\n`NOT PatientId(\"123456\", \"MRN\")`, `NOT labels.\"tag1\":*`,\n`NOT labels.\"tag2\"=\"val2\"`.\n*  Conjunction of multiple patient ID functions is not supported, for\nexample this query is invalid:\n`PatientId(\"123456\", \"MRN\") AND PatientId(\"456789\", \"MRN\")`.\n*  Conjunction of multiple labels fields is also not supported, for\nexample this query is invalid: `labels.\"tag1\":* AND labels.\"tag2\"=\"val2\"`.\n*  Conjunction of one patient ID function, one labels field and conditions\non other fields is supported, for example this query is valid:\n`PatientId(\"123456\", \"MRN\") AND labels.\"tag1\":* AND message_type = \"ADT\"`.",
+                              "description": "Restricts messages returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\n\nFields\/functions available for filtering are:\n\n*  `message_type`, from the MSH-9 segment. For example,\n`NOT message_type = \"ADT\"`.\n*  `send_date` or `sendDate`, the YYYY-MM-DD date the message was sent in\nthe dataset's time_zone, from the MSH-7 segment. For example,\n`send_date < \"2017-01-02\"`.\n*  `send_time`, the timestamp when the message was sent, using the\nRFC3339 time format for comparisons, from the MSH-7 segment. For example,\n`send_time < \"2017-01-02T00:00:00-05:00\"`.\n*  `send_facility`, the care center that the message came from, from the\nMSH-4 segment. For example, `send_facility = \"ABC\"`.\n*  `HL7RegExp(expr)`, which does regular expression matching of `expr`\nagainst the message payload using RE2 syntax\n(https:\/\/github.com\/google\/re2\/wiki\/Syntax). For example,\n`HL7RegExp(\"^.*\\|.*\\|EMERG\")`.\n*  `PatientId(value, type)`, which matches if the message lists a patient\nhaving an ID of the given value and type in the PID-2, PID-3, or PID-4\nsegments. For example, `PatientId(\"123456\", \"MRN\")`.\n*  `labels.x`, a string value of the label with key `x` as set using the\nMessage.labels\nmap. For example, `labels.\"priority\"=\"high\"`. The operator `:*` can be used\nto assert the existence of a label. For example, `labels.\"priority\":*`.\n\nLimitations on conjunctions:\n\n*  Negation on the patient ID function or the labels field is not\nsupported. For example, these queries are invalid:\n`NOT PatientId(\"123456\", \"MRN\")`, `NOT labels.\"tag1\":*`,\n`NOT labels.\"tag2\"=\"val2\"`.\n*  Conjunction of multiple patient ID functions is not supported, for\nexample this query is invalid:\n`PatientId(\"123456\", \"MRN\") AND PatientId(\"456789\", \"MRN\")`.\n*  Conjunction of multiple labels fields is also not supported, for\nexample this query is invalid: `labels.\"tag1\":* AND labels.\"tag2\"=\"val2\"`.\n*  Conjunction of one patient ID function, one labels field and conditions\non other fields is supported. For example, this query is valid:\n`PatientId(\"123456\", \"MRN\") AND labels.\"tag1\":* AND message_type = \"ADT\"`.",
                               "location": "query",
                               "type": "string"
                             },
@@ -3221,7 +3222,7 @@
                               "type": "string"
                             },
                             "updateMask": {
-                              "description": "The update mask applies to the resource. For the `FieldMask` definition,\nsee\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask\nOnly the `labels` field is allowed to be updated.\nThe labels in the request will be merged with the existing set of labels.\nExisting labels with the same keys will be updated.",
+                              "description": "The update mask applies to the resource. For the `FieldMask` definition,\nsee\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask\nOnly the `labels` field is allowed to be updated.\nThe labels in the request are merged with the existing set of labels.\nExisting labels with the same keys are updated.",
                               "location": "query",
                               "type": "string",
                               "format": "google-fieldmask"
@@ -3289,7 +3290,7 @@
                           "type": "string"
                         },
                         "options.requestedPolicyVersion": {
-                          "description": "Optional. The policy format version to be returned.\nAcceptable values are 0, 1, and 3.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+                          "description": "Optional. The policy format version to be returned.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nRequests for policies with any conditional bindings must specify version 3.\nPolicies without any conditional bindings may specify any valid value or\nleave the field unset.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -3360,7 +3361,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Import resources to the FHIR store by loading data from the specified\nsources. This method is optimized to load large quantities of data using\nimport semantics that ignore some FHIR store configuration options and are\nnot suitable for all use cases. It is primarily intended to load data into\nan empty FHIR store that is not being used by other clients. In cases\nwhere this method is not appropriate, consider using ExecuteBundle to\nload data.\n\nEvery resource in the input must contain a client-supplied ID, and will be\nstored using that ID regardless of the\nenable_update_create setting on the FHIR\nstore.\n\nThe import process does not enforce referential integrity, regardless of\nthe\ndisable_referential_integrity\nsetting on the FHIR store. This allows the import of resources with\narbitrary interdependencies without considering grouping or ordering, but\nif the input data contains invalid references or if some resources fail to\nbe imported, the FHIR store might be left in a state that violates\nreferential integrity.\n\nIf a resource with the specified ID already exists, the most recent\nversion of the resource is overwritten without creating a new historical\nversion, regardless of the\ndisable_resource_versioning\nsetting on the FHIR store. If transient failures occur during the import,\nit is possible that successfully imported resources will be overwritten\nmore than once.\n\nThe import operation is idempotent unless the input data contains multiple\nvalid resources with the same ID but different contents. In that case,\nafter the import completes, the store will contain exactly one resource\nwith that ID but there is no ordering guarantee on which version of the\ncontents it will have. The operation result counters do not count\nduplicate IDs as an error and will count one success for each resource in\nthe input, which might result in a success count larger than the number\nof resources in the FHIR store. This often occurs when importing data\norganized in bundles produced by Patient-everything\nwhere each bundle contains its own copy of a resource such as Practitioner\nthat might be referred to by many patients.\n\nIf some resources fail to import, for example due to parsing errors,\nsuccessfully imported resources are not rolled back.\n\nThe location and format of the input data is specified by the parameters\nbelow. Note that if no format is specified, this method assumes the\n`BUNDLE` format. When using the `BUNDLE` format this method ignores the\n`Bundle.type` field, except for the special case of `history`, and does\nnot apply any of the bundle processing semantics for batch or transaction\nbundles. Unlike in ExecuteBundle, transaction bundles are not executed\nas a single transaction and bundle-internal references are not rewritten.\nThe bundle is treated as a collection of resources to be written as\nprovided in `Bundle.entry.resource`, ignoring `Bundle.entry.request`. As\nan example, this allows the import of `searchset` bundles produced by a\nFHIR search or\nPatient-everything operation.\n\nIf history imports are enabled by setting\nenable_history_import in the FHIR\nstore's configuration, this method can import historical versions\nof a resource by supplying a bundle of type `history` and using the\n`BUNDLE` format. The historical versions in the bundle must have\n`lastUpdated` timestamps, and the resulting resource history on the server\nwill appear as if the versions had been created at those timestamps. If a\ncurrent or historical version with the supplied resource ID already\nexists, the bundle is rejected to avoid creating an inconsistent sequence\nof resource versions.\n\nThis method returns an Operation that can\nbe used to track the status of the import by calling\nGetOperation.\n\nImmediate fatal errors appear in the\nerror field, errors are also logged\nto Stackdriver (see [Viewing\nlogs](\/healthcare\/docs\/how-tos\/stackdriver-logging)). Otherwise, when the\noperation finishes, a detailed response of type ImportResourcesResponse\nis returned in the response field.\nThe metadata field type for this\noperation is OperationMetadata."
+                      "description": "Import resources to the FHIR store by loading data from the specified\nsources. This method is optimized to load large quantities of data using\nimport semantics that ignore some FHIR store configuration options and are\nnot suitable for all use cases. It is primarily intended to load data into\nan empty FHIR store that is not being used by other clients. In cases\nwhere this method is not appropriate, consider using ExecuteBundle to\nload data.\n\nEvery resource in the input must contain a client-supplied ID, and will be\nstored using that ID regardless of the\nenable_update_create setting on the FHIR\nstore.\n\nThe import process does not enforce referential integrity, regardless of\nthe\ndisable_referential_integrity\nsetting on the FHIR store. This allows the import of resources with\narbitrary interdependencies without considering grouping or ordering, but\nif the input data contains invalid references or if some resources fail to\nbe imported, the FHIR store might be left in a state that violates\nreferential integrity.\n\nIf a resource with the specified ID already exists, the most recent\nversion of the resource is overwritten without creating a new historical\nversion, regardless of the\ndisable_resource_versioning\nsetting on the FHIR store. If transient failures occur during the import,\nit is possible that successfully imported resources will be overwritten\nmore than once.\n\nThe import operation is idempotent unless the input data contains multiple\nvalid resources with the same ID but different contents. In that case,\nafter the import completes, the store will contain exactly one resource\nwith that ID but there is no ordering guarantee on which version of the\ncontents it will have. The operation result counters do not count\nduplicate IDs as an error and will count one success for each resource in\nthe input, which might result in a success count larger than the number\nof resources in the FHIR store. This often occurs when importing data\norganized in bundles produced by Patient-everything\nwhere each bundle contains its own copy of a resource such as Practitioner\nthat might be referred to by many patients.\n\nIf some resources fail to import, for example due to parsing errors,\nsuccessfully imported resources are not rolled back.\n\nThe location and format of the input data is specified by the parameters\nbelow. Note that if no format is specified, this method assumes the\n`BUNDLE` format. When using the `BUNDLE` format this method ignores the\n`Bundle.type` field, except that `history` bundles are rejected, and does\nnot apply any of the bundle processing semantics for batch or transaction\nbundles. Unlike in ExecuteBundle, transaction bundles are not executed\nas a single transaction and bundle-internal references are not rewritten.\nThe bundle is treated as a collection of resources to be written as\nprovided in `Bundle.entry.resource`, ignoring `Bundle.entry.request`. As\nan example, this allows the import of `searchset` bundles produced by a\nFHIR search or\nPatient-everything operation.\n\nThis method returns an Operation that can\nbe used to track the status of the import by calling\nGetOperation.\n\nImmediate fatal errors appear in the\nerror field, errors are also logged\nto Stackdriver (see [Viewing\nlogs](\/healthcare\/docs\/how-tos\/stackdriver-logging)). Otherwise, when the\noperation finishes, a detailed response of type ImportResourcesResponse\nis returned in the response field.\nThe metadata field type for this\noperation is OperationMetadata."
                     },
                     "export": {
                       "id": "healthcare.projects.locations.datasets.fhirStores.export",
@@ -4058,23 +4059,23 @@
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+\/fhir\/[^\/]+\/[^\/]+$",
                               "type": "string"
                             },
-                            "_count": {
+                            "count": {
                               "description": "The maximum number of search results on a page. Defaults to 1000.",
                               "location": "query",
                               "type": "integer",
                               "format": "int32"
                             },
-                            "_since": {
+                            "since": {
                               "description": "Only include resource versions that were created at or after the given\ninstant in time. The instant in time uses the format\nYYYY-MM-DDThh:mm:ss.sss+zz:zz (for example 2015-02-07T13:28:17.239+02:00 or\n2017-01-01T00:00:00Z). The time must be specified to the second and\ninclude a time zone.",
                               "location": "query",
                               "type": "string"
                             },
-                            "_at": {
+                            "at": {
                               "description": "Only include resource versions that were current at some point during the\ntime period specified in the date time value. The date parameter format is\nyyyy-mm-ddThh:mm:ss[Z|(+|-)hh:mm]\n\nClients may specify any of the following:\n\n*  An entire year: `_at=2019`\n*  An entire month: `_at=2019-01`\n*  A specific day: `_at=2019-01-20`\n*  A specific second: `_at=2018-12-31T23:59:58Z`",
                               "location": "query",
                               "type": "string"
                             },
-                            "_page": {
+                            "page": {
                               "description": "Used to retrieve the first, previous, next, or last page of resource\nversions when using pagination. Value should be set to the value of the\n`link.url` field returned in the response to the previous request, where\n`link.relation` is \"first\", \"previous\", \"next\" or \"last\".\n\nOmit `page` if no previous request has been made.",
                               "location": "query",
                               "type": "string"

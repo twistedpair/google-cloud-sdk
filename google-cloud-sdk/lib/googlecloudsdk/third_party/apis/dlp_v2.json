@@ -1696,7 +1696,7 @@
           "$ref": "GooglePrivacyDlpV2CryptoKey"
         },
         "surrogateInfoType": {
-          "description": "The custom info type to annotate the surrogate with.\nThis annotation will be applied to the surrogate by prefixing it with\nthe name of the custom info type followed by the number of\ncharacters comprising the surrogate. The following scheme defines the\nformat: <info type name>(<surrogate character count>):<surrogate>\n\nFor example, if the name of custom info type is 'MY_TOKEN_INFO_TYPE' and\nthe surrogate is 'abc', the full replacement value\nwill be: 'MY_TOKEN_INFO_TYPE(3):abc'\n\nThis annotation identifies the surrogate when inspecting content using the\ncustom info type 'Surrogate'. This facilitates reversal of the\nsurrogate when it occurs in free text.\n\nIn order for inspection to work properly, the name of this info type must\nnot occur naturally anywhere in your data; otherwise, inspection may either\n\n- reverse a surrogate that does not correspond to an actual identifier\n- be unable to parse the surrogate and result in an error\n\nTherefore, choose your custom info type name carefully after considering\nwhat your data looks like. One way to select a name that has a high chance\nof yielding reliable detection is to include one or more unicode characters\nthat are highly improbable to exist in your data.\nFor example, assuming your data is entered from a regular ASCII keyboard,\nthe symbol with the hex code point 29DD might be used like so:\n\u29DDMY_TOKEN_TYPE",
+          "description": "The custom info type to annotate the surrogate with.\nThis annotation will be applied to the surrogate by prefixing it with\nthe name of the custom info type followed by the number of\ncharacters comprising the surrogate. The following scheme defines the\nformat: <info type name>(<surrogate character count>):<surrogate>\n\nFor example, if the name of custom info type is 'MY_TOKEN_INFO_TYPE' and\nthe surrogate is 'abc', the full replacement value\nwill be: 'MY_TOKEN_INFO_TYPE(3):abc'\n\nThis annotation identifies the surrogate when inspecting content using the\ncustom info type 'Surrogate'. This facilitates reversal of the\nsurrogate when it occurs in free text.\n\nNote: For record transformations where the entire cell in a table is being\ntransformed, surrogates are optional to use. Surrogates are used to denote\nthe location of the token and are necessary for re-identification in free\nform text.\n\nIn order for inspection to work properly, the name of this info type must\nnot occur naturally anywhere in your data; otherwise, inspection may either\n\n- reverse a surrogate that does not correspond to an actual identifier\n- be unable to parse the surrogate and result in an error\n\nTherefore, choose your custom info type name carefully after considering\nwhat your data looks like. One way to select a name that has a high chance\nof yielding reliable detection is to include one or more unicode characters\nthat are highly improbable to exist in your data.\nFor example, assuming your data is entered from a regular ASCII keyboard,\nthe symbol with the hex code point 29DD might be used like so:\n\u29DDMY_TOKEN_TYPE.",
           "$ref": "GooglePrivacyDlpV2InfoType"
         },
         "context": {
@@ -1975,6 +1975,10 @@
         "reidentifyTemplateName": {
           "description": "Optional template to use. References an instance of `DeidentifyTemplate`.\nAny configuration directly specified in `reidentify_config` or\n`inspect_config` will override those set in the template. Singular fields\nthat are set in this request will replace their corresponding fields in the\ntemplate. Repeated fields are appended. Singular sub-messages and groups\nare recursively merged.",
           "type": "string"
+        },
+        "location": {
+          "description": "The geographic location to process content reidentification.  Reserved for\nfuture extensions.",
+          "type": "string"
         }
       }
     },
@@ -2039,6 +2043,21 @@
         },
         "description": {
           "description": "Description of the infotype. Translated when language is provided in the\nrequest.",
+          "type": "string"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2ListInfoTypesRequest": {
+      "id": "GooglePrivacyDlpV2ListInfoTypesRequest",
+      "description": "Request for the list of infoTypes.",
+      "type": "object",
+      "properties": {
+        "languageCode": {
+          "description": "Optional BCP-47 language code for localized infoType friendly\nnames. If omitted, or if localized strings are not available,\nen-US strings will be returned.",
+          "type": "string"
+        },
+        "filter": {
+          "description": "Optional filter to only return infoTypes supported by certain parts of the\nAPI. Defaults to supported_by=INSPECT.",
           "type": "string"
         }
       }
@@ -3985,6 +4004,41 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "De-identifies potentially sensitive info from a ContentItem.\nThis method has limits on input size and output size.\nSee https:\/\/cloud.google.com\/dlp\/docs\/deidentify-sensitive-data to\nlearn more.\n\nWhen no InfoTypes or CustomInfoTypes are specified in this request, the\nsystem will automatically choose what detectors to run. By default this may\nbe all types, but may change over time as detectors are updated."
+                },
+                "reidentify": {
+                  "id": "dlp.projects.locations.content.reidentify",
+                  "path": "v2/{+parent}/locations/{location}/content:reidentify",
+                  "flatPath": "v2/projects/{projectsId}/locations/{location}/content:reidentify",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "The parent resource name.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "location": {
+                      "description": "The geographic location to process content reidentification.  Reserved for\nfuture extensions.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent",
+                    "location"
+                  ],
+                  "request": {
+                    "$ref": "GooglePrivacyDlpV2ReidentifyContentRequest"
+                  },
+                  "response": {
+                    "$ref": "GooglePrivacyDlpV2ReidentifyContentResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Re-identifies content that has been de-identified.\nSee\nhttps:\/\/cloud.google.com\/dlp\/docs\/pseudonymization#re-identification_in_free_text_code_example\nto learn more."
                 }
               }
             }
@@ -4844,10 +4898,46 @@
               "description": "Optional filter to only return infoTypes supported by certain parts of the\nAPI. Defaults to supported_by=INSPECT.",
               "location": "query",
               "type": "string"
+            },
+            "location": {
+              "description": "The geographic location to list info types. Reserved for future\nextensions.",
+              "location": "query",
+              "type": "string"
             }
           },
           "parameterOrder": [
           ],
+          "response": {
+            "$ref": "GooglePrivacyDlpV2ListInfoTypesResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Returns a list of the sensitive information types that the DLP API\nsupports. See https:\/\/cloud.google.com\/dlp\/docs\/infotypes-reference to\nlearn more."
+        }
+      }
+    },
+    "locations": {
+      "methods": {
+        "infoTypes": {
+          "id": "dlp.locations.infoTypes",
+          "path": "v2/locations/{location}/infoTypes",
+          "flatPath": "v2/locations/{location}/infoTypes",
+          "httpMethod": "POST",
+          "parameters": {
+            "location": {
+              "description": "The geographic location to list info types. Reserved for future\nextensions.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "location"
+          ],
+          "request": {
+            "$ref": "GooglePrivacyDlpV2ListInfoTypesRequest"
+          },
           "response": {
             "$ref": "GooglePrivacyDlpV2ListInfoTypesResponse"
           },

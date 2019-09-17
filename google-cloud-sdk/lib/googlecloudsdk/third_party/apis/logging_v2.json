@@ -1414,7 +1414,7 @@
           "httpMethod": "GET",
           "parameters": {
             "parent": {
-              "description": "Required. The parent resource whose buckets are to be listed:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\"\n",
+              "description": "Required. The parent resource whose buckets are to be listed:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\"\nNote: The locations portion of the resource is required, but supplying the character - in place of LOCATION_ID will return all buckets.",
               "location": "path",
               "required": true,
               "pattern": "^[^\/]+\/[^\/]+$",
@@ -1524,7 +1524,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource whose buckets are to be listed:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\"\n",
+                      "description": "Required. The parent resource whose buckets are to be listed:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\"\nNote: The locations portion of the resource is required, but supplying the character - in place of LOCATION_ID will return all buckets.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -2096,6 +2096,11 @@
                   "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
+                "resourceNames": {
+                  "location": "query",
+                  "repeated": true,
+                  "type": "string"
+                },
                 "pageSize": {
                   "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
                   "location": "query",
@@ -2297,7 +2302,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource whose buckets are to be listed:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\"\n",
+                      "description": "Required. The parent resource whose buckets are to be listed:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\"\nNote: The locations portion of the resource is required, but supplying the character - in place of LOCATION_ID will return all buckets.",
                       "location": "path",
                       "required": true,
                       "pattern": "^folders\/[^\/]+\/locations\/[^\/]+$",
@@ -2869,6 +2874,11 @@
                   "pattern": "^folders\/[^\/]+$",
                   "type": "string"
                 },
+                "resourceNames": {
+                  "location": "query",
+                  "repeated": true,
+                  "type": "string"
+                },
                 "pageSize": {
                   "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
                   "location": "query",
@@ -2912,7 +2922,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource whose buckets are to be listed:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\"\n",
+                      "description": "Required. The parent resource whose buckets are to be listed:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\"\nNote: The locations portion of the resource is required, but supplying the character - in place of LOCATION_ID will return all buckets.",
                       "location": "path",
                       "required": true,
                       "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+$",
@@ -3486,6 +3496,11 @@
                   "location": "path",
                   "required": true,
                   "pattern": "^billingAccounts\/[^\/]+$",
+                  "type": "string"
+                },
+                "resourceNames": {
+                  "location": "query",
+                  "repeated": true,
                   "type": "string"
                 },
                 "pageSize": {
@@ -4064,7 +4079,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource whose buckets are to be listed:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\"\n",
+                      "description": "Required. The parent resource whose buckets are to be listed:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\"\nNote: The locations portion of the resource is required, but supplying the character - in place of LOCATION_ID will return all buckets.",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
@@ -4636,6 +4651,11 @@
                   "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 },
+                "resourceNames": {
+                  "location": "query",
+                  "repeated": true,
+                  "type": "string"
+                },
                 "pageSize": {
                   "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
                   "location": "query",
@@ -4705,6 +4725,11 @@
               "location": "path",
               "required": true,
               "pattern": "^[^\/]+\/[^\/]+$",
+              "type": "string"
+            },
+            "resourceNames": {
+              "location": "query",
+              "repeated": true,
               "type": "string"
             },
             "pageSize": {

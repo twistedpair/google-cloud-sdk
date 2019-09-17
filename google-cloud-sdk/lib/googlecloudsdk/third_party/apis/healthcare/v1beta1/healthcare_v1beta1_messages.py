@@ -156,8 +156,8 @@ class Dataset(_messages.Message):
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`.
     timeZone: The default timezone used by this dataset. Must be a either a
       valid IANA time zone name such as "America/New_York" or empty, which
-      defaults to UTC. This is used for parsing times in resources (e.g., HL7
-      messages) where no explicit timezone is specified.
+      defaults to UTC. This is used for parsing times in resources, such as
+      HL7 messages, where no explicit timezone is specified.
   """
 
   name = _messages.StringField(1)
@@ -204,8 +204,8 @@ class DeidentifyDatasetRequest(_messages.Message):
   Fields:
     config: Deidentify configuration.
     destinationDataset: The name of the dataset resource to create and write
-      the redacted data to (e.g.,   * The destination dataset must not exist.
-      * The destination dataset must be in the same project as the source
+      the redacted data to.   * The destination dataset must not exist.  * The
+      destination dataset must be in the same project as the source
       dataset. De-identifying data across multiple projects is not supported.
   """
 
@@ -217,8 +217,8 @@ class DeidentifyErrorDetails(_messages.Message):
   r"""Contains the status of the Deidentify operation.
 
   Fields:
-    failureResourceCount: Number of resources failed to process.
-    failureStoreCount: Number of stores failed to process.
+    failureResourceCount: Number of resources that failed to process.
+    failureStoreCount: Number of stores that failed to process.
     successResourceCount: Number of resources successfully processed.
     successStoreCount: Number of stores successfully processed.
   """
@@ -233,12 +233,16 @@ class DeidentifySummary(_messages.Message):
   r"""Contains a detailed summary of the Deidentify operation.
 
   Fields:
+    failureResourceCount: Number of resources that failed to process. The
+      failures might be caused by:   * Invalid user input data   * Transient
+      errors that could be skipped
     successResourceCount: Number of resources successfully processed.
     successStoreCount: Number of stores successfully processed.
   """
 
-  successResourceCount = _messages.IntegerField(1)
-  successStoreCount = _messages.IntegerField(2)
+  failureResourceCount = _messages.IntegerField(1)
+  successResourceCount = _messages.IntegerField(2)
+  successStoreCount = _messages.IntegerField(3)
 
 
 class DicomConfig(_messages.Message):
@@ -384,10 +388,10 @@ class ErrorDetail(_messages.Message):
 
 
 class ExportDicomDataRequest(_messages.Message):
-  r"""Exports data from the specified DICOM store. If a given resource (e.g.,
-  a DICOM object with the same SOPInstance UID) already exists in the output,
-  it is overwritten with the version in the source dataset. Exported DICOM
-  data will persist when the DICOM store from which it was exported is
+  r"""Exports data from the specified DICOM store. If a given resource, such
+  as a DICOM object with the same SOPInstance UID, already exists in the
+  output, it is overwritten with the version in the source dataset. Exported
+  DICOM data persists when the DICOM store from which it was exported is
   deleted.
 
   Fields:
@@ -447,13 +451,13 @@ class Expr(_messages.Message):
 
 
 class FhirConfig(_messages.Message):
-  r"""Specifies how de-identification of a FHIR store should be handled.
+  r"""Specifies how to handle de-identification of a FHIR store.
 
   Fields:
     fieldMetadataList: Specifies FHIR paths to match and how to transform
-      them. Any field that is not matched by a FieldMetadata will be passed
-      through to the output dataset unmodified. All extensions are removed in
-      the output.
+      them. Any field that is not matched by a FieldMetadata is passed through
+      to the output dataset unmodified. All extensions are removed in the
+      output.
   """
 
   fieldMetadataList = _messages.MessageField('FieldMetadata', 1, repeated=True)
@@ -475,36 +479,29 @@ class FhirStore(_messages.Message):
   Fields:
     disableReferentialIntegrity: Whether to disable referential integrity in
       this FHIR store. This field is immutable after FHIR store creation. The
-      default value is false, meaning that the API will enforce referential
-      integrity and fail the requests that will result in inconsistent state
-      in the FHIR store. When this field is set to true, the API will skip
-      referential integrity check. Consequently, operations that rely on
-      references, such as GetPatientEverything, will not return all the
-      results if broken references exist.
+      default value is false, meaning that the API enforces referential
+      integrity and fails the requests that result in inconsistent state in
+      the FHIR store. When this field is set to true, the API skips
+      referential integrity checks. Consequently, operations that rely on
+      references, such as GetPatientEverything, do not return all the results
+      if broken references exist.
     disableResourceVersioning: Whether to disable resource versioning for this
       FHIR store. This field can not be changed after the creation of FHIR
       store. If set to false, which is the default behavior, all write
-      operations will cause historical versions to be recorded automatically.
-      The historical versions can be fetched through the history APIs, but
-      cannot be updated. If set to true, no historical versions will be kept.
-      The server will send back errors for attempts to read the historical
-      versions.
-    enableHistoryImport: Whether to allow the bulk import API to accept
-      history bundles and directly insert historical resource versions into
-      the FHIR store. Importing resource histories creates resource
-      interactions that appear to have occurred in the past, which clients may
-      not want to allow. If set to false, history bundles within an import
-      will fail with an error.
+      operations cause historical versions to be recorded automatically. The
+      historical versions can be fetched through the history APIs, but cannot
+      be updated. If set to true, no historical versions are kept. The server
+      sends errors for attempts to read the historical versions.
     enableUpdateCreate: Whether this FHIR store has the [updateCreate
       capability](https://www.hl7.org/fhir/capabilitystatement-
       definitions.html#CapabilityStatement.rest.resource.updateCreate). This
       determines if the client can use an Update operation to create a new
       resource with a client-specified ID. If false, all IDs are server-
-      assigned through the Create operation and attempts to Update a non-
-      existent resource will return errors. Please treat the audit logs with
+      assigned through the Create operation and attempts to update a non-
+      existent resource return errors. Please treat the audit logs with
       appropriate levels of care if client-specified resource IDs contain
-      sensitive data such as patient identifiers, those IDs will be part of
-      the FHIR resource path recorded in Cloud audit logs and Cloud Pub/Sub
+      sensitive data such as patient identifiers, those IDs are part of the
+      FHIR resource path recorded in Cloud audit logs and Cloud Pub/Sub
       notifications.
     labels: User-supplied key-value pairs used to organize FHIR stores.  Label
       keys must be between 1 and 63 characters long, have a UTF-8 encoding of
@@ -519,8 +516,8 @@ class FhirStore(_messages.Message):
       .
     notificationConfig: If non-empty, publish all resource modifications of
       this FHIR store to this destination. The Cloud Pub/Sub message
-      attributes will contain a map with a string describing the action that
-      has triggered the notification, e.g. "action":"CreateResource".
+      attributes contain a map with a string describing the action that has
+      triggered the notification. For example, "action":"CreateResource".
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -556,11 +553,10 @@ class FhirStore(_messages.Message):
 
   disableReferentialIntegrity = _messages.BooleanField(1)
   disableResourceVersioning = _messages.BooleanField(2)
-  enableHistoryImport = _messages.BooleanField(3)
-  enableUpdateCreate = _messages.BooleanField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  notificationConfig = _messages.MessageField('NotificationConfig', 7)
+  enableUpdateCreate = _messages.BooleanField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  notificationConfig = _messages.MessageField('NotificationConfig', 6)
 
 
 class FieldMetadata(_messages.Message):
@@ -576,10 +572,10 @@ class FieldMetadata(_messages.Message):
       separated list where each component is either a field name or FHIR type
       name, for example: Patient, HumanName. For "choice" types (those defined
       in the FHIR spec with the form: field[x]) we use two separate
-      components. e.g. "deceasedAge.unit" is matched by "Deceased.Age.unit".
-      Supported types are: AdministrativeGenderCode, Code, Date, DateTime,
-      Decimal, HumanName, Id, LanguageCode, Markdown, MimeTypeCode, Oid,
-      String, Uri, Uuid, Xhtml.
+      components. For example, "deceasedAge.unit" is matched by
+      "Deceased.Age.unit". Supported types are: AdministrativeGenderCode,
+      Code, Date, DateTime, Decimal, HumanName, Id, LanguageCode, Markdown,
+      MimeTypeCode, Oid, String, Uri, Uuid, Xhtml.
   """
 
   class ActionValueValuesEnum(_messages.Enum):
@@ -601,13 +597,13 @@ class FieldMetadata(_messages.Message):
 
 
 class GoogleCloudHealthcareV1beta1DicomBigQueryDestination(_messages.Message):
-  r"""The BigQuery table where the output should be written.
+  r"""The BigQuery table where the server writes the output.
 
   Fields:
     force: If the destination table already exists and this flag is `TRUE`,
-      the table will be overwritten by the contents of the DICOM store. If the
-      flag is not set and the destination table already exists, the export
-      call returns an error.
+      the table is overwritten by the contents of the DICOM store. If the flag
+      is not set and the destination table already exists, the export call
+      returns an error.
     tableUri: BigQuery URI to a table, up to 2000 characters long, in the
       format `bq://projectId.bqDatasetId.tableId`
   """
@@ -617,25 +613,25 @@ class GoogleCloudHealthcareV1beta1DicomBigQueryDestination(_messages.Message):
 
 
 class GoogleCloudHealthcareV1beta1DicomGcsDestination(_messages.Message):
-  r"""The Cloud Storage location where the output should be written, and the
+  r"""The Cloud Storage location where the server writes the output and the
   export configuration.
 
   Fields:
-    mimeType: MIME types supported by DICOM spec. Each file will be written in
-      the following format:
+    mimeType: MIME types supported by DICOM spec. Each file is written in the
+      following format:
       `.../{study_id}/{series_id}/{instance_id}[/{frame_number}].{extension}`
-      The frame_number component will exist only for multi-frame instances.
-      Refer to the DICOM conformance statement for permissible MIME types:
+      The frame_number component exists only for multi-frame instances.  Refer
+      to the DICOM conformance statement for permissible MIME types:
       https://cloud.google.com/healthcare/docs/dicom#wado-rs  The following
-      extensions will be used for output files:   application/dicom -> .dcm
+      extensions are used for output files:   application/dicom -> .dcm
       image/jpeg -> .jpg   image/png -> .png  If unspecified, the instances
-      will be exported in their original DICOM format.
+      are exported in their original DICOM format.
     uriPrefix: The Cloud Storage destination to export to.  URI for a Cloud
-      Storage directory where result files should be written (in the format
-      `gs://{bucket-id}/{path/to/destination/dir}`). If there is no trailing
-      slash, the service will append one when composing the object path. The
-      user is responsible for creating the Cloud Storage bucket referenced in
-      `uri_prefix`.
+      Storage directory where the server writes the result files, in the
+      format `gs://{bucket-id}/{path/to/destination/dir}`). If there is no
+      trailing slash, the service appends one when composing the object path.
+      The user is responsible for creating the Cloud Storage bucket referenced
+      in `uri_prefix`.
   """
 
   mimeType = _messages.StringField(1)
@@ -799,8 +795,8 @@ class HealthcareProjectsLocationsDatasetsCreateRequest(_messages.Message):
     dataset: A Dataset resource to be passed as the request body.
     datasetId: The ID of the dataset that is being created. The string must
       match the following regex: `[\p{L}\p{N}_\-\.]{1,256}`.
-    parent: The name of the project in which the dataset should be created
-      (e.g., `projects/{project_id}/locations/{location_id}`).
+    parent: The name of the project where the server creates the dataset. For
+      example, `projects/{project_id}/locations/{location_id}`.
   """
 
   dataset = _messages.MessageField('Dataset', 1)
@@ -814,8 +810,8 @@ class HealthcareProjectsLocationsDatasetsDeidentifyRequest(_messages.Message):
   Fields:
     deidentifyDatasetRequest: A DeidentifyDatasetRequest resource to be passed
       as the request body.
-    sourceDataset: Source dataset resource name. (e.g.,
-      `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`).
+    sourceDataset: Source dataset resource name. For example,
+      `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`.
   """
 
   deidentifyDatasetRequest = _messages.MessageField('DeidentifyDatasetRequest', 1)
@@ -826,8 +822,8 @@ class HealthcareProjectsLocationsDatasetsDeleteRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsDeleteRequest object.
 
   Fields:
-    name: The name of the dataset to delete (e.g.,
-      `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`).
+    name: The name of the dataset to delete. For example,
+      `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -864,9 +860,9 @@ class HealthcareProjectsLocationsDatasetsDicomStoresExportRequest(_messages.Mess
   Fields:
     exportDicomDataRequest: A ExportDicomDataRequest resource to be passed as
       the request body.
-    name: The DICOM store resource name from which the data should be exported
-      (e.g., `projects/{project_id}/locations/{location_id}/datasets/{dataset_
-      id}/dicomStores/{dicom_store_id}`).
+    name: The DICOM store resource name from which to export the data. For
+      example, `projects/{project_id}/locations/{location_id}/datasets/{datase
+      t_id}/dicomStores/{dicom_store_id}`.
   """
 
   exportDicomDataRequest = _messages.MessageField('ExportDicomDataRequest', 1)
@@ -879,8 +875,10 @@ class HealthcareProjectsLocationsDatasetsDicomStoresGetIamPolicyRequest(_message
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
-      field is omitted, policy format version 1 will be returned.
+      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.  Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -906,9 +904,9 @@ class HealthcareProjectsLocationsDatasetsDicomStoresImportRequest(_messages.Mess
   Fields:
     importDicomDataRequest: A ImportDicomDataRequest resource to be passed as
       the request body.
-    name: The name of the DICOM store resource into which the data is imported
-      (e.g., `projects/{project_id}/locations/{location_id}/datasets/{dataset_
-      id}/dicomStores/{dicom_store_id}`).
+    name: The name of the DICOM store resource into which the data is
+      imported. For example, `projects/{project_id}/locations/{location_id}/da
+      tasets/{dataset_id}/dicomStores/{dicom_store_id}`.
   """
 
   importDicomDataRequest = _messages.MessageField('ImportDicomDataRequest', 1)
@@ -921,7 +919,7 @@ class HealthcareProjectsLocationsDatasetsDicomStoresListRequest(_messages.Messag
   Fields:
     filter: Restricts stores returned to those matching a filter. Syntax: http
       s://cloud.google.com/appengine/docs/standard/python/search/query_strings
-      Only filtering on labels is supported, for example `labels.key=value`.
+      Only filtering on labels is supported. For example, `labels.key=value`.
     pageSize: Limit on the number of DICOM stores to return in a single
       response. If zero the default page size of 100 is used.
     pageToken: The next_page_token value returned from the previous List
@@ -960,11 +958,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresSearchForInstancesRequest(_m
 
   Fields:
     dicomWebPath: The path of the SearchForInstancesRequest DICOMweb request
-      (e.g., `instances` or `series/{series_uid}/instances` or
+      (for example, `instances` or `series/{series_uid}/instances` or
       `studies/{study_uid}/instances`).
-    parent: The name of the DICOM store that is being accessed (e.g., `project
-      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
-      /{dicom_store_id}`).
+    parent: The name of the DICOM store that is being accessed (for example, `
+      projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
+      mStores/{dicom_store_id}`).
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -976,11 +974,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresSearchForSeriesRequest(_mess
   object.
 
   Fields:
-    dicomWebPath: The path of the SearchForSeries DICOMweb request(e.g.,
-      `series` or `studies/{study_uid}/series`).
-    parent: The name of the DICOM store that is being accessed (e.g., `project
-      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
-      /{dicom_store_id}`).
+    dicomWebPath: The path of the SearchForSeries DICOMweb request(for
+      example, `series` or `studies/{study_uid}/series`).
+    parent: The name of the DICOM store that is being accessed (for example, `
+      projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
+      mStores/{dicom_store_id}`).
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -992,11 +990,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresSearchForStudiesRequest(_mes
   object.
 
   Fields:
-    dicomWebPath: The path of the SearchForStudies DICOMweb request (e.g.,
-      `studies`).
-    parent: The name of the DICOM store that is being accessed (e.g., `project
-      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
-      /{dicom_store_id}`).
+    dicomWebPath: The path of the SearchForStudies DICOMweb request (for
+      example, `studies`).
+    parent: The name of the DICOM store that is being accessed (for example, `
+      projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
+      mStores/{dicom_store_id}`).
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1024,12 +1022,13 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStoreInstancesRequest(_messa
   object.
 
   Fields:
-    dicomWebPath: The path of the StoreInstances DICOMweb request (e.g.,
-      `studies/[{study_id}]`). Note that the `study_uid` is optional.
+    dicomWebPath: The path of the StoreInstances DICOMweb request (for
+      example, `studies/[{study_uid}]`). Note that the `study_uid` is
+      optional.
     httpBody: A HttpBody resource to be passed as the request body.
-    parent: The name of the DICOM store that is being accessed (e.g., `project
-      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
-      /{dicom_store_id}`).
+    parent: The name of the DICOM store that is being accessed (for example, `
+      projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
+      mStores/{dicom_store_id}`).
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1042,11 +1041,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesDeleteRequest(_messag
   object.
 
   Fields:
-    dicomWebPath: The path of the DeleteStudy request (e.g.,
-      `studies/{study_id}`).
-    parent: The name of the DICOM store that is being accessed (e.g., `project
-      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
-      /{dicom_store_id}`).
+    dicomWebPath: The path of the DeleteStudy request (for example,
+      `studies/{study_uid}`).
+    parent: The name of the DICOM store that is being accessed (for example, `
+      projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
+      mStores/{dicom_store_id}`).
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1059,11 +1058,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesRetrieveMetadataReque
   object.
 
   Fields:
-    dicomWebPath: The path of the RetrieveStudyMetadata DICOMweb request
-      (e.g., `studies/{study_id}/metadata`).
-    parent: The name of the DICOM store that is being accessed (e.g., `project
-      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
-      /{dicom_store_id}`).
+    dicomWebPath: The path of the RetrieveStudyMetadata DICOMweb request (for
+      example, `studies/{study_uid}/metadata`).
+    parent: The name of the DICOM store that is being accessed (for example, `
+      projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
+      mStores/{dicom_store_id}`).
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1076,11 +1075,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesRetrieveStudyRequest(
   object.
 
   Fields:
-    dicomWebPath: The path of the RetrieveStudy DICOMweb request (e.g.,
-      `studies/{study_id}`).
-    parent: The name of the DICOM store that is being accessed (e.g., `project
-      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
-      /{dicom_store_id}`).
+    dicomWebPath: The path of the RetrieveStudy DICOMweb request (for example,
+      `studies/{study_uid}`).
+    parent: The name of the DICOM store that is being accessed (for example, `
+      projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
+      mStores/{dicom_store_id}`).
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1093,11 +1092,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSearchForInstancesReq
 
   Fields:
     dicomWebPath: The path of the SearchForInstancesRequest DICOMweb request
-      (e.g., `instances` or `series/{series_uid}/instances` or
+      (for example, `instances` or `series/{series_uid}/instances` or
       `studies/{study_uid}/instances`).
-    parent: The name of the DICOM store that is being accessed (e.g., `project
-      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
-      /{dicom_store_id}`).
+    parent: The name of the DICOM store that is being accessed (for example, `
+      projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
+      mStores/{dicom_store_id}`).
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1110,11 +1109,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSearchForSeriesReques
   object.
 
   Fields:
-    dicomWebPath: The path of the SearchForSeries DICOMweb request(e.g.,
-      `series` or `studies/{study_uid}/series`).
-    parent: The name of the DICOM store that is being accessed (e.g., `project
-      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
-      /{dicom_store_id}`).
+    dicomWebPath: The path of the SearchForSeries DICOMweb request(for
+      example, `series` or `studies/{study_uid}/series`).
+    parent: The name of the DICOM store that is being accessed (for example, `
+      projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
+      mStores/{dicom_store_id}`).
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1127,11 +1126,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesDeleteRequest(_
   object.
 
   Fields:
-    dicomWebPath: The path of the DeleteSeries request (e.g.,
-      `studies/{study_id}/series/{series_id}`).
-    parent: The name of the DICOM store that is being accessed (e.g., `project
-      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
-      /{dicom_store_id}`).
+    dicomWebPath: The path of the DeleteSeries request (for example,
+      `studies/{study_uid}/series/{series_uid}`).
+    parent: The name of the DICOM store that is being accessed (for example, `
+      projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
+      mStores/{dicom_store_id}`).
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1143,11 +1142,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesDelete
   leteRequest object.
 
   Fields:
-    dicomWebPath: The path of the DeleteInstance request (e.g.,
-      `studies/{study_id}/series/{series_id}/instances/{instance_id}`).
-    parent: The name of the DICOM store that is being accessed (e.g., `project
-      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
-      /{dicom_store_id}`).
+    dicomWebPath: The path of the DeleteInstance request (for example,
+      `studies/{study_uid}/series/{series_uid}/instances/{instance_uid}`).
+    parent: The name of the DICOM store that is being accessed (for example, `
+      projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
+      mStores/{dicom_store_id}`).
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1159,12 +1158,12 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesFrames
   amesRetrieveFramesRequest object.
 
   Fields:
-    dicomWebPath: The path of the RetrieveFrames DICOMweb request (e.g., `stud
-      ies/{study_id}/series/{series_id}/instances/{instance_id}/frames/{frame_
-      list}`).
-    parent: The name of the DICOM store that is being accessed (e.g., `project
-      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
-      /{dicom_store_id}`).
+    dicomWebPath: The path of the RetrieveFrames DICOMweb request (for
+      example, `studies/{study_uid}/series/{series_uid}/instances/{instance_ui
+      d}/frames/{frame_list}`).
+    parent: The name of the DICOM store that is being accessed (for example, `
+      projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
+      mStores/{dicom_store_id}`).
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1176,12 +1175,12 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesFrames
   amesRetrieveRenderedRequest object.
 
   Fields:
-    dicomWebPath: The path of the RetrieveRenderedFrames DICOMweb request
-      (e.g., `studies/{study_id}/series/{series_id}/instances/{instance_id}/fr
-      ames/{frame_list}/rendered`).
-    parent: The name of the DICOM store that is being accessed (e.g., `project
-      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
-      /{dicom_store_id}`).
+    dicomWebPath: The path of the RetrieveRenderedFrames DICOMweb request (for
+      example, `studies/{study_uid}/series/{series_uid}/instances/{instance_ui
+      d}/frames/{frame_list}/rendered`).
+    parent: The name of the DICOM store that is being accessed (for example, `
+      projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
+      mStores/{dicom_store_id}`).
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1193,11 +1192,12 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesRetrie
   trieveInstanceRequest object.
 
   Fields:
-    dicomWebPath: The path of the RetrieveInstance DICOMweb request (e.g.,
-      `studies/{study_id}/series/{series_id}/instances/{instance_id}`).
-    parent: The name of the DICOM store that is being accessed (e.g., `project
-      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
-      /{dicom_store_id}`).
+    dicomWebPath: The path of the RetrieveInstance DICOMweb request (for
+      example,
+      `studies/{study_uid}/series/{series_uid}/instances/{instance_uid}`).
+    parent: The name of the DICOM store that is being accessed (for example, `
+      projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
+      mStores/{dicom_store_id}`).
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1210,11 +1210,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesRetrie
 
   Fields:
     dicomWebPath: The path of the RetrieveInstanceMetadata DICOMweb request
-      (e.g., `studies/{study_id}/series/{series_id}/instances/{instance_id}/me
-      tadata`).
-    parent: The name of the DICOM store that is being accessed (e.g., `project
-      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
-      /{dicom_store_id}`).
+      (for example, `studies/{study_uid}/series/{series_uid}/instances/{instan
+      ce_uid}/metadata`).
+    parent: The name of the DICOM store that is being accessed (for example, `
+      projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
+      mStores/{dicom_store_id}`).
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1227,11 +1227,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesRetrie
 
   Fields:
     dicomWebPath: The path of the RetrieveRenderedInstance DICOMweb request
-      (e.g., `studies/{study_id}/series/{series_id}/instances/{instance_id}/re
-      ndered`).
-    parent: The name of the DICOM store that is being accessed (e.g., `project
-      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
-      /{dicom_store_id}`).
+      (for example, `studies/{study_uid}/series/{series_uid}/instances/{instan
+      ce_uid}/rendered`).
+    parent: The name of the DICOM store that is being accessed (for example, `
+      projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
+      mStores/{dicom_store_id}`).
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1243,11 +1243,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesRetrieveMetadat
   adataRequest object.
 
   Fields:
-    dicomWebPath: The path of the RetrieveSeriesMetadata DICOMweb request
-      (e.g., `studies/{study_id}/series/{series_id}/metadata`).
-    parent: The name of the DICOM store that is being accessed (e.g., `project
-      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
-      /{dicom_store_id}`).
+    dicomWebPath: The path of the RetrieveSeriesMetadata DICOMweb request (for
+      example, `studies/{study_uid}/series/{series_uid}/metadata`).
+    parent: The name of the DICOM store that is being accessed (for example, `
+      projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
+      mStores/{dicom_store_id}`).
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1259,11 +1259,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesRetrieveSeriesR
   iesRequest object.
 
   Fields:
-    dicomWebPath: The path of the RetrieveSeries DICOMweb request (e.g.,
-      `studies/{study_id}/series/{series_id}`).
-    parent: The name of the DICOM store that is being accessed (e.g., `project
-      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
-      /{dicom_store_id}`).
+    dicomWebPath: The path of the RetrieveSeries DICOMweb request (for
+      example, `studies/{study_uid}/series/{series_uid}`).
+    parent: The name of the DICOM store that is being accessed (for example, `
+      projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
+      mStores/{dicom_store_id}`).
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1276,11 +1276,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesSearchForInstan
 
   Fields:
     dicomWebPath: The path of the SearchForInstancesRequest DICOMweb request
-      (e.g., `instances` or `series/{series_uid}/instances` or
+      (for example, `instances` or `series/{series_uid}/instances` or
       `studies/{study_uid}/instances`).
-    parent: The name of the DICOM store that is being accessed (e.g., `project
-      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
-      /{dicom_store_id}`).
+    parent: The name of the DICOM store that is being accessed (for example, `
+      projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
+      mStores/{dicom_store_id}`).
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1293,12 +1293,13 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesStoreInstancesRequest
   object.
 
   Fields:
-    dicomWebPath: The path of the StoreInstances DICOMweb request (e.g.,
-      `studies/[{study_id}]`). Note that the `study_uid` is optional.
+    dicomWebPath: The path of the StoreInstances DICOMweb request (for
+      example, `studies/[{study_uid}]`). Note that the `study_uid` is
+      optional.
     httpBody: A HttpBody resource to be passed as the request body.
-    parent: The name of the DICOM store that is being accessed (e.g., `project
-      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores
-      /{dicom_store_id}`).
+    parent: The name of the DICOM store that is being accessed (for example, `
+      projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
+      mStores/{dicom_store_id}`).
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1472,31 +1473,31 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirHistoryRequest(_messages.
   object.
 
   Fields:
-    _at: Only include resource versions that were current at some point during
+    at: Only include resource versions that were current at some point during
       the time period specified in the date time value. The date parameter
       format is yyyy-mm-ddThh:mm:ss[Z|(+|-)hh:mm]  Clients may specify any of
       the following:  *  An entire year: `_at=2019` *  An entire month:
       `_at=2019-01` *  A specific day: `_at=2019-01-20` *  A specific second:
       `_at=2018-12-31T23:59:58Z`
-    _count: The maximum number of search results on a page. Defaults to 1000.
-    _page: Used to retrieve the first, previous, next, or last page of
-      resource versions when using pagination. Value should be set to the
-      value of the `link.url` field returned in the response to the previous
-      request, where `link.relation` is "first", "previous", "next" or "last".
-      Omit `page` if no previous request has been made.
-    _since: Only include resource versions that were created at or after the
+    count: The maximum number of search results on a page. Defaults to 1000.
+    name: The name of the resource to retrieve.
+    page: Used to retrieve the first, previous, next, or last page of resource
+      versions when using pagination. Value should be set to the value of the
+      `link.url` field returned in the response to the previous request, where
+      `link.relation` is "first", "previous", "next" or "last".  Omit `page`
+      if no previous request has been made.
+    since: Only include resource versions that were created at or after the
       given instant in time. The instant in time uses the format YYYY-MM-
       DDThh:mm:ss.sss+zz:zz (for example 2015-02-07T13:28:17.239+02:00 or
       2017-01-01T00:00:00Z). The time must be specified to the second and
       include a time zone.
-    name: The name of the resource to retrieve.
   """
 
-  _at = _messages.StringField(1)
-  _count = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  _page = _messages.StringField(3)
-  _since = _messages.StringField(4)
-  name = _messages.StringField(5, required=True)
+  at = _messages.StringField(1)
+  count = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  name = _messages.StringField(3, required=True)
+  page = _messages.StringField(4)
+  since = _messages.StringField(5)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresFhirObservationLastnRequest(_messages.Message):
@@ -1613,8 +1614,10 @@ class HealthcareProjectsLocationsDatasetsFhirStoresGetIamPolicyRequest(_messages
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
-      field is omitted, policy format version 1 will be returned.
+      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.  Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -1724,8 +1727,10 @@ class HealthcareProjectsLocationsDatasetsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
-      field is omitted, policy format version 1 will be returned.
+      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.  Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -1739,8 +1744,8 @@ class HealthcareProjectsLocationsDatasetsGetRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsGetRequest object.
 
   Fields:
-    name: The name of the dataset to read (e.g.,
-      `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`).
+    name: The name of the dataset to read. For example,
+      `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1777,8 +1782,10 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresGetIamPolicyRequest(_message
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
-      field is omitted, policy format version 1 will be returned.
+      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.  Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -1804,7 +1811,7 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresListRequest(_messages.Messag
   Fields:
     filter: Restricts stores returned to those matching a filter. Syntax: http
       s://cloud.google.com/appengine/docs/standard/python/search/query_strings
-      Only filtering on labels is supported, for example `labels.key=value`.
+      Only filtering on labels is supported. For example, `labels.key=value`.
     pageSize: Limit on the number of HL7v2 stores to return in a single
       response. If zero the default page size of 100 is used.
     pageToken: The next_page_token value returned from the previous List
@@ -1848,18 +1855,18 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesGetRequest(_messages
   object.
 
   Enums:
-    ViewValueValuesEnum: Specifies which parts of the Message resource should
-      be returned in the response.
+    ViewValueValuesEnum: Specifies which parts of the Message resource to
+      return in the response.
 
   Fields:
     name: The resource name of the HL7v2 message to retrieve.
-    view: Specifies which parts of the Message resource should be returned in
-      the response.
+    view: Specifies which parts of the Message resource to return in the
+      response.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    r"""Specifies which parts of the Message resource should be returned in
-    the response.
+    r"""Specifies which parts of the Message resource to return in the
+    response.
 
     Values:
       MESSAGE_VIEW_UNSPECIFIED: <no description>
@@ -1898,25 +1905,26 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesListRequest(_message
     filter: Restricts messages returned to those matching a filter. Syntax: ht
       tps://cloud.google.com/appengine/docs/standard/python/search/query_strin
       gs  Fields/functions available for filtering are:  *  `message_type`,
-      from the MSH-9 segment; for example `NOT message_type = "ADT"` *
+      from the MSH-9 segment. For example, `NOT message_type = "ADT"`. *
       `send_date` or `sendDate`, the YYYY-MM-DD date the message was sent in
-      the dataset's time_zone, from the MSH-7 segment; for example `send_date
-      < "2017-01-02"` *  `send_time`, the timestamp when the message was sent,
-      using the RFC3339 time format for comparisons, from the MSH-7 segment;
-      for example `send_time < "2017-01-02T00:00:00-05:00"` *
+      the dataset's time_zone, from the MSH-7 segment. For example, `send_date
+      < "2017-01-02"`. *  `send_time`, the timestamp when the message was
+      sent, using the RFC3339 time format for comparisons, from the MSH-7
+      segment. For example, `send_time < "2017-01-02T00:00:00-05:00"`. *
       `send_facility`, the care center that the message came from, from the
-      MSH-4 segment; for example `send_facility = "ABC"` *  `HL7RegExp(expr)`,
-      which does regular expression matching of `expr` against the message
-      payload using re2 (http://code.google.com/p/re2/) syntax; for example
-      `HL7RegExp("^.*\|.*\|EMERG")` *  `PatientId(value, type)`, which matches
-      if the message lists a patient having an ID of the given value and type
-      in the PID-2, PID-3, or PID-4 segments; for example `PatientId("123456",
-      "MRN")` *  `labels.x`, a string value of the label with key `x` as set
-      using the Message.labels map, for example `labels."priority"="high"`.
-      The operator `:*` can be used to assert the existence of a label, for
-      example `labels."priority":*`.  Limitations on conjunctions:  *
-      Negation on the patient ID function or the labels field is not
-      supported, for example these queries are invalid: `NOT
+      MSH-4 segment. For example, `send_facility = "ABC"`. *
+      `HL7RegExp(expr)`, which does regular expression matching of `expr`
+      against the message payload using RE2 syntax
+      (https://github.com/google/re2/wiki/Syntax). For example,
+      `HL7RegExp("^.*\|.*\|EMERG")`. *  `PatientId(value, type)`, which
+      matches if the message lists a patient having an ID of the given value
+      and type in the PID-2, PID-3, or PID-4 segments. For example,
+      `PatientId("123456", "MRN")`. *  `labels.x`, a string value of the label
+      with key `x` as set using the Message.labels map. For example,
+      `labels."priority"="high"`. The operator `:*` can be used to assert the
+      existence of a label. For example, `labels."priority":*`.  Limitations
+      on conjunctions:  *  Negation on the patient ID function or the labels
+      field is not supported. For example, these queries are invalid: `NOT
       PatientId("123456", "MRN")`, `NOT labels."tag1":*`, `NOT
       labels."tag2"="val2"`. *  Conjunction of multiple patient ID functions
       is not supported, for example this query is invalid:
@@ -1924,7 +1932,7 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesListRequest(_message
       Conjunction of multiple labels fields is also not supported, for example
       this query is invalid: `labels."tag1":* AND labels."tag2"="val2"`. *
       Conjunction of one patient ID function, one labels field and conditions
-      on other fields is supported, for example this query is valid:
+      on other fields is supported. For example, this query is valid:
       `PatientId("123456", "MRN") AND labels."tag1":* AND message_type =
       "ADT"`.
     orderBy: Orders messages returned by the specified order_by clause.
@@ -1957,9 +1965,8 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesPatchRequest(_messag
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask Only the `labels` field
-      is allowed to be updated. The labels in the request will be merged with
-      the existing set of labels. Existing labels with the same keys will be
-      updated.
+      is allowed to be updated. The labels in the request are merged with the
+      existing set of labels. Existing labels with the same keys are updated.
   """
 
   message = _messages.MessageField('Message', 1)
@@ -2025,8 +2032,8 @@ class HealthcareProjectsLocationsDatasetsListRequest(_messages.Message):
       specified. May not be larger than 1000.
     pageToken: The next_page_token value returned from a previous List
       request, if any.
-    parent: The name of the project whose datasets should be listed (e.g.,
-      `projects/{project_id}/locations/{location_id}`).
+    parent: The name of the project whose datasets should be listed. For
+      example, `projects/{project_id}/locations/{location_id}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2159,8 +2166,8 @@ class Hl7V2Store(_messages.Message):
       /{project_id}/datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_id}`.
     notificationConfig: The notification destination all messages (both Ingest
       & Create) are published on. Only the message name is sent as part of the
-      notification. If this is unset, no notifications will be sent. Supplied
-      by the client.
+      notification. If this is unset, no notifications are sent. Supplied by
+      the client.
     parserConfig: The configuration for the parser. It determines how the
       server parses the messages.
   """
@@ -2265,7 +2272,7 @@ class HttpBody(_messages.Message):
 
 
 class ImageConfig(_messages.Message):
-  r"""Specifies how de-identification of image pixel should be handled.
+  r"""Specifies how to handle de-identification of image pixels.
 
   Enums:
     TextRedactionModeValueValuesEnum: Determines how to redact text from
@@ -2298,8 +2305,8 @@ class ImportDicomDataErrorDetails(_messages.Message):
 
   Fields:
     sampleErrors: Deprecated. Use only for debugging purposes.  Contains
-      sample errors encountered in imports of individual resources (for
-      example, a Cloud Storage object).
+      sample errors encountered in imports of individual resources. For
+      example, a Cloud Storage object.
   """
 
   sampleErrors = _messages.MessageField('ErrorDetail', 1, repeated=True)
@@ -2307,9 +2314,8 @@ class ImportDicomDataErrorDetails(_messages.Message):
 
 class ImportDicomDataRequest(_messages.Message):
   r"""Imports data into the specified DICOM store. Returns an error if any of
-  the files to import are not DICOM files. This API will accept duplicate
-  DICOM instances, by simply ignoring the newly pushed instance (it will not
-  overwrite).
+  the files to import are not DICOM files. This API accepts duplicate DICOM
+  instances by ignoring the newly-pushed instance. It does not overwrite.
 
   Fields:
     gcsSource: Cloud Storage source data location and import configuration.
@@ -2666,13 +2672,12 @@ class Message(_messages.Message):
 
 
 class NotificationConfig(_messages.Message):
-  r"""Specifies where notifications should be sent upon changes to a data
-  store.
+  r"""Specifies where to send notifications upon changes to a data store.
 
   Fields:
     pubsubTopic: The [Cloud Pub/Sub](https://cloud.google.com/pubsub/docs/)
       topic that notifications of changes are published on. Supplied by the
-      client. PubsubMessage.Data will contain the resource name.
+      client. PubsubMessage.Data contains the resource name.
       PubsubMessage.MessageId is the ID of this message. It is guaranteed to
       be unique within the topic. PubsubMessage.PublishTime is the time at
       which the message was published. Notifications are only sent if the
@@ -2680,8 +2685,7 @@ class NotificationConfig(_messages.Message):
       names](https://cloud.google.com/pubsub/docs/overview#names) must be
       scoped to a project. cloud-healthcare@system.gserviceaccount.com must
       have publisher permissions on the given Cloud Pub/Sub topic. Not having
-      adequate permissions will cause the calls that send notifications to
-      fail.
+      adequate permissions causes the calls that send notifications to fail.
   """
 
   pubsubTopic = _messages.StringField(1)
@@ -2828,8 +2832,8 @@ class ParserConfig(_messages.Message):
 
   Fields:
     allowNullHeader: Determines whether messages with no header are allowed.
-    segmentTerminator: Byte(s) to be used as the segment terminator. If this
-      is unset, '\r' will be used as segment terminator.
+    segmentTerminator: Byte(s) to use as the segment terminator. If this is
+      unset, '\r' is used as segment terminator.
   """
 
   allowNullHeader = _messages.BooleanField(1)
@@ -2840,7 +2844,7 @@ class PatientId(_messages.Message):
   r"""A patient identifier and associated type.
 
   Fields:
-    type: ID type, e.g. MRN or NHS.
+    type: ID type. For example, MRN or NHS.
     value: The patient's unique identifier.
   """
 
@@ -2881,7 +2885,11 @@ class Policy(_messages.Message):
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten.
-    version: Deprecated.
+    version: Specifies the format of the policy.  Valid values are 0, 1, and
+      3. Requests specifying an invalid value will be rejected.  Policies with
+      any conditional bindings must specify version 3. Policies without any
+      conditional bindings may specify any valid value or leave the field
+      unset.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -2905,8 +2913,8 @@ class ProgressCounter(_messages.Message):
 
 
 class RedactConfig(_messages.Message):
-  r"""Define how to redact sensitive values. Default behaviour is erase, e.g.
-  "My name is Jake." becomes "My name is ."
+  r"""Define how to redact sensitive values. Default behaviour is erase. For
+  example, "My name is Jake." becomes "My name is ."
   """
 
 
@@ -2977,25 +2985,28 @@ class Segment(_messages.Message):
       string uses zero-based indexes separated by dots to identify Fields,
       components and sub-components. A bracket notation is also used to
       identify different instances of a repeated field. Regex for key:
-      (\d+)(\[\d+\])?(.\d+)?(.\d+)?  Examples of (key, value) pairs: - (0.1,
-      "foo"): Component 1 of Field 0 has the value "foo". - (1.1.2, "bar"):
-      Sub-component 2 of Component 1 of field 1 has the value "bar". -
-      (1[2].1, "baz"): Component 1 of Instance 2 of Field 1, which is
-      repeated, has the value "baz".
+      (\d+)(\[\d+\])?(.\d+)?(.\d+)?  Examples of (key, value) pairs:  * (0.1,
+      "hemoglobin") denotes that the first component of Field 0 has the
+      value "hemoglobin".  * (1.1.2, "CBC") denotes that the second sub-
+      component of the first   component of Field 1 has the value "CBC".  *
+      (1[0].1, "HbA1c") denotes that the first component of the   first
+      Instance of Field 1, which is repeated, has the value "HbA1c".
 
   Fields:
     fields: A mapping from the positional location to the value. The key
       string uses zero-based indexes separated by dots to identify Fields,
       components and sub-components. A bracket notation is also used to
       identify different instances of a repeated field. Regex for key:
-      (\d+)(\[\d+\])?(.\d+)?(.\d+)?  Examples of (key, value) pairs: - (0.1,
-      "foo"): Component 1 of Field 0 has the value "foo". - (1.1.2, "bar"):
-      Sub-component 2 of Component 1 of field 1 has the value "bar". -
-      (1[2].1, "baz"): Component 1 of Instance 2 of Field 1, which is
-      repeated, has the value "baz".
-    segmentId: A string that indicates the type of segment, e.g., EVN, PID.
-    setId: Set ID for segments that can be in a set. This can be empty if it
-      is missing or it is not applicable.
+      (\d+)(\[\d+\])?(.\d+)?(.\d+)?  Examples of (key, value) pairs:  * (0.1,
+      "hemoglobin") denotes that the first component of Field 0 has the
+      value "hemoglobin".  * (1.1.2, "CBC") denotes that the second sub-
+      component of the first   component of Field 1 has the value "CBC".  *
+      (1[0].1, "HbA1c") denotes that the first component of the   first
+      Instance of Field 1, which is repeated, has the value "HbA1c".
+    segmentId: A string that indicates the type of segment. For example, EVN
+      or PID.
+    setId: Set ID for segments that can be in a set. This can be empty if it's
+      missing or isn't applicable.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -3004,11 +3015,12 @@ class Segment(_messages.Message):
     uses zero-based indexes separated by dots to identify Fields, components
     and sub-components. A bracket notation is also used to identify different
     instances of a repeated field. Regex for key:
-    (\d+)(\[\d+\])?(.\d+)?(.\d+)?  Examples of (key, value) pairs: - (0.1,
-    "foo"): Component 1 of Field 0 has the value "foo". - (1.1.2, "bar"): Sub-
-    component 2 of Component 1 of field 1 has the value "bar". - (1[2].1,
-    "baz"): Component 1 of Instance 2 of Field 1, which is repeated, has the
-    value "baz".
+    (\d+)(\[\d+\])?(.\d+)?(.\d+)?  Examples of (key, value) pairs:  * (0.1,
+    "hemoglobin") denotes that the first component of Field 0 has the   value
+    "hemoglobin".  * (1.1.2, "CBC") denotes that the second sub-component of
+    the first   component of Field 1 has the value "CBC".  * (1[0].1, "HbA1c")
+    denotes that the first component of the   first Instance of Field 1, which
+    is repeated, has the value "HbA1c".
 
     Messages:
       AdditionalProperty: An additional property for a FieldsValue object.

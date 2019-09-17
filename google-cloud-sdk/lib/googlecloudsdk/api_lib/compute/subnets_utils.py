@@ -27,7 +27,6 @@ def MakeSubnetworkUpdateRequest(
     client,
     subnet_ref,
     include_alpha_logging,
-    include_beta_logging,
     enable_private_ip_google_access=None,
     add_secondary_ranges=None,
     remove_secondary_ranges=None,
@@ -46,7 +45,6 @@ def MakeSubnetworkUpdateRequest(
     client: GCE API client
     subnet_ref: Reference to a subnetwork
     include_alpha_logging: Include alpha-specific logging args.
-    include_beta_logging: Include beta-specific logging args.
     enable_private_ip_google_access: Enable/disable access to Google Cloud APIs
       from this subnet for instances without a public ip address.
     add_secondary_ranges: List of secondary IP ranges to add to the subnetwork
@@ -144,7 +142,7 @@ def MakeSubnetworkUpdateRequest(
         log_config.metadata = flags.GetLoggingMetadataArgAlpha(
             client.messages).GetEnumForChoice(metadata)
       subnetwork.logConfig = log_config
-    elif include_beta_logging:
+    else:
       log_config = client.messages.SubnetworkLogConfig(enable=enable_flow_logs)
       if aggregation_interval is not None:
         log_config.aggregationInterval = flags.GetLoggingAggregationIntervalArg(
@@ -155,8 +153,6 @@ def MakeSubnetworkUpdateRequest(
         log_config.metadata = flags.GetLoggingMetadataArg(
             client.messages).GetEnumForChoice(metadata)
       subnetwork.logConfig = log_config
-    else:
-      subnetwork.enableFlowLogs = enable_flow_logs
 
     return client.MakeRequests(
         [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])

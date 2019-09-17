@@ -17,7 +17,7 @@
 import enum
 
 
-BASE_URL = 'https://www.googleapis.com/compute/v1/'
+BASE_URL = 'https://compute.googleapis.com/compute/v1/'
 DOCS_URL = 'https://developers.google.com/compute/docs/reference/latest/'
 
 

@@ -58,6 +58,10 @@ class ListConnectionsPermissionDeniedException(Error):
   pass
 
 
+class GenerateServiceIdentityPermissionDeniedException(Error):
+  pass
+
+
 class OperationErrorException(Error):
   pass
 

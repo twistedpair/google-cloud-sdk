@@ -710,27 +710,27 @@ class _SectionRun(_Section):
   """Contains the properties for the 'run' section."""
 
   def __init__(self):
-    super(_SectionRun, self).__init__('run', hidden=True)
+    super(_SectionRun, self).__init__('run')
     self.region = self._Add(
         'region',
-        help_text='Default region to use when working with Google '
+        help_text='Default region to use when working with Cloud '
         'Run resources. When a `--region` flag is required '
-        'but not provided, the command will fall back to this value, if set. '
-        'To see valid choices, run `gcloud run regions list`.')
+        'but not provided, the command will fall back to this value, if set.')
 
     self.namespace = self._Add(
         'namespace',
-        help_text='Kubernetes namespace to create Run resources in.',
+        help_text='Specific to working with Cloud on GKE or '
+        'a Kubernetes cluster: Kubernetes namespace for the resource.',
         hidden=True)
 
     self.cluster = self._Add(
         'cluster',
-        help_text='GKE cluster to use. '
-        'Knative must be installed in this cluster.')
+        help_text='ID of the cluster or fully qualified identifier '
+        'for the cluster')
 
     self.cluster_location = self._Add(
         'cluster_location',
-        help_text='Zone or region of the GKE cluster to use.')
+        help_text='Zone or region in which the cluster is located.')
 
     self.platform = self._Add(
         'platform',
@@ -1646,6 +1646,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.clouddebugger = self._Add('clouddebugger')
     self.clouderrorreporting = self._Add('clouderrorreporting')
     self.cloudfunctions = self._Add('cloudfunctions')
+    self.cloudidentity = self._Add('cloudidentity')
     self.cloudiot = self._Add('cloudiot')
     self.cloudkms = self._Add('cloudkms')
     self.cloudresourcemanager = self._Add('cloudresourcemanager')
@@ -1732,6 +1733,7 @@ class _SectionApiClientOverrides(_Section):
     super(_SectionApiClientOverrides, self).__init__(
         'api_client_overrides', hidden=True)
     self.appengine = self._Add('appengine')
+    self.cloudidentity = self._Add('cloudidentity')
     self.compute = self._Add('compute')
     self.container = self._Add('container')
     self.sql = self._Add('sql')

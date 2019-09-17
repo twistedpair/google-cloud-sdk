@@ -32,7 +32,7 @@ class _LatestRevisionKey(object):
   """Key class for the latest revision in TrafficTargets."""
 
   def __repr__(self):
-    return '&&&LATEST&&&'
+    return 'LATEST'
 
 
 # Designated key value for latest.
@@ -66,7 +66,7 @@ def GetKey(target):
   return LATEST_REVISION_KEY if target.latestRevision else target.revisionName
 
 
-def SortKeyFeyFromKey(key):
+def SortKeyFromKey(key):
   """Sorted key function  to order TrafficTarget keys.
 
   TrafficTargets keys are one of:
@@ -90,7 +90,7 @@ def SortKeyFeyFromKey(key):
   return result
 
 
-def SortKeyFeyFromTarget(target):
+def SortKeyFromTarget(target):
   """Sorted key function to order TrafficTarget objects by key.
 
   Args:
@@ -101,7 +101,7 @@ def SortKeyFeyFromTarget(target):
     last.
   """
   key = GetKey(target)
-  return SortKeyFeyFromKey(key)
+  return SortKeyFromKey(key)
 
 
 def NewRoundingCorrectionPrecedence(key_and_percent):
@@ -136,7 +136,7 @@ def NewRoundingCorrectionPrecedence(key_and_percent):
   return [
       1 - (float_percent - int(float_percent)),
       float_percent,
-      SortKeyFeyFromKey(key)]
+      SortKeyFromKey(key)]
 
 
 class TrafficTargets(collections.MutableMapping):
@@ -348,6 +348,142 @@ class TrafficTargets(collections.MutableMapping):
       else:
         target = NewTrafficTarget(self._messages, key, int_percentages[key])
       new_targets.append(target)
-    new_targets = sorted(new_targets, key=SortKeyFeyFromTarget)
+    new_targets = sorted(new_targets, key=SortKeyFromTarget)
     del self._m[:]
     self._m.extend(new_targets)
+
+
+class TrafficTargetPair(object):
+  """Holder for a TrafficTarget status information.
+
+  The representation of the status of traffic for a service
+  includes:
+    o User requested assignments (spec.traffic)
+    o Actual assignments (status.traffic)
+
+  These may differ after a failed traffic update or during a
+  successful one. A TrafficTargetPair holds both values
+  for a TrafficTarget, identified by revisionName or by
+  latestRevision. In cases a TrafficTarget is added or removed
+  from a service, either value can be missing.
+
+  The latest revision can be included in the spec traffic targets
+  twice
+    o by revisionName
+    o by setting latestRevision to True.
+
+  Managed cloud run provides a single combined status traffic target
+  for both spec entries with:
+    o revisionName set to the latest revision's name
+    o percent set to combined percentage for both spec entries
+    o latestRevision not set
+
+  In this case both spec targets are paired with the combined status
+  target and a status_percent_override value is used to allocate the
+  combined traffic.
+  """
+
+  def __init__(
+      self, spec_target, status_target, latest_revision_name,
+      status_percent_override):
+    self._spec_target = spec_target
+    self._status_target = status_target
+    self._latest_revision_name = latest_revision_name
+    self._status_percent_override = status_percent_override
+
+  @property
+  def key(self):
+    return LATEST_REVISION_KEY if self.latestRevision else GetKey(self)
+
+  @property
+  def latestRevision(self):  # pylint: disable=invalid-name
+    result = False
+    if self._spec_target and self._spec_target.latestRevision:
+      result = True
+    if self._status_target and self._status_target.latestRevision:
+      result = True
+    return result
+
+  @property
+  def revisionName(self):  # pylint: disable=invalid-name
+    result = None
+    if self._spec_target and self._spec_target.revisionName:
+      result = self._spec_target.revisionName
+    if self._status_target and self._status_target.revisionName:
+      result = self._status_target.revisionName
+    return result
+
+  @property
+  def specTarget(self):  # pylint: disable=invalid-name
+    return self._spec_target
+
+  @property
+  def statusTarget(self):  # pylint: disable=invalid-name
+    return self._status_target
+
+  @property
+  def specPercent(self):  # pylint: disable=invalid-name
+    return str(self._spec_target.percent) if self._spec_target else '-'
+
+  @property
+  def statusPercent(self):  # pylint: disable=invalid-name
+    if self._status_percent_override is not None:
+      return str(self._status_percent_override)
+    elif self._status_target:
+      return str(self._status_target.percent)
+    return '-'
+
+  @property
+  def displayRevisionId(self):  # pylint: disable=invalid-name
+    """Returns human readable revision identifier."""
+    if self.latestRevision:
+      return '%s (currently %s)'% (GetKey(self), self._latest_revision_name)
+    else:
+      return self.revisionName
+
+  def SetSpecTarget(self, target):
+    self._spec_target = target
+
+  def SetStatusTarget(self, target, inferred_latest=False):
+    self._status_target = target
+    self._inferred_latest = inferred_latest
+
+
+def GetTrafficTargetPairs(spec_targets, status_targets, is_platform_managed,
+                          latest_ready_revision_name):
+  """Returns the list of TrafficTargetPair's for a Service."""
+  spec_dict = {GetKey(t): t for t in spec_targets}
+  status_dict = {GetKey(t): t for t in status_targets}
+
+  # For managed the status target for the latest revision is
+  # included by revisionName only and may hold the combined traffic
+  # percent for both latestRevisionName and latestRevision spec targets.
+  # Here we adjust keys in status_dict to match with spec_dict.
+  combined_status_target_id = None
+  if (is_platform_managed
+      and LATEST_REVISION_KEY in spec_dict
+      and LATEST_REVISION_KEY not in status_dict
+      and latest_ready_revision_name in status_dict):
+    latest_status_target = status_dict[latest_ready_revision_name]
+    status_dict[LATEST_REVISION_KEY] = latest_status_target
+    if latest_ready_revision_name in spec_dict:
+      combined_status_target_id = id(latest_status_target)
+    else:
+      del status_dict[latest_ready_revision_name]
+  result = []
+  for k in set(spec_dict).union(status_dict):
+    spec_target = spec_dict.get(k, None)
+    status_target = status_dict.get(k, None)
+    percent_override = None
+    if id(status_target) == combined_status_target_id:
+      spec_by_latest_target = spec_dict[LATEST_REVISION_KEY]
+      status_by_latest_percent = min(
+          spec_by_latest_target.percent, status_target.percent)
+      if k == LATEST_REVISION_KEY:
+        percent_override = status_by_latest_percent
+      else:
+        percent_override = status_target.percent - status_by_latest_percent
+    result.append(TrafficTargetPair(
+        spec_target, status_target, latest_ready_revision_name,
+        percent_override))
+  return sorted(result, key=SortKeyFromTarget)

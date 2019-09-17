@@ -36,7 +36,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.accessPolicies_accessLevels = self.AccessPoliciesAccessLevelsService(self)
-    self.accessPolicies_accessZones = self.AccessPoliciesAccessZonesService(self)
+    self.accessPolicies_servicePerimeters = self.AccessPoliciesServicePerimetersService(self)
     self.accessPolicies = self.AccessPoliciesService(self)
     self.operations = self.OperationsService(self)
 
@@ -51,7 +51,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""[Deprecated] Create an Access Level. The longrunning.
+      r"""Create an Access Level. The longrunning.
 operation from this RPC will have a successful status once the Access
 Level has
 propagated to long-lasting storage. Access Levels containing
@@ -82,7 +82,7 @@ errors will result in an error response for the first error encountered.
     )
 
     def Delete(self, request, global_params=None):
-      r"""[Deprecated] Delete an Access Level by resource.
+      r"""Delete an Access Level by resource.
 name. The longrunning operation from this RPC will have a successful status
 once the Access Level has been removed
 from long-lasting storage.
@@ -112,7 +112,7 @@ from long-lasting storage.
     )
 
     def Get(self, request, global_params=None):
-      r"""[Deprecated] Get an Access Level by resource.
+      r"""Get an Access Level by resource.
 name.
 
       Args:
@@ -140,7 +140,7 @@ name.
     )
 
     def List(self, request, global_params=None):
-      r"""[Deprecated] List all Access Levels for an access.
+      r"""List all Access Levels for an access.
 policy.
 
       Args:
@@ -168,7 +168,7 @@ policy.
     )
 
     def Patch(self, request, global_params=None):
-      r"""[Deprecated] Update an Access Level. The longrunning.
+      r"""Update an Access Level. The longrunning.
 operation from this RPC will have a successful status once the changes to
 the Access Level have propagated
 to long-lasting storage. Access Levels containing
@@ -198,25 +198,25 @@ errors will result in an error response for the first error encountered.
         supports_download=False,
     )
 
-  class AccessPoliciesAccessZonesService(base_api.BaseApiService):
-    """Service class for the accessPolicies_accessZones resource."""
+  class AccessPoliciesServicePerimetersService(base_api.BaseApiService):
+    """Service class for the accessPolicies_servicePerimeters resource."""
 
-    _NAME = u'accessPolicies_accessZones'
+    _NAME = u'accessPolicies_servicePerimeters'
 
     def __init__(self, client):
-      super(AccesscontextmanagerV1alpha.AccessPoliciesAccessZonesService, self).__init__(client)
+      super(AccesscontextmanagerV1alpha.AccessPoliciesServicePerimetersService, self).__init__(client)
       self._upload_configs = {
           }
 
     def Create(self, request, global_params=None):
-      r"""[Deprecated] Create an Access Zone. The longrunning.
-operation from this RPC will have a successful status once the Access
-Zone has
-propagated to long-lasting storage. Access Zones containing errors
-will result in an error response for the first error encountered.
+      r"""Create an Service Perimeter. The.
+longrunning operation from this RPC will have a successful status once the
+Service Perimeter has
+propagated to long-lasting storage. Service Perimeters containing
+errors will result in an error response for the first error encountered.
 
       Args:
-        request: (AccesscontextmanagerAccessPoliciesAccessZonesCreateRequest) input message
+        request: (AccesscontextmanagerAccessPoliciesServicePerimetersCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -226,27 +226,27 @@ will result in an error response for the first error encountered.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/accessPolicies/{accessPoliciesId}/accessZones',
+        flat_path=u'v1alpha/accessPolicies/{accessPoliciesId}/servicePerimeters',
         http_method=u'POST',
-        method_id=u'accesscontextmanager.accessPolicies.accessZones.create',
+        method_id=u'accesscontextmanager.accessPolicies.servicePerimeters.create',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
         query_params=[],
-        relative_path=u'v1alpha/{+parent}/accessZones',
-        request_field=u'accessZone',
-        request_type_name=u'AccesscontextmanagerAccessPoliciesAccessZonesCreateRequest',
+        relative_path=u'v1alpha/{+parent}/servicePerimeters',
+        request_field=u'servicePerimeter',
+        request_type_name=u'AccesscontextmanagerAccessPoliciesServicePerimetersCreateRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
 
     def Delete(self, request, global_params=None):
-      r"""[Deprecated] Delete an Access Zone by resource name.
-The longrunning operation from this RPC will have a successful status once
-the Access Zone
-has been removed from long-lasting storage.
+      r"""Delete an Service Perimeter by resource.
+name. The longrunning operation from this RPC will have a successful status
+once the Service Perimeter has been
+removed from long-lasting storage.
 
       Args:
-        request: (AccesscontextmanagerAccessPoliciesAccessZonesDeleteRequest) input message
+        request: (AccesscontextmanagerAccessPoliciesServicePerimetersDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -256,83 +256,84 @@ has been removed from long-lasting storage.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/accessPolicies/{accessPoliciesId}/accessZones/{accessZonesId}',
+        flat_path=u'v1alpha/accessPolicies/{accessPoliciesId}/servicePerimeters/{servicePerimetersId}',
         http_method=u'DELETE',
-        method_id=u'accesscontextmanager.accessPolicies.accessZones.delete',
+        method_id=u'accesscontextmanager.accessPolicies.servicePerimeters.delete',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
         relative_path=u'v1alpha/{+name}',
         request_field='',
-        request_type_name=u'AccesscontextmanagerAccessPoliciesAccessZonesDeleteRequest',
+        request_type_name=u'AccesscontextmanagerAccessPoliciesServicePerimetersDeleteRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
 
     def Get(self, request, global_params=None):
-      r"""[Deprecated] Get an Access Zone by resource name.
+      r"""Get an Service Perimeter by resource.
+name.
 
       Args:
-        request: (AccesscontextmanagerAccessPoliciesAccessZonesGetRequest) input message
+        request: (AccesscontextmanagerAccessPoliciesServicePerimetersGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (AccessZone) The response message.
+        (ServicePerimeter) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/accessPolicies/{accessPoliciesId}/accessZones/{accessZonesId}',
+        flat_path=u'v1alpha/accessPolicies/{accessPoliciesId}/servicePerimeters/{servicePerimetersId}',
         http_method=u'GET',
-        method_id=u'accesscontextmanager.accessPolicies.accessZones.get',
+        method_id=u'accesscontextmanager.accessPolicies.servicePerimeters.get',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
         relative_path=u'v1alpha/{+name}',
         request_field='',
-        request_type_name=u'AccesscontextmanagerAccessPoliciesAccessZonesGetRequest',
-        response_type_name=u'AccessZone',
+        request_type_name=u'AccesscontextmanagerAccessPoliciesServicePerimetersGetRequest',
+        response_type_name=u'ServicePerimeter',
         supports_download=False,
     )
 
     def List(self, request, global_params=None):
-      r"""[Deprecated] List all Access Zones for an access.
-policy.
+      r"""List all Service Perimeters for an.
+access policy.
 
       Args:
-        request: (AccesscontextmanagerAccessPoliciesAccessZonesListRequest) input message
+        request: (AccesscontextmanagerAccessPoliciesServicePerimetersListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ListAccessZonesResponse) The response message.
+        (ListServicePerimetersResponse) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/accessPolicies/{accessPoliciesId}/accessZones',
+        flat_path=u'v1alpha/accessPolicies/{accessPoliciesId}/servicePerimeters',
         http_method=u'GET',
-        method_id=u'accesscontextmanager.accessPolicies.accessZones.list',
+        method_id=u'accesscontextmanager.accessPolicies.servicePerimeters.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
         query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha/{+parent}/accessZones',
+        relative_path=u'v1alpha/{+parent}/servicePerimeters',
         request_field='',
-        request_type_name=u'AccesscontextmanagerAccessPoliciesAccessZonesListRequest',
-        response_type_name=u'ListAccessZonesResponse',
+        request_type_name=u'AccesscontextmanagerAccessPoliciesServicePerimetersListRequest',
+        response_type_name=u'ListServicePerimetersResponse',
         supports_download=False,
     )
 
     def Patch(self, request, global_params=None):
-      r"""[Deprecated] Update an Access Zone. The longrunning.
-operation from this RPC will have a successful status once the changes to
-the Access Zone
-have propagated to long-lasting storage. Access Zone containing errors
-will result in an error response for the first error encountered.
+      r"""Update an Service Perimeter. The.
+longrunning operation from this RPC will have a successful status once the
+changes to the Service Perimeter have
+propagated to long-lasting storage. Service Perimeter containing
+errors will result in an error response for the first error encountered.
 
       Args:
-        request: (AccesscontextmanagerAccessPoliciesAccessZonesPatchRequest) input message
+        request: (AccesscontextmanagerAccessPoliciesServicePerimetersPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -342,15 +343,15 @@ will result in an error response for the first error encountered.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/accessPolicies/{accessPoliciesId}/accessZones/{accessZonesId}',
+        flat_path=u'v1alpha/accessPolicies/{accessPoliciesId}/servicePerimeters/{servicePerimetersId}',
         http_method=u'PATCH',
-        method_id=u'accesscontextmanager.accessPolicies.accessZones.patch',
+        method_id=u'accesscontextmanager.accessPolicies.servicePerimeters.patch',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[u'updateMask'],
         relative_path=u'v1alpha/{+name}',
-        request_field=u'accessZone',
-        request_type_name=u'AccesscontextmanagerAccessPoliciesAccessZonesPatchRequest',
+        request_field=u'servicePerimeter',
+        request_type_name=u'AccesscontextmanagerAccessPoliciesServicePerimetersPatchRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -366,9 +367,9 @@ will result in an error response for the first error encountered.
           }
 
     def Create(self, request, global_params=None):
-      r"""[Deprecated] Create an `AccessPolicy`. Fails if this organization already.
-has a `AccessPolicy`. The longrunning Operation will have a successful
-status once the `AccessPolicy` has propagated to long-lasting storage.
+      r"""Create an `AccessPolicy`. Fails if this organization already has a.
+`AccessPolicy`. The longrunning Operation will have a successful status
+once the `AccessPolicy` has propagated to long-lasting storage.
 Syntactic and basic semantic errors will be returned in `metadata` as a
 BadRequest proto.
 
@@ -396,7 +397,7 @@ BadRequest proto.
     )
 
     def Delete(self, request, global_params=None):
-      r"""[Deprecated] Delete an AccessPolicy by resource.
+      r"""Delete an AccessPolicy by resource.
 name. The longrunning Operation will have a successful status once the
 AccessPolicy
 has been removed from long-lasting storage.
@@ -426,7 +427,7 @@ has been removed from long-lasting storage.
     )
 
     def Get(self, request, global_params=None):
-      r"""[Deprecated] Get an AccessPolicy by name.
+      r"""Get an AccessPolicy by name.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesGetRequest) input message
@@ -453,7 +454,7 @@ has been removed from long-lasting storage.
     )
 
     def List(self, request, global_params=None):
-      r"""[Deprecated] List all AccessPolicies under a.
+      r"""List all AccessPolicies under a.
 container.
 
       Args:
@@ -480,7 +481,7 @@ container.
     )
 
     def Patch(self, request, global_params=None):
-      r"""[Deprecated] Update an AccessPolicy. The.
+      r"""Update an AccessPolicy. The.
 longrunning Operation from this RPC will have a successful status once the
 changes to the AccessPolicy have propagated
 to long-lasting storage. Syntactic and basic semantic errors will be

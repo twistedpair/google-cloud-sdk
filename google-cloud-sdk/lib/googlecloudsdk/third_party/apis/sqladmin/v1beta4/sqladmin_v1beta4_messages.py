@@ -573,9 +573,11 @@ class ImportContext(_messages.Message):
   r"""Database instance import context.
 
   Messages:
+    BakImportOptionsValue: Import parameters specific to SQL Server .BAK files
     CsvImportOptionsValue: Options for importing data as CSV.
 
   Fields:
+    bakImportOptions: Import parameters specific to SQL Server .BAK files
     csvImportOptions: Options for importing data as CSV.
     database: The target database for the import. If fileType is SQL, this
       field is required only if the import file does not specify a database,
@@ -592,6 +594,35 @@ class ImportContext(_messages.Message):
       and read access to the file.
   """
 
+  class BakImportOptionsValue(_messages.Message):
+    r"""Import parameters specific to SQL Server .BAK files
+
+    Messages:
+      EncryptionOptionsValue: A EncryptionOptionsValue object.
+
+    Fields:
+      encryptionOptions: A EncryptionOptionsValue attribute.
+    """
+
+    class EncryptionOptionsValue(_messages.Message):
+      r"""A EncryptionOptionsValue object.
+
+      Fields:
+        certPath: Path to the Certificate (.cer) in Cloud Storage, in the form
+          gs://bucketName/fileName. The instance must have write permissions
+          to the bucket and read access to the file.
+        pvkPassword: Password that encrypts the private key
+        pvkPath: Path to the Certificate Private Key (.pvk) in Cloud Storage,
+          in the form gs://bucketName/fileName. The instance must have write
+          permissions to the bucket and read access to the file.
+      """
+
+      certPath = _messages.StringField(1)
+      pvkPassword = _messages.StringField(2)
+      pvkPath = _messages.StringField(3)
+
+    encryptionOptions = _messages.MessageField('EncryptionOptionsValue', 1)
+
   class CsvImportOptionsValue(_messages.Message):
     r"""Options for importing data as CSV.
 
@@ -604,12 +635,13 @@ class ImportContext(_messages.Message):
     columns = _messages.StringField(1, repeated=True)
     table = _messages.StringField(2)
 
-  csvImportOptions = _messages.MessageField('CsvImportOptionsValue', 1)
-  database = _messages.StringField(2)
-  fileType = _messages.StringField(3)
-  importUser = _messages.StringField(4)
-  kind = _messages.StringField(5, default=u'sql#importContext')
-  uri = _messages.StringField(6)
+  bakImportOptions = _messages.MessageField('BakImportOptionsValue', 1)
+  csvImportOptions = _messages.MessageField('CsvImportOptionsValue', 2)
+  database = _messages.StringField(3)
+  fileType = _messages.StringField(4)
+  importUser = _messages.StringField(5)
+  kind = _messages.StringField(6, default=u'sql#importContext')
+  uri = _messages.StringField(7)
 
 
 class InstancesCloneRequest(_messages.Message):

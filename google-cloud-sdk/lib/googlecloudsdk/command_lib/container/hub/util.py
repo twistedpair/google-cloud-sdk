@@ -591,7 +591,8 @@ def _DeleteNamespaceForReinstall(kube_client, namespace):
               namespace, error))
 
 
-def _GetConnectAgentOptions(args, upgrade, namespace, image_pull_secret_data):
+def _GetConnectAgentOptions(args, upgrade, namespace, image_pull_secret_data,
+                            membership_ref):
   return api_adapter.ConnectAgentOption(
       name=args.CLUSTER_NAME,
       proxy=args.proxy or '',
@@ -599,11 +600,12 @@ def _GetConnectAgentOptions(args, upgrade, namespace, image_pull_secret_data):
       is_upgrade=upgrade,
       version=args.version or '',
       registry=args.docker_registry or '',
-      image_pull_secret_content=image_pull_secret_data or '')
+      image_pull_secret_content=image_pull_secret_data or '',
+      membership_ref=membership_ref)
 
 
 def _GenerateManifest(args, service_account_key_data, image_pull_secret_data,
-                      upgrade, namespace):
+                      upgrade, namespace, membership_ref):
   """Generate the manifest for connect agent from API.
 
   Args:
@@ -614,6 +616,8 @@ def _GenerateManifest(args, service_account_key_data, image_pull_secret_data,
       registries.
     upgrade: if this is an upgrade operation.
     namespace: namespace to deploy the connect agent.
+    membership_ref: The membership associated with the connect agent in the
+      format of `projects/[PROJECT]/locations/global/memberships/[MEMBERSHIP]`
 
   Returns:
     The full manifest to deploy the connect agent resources.
@@ -622,7 +626,8 @@ def _GenerateManifest(args, service_account_key_data, image_pull_secret_data,
   connect_agent_ref = _GetConnectAgentOptions(args,
                                               upgrade,
                                               namespace,
-                                              image_pull_secret_data)
+                                              image_pull_secret_data,
+                                              membership_ref)
   manifest_resources = adapter.GenerateConnectAgentManifest(connect_agent_ref)
   delimeter = '---\n'
   full_manifest = ''
@@ -675,7 +680,8 @@ def _PurgeAlphaInstaller(kube_client, namespace, project_id):
 
 def DeployConnectAgent(args,
                        service_account_key_data,
-                       image_pull_secret_data):
+                       image_pull_secret_data,
+                       membership_ref):
   """Deploys the GKE Connect agent to the cluster.
 
   Args:
@@ -684,6 +690,9 @@ def DeployConnectAgent(args,
       file
     image_pull_secret_data: The contents of image pull secret to use for
       private registries.
+    membership_ref: The membership should be associated with the connect agent
+      in the format of
+      `project/[PROJECT]/location/global/memberships/[MEMBERSHIP]`.
 
   Raises:
     exceptions.Error: If the agent cannot be deployed properly
@@ -700,7 +709,8 @@ def DeployConnectAgent(args,
                                     service_account_key_data,
                                     image_pull_secret_data,
                                     False,
-                                    namespace)
+                                    namespace,
+                                    membership_ref)
 
   # Generate a manifest file if necessary.
   if args.manifest_output_file:

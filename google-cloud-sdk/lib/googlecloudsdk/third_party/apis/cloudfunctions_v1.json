@@ -424,7 +424,7 @@
       "type": "object",
       "properties": {
         "data": {
-          "description": "Input to be passed to the function.",
+          "description": "Required. Input to be passed to the function.",
           "type": "string"
         }
       }
@@ -511,7 +511,7 @@
       "type": "object",
       "properties": {
         "version": {
-          "description": "Deprecated.",
+          "description": "Specifies the format of the policy.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nPolicies with any conditional bindings must specify version 3. Policies\nwithout any conditional bindings may specify any valid value or leave the\nfield unset.",
           "type": "integer",
           "format": "int32"
         },
@@ -961,7 +961,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The name of the function which details should be obtained.",
+                      "description": "Required. The name of the function which details should be obtained.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
@@ -986,7 +986,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "location": {
-                      "description": "The project and location in which the function should be created, specified\nin the format `projects\/*\/locations\/*`",
+                      "description": "Required. The project and location in which the function should be created, specified\nin the format `projects\/*\/locations\/*`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1048,7 +1048,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "The name of the function which should be deleted.",
+                      "description": "Required. The name of the function which should be deleted.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
@@ -1073,7 +1073,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "The name of the function to be called.",
+                      "description": "Required. The name of the function to be called.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
@@ -1192,7 +1192,7 @@
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
-                      "description": "Optional. The policy format version to be returned.\nAcceptable values are 0, 1, and 3.\nIf the value is 0, or the field is omitted, policy format version 1 will be\nreturned.",
+                      "description": "Optional. The policy format version to be returned.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nRequests for policies with any conditional bindings must specify version 3.\nPolicies without any conditional bindings may specify any valid value or\nleave the field unset.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"

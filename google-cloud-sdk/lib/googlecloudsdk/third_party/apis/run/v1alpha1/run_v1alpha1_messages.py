@@ -157,12 +157,18 @@ class ConfigMapEnvSource(_messages.Message):
   represent the key-value pairs as environment variables.
 
   Fields:
-    localObjectReference: The ConfigMap to select from.
-    optional: Specify whether the ConfigMap must be defined +optional
+    localObjectReference: Output only. This field should not be used directly
+      as it is meant to be inlined directly into the message. Use the "name"
+      field instead.
+    name: Cloud Run fully managed: not supported  Cloud Run for Anthos:
+      supported  The ConfigMap to select from.
+    optional: Cloud Run fully managed: not supported  Cloud Run for Anthos:
+      supported  Specify whether the ConfigMap must be defined +optional
   """
 
   localObjectReference = _messages.MessageField('LocalObjectReference', 1)
-  optional = _messages.BooleanField(2)
+  name = _messages.StringField(2)
+  optional = _messages.BooleanField(3)
 
 
 class ConfigMapKeySelector(_messages.Message):
@@ -172,8 +178,11 @@ class ConfigMapKeySelector(_messages.Message):
   Fields:
     key: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
       The key to select.
-    localObjectReference: Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  The ConfigMap to select from.
+    localObjectReference: Output only. This field should not be used directly
+      as it is meant to be inlined directly into the message. Use the "name"
+      field instead.
+    name: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+      The ConfigMap to select from.
     optional: Cloud Run fully managed: not supported  Cloud Run on GKE:
       supported  Specify whether the ConfigMap or its key must be defined
       +optional
@@ -181,7 +190,8 @@ class ConfigMapKeySelector(_messages.Message):
 
   key = _messages.StringField(1)
   localObjectReference = _messages.MessageField('LocalObjectReference', 2)
-  optional = _messages.BooleanField(3)
+  name = _messages.StringField(3)
+  optional = _messages.BooleanField(4)
 
 
 class ConfigMapVolumeSource(_messages.Message):
@@ -1011,6 +1021,7 @@ class ListDomainMappingsResponse(_messages.Message):
     metadata: Metadata associated with this DomainMapping list.
     regionDetails: Details for the regions used during a global call including
       any failures. This is not populated when targeting a specific region.
+    unreachable: Locations that could not be reached.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1044,6 +1055,7 @@ class ListDomainMappingsResponse(_messages.Message):
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
   regionDetails = _messages.MessageField('RegionDetailsValue', 5)
+  unreachable = _messages.StringField(6, repeated=True)
 
 
 class ListEventTypesResponse(_messages.Message):
@@ -1748,7 +1760,11 @@ class Policy(_messages.Message):
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten.
-    version: Deprecated.
+    version: Specifies the format of the policy.  Valid values are 0, 1, and
+      3. Requests specifying an invalid value will be rejected.  Policies with
+      any conditional bindings must specify version 3. Policies without any
+      conditional bindings may specify any valid value or leave the field
+      unset.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -2089,11 +2105,12 @@ class RevisionSpec(_messages.Message):
       Container, including: name, ports, and volumeMounts. The runtime
       contract is documented here:
       https://github.com/knative/serving/blob/master/docs/runtime-contract.md
-    containerConcurrency: ContainerConcurrency specifies the maximum allowed
-      in-flight (concurrent) requests per container of the Revision. Values
-      are: - `0` thread-safe, the system should manage the max concurrency.
-      This is    the default value. - `1` not-thread-safe. Single concurrency
-      - `2-N` thread-safe, max concurrency of N
+    containerConcurrency: (Optional)  ContainerConcurrency specifies the
+      maximum allowed in-flight (concurrent) requests per container instance
+      of the Revision.  Cloud Run fully managed: supported, defaults to 80
+      Cloud Run on GKE: supported, defaults to 0, which means concurrency to
+      the application is not limited, and the system decides the target
+      concurrency for the autoscaler.
     containers: Containers holds the single container that defines the unit of
       execution for this Revision. In the context of a Revision, we disallow a
       number of fields on this Container, including: name and lifecycle. In
@@ -3116,8 +3133,10 @@ class RunProjectsLocationsServicesGetIamPolicyRequest(_messages.Message):
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
-      field is omitted, policy format version 1 will be returned.
+      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.  Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -3324,12 +3343,18 @@ class SecretEnvSource(_messages.Message):
   key-value pairs as environment variables.
 
   Fields:
-    localObjectReference: The Secret to select from.
-    optional: Specify whether the Secret must be defined +optional
+    localObjectReference: Output only. This field should not be used directly
+      as it is meant to be inlined directly into the message. Use the "name"
+      field instead.
+    name: Cloud Run fully managed: not supported  Cloud Run for Anthos:
+      supported  The Secret to select from.
+    optional: Cloud Run fully managed: not supported  Cloud Run for Anthos:
+      supported  Specify whether the Secret must be defined +optional
   """
 
   localObjectReference = _messages.MessageField('LocalObjectReference', 1)
-  optional = _messages.BooleanField(2)
+  name = _messages.StringField(2)
+  optional = _messages.BooleanField(3)
 
 
 class SecretKeySelector(_messages.Message):
@@ -3339,9 +3364,11 @@ class SecretKeySelector(_messages.Message):
   Fields:
     key: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
       The key of the secret to select from.  Must be a valid secret key.
-    localObjectReference: Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  The name of the secret in the pod's namespace to select
-      from.
+    localObjectReference: Output only. This field should not be used directly
+      as it is meant to be inlined directly into the message. Use the "name"
+      field instead.
+    name: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+      The name of the secret in the pod's namespace to select from.
     optional: Cloud Run fully managed: not supported  Cloud Run on GKE:
       supported  Specify whether the Secret or its key must be defined
       +optional
@@ -3349,7 +3376,8 @@ class SecretKeySelector(_messages.Message):
 
   key = _messages.StringField(1)
   localObjectReference = _messages.MessageField('LocalObjectReference', 2)
-  optional = _messages.BooleanField(3)
+  name = _messages.StringField(3)
+  optional = _messages.BooleanField(4)
 
 
 class SecretVolumeSource(_messages.Message):
@@ -3847,11 +3875,57 @@ class TriggerCondition(_messages.Message):
 class TriggerFilter(_messages.Message):
   r"""A TriggerFilter object.
 
+  Messages:
+    AttributesValue: Cloud Run fully managed: not supported  Cloud Run on GKE:
+      supported  Attributes filters events by exact match on event context
+      attributes. Each key in the map is compared with the equivalent key in
+      the event context. An event passes the filter if all values are equal to
+      the specified values.  Nested context attributes are not supported as
+      keys. Only string values are supported.  +optional
+
   Fields:
-    sourceAndType: A TriggerFilterSourceAndType attribute.
+    attributes: Cloud Run fully managed: not supported  Cloud Run on GKE:
+      supported  Attributes filters events by exact match on event context
+      attributes. Each key in the map is compared with the equivalent key in
+      the event context. An event passes the filter if all values are equal to
+      the specified values.  Nested context attributes are not supported as
+      keys. Only string values are supported.  +optional
+    sourceAndType: SourceAndType filters events based on exact matches on the
+      CloudEvents type and source attributes. This field has been replaced by
+      the Attributes field.  +optional
   """
 
-  sourceAndType = _messages.MessageField('TriggerFilterSourceAndType', 1)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AttributesValue(_messages.Message):
+    r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+    Attributes filters events by exact match on event context attributes. Each
+    key in the map is compared with the equivalent key in the event context.
+    An event passes the filter if all values are equal to the specified
+    values.  Nested context attributes are not supported as keys. Only string
+    values are supported.  +optional
+
+    Messages:
+      AdditionalProperty: An additional property for a AttributesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type AttributesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AttributesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  attributes = _messages.MessageField('AttributesValue', 1)
+  sourceAndType = _messages.MessageField('TriggerFilterSourceAndType', 2)
 
 
 class TriggerFilterSourceAndType(_messages.Message):

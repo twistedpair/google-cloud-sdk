@@ -23,10 +23,28 @@ class DlpInfoTypesListRequest(_messages.Message):
     languageCode: Optional BCP-47 language code for localized infoType
       friendly names. If omitted, or if localized strings are not available,
       en-US strings will be returned.
+    location: The geographic location to list info types. Reserved for future
+      extensions.
   """
 
   filter = _messages.StringField(1)
   languageCode = _messages.StringField(2)
+  location = _messages.StringField(3)
+
+
+class DlpLocationsInfoTypesRequest(_messages.Message):
+  r"""A DlpLocationsInfoTypesRequest object.
+
+  Fields:
+    googlePrivacyDlpV2ListInfoTypesRequest: A
+      GooglePrivacyDlpV2ListInfoTypesRequest resource to be passed as the
+      request body.
+    location: The geographic location to list info types. Reserved for future
+      extensions.
+  """
+
+  googlePrivacyDlpV2ListInfoTypesRequest = _messages.MessageField('GooglePrivacyDlpV2ListInfoTypesRequest', 1)
+  location = _messages.StringField(2, required=True)
 
 
 class DlpOrganizationsDeidentifyTemplatesCreateRequest(_messages.Message):
@@ -740,6 +758,23 @@ class DlpProjectsLocationsContentInspectRequest(_messages.Message):
   """
 
   googlePrivacyDlpV2InspectContentRequest = _messages.MessageField('GooglePrivacyDlpV2InspectContentRequest', 1)
+  location = _messages.StringField(2, required=True)
+  parent = _messages.StringField(3, required=True)
+
+
+class DlpProjectsLocationsContentReidentifyRequest(_messages.Message):
+  r"""A DlpProjectsLocationsContentReidentifyRequest object.
+
+  Fields:
+    googlePrivacyDlpV2ReidentifyContentRequest: A
+      GooglePrivacyDlpV2ReidentifyContentRequest resource to be passed as the
+      request body.
+    location: The geographic location to process content reidentification.
+      Reserved for future extensions.
+    parent: The parent resource name.
+  """
+
+  googlePrivacyDlpV2ReidentifyContentRequest = _messages.MessageField('GooglePrivacyDlpV2ReidentifyContentRequest', 1)
   location = _messages.StringField(2, required=True)
   parent = _messages.StringField(3, required=True)
 
@@ -1560,17 +1595,20 @@ class GooglePrivacyDlpV2CryptoDeterministicConfig(_messages.Message):
       'abc', the full replacement value will be: 'MY_TOKEN_INFO_TYPE(3):abc'
       This annotation identifies the surrogate when inspecting content using
       the custom info type 'Surrogate'. This facilitates reversal of the
-      surrogate when it occurs in free text.  In order for inspection to work
-      properly, the name of this info type must not occur naturally anywhere
-      in your data; otherwise, inspection may either  - reverse a surrogate
-      that does not correspond to an actual identifier - be unable to parse
-      the surrogate and result in an error  Therefore, choose your custom info
-      type name carefully after considering what your data looks like. One way
-      to select a name that has a high chance of yielding reliable detection
-      is to include one or more unicode characters that are highly improbable
-      to exist in your data. For example, assuming your data is entered from a
-      regular ASCII keyboard, the symbol with the hex code point 29DD might be
-      used like so: \u29ddMY_TOKEN_TYPE
+      surrogate when it occurs in free text.  Note: For record transformations
+      where the entire cell in a table is being transformed, surrogates are
+      optional to use. Surrogates are used to denote the location of the token
+      and are necessary for re-identification in free form text.  In order for
+      inspection to work properly, the name of this info type must not occur
+      naturally anywhere in your data; otherwise, inspection may either  -
+      reverse a surrogate that does not correspond to an actual identifier -
+      be unable to parse the surrogate and result in an error  Therefore,
+      choose your custom info type name carefully after considering what your
+      data looks like. One way to select a name that has a high chance of
+      yielding reliable detection is to include one or more unicode characters
+      that are highly improbable to exist in your data. For example, assuming
+      your data is entered from a regular ASCII keyboard, the symbol with the
+      hex code point 29DD might be used like so: \u29ddMY_TOKEN_TYPE.
   """
 
   context = _messages.MessageField('GooglePrivacyDlpV2FieldId', 1)
@@ -3234,6 +3272,21 @@ class GooglePrivacyDlpV2ListDlpJobsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GooglePrivacyDlpV2ListInfoTypesRequest(_messages.Message):
+  r"""Request for the list of infoTypes.
+
+  Fields:
+    filter: Optional filter to only return infoTypes supported by certain
+      parts of the API. Defaults to supported_by=INSPECT.
+    languageCode: Optional BCP-47 language code for localized infoType
+      friendly names. If omitted, or if localized strings are not available,
+      en-US strings will be returned.
+  """
+
+  filter = _messages.StringField(1)
+  languageCode = _messages.StringField(2)
+
+
 class GooglePrivacyDlpV2ListInfoTypesResponse(_messages.Message):
   r"""Response to the ListInfoTypes request.
 
@@ -3763,6 +3816,8 @@ class GooglePrivacyDlpV2ReidentifyContentRequest(_messages.Message):
       corresponding fields in the template. Repeated fields are appended.
       Singular sub-messages and groups are recursively merged.
     item: The item to re-identify. Will be treated as text.
+    location: The geographic location to process content reidentification.
+      Reserved for future extensions.
     reidentifyConfig: Configuration for the re-identification of the content
       item. This field shares the same proto message type that is used for de-
       identification, however its usage here is for the reversal of the
@@ -3782,8 +3837,9 @@ class GooglePrivacyDlpV2ReidentifyContentRequest(_messages.Message):
   inspectConfig = _messages.MessageField('GooglePrivacyDlpV2InspectConfig', 1)
   inspectTemplateName = _messages.StringField(2)
   item = _messages.MessageField('GooglePrivacyDlpV2ContentItem', 3)
-  reidentifyConfig = _messages.MessageField('GooglePrivacyDlpV2DeidentifyConfig', 4)
-  reidentifyTemplateName = _messages.StringField(5)
+  location = _messages.StringField(4)
+  reidentifyConfig = _messages.MessageField('GooglePrivacyDlpV2DeidentifyConfig', 5)
+  reidentifyTemplateName = _messages.StringField(6)
 
 
 class GooglePrivacyDlpV2ReidentifyContentResponse(_messages.Message):

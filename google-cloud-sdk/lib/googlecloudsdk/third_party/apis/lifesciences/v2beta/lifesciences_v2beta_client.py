@@ -36,6 +36,7 @@ class LifesciencesV2beta(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_pipelines = self.ProjectsLocationsPipelinesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -143,6 +144,57 @@ Authorization requires the following [Google IAM](https://cloud.google.com/iam) 
         request_field='',
         request_type_name=u'LifesciencesProjectsLocationsOperationsListRequest',
         response_type_name=u'ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPipelinesService(base_api.BaseApiService):
+    """Service class for the projects_locations_pipelines resource."""
+
+    _NAME = u'projects_locations_pipelines'
+
+    def __init__(self, client):
+      super(LifesciencesV2beta.ProjectsLocationsPipelinesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Run(self, request, global_params=None):
+      r"""Runs a pipeline.  The returned Operation's metadata field will contain a.
+google.cloud.lifesciences.v2beta.Metadata object describing the status
+of the pipeline execution.  The [response] field will contain a
+google.cloud.lifesciences.v2beta.RunPipelineResponse object if the
+pipeline completes successfully.
+
+**Note:** Before you can use this method, the *Life Sciences Service Agent*
+must have access to your project. This is done automatically when the
+Cloud Life Sciences API is first enabled, but if you delete this permission
+you must disable and re-enable the API to grant the Life Sciences
+Service Agent the required permissions.
+Authorization requires the following [Google
+IAM](https://cloud.google.com/iam/) permission:
+
+* `lifesciences.operations.create`
+
+      Args:
+        request: (LifesciencesProjectsLocationsPipelinesRunRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Run')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Run.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2beta/projects/{projectsId}/locations/{locationsId}/pipelines:run',
+        http_method=u'POST',
+        method_id=u'lifesciences.projects.locations.pipelines.run',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v2beta/{+parent}/pipelines:run',
+        request_field=u'runPipelineRequest',
+        request_type_name=u'LifesciencesProjectsLocationsPipelinesRunRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 

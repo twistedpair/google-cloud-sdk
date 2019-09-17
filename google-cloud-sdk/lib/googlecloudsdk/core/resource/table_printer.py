@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Table format resource printer."""
 
 from __future__ import absolute_import
@@ -21,7 +20,6 @@ from __future__ import unicode_literals
 
 import io
 import json
-import operator
 import re
 
 from googlecloudsdk.core.console import console_attr
@@ -36,7 +34,6 @@ from six.moves import range  # pylint: disable=redefined-builtin
 # Table output column padding.
 _TABLE_COLUMN_PAD = 2
 _BOX_CHAR_LENGTH = 1
-
 
 # Default min width.
 _MIN_WIDTH = 10
@@ -56,6 +53,13 @@ def _Stringify(value):  # pylint: disable=invalid-name
     return six.text_type(value)
   else:
     return json.dumps(value, sort_keys=True)
+
+
+def _Numify(value):  # pylint: disable=invalid-name
+  """Represents value as a number, or infinity if it is not a valid number."""
+  if isinstance(value, (six.integer_types, float)):
+    return value
+  return float('inf')
 
 
 class _Justify(object):
@@ -135,8 +139,8 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       output is not a terminal.
 
   Attributes:
-    _optional: True if at least one column is optional. An optional
-      column is not displayed if it contains no data.
+    _optional: True if at least one column is optional. An optional column is
+      not displayed if it contains no data.
     _page_count: The output page count, incremented before each page.
     _rows: The list of all resource columns indexed by row.
     _visible: Ordered list of visible column indexes.
@@ -146,9 +150,8 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
   def __init__(self, *args, **kwargs):
     """Creates a new TablePrinter."""
     self._rows = []
-    super(TablePrinter, self).__init__(*args, by_columns=True,
-                                       non_empty_projection_required=True,
-                                       **kwargs)
+    super(TablePrinter, self).__init__(
+        *args, by_columns=True, non_empty_projection_required=True, **kwargs)
     encoding = None
     for name in ['ascii', 'utf8', 'win']:
       if name in self.attributes:
@@ -183,9 +186,11 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
           # This initializes a nested Printer to a string stream.
           out = self._out if self._aggregate else io.StringIO()
           wrap = None
-          printer = self.Printer(col.attribute.subformat, out=out,
-                                 console_attr=self._console_attr,
-                                 defaults=defaults)
+          printer = self.Printer(
+              col.attribute.subformat,
+              out=out,
+              console_attr=self._console_attr,
+              defaults=defaults)
           self._has_subprinters = True
         else:
           out = None
@@ -205,7 +210,9 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
           self._visible.append(subformat.index)
 
   def _AddRecord(self, record, delimit=True):
-    """Adds a list of columns. Output delayed until Finish().
+    """Adds a list of columns.
+
+    Output delayed until Finish().
 
     Args:
       record: A JSON-serializable object.
@@ -222,7 +229,9 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       visible.append(row[index])
     return visible
 
-  def _GetNextLineAndRemainder(self, s, max_width,
+  def _GetNextLineAndRemainder(self,
+                               s,
+                               max_width,
                                include_all_whitespace=False):
     """Helper function to get next line of wrappable text."""
     # Get maximum split index where the next line will be wider than max.
@@ -301,12 +310,8 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       if self._page_count > 1:
         self._out.write('\n')
 
-    # Stringify all column cells for all rows.
-    rows = [[_Stringify(cell) for cell in row] for row in self._rows]
-    if not self._has_subprinters:
-      self._rows = []
-
     # Sort by columns if requested.
+    rows = self._rows
     if self.column_attributes:
       # Order() is a list of (key,reverse) tuples from highest to lowest key
       # precedence. This loop partitions the keys into groups with the same
@@ -326,10 +331,27 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       if keys:
         groups.insert(0, (keys, reverse))
       for keys, reverse in groups:
-        rows = sorted(rows, key=operator.itemgetter(*keys), reverse=reverse)
+        # For reverse sort of multiple keys we reverse the entire table, sort by
+        # each key ascending, and then reverse the entire table again. If we
+        # sorted by each individual column in descending order, we would end up
+        # flip-flopping between ascending and descending as we went.
+        if reverse:
+          rows = reversed(rows)
+        for key in reversed(keys):
+          decorated = [(_Numify(row[key]), _Stringify(row[key]), i, row)
+                       for i, row in enumerate(rows)]
+          decorated.sort()
+          rows = [row for _, _, _, row in decorated]
+        if reverse:
+          rows = reversed(rows)
       align = self.column_attributes.Alignments()
     else:
       align = None
+
+    # Stringify all column cells for all rows.
+    rows = [[_Stringify(cell) for cell in row] for row in rows]
+    if not self._has_subprinters:
+      self._rows = []
 
     # Remove the hidden/subformat alignments and columns from rows.
     if self._visible:
@@ -402,16 +424,18 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       visible_cols = len(self._Visible(self.column_attributes.Columns()))
       table_padding = (visible_cols - 1) * table_column_pad
       if box:
-        table_padding = (_BOX_CHAR_LENGTH * (visible_cols + 1)
-                         + visible_cols * table_column_pad * 2)
+        table_padding = (
+            _BOX_CHAR_LENGTH * (visible_cols + 1) +
+            visible_cols * table_column_pad * 2)
       table_padding += self.attributes.get('margin', 0)
-      table_width = self.attributes.get(
-          'width', self._console_attr.GetTermSize()[0])
+      table_width = self.attributes.get('width',
+                                        self._console_attr.GetTermSize()[0])
       total_col_width = table_width - table_padding
       if total_col_width < sum(col_widths):
-        non_wrappable_width = sum(
-            [col_width for (i, col_width) in enumerate(col_widths)
-             if i not in wrap])
+        non_wrappable_width = sum([
+            col_width for (i, col_width) in enumerate(col_widths)
+            if i not in wrap
+        ])
         available_width = total_col_width - non_wrappable_width
         for i, col_width in enumerate(col_widths):
           if i in wrap:
@@ -445,7 +469,8 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
         self._out.write(line)
         self._out.write('\n')
         line = '{0}{1}{2}'.format(
-            box.v, _Justify(self._console_attr, title).center(width), box.v)
+            box.v,
+            _Justify(self._console_attr, title).center(width), box.v)
       else:
         width += table_column_pad * (len(col_widths) - 1)
         line = _Justify(self._console_attr, title).center(width).rstrip()
@@ -554,8 +579,9 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
                 pad = 0
               stripped = value.rstrip()
               self._out.write(stripped)
-              pad = (table_column_pad + self._console_attr.DisplayWidth(value) -
-                     self._console_attr.DisplayWidth(stripped))
+              pad = (
+                  table_column_pad + self._console_attr.DisplayWidth(value) -
+                  self._console_attr.DisplayWidth(stripped))
             else:
               pad += table_column_pad + self._console_attr.DisplayWidth(value)
         if box:

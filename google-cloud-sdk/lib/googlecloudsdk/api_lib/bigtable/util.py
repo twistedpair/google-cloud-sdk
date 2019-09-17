@@ -70,6 +70,12 @@ def AwaitAppProfile(operation_ref, message):
   return _Await(client.projects_instances_appProfiles, operation_ref, message)
 
 
+def AwaitTable(operation_ref, message):
+  """Waits for table long running operation to complete."""
+  client = GetAdminClient()
+  return _Await(client.projects_instances_tables, operation_ref, message)
+
+
 def GetAppProfileRef(instance, app_profile):
   """Get a resource reference to an app profile."""
   return resources.REGISTRY.Parse(
@@ -79,6 +85,17 @@ def GetAppProfileRef(instance, app_profile):
           'instancesId': instance,
       },
       collection='bigtableadmin.projects.instances.appProfiles')
+
+
+def GetClusterRef(instance, cluster):
+  """Get a resource reference to a cluster."""
+  return resources.REGISTRY.Parse(
+      cluster,
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'instancesId': instance,
+      },
+      collection='bigtableadmin.projects.instances.clusters')
 
 
 def GetOperationRef(operation):
@@ -95,6 +112,17 @@ def GetInstanceRef(instance):
           'projectsId': properties.VALUES.core.project.GetOrFail,
       },
       collection='bigtableadmin.projects.instances')
+
+
+def GetTableRef(instance, table):
+  """Get a resource reference to a table."""
+  return resources.REGISTRY.Parse(
+      table,
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'instancesId': instance,
+      },
+      collection='bigtableadmin.projects.instances.tables')
 
 
 WARNING_TYPE_PREFIX = 'CLOUD_BIGTABLE_APP_PROFILE_WARNING'

@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20190821",
+ "revision": "20190910",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -15,9 +15,9 @@
  },
  "documentationLink": "https://developers.google.com/compute/docs/reference/latest/",
  "protocol": "rest",
- "baseUrl": "https://www.googleapis.com/compute/alpha/projects/",
+ "baseUrl": "https://compute.googleapis.com/compute/alpha/projects/",
  "basePath": "/compute/alpha/projects/",
- "rootUrl": "https://www.googleapis.com/",
+ "rootUrl": "https://compute.googleapis.com/",
  "servicePath": "compute/alpha/projects/",
  "batchPath": "batch/compute/alpha",
  "parameters": {
@@ -1324,7 +1324,7 @@
     },
     "ignoreChildExemptions": {
      "type": "boolean",
-     "description": "Specifies whether principals can be exempted for the same LogType in lower-level resource policies. If true, any lower-level exemptions will be ignored."
+     "description": ""
     },
     "logType": {
      "type": "string",
@@ -2311,7 +2311,7 @@
   "BackendService": {
    "id": "BackendService",
    "type": "object",
-   "description": "Represents a Backend Service resource.\n\n\n\nBackend services must have an associated health check. Backend services also store information about session affinity. For more information, read Backend Services.\n\nA backendServices resource represents a global backend service. Global backend services are used for HTTP(S), SSL Proxy, TCP Proxy load balancing and Traffic Director.\n\nA regionBackendServices resource represents a regional backend service. Regional backend services are used for internal TCP/UDP load balancing. For more information, read Internal TCP/UDP Load balancing. (== resource_for v1.backendService ==) (== resource_for beta.backendService ==)",
+   "description": "Represents a Backend Service resource.\n\nA backend service contains configuration values for Google Cloud Platform load balancing services.\n\nFor more information, read Backend Services.\n\n(== resource_for v1.backendService ==) (== resource_for beta.backendService ==)",
    "properties": {
     "affinityCookieTtlSec": {
      "type": "integer",
@@ -2456,7 +2456,7 @@
     },
     "protocol": {
      "type": "string",
-     "description": "The protocol this BackendService uses to communicate with backends.\n\nPossible values are HTTP, HTTPS, TCP, SSL, or UDP, depending on the chosen load balancer or Traffic Director configuration. Refer to the documentation for the load balancer or for Traffic director for more information.",
+     "description": "The protocol this BackendService uses to communicate with backends.\n\nPossible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP, depending on the chosen load balancer or Traffic Director configuration. Refer to the documentation for the load balancer or for Traffic Director for more information.",
      "enum": [
       "HTTP",
       "HTTP2",
@@ -3437,6 +3437,20 @@
    "type": "object",
    "description": "Represents a regional Commitment resource.\n\nCreating a commitment resource means that you are purchasing a committed use contract with an explicit start and end time. You can create commitments based on vCPUs and memory usage and receive discounted rates. For full details, read Signing Up for Committed Use Discounts. (== resource_for beta.regionCommitments ==) (== resource_for v1.regionCommitments ==)",
    "properties": {
+    "category": {
+     "type": "string",
+     "description": "The category of the commitment. Category MACHINE specifies commitments composed of machine resources such as VCPU or MEMORY, listed in resources. Category LICENSE specifies commitments composed of software licenses, listed in licenseResources. Note that only MACHINE commitments should have a Type specified.",
+     "enum": [
+      "CATEGORY_UNSPECIFIED",
+      "LICENSE",
+      "MACHINE"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    },
     "creationTimestamp": {
      "type": "string",
      "description": "[Output Only] Creation timestamp in RFC3339 text format."
@@ -3458,6 +3472,13 @@
      "type": "string",
      "description": "[Output Only] Type of the resource. Always compute#commitment for commitments.",
      "default": "compute#commitment"
+    },
+    "licenseResources": {
+     "type": "array",
+     "description": "A list of commitment amounts for particular licenses.",
+     "items": {
+      "$ref": "LicenseResourceCommitment"
+     }
     },
     "name": {
      "type": "string",
@@ -5900,7 +5921,7 @@
   "ForwardingRule": {
    "id": "ForwardingRule",
    "type": "object",
-   "description": "Represents a Forwarding Rule resource.\n\n\n\nA forwardingRules resource represents a regional forwarding rule.\n\nRegional external forwarding rules can reference any of the following resources:\n \n- A target instance \n- A Cloud VPN Classic gateway (targetVpnGateway),  \n- A target pool for a Network Load Balancer \n- A global target HTTP(S) proxy for an HTTP(S) load balancer using Standard Tier \n- A target SSL proxy for a SSL Proxy load balancer using Standard Tier \n- A target TCP proxy for a TCP Proxy load balancer using Standard Tier.  \n\nRegional internal forwarding rules can reference the backend service of an internal TCP/UDP load balancer.\n\nFor regional internal forwarding rules, the following applies:  \n- If the loadBalancingScheme for the load balancer is INTERNAL, then the forwarding rule references a regional internal backend service. \n- If the loadBalancingScheme for the load balancer is INTERNAL_MANAGED, then the forwarding rule must reference a regional target HTTP(S) proxy.  \n\nFor more information, read Using Forwarding rules.\n\nA globalForwardingRules resource represents a global forwarding rule.\n\nGlobal forwarding rules are only used by load balancers that use Premium Tier. (== resource_for beta.forwardingRules ==) (== resource_for v1.forwardingRules ==) (== resource_for beta.globalForwardingRules ==) (== resource_for v1.globalForwardingRules ==) (== resource_for beta.regionForwardingRules ==) (== resource_for v1.regionForwardingRules ==)",
+   "description": "Represents a Forwarding Rule resource.\n\nA forwarding rule and its corresponding IP address represent the frontend configuration of a Google Cloud Platform load balancer. Forwarding rules can also reference target instances and Cloud VPN Classic gateways (targetVpnGateway).\n\nFor more information, read Forwarding rule concepts and Using protocol forwarding.\n\n(== resource_for beta.forwardingRules ==) (== resource_for v1.forwardingRules ==) (== resource_for beta.globalForwardingRules ==) (== resource_for v1.globalForwardingRules ==) (== resource_for beta.regionForwardingRules ==) (== resource_for v1.regionForwardingRules ==)",
    "properties": {
     "IPAddress": {
      "type": "string",
@@ -8662,6 +8683,20 @@
       "$ref": "NetworkInterface"
      }
     },
+    "postKeyRevocationActionType": {
+     "type": "string",
+     "description": "Specifies whether this instance will be shut down on key revocation.",
+     "enum": [
+      "NOOP",
+      "SHUTDOWN",
+      "UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    },
     "preservedStateSizeGb": {
      "type": "string",
      "description": "Total amount of preserved state for SUSPENDED instances. Read-only in the api.",
@@ -10862,6 +10897,20 @@
      "items": {
       "$ref": "NetworkInterface"
      }
+    },
+    "postKeyRevocationActionType": {
+     "type": "string",
+     "description": "Specifies whether this instance will be shut down on key revocation.",
+     "enum": [
+      "NOOP",
+      "SHUTDOWN",
+      "UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
     },
     "reservationAffinity": {
      "$ref": "ReservationAffinity",
@@ -13195,6 +13244,26 @@
     "selfLink": {
      "type": "string",
      "description": "[Output Only] URL of license corresponding to this License Code."
+    }
+   }
+  },
+  "LicenseResourceCommitment": {
+   "id": "LicenseResourceCommitment",
+   "type": "object",
+   "description": "Commitment for a particular license resource (a License Commitment is composed of one or more of these).",
+   "properties": {
+    "amount": {
+     "type": "string",
+     "description": "The number of licenses purchased.",
+     "format": "int64"
+    },
+    "coresPerLicense": {
+     "type": "string",
+     "description": "Specifies the core range of the instance for which this license applies."
+    },
+    "license": {
+     "type": "string",
+     "description": "Any applicable license URI."
     }
    }
   },
@@ -16944,6 +17013,10 @@
      "type": "string",
      "description": "Optional. If specified, this field is used to populate the ?name? field in gRPC requests."
     },
+    "resendInterval": {
+     "$ref": "Duration",
+     "description": "Optional. This field is used to configure how often to send a full update of all non-healthy backends. If unspecified, full updates are not sent. If specified, must be in the range between 600 seconds to 3600 seconds. Nanos are disallowed."
+    },
     "retryDurationSec": {
      "type": "integer",
      "description": "How much time (in seconds) is spent attempting notification retries until a successful response is received. Default is 30s. Limit is 20m (1200s). Must be a positive number.",
@@ -18332,14 +18405,14 @@
     },
     "pathRules": {
      "type": "array",
-     "description": "The list of path rules. Use this list instead of routeRules when routing based on simple path matching is all that's required. The order by which path rules are specified does not matter. Matches are always done on the longest-path-first basis.\nFor example: a pathRule with a path /a/b/c/* will match before /a/b/* irrespective of the order in which those paths appear in this list.\nOnly one of pathRules or routeRules must be set.",
+     "description": "The list of path rules. Use this list instead of routeRules when routing based on simple path matching is all that's required. The order by which path rules are specified does not matter. Matches are always done on the longest-path-first basis.\nFor example: a pathRule with a path /a/b/c/* will match before /a/b/* irrespective of the order in which those paths appear in this list.\nWithin a given pathMatcher, only one of pathRules or routeRules must be set.",
      "items": {
       "$ref": "PathRule"
      }
     },
     "routeRules": {
      "type": "array",
-     "description": "The list of ordered HTTP route rules. Use this list instead of pathRules when advanced route matching and routing actions are desired. The order of specifying routeRules matters: the first rule that matches will cause its specified routing action to take effect.\nOnly one of pathRules or routeRules must be set.",
+     "description": "The list of ordered HTTP route rules. Use this list instead of pathRules when advanced route matching and routing actions are desired. The order of specifying routeRules matters: the first rule that matches will cause its specified routing action to take effect.\nWithin a given pathMatcher, only one of pathRules or routeRules must be set.\nrouteRules are not supported in UrlMaps intended for External Load balancers.",
      "items": {
       "$ref": "HttpRouteRule"
      }
@@ -18527,7 +18600,7 @@
     },
     "version": {
      "type": "integer",
-     "description": "Deprecated.",
+     "description": "Specifies the format of the policy.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be rejected.\n\nPolicies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset.",
      "format": "int32"
     }
    }
@@ -19078,13 +19151,6 @@
      "description": "Fingerprint of this resource. A hash of the contents stored in this object. This field is used in optimistic locking. This field will be ignored when inserting a new PublicDelegatedPrefix. An up-to-date fingerprint must be provided in order to update the PublicDelegatedPrefix, otherwise the request will fail with error 412 conditionNotMet.\n\nTo see the latest fingerprint, make a get() request to retrieve a PublicDelegatedPrefix.",
      "format": "byte"
     },
-    "googleAnnouncements": {
-     "type": "array",
-     "description": "The list of Google announcements that exist for this delegated prefix.",
-     "items": {
-      "$ref": "PublicDelegatedPrefixGoogleAnnouncement"
-     }
-    },
     "id": {
      "type": "string",
      "description": "[Output Only] The unique identifier for the resource type. The server generates this identifier.",
@@ -19247,32 +19313,6 @@
        "description": "[Output Only] A human-readable description of the warning code."
       }
      }
-    }
-   }
-  },
-  "PublicDelegatedPrefixGoogleAnnouncement": {
-   "id": "PublicDelegatedPrefixGoogleAnnouncement",
-   "type": "object",
-   "description": "A Google announcement advertises the prefix internally within Google's network backbone from the specified scope.",
-   "properties": {
-    "name": {
-     "type": "string",
-     "description": "The name of a Google announcement. The name must be 1-63 characters long, and comply with  RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first // character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
-     "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
-    },
-    "status": {
-     "type": "string",
-     "description": "The status of this Google announcement.",
-     "enum": [
-      "CANARY_CONFIGURED",
-      "CONFIGURED",
-      "INITIAL"
-     ],
-     "enumDescriptions": [
-      "",
-      "",
-      ""
-     ]
     }
    }
   },
@@ -21806,6 +21846,23 @@
    "type": "object",
    "description": "A GroupPlacementPolicy specifies resource placement configuration. It specifies the failure bucket separation as well as network locality",
    "properties": {
+    "availabilityDomainCount": {
+     "type": "integer",
+     "description": "The number of availability domains instances will be spread across. If two instances are in different availability domain, they will not be put in the same low latency network",
+     "format": "int32"
+    },
+    "distribution": {
+     "type": "string",
+     "description": "Distribution specifies how the instances are placed at host level. If set to SPREAD, no two instances will be put on the same host",
+     "enum": [
+      "SPREAD",
+      "UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
     "locality": {
      "type": "string",
      "description": "Specifies network locality",
@@ -23717,6 +23774,10 @@
     "latencyTolerant": {
      "type": "boolean",
      "description": "Defines whether the instance is tolerant of higher cpu latency. This can only be set during instance creation, or when the instance is not currently running. It must not be set if the preemptible option is also set."
+    },
+    "locationHint": {
+     "type": "string",
+     "description": "An opaque location hint used to place the instance close to other resources. This field is for use by internal tools that use the public API."
     },
     "minNodeCpus": {
      "type": "integer",

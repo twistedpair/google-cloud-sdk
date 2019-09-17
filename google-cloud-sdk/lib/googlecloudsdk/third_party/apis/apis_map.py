@@ -870,6 +870,12 @@ MAP = {
             messages_modulepath='recommender_v1alpha1_messages',
             default_version=True
         ),
+        'v1alpha2': APIDef(
+            class_path='googlecloudsdk.third_party.apis.recommender.v1alpha2',
+            client_classpath='recommender_v1alpha2_client.RecommenderV1alpha2',
+            messages_modulepath='recommender_v1alpha2_messages',
+            default_version=False
+        ),
         'v1beta1': APIDef(
             class_path='googlecloudsdk.third_party.apis.recommender.v1beta1',
             client_classpath='recommender_v1beta1_client.RecommenderV1beta1',

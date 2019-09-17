@@ -413,6 +413,9 @@ class AppLocationResolver(object):
 
   def _CreateApp(self, project):
     """Walks the user through creating an AppEngine app."""
+    if properties.VALUES.core.disable_prompts.Get():
+      log.warning('Cannot create new App Engine app in quiet mode')
+      return None
     if console_io.PromptContinue(
         message=('There is no App Engine app in project [{}].'.format(project)),
         prompt_string=('Would you like to create one'),

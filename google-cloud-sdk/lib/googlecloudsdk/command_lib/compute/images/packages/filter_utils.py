@@ -29,7 +29,7 @@ def GetFilter(image_ref, holder):
       # Display only packages
       'kind = "PACKAGE_MANAGER"',
       # Display only compute metadata
-      'has_prefix(resource_url,"https://www.googleapis.com/compute/")',
+      'has_prefix(resource_url,"https://compute.googleapis.com/compute/")',
   ]
   client = holder.client
   resource_parser = holder.resources

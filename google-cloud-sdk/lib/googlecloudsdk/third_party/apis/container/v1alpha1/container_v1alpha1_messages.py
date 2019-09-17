@@ -571,7 +571,10 @@ class ClusterUpdate(_messages.Message):
 
   Fields:
     concurrentNodeCount: Controls how many nodes to upgrade in parallel. A
-      maximum of 20 concurrent nodes is allowed.
+      maximum of 20 concurrent nodes is allowed. Deprecated. This feature will
+      be replaced by an equivalent new feature that gives better control over
+      concurrency. It is not planned to propagate this field to GA and it will
+      be eventually removed from the API.
     desiredAddonsConfig: Configurations for the various addons available to
       run in the cluster.
     desiredBinaryAuthorization: The desired configuration options for the
@@ -2320,6 +2323,12 @@ class NodeConfig(_messages.Message):
     accelerators: A list of hardware accelerators to be attached to each node.
       See https://cloud.google.com/compute/docs/gpus for more information
       about support for GPUs.
+    bootDiskKmsKey:  The Customer Managed Encryption Key used to encrypt the
+      boot disk attached to each node in the node pool. This should be of the
+      form projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]
+      /cryptoKeys/[KEY_NAME]. For more information about protecting resources
+      with Cloud KMS Keys please see:
+      https://cloud.google.com/compute/docs/disks/customer-managed-encryption
     diskSizeGb: Size of the disk attached to each node, specified in GB. The
       smallest allowed disk size is 10GB.  If unspecified, the default disk
       size is 100GB.
@@ -2477,28 +2486,29 @@ class NodeConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   accelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
-  diskSizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  diskType = _messages.StringField(3)
-  imageType = _messages.StringField(4)
-  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 7)
-  localSsdCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  localSsdVolumeConfigs = _messages.MessageField('LocalSsdVolumeConfig', 9, repeated=True)
-  machineType = _messages.StringField(10)
-  metadata = _messages.MessageField('MetadataValue', 11)
-  minCpuPlatform = _messages.StringField(12)
-  nodeGroup = _messages.StringField(13)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 14)
-  oauthScopes = _messages.StringField(15, repeated=True)
-  preemptible = _messages.BooleanField(16)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 17)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 18)
-  serviceAccount = _messages.StringField(19)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 20)
-  tags = _messages.StringField(21, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 22, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 23)
+  bootDiskKmsKey = _messages.StringField(2)
+  diskSizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  diskType = _messages.StringField(4)
+  imageType = _messages.StringField(5)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 8)
+  localSsdCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  localSsdVolumeConfigs = _messages.MessageField('LocalSsdVolumeConfig', 10, repeated=True)
+  machineType = _messages.StringField(11)
+  metadata = _messages.MessageField('MetadataValue', 12)
+  minCpuPlatform = _messages.StringField(13)
+  nodeGroup = _messages.StringField(14)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 15)
+  oauthScopes = _messages.StringField(16, repeated=True)
+  preemptible = _messages.BooleanField(17)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 18)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 19)
+  serviceAccount = _messages.StringField(20)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 21)
+  tags = _messages.StringField(22, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 23, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 24)
 
 
 class NodeKubeletConfig(_messages.Message):

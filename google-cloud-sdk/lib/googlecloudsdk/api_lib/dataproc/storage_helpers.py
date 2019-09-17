@@ -154,7 +154,8 @@ class StorageClient(object):
     Returns:
       The download.
     """
-    download = transfer.Download.FromStream(stream, auto_transfer=False)
+    download = transfer.Download.FromStream(
+        stream, total_size=object_ref.size, auto_transfer=False)
     self._GetObject(object_ref, download=download)
     return download
 

@@ -167,6 +167,14 @@ class OperationData(object):
   def __ne__(self, o):
     return not self == o
 
+  def SetOperation(self, operation):
+    """"Updates the operation.
+
+    Args:
+      operation: Operation to be assigned.
+    """
+    self.operation = operation
+
   def IsDone(self):
     """Returns true if the operation is done."""
     operation_type = self.operation_service.GetResponseType('Get')
@@ -362,6 +370,9 @@ def WaitForOperations(
     for operation in unprocessed_operations:
       # Reify operation
       data = operation_details[operation.selfLink]
+      # Need to update the operation since old operation may not have all the
+      # required information.
+      data.SetOperation(operation)
 
       operation_service = data.operation_service
       resource_service = data.resource_service

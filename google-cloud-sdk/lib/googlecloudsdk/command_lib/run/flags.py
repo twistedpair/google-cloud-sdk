@@ -58,14 +58,10 @@ _PLATFORMS = collections.OrderedDict([
             'and `--cluster-location` flags or set the [run/cluster] and '
             '[run/cluster_location] properties to specify a cluster in a given '
             'zone.'),
-])
-
-_PLATFORMS_ALPHA = _PLATFORMS.copy()
-_PLATFORMS_ALPHA.update(collections.OrderedDict([
     ('kubernetes', 'Use a Knative-compatible kubernetes cluster. Use with the '
                    '`--kubeconfig` and `--context` flags to specify a '
                    'kubeconfig file and the context for connecting.'),
-]))
+])
 
 _PLATFORM_SHORT_DESCRIPTIONS = {
     'managed': 'Cloud Run (fully managed)',
@@ -382,17 +378,6 @@ def AddPlatformArg(parser):
       'If not specified, the user will be prompted to choose a platform.')
 
 
-def AddAlphaPlatformArg(parser):
-  """Add a platform arg with alpha choices."""
-  parser.add_argument(
-      '--platform',
-      choices=_PLATFORMS_ALPHA,
-      action=actions.StoreProperty(properties.VALUES.run.platform),
-      help='Target platform for running commands. '
-      'Alternatively, set the property [run/platform]. '
-      'If not specified, the user will be prompted to choose a platform.')
-
-
 def AddKubeconfigFlags(parser):
   parser.add_argument(
       '--kubeconfig',
@@ -430,13 +415,14 @@ def AddSecretsFlags(parser):
       parser,
       group_help='Specify where to mount which secrets. '
       'Mount paths map to a secret name. '
-      'Optionally, add an additional parameter to specify a '
-      'volume name for the secret. For example, '
-      '\'--update-secrets=/my/path=mysecret:secretvol\' will '
-      'create a volume named \'secretvol\' with a secret '
-      'named \'mysecret\' and mount that volume at \'/my/path\'. '
-      'If a volume name is not provided, the secret name '
-      'will be used.',
+      'Optionally, add a colon and an additional parameter to specify a '
+      'specific key in the secret data to use. For example, '
+      '\'--update-secrets=/my/path=mysecret:mykey\' will '
+      'create a volume named with a secret named \'mysecret\' '
+      'that has an item with key and path \'mykey\', '
+      'and mount that volume at \'/my/path\'. '
+      'If the additional parameter is not provided, all items in the '
+      'secret data will be included.',
       flag_name='secrets',
       long_name='secret mount paths')
 
@@ -447,13 +433,14 @@ def AddConfigMapsFlags(parser):
       parser,
       group_help='Specify where to mount which config maps. '
       'Mount paths map to a config map name. '
-      'Optionally, add an additional parameter to specify a '
-      'volume name for the config map. For example, '
-      '\'--update-config-maps=/my/path=myconfig:configvol\' will '
-      'create a volume named \'configvol\' with a config map '
-      'named \'myconfig\' and mount that volume at \'/my/path\'. '
-      'If a volume name is not provided, the config map name '
-      'will be used.',
+      'Optionally, add a colon and an additional parameter to specify a '
+      'specific key in the config map data to use. For example, '
+      '\'--update-config-maps=/my/path=myconfig:mykey\' will '
+      'create a volume with a config map named \'myconfig\' '
+      'that has an item with key and path \'myitem\' '
+      'and mount that volume at \'/my/path\'. '
+      'If the additional parameter is not provided, all items in the '
+      'secret data will be included.',
       flag_name='config-maps',
       long_name='config map mount paths')
 
@@ -1162,15 +1149,14 @@ def GetPlatformFallback():
 def GetPlatform(args):
   """Returns the platform to run on."""
   platform = properties.VALUES.run.platform.Get()
-  choices = args.GetFlagArgument('platform').choices_help
   if platform is None:
     if console_io.CanPrompt():
-      platform_descs = [_PLATFORM_SHORT_DESCRIPTIONS[k] for k in choices]
+      platform_descs = [_PLATFORM_SHORT_DESCRIPTIONS[k] for k in _PLATFORMS]
       index = console_io.PromptChoice(
           platform_descs,
           message='Please choose a target platform:',
           cancel_option=True)
-      platform = list(choices.keys())[index]
+      platform = list(_PLATFORMS.keys())[index]
       # Set platform so we don't re-prompt on future calls to this method
       properties.VALUES.run.platform.Set(platform)
       log.status.Print(
@@ -1183,7 +1169,7 @@ def GetPlatform(args):
           'the [run/platform] property to specify a target platform.\n'
           'Available platforms:\n{}'.format(
               '\n'.join(
-                  ['- {}: {}'.format(k, v) for k, v in choices.items()])))
+                  ['- {}: {}'.format(k, v) for k, v in _PLATFORMS.items()])))
 
   if platform == 'managed':
     VerifyOnePlatformFlags(args)
@@ -1196,7 +1182,7 @@ def GetPlatform(args):
         'Invalid target platform specified: [{}].\n'
         'Available platforms:\n{}'.format(
             platform,
-            '\n'.join(['- {}: {}'.format(k, v) for k, v in choices.items()
+            '\n'.join(['- {}: {}'.format(k, v) for k, v in _PLATFORMS.items()
                       ])))
   return platform
 

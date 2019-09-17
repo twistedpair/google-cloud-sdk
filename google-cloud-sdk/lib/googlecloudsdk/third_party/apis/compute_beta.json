@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20190821",
+ "revision": "20190910",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -15,9 +15,9 @@
  },
  "documentationLink": "https://developers.google.com/compute/docs/reference/latest/",
  "protocol": "rest",
- "baseUrl": "https://www.googleapis.com/compute/beta/projects/",
+ "baseUrl": "https://compute.googleapis.com/compute/beta/projects/",
  "basePath": "/compute/beta/projects/",
- "rootUrl": "https://www.googleapis.com/",
+ "rootUrl": "https://compute.googleapis.com/",
  "servicePath": "compute/beta/projects/",
  "batchPath": "batch/compute/beta",
  "parameters": {
@@ -1270,7 +1270,7 @@
     },
     "ignoreChildExemptions": {
      "type": "boolean",
-     "description": "Specifies whether principals can be exempted for the same LogType in lower-level resource policies. If true, any lower-level exemptions will be ignored."
+     "description": ""
     },
     "logType": {
      "type": "string",
@@ -1351,6 +1351,11 @@
        "compute.instanceGroups.insert"
       ]
      }
+    },
+    "recommendedSize": {
+     "type": "integer",
+     "description": "[Output Only] Target recommended MIG size (number of instances) computed by autoscaler. Autoscaler calculates recommended MIG size even when autoscaling policy mode is different from ON. This field is empty when autoscaler is not connected to the existing managed instance group or autoscaler did not generate its prediction.",
+     "format": "int32"
     },
     "region": {
      "type": "string",
@@ -1797,6 +1802,20 @@
      "type": "integer",
      "description": "The minimum number of replicas that the autoscaler can scale down to. This cannot be less than 0. If not provided, autoscaler will choose a default value depending on maximum number of instances allowed.",
      "format": "int32"
+    },
+    "mode": {
+     "type": "string",
+     "description": "Defines operating mode for this policy.",
+     "enum": [
+      "OFF",
+      "ON",
+      "ONLY_UP"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
     }
    }
   },
@@ -2116,7 +2135,7 @@
   "BackendService": {
    "id": "BackendService",
    "type": "object",
-   "description": "Represents a Backend Service resource.\n\n\n\nBackend services must have an associated health check. Backend services also store information about session affinity. For more information, read Backend Services.\n\nA backendServices resource represents a global backend service. Global backend services are used for HTTP(S), SSL Proxy, TCP Proxy load balancing and Traffic Director.\n\nA regionBackendServices resource represents a regional backend service. Regional backend services are used for internal TCP/UDP load balancing. For more information, read Internal TCP/UDP Load balancing. (== resource_for v1.backendService ==) (== resource_for beta.backendService ==)",
+   "description": "Represents a Backend Service resource.\n\nA backend service contains configuration values for Google Cloud Platform load balancing services.\n\nFor more information, read Backend Services.\n\n(== resource_for v1.backendService ==) (== resource_for beta.backendService ==)",
    "properties": {
     "affinityCookieTtlSec": {
      "type": "integer",
@@ -2261,7 +2280,7 @@
     },
     "protocol": {
      "type": "string",
-     "description": "The protocol this BackendService uses to communicate with backends.\n\nPossible values are HTTP, HTTPS, TCP, SSL, or UDP, depending on the chosen load balancer or Traffic Director configuration. Refer to the documentation for the load balancer or for Traffic director for more information.",
+     "description": "The protocol this BackendService uses to communicate with backends.\n\nPossible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP, depending on the chosen load balancer or Traffic Director configuration. Refer to the documentation for the load balancer or for Traffic Director for more information.",
      "enum": [
       "HTTP",
       "HTTP2",
@@ -5489,7 +5508,7 @@
   "ForwardingRule": {
    "id": "ForwardingRule",
    "type": "object",
-   "description": "Represents a Forwarding Rule resource.\n\n\n\nA forwardingRules resource represents a regional forwarding rule.\n\nRegional external forwarding rules can reference any of the following resources:\n \n- A target instance \n- A Cloud VPN Classic gateway (targetVpnGateway),  \n- A target pool for a Network Load Balancer \n- A global target HTTP(S) proxy for an HTTP(S) load balancer using Standard Tier \n- A target SSL proxy for a SSL Proxy load balancer using Standard Tier \n- A target TCP proxy for a TCP Proxy load balancer using Standard Tier.  \n\nRegional internal forwarding rules can reference the backend service of an internal TCP/UDP load balancer.\n\nFor regional internal forwarding rules, the following applies:  \n- If the loadBalancingScheme for the load balancer is INTERNAL, then the forwarding rule references a regional internal backend service. \n- If the loadBalancingScheme for the load balancer is INTERNAL_MANAGED, then the forwarding rule must reference a regional target HTTP(S) proxy.  \n\nFor more information, read Using Forwarding rules.\n\nA globalForwardingRules resource represents a global forwarding rule.\n\nGlobal forwarding rules are only used by load balancers that use Premium Tier. (== resource_for beta.forwardingRules ==) (== resource_for v1.forwardingRules ==) (== resource_for beta.globalForwardingRules ==) (== resource_for v1.globalForwardingRules ==) (== resource_for beta.regionForwardingRules ==) (== resource_for v1.regionForwardingRules ==)",
+   "description": "Represents a Forwarding Rule resource.\n\nA forwarding rule and its corresponding IP address represent the frontend configuration of a Google Cloud Platform load balancer. Forwarding rules can also reference target instances and Cloud VPN Classic gateways (targetVpnGateway).\n\nFor more information, read Forwarding rule concepts and Using protocol forwarding.\n\n(== resource_for beta.forwardingRules ==) (== resource_for v1.forwardingRules ==) (== resource_for beta.globalForwardingRules ==) (== resource_for v1.globalForwardingRules ==) (== resource_for beta.regionForwardingRules ==) (== resource_for v1.regionForwardingRules ==)",
    "properties": {
     "IPAddress": {
      "type": "string",
@@ -9000,6 +9019,20 @@
       "",
       ""
      ]
+    }
+   }
+  },
+  "InstanceGroupManagersCreateInstancesRequest": {
+   "id": "InstanceGroupManagersCreateInstancesRequest",
+   "type": "object",
+   "description": "InstanceGroupManagers.createInstances",
+   "properties": {
+    "instances": {
+     "type": "array",
+     "description": "[Required] List of specifications of per-instance configs.",
+     "items": {
+      "$ref": "PerInstanceConfig"
+     }
     }
    }
   },
@@ -15477,14 +15510,14 @@
     },
     "pathRules": {
      "type": "array",
-     "description": "The list of path rules. Use this list instead of routeRules when routing based on simple path matching is all that's required. The order by which path rules are specified does not matter. Matches are always done on the longest-path-first basis.\nFor example: a pathRule with a path /a/b/c/* will match before /a/b/* irrespective of the order in which those paths appear in this list.\nOnly one of pathRules or routeRules must be set.",
+     "description": "The list of path rules. Use this list instead of routeRules when routing based on simple path matching is all that's required. The order by which path rules are specified does not matter. Matches are always done on the longest-path-first basis.\nFor example: a pathRule with a path /a/b/c/* will match before /a/b/* irrespective of the order in which those paths appear in this list.\nWithin a given pathMatcher, only one of pathRules or routeRules must be set.",
      "items": {
       "$ref": "PathRule"
      }
     },
     "routeRules": {
      "type": "array",
-     "description": "The list of ordered HTTP route rules. Use this list instead of pathRules when advanced route matching and routing actions are desired. The order of specifying routeRules matters: the first rule that matches will cause its specified routing action to take effect.\nOnly one of pathRules or routeRules must be set.",
+     "description": "The list of ordered HTTP route rules. Use this list instead of pathRules when advanced route matching and routing actions are desired. The order of specifying routeRules matters: the first rule that matches will cause its specified routing action to take effect.\nWithin a given pathMatcher, only one of pathRules or routeRules must be set.\nrouteRules are not supported in UrlMaps intended for External Load balancers.",
      "items": {
       "$ref": "HttpRouteRule"
      }
@@ -15514,6 +15547,21 @@
     "urlRedirect": {
      "$ref": "HttpRedirectAction",
      "description": "When a path pattern is matched, the request is redirected to a URL specified by urlRedirect.\nIf urlRedirect is specified, service or routeAction must not be set."
+    }
+   }
+  },
+  "PerInstanceConfig": {
+   "id": "PerInstanceConfig",
+   "type": "object",
+   "properties": {
+    "fingerprint": {
+     "type": "string",
+     "description": "Fingerprint of this per-instance config. This field may be used in optimistic locking. It will be ignored when inserting a per-instance config. An up-to-date fingerprint must be provided in order to update an existing per-instance config or the field needs to be unset.",
+     "format": "byte"
+    },
+    "name": {
+     "type": "string",
+     "description": "The name of the per-instance config and the corresponding instance. Serves as a merge key during UpdatePerInstanceConfigs operation, i.e. if per-instance config with the same name exists then it will be updated, otherwise a new one will be created for the VM instance with the same name. An attempt to create a per-instance config for a VM instance that either doesn't exist or is not part of the group will result in a failure."
     }
    }
   },
@@ -15554,7 +15602,7 @@
     },
     "version": {
      "type": "integer",
-     "description": "Deprecated.",
+     "description": "Specifies the format of the policy.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be rejected.\n\nPolicies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset.",
      "format": "int32"
     }
    }
@@ -16554,6 +16602,20 @@
       "",
       ""
      ]
+    }
+   }
+  },
+  "RegionInstanceGroupManagersCreateInstancesRequest": {
+   "id": "RegionInstanceGroupManagersCreateInstancesRequest",
+   "type": "object",
+   "description": "RegionInstanceGroupManagers.createInstances",
+   "properties": {
+    "instances": {
+     "type": "array",
+     "description": "[Required] List of specifications of per-instance configs.",
+     "items": {
+      "$ref": "PerInstanceConfig"
+     }
     }
    }
   },
@@ -31761,6 +31823,53 @@
       "https://www.googleapis.com/auth/compute"
      ]
     },
+    "createInstances": {
+     "id": "compute.instanceGroupManagers.createInstances",
+     "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/createInstances",
+     "httpMethod": "POST",
+     "description": "Creates instances with per-instance configs in this managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.",
+     "parameters": {
+      "instanceGroupManager": {
+       "type": "string",
+       "description": "The name of the managed instance group. It should conform to RFC1035.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone where the managed instance group is located. It should conform to RFC1035.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instanceGroupManager"
+     ],
+     "request": {
+      "$ref": "InstanceGroupManagersCreateInstancesRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
     "delete": {
      "id": "compute.instanceGroupManagers.delete",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}",
@@ -40973,6 +41082,53 @@
      ],
      "request": {
       "$ref": "RegionInstanceGroupManagersApplyUpdatesRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "createInstances": {
+     "id": "compute.regionInstanceGroupManagers.createInstances",
+     "path": "{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/createInstances",
+     "httpMethod": "POST",
+     "description": "Creates instances with per-instance configs in this regional managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.",
+     "parameters": {
+      "instanceGroupManager": {
+       "type": "string",
+       "description": "The name of the managed instance group. It should conform to RFC1035.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region where the managed instance group is located. It should conform to RFC1035.",
+       "required": true,
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "instanceGroupManager"
+     ],
+     "request": {
+      "$ref": "RegionInstanceGroupManagersCreateInstancesRequest"
      },
      "response": {
       "$ref": "Operation"

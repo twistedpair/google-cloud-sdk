@@ -543,6 +543,14 @@
             "FLEXRS_SPEED_OPTIMIZED",
             "FLEXRS_COST_OPTIMIZED"
           ]
+        },
+        "workerRegion": {
+          "description": "The Compute Engine region\n(https:\/\/cloud.google.com\/compute\/docs\/regions-zones\/regions-zones) in\nwhich worker processing should occur, e.g. \"us-west1\". Mutually exclusive\nwith worker_zone. If neither worker_region nor worker_zone is specified,\ndefault to the control plane's region.",
+          "type": "string"
+        },
+        "workerZone": {
+          "description": "The Compute Engine zone\n(https:\/\/cloud.google.com\/compute\/docs\/regions-zones\/regions-zones) in\nwhich worker processing should occur, e.g. \"us-west1-a\". Mutually exclusive\nwith worker_region. If neither worker_region nor worker_zone is specified,\na zone in the control plane's region is chosen based on available capacity.",
+          "type": "string"
         }
       }
     },
@@ -1788,7 +1796,7 @@
           "format": "int32"
         },
         "zone": {
-          "description": "The Compute Engine [availability\nzone](https:\/\/cloud.google.com\/compute\/docs\/regions-zones\/regions-zones)\nfor launching worker instances to run your pipeline.",
+          "description": "The Compute Engine [availability\nzone](https:\/\/cloud.google.com\/compute\/docs\/regions-zones\/regions-zones)\nfor launching worker instances to run your pipeline.\nIn the future, worker_zone will take precedence.",
           "type": "string"
         },
         "serviceAccountEmail": {
@@ -1846,6 +1854,14 @@
             "WORKER_IP_PUBLIC",
             "WORKER_IP_PRIVATE"
           ]
+        },
+        "workerRegion": {
+          "description": "The Compute Engine region\n(https:\/\/cloud.google.com\/compute\/docs\/regions-zones\/regions-zones) in\nwhich worker processing should occur, e.g. \"us-west1\". Mutually exclusive\nwith worker_zone. If neither worker_region nor worker_zone is specified,\ndefault to the control plane's region.",
+          "type": "string"
+        },
+        "workerZone": {
+          "description": "The Compute Engine zone\n(https:\/\/cloud.google.com\/compute\/docs\/regions-zones\/regions-zones) in\nwhich worker processing should occur, e.g. \"us-west1-a\". Mutually exclusive\nwith worker_region. If neither worker_region nor worker_zone is specified,\na zone in the control plane's region is chosen based on available capacity.\nIf both `worker_zone` and `zone` are set, `worker_zone` takes precedence.",
+          "type": "string"
         }
       }
     },

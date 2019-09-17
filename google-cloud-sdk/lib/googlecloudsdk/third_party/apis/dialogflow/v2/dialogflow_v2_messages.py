@@ -670,6 +670,16 @@ class DialogflowProjectsGetAgentRequest(_messages.Message):
   parent = _messages.StringField(1, required=True)
 
 
+class DialogflowProjectsLocationsOperationsCancelRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsOperationsCancelRequest object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class DialogflowProjectsLocationsOperationsGetRequest(_messages.Message):
   r"""A DialogflowProjectsLocationsOperationsGetRequest object.
 
@@ -694,6 +704,16 @@ class DialogflowProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class DialogflowProjectsOperationsCancelRequest(_messages.Message):
+  r"""A DialogflowProjectsOperationsCancelRequest object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class DialogflowProjectsOperationsGetRequest(_messages.Message):
@@ -1115,6 +1135,8 @@ class GoogleCloudDialogflowV2EntityType(_messages.Message):
     autoExpansionMode: Optional. Indicates whether the entity type can be
       automatically expanded.
     displayName: Required. The name of the entity type.
+    enableFuzzyExtraction: Optional. Enables fuzzy entity extraction during
+      classification.
     entities: Optional. The collection of entity entries associated with the
       entity type.
     kind: Required. Indicates the kind of entity type.
@@ -1146,16 +1168,20 @@ class GoogleCloudDialogflowV2EntityType(_messages.Message):
       KIND_LIST: List entity types contain a set of entries that do not map to
         canonical values. However, list entity types can contain references to
         other entity types (with or without aliases).
+      KIND_REGEXP: Regexp entity types allow to specify regular expressions in
+        entries values.
     """
     KIND_UNSPECIFIED = 0
     KIND_MAP = 1
     KIND_LIST = 2
+    KIND_REGEXP = 3
 
   autoExpansionMode = _messages.EnumField('AutoExpansionModeValueValuesEnum', 1)
   displayName = _messages.StringField(2)
-  entities = _messages.MessageField('GoogleCloudDialogflowV2EntityTypeEntity', 3, repeated=True)
-  kind = _messages.EnumField('KindValueValuesEnum', 4)
-  name = _messages.StringField(5)
+  enableFuzzyExtraction = _messages.BooleanField(3)
+  entities = _messages.MessageField('GoogleCloudDialogflowV2EntityTypeEntity', 4, repeated=True)
+  kind = _messages.EnumField('KindValueValuesEnum', 5)
+  name = _messages.StringField(6)
 
 
 class GoogleCloudDialogflowV2EntityTypeBatch(_messages.Message):
@@ -1258,12 +1284,11 @@ class GoogleCloudDialogflowV2ExportAgentResponse(_messages.Message):
   Fields:
     agentContent: The exported agent.  Example for how to export an agent to a
       zip file via a command line: <pre>curl \   'https://dialogflow.googleapi
-      s.com/v2/projects/&lt;project_name&gt;/agent:export'\   -X POST \   -H
-      'Authorization: Bearer '$(gcloud auth application-default   print-
-      access-token) \   -H 'Accept: application/json' \   -H 'Content-Type:
-      application/json' \   --compressed \   --data-binary '{}' \ | grep
-      agentContent | sed -e 's/.*"agentContent": "\([^"]*\)".*/\1/' \ | base64
-      --decode > &lt;agent zip file&gt;</pre>
+      s.com/v2/projects/&lt;project_id&gt;/agent:export'\   -X POST \   -H
+      'Authorization: Bearer' \   $(gcloud auth application-default print-
+      access-token) \   -H 'Accept: application/json'   --compressed \   |
+      grep agentContent | sed -e 's/.*"agentContent": "\([^"]*\)".*/\1/' \   |
+      base64 --decode > &lt;agent zip file&gt;</pre>
     agentUri: The URI to a file containing the exported agent. This field is
       populated only if `agent_uri` is specified in `ExportAgentRequest`.
   """
@@ -1278,12 +1303,11 @@ class GoogleCloudDialogflowV2ImportAgentRequest(_messages.Message):
   Fields:
     agentContent: The agent to import.  Example for how to import an agent via
       the command line: <pre>curl \   'https://dialogflow.googleapis.com/v2/pr
-      ojects/&lt;project_name&gt;/agent:import\    -X POST \    -H
-      'Authorization: Bearer '$(gcloud auth application-default    print-
+      ojects/&lt;project_id&gt;/agent:import'\    -X POST \    -H
+      'Authorization: Bearer'\    $(gcloud auth application-default print-
       access-token) \    -H 'Accept: application/json' \    -H 'Content-Type:
-      application/json' \    --compressed \    --data-binary "{
-      'agentContent': '$(cat &lt;agent zip file&gt; | base64 -w 0)'
-      }"</pre>
+      application/json' \    --data-binary "{       'agentContent': '$(cat
+      &lt;agent zip file&gt; | base64 -w 0)'    }"</pre>
     agentUri: The URI to a Google Cloud Storage file containing the agent to
       import. Note: The URI must start with "gs://".
   """
@@ -2449,12 +2473,11 @@ class GoogleCloudDialogflowV2RestoreAgentRequest(_messages.Message):
   Fields:
     agentContent: The agent to restore.  Example for how to restore an agent
       via the command line: <pre>curl \   'https://dialogflow.googleapis.com/v
-      2/projects/&lt;project_name&gt;/agent:restore\    -X POST \    -H
-      'Authorization: Bearer '$(gcloud auth application-default    print-
+      2/projects/&lt;project_id&gt;/agent:restore'\    -X POST \    -H
+      'Authorization: Bearer' \    $(gcloud auth application-default print-
       access-token) \    -H 'Accept: application/json' \    -H 'Content-Type:
-      application/json' \    --compressed \    --data-binary "{
-      'agentContent': '$(cat &lt;agent zip file&gt; | base64 -w 0)'
-      }"</pre>
+      application/json' \    --data-binary "{        'agentContent': '$(cat
+      &lt;agent zip file&gt; | base64 -w 0)'    }"</pre>
     agentUri: The URI to a Google Cloud Storage file containing the agent to
       restore. Note: The URI must start with "gs://".
   """
@@ -2920,6 +2943,7 @@ class GoogleCloudDialogflowV2beta1ConversationModel(_messages.Message):
       long.
     name: Output only. ConversationModel resource name. Format:
       `projects/<Project ID>/conversationModels/<Conversation Model ID>`
+    smartReplyModelMetadata: Metadata for smart reply models.
     state: Output only. State of the model. A model can only serve prediction
       requests after it gets deployed.
   """
@@ -2953,7 +2977,8 @@ class GoogleCloudDialogflowV2beta1ConversationModel(_messages.Message):
   datasets = _messages.MessageField('GoogleCloudDialogflowV2beta1InputDataset', 3, repeated=True)
   displayName = _messages.StringField(4)
   name = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
+  smartReplyModelMetadata = _messages.MessageField('GoogleCloudDialogflowV2beta1SmartReplyModelMetadata', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
 
 
 class GoogleCloudDialogflowV2beta1EntityType(_messages.Message):
@@ -2969,6 +2994,8 @@ class GoogleCloudDialogflowV2beta1EntityType(_messages.Message):
     autoExpansionMode: Optional. Indicates whether the entity type can be
       automatically expanded.
     displayName: Required. The name of the entity type.
+    enableFuzzyExtraction: Optional. Enables fuzzy entity extraction during
+      classification.
     entities: Optional. The collection of entity entries associated with the
       entity type.
     kind: Required. Indicates the kind of entity type.
@@ -3000,16 +3027,20 @@ class GoogleCloudDialogflowV2beta1EntityType(_messages.Message):
       KIND_LIST: List entity types contain a set of entries that do not map to
         canonical values. However, list entity types can contain references to
         other entity types (with or without aliases).
+      KIND_REGEXP: Regexp entity types allow to specify regular expressions in
+        entries values.
     """
     KIND_UNSPECIFIED = 0
     KIND_MAP = 1
     KIND_LIST = 2
+    KIND_REGEXP = 3
 
   autoExpansionMode = _messages.EnumField('AutoExpansionModeValueValuesEnum', 1)
   displayName = _messages.StringField(2)
-  entities = _messages.MessageField('GoogleCloudDialogflowV2beta1EntityTypeEntity', 3, repeated=True)
-  kind = _messages.EnumField('KindValueValuesEnum', 4)
-  name = _messages.StringField(5)
+  enableFuzzyExtraction = _messages.BooleanField(3)
+  entities = _messages.MessageField('GoogleCloudDialogflowV2beta1EntityTypeEntity', 4, repeated=True)
+  kind = _messages.EnumField('KindValueValuesEnum', 5)
+  name = _messages.StringField(6)
 
 
 class GoogleCloudDialogflowV2beta1EntityTypeEntity(_messages.Message):
@@ -3089,12 +3120,11 @@ class GoogleCloudDialogflowV2beta1ExportAgentResponse(_messages.Message):
   Fields:
     agentContent: The exported agent.  Example for how to export an agent to a
       zip file via a command line: <pre>curl \   'https://dialogflow.googleapi
-      s.com/v2beta1/projects/&lt;project_name&gt;/agent:export'\   -X POST \
-      -H 'Authorization: Bearer '$(gcloud auth application-default   print-
-      access-token) \   -H 'Accept: application/json' \   -H 'Content-Type:
-      application/json' \   --compressed \   --data-binary '{}' \ | grep
-      agentContent | sed -e 's/.*"agentContent": "\([^"]*\)".*/\1/' \ | base64
-      --decode > &lt;agent zip file&gt;</pre>
+      s.com/v2beta1/projects/&lt;project_id&gt;/agent:export'\   -X POST \
+      -H 'Authorization: Bearer' \   $(gcloud auth application-default print-
+      access-token) \   -H 'Accept: application/json'   --compressed \   |
+      grep agentContent | sed -e 's/.*"agentContent": "\([^"]*\)".*/\1/' \   |
+      base64 --decode > &lt;agent zip file&gt;</pre>
     agentUri: The URI to a file containing the exported agent. This field is
       populated only if `agent_uri` is specified in `ExportAgentRequest`.
   """
@@ -4431,6 +4461,18 @@ class GoogleCloudDialogflowV2beta1SentimentAnalysisResult(_messages.Message):
   queryTextSentiment = _messages.MessageField('GoogleCloudDialogflowV2beta1Sentiment', 1)
 
 
+class GoogleCloudDialogflowV2beta1SmartReplyModelMetadata(_messages.Message):
+  r"""Metadata for smart reply models.
+
+  Fields:
+    modelType: Optional. Type of the article suggestion model. The available
+      values are: *  `smart-reply-dual-encoder-model-1` - (default) Smart
+      Reply Dual Encoder model.
+  """
+
+  modelType = _messages.StringField(1)
+
+
 class GoogleCloudDialogflowV2beta1WebhookRequest(_messages.Message):
   r"""The request message for a webhook call.
 
@@ -4547,421 +4589,28 @@ class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
   source = _messages.StringField(7)
 
 
-class GoogleCloudDialogflowV3alpha1PageInfo(_messages.Message):
-  r"""Represents page information communicated to and from the webhook.
+class GoogleCloudDialogflowV3alpha1ExportAgentResponse(_messages.Message):
+  r"""The response message for Agents.ExportAgent.
 
   Fields:
-    currentPage: Always present for WebhookRequest. Ignored for
-      WebhookResponse. The unique identifier of the current page. Format:
-      `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-      ID>/pages/<Page ID>`.
-    formInfo: Optional for both WebhookRequest and WebhookResponse.
-      Information about the form.
-    nextPage: Optional for both WebhookRequest and WebhookResponse. The unique
-      identifier of the next page. This field can be set by the webhook to
-      immediately transition to a page different from `current_page`. Format:
-      `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-      ID>/pages/<Page ID>`.
+    agentContent: The exported agent.  Example for how to export an agent to a
+      zip file via a command line: <pre>curl \
+      'https://dialogflow.googleapis.com/v3alpha1/projects/&lt;project-
+      id&gt;/locations/&lt;location-id&gt;/agents/&lt;agent-id&gt;:export'\
+      -X POST \   -H 'Authorization: Bearer' \   $(gcloud auth application-
+      default print-access-token) \   -H 'Accept: application/json'</pre>
+      <pre>curl \   'https://dialogflow.googleapis.com/v3alpha1/projects/&lt
+      ;project-id&gt;/locations/&lt;location-id&gt;/operations/&lt;operation-
+      id&gt;'\   -H 'Authorization: Bearer' \   $(gcloud auth application-
+      default print-access-token) \   -H 'Accept: application/json' \
+      --compressed \   | grep agentContent | sed -e 's/.*"agentContent":
+      "\([^"]*\)".*/\1/' \ | base64 --decode > &lt;agent zip file&gt;</pre>
+    agentUri: The URI to a file containing the exported agent. This field is
+      populated only if `agent_uri` is specified in ExportAgentRequest.
   """
 
-  currentPage = _messages.StringField(1)
-  formInfo = _messages.MessageField('GoogleCloudDialogflowV3alpha1PageInfoFormInfo', 2)
-  nextPage = _messages.StringField(3)
-
-
-class GoogleCloudDialogflowV3alpha1PageInfoFormInfo(_messages.Message):
-  r"""Represents form information.
-
-  Enums:
-    StateValueValuesEnum: Always present for WebhookRequest. Ignored for
-      WebhookResponse. The current state of the form.
-
-  Fields:
-    parameterInfo: Optional for both WebhookRequest and WebhookResponse. The
-      parameters contained in the form. Note that the webhook cannot add or
-      remove any form parameter.
-    state: Always present for WebhookRequest. Ignored for WebhookResponse. The
-      current state of the form.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Always present for WebhookRequest. Ignored for WebhookResponse. The
-    current state of the form.
-
-    Values:
-      FORM_STATE_UNSPECIFIED: Not specified. This value should be never used.
-      INITIALIZING: The server is initializing the form. The webhook can
-        process the form before parameter collection begins.
-      COLLECTING: The server is collecting form parameters from the user. The
-        webhook can modify form parameters that have been collected or are to
-        be collected.
-      FINALIZED: The server has collected all required form parameters from
-        the user. The webhook can modify collected form parameters. If any
-        required parameter is invalidated by the webhook, the form will return
-        to the parameter collection state; otherwise, parameter collection
-        will conclude.
-    """
-    FORM_STATE_UNSPECIFIED = 0
-    INITIALIZING = 1
-    COLLECTING = 2
-    FINALIZED = 3
-
-  parameterInfo = _messages.MessageField('GoogleCloudDialogflowV3alpha1PageInfoFormInfoParameterInfo', 1, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
-
-
-class GoogleCloudDialogflowV3alpha1PageInfoFormInfoParameterInfo(_messages.Message):
-  r"""Represents parameter information.
-
-  Enums:
-    StateValueValuesEnum: Always present for WebhookRequest. Required for
-      WebhookResponse. The state of the parameter. This field can be set to
-      INVALID by the webhook to invalidate the parameter; other values set by
-      the webhook will be ignored.
-
-  Fields:
-    displayName: Always present for WebhookRequest. Required for
-      WebhookResponse. The human-readable name of the parameter, unique within
-      the form. This field cannot be modified by the webhook.
-    justCollected: Optional for WebhookRequest. Ignored for WebhookResponse.
-      Indicates if the parameter value was just collected on the last
-      conversation turn.
-    prompt: Not set for WebhookRequest. Optional for WebhookResponse. The
-      prompt to send to the user to fill a required form parameter. This field
-      can be set by the webhook. If set, this field overrides the prompt
-      defined for the form parameter.
-    required: Optional for both WebhookRequest and WebhookResponse. Indicates
-      whether the parameter is required. Optional parameters will not trigger
-      prompts; however, they are filled if the user specifies them. Required
-      parameters must be filled before form filling concludes.
-    state: Always present for WebhookRequest. Required for WebhookResponse.
-      The state of the parameter. This field can be set to INVALID by the
-      webhook to invalidate the parameter; other values set by the webhook
-      will be ignored.
-    value: Optional for both WebhookRequest and WebhookResponse. The value of
-      the parameter. This field can be set by the webhook to change the
-      parameter value.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Always present for WebhookRequest. Required for WebhookResponse. The
-    state of the parameter. This field can be set to INVALID by the webhook to
-    invalidate the parameter; other values set by the webhook will be ignored.
-
-    Values:
-      PARAMETER_STATE_UNSPECIFIED: Not specified. This value should be never
-        used.
-      EMPTY: Indicates that the parameter does not have a value.
-      INVALID: Indicates that the parameter value is invalid. This field can
-        be used by the webhook to invalidate the parameter and ask the server
-        to collect it from the user again.
-      FILLED: Indicates that the parameter has a value.
-    """
-    PARAMETER_STATE_UNSPECIFIED = 0
-    EMPTY = 1
-    INVALID = 2
-    FILLED = 3
-
-  displayName = _messages.StringField(1)
-  justCollected = _messages.BooleanField(2)
-  prompt = _messages.MessageField('GoogleCloudDialogflowV3alpha1ResponseMessage', 3, repeated=True)
-  required = _messages.BooleanField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  value = _messages.MessageField('extra_types.JsonValue', 6)
-
-
-class GoogleCloudDialogflowV3alpha1ResponseMessage(_messages.Message):
-  r"""Represents a response message that can be returned by a conversational
-  agent.
-
-  Enums:
-    PlatformValueValuesEnum: The platform that the response message is
-      intended for.
-
-  Messages:
-    PayloadValue: Returns a response containing a custom, platform-specific
-      payload.
-
-  Fields:
-    payload: Returns a response containing a custom, platform-specific
-      payload.
-    platform: The platform that the response message is intended for.
-    text: Returns a text response.
-  """
-
-  class PlatformValueValuesEnum(_messages.Enum):
-    r"""The platform that the response message is intended for.
-
-    Values:
-      PLATFORM_UNSPECIFIED: Not specified.
-    """
-    PLATFORM_UNSPECIFIED = 0
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class PayloadValue(_messages.Message):
-    r"""Returns a response containing a custom, platform-specific payload.
-
-    Messages:
-      AdditionalProperty: An additional property for a PayloadValue object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a PayloadValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  payload = _messages.MessageField('PayloadValue', 1)
-  platform = _messages.EnumField('PlatformValueValuesEnum', 2)
-  text = _messages.MessageField('GoogleCloudDialogflowV3alpha1ResponseMessageText', 3)
-
-
-class GoogleCloudDialogflowV3alpha1ResponseMessageText(_messages.Message):
-  r"""The text response message.
-
-  Fields:
-    text: A collection of text responses.
-  """
-
-  text = _messages.StringField(1, repeated=True)
-
-
-class GoogleCloudDialogflowV3alpha1SessionInfo(_messages.Message):
-  r"""Represents session information communicated to and from the webhook.
-
-  Messages:
-    ParametersValue: Optional for WebhookRequest. Optional for
-      WebhookResponse. All parameters collected from forms and intents during
-      the session. Parameters can be created, updated, or removed by the
-      webhook. To remove a parameter from the session, the webhook should
-      explictly set the parameter value to null in WebhookResponse. The map is
-      keyed by parameters' display names.
-
-  Fields:
-    parameters: Optional for WebhookRequest. Optional for WebhookResponse. All
-      parameters collected from forms and intents during the session.
-      Parameters can be created, updated, or removed by the webhook. To remove
-      a parameter from the session, the webhook should explictly set the
-      parameter value to null in WebhookResponse. The map is keyed by
-      parameters' display names.
-    session: Always present for WebhookRequest. Ignored for WebhookResponse.
-      The unique identifier of the session. This field can be used by the
-      webhook to identify an user. Format: `projects/<Project
-      ID>/locations/<Location ID>/agents/<Agent ID>/sessions/<Session ID>`.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ParametersValue(_messages.Message):
-    r"""Optional for WebhookRequest. Optional for WebhookResponse. All
-    parameters collected from forms and intents during the session. Parameters
-    can be created, updated, or removed by the webhook. To remove a parameter
-    from the session, the webhook should explictly set the parameter value to
-    null in WebhookResponse. The map is keyed by parameters' display names.
-
-    Messages:
-      AdditionalProperty: An additional property for a ParametersValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type ParametersValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ParametersValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  parameters = _messages.MessageField('ParametersValue', 1)
-  session = _messages.StringField(2)
-
-
-class GoogleCloudDialogflowV3alpha1WebhookRequest(_messages.Message):
-  r"""The request message for a webhook call.
-
-  Fields:
-    detectIntentResponseId: Always present. The unique identifier of the
-      DetectIntentResponse that will be returned to the API caller.
-    fulfillmentInfo: Always present. Information about the fulfillment that
-      triggered this webhook call.
-    intentInfo: Information about the last matched intent.
-    pageInfo: Information about page status.
-    sessionInfo: Information about session status.
-  """
-
-  detectIntentResponseId = _messages.StringField(1)
-  fulfillmentInfo = _messages.MessageField('GoogleCloudDialogflowV3alpha1WebhookRequestFulfillmentInfo', 2)
-  intentInfo = _messages.MessageField('GoogleCloudDialogflowV3alpha1WebhookRequestIntentInfo', 3)
-  pageInfo = _messages.MessageField('GoogleCloudDialogflowV3alpha1PageInfo', 4)
-  sessionInfo = _messages.MessageField('GoogleCloudDialogflowV3alpha1SessionInfo', 5)
-
-
-class GoogleCloudDialogflowV3alpha1WebhookRequestFulfillmentInfo(_messages.Message):
-  r"""Represents fulfillment information communicated to the webhook.
-
-  Fields:
-    tag: Always present. The tag used to identify which fulfillment is being
-      called.
-  """
-
-  tag = _messages.StringField(1)
-
-
-class GoogleCloudDialogflowV3alpha1WebhookRequestIntentInfo(_messages.Message):
-  r"""Represents intent information communicated to the webhook.
-
-  Messages:
-    ParametersValue: Parameters identified as a result of intent matching.
-      This is a map of the name of the identified parameter to the value of
-      the parameter identified from the user's utterance. All parameters
-      defined in the matched intent that are identified will be surfaced here.
-
-  Fields:
-    lastMatchedIntent: Always present. The unique identifier of the last
-      matched intent. Format: `projects/<Project ID>/locations/<Location
-      ID>/agents/<Agent ID>/intents/<Intent ID>`.
-    parameters: Parameters identified as a result of intent matching. This is
-      a map of the name of the identified parameter to the value of the
-      parameter identified from the user's utterance. All parameters defined
-      in the matched intent that are identified will be surfaced here.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ParametersValue(_messages.Message):
-    r"""Parameters identified as a result of intent matching. This is a map of
-    the name of the identified parameter to the value of the parameter
-    identified from the user's utterance. All parameters defined in the
-    matched intent that are identified will be surfaced here.
-
-    Messages:
-      AdditionalProperty: An additional property for a ParametersValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type ParametersValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ParametersValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A GoogleCloudDialogflowV3alpha1WebhookRequestIntentInfoIntentPa
-          rameterValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('GoogleCloudDialogflowV3alpha1WebhookRequestIntentInfoIntentParameterValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  lastMatchedIntent = _messages.StringField(1)
-  parameters = _messages.MessageField('ParametersValue', 2)
-
-
-class GoogleCloudDialogflowV3alpha1WebhookRequestIntentInfoIntentParameterValue(_messages.Message):
-  r"""Represents a value for an intent parameter.
-
-  Fields:
-    originalValue: Always present. Original text value extracted from user
-      utterance.
-    resolvedValue: Always present. Structured value for the parameter
-      extracted from user utterance.
-  """
-
-  originalValue = _messages.StringField(1)
-  resolvedValue = _messages.MessageField('extra_types.JsonValue', 2)
-
-
-class GoogleCloudDialogflowV3alpha1WebhookResponse(_messages.Message):
-  r"""The response message for a webhook call.
-
-  Messages:
-    PayloadValue: Value to append directly to `QueryResult.webhook_payloads`.
-
-  Fields:
-    fulfillmentResponse: The fulfillment response to send to the user. This
-      field can be omitted by the webhook if it does not intend to send any
-      response to the user.
-    pageInfo: Information about page status. This field can be omitted by the
-      webhook if it does not intend to modify page status.
-    payload: Value to append directly to `QueryResult.webhook_payloads`.
-    sessionInfo: Information about session status. This field can be omitted
-      by the webhook if it does not intend to modify session status.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class PayloadValue(_messages.Message):
-    r"""Value to append directly to `QueryResult.webhook_payloads`.
-
-    Messages:
-      AdditionalProperty: An additional property for a PayloadValue object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a PayloadValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  fulfillmentResponse = _messages.MessageField('GoogleCloudDialogflowV3alpha1WebhookResponseFulfillmentResponse', 1)
-  pageInfo = _messages.MessageField('GoogleCloudDialogflowV3alpha1PageInfo', 2)
-  payload = _messages.MessageField('PayloadValue', 3)
-  sessionInfo = _messages.MessageField('GoogleCloudDialogflowV3alpha1SessionInfo', 4)
-
-
-class GoogleCloudDialogflowV3alpha1WebhookResponseFulfillmentResponse(_messages.Message):
-  r"""Represents a fulfillment response to the user.
-
-  Enums:
-    MergeBehaviorValueValuesEnum: Merge behavior for `messages`.
-
-  Fields:
-    mergeBehavior: Merge behavior for `messages`.
-    messages: A static response in the form of rich messages.
-  """
-
-  class MergeBehaviorValueValuesEnum(_messages.Enum):
-    r"""Merge behavior for `messages`.
-
-    Values:
-      MERGE_BEHAVIOR_UNSPECIFIED: Not specified. `APPEND` will be used.
-      APPEND: `messages` will be appended to the list of messages waiting to
-        be sent to the user.
-      REPLACE: `messages` will replace the list of messages waiting to be sent
-        to the user.
-    """
-    MERGE_BEHAVIOR_UNSPECIFIED = 0
-    APPEND = 1
-    REPLACE = 2
-
-  mergeBehavior = _messages.EnumField('MergeBehaviorValueValuesEnum', 1)
-  messages = _messages.MessageField('GoogleCloudDialogflowV3alpha1ResponseMessage', 2, repeated=True)
+  agentContent = _messages.BytesField(1)
+  agentUri = _messages.StringField(2)
 
 
 class GoogleLongrunningListOperationsResponse(_messages.Message):

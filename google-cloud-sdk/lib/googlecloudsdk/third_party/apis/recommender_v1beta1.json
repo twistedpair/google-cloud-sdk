@@ -268,7 +268,7 @@
     },
     "GoogleCloudRecommenderV1beta1Operation": {
       "id": "GoogleCloudRecommenderV1beta1Operation",
-      "description": "Contains an operation for a resource inspired by the JSON-PATCH format with\nsupport for:\n* Custom filters for describing partial array patch.\n* Extended path values for describing nested arrays.\n* Custom fields for describing the resource for which the operation is being\n  described.\n* Allows extension to custom operations not natively supported by RFC6902.\nSee https:\/\/tools.ietf.org\/html\/rfc6902 for details on the original RFC.\nNext Id: 12",
+      "description": "Contains an operation for a resource loosely based on the JSON-PATCH format\nwith support for:\n\n* Custom filters for describing partial array patch.\n* Extended path values for describing nested arrays.\n* Custom fields for describing the resource for which the operation is being\n  described.\n* Allows extension to custom operations not natively supported by RFC6902.\nSee https:\/\/tools.ietf.org\/html\/rfc6902 for details on the original RFC.",
       "type": "object",
       "properties": {
         "action": {
@@ -304,7 +304,7 @@
           "$ref": "GoogleCloudRecommenderV1beta1ValueMatcher"
         },
         "pathFilters": {
-          "description": "Set of filters to apply if `path` refers to array elements or nested array\nelements in order to narrow down to a single unique element that is being\ntested\/modified.\nThis is intended to be an exact match per filter. To perform advanced\nmatching, use path_value_matchers.\nExample: {\n  \"\/versions\/*\/name\" : \"it-123\"\n  \"\/versions\/*\/targetSize\/percent\": 20\n}\nExample: {\n  \"\/bindings\/*\/role\": \"roles\/admin\"\n  \"\/bindings\/*\/condition\" : null\n}\nExample: {\n  \"\/bindings\/*\/role\": \"roles\/admin\"\n  \"\/bindings\/*\/members\/*\" : [\"x@google.com\", \"y@google.com\"]\n}\nWhen both path_filters and path_value_matchers are set, an implicit AND\nmust be performed.",
+          "description": "Set of filters to apply if `path` refers to array elements or nested array\nelements in order to narrow down to a single unique element that is being\ntested\/modified.\nThis is intended to be an exact match per filter. To perform advanced\nmatching, use path_value_matchers.\n\n* Example: {\n  \"\/versions\/*\/name\" : \"it-123\"\n  \"\/versions\/*\/targetSize\/percent\": 20\n }\n* Example: {\n  \"\/bindings\/*\/role\": \"roles\/admin\"\n  \"\/bindings\/*\/condition\" : null\n }\n* Example: {\n  \"\/bindings\/*\/role\": \"roles\/admin\"\n  \"\/bindings\/*\/members\/*\" : [\"x@google.com\", \"y@google.com\"]\n }\nWhen both path_filters and path_value_matchers are set, an implicit AND\nmust be performed.",
           "type": "object",
           "additionalProperties": {
             "type": "any"
@@ -325,7 +325,7 @@
       "type": "object",
       "properties": {
         "matchesPattern": {
-          "description": "To be used for regex matching. The regular expression is using the Google\nRE2 syntax (https:\/\/github.com\/google\/re2\/wiki\/Syntax).",
+          "description": "To be used for full regex matching. The regular expression is using the\nGoogle RE2 syntax (https:\/\/github.com\/google\/re2\/wiki\/Syntax), so to be\nused with RE2::FullMatch",
           "type": "string"
         }
       }

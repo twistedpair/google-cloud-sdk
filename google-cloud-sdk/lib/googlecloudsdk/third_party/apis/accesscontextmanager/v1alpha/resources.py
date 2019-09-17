@@ -45,12 +45,13 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
-  ACCESSPOLICIES_ACCESSZONES = (
-      'accessPolicies.accessZones',
+  ACCESSPOLICIES_SERVICEPERIMETERS = (
+      'accessPolicies.servicePerimeters',
       '{+name}',
       {
           '':
-              'accessPolicies/{accessPoliciesId}/accessZones/{accessZonesId}',
+              'accessPolicies/{accessPoliciesId}/servicePerimeters/'
+              '{servicePerimetersId}',
       },
       [u'name'],
       True

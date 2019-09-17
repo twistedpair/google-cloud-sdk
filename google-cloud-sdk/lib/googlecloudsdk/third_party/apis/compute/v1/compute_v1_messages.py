@@ -1492,9 +1492,7 @@ class AuditLogConfig(_messages.Message):
   Fields:
     exemptedMembers: Specifies the identities that do not cause logging for
       this type of permission. Follows the same format of [Binding.members][].
-    ignoreChildExemptions: Specifies whether principals can be exempted for
-      the same LogType in lower-level resource policies. If true, any lower-
-      level exemptions will be ignored.
+    ignoreChildExemptions:
     logType: The log type that this config enables.
   """
 
@@ -2531,27 +2529,42 @@ class BackendBucketList(_messages.Message):
 
 
 class BackendService(_messages.Message):
-  r"""Represents a Backend Service resource.    Backend services must have an
-  associated health check. Backend services also store information about
-  session affinity. For more information, read Backend Services.  A
-  backendServices resource represents a global backend service. Global backend
-  services are used for HTTP(S), SSL Proxy, TCP Proxy load balancing and
-  Traffic Director.  A regionBackendServices resource represents a regional
-  backend service. Regional backend services are used for internal TCP/UDP
-  load balancing. For more information, read Internal TCP/UDP Load balancing.
-  (== resource_for v1.backendService ==) (== resource_for beta.backendService
-  ==)
+  r"""Represents a Backend Service resource.  A backend service contains
+  configuration values for Google Cloud Platform load balancing services.  For
+  more information, read Backend Services.  (== resource_for v1.backendService
+  ==) (== resource_for beta.backendService ==)
 
   Enums:
     LoadBalancingSchemeValueValuesEnum: Indicates whether the backend service
       will be used with internal or external load balancing. A backend service
       created for one type of load balancing cannot be used with the other.
       Possible values are INTERNAL and EXTERNAL.
+    LocalityLbPolicyValueValuesEnum: The load balancing algorithm used within
+      the scope of the locality. The possible values are:   - ROUND_ROBIN:
+      This is a simple policy in which each healthy backend is selected in
+      round robin order. This is the default.  - LEAST_REQUEST: An O(1)
+      algorithm which selects two random healthy hosts and picks the host
+      which has fewer active requests.  - RING_HASH: The ring/modulo hash load
+      balancer implements consistent hashing to backends. The algorithm has
+      the property that the addition/removal of a host from a set of N hosts
+      only affects 1/N of the requests.  - RANDOM: The load balancer selects a
+      random healthy host.  - ORIGINAL_DESTINATION: Backend host is selected
+      based on the client connection metadata, i.e., connections are opened to
+      the same address as the destination address of the incoming connection
+      before the connection was redirected to the load balancer.  - MAGLEV:
+      used as a drop in replacement for the ring hash load balancer. Maglev is
+      not as stable as ring hash but has faster table lookup build times and
+      host selection times. For more information about Maglev, refer to
+      https://ai.google/research/pubs/pub44824   This field is applicable to
+      either:   - A regional backend service with the service_protocol set to
+      HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to
+      INTERNAL_MANAGED.  - A global backend service with the
+      load_balancing_scheme set to INTERNAL_SELF_MANAGED.
     ProtocolValueValuesEnum: The protocol this BackendService uses to
-      communicate with backends.  Possible values are HTTP, HTTPS, TCP, SSL,
-      or UDP, depending on the chosen load balancer or Traffic Director
+      communicate with backends.  Possible values are HTTP, HTTPS, HTTP2, TCP,
+      SSL, or UDP, depending on the chosen load balancer or Traffic Director
       configuration. Refer to the documentation for the load balancer or for
-      Traffic director for more information.
+      Traffic Director for more information.
     SessionAffinityValueValuesEnum: Type of session affinity to use. The
       default is NONE. Session affinity is not applicable if the --protocol is
       UDP.  When the loadBalancingScheme is EXTERNAL, possible values are
@@ -2568,7 +2581,23 @@ class BackendService(_messages.Message):
       allowed value is one day (86,400).
     backends: The list of backends that serve this BackendService.
     cdnPolicy: Cloud CDN configuration for this BackendService.
+    circuitBreakers: Settings controlling the volume of connections to a
+      backend service.  This field is applicable to either:   - A regional
+      backend service with the service_protocol set to HTTP, HTTPS, or HTTP2,
+      and load_balancing_scheme set to INTERNAL_MANAGED.  - A global backend
+      service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED.
     connectionDraining: A ConnectionDraining attribute.
+    consistentHash: Consistent Hash-based load balancing can be used to
+      provide soft session affinity based on HTTP headers, cookies or other
+      properties. This load balancing policy is applicable only for HTTP
+      connections. The affinity to a particular destination host will be lost
+      when one or more hosts are added/removed from the destination service.
+      This field specifies parameters that control consistent hashing. This
+      field is only applicable when localityLbPolicy is set to MAGLEV or
+      RING_HASH.  This field is applicable to either:   - A regional backend
+      service with the service_protocol set to HTTP, HTTPS, or HTTP2, and
+      load_balancing_scheme set to INTERNAL_MANAGED.  - A global backend
+      service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     customRequestHeaders: Headers that the HTTP/S load balancer should add to
@@ -2600,6 +2629,27 @@ class BackendService(_messages.Message):
       with internal or external load balancing. A backend service created for
       one type of load balancing cannot be used with the other. Possible
       values are INTERNAL and EXTERNAL.
+    localityLbPolicy: The load balancing algorithm used within the scope of
+      the locality. The possible values are:   - ROUND_ROBIN: This is a simple
+      policy in which each healthy backend is selected in round robin order.
+      This is the default.  - LEAST_REQUEST: An O(1) algorithm which selects
+      two random healthy hosts and picks the host which has fewer active
+      requests.  - RING_HASH: The ring/modulo hash load balancer implements
+      consistent hashing to backends. The algorithm has the property that the
+      addition/removal of a host from a set of N hosts only affects 1/N of the
+      requests.  - RANDOM: The load balancer selects a random healthy host.  -
+      ORIGINAL_DESTINATION: Backend host is selected based on the client
+      connection metadata, i.e., connections are opened to the same address as
+      the destination address of the incoming connection before the connection
+      was redirected to the load balancer.  - MAGLEV: used as a drop in
+      replacement for the ring hash load balancer. Maglev is not as stable as
+      ring hash but has faster table lookup build times and host selection
+      times. For more information about Maglev, refer to
+      https://ai.google/research/pubs/pub44824   This field is applicable to
+      either:   - A regional backend service with the service_protocol set to
+      HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to
+      INTERNAL_MANAGED.  - A global backend service with the
+      load_balancing_scheme set to INTERNAL_SELF_MANAGED.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -2607,6 +2657,12 @@ class BackendService(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    outlierDetection: Settings controlling eviction of unhealthy hosts from
+      the load balancing pool. This field is applicable to either:   - A
+      regional backend service with the service_protocol set to HTTP, HTTPS,
+      or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED.  - A global
+      backend service with the load_balancing_scheme set to
+      INTERNAL_SELF_MANAGED.
     port: Deprecated in favor of portName. The TCP port to connect on the
       backend. The default value is 80.  This cannot be used if the
       loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Balancing).
@@ -2618,10 +2674,10 @@ class BackendService(_messages.Message):
       when the loadBalancingScheme is INTERNAL (Internal TCP/UDP Load
       Blaancing).
     protocol: The protocol this BackendService uses to communicate with
-      backends.  Possible values are HTTP, HTTPS, TCP, SSL, or UDP, depending
-      on the chosen load balancer or Traffic Director configuration. Refer to
-      the documentation for the load balancer or for Traffic director for more
-      information.
+      backends.  Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP,
+      depending on the chosen load balancer or Traffic Director configuration.
+      Refer to the documentation for the load balancer or for Traffic Director
+      for more information.
     region: [Output Only] URL of the region where the regional backend service
       resides. This field is not applicable to global backend services. You
       must specify this field as part of the HTTP request URL. It is not
@@ -2661,11 +2717,51 @@ class BackendService(_messages.Message):
     INTERNAL_SELF_MANAGED = 3
     INVALID_LOAD_BALANCING_SCHEME = 4
 
+  class LocalityLbPolicyValueValuesEnum(_messages.Enum):
+    r"""The load balancing algorithm used within the scope of the locality.
+    The possible values are:   - ROUND_ROBIN: This is a simple policy in which
+    each healthy backend is selected in round robin order. This is the
+    default.  - LEAST_REQUEST: An O(1) algorithm which selects two random
+    healthy hosts and picks the host which has fewer active requests.  -
+    RING_HASH: The ring/modulo hash load balancer implements consistent
+    hashing to backends. The algorithm has the property that the
+    addition/removal of a host from a set of N hosts only affects 1/N of the
+    requests.  - RANDOM: The load balancer selects a random healthy host.  -
+    ORIGINAL_DESTINATION: Backend host is selected based on the client
+    connection metadata, i.e., connections are opened to the same address as
+    the destination address of the incoming connection before the connection
+    was redirected to the load balancer.  - MAGLEV: used as a drop in
+    replacement for the ring hash load balancer. Maglev is not as stable as
+    ring hash but has faster table lookup build times and host selection
+    times. For more information about Maglev, refer to
+    https://ai.google/research/pubs/pub44824   This field is applicable to
+    either:   - A regional backend service with the service_protocol set to
+    HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED.
+    - A global backend service with the load_balancing_scheme set to
+    INTERNAL_SELF_MANAGED.
+
+    Values:
+      INVALID_LB_POLICY: <no description>
+      LEAST_REQUEST: <no description>
+      MAGLEV: <no description>
+      ORIGINAL_DESTINATION: <no description>
+      RANDOM: <no description>
+      RING_HASH: <no description>
+      ROUND_ROBIN: <no description>
+    """
+    INVALID_LB_POLICY = 0
+    LEAST_REQUEST = 1
+    MAGLEV = 2
+    ORIGINAL_DESTINATION = 3
+    RANDOM = 4
+    RING_HASH = 5
+    ROUND_ROBIN = 6
+
   class ProtocolValueValuesEnum(_messages.Enum):
     r"""The protocol this BackendService uses to communicate with backends.
-    Possible values are HTTP, HTTPS, TCP, SSL, or UDP, depending on the chosen
-    load balancer or Traffic Director configuration. Refer to the
-    documentation for the load balancer or for Traffic director for more
+    Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP, depending on the
+    chosen load balancer or Traffic Director configuration. Refer to the
+    documentation for the load balancer or for Traffic Director for more
     information.
 
     Values:
@@ -2698,37 +2794,45 @@ class BackendService(_messages.Message):
       CLIENT_IP_PORT_PROTO: <no description>
       CLIENT_IP_PROTO: <no description>
       GENERATED_COOKIE: <no description>
+      HEADER_FIELD: <no description>
+      HTTP_COOKIE: <no description>
       NONE: <no description>
     """
     CLIENT_IP = 0
     CLIENT_IP_PORT_PROTO = 1
     CLIENT_IP_PROTO = 2
     GENERATED_COOKIE = 3
-    NONE = 4
+    HEADER_FIELD = 4
+    HTTP_COOKIE = 5
+    NONE = 6
 
   affinityCookieTtlSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   backends = _messages.MessageField('Backend', 2, repeated=True)
   cdnPolicy = _messages.MessageField('BackendServiceCdnPolicy', 3)
-  connectionDraining = _messages.MessageField('ConnectionDraining', 4)
-  creationTimestamp = _messages.StringField(5)
-  customRequestHeaders = _messages.StringField(6, repeated=True)
-  description = _messages.StringField(7)
-  enableCDN = _messages.BooleanField(8)
-  fingerprint = _messages.BytesField(9)
-  healthChecks = _messages.StringField(10, repeated=True)
-  iap = _messages.MessageField('BackendServiceIAP', 11)
-  id = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(13, default=u'compute#backendService')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 14)
-  name = _messages.StringField(15)
-  port = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(17)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 18)
-  region = _messages.StringField(19)
-  securityPolicy = _messages.StringField(20)
-  selfLink = _messages.StringField(21)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 22)
-  timeoutSec = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  circuitBreakers = _messages.MessageField('CircuitBreakers', 4)
+  connectionDraining = _messages.MessageField('ConnectionDraining', 5)
+  consistentHash = _messages.MessageField('ConsistentHashLoadBalancerSettings', 6)
+  creationTimestamp = _messages.StringField(7)
+  customRequestHeaders = _messages.StringField(8, repeated=True)
+  description = _messages.StringField(9)
+  enableCDN = _messages.BooleanField(10)
+  fingerprint = _messages.BytesField(11)
+  healthChecks = _messages.StringField(12, repeated=True)
+  iap = _messages.MessageField('BackendServiceIAP', 13)
+  id = _messages.IntegerField(14, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(15, default=u'compute#backendService')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 16)
+  localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 17)
+  name = _messages.StringField(18)
+  outlierDetection = _messages.MessageField('OutlierDetection', 19)
+  port = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(21)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 22)
+  region = _messages.StringField(23)
+  securityPolicy = _messages.StringField(24)
+  selfLink = _messages.StringField(25)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 26)
+  timeoutSec = _messages.IntegerField(27, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -3255,6 +3359,31 @@ class CacheKeyPolicy(_messages.Message):
   includeQueryString = _messages.BooleanField(3)
   queryStringBlacklist = _messages.StringField(4, repeated=True)
   queryStringWhitelist = _messages.StringField(5, repeated=True)
+
+
+class CircuitBreakers(_messages.Message):
+  r"""Settings controlling the volume of connections to a backend service.
+
+  Fields:
+    maxConnections: The maximum number of connections to the backend cluster.
+      If not specified, the default is 1024.
+    maxPendingRequests: The maximum number of pending requests allowed to the
+      backend cluster. If not specified, the default is 1024.
+    maxRequests: The maximum number of parallel requests that allowed to the
+      backend cluster. If not specified, the default is 1024.
+    maxRequestsPerConnection: Maximum requests for a single backend
+      connection. This parameter is respected by both the HTTP/1.1 and HTTP/2
+      implementations. If not specified, there is no limit. Setting this
+      parameter to 1 will effectively disable keep alive.
+    maxRetries: The maximum number of parallel retries allowed to the backend
+      cluster. If not specified, the default is 3.
+  """
+
+  maxConnections = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  maxPendingRequests = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  maxRequests = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  maxRequestsPerConnection = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  maxRetries = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class Commitment(_messages.Message):
@@ -17104,6 +17233,82 @@ class ConnectionDraining(_messages.Message):
   drainingTimeoutSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class ConsistentHashLoadBalancerSettings(_messages.Message):
+  r"""This message defines settings for a consistent hash style load balancer.
+
+  Fields:
+    httpCookie: Hash is based on HTTP Cookie. This field describes a HTTP
+      cookie that will be used as the hash key for the consistent hash load
+      balancer. If the cookie is not present, it will be generated. This field
+      is applicable if the sessionAffinity is set to HTTP_COOKIE.
+    httpHeaderName: The hash based on the value of the specified header field.
+      This field is applicable if the sessionAffinity is set to HEADER_FIELD.
+    minimumRingSize: The minimum number of virtual nodes to use for the hash
+      ring. Defaults to 1024. Larger ring sizes result in more granular load
+      distributions. If the number of hosts in the load balancing pool is
+      larger than the ring size, each host will be assigned a single virtual
+      node.
+  """
+
+  httpCookie = _messages.MessageField('ConsistentHashLoadBalancerSettingsHttpCookie', 1)
+  httpHeaderName = _messages.StringField(2)
+  minimumRingSize = _messages.IntegerField(3)
+
+
+class ConsistentHashLoadBalancerSettingsHttpCookie(_messages.Message):
+  r"""The information about the HTTP Cookie on which the hash function is
+  based for load balancing policies that use a consistent hash.
+
+  Fields:
+    name: Name of the cookie.
+    path: Path to set for the cookie.
+    ttl: Lifetime of the cookie.
+  """
+
+  name = _messages.StringField(1)
+  path = _messages.StringField(2)
+  ttl = _messages.MessageField('Duration', 3)
+
+
+class CorsPolicy(_messages.Message):
+  r"""The specification for allowing client side cross-origin requests. Please
+  see W3C Recommendation for Cross Origin Resource Sharing
+
+  Fields:
+    allowCredentials: In response to a preflight request, setting this to true
+      indicates that the actual request can include user credentials. This
+      translates to the Access-Control-Allow-Credentials header. Default is
+      false.
+    allowHeaders: Specifies the content for the Access-Control-Allow-Headers
+      header.
+    allowMethods: Specifies the content for the Access-Control-Allow-Methods
+      header.
+    allowOriginRegexes: Specifies the regualar expression patterns that match
+      allowed origins. For regular expression grammar please see
+      en.cppreference.com/w/cpp/regex/ecmascript  An origin is allowed if it
+      matches either allow_origins or allow_origin_regex.
+    allowOrigins: Specifies the list of origins that will be allowed to do
+      CORS requests. An origin is allowed if it matches either allow_origins
+      or allow_origin_regex.
+    disabled: If true, specifies the CORS policy is disabled. The default
+      value of false, which indicates that the CORS policy is in effect.
+    exposeHeaders: Specifies the content for the Access-Control-Expose-Headers
+      header.
+    maxAge: Specifies how long the results of a preflight request can be
+      cached. This translates to the content for the Access-Control-Max-Age
+      header.
+  """
+
+  allowCredentials = _messages.BooleanField(1)
+  allowHeaders = _messages.StringField(2, repeated=True)
+  allowMethods = _messages.StringField(3, repeated=True)
+  allowOriginRegexes = _messages.StringField(4, repeated=True)
+  allowOrigins = _messages.StringField(5, repeated=True)
+  disabled = _messages.BooleanField(6)
+  exposeHeaders = _messages.StringField(7, repeated=True)
+  maxAge = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+
+
 class CustomerEncryptionKey(_messages.Message):
   r"""Represents a customer-supplied encryption key
 
@@ -18395,6 +18600,26 @@ class DistributionPolicyZoneConfiguration(_messages.Message):
   zone = _messages.StringField(1)
 
 
+class Duration(_messages.Message):
+  r"""A Duration represents a fixed-length span of time represented as a count
+  of seconds and fractions of seconds at nanosecond resolution. It is
+  independent of any calendar and concepts like "day" or "month". Range is
+  approximately 10,000 years.
+
+  Fields:
+    nanos: Span of time that's a fraction of a second at nanosecond
+      resolution. Durations less than one second are represented with a 0
+      `seconds` field and a positive `nanos` field. Must be from 0 to
+      999,999,999 inclusive.
+    seconds: Span of time at a resolution of a second. Must be from 0 to
+      315,576,000,000 inclusive. Note: these bounds are computed from: 60
+      sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years
+  """
+
+  nanos = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  seconds = _messages.IntegerField(2)
+
+
 class Expr(_messages.Message):
   r"""Represents an expression text. Example:  title: "User account presence"
   description: "Determines whether the request has a user account" expression:
@@ -19008,27 +19233,15 @@ class FixedOrPercent(_messages.Message):
 
 
 class ForwardingRule(_messages.Message):
-  r"""Represents a Forwarding Rule resource.    A forwardingRules resource
-  represents a regional forwarding rule.  Regional external forwarding rules
-  can reference any of the following resources:   - A target instance  - A
-  Cloud VPN Classic gateway (targetVpnGateway),   - A target pool for a
-  Network Load Balancer  - A global target HTTP(S) proxy for an HTTP(S) load
-  balancer using Standard Tier  - A target SSL proxy for a SSL Proxy load
-  balancer using Standard Tier  - A target TCP proxy for a TCP Proxy load
-  balancer using Standard Tier.    Regional internal forwarding rules can
-  reference the backend service of an internal TCP/UDP load balancer.  For
-  regional internal forwarding rules, the following applies:   - If the
-  loadBalancingScheme for the load balancer is INTERNAL, then the forwarding
-  rule references a regional internal backend service.  - If the
-  loadBalancingScheme for the load balancer is INTERNAL_MANAGED, then the
-  forwarding rule must reference a regional target HTTP(S) proxy.    For more
-  information, read Using Forwarding rules.  A globalForwardingRules resource
-  represents a global forwarding rule.  Global forwarding rules are only used
-  by load balancers that use Premium Tier. (== resource_for
-  beta.forwardingRules ==) (== resource_for v1.forwardingRules ==) (==
-  resource_for beta.globalForwardingRules ==) (== resource_for
-  v1.globalForwardingRules ==) (== resource_for beta.regionForwardingRules ==)
-  (== resource_for v1.regionForwardingRules ==)
+  r"""Represents a Forwarding Rule resource.  A forwarding rule and its
+  corresponding IP address represent the frontend configuration of a Google
+  Cloud Platform load balancer. Forwarding rules can also reference target
+  instances and Cloud VPN Classic gateways (targetVpnGateway).  For more
+  information, read Forwarding rule concepts and Using protocol forwarding.
+  (== resource_for beta.forwardingRules ==) (== resource_for
+  v1.forwardingRules ==) (== resource_for beta.globalForwardingRules ==) (==
+  resource_for v1.globalForwardingRules ==) (== resource_for
+  beta.regionForwardingRules ==) (== resource_for v1.regionForwardingRules ==)
 
   Enums:
     IPProtocolValueValuesEnum: The IP protocol to which this rule applies.
@@ -19099,6 +19312,19 @@ class ForwardingRule(_messages.Message):
       of INTERNAL_SELF_MANAGED means that this will be used for Internal
       Global HTTP(S) LB. The value of EXTERNAL means that this will be used
       for External Load Balancing (HTTP(S) LB, External TCP/UDP LB, SSL Proxy)
+    metadataFilters: Opaque filter criteria used by Loadbalancer to restrict
+      routing configuration to a limited set xDS compliant clients. In their
+      xDS requests to Loadbalancer, xDS clients present node metadata. If a
+      match takes place, the relevant routing configuration is made available
+      to those proxies. For each metadataFilter in this list, if its
+      filterMatchCriteria is set to MATCH_ANY, at least one of the
+      filterLabels must match the corresponding label provided in the
+      metadata. If its filterMatchCriteria is set to MATCH_ALL, then all of
+      its filterLabels must match with corresponding labels in the provided
+      metadata. metadataFilters specified here can be overridden by those
+      specified in the UrlMap that this ForwardingRule references.
+      metadataFilters only applies to Loadbalancers that have their
+      loadBalancingScheme set to INTERNAL_SELF_MANAGED.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -19253,17 +19479,18 @@ class ForwardingRule(_messages.Message):
   ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 8)
   kind = _messages.StringField(9, default=u'compute#forwardingRule')
   loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 10)
-  name = _messages.StringField(11)
-  network = _messages.StringField(12)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 13)
-  portRange = _messages.StringField(14)
-  ports = _messages.StringField(15, repeated=True)
-  region = _messages.StringField(16)
-  selfLink = _messages.StringField(17)
-  serviceLabel = _messages.StringField(18)
-  serviceName = _messages.StringField(19)
-  subnetwork = _messages.StringField(20)
-  target = _messages.StringField(21)
+  metadataFilters = _messages.MessageField('MetadataFilter', 11, repeated=True)
+  name = _messages.StringField(12)
+  network = _messages.StringField(13)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 14)
+  portRange = _messages.StringField(15)
+  ports = _messages.StringField(16, repeated=True)
+  region = _messages.StringField(17)
+  selfLink = _messages.StringField(18)
+  serviceLabel = _messages.StringField(19)
+  serviceName = _messages.StringField(20)
+  subnetwork = _messages.StringField(21)
+  target = _messages.StringField(22)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -20653,6 +20880,146 @@ class HostRule(_messages.Message):
   pathMatcher = _messages.StringField(3)
 
 
+class HttpFaultAbort(_messages.Message):
+  r"""Specification for how requests are aborted as part of fault injection.
+
+  Fields:
+    httpStatus: The HTTP status code used to abort the request. The value must
+      be between 200 and 599 inclusive.
+    percentage: The percentage of traffic (connections/operations/requests)
+      which will be aborted as part of fault injection. The value must be
+      between 0.0 and 100.0 inclusive.
+  """
+
+  httpStatus = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  percentage = _messages.FloatField(2)
+
+
+class HttpFaultDelay(_messages.Message):
+  r"""Specifies the delay introduced by Loadbalancer before forwarding the
+  request to the backend service as part of fault injection.
+
+  Fields:
+    fixedDelay: Specifies the value of the fixed delay interval.
+    percentage: The percentage of traffic (connections/operations/requests) on
+      which delay will be introduced as part of fault injection. The value
+      must be between 0.0 and 100.0 inclusive.
+  """
+
+  fixedDelay = _messages.MessageField('Duration', 1)
+  percentage = _messages.FloatField(2)
+
+
+class HttpFaultInjection(_messages.Message):
+  r"""The specification for fault injection introduced into traffic to test
+  the resiliency of clients to backend service failure. As part of fault
+  injection, when clients send requests to a backend service, delays can be
+  introduced by Loadbalancer on a percentage of requests before sending those
+  request to the backend service. Similarly requests from clients can be
+  aborted by the Loadbalancer for a percentage of requests.
+
+  Fields:
+    abort: The specification for how client requests are aborted as part of
+      fault injection.
+    delay: The specification for how client requests are delayed as part of
+      fault injection, before being sent to a backend service.
+  """
+
+  abort = _messages.MessageField('HttpFaultAbort', 1)
+  delay = _messages.MessageField('HttpFaultDelay', 2)
+
+
+class HttpHeaderAction(_messages.Message):
+  r"""The request and response header transformations that take effect before
+  the request is passed along to the selected backendService.
+
+  Fields:
+    requestHeadersToAdd: Headers to add to a matching request prior to
+      forwarding the request to the backendService.
+    requestHeadersToRemove: A list of header names for headers that need to be
+      removed from the request prior to forwarding the request to the
+      backendService.
+    responseHeadersToAdd: Headers to add the response prior to sending the
+      response back to the client.
+    responseHeadersToRemove: A list of header names for headers that need to
+      be removed from the response prior to sending the response back to the
+      client.
+  """
+
+  requestHeadersToAdd = _messages.MessageField('HttpHeaderOption', 1, repeated=True)
+  requestHeadersToRemove = _messages.StringField(2, repeated=True)
+  responseHeadersToAdd = _messages.MessageField('HttpHeaderOption', 3, repeated=True)
+  responseHeadersToRemove = _messages.StringField(4, repeated=True)
+
+
+class HttpHeaderMatch(_messages.Message):
+  r"""matchRule criteria for request header matches.
+
+  Fields:
+    exactMatch: The value should exactly match contents of exactMatch. Only
+      one of exactMatch, prefixMatch, suffixMatch, regexMatch, presentMatch or
+      rangeMatch must be set.
+    headerName: The name of the HTTP header to match. For matching against the
+      HTTP request's authority, use a headerMatch with the header name
+      ":authority". For matching a request's method, use the headerName
+      ":method".
+    invertMatch: If set to false, the headerMatch is considered a match if the
+      match criteria above are met. If set to true, the headerMatch is
+      considered a match if the match criteria above are NOT met. The default
+      setting is false.
+    prefixMatch: The value of the header must start with the contents of
+      prefixMatch. Only one of exactMatch, prefixMatch, suffixMatch,
+      regexMatch, presentMatch or rangeMatch must be set.
+    presentMatch: A header with the contents of headerName must exist. The
+      match takes place whether or not the request's header has a value or
+      not. Only one of exactMatch, prefixMatch, suffixMatch, regexMatch,
+      presentMatch or rangeMatch must be set.
+    rangeMatch: The header value must be an integer and its value must be in
+      the range specified in rangeMatch. If the header does not contain an
+      integer, number or is empty, the match fails. For example for a range
+      [-5, 0]   - -3 will match.  - 0 will not match.  - 0.25 will not match.
+      - -3someString will not match.   Only one of exactMatch, prefixMatch,
+      suffixMatch, regexMatch, presentMatch or rangeMatch must be set.
+    regexMatch: The value of the header must match the regualar expression
+      specified in regexMatch. For regular expression grammar, please see:
+      en.cppreference.com/w/cpp/regex/ecmascript  For matching against a port
+      specified in the HTTP request, use a headerMatch with headerName set to
+      PORT and a regular expression that satisfies the RFC2616 Host header's
+      port specifier. Only one of exactMatch, prefixMatch, suffixMatch,
+      regexMatch, presentMatch or rangeMatch must be set.
+    suffixMatch: The value of the header must end with the contents of
+      suffixMatch. Only one of exactMatch, prefixMatch, suffixMatch,
+      regexMatch, presentMatch or rangeMatch must be set.
+  """
+
+  exactMatch = _messages.StringField(1)
+  headerName = _messages.StringField(2)
+  invertMatch = _messages.BooleanField(3)
+  prefixMatch = _messages.StringField(4)
+  presentMatch = _messages.BooleanField(5)
+  rangeMatch = _messages.MessageField('Int64RangeMatch', 6)
+  regexMatch = _messages.StringField(7)
+  suffixMatch = _messages.StringField(8)
+
+
+class HttpHeaderOption(_messages.Message):
+  r"""Specification determining how headers are added to requests or
+  responses.
+
+  Fields:
+    headerName: The name of the header.
+    headerValue: The value of the header to add.
+    replace: If false, headerValue is appended to any values that already
+      exist for the header. If true, headerValue is set for the header,
+      discarding any values that were set for that header. The default value
+      is false.
+  """
+
+  headerName = _messages.StringField(1)
+  headerValue = _messages.StringField(2)
+  replace = _messages.BooleanField(3)
+
+
 class HttpHealthCheck(_messages.Message):
   r"""Represents a legacy HTTP Health Check resource.  Legacy health checks
   are required by network load balancers. For more information, read Health
@@ -20830,6 +21197,272 @@ class HttpHealthCheckList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class HttpQueryParameterMatch(_messages.Message):
+  r"""HttpRouteRuleMatch criteria for a request's query parameter.
+
+  Fields:
+    exactMatch: The queryParameterMatch matches if the value of the parameter
+      exactly matches the contents of exactMatch. Only one of presentMatch,
+      exactMatch and regexMatch must be set.
+    name: The name of the query parameter to match. The query parameter must
+      exist in the request, in the absence of which the request match fails.
+    presentMatch: Specifies that the queryParameterMatch matches if the
+      request contains the query parameter, irrespective of whether the
+      parameter has a value or not. Only one of presentMatch, exactMatch and
+      regexMatch must be set.
+    regexMatch: The queryParameterMatch matches if the value of the parameter
+      matches the regular expression specified by regexMatch. For the regular
+      expression grammar, please see
+      en.cppreference.com/w/cpp/regex/ecmascript  Only one of presentMatch,
+      exactMatch and regexMatch must be set.
+  """
+
+  exactMatch = _messages.StringField(1)
+  name = _messages.StringField(2)
+  presentMatch = _messages.BooleanField(3)
+  regexMatch = _messages.StringField(4)
+
+
+class HttpRedirectAction(_messages.Message):
+  r"""Specifies settings for an HTTP redirect.
+
+  Enums:
+    RedirectResponseCodeValueValuesEnum: The HTTP Status code to use for this
+      RedirectAction. Supported values are:   - MOVED_PERMANENTLY_DEFAULT,
+      which is the default value and corresponds to 301.  - FOUND, which
+      corresponds to 302.  - SEE_OTHER which corresponds to 303.  -
+      TEMPORARY_REDIRECT, which corresponds to 307. In this case, the request
+      method will be retained.  - PERMANENT_REDIRECT, which corresponds to
+      308. In this case, the request method will be retained.
+
+  Fields:
+    hostRedirect: The host that will be used in the redirect response instead
+      of the one that was supplied in the request. The value must be between 1
+      and 255 characters.
+    httpsRedirect: If set to true, the URL scheme in the redirected request is
+      set to https. If set to false, the URL scheme of the redirected request
+      will remain the same as that of the request. This must only be set for
+      UrlMaps used in TargetHttpProxys. Setting this true for TargetHttpsProxy
+      is not permitted. The default is set to false.
+    pathRedirect: The path that will be used in the redirect response instead
+      of the one that was supplied in the request. Only one of pathRedirect or
+      prefixRedirect must be specified. The value must be between 1 and 1024
+      characters.
+    prefixRedirect: The prefix that replaces the prefixMatch specified in the
+      HttpRouteRuleMatch, retaining the remaining portion of the URL before
+      redirecting the request.
+    redirectResponseCode: The HTTP Status code to use for this RedirectAction.
+      Supported values are:   - MOVED_PERMANENTLY_DEFAULT, which is the
+      default value and corresponds to 301.  - FOUND, which corresponds to
+      302.  - SEE_OTHER which corresponds to 303.  - TEMPORARY_REDIRECT, which
+      corresponds to 307. In this case, the request method will be retained.
+      - PERMANENT_REDIRECT, which corresponds to 308. In this case, the
+      request method will be retained.
+    stripQuery: If set to true, any accompanying query portion of the original
+      URL is removed prior to redirecting the request. If set to false, the
+      query portion of the original URL is retained. The default is set to
+      false.
+  """
+
+  class RedirectResponseCodeValueValuesEnum(_messages.Enum):
+    r"""The HTTP Status code to use for this RedirectAction. Supported values
+    are:   - MOVED_PERMANENTLY_DEFAULT, which is the default value and
+    corresponds to 301.  - FOUND, which corresponds to 302.  - SEE_OTHER which
+    corresponds to 303.  - TEMPORARY_REDIRECT, which corresponds to 307. In
+    this case, the request method will be retained.  - PERMANENT_REDIRECT,
+    which corresponds to 308. In this case, the request method will be
+    retained.
+
+    Values:
+      FOUND: <no description>
+      MOVED_PERMANENTLY_DEFAULT: <no description>
+      PERMANENT_REDIRECT: <no description>
+      SEE_OTHER: <no description>
+      TEMPORARY_REDIRECT: <no description>
+    """
+    FOUND = 0
+    MOVED_PERMANENTLY_DEFAULT = 1
+    PERMANENT_REDIRECT = 2
+    SEE_OTHER = 3
+    TEMPORARY_REDIRECT = 4
+
+  hostRedirect = _messages.StringField(1)
+  httpsRedirect = _messages.BooleanField(2)
+  pathRedirect = _messages.StringField(3)
+  prefixRedirect = _messages.StringField(4)
+  redirectResponseCode = _messages.EnumField('RedirectResponseCodeValueValuesEnum', 5)
+  stripQuery = _messages.BooleanField(6)
+
+
+class HttpRetryPolicy(_messages.Message):
+  r"""The retry policy associates with HttpRouteRule
+
+  Fields:
+    numRetries: Specifies the allowed number retries. This number must be > 0.
+    perTryTimeout: Specifies a non-zero timeout per retry attempt.
+    retryConditions: Specfies one or more conditions when this retry rule
+      applies. Valid values are:   - 5xx: Loadbalancer will attempt a retry if
+      the backend service responds with any 5xx response code, or if the
+      backend service does not respond at all, example: disconnects, reset,
+      read timeout, connection failure, and refused streams.  - gateway-error:
+      Similar to 5xx, but only applies to response codes 502, 503 or 504. -  -
+      connect-failure: Loadbalancer will retry on failures connecting to
+      backend services, for example due to connection timeouts.  - retriable-
+      4xx: Loadbalancer will retry for retriable 4xx response codes. Currently
+      the only retriable error supported is 409.  - refused-
+      stream:Loadbalancer will retry if the backend service resets the stream
+      with a REFUSED_STREAM error code. This reset type indicates that it is
+      safe to retry.  - cancelledLoadbalancer will retry if the gRPC status
+      code in the response header is set to cancelled  - deadline-exceeded:
+      Loadbalancer will retry if the gRPC status code in the response header
+      is set to deadline-exceeded  - resource-exhausted: Loadbalancer will
+      retry if the gRPC status code in the response header is set to resource-
+      exhausted  - unavailable: Loadbalancer will retry if the gRPC status
+      code in the response header is set to unavailable
+  """
+
+  numRetries = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  perTryTimeout = _messages.MessageField('Duration', 2)
+  retryConditions = _messages.StringField(3, repeated=True)
+
+
+class HttpRouteAction(_messages.Message):
+  r"""A HttpRouteAction object.
+
+  Fields:
+    corsPolicy: The specification for allowing client side cross-origin
+      requests. Please see W3C Recommendation for Cross Origin Resource
+      Sharing
+    faultInjectionPolicy: The specification for fault injection introduced
+      into traffic to test the resiliency of clients to backend service
+      failure. As part of fault injection, when clients send requests to a
+      backend service, delays can be introduced by Loadbalancer on a
+      percentage of requests before sending those request to the backend
+      service. Similarly requests from clients can be aborted by the
+      Loadbalancer for a percentage of requests. timeout and retry_policy will
+      be ignored by clients that are configured with a fault_injection_policy.
+    requestMirrorPolicy: Specifies the policy on how requests intended for the
+      route's backends are shadowed to a separate mirrored backend service.
+      Loadbalancer does not wait for responses from the shadow service. Prior
+      to sending traffic to the shadow service, the host / authority header is
+      suffixed with -shadow.
+    retryPolicy: Specifies the retry policy associated with this route.
+    timeout: Specifies the timeout for the selected route. Timeout is computed
+      from the time the request is has been fully processed (i.e. end-of-
+      stream) up until the response has been completely processed. Timeout
+      includes all retries. If not specified, the default value is 15 seconds.
+    urlRewrite: The spec to modify the URL of the request, prior to forwarding
+      the request to the matched service
+    weightedBackendServices: A list of weighted backend services to send
+      traffic to when a route match occurs. The weights determine the fraction
+      of traffic that flows to their corresponding backend service. If all
+      traffic needs to go to a single backend service, there must be one
+      weightedBackendService with weight set to a non 0 number. Once a
+      backendService is identified and before forwarding the request to the
+      backend service, advanced routing actions like Url rewrites and header
+      transformations are applied depending on additional settings specified
+      in this HttpRouteAction.
+  """
+
+  corsPolicy = _messages.MessageField('CorsPolicy', 1)
+  faultInjectionPolicy = _messages.MessageField('HttpFaultInjection', 2)
+  requestMirrorPolicy = _messages.MessageField('RequestMirrorPolicy', 3)
+  retryPolicy = _messages.MessageField('HttpRetryPolicy', 4)
+  timeout = _messages.MessageField('Duration', 5)
+  urlRewrite = _messages.MessageField('UrlRewrite', 6)
+  weightedBackendServices = _messages.MessageField('WeightedBackendService', 7, repeated=True)
+
+
+class HttpRouteRule(_messages.Message):
+  r"""An HttpRouteRule specifies how to match an HTTP request and the
+  corresponding routing action that load balancing proxies will perform.
+
+  Fields:
+    headerAction: Specifies changes to request and response headers that need
+      to take effect for the selected backendService. The headerAction
+      specified here are applied before the matching
+      pathMatchers[].headerAction and after pathMatchers[].routeRules[].routeA
+      ction.weightedBackendService.backendServiceWeightAction[].headerAction
+    matchRules: A HttpRouteRuleMatch attribute.
+    routeAction: In response to a matching matchRule, the load balancer
+      performs advanced routing actions like URL rewrites, header
+      transformations, etc. prior to forwarding the request to the selected
+      backend. If  routeAction specifies any  weightedBackendServices, service
+      must not be set. Conversely if service is set, routeAction cannot
+      contain any  weightedBackendServices. Only one of routeAction or
+      urlRedirect must be set.
+    service: The full or partial URL of the backend service resource to which
+      traffic is directed if this rule is matched. If routeAction is
+      additionally specified, advanced routing actions like URL Rewrites, etc.
+      take effect prior to sending the request to the backend. However, if
+      service is specified, routeAction cannot contain any
+      weightedBackendService s. Conversely, if routeAction specifies any
+      weightedBackendServices, service must not be specified. Only one of
+      urlRedirect, service or routeAction.weightedBackendService must be set.
+    urlRedirect: When this rule is matched, the request is redirected to a URL
+      specified by urlRedirect. If urlRedirect is specified, service or
+      routeAction must not be set.
+  """
+
+  headerAction = _messages.MessageField('HttpHeaderAction', 1)
+  matchRules = _messages.MessageField('HttpRouteRuleMatch', 2, repeated=True)
+  routeAction = _messages.MessageField('HttpRouteAction', 3)
+  service = _messages.StringField(4)
+  urlRedirect = _messages.MessageField('HttpRedirectAction', 5)
+
+
+class HttpRouteRuleMatch(_messages.Message):
+  r"""HttpRouteRuleMatch specifies a set of criteria for matching requests to
+  an HttpRouteRule. All specified criteria must be satisfied for a match to
+  occur.
+
+  Fields:
+    fullPathMatch: For satifying the matchRule condition, the path of the
+      request must exactly match the value specified in fullPathMatch after
+      removing any query parameters and anchor that may be part of the
+      original URL. FullPathMatch must be between 1 and 1024 characters. Only
+      one of prefixMatch, fullPathMatch or regexMatch must be specified.
+    headerMatches: Specifies a list of header match criteria, all of which
+      must match corresponding headers in the request.
+    ignoreCase: Specifies that prefixMatch and fullPathMatch matches are case
+      sensitive. The default value is false. caseSensitive must not be used
+      with regexMatch.
+    metadataFilters: Opaque filter criteria used by Loadbalancer to restrict
+      routing configuration to a limited set xDS compliant clients. In their
+      xDS requests to Loadbalancer, xDS clients present node metadata. If a
+      match takes place, the relevant routing configuration is made available
+      to those proxies. For each metadataFilter in this list, if its
+      filterMatchCriteria is set to MATCH_ANY, at least one of the
+      filterLabels must match the corresponding label provided in the
+      metadata. If its filterMatchCriteria is set to MATCH_ALL, then all of
+      its filterLabels must match with corresponding labels in the provided
+      metadata. metadataFilters specified here can be overrides those
+      specified in ForwardingRule that refers to this UrlMap. metadataFilters
+      only applies to Loadbalancers that have their loadBalancingScheme set to
+      INTERNAL_SELF_MANAGED.
+    prefixMatch: For satifying the matchRule condition, the request's path
+      must begin with the specified prefixMatch. prefixMatch must begin with a
+      /. The value must be between 1 and 1024 characters. Only one of
+      prefixMatch, fullPathMatch or regexMatch must be specified.
+    queryParameterMatches: Specifies a list of query parameter match criteria,
+      all of which must match corresponding query parameters in the request.
+    regexMatch: For satifying the matchRule condition, the path of the request
+      must satisfy the regular expression specified in regexMatch after
+      removing any query parameters and anchor supplied with the original URL.
+      For regular expression grammar please see
+      en.cppreference.com/w/cpp/regex/ecmascript  Only one of prefixMatch,
+      fullPathMatch or regexMatch must be specified.
+  """
+
+  fullPathMatch = _messages.StringField(1)
+  headerMatches = _messages.MessageField('HttpHeaderMatch', 2, repeated=True)
+  ignoreCase = _messages.BooleanField(3)
+  metadataFilters = _messages.MessageField('MetadataFilter', 4, repeated=True)
+  prefixMatch = _messages.StringField(5)
+  queryParameterMatches = _messages.MessageField('HttpQueryParameterMatch', 6, repeated=True)
+  regexMatch = _messages.StringField(7)
 
 
 class HttpsHealthCheck(_messages.Message):
@@ -23895,6 +24528,20 @@ class InstancesStartWithEncryptionKeyRequest(_messages.Message):
   disks = _messages.MessageField('CustomerEncryptionKeyProtectedDisk', 1, repeated=True)
 
 
+class Int64RangeMatch(_messages.Message):
+  r"""HttpRouteRuleMatch criteria for field values that must stay within the
+  specified integer range.
+
+  Fields:
+    rangeEnd: The end of the range (exclusive) in signed long integer format.
+    rangeStart: The start of the range (inclusive) in signed long integer
+      format.
+  """
+
+  rangeEnd = _messages.IntegerField(1)
+  rangeStart = _messages.IntegerField(2)
+
+
 class Interconnect(_messages.Message):
   r"""Represents an Interconnect resource.  An Interconnect resource is a
   dedicated connection between the GCP network and your on-premises network.
@@ -26542,6 +27189,78 @@ class Metadata(_messages.Message):
   fingerprint = _messages.BytesField(1)
   items = _messages.MessageField('ItemsValueListEntry', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#metadata')
+
+
+class MetadataFilter(_messages.Message):
+  r"""Opaque filter criteria used by loadbalancers to restrict routing
+  configuration to a limited set of loadbalancing proxies. Proxies and
+  sidecars involved in loadbalancing would typically present metadata to the
+  loadbalancers which need to match criteria specified here. If a match takes
+  place, the relevant routing configuration is made available to those
+  proxies. For each metadataFilter in this list, if its filterMatchCriteria is
+  set to MATCH_ANY, at least one of the filterLabels must match the
+  corresponding label provided in the metadata. If its filterMatchCriteria is
+  set to MATCH_ALL, then all of its filterLabels must match with corresponding
+  labels in the provided metadata. An example for using metadataFilters would
+  be: if loadbalancing involves  Envoys, they will only receive routing
+  configuration when values in metadataFilters match values supplied in <a hre
+  f="https://www.envoyproxy.io/docs/envoy/latest/api-v2/api/v2/core/base.proto
+  #envoy-api-msg-core-node" Node metadata of their XDS requests to
+  loadbalancers.
+
+  Enums:
+    FilterMatchCriteriaValueValuesEnum: Specifies how individual filterLabel
+      matches within the list of filterLabels contribute towards the overall
+      metadataFilter match. Supported values are:   - MATCH_ANY: At least one
+      of the filterLabels must have a matching label in the provided metadata.
+      - MATCH_ALL: All filterLabels must have matching labels in the provided
+      metadata.
+
+  Fields:
+    filterLabels: The list of label value pairs that must match labels in the
+      provided metadata based on filterMatchCriteria  This list must not be
+      empty and can have at the most 64 entries.
+    filterMatchCriteria: Specifies how individual filterLabel matches within
+      the list of filterLabels contribute towards the overall metadataFilter
+      match. Supported values are:   - MATCH_ANY: At least one of the
+      filterLabels must have a matching label in the provided metadata.  -
+      MATCH_ALL: All filterLabels must have matching labels in the provided
+      metadata.
+  """
+
+  class FilterMatchCriteriaValueValuesEnum(_messages.Enum):
+    r"""Specifies how individual filterLabel matches within the list of
+    filterLabels contribute towards the overall metadataFilter match.
+    Supported values are:   - MATCH_ANY: At least one of the filterLabels must
+    have a matching label in the provided metadata.  - MATCH_ALL: All
+    filterLabels must have matching labels in the provided metadata.
+
+    Values:
+      MATCH_ALL: <no description>
+      MATCH_ANY: <no description>
+      NOT_SET: <no description>
+    """
+    MATCH_ALL = 0
+    MATCH_ANY = 1
+    NOT_SET = 2
+
+  filterLabels = _messages.MessageField('MetadataFilterLabelMatch', 1, repeated=True)
+  filterMatchCriteria = _messages.EnumField('FilterMatchCriteriaValueValuesEnum', 2)
+
+
+class MetadataFilterLabelMatch(_messages.Message):
+  r"""MetadataFilter label name value pairs that are expected to match
+  corresponding labels presented as metadata to the loadbalancer.
+
+  Fields:
+    name: Name of metadata label. The name can have a maximum length of 1024
+      characters and must be at least 1 character long.
+    value: The value of the label must match the specified value. value can
+      have a maximum length of 1024 characters.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class NamedPort(_messages.Message):
@@ -29823,12 +30542,83 @@ class OperationsScopedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 2)
 
 
+class OutlierDetection(_messages.Message):
+  r"""Settings controlling eviction of unhealthy hosts from the load balancing
+  pool.
+
+  Fields:
+    baseEjectionTime: The base time that a host is ejected for. The real time
+      is equal to the base time multiplied by the number of times the host has
+      been ejected. Defaults to 30000ms or 30s.
+    consecutiveErrors: Number of errors before a host is ejected from the
+      connection pool. When the backend host is accessed over HTTP, a 5xx
+      return code qualifies as an error. Defaults to 5.
+    consecutiveGatewayFailure: The number of consecutive gateway failures
+      (502, 503, 504 status or connection errors that are mapped to one of
+      those status codes) before a consecutive gateway failure ejection
+      occurs. Defaults to 5.
+    enforcingConsecutiveErrors: The percentage chance that a host will be
+      actually ejected when an outlier status is detected through consecutive
+      5xx. This setting can be used to disable ejection or to ramp it up
+      slowly. Defaults to 100.
+    enforcingConsecutiveGatewayFailure: The percentage chance that a host will
+      be actually ejected when an outlier status is detected through
+      consecutive gateway failures. This setting can be used to disable
+      ejection or to ramp it up slowly. Defaults to 0.
+    enforcingSuccessRate: The percentage chance that a host will be actually
+      ejected when an outlier status is detected through success rate
+      statistics. This setting can be used to disable ejection or to ramp it
+      up slowly. Defaults to 100.
+    interval: Time interval between ejection sweep analysis. This can result
+      in both new ejections as well as hosts being returned to service.
+      Defaults to 10 seconds.
+    maxEjectionPercent: Maximum percentage of hosts in the load balancing pool
+      for the backend service that can be ejected. Defaults to 10%.
+    successRateMinimumHosts: The number of hosts in a cluster that must have
+      enough request volume to detect success rate outliers. If the number of
+      hosts is less than this setting, outlier detection via success rate
+      statistics is not performed for any host in the cluster. Defaults to 5.
+    successRateRequestVolume: The minimum number of total requests that must
+      be collected in one interval (as defined by the interval duration above)
+      to include this host in success rate based outlier detection. If the
+      volume is lower than this setting, outlier detection via success rate
+      statistics is not performed for that host. Defaults to 100.
+    successRateStdevFactor: This factor is used to determine the ejection
+      threshold for success rate outlier ejection. The ejection threshold is
+      the difference between the mean success rate, and the product of this
+      factor and the standard deviation of the mean success rate: mean -
+      (stdev * success_rate_stdev_factor). This factor is divided by a
+      thousand to get a double. That is, if the desired factor is 1.9, the
+      runtime value should be 1900. Defaults to 1900.
+  """
+
+  baseEjectionTime = _messages.MessageField('Duration', 1)
+  consecutiveErrors = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  consecutiveGatewayFailure = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  enforcingConsecutiveErrors = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  enforcingConsecutiveGatewayFailure = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  enforcingSuccessRate = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  interval = _messages.MessageField('Duration', 7)
+  maxEjectionPercent = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  successRateMinimumHosts = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  successRateRequestVolume = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  successRateStdevFactor = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+
+
 class PathMatcher(_messages.Message):
   r"""A matcher for the path portion of the URL. The BackendService from the
   longest-matched rule will serve the URL. If no rule was matched, the default
   service will be used.
 
   Fields:
+    defaultRouteAction: defaultRouteAction takes effect when none of the
+      pathRules or routeRules match. The load balancer performs advanced
+      routing actions like URL rewrites, header transformations, etc. prior to
+      forwarding the request to the selected backend. If defaultRouteAction
+      specifies any weightedBackendServices, defaultService must not be set.
+      Conversely if defaultService is set, defaultRouteAction cannot contain
+      any  weightedBackendServices. Only one of defaultRouteAction or
+      defaultUrlRedirect must be set.
     defaultService: The full or partial URL to the BackendService resource.
       This will be used if none of the pathRules or routeRules defined by this
       PathMatcher are matched. For example, the following are all valid URLs
@@ -29846,22 +30636,40 @@ class PathMatcher(_messages.Message):
       requires one or more of the following Google IAM permissions on the
       specified resource default_service:   - compute.backendBuckets.use  -
       compute.backendServices.use
+    defaultUrlRedirect: When when none of the specified pathRules or
+      routeRules match, the request is redirected to a URL specified by
+      defaultUrlRedirect. If defaultUrlRedirect is specified, defaultService
+      or defaultRouteAction must not be set.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    headerAction: Specifies changes to request and response headers that need
+      to take effect for the selected backendService. HeaderAction specified
+      here are applied after the matching HttpRouteRule HeaderAction and
+      before the HeaderAction in the UrlMap
     name: The name to which this PathMatcher is referred by the HostRule.
     pathRules: The list of path rules. Use this list instead of routeRules
       when routing based on simple path matching is all that's required. The
       order by which path rules are specified does not matter. Matches are
       always done on the longest-path-first basis. For example: a pathRule
       with a path /a/b/c/* will match before /a/b/* irrespective of the order
-      in which those paths appear in this list. Only one of pathRules or
-      routeRules must be set.
+      in which those paths appear in this list. Within a given pathMatcher,
+      only one of pathRules or routeRules must be set.
+    routeRules: The list of ordered HTTP route rules. Use this list instead of
+      pathRules when advanced route matching and routing actions are desired.
+      The order of specifying routeRules matters: the first rule that matches
+      will cause its specified routing action to take effect. Within a given
+      pathMatcher, only one of pathRules or routeRules must be set. routeRules
+      are not supported in UrlMaps intended for External Load balancers.
   """
 
-  defaultService = _messages.StringField(1)
-  description = _messages.StringField(2)
-  name = _messages.StringField(3)
-  pathRules = _messages.MessageField('PathRule', 4, repeated=True)
+  defaultRouteAction = _messages.MessageField('HttpRouteAction', 1)
+  defaultService = _messages.StringField(2)
+  defaultUrlRedirect = _messages.MessageField('HttpRedirectAction', 3)
+  description = _messages.StringField(4)
+  headerAction = _messages.MessageField('HttpHeaderAction', 5)
+  name = _messages.StringField(6)
+  pathRules = _messages.MessageField('PathRule', 7, repeated=True)
+  routeRules = _messages.MessageField('HttpRouteRule', 8, repeated=True)
 
 
 class PathRule(_messages.Message):
@@ -29873,6 +30681,13 @@ class PathRule(_messages.Message):
       only place a * is allowed is at the end following a /. The string fed to
       the path matcher does not include any text after the first ? or #, and
       those chars are not allowed here.
+    routeAction: In response to a matching path, the load balancer performs
+      advanced routing actions like URL rewrites, header transformations, etc.
+      prior to forwarding the request to the selected backend. If routeAction
+      specifies any  weightedBackendServices, service must not be set.
+      Conversely if service is set, routeAction cannot contain any
+      weightedBackendServices. Only one of routeAction or urlRedirect must be
+      set.
     service: The full or partial URL of the backend service resource to which
       traffic is directed if this rule is matched. If routeAction is
       additionally specified, advanced routing actions like URL Rewrites, etc.
@@ -29881,10 +30696,15 @@ class PathRule(_messages.Message):
       weightedBackendService s. Conversely, if routeAction specifies any
       weightedBackendServices, service must not be specified. Only one of
       urlRedirect, service or routeAction.weightedBackendService must be set.
+    urlRedirect: When a path pattern is matched, the request is redirected to
+      a URL specified by urlRedirect. If urlRedirect is specified, service or
+      routeAction must not be set.
   """
 
   paths = _messages.StringField(1, repeated=True)
-  service = _messages.StringField(2)
+  routeAction = _messages.MessageField('HttpRouteAction', 2)
+  service = _messages.StringField(3)
+  urlRedirect = _messages.MessageField('HttpRedirectAction', 4)
 
 
 class Policy(_messages.Message):
@@ -29925,7 +30745,11 @@ class Policy(_messages.Message):
       any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
       will be applied if one or more matching rule requires logging. -
       Otherwise, if no rule applies, permission is denied.
-    version: Deprecated.
+    version: Specifies the format of the policy.  Valid values are 0, 1, and
+      3. Requests specifying an invalid value will be rejected.  Policies with
+      any conditional bindings must specify version 3. Policies without any
+      conditional bindings may specify any valid value or leave the field
+      unset.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -31328,6 +32152,20 @@ class RegionUrlMapsValidateRequest(_messages.Message):
   """
 
   resource = _messages.MessageField('UrlMap', 1)
+
+
+class RequestMirrorPolicy(_messages.Message):
+  r"""A policy that specifies how requests intended for the route's backends
+  are shadowed to a separate mirrored backend service. Loadbalancer does not
+  wait for responses from the shadow service. Prior to sending traffic to the
+  shadow service, the host / authority header is suffixed with -shadow.
+
+  Fields:
+    backendService: The full or partial URL to the BackendService resource
+      being mirrored to.
+  """
+
+  backendService = _messages.StringField(1)
 
 
 class Reservation(_messages.Message):
@@ -37655,13 +38493,17 @@ class TargetPool(_messages.Message):
       CLIENT_IP_PORT_PROTO: <no description>
       CLIENT_IP_PROTO: <no description>
       GENERATED_COOKIE: <no description>
+      HEADER_FIELD: <no description>
+      HTTP_COOKIE: <no description>
       NONE: <no description>
     """
     CLIENT_IP = 0
     CLIENT_IP_PORT_PROTO = 1
     CLIENT_IP_PROTO = 2
     GENERATED_COOKIE = 3
-    NONE = 4
+    HEADER_FIELD = 4
+    HTTP_COOKIE = 5
+    NONE = 6
 
   backupPool = _messages.StringField(1)
   creationTimestamp = _messages.StringField(2)
@@ -39103,6 +39945,14 @@ class UrlMap(_messages.Message):
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
+    defaultRouteAction: defaultRouteAction takes effect when none of the
+      hostRules match. The load balancer performs advanced routing actions
+      like URL rewrites, header transformations, etc. prior to forwarding the
+      request to the selected backend. If defaultRouteAction specifies any
+      weightedBackendServices, defaultService must not be set. Conversely if
+      defaultService is set, defaultRouteAction cannot contain any
+      weightedBackendServices. Only one of defaultRouteAction or
+      defaultUrlRedirect must be set.
     defaultService: The full or partial URL of the defaultService resource to
       which traffic is directed if none of the hostRules match. If
       defaultRouteAction is additionally specified, advanced routing actions
@@ -39112,6 +39962,10 @@ class UrlMap(_messages.Message):
       specifies any weightedBackendServices, service must not be specified.
       Only one of defaultService, defaultUrlRedirect  or
       defaultRouteAction.weightedBackendService must be set.
+    defaultUrlRedirect: When none of the specified hostRules match, the
+      request is redirected to a URL specified by defaultUrlRedirect. If
+      defaultUrlRedirect is specified, defaultService or defaultRouteAction
+      must not be set.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
@@ -39120,6 +39974,10 @@ class UrlMap(_messages.Message):
       be provided in order to update the UrlMap, otherwise the request will
       fail with error 412 conditionNotMet.  To see the latest fingerprint,
       make a get() request to retrieve a UrlMap.
+    headerAction: Specifies changes to request and response headers that need
+      to take effect for the selected backendService. The headerAction
+      specified here take effect after headerAction specified under
+      pathMatcher.
     hostRules: The list of HostRules to use against the URL.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
@@ -39144,17 +40002,20 @@ class UrlMap(_messages.Message):
   """
 
   creationTimestamp = _messages.StringField(1)
-  defaultService = _messages.StringField(2)
-  description = _messages.StringField(3)
-  fingerprint = _messages.BytesField(4)
-  hostRules = _messages.MessageField('HostRule', 5, repeated=True)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#urlMap')
-  name = _messages.StringField(8)
-  pathMatchers = _messages.MessageField('PathMatcher', 9, repeated=True)
-  region = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  tests = _messages.MessageField('UrlMapTest', 12, repeated=True)
+  defaultRouteAction = _messages.MessageField('HttpRouteAction', 2)
+  defaultService = _messages.StringField(3)
+  defaultUrlRedirect = _messages.MessageField('HttpRedirectAction', 4)
+  description = _messages.StringField(5)
+  fingerprint = _messages.BytesField(6)
+  headerAction = _messages.MessageField('HttpHeaderAction', 7)
+  hostRules = _messages.MessageField('HostRule', 8, repeated=True)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(10, default=u'compute#urlMap')
+  name = _messages.StringField(11)
+  pathMatchers = _messages.MessageField('PathMatcher', 12, repeated=True)
+  region = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  tests = _messages.MessageField('UrlMapTest', 15, repeated=True)
 
 
 class UrlMapList(_messages.Message):
@@ -39607,6 +40468,23 @@ class UrlMapsValidateResponse(_messages.Message):
   """
 
   result = _messages.MessageField('UrlMapValidationResult', 1)
+
+
+class UrlRewrite(_messages.Message):
+  r"""The spec for modifying the path before sending the request to the
+  matched backend service.
+
+  Fields:
+    hostRewrite: Prior to forwarding the request to the selected service, the
+      request's host header is replaced with contents of hostRewrite. The
+      value must be between 1 and 255 characters.
+    pathPrefixRewrite: Prior to forwarding the request to the selected backend
+      service, the matching portion of the request's path is replaced by
+      pathPrefixRewrite. The value must be between 1 and 1024 characters.
+  """
+
+  hostRewrite = _messages.StringField(1)
+  pathPrefixRewrite = _messages.StringField(2)
 
 
 class UsableSubnetwork(_messages.Message):
@@ -41089,6 +41967,36 @@ class VpnTunnelsScopedList(_messages.Message):
 
   vpnTunnels = _messages.MessageField('VpnTunnel', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class WeightedBackendService(_messages.Message):
+  r"""In contrast to a single BackendService in  HttpRouteAction to which all
+  matching traffic is directed to, WeightedBackendService allows traffic to be
+  split across multiple BackendServices. The volume of traffic for each
+  BackendService is proportional to the weight specified in each
+  WeightedBackendService
+
+  Fields:
+    backendService: The full or partial URL to the default BackendService
+      resource. Before forwarding the request to backendService, the
+      loadbalancer applies any relevant headerActions specified as part of
+      this backendServiceWeight.
+    headerAction: Specifies changes to request and response headers that need
+      to take effect for the selected backendService. headerAction specified
+      here take effect before headerAction in the enclosing HttpRouteRule,
+      PathMatcher and UrlMap.
+    weight: Specifies the fraction of traffic sent to backendService, computed
+      as weight / (sum of all weightedBackendService weights in routeAction) .
+      The selection of a backend service is determined only for new traffic.
+      Once a user's request has been directed to a backendService, subsequent
+      requests will be sent to the same backendService as determined by the
+      BackendService's session affinity policy. The value must be between 0
+      and 1000
+  """
+
+  backendService = _messages.StringField(1)
+  headerAction = _messages.MessageField('HttpHeaderAction', 2)
+  weight = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
 
 
 class XpnHostList(_messages.Message):

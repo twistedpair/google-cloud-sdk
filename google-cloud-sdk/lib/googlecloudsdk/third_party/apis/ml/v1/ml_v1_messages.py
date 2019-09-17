@@ -74,23 +74,6 @@ class GoogleApiHttpBody(_messages.Message):
   extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
 
 
-class GoogleCloudMlV1AblationAttribution(_messages.Message):
-  r"""Attributes credit to model inputs by ablating features (ie. setting them
-  to their default/missing values) and computing corresponding model score
-  delta per feature. The term "ablation" is in reference to running an
-  "ablation study" to analyze input effects on the outcome of interest, which
-  in this case is the model's output. This attribution method is supported for
-  Tensorflow and XGBoost models.
-
-  Fields:
-    numFeatureInteractions: Number of feature interactions to account for in
-      the ablation process, capped at the maximum number of provided input
-      features. Currently, only the value 1 is supported.
-  """
-
-  numFeatureInteractions = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-
-
 class GoogleCloudMlV1AcceleratorConfig(_messages.Message):
   r"""Represents a hardware accelerator request config.
 
@@ -249,20 +232,17 @@ class GoogleCloudMlV1ExplanationConfig(_messages.Message):
   Currently, the only supported mechanism to explain a model's prediction is
   through attributing its output back to its inputs which is essentially a
   credit assignment task. We support multiple attribution methods, some
-  specific to particular frameworks like Tensorflow and XGBoost.
+  specific to particular frameworks like Tensorflow and XGBoost. Next idx: 6.
 
   Fields:
-    ablationAttribution: A GoogleCloudMlV1AblationAttribution attribute.
     integratedGradientsAttribution: A
       GoogleCloudMlV1IntegratedGradientsAttribution attribute.
-    saabasAttribution: A GoogleCloudMlV1SaabasAttribution attribute.
-    treeShapAttribution: A GoogleCloudMlV1TreeShapAttribution attribute.
+    samplingShapAttribution: A GoogleCloudMlV1SamplingShapAttribution
+      attribute.
   """
 
-  ablationAttribution = _messages.MessageField('GoogleCloudMlV1AblationAttribution', 1)
-  integratedGradientsAttribution = _messages.MessageField('GoogleCloudMlV1IntegratedGradientsAttribution', 2)
-  saabasAttribution = _messages.MessageField('GoogleCloudMlV1SaabasAttribution', 3)
-  treeShapAttribution = _messages.MessageField('GoogleCloudMlV1TreeShapAttribution', 4)
+  integratedGradientsAttribution = _messages.MessageField('GoogleCloudMlV1IntegratedGradientsAttribution', 1)
+  samplingShapAttribution = _messages.MessageField('GoogleCloudMlV1SamplingShapAttribution', 2)
 
 
 class GoogleCloudMlV1ExplanationInput(_messages.Message):
@@ -1297,30 +1277,53 @@ class GoogleCloudMlV1ReplicaConfig(_messages.Message):
 
 
 class GoogleCloudMlV1RequestLoggingConfig(_messages.Message):
-  r"""Configurations for logging request-response pairs. Currently only
-  BigQuery logging is supported. The request and response will be converted to
-  raw string and stored within the specified BigQuery table. The schema is:
-  model: STRING   version: STRING   time: Timestamp   raw_data: STRING
-  raw_prediction: STRING   ground_truth: STRING
+  r"""Configuration for logging request-response pairs to a BigQuery table.
+  Online prediction requests to a model version and the responses to these
+  requests are converted to raw strings and saved to the specified BigQuery
+  table. Logging is constrained by [BigQuery quotas and
+  limits](/bigquery/quotas). If your project exceeds BigQuery quotas or
+  limits, AI Platform Prediction does not log request-response pairs, but it
+  continues to serve predictions.  If you are using [continuous evaluation
+  ](/ml-engine/docs/continuous-evaluation/), you do not need to specify this
+  configuration manually. Setting up continuous evaluation automatically
+  enables logging of request-response pairs.
 
   Fields:
-    bigqueryTableName: Fully qualified BigQuery table name in the format of
-      "[project_id].[dataset_name].[table_name]".
-    samplingPercentage: Percentage of the request being logged. The sampling
-      window is the lifetime of the Version. Defaults to 0.
+    bigqueryTableName: Required. Fully qualified BigQuery table name in the
+      following format:
+      "<var>project_id</var>.<var>dataset_name</var>.<var>table_name</var>"
+      The specifcied table must already exist, and the "Cloud ML Service
+      Agent" for your project must have permission to write to it. The table
+      must have the following [schema](/bigquery/docs/schemas):  <table>
+      <tr><th>Field name</th><th style="display: table-cell">Type</th>     <th
+      style="display: table-cell">Mode</th></tr>
+      <tr><td>model</td><td>STRING</td><td>REQUIRED</td></tr>
+      <tr><td>model_version</td><td>STRING</td><td>REQUIRED</td></tr>
+      <tr><td>time</td><td>TIMESTAMP</td><td>REQUIRED</td></tr>
+      <tr><td>raw_data</td><td>STRING</td><td>REQUIRED</td></tr>
+      <tr><td>raw_prediction</td><td>STRING</td><td>NULLABLE</td></tr>
+      <tr><td>groundtruth</td><td>STRING</td><td>NULLABLE</td></tr> </table>
+    samplingPercentage: Percentage of requests to be logged, expressed as a
+      fraction from 0 to 1. For example, if you want to log 10% of requests,
+      enter `0.1`. The sampling window is the lifetime of the model version.
+      Defaults to 0.
   """
 
   bigqueryTableName = _messages.StringField(1)
   samplingPercentage = _messages.FloatField(2)
 
 
-class GoogleCloudMlV1SaabasAttribution(_messages.Message):
-  r"""Attributes credit by running a faster aproximation to the TreeShap
-  method. Please refer to this link for more details:
-  https://blog.datadive.net/interpreting-random-forests/ This attribution
-  method is only supported for XGBoost models.
+class GoogleCloudMlV1SamplingShapAttribution(_messages.Message):
+  r"""An attribution method that approximates Shapley values for features that
+  contribute to the label being predicted. A sampling strategy is used to
+  approximate the value rather than considering all subsets of features.
+
+  Fields:
+    numPaths: The number of feature permutations to consider when
+      approximating the shapley values.
   """
 
+  numPaths = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudMlV1SetDefaultVersionRequest(_messages.Message):
@@ -1555,15 +1558,6 @@ class GoogleCloudMlV1TrainingOutput(_messages.Message):
   isBuiltInAlgorithmJob = _messages.BooleanField(5)
   isHyperparameterTuningJob = _messages.BooleanField(6)
   trials = _messages.MessageField('GoogleCloudMlV1HyperparameterOutput', 7, repeated=True)
-
-
-class GoogleCloudMlV1TreeShapAttribution(_messages.Message):
-  r"""Attributes credit by computing the Shapley value taking advantage of the
-  model's tree ensemble structure. Refer to this paper for more details:
-  http://papers.nips.cc/paper/7062-a-unified-approach-to-interpreting-model-
-  predictions.pdf. This attribution method is supported for XGBoost models.
-  """
-
 
 
 class GoogleCloudMlV1Version(_messages.Message):
@@ -1945,7 +1939,11 @@ class GoogleIamV1Policy(_messages.Message):
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten.
-    version: Deprecated.
+    version: Specifies the format of the policy.  Valid values are 0, 1, and
+      3. Requests specifying an invalid value will be rejected.  Policies with
+      any conditional bindings must specify version 3. Policies without any
+      conditional bindings may specify any valid value or leave the field
+      unset.
   """
 
   auditConfigs = _messages.MessageField('GoogleIamV1AuditConfig', 1, repeated=True)
@@ -2243,8 +2241,10 @@ class MlProjectsJobsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
-      field is omitted, policy format version 1 will be returned.
+      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.  Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -2407,8 +2407,10 @@ class MlProjectsModelsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
-      field is omitted, policy format version 1 will be returned.
+      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.  Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.

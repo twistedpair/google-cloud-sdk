@@ -18,6 +18,12 @@ class BatchTranslateTextRequest(_messages.Message):
   Messages:
     GlossariesValue: Optional. Glossaries to be applied for translation. It's
       keyed by target language code.
+    LabelsValue: Optional. The labels with user-defined metadata for the
+      request.  Label keys and values can be no longer than 63 characters
+      (Unicode codepoints), can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. Label values are optional. Label keys must start with a letter.
+      See https://cloud.google.com/translate/docs/labels for more information.
     ModelsValue: Optional. The models to use for translation. Map's key is
       target language code. Map's value is model name. Value can be a built-in
       general model, or an AutoML Translation model.  The value format depends
@@ -35,6 +41,12 @@ class BatchTranslateTextRequest(_messages.Message):
     inputConfigs: Required. Input configurations. The total number of files
       matched should be <= 1000. The total content size should be <= 100M
       Unicode codepoints. The files must use UTF-8 encoding.
+    labels: Optional. The labels with user-defined metadata for the request.
+      Label keys and values can be no longer than 63 characters (Unicode
+      codepoints), can only contain lowercase letters, numeric characters,
+      underscores and dashes. International characters are allowed. Label
+      values are optional. Label keys must start with a letter.  See
+      https://cloud.google.com/translate/docs/labels for more information.
     models: Optional. The models to use for translation. Map's key is target
       language code. Map's value is model name. Value can be a built-in
       general model, or an AutoML Translation model.  The value format depends
@@ -78,6 +90,35 @@ class BatchTranslateTextRequest(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels with user-defined metadata for the request.
+    Label keys and values can be no longer than 63 characters (Unicode
+    codepoints), can only contain lowercase letters, numeric characters,
+    underscores and dashes. International characters are allowed. Label values
+    are optional. Label keys must start with a letter.  See
+    https://cloud.google.com/translate/docs/labels for more information.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class ModelsValue(_messages.Message):
     r"""Optional. The models to use for translation. Map's key is target
     language code. Map's value is model name. Value can be a built-in general
@@ -111,10 +152,11 @@ class BatchTranslateTextRequest(_messages.Message):
 
   glossaries = _messages.MessageField('GlossariesValue', 1)
   inputConfigs = _messages.MessageField('InputConfig', 2, repeated=True)
-  models = _messages.MessageField('ModelsValue', 3)
-  outputConfig = _messages.MessageField('OutputConfig', 4)
-  sourceLanguageCode = _messages.StringField(5)
-  targetLanguageCodes = _messages.StringField(6, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 3)
+  models = _messages.MessageField('ModelsValue', 4)
+  outputConfig = _messages.MessageField('OutputConfig', 5)
+  sourceLanguageCode = _messages.StringField(6)
+  targetLanguageCodes = _messages.StringField(7, repeated=True)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -124,8 +166,22 @@ class CancelOperationRequest(_messages.Message):
 class DetectLanguageRequest(_messages.Message):
   r"""The request message for language detection.
 
+  Messages:
+    LabelsValue: Optional. The labels with user-defined metadata for the
+      request.  Label keys and values can be no longer than 63 characters
+      (Unicode codepoints), can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. Label values are optional. Label keys must start with a letter.
+      See https://cloud.google.com/translate/docs/labels for more information.
+
   Fields:
     content: The content of the input stored as a string.
+    labels: Optional. The labels with user-defined metadata for the request.
+      Label keys and values can be no longer than 63 characters (Unicode
+      codepoints), can only contain lowercase letters, numeric characters,
+      underscores and dashes. International characters are allowed. Label
+      values are optional. Label keys must start with a letter.  See
+      https://cloud.google.com/translate/docs/labels for more information.
     mimeType: Optional. The format of the source text, for example,
       "text/html", "text/plain". If left blank, the MIME type defaults to
       "text/html".
@@ -136,9 +192,39 @@ class DetectLanguageRequest(_messages.Message):
       detection/default`.  If not specified, the default model is used.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels with user-defined metadata for the request.
+    Label keys and values can be no longer than 63 characters (Unicode
+    codepoints), can only contain lowercase letters, numeric characters,
+    underscores and dashes. International characters are allowed. Label values
+    are optional. Label keys must start with a letter.  See
+    https://cloud.google.com/translate/docs/labels for more information.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   content = _messages.StringField(1)
-  mimeType = _messages.StringField(2)
-  model = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 2)
+  mimeType = _messages.StringField(3)
+  model = _messages.StringField(4)
 
 
 class DetectLanguageResponse(_messages.Message):
@@ -1048,6 +1134,14 @@ class TranslateTextGlossaryConfig(_messages.Message):
 class TranslateTextRequest(_messages.Message):
   r"""The request message for synchronous translation.
 
+  Messages:
+    LabelsValue: Optional. The labels with user-defined metadata for the
+      request.  Label keys and values can be no longer than 63 characters
+      (Unicode codepoints), can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. Label values are optional. Label keys must start with a letter.
+      See https://cloud.google.com/translate/docs/labels for more information.
+
   Fields:
     contents: Required. The content of the input in string format. We
       recommend the total content be less than 30k codepoints. Use
@@ -1055,6 +1149,12 @@ class TranslateTextRequest(_messages.Message):
     glossaryConfig: Optional. Glossary to be applied. The glossary must be
       within the same region (have the same location-id) as the model,
       otherwise an INVALID_ARGUMENT (400) error is returned.
+    labels: Optional. The labels with user-defined metadata for the request.
+      Label keys and values can be no longer than 63 characters (Unicode
+      codepoints), can only contain lowercase letters, numeric characters,
+      underscores and dashes. International characters are allowed. Label
+      values are optional. Label keys must start with a letter.  See
+      https://cloud.google.com/translate/docs/labels for more information.
     mimeType: Optional. The format of the source text, for example,
       "text/html",  "text/plain". If left blank, the MIME type defaults to
       "text/html".
@@ -1077,12 +1177,42 @@ class TranslateTextRequest(_messages.Message):
       in Language Support.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels with user-defined metadata for the request.
+    Label keys and values can be no longer than 63 characters (Unicode
+    codepoints), can only contain lowercase letters, numeric characters,
+    underscores and dashes. International characters are allowed. Label values
+    are optional. Label keys must start with a letter.  See
+    https://cloud.google.com/translate/docs/labels for more information.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   contents = _messages.StringField(1, repeated=True)
   glossaryConfig = _messages.MessageField('TranslateTextGlossaryConfig', 2)
-  mimeType = _messages.StringField(3)
-  model = _messages.StringField(4)
-  sourceLanguageCode = _messages.StringField(5)
-  targetLanguageCode = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 3)
+  mimeType = _messages.StringField(4)
+  model = _messages.StringField(5)
+  sourceLanguageCode = _messages.StringField(6)
+  targetLanguageCode = _messages.StringField(7)
 
 
 class TranslateTextResponse(_messages.Message):

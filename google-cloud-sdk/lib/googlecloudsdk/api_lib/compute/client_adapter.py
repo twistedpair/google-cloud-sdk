@@ -56,7 +56,7 @@ class ClientAdapter(object):
         self._API_NAME, self._api_version, no_http=no_http)
 
     # Turn the endpoint into just the host.
-    # eg. https://www.googleapis.com/compute/v1 -> https://www.googleapis.com
+    # eg. https://compute.googleapis.com/compute/v1 -> https://compute.googleapis.com
     endpoint_url = core_apis.GetEffectiveApiEndpoint(self._API_NAME,
                                                      self._api_version)
     self._batch_url = _GetBatchUrl(endpoint_url, self._api_version)

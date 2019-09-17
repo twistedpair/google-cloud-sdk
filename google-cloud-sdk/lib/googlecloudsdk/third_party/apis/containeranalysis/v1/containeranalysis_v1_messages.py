@@ -999,6 +999,7 @@ class DiscoveryOccurrence(_messages.Message):
       LocalizedMessage under details to show to the user. The LocalizedMessage
       is output only and populated by the API.
     continuousAnalysis: Whether the resource is continuously analyzed.
+    cpe: The CPE of the resource being scanned.
   """
 
   class AnalysisStatusValueValuesEnum(_messages.Enum):
@@ -1035,6 +1036,7 @@ class DiscoveryOccurrence(_messages.Message):
   analysisStatus = _messages.EnumField('AnalysisStatusValueValuesEnum', 1)
   analysisStatusError = _messages.MessageField('Status', 2)
   continuousAnalysis = _messages.EnumField('ContinuousAnalysisValueValuesEnum', 3)
+  cpe = _messages.StringField(4)
 
 
 class Distribution(_messages.Message):
@@ -1177,8 +1179,10 @@ class GetPolicyOptions(_messages.Message):
 
   Fields:
     requestedPolicyVersion: Optional. The policy format version to be
-      returned. Acceptable values are 0, 1, and 3. If the value is 0, or the
-      field is omitted, policy format version 1 will be returned.
+      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.  Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.
   """
 
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1731,7 +1735,11 @@ class Policy(_messages.Message):
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten.
-    version: Deprecated.
+    version: Specifies the format of the policy.  Valid values are 0, 1, and
+      3. Requests specifying an invalid value will be rejected.  Policies with
+      any conditional bindings must specify version 3. Policies without any
+      conditional bindings may specify any valid value or leave the field
+      unset.
   """
 
   bindings = _messages.MessageField('Binding', 1, repeated=True)

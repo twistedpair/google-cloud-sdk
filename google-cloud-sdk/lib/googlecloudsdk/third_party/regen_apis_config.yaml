@@ -709,6 +709,8 @@ apis:
           enable_uri_parsing: false
         operations:
           path: operations/{+operationId}
+    v1alpha2:
+      discovery_doc: recommender_v1alpha2.json
     v1beta1:
       discovery_doc: recommender_v1beta1.json
   gameservices:

@@ -414,35 +414,6 @@ set.
         supports_download=False,
     )
 
-    def Reattach(self, request, global_params=None):
-      r"""Reattach a Registration, reenabling Cloud Domains management. Can only be.
-applied to existing resources in the `DETACHED` state that are not expired,
-still managed by Google Domains, and accessible to the caller.
-
-      Args:
-        request: (DomainsProjectsLocationsRegistrationsReattachRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Reattach')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Reattach.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}:reattach',
-        http_method=u'POST',
-        method_id=u'domains.projects.locations.registrations.reattach',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1alpha1/{+name}:reattach',
-        request_field=u'reattachRegistrationRequest',
-        request_type_name=u'DomainsProjectsLocationsRegistrationsReattachRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
     def SearchAvailability(self, request, global_params=None):
       r"""Searches available domains similar to the given query.
 Returned domain availability allows some staleness.

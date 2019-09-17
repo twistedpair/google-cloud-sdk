@@ -1597,9 +1597,7 @@ class AuditLogConfig(_messages.Message):
   Fields:
     exemptedMembers: Specifies the identities that do not cause logging for
       this type of permission. Follows the same format of [Binding.members][].
-    ignoreChildExemptions: Specifies whether principals can be exempted for
-      the same LogType in lower-level resource policies. If true, any lower-
-      level exemptions will be ignored.
+    ignoreChildExemptions:
     logType: The log type that this config enables.
   """
 
@@ -2850,16 +2848,10 @@ class BackendBucketList(_messages.Message):
 
 
 class BackendService(_messages.Message):
-  r"""Represents a Backend Service resource.    Backend services must have an
-  associated health check. Backend services also store information about
-  session affinity. For more information, read Backend Services.  A
-  backendServices resource represents a global backend service. Global backend
-  services are used for HTTP(S), SSL Proxy, TCP Proxy load balancing and
-  Traffic Director.  A regionBackendServices resource represents a regional
-  backend service. Regional backend services are used for internal TCP/UDP
-  load balancing. For more information, read Internal TCP/UDP Load balancing.
-  (== resource_for v1.backendService ==) (== resource_for beta.backendService
-  ==)
+  r"""Represents a Backend Service resource.  A backend service contains
+  configuration values for Google Cloud Platform load balancing services.  For
+  more information, read Backend Services.  (== resource_for v1.backendService
+  ==) (== resource_for beta.backendService ==)
 
   Enums:
     LoadBalancingSchemeValueValuesEnum: Indicates whether the backend service
@@ -2888,10 +2880,10 @@ class BackendService(_messages.Message):
       INTERNAL_MANAGED.  - A global backend service with the
       load_balancing_scheme set to INTERNAL_SELF_MANAGED.
     ProtocolValueValuesEnum: The protocol this BackendService uses to
-      communicate with backends.  Possible values are HTTP, HTTPS, TCP, SSL,
-      or UDP, depending on the chosen load balancer or Traffic Director
+      communicate with backends.  Possible values are HTTP, HTTPS, HTTP2, TCP,
+      SSL, or UDP, depending on the chosen load balancer or Traffic Director
       configuration. Refer to the documentation for the load balancer or for
-      Traffic director for more information.
+      Traffic Director for more information.
     SessionAffinityValueValuesEnum: Type of session affinity to use. The
       default is NONE. Session affinity is not applicable if the --protocol is
       UDP.  When the loadBalancingScheme is EXTERNAL, possible values are
@@ -3010,10 +3002,10 @@ class BackendService(_messages.Message):
       when the loadBalancingScheme is INTERNAL (Internal TCP/UDP Load
       Blaancing).
     protocol: The protocol this BackendService uses to communicate with
-      backends.  Possible values are HTTP, HTTPS, TCP, SSL, or UDP, depending
-      on the chosen load balancer or Traffic Director configuration. Refer to
-      the documentation for the load balancer or for Traffic director for more
-      information.
+      backends.  Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP,
+      depending on the chosen load balancer or Traffic Director configuration.
+      Refer to the documentation for the load balancer or for Traffic Director
+      for more information.
     region: [Output Only] URL of the region where the regional backend service
       resides. This field is not applicable to global backend services. You
       must specify this field as part of the HTTP request URL. It is not
@@ -3102,9 +3094,9 @@ class BackendService(_messages.Message):
 
   class ProtocolValueValuesEnum(_messages.Enum):
     r"""The protocol this BackendService uses to communicate with backends.
-    Possible values are HTTP, HTTPS, TCP, SSL, or UDP, depending on the chosen
-    load balancer or Traffic Director configuration. Refer to the
-    documentation for the load balancer or for Traffic director for more
+    Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP, depending on the
+    chosen load balancer or Traffic Director configuration. Refer to the
+    documentation for the load balancer or for Traffic Director for more
     information.
 
     Values:
@@ -4235,6 +4227,11 @@ class Commitment(_messages.Message):
   resource_for v1.regionCommitments ==)
 
   Enums:
+    CategoryValueValuesEnum: The category of the commitment. Category MACHINE
+      specifies commitments composed of machine resources such as VCPU or
+      MEMORY, listed in resources. Category LICENSE specifies commitments
+      composed of software licenses, listed in licenseResources. Note that
+      only MACHINE commitments should have a Type specified.
     PlanValueValuesEnum: The plan for this commitment, which determines
       duration and discount rate. The currently supported plans are
       TWELVE_MONTH (1 year), and THIRTY_SIX_MONTH (3 years).
@@ -4246,6 +4243,11 @@ class Commitment(_messages.Message):
       commitment that will only apply to memory optimized machines.
 
   Fields:
+    category: The category of the commitment. Category MACHINE specifies
+      commitments composed of machine resources such as VCPU or MEMORY, listed
+      in resources. Category LICENSE specifies commitments composed of
+      software licenses, listed in licenseResources. Note that only MACHINE
+      commitments should have a Type specified.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -4255,6 +4257,7 @@ class Commitment(_messages.Message):
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#commitment for
       commitments.
+    licenseResources: A list of commitment amounts for particular licenses.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -4283,6 +4286,22 @@ class Commitment(_messages.Message):
       eligible resources. Type MEMORY_OPTIMIZED specifies a commitment that
       will only apply to memory optimized machines.
   """
+
+  class CategoryValueValuesEnum(_messages.Enum):
+    r"""The category of the commitment. Category MACHINE specifies commitments
+    composed of machine resources such as VCPU or MEMORY, listed in resources.
+    Category LICENSE specifies commitments composed of software licenses,
+    listed in licenseResources. Note that only MACHINE commitments should have
+    a Type specified.
+
+    Values:
+      CATEGORY_UNSPECIFIED: <no description>
+      LICENSE: <no description>
+      MACHINE: <no description>
+    """
+    CATEGORY_UNSPECIFIED = 0
+    LICENSE = 1
+    MACHINE = 2
 
   class PlanValueValuesEnum(_messages.Enum):
     r"""The plan for this commitment, which determines duration and discount
@@ -4336,22 +4355,24 @@ class Commitment(_messages.Message):
     MEMORY_OPTIMIZED = 5
     TYPE_UNSPECIFIED = 6
 
-  creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  endTimestamp = _messages.StringField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#commitment')
-  name = _messages.StringField(6)
-  plan = _messages.EnumField('PlanValueValuesEnum', 7)
-  region = _messages.StringField(8)
-  reservations = _messages.MessageField('Reservation', 9, repeated=True)
-  resources = _messages.MessageField('ResourceCommitment', 10, repeated=True)
-  selfLink = _messages.StringField(11)
-  selfLinkWithId = _messages.StringField(12)
-  startTimestamp = _messages.StringField(13)
-  status = _messages.EnumField('StatusValueValuesEnum', 14)
-  statusMessage = _messages.StringField(15)
-  type = _messages.EnumField('TypeValueValuesEnum', 16)
+  category = _messages.EnumField('CategoryValueValuesEnum', 1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  endTimestamp = _messages.StringField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default=u'compute#commitment')
+  licenseResources = _messages.MessageField('LicenseResourceCommitment', 7, repeated=True)
+  name = _messages.StringField(8)
+  plan = _messages.EnumField('PlanValueValuesEnum', 9)
+  region = _messages.StringField(10)
+  reservations = _messages.MessageField('Reservation', 11, repeated=True)
+  resources = _messages.MessageField('ResourceCommitment', 12, repeated=True)
+  selfLink = _messages.StringField(13)
+  selfLinkWithId = _messages.StringField(14)
+  startTimestamp = _messages.StringField(15)
+  status = _messages.EnumField('StatusValueValuesEnum', 16)
+  statusMessage = _messages.StringField(17)
+  type = _messages.EnumField('TypeValueValuesEnum', 18)
 
 
 class CommitmentAggregatedList(_messages.Message):
@@ -24440,27 +24461,15 @@ class FixedOrPercent(_messages.Message):
 
 
 class ForwardingRule(_messages.Message):
-  r"""Represents a Forwarding Rule resource.    A forwardingRules resource
-  represents a regional forwarding rule.  Regional external forwarding rules
-  can reference any of the following resources:   - A target instance  - A
-  Cloud VPN Classic gateway (targetVpnGateway),   - A target pool for a
-  Network Load Balancer  - A global target HTTP(S) proxy for an HTTP(S) load
-  balancer using Standard Tier  - A target SSL proxy for a SSL Proxy load
-  balancer using Standard Tier  - A target TCP proxy for a TCP Proxy load
-  balancer using Standard Tier.    Regional internal forwarding rules can
-  reference the backend service of an internal TCP/UDP load balancer.  For
-  regional internal forwarding rules, the following applies:   - If the
-  loadBalancingScheme for the load balancer is INTERNAL, then the forwarding
-  rule references a regional internal backend service.  - If the
-  loadBalancingScheme for the load balancer is INTERNAL_MANAGED, then the
-  forwarding rule must reference a regional target HTTP(S) proxy.    For more
-  information, read Using Forwarding rules.  A globalForwardingRules resource
-  represents a global forwarding rule.  Global forwarding rules are only used
-  by load balancers that use Premium Tier. (== resource_for
-  beta.forwardingRules ==) (== resource_for v1.forwardingRules ==) (==
-  resource_for beta.globalForwardingRules ==) (== resource_for
-  v1.globalForwardingRules ==) (== resource_for beta.regionForwardingRules ==)
-  (== resource_for v1.regionForwardingRules ==)
+  r"""Represents a Forwarding Rule resource.  A forwarding rule and its
+  corresponding IP address represent the frontend configuration of a Google
+  Cloud Platform load balancer. Forwarding rules can also reference target
+  instances and Cloud VPN Classic gateways (targetVpnGateway).  For more
+  information, read Forwarding rule concepts and Using protocol forwarding.
+  (== resource_for beta.forwardingRules ==) (== resource_for
+  v1.forwardingRules ==) (== resource_for beta.globalForwardingRules ==) (==
+  resource_for v1.globalForwardingRules ==) (== resource_for
+  beta.regionForwardingRules ==) (== resource_for v1.regionForwardingRules ==)
 
   Enums:
     IPProtocolValueValuesEnum: The IP protocol to which this rule applies.
@@ -27673,6 +27682,8 @@ class Instance(_messages.Message):
   v1.instances ==)
 
   Enums:
+    PostKeyRevocationActionTypeValueValuesEnum: Specifies whether this
+      instance will be shut down on key revocation.
     StatusValueValuesEnum: [Output Only] The status of the instance. One of
       the following values: PROVISIONING, STAGING, RUNNING, STOPPING, STOPPED,
       SUSPENDING, SUSPENDED, and TERMINATED.
@@ -27758,6 +27769,8 @@ class Instance(_messages.Message):
       These specify how interfaces are configured to interact with other
       network services, such as connecting to the internet. Multiple
       interfaces are supported per instance.
+    postKeyRevocationActionType: Specifies whether this instance will be shut
+      down on key revocation.
     preservedStateSizeGb: Total amount of preserved state for SUSPENDED
       instances. Read-only in the api.
     reservationAffinity: Specifies the reservations that this instance can
@@ -27796,6 +27809,18 @@ class Instance(_messages.Message):
       specify this field as part of the HTTP request URL. It is not settable
       as a field in the request body.
   """
+
+  class PostKeyRevocationActionTypeValueValuesEnum(_messages.Enum):
+    r"""Specifies whether this instance will be shut down on key revocation.
+
+    Values:
+      NOOP: <no description>
+      SHUTDOWN: <no description>
+      UNSPECIFIED: <no description>
+    """
+    NOOP = 0
+    SHUTDOWN = 1
+    UNSPECIFIED = 2
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the instance. One of the following values:
@@ -27868,24 +27893,25 @@ class Instance(_messages.Message):
   minCpuPlatform = _messages.StringField(18)
   name = _messages.StringField(19)
   networkInterfaces = _messages.MessageField('NetworkInterface', 20, repeated=True)
-  preservedStateSizeGb = _messages.IntegerField(21)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 22)
-  resourcePolicies = _messages.StringField(23, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 24)
-  selfLink = _messages.StringField(25)
-  selfLinkWithId = _messages.StringField(26)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 27, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 28)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 29)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 30)
-  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 31)
-  sourceMachineImage = _messages.StringField(32)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 33)
-  startRestricted = _messages.BooleanField(34)
-  status = _messages.EnumField('StatusValueValuesEnum', 35)
-  statusMessage = _messages.StringField(36)
-  tags = _messages.MessageField('Tags', 37)
-  zone = _messages.StringField(38)
+  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 21)
+  preservedStateSizeGb = _messages.IntegerField(22)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 23)
+  resourcePolicies = _messages.StringField(24, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 25)
+  selfLink = _messages.StringField(26)
+  selfLinkWithId = _messages.StringField(27)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 28, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 29)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 30)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 31)
+  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 32)
+  sourceMachineImage = _messages.StringField(33)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 34)
+  startRestricted = _messages.BooleanField(35)
+  status = _messages.EnumField('StatusValueValuesEnum', 36)
+  statusMessage = _messages.StringField(37)
+  tags = _messages.MessageField('Tags', 38)
+  zone = _messages.StringField(39)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -30291,6 +30317,10 @@ class InstanceMoveRequest(_messages.Message):
 class InstanceProperties(_messages.Message):
   r"""InstanceProperties message type.
 
+  Enums:
+    PostKeyRevocationActionTypeValueValuesEnum: Specifies whether this
+      instance will be shut down on key revocation.
+
   Messages:
     LabelsValue: Labels to apply to instances that are created from this
       template.
@@ -30324,6 +30354,8 @@ class InstanceProperties(_messages.Message):
       For more information, read Specifying a Minimum CPU Platform.
     networkInterfaces: An array of network access configurations for this
       interface.
+    postKeyRevocationActionType: Specifies whether this instance will be shut
+      down on key revocation.
     reservationAffinity: Specifies the reservations that this instance can
       consume from.
     scheduling: Specifies the scheduling options for the instances that are
@@ -30340,6 +30372,18 @@ class InstanceProperties(_messages.Message):
       firewalls. The setTags method can modify this list of tags. Each tag
       within the list must comply with RFC1035.
   """
+
+  class PostKeyRevocationActionTypeValueValuesEnum(_messages.Enum):
+    r"""Specifies whether this instance will be shut down on key revocation.
+
+    Values:
+      NOOP: <no description>
+      SHUTDOWN: <no description>
+      UNSPECIFIED: <no description>
+    """
+    NOOP = 0
+    SHUTDOWN = 1
+    UNSPECIFIED = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -30375,12 +30419,13 @@ class InstanceProperties(_messages.Message):
   metadata = _messages.MessageField('Metadata', 8)
   minCpuPlatform = _messages.StringField(9)
   networkInterfaces = _messages.MessageField('NetworkInterface', 10, repeated=True)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 11)
-  scheduling = _messages.MessageField('Scheduling', 12)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 13, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 14)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 15)
-  tags = _messages.MessageField('Tags', 16)
+  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 11)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 12)
+  scheduling = _messages.MessageField('Scheduling', 13)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 14, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 15)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 16)
+  tags = _messages.MessageField('Tags', 17)
 
 
 class InstanceReference(_messages.Message):
@@ -33103,6 +33148,22 @@ class LicenseCodeLicenseAlias(_messages.Message):
 
   description = _messages.StringField(1)
   selfLink = _messages.StringField(2)
+
+
+class LicenseResourceCommitment(_messages.Message):
+  r"""Commitment for a particular license resource (a License Commitment is
+  composed of one or more of these).
+
+  Fields:
+    amount: The number of licenses purchased.
+    coresPerLicense: Specifies the core range of the instance for which this
+      license applies.
+    license: Any applicable license URI.
+  """
+
+  amount = _messages.IntegerField(1)
+  coresPerLicense = _messages.StringField(2)
+  license = _messages.StringField(3)
 
 
 class LicenseResourceRequirements(_messages.Message):
@@ -37456,6 +37517,10 @@ class NotificationEndpointGrpcSettings(_messages.Message):
       valid gRPCLB DNS name.
     payloadName: Optional. If specified, this field is used to populate the
       ?name? field in gRPC requests.
+    resendInterval: Optional. This field is used to configure how often to
+      send a full update of all non-healthy backends. If unspecified, full
+      updates are not sent. If specified, must be in the range between 600
+      seconds to 3600 seconds. Nanos are disallowed.
     retryDurationSec: How much time (in seconds) is spent attempting
       notification retries until a successful response is received. Default is
       30s. Limit is 20m (1200s). Must be a positive number.
@@ -37464,7 +37529,8 @@ class NotificationEndpointGrpcSettings(_messages.Message):
   authority = _messages.StringField(1)
   endpoint = _messages.StringField(2)
   payloadName = _messages.StringField(3)
-  retryDurationSec = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
+  resendInterval = _messages.MessageField('Duration', 4)
+  retryDurationSec = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
 
 
 class NotificationEndpointList(_messages.Message):
@@ -39013,13 +39079,14 @@ class PathMatcher(_messages.Message):
       order by which path rules are specified does not matter. Matches are
       always done on the longest-path-first basis. For example: a pathRule
       with a path /a/b/c/* will match before /a/b/* irrespective of the order
-      in which those paths appear in this list. Only one of pathRules or
-      routeRules must be set.
+      in which those paths appear in this list. Within a given pathMatcher,
+      only one of pathRules or routeRules must be set.
     routeRules: The list of ordered HTTP route rules. Use this list instead of
       pathRules when advanced route matching and routing actions are desired.
       The order of specifying routeRules matters: the first rule that matches
-      will cause its specified routing action to take effect. Only one of
-      pathRules or routeRules must be set.
+      will cause its specified routing action to take effect. Within a given
+      pathMatcher, only one of pathRules or routeRules must be set. routeRules
+      are not supported in UrlMaps intended for External Load balancers.
   """
 
   defaultRouteAction = _messages.MessageField('HttpRouteAction', 1)
@@ -39181,7 +39248,11 @@ class Policy(_messages.Message):
       any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
       will be applied if one or more matching rule requires logging. -
       Otherwise, if no rule applies, permission is denied.
-    version: Deprecated.
+    version: Specifies the format of the policy.  Valid values are 0, 1, and
+      3. Requests specifying an invalid value will be rejected.  Policies with
+      any conditional bindings must specify version 3. Policies without any
+      conditional bindings may specify any valid value or leave the field
+      unset.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -39802,8 +39873,6 @@ class PublicDelegatedPrefix(_messages.Message):
       PublicDelegatedPrefix, otherwise the request will fail with error 412
       conditionNotMet.  To see the latest fingerprint, make a get() request to
       retrieve a PublicDelegatedPrefix.
-    googleAnnouncements: The list of Google announcements that exist for this
-      delegated prefix.
     id: [Output Only] The unique identifier for the resource type. The server
       generates this identifier.
     ipCidrRange: The IPv4 address range, in CIDR format, represented by this
@@ -39833,17 +39902,16 @@ class PublicDelegatedPrefix(_messages.Message):
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   fingerprint = _messages.BytesField(3)
-  googleAnnouncements = _messages.MessageField('PublicDelegatedPrefixGoogleAnnouncement', 4, repeated=True)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  ipCidrRange = _messages.StringField(6)
-  kind = _messages.StringField(7, default=u'compute#publicDelegatedPrefix')
-  name = _messages.StringField(8)
-  parentPrefix = _messages.StringField(9)
-  publicDelegatedSubPrefixs = _messages.MessageField('PublicDelegatedPrefixPublicDelegatedSubPrefix', 10, repeated=True)
-  region = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
-  selfLinkWithId = _messages.StringField(13)
-  status = _messages.MessageField('extra_types.JsonValue', 14)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  ipCidrRange = _messages.StringField(5)
+  kind = _messages.StringField(6, default=u'compute#publicDelegatedPrefix')
+  name = _messages.StringField(7)
+  parentPrefix = _messages.StringField(8)
+  publicDelegatedSubPrefixs = _messages.MessageField('PublicDelegatedPrefixPublicDelegatedSubPrefix', 9, repeated=True)
+  region = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  selfLinkWithId = _messages.StringField(12)
+  status = _messages.MessageField('extra_types.JsonValue', 13)
 
 
 class PublicDelegatedPrefixAggregatedList(_messages.Message):
@@ -39996,40 +40064,6 @@ class PublicDelegatedPrefixAggregatedList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
-
-
-class PublicDelegatedPrefixGoogleAnnouncement(_messages.Message):
-  r"""A Google announcement advertises the prefix internally within Google's
-  network backbone from the specified scope.
-
-  Enums:
-    StatusValueValuesEnum: The status of this Google announcement.
-
-  Fields:
-    name: The name of a Google announcement. The name must be 1-63 characters
-      long, and comply with  RFC1035. Specifically, the name must be 1-63
-      characters long and match the regular expression
-      `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first // character must be
-      a lowercase letter, and all following characters must be a dash,
-      lowercase letter, or digit, except the last character, which cannot be a
-      dash.
-    status: The status of this Google announcement.
-  """
-
-  class StatusValueValuesEnum(_messages.Enum):
-    r"""The status of this Google announcement.
-
-    Values:
-      CANARY_CONFIGURED: <no description>
-      CONFIGURED: <no description>
-      INITIAL: <no description>
-    """
-    CANARY_CONFIGURED = 0
-    CONFIGURED = 1
-    INITIAL = 2
-
-  name = _messages.StringField(1)
-  status = _messages.EnumField('StatusValueValuesEnum', 2)
 
 
 class PublicDelegatedPrefixList(_messages.Message):
@@ -42824,14 +42858,33 @@ class ResourcePolicyGroupPlacementPolicy(_messages.Message):
   specifies the failure bucket separation as well as network locality
 
   Enums:
+    DistributionValueValuesEnum: Distribution specifies how the instances are
+      placed at host level. If set to SPREAD, no two instances will be put on
+      the same host
     LocalityValueValuesEnum: Specifies network locality
     StyleValueValuesEnum: Specifies instances to hosts placement relationship
 
   Fields:
+    availabilityDomainCount: The number of availability domains instances will
+      be spread across. If two instances are in different availability domain,
+      they will not be put in the same low latency network
+    distribution: Distribution specifies how the instances are placed at host
+      level. If set to SPREAD, no two instances will be put on the same host
     locality: Specifies network locality
     style: Specifies instances to hosts placement relationship
     vmCount: Number of vms in this placement group
   """
+
+  class DistributionValueValuesEnum(_messages.Enum):
+    r"""Distribution specifies how the instances are placed at host level. If
+    set to SPREAD, no two instances will be put on the same host
+
+    Values:
+      SPREAD: <no description>
+      UNSPECIFIED: <no description>
+    """
+    SPREAD = 0
+    UNSPECIFIED = 1
 
   class LocalityValueValuesEnum(_messages.Enum):
     r"""Specifies network locality
@@ -42857,9 +42910,11 @@ class ResourcePolicyGroupPlacementPolicy(_messages.Message):
     FULLY_SPREAD = 1
     UNSPECIFIED_PLACEMENT_TYPE = 2
 
-  locality = _messages.EnumField('LocalityValueValuesEnum', 1)
-  style = _messages.EnumField('StyleValueValuesEnum', 2)
-  vmCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  availabilityDomainCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  distribution = _messages.EnumField('DistributionValueValuesEnum', 2)
+  locality = _messages.EnumField('LocalityValueValuesEnum', 3)
+  style = _messages.EnumField('StyleValueValuesEnum', 4)
+  vmCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class ResourcePolicyHourlyCycle(_messages.Message):
@@ -44941,6 +44996,9 @@ class Scheduling(_messages.Message):
       latency. This can only be set during instance creation, or when the
       instance is not currently running. It must not be set if the preemptible
       option is also set.
+    locationHint: An opaque location hint used to place the instance close to
+      other resources. This field is for use by internal tools that use the
+      public API.
     minNodeCpus: The minimum number of virtual CPUs this instance will consume
       when running on a sole-tenant node.
     nodeAffinities: A set of node affinity and anti-affinity configurations.
@@ -44969,10 +45027,11 @@ class Scheduling(_messages.Message):
 
   automaticRestart = _messages.BooleanField(1)
   latencyTolerant = _messages.BooleanField(2)
-  minNodeCpus = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 4, repeated=True)
-  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 5)
-  preemptible = _messages.BooleanField(6)
+  locationHint = _messages.StringField(3)
+  minNodeCpus = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 5, repeated=True)
+  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 6)
+  preemptible = _messages.BooleanField(7)
 
 
 class SchedulingNodeAffinity(_messages.Message):

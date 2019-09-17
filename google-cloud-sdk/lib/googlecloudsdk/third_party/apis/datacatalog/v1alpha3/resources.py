@@ -52,6 +52,27 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  PROJECTS_TAXONOMIES = (
+      'projects.taxonomies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/taxonomies/{taxonomiesId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_TAXONOMIES_CATEGORIES = (
+      'projects.taxonomies.categories',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/taxonomies/{taxonomiesId}/categories/'
+              '{categoriesId}',
+      },
+      [u'name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

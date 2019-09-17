@@ -199,24 +199,23 @@ class GoogleCloudRecommenderV1beta1MarkRecommendationSucceededRequest(_messages.
 
 
 class GoogleCloudRecommenderV1beta1Operation(_messages.Message):
-  r"""Contains an operation for a resource inspired by the JSON-PATCH format
-  with support for: * Custom filters for describing partial array patch. *
-  Extended path values for describing nested arrays. * Custom fields for
-  describing the resource for which the operation is being   described. *
+  r"""Contains an operation for a resource loosely based on the JSON-PATCH
+  format with support for:  * Custom filters for describing partial array
+  patch. * Extended path values for describing nested arrays. * Custom fields
+  for describing the resource for which the operation is being   described. *
   Allows extension to custom operations not natively supported by RFC6902. See
-  https://tools.ietf.org/html/rfc6902 for details on the original RFC. Next
-  Id: 12
+  https://tools.ietf.org/html/rfc6902 for details on the original RFC.
 
   Messages:
     PathFiltersValue: Set of filters to apply if `path` refers to array
       elements or nested array elements in order to narrow down to a single
       unique element that is being tested/modified. This is intended to be an
       exact match per filter. To perform advanced matching, use
-      path_value_matchers. Example: {   "/versions/*/name" : "it-123"
-      "/versions/*/targetSize/percent": 20 } Example: {   "/bindings/*/role":
-      "roles/admin"   "/bindings/*/condition" : null } Example: {
-      "/bindings/*/role": "roles/admin"   "/bindings/*/members/*" :
-      ["x@google.com", "y@google.com"] } When both path_filters and
+      path_value_matchers.  * Example: {   "/versions/*/name" : "it-123"
+      "/versions/*/targetSize/percent": 20  } * Example: {
+      "/bindings/*/role": "roles/admin"   "/bindings/*/condition" : null  } *
+      Example: {   "/bindings/*/role": "roles/admin"   "/bindings/*/members/*"
+      : ["x@google.com", "y@google.com"]  } When both path_filters and
       path_value_matchers are set, an implicit AND must be performed.
     PathValueMatchersValue: Similar to path_filters, this contains set of
       filters to apply if `path` field referes to array elements. This is
@@ -234,13 +233,13 @@ class GoogleCloudRecommenderV1beta1Operation(_messages.Message):
     pathFilters: Set of filters to apply if `path` refers to array elements or
       nested array elements in order to narrow down to a single unique element
       that is being tested/modified. This is intended to be an exact match per
-      filter. To perform advanced matching, use path_value_matchers. Example:
-      {   "/versions/*/name" : "it-123"   "/versions/*/targetSize/percent": 20
-      } Example: {   "/bindings/*/role": "roles/admin"
-      "/bindings/*/condition" : null } Example: {   "/bindings/*/role":
-      "roles/admin"   "/bindings/*/members/*" : ["x@google.com",
-      "y@google.com"] } When both path_filters and path_value_matchers are
-      set, an implicit AND must be performed.
+      filter. To perform advanced matching, use path_value_matchers.  *
+      Example: {   "/versions/*/name" : "it-123"
+      "/versions/*/targetSize/percent": 20  } * Example: {
+      "/bindings/*/role": "roles/admin"   "/bindings/*/condition" : null  } *
+      Example: {   "/bindings/*/role": "roles/admin"   "/bindings/*/members/*"
+      : ["x@google.com", "y@google.com"]  } When both path_filters and
+      path_value_matchers are set, an implicit AND must be performed.
     pathValueMatchers: Similar to path_filters, this contains set of filters
       to apply if `path` field referes to array elements. This is meant to
       support value matching beyond exact match. To perform exact match, use
@@ -273,11 +272,11 @@ class GoogleCloudRecommenderV1beta1Operation(_messages.Message):
     r"""Set of filters to apply if `path` refers to array elements or nested
     array elements in order to narrow down to a single unique element that is
     being tested/modified. This is intended to be an exact match per filter.
-    To perform advanced matching, use path_value_matchers. Example: {
-    "/versions/*/name" : "it-123"   "/versions/*/targetSize/percent": 20 }
+    To perform advanced matching, use path_value_matchers.  * Example: {
+    "/versions/*/name" : "it-123"   "/versions/*/targetSize/percent": 20  } *
     Example: {   "/bindings/*/role": "roles/admin"   "/bindings/*/condition" :
-    null } Example: {   "/bindings/*/role": "roles/admin"
-    "/bindings/*/members/*" : ["x@google.com", "y@google.com"] } When both
+    null  } * Example: {   "/bindings/*/role": "roles/admin"
+    "/bindings/*/members/*" : ["x@google.com", "y@google.com"]  } When both
     path_filters and path_value_matchers are set, an implicit AND must be
     performed.
 
@@ -488,8 +487,10 @@ class GoogleCloudRecommenderV1beta1ValueMatcher(_messages.Message):
   r"""Contains various matching options for values for a GCP resource field.
 
   Fields:
-    matchesPattern: To be used for regex matching. The regular expression is
-      using the Google RE2 syntax (https://github.com/google/re2/wiki/Syntax).
+    matchesPattern: To be used for full regex matching. The regular expression
+      is using the Google RE2 syntax
+      (https://github.com/google/re2/wiki/Syntax), so to be used with
+      RE2::FullMatch
   """
 
   matchesPattern = _messages.StringField(1)

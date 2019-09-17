@@ -964,7 +964,7 @@ class MultiScopeLister(object):
                regional_service=None,
                global_service=None,
                aggregation_service=None,
-               allow_partial_server_failure=False):
+               allow_partial_server_failure=True):
     self.client = client
     self.zonal_service = zonal_service
     self.regional_service = regional_service
@@ -1080,7 +1080,7 @@ class ZonalParallelLister(object):
   """
 
   def __init__(self, client, service, resources,
-               allow_partial_server_failure=False):
+               allow_partial_server_failure=True):
     self.client = client
     self.service = service
     self.resources = resources
