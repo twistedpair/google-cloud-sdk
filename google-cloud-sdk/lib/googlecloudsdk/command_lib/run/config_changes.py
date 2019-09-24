@@ -187,12 +187,12 @@ class ImageChange(ConfigChanger):
     return resource
 
 
-class EnvVarChanges(ConfigChanger):
-  """Represents the user intent to modify environment variables."""
+class EnvVarLiteralChanges(ConfigChanger):
+  """Represents the user intent to modify environment variables string literals."""
 
   def __init__(self, env_vars_to_update=None,
                env_vars_to_remove=None, clear_others=False):
-    """Initialize a new EnvVarChanges object.
+    """Initialize a new EnvVarLiteralChanges object.
 
     Args:
       env_vars_to_update: {str, str}, Update env var names and values.
@@ -208,16 +208,140 @@ class EnvVarChanges(ConfigChanger):
       self._to_remove = [k.lstrip() for k in env_vars_to_remove]
 
   def Adjust(self, resource):
-    """Mutates the given config's env vars to match the desired changes."""
+    """Mutates the given config's env vars to match the desired changes.
+
+    Args:
+      resource: k8s_object to adjust
+
+    Returns:
+      The adjusted resource
+
+    Raises:
+      ConfigurationError if there's an attempt to replace the source of an
+        existing environment variable whose source is of a different type
+        (e.g. env var's secret source can't be replaced with a config map
+        source).
+    """
     if self._clear_others:
-      resource.template.env_vars.clear()
+      resource.template.env_vars.literals.clear()
     elif self._to_remove:
       for env_var in self._to_remove:
-        if env_var in resource.template.env_vars:
-          del resource.template.env_vars[env_var]
+        if env_var in resource.template.env_vars.literals:
+          del resource.template.env_vars.literals[env_var]
 
-    if self._to_update: resource.template.env_vars.update(self._to_update)
+    if self._to_update:
+      try:
+        resource.template.env_vars.literals.update(self._to_update)
+      except KeyError as e:
+        raise exceptions.ConfigurationError(
+            'Cannot update environment variable [{}] to string literal '
+            'because it has already been set with a different type.'.format(
+                e.args[0]))
     return resource
+
+
+class EnvVarSourceChanges(ConfigChanger):
+  """Represents the user intent to modify environment variables sources."""
+
+  def __init__(self, env_vars_to_update=None,
+               env_vars_to_remove=None, clear_others=False):
+    """Initialize a new EnvVarSourceChanges object.
+
+    Args:
+      env_vars_to_update: {str, str}, Update env var names and values.
+      env_vars_to_remove: [str], List of env vars to remove.
+      clear_others: bool, If true, clear all non-updated env vars.
+
+    Raises:
+      ConfigurationError if a key hasn't been provided for a source.
+    """
+    self._to_update = None
+    self._to_remove = None
+    self._clear_others = clear_others
+    if env_vars_to_update:
+      self._to_update = {}
+      for k, v in env_vars_to_update.items():
+        name = k.strip()
+        # Split the given values into 2 parts:
+        #    [env var source name, source data item key]
+        value = v.split(':', 1)
+        if len(value) < 2:
+          raise exceptions.ConfigurationError(
+              'Missing required item key for environment variable [{}].'
+              .format(name))
+        self._to_update[name] = value
+    if env_vars_to_remove:
+      self._to_remove = [k.lstrip() for k in env_vars_to_remove]
+
+  @abc.abstractmethod
+  def _MakeEnvVarSource(self, messages, name, key):
+    """Returns an instance of an EnvVarSource."""
+
+  @abc.abstractmethod
+  def _GetEnvVars(self, resource):
+    """Returns a k8s_object.ListAsDictionaryWrapper to manage env vars with a source."""
+
+  def Adjust(self, resource):
+    """Mutates the given config's env vars to match the desired changes.
+
+    Args:
+      resource: k8s_object to adjust
+
+    Returns:
+      The adjusted resource
+
+    Raises:
+      ConfigurationError if there's an attempt to replace the source of an
+        existing environment variable whose source is of a different type
+        (e.g. env var's secret source can't be replaced with a config map
+        source).
+    """
+    env_vars = self._GetEnvVars(resource)
+
+    if self._clear_others:
+      env_vars.clear()
+    elif self._to_remove:
+      for env_var in self._to_remove:
+        if env_var in env_vars:
+          del env_vars[env_var]
+
+    if self._to_update:
+      for name, (source_name, source_key) in self._to_update.items():
+        try:
+          env_vars[name] = self._MakeEnvVarSource(
+              resource.MessagesModule(), source_name, source_key)
+        except KeyError:
+          raise exceptions.ConfigurationError(
+              'Cannot update environment variable [{}] to the given type '
+              'because it has already been set with a different type.'.format(
+                  name))
+    return resource
+
+
+class SecretEnvVarChanges(EnvVarSourceChanges):
+  """Represents the user intent to modify environment variable secrets."""
+
+  def _MakeEnvVarSource(self, messages, name, key):
+    return messages.EnvVarSource(
+        secretKeyRef=messages.SecretKeySelector(
+            name=name,
+            key=key))
+
+  def _GetEnvVars(self, resource):
+    return resource.template.env_vars.secrets
+
+
+class ConfigMapEnvVarChanges(EnvVarSourceChanges):
+  """Represents the user intent to modify environment variable config maps."""
+
+  def _MakeEnvVarSource(self, messages, name, key):
+    return messages.EnvVarSource(
+        configMapKeyRef=messages.ConfigMapKeySelector(
+            name=name,
+            key=key))
+
+  def _GetEnvVars(self, resource):
+    return resource.template.env_vars.config_maps
 
 
 class ResourceChanges(ConfigChanger):
@@ -408,17 +532,14 @@ class VolumeChanges(ConfigChanger):
   @abc.abstractmethod
   def _MakeVolumeSource(self, messages, name, key=None):
     """Returns an instance of a volume source."""
-    pass
 
   @abc.abstractmethod
   def _GetVolumes(self, resource):
     """Returns a k8s_object.ListAsDictionaryWrapper to manage volumes."""
-    pass
 
   @abc.abstractmethod
   def _GetVolumeMounts(self, resource):
     """Returns a k8s_object.ListAsDictionaryWrapper to manage volume mounts."""
-    pass
 
   def Adjust(self, resource):
     """Mutates the given config's volumes to match the desired changes.

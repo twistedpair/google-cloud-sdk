@@ -64,7 +64,7 @@ def EnableService(project_id, service_name, is_async=False):
 
   # Enable the service
   op = serviceusage.EnableApiCall(project_id, service_name)
-  if not is_async:
+  if not is_async and not op.done:
     op = services_util.WaitOperation(op.name, serviceusage.GetOperation)
     services_util.PrintOperation(op)
 

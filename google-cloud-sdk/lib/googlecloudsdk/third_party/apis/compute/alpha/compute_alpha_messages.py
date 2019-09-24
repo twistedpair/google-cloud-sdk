@@ -2854,10 +2854,13 @@ class BackendService(_messages.Message):
   ==) (== resource_for beta.backendService ==)
 
   Enums:
-    LoadBalancingSchemeValueValuesEnum: Indicates whether the backend service
-      will be used with internal or external load balancing. A backend service
-      created for one type of load balancing cannot be used with the other.
-      Possible values are INTERNAL and EXTERNAL.
+    LoadBalancingSchemeValueValuesEnum: Specifies the load balancer type.
+      Choose EXTERNAL for load balancers that receive traffic from external
+      clients. Choose INTERNAL for Internal TCP/UDP Load Balancing. Choose
+      INTERNAL_MANAGED for Internal HTTP(S) Load Balancing. Choose
+      INTERNAL_SELF_MANAGED for Traffic Director. A backend service created
+      for one type of load balancing cannot be used with another. For more
+      information, refer to Choosing a load balancer.
     LocalityLbPolicyValueValuesEnum: The load balancing algorithm used within
       the scope of the locality. The possible values are:   - ROUND_ROBIN:
       This is a simple policy in which each healthy backend is selected in
@@ -2947,10 +2950,13 @@ class BackendService(_messages.Message):
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#backendService for
       backend services.
-    loadBalancingScheme: Indicates whether the backend service will be used
-      with internal or external load balancing. A backend service created for
-      one type of load balancing cannot be used with the other. Possible
-      values are INTERNAL and EXTERNAL.
+    loadBalancingScheme: Specifies the load balancer type. Choose EXTERNAL for
+      load balancers that receive traffic from external clients. Choose
+      INTERNAL for Internal TCP/UDP Load Balancing. Choose INTERNAL_MANAGED
+      for Internal HTTP(S) Load Balancing. Choose INTERNAL_SELF_MANAGED for
+      Traffic Director. A backend service created for one type of load
+      balancing cannot be used with another. For more information, refer to
+      Choosing a load balancer.
     localityLbPolicy: The load balancing algorithm used within the scope of
       the locality. The possible values are:   - ROUND_ROBIN: This is a simple
       policy in which each healthy backend is selected in round robin order.
@@ -3034,10 +3040,12 @@ class BackendService(_messages.Message):
   """
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
-    r"""Indicates whether the backend service will be used with internal or
-    external load balancing. A backend service created for one type of load
-    balancing cannot be used with the other. Possible values are INTERNAL and
-    EXTERNAL.
+    r"""Specifies the load balancer type. Choose EXTERNAL for load balancers
+    that receive traffic from external clients. Choose INTERNAL for Internal
+    TCP/UDP Load Balancing. Choose INTERNAL_MANAGED for Internal HTTP(S) Load
+    Balancing. Choose INTERNAL_SELF_MANAGED for Traffic Director. A backend
+    service created for one type of load balancing cannot be used with
+    another. For more information, refer to Choosing a load balancer.
 
     Values:
       EXTERNAL: <no description>
@@ -22276,7 +22284,9 @@ class CustomerEncryptionKey(_messages.Message):
   Fields:
     kmsKeyName: The name of the encryption key that is stored in Google Cloud
       KMS.
-    kmsKeyServiceAccount: A string attribute.
+    kmsKeyServiceAccount: The service account being used for the encryption
+      request for the given KMS key. If absent, default GCE compute robot
+      account will be used
     rawKey: Specifies a 256-bit customer-supplied encryption key, encoded in
       RFC 4648 base64 to either encrypt or decrypt this resource.
     rsaEncryptedKey: Specifies an RFC 4648 base64 encoded, RSA-wrapped
@@ -24473,19 +24483,27 @@ class ForwardingRule(_messages.Message):
 
   Enums:
     IPProtocolValueValuesEnum: The IP protocol to which this rule applies.
-      Valid options are TCP, UDP, ESP, AH, SCTP or ICMP.  When the load
-      balancing scheme is INTERNAL, only TCP and UDP are valid. When the load
-      balancing scheme is INTERNAL_SELF_MANAGED, only TCPis valid.
+      Valid options are TCP, UDP, ESP, AH, SCTP or ICMP.  For Internal TCP/UDP
+      Load Balancing, the load balancing scheme is INTERNAL, and one of TCP or
+      UDP are valid. For Traffic Director, the load balancing scheme is
+      INTERNAL_SELF_MANAGED, and only TCPis valid. For Internal HTTP(S) Load
+      Balancing, the load balancing scheme is INTERNAL_MANAGED, and only TCP
+      is valid. For HTTP(S), SSL Proxy, and TCP Proxy Load Balancing, the load
+      balancing scheme is EXTERNAL and only TCP is valid. For Network TCP/UDP
+      Load Balancing, the load balancing scheme is EXTERNAL, and one of TCP or
+      UDP is valid.
     IpVersionValueValuesEnum: The IP Version that will be used by this
       forwarding rule. Valid options are IPV4 or IPV6. This can only be
       specified for an external global forwarding rule.
-    LoadBalancingSchemeValueValuesEnum: This signifies what the ForwardingRule
-      will be used for and can only take the following values: INTERNAL,
-      INTERNAL_SELF_MANAGED, EXTERNAL. The value of INTERNAL means that this
-      will be used for Internal Network Load Balancing (TCP, UDP). The value
-      of INTERNAL_SELF_MANAGED means that this will be used for Internal
-      Global HTTP(S) LB. The value of EXTERNAL means that this will be used
-      for External Load Balancing (HTTP(S) LB, External TCP/UDP LB, SSL Proxy)
+    LoadBalancingSchemeValueValuesEnum: Specifies the forwarding rule type.
+      EXTERNAL is used for: - Classic Cloud VPN gateways - Protocol forwarding
+      to VMs from an external IP address - The following load balancers:
+      HTTP(S), SSL Proxy, TCP Proxy, and Network TCP/UDP.  INTERNAL is used
+      for: - Protocol forwarding to VMs from an internal IP address - Internal
+      TCP/UDP load balancers  INTERNAL_MANAGED is used for: - Internal HTTP(S)
+      load balancers  INTERNAL_SELF_MANAGED is used for: - Traffic Director
+      For more information about forwarding rules, refer to Forwarding rule
+      concepts.
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this load balancer and can only take the following values:
       PREMIUM , STANDARD.  For regional ForwardingRule, the valid values are
@@ -24515,9 +24533,15 @@ class ForwardingRule(_messages.Message):
       ](/load-balancing/docs/forwarding-rule-
       concepts#ip_address_specifications).
     IPProtocol: The IP protocol to which this rule applies. Valid options are
-      TCP, UDP, ESP, AH, SCTP or ICMP.  When the load balancing scheme is
-      INTERNAL, only TCP and UDP are valid. When the load balancing scheme is
-      INTERNAL_SELF_MANAGED, only TCPis valid.
+      TCP, UDP, ESP, AH, SCTP or ICMP.  For Internal TCP/UDP Load Balancing,
+      the load balancing scheme is INTERNAL, and one of TCP or UDP are valid.
+      For Traffic Director, the load balancing scheme is
+      INTERNAL_SELF_MANAGED, and only TCPis valid. For Internal HTTP(S) Load
+      Balancing, the load balancing scheme is INTERNAL_MANAGED, and only TCP
+      is valid. For HTTP(S), SSL Proxy, and TCP Proxy Load Balancing, the load
+      balancing scheme is EXTERNAL and only TCP is valid. For Network TCP/UDP
+      Load Balancing, the load balancing scheme is EXTERNAL, and one of TCP or
+      UDP is valid.
     allPorts: This field is used along with the backend_service field for
       internal load balancing or with the target field for internal
       TargetInstance. This field cannot be used with port or portRange fields.
@@ -24566,13 +24590,15 @@ class ForwardingRule(_messages.Message):
     labels: Labels to apply to this resource. These can be later modified by
       the setLabels method. Each label key/value pair must comply with
       RFC1035. Label values may be empty.
-    loadBalancingScheme: This signifies what the ForwardingRule will be used
-      for and can only take the following values: INTERNAL,
-      INTERNAL_SELF_MANAGED, EXTERNAL. The value of INTERNAL means that this
-      will be used for Internal Network Load Balancing (TCP, UDP). The value
-      of INTERNAL_SELF_MANAGED means that this will be used for Internal
-      Global HTTP(S) LB. The value of EXTERNAL means that this will be used
-      for External Load Balancing (HTTP(S) LB, External TCP/UDP LB, SSL Proxy)
+    loadBalancingScheme: Specifies the forwarding rule type. EXTERNAL is used
+      for: - Classic Cloud VPN gateways - Protocol forwarding to VMs from an
+      external IP address - The following load balancers: HTTP(S), SSL Proxy,
+      TCP Proxy, and Network TCP/UDP.  INTERNAL is used for: - Protocol
+      forwarding to VMs from an internal IP address - Internal TCP/UDP load
+      balancers  INTERNAL_MANAGED is used for: - Internal HTTP(S) load
+      balancers  INTERNAL_SELF_MANAGED is used for: - Traffic Director  For
+      more information about forwarding rules, refer to Forwarding rule
+      concepts.
     metadataFilters: Opaque filter criteria used by Loadbalancer to restrict
       routing configuration to a limited set xDS compliant clients. In their
       xDS requests to Loadbalancer, xDS clients present node metadata. If a
@@ -24662,9 +24688,14 @@ class ForwardingRule(_messages.Message):
 
   class IPProtocolValueValuesEnum(_messages.Enum):
     r"""The IP protocol to which this rule applies. Valid options are TCP,
-    UDP, ESP, AH, SCTP or ICMP.  When the load balancing scheme is INTERNAL,
-    only TCP and UDP are valid. When the load balancing scheme is
-    INTERNAL_SELF_MANAGED, only TCPis valid.
+    UDP, ESP, AH, SCTP or ICMP.  For Internal TCP/UDP Load Balancing, the load
+    balancing scheme is INTERNAL, and one of TCP or UDP are valid. For Traffic
+    Director, the load balancing scheme is INTERNAL_SELF_MANAGED, and only
+    TCPis valid. For Internal HTTP(S) Load Balancing, the load balancing
+    scheme is INTERNAL_MANAGED, and only TCP is valid. For HTTP(S), SSL Proxy,
+    and TCP Proxy Load Balancing, the load balancing scheme is EXTERNAL and
+    only TCP is valid. For Network TCP/UDP Load Balancing, the load balancing
+    scheme is EXTERNAL, and one of TCP or UDP is valid.
 
     Values:
       AH: <no description>
@@ -24696,13 +24727,14 @@ class ForwardingRule(_messages.Message):
     UNSPECIFIED_VERSION = 2
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
-    r"""This signifies what the ForwardingRule will be used for and can only
-    take the following values: INTERNAL, INTERNAL_SELF_MANAGED, EXTERNAL. The
-    value of INTERNAL means that this will be used for Internal Network Load
-    Balancing (TCP, UDP). The value of INTERNAL_SELF_MANAGED means that this
-    will be used for Internal Global HTTP(S) LB. The value of EXTERNAL means
-    that this will be used for External Load Balancing (HTTP(S) LB, External
-    TCP/UDP LB, SSL Proxy)
+    r"""Specifies the forwarding rule type. EXTERNAL is used for: - Classic
+    Cloud VPN gateways - Protocol forwarding to VMs from an external IP
+    address - The following load balancers: HTTP(S), SSL Proxy, TCP Proxy, and
+    Network TCP/UDP.  INTERNAL is used for: - Protocol forwarding to VMs from
+    an internal IP address - Internal TCP/UDP load balancers  INTERNAL_MANAGED
+    is used for: - Internal HTTP(S) load balancers  INTERNAL_SELF_MANAGED is
+    used for: - Traffic Director  For more information about forwarding rules,
+    refer to Forwarding rule concepts.
 
     Values:
       EXTERNAL: <no description>
@@ -48838,13 +48870,13 @@ class TargetHttpsProxy(_messages.Message):
 
   Enums:
     QuicOverrideValueValuesEnum: Specifies the QUIC override policy for this
-      TargetHttpsProxy resource. This determines whether the load balancer
-      will attempt to negotiate QUIC with clients or not. Can specify one of
-      NONE, ENABLE, or DISABLE. Specify ENABLE to always enable QUIC, Enables
-      QUIC when set to ENABLE, and disables QUIC when set to DISABLE. If NONE
-      is specified, uses the QUIC policy with no user overrides, which is
-      equivalent to DISABLE. Not specifying this field is equivalent to
-      specifying NONE.
+      TargetHttpsProxy resource. This setting determines whether the load
+      balancer attempts to negotiate QUIC with clients. You can specify NONE,
+      ENABLE, or DISABLE.   - When quic-override is set to NONE, Google
+      manages whether QUIC is used.  - When quic-override is set to ENABLE,
+      the load balancer uses QUIC when possible.  - When quic-override is set
+      to DISABLE, the load balancer doesn't use QUIC.  - If the quic-override
+      flag is not specified, NONE is implied. -
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -48866,12 +48898,13 @@ class TargetHttpsProxy(_messages.Message):
       INTERNAL_SELF_MANAGED. When set to true the Envoy binds on the IP
       address specified by the forwarding rule. Default is false.
     quicOverride: Specifies the QUIC override policy for this TargetHttpsProxy
-      resource. This determines whether the load balancer will attempt to
-      negotiate QUIC with clients or not. Can specify one of NONE, ENABLE, or
-      DISABLE. Specify ENABLE to always enable QUIC, Enables QUIC when set to
-      ENABLE, and disables QUIC when set to DISABLE. If NONE is specified,
-      uses the QUIC policy with no user overrides, which is equivalent to
-      DISABLE. Not specifying this field is equivalent to specifying NONE.
+      resource. This setting determines whether the load balancer attempts to
+      negotiate QUIC with clients. You can specify NONE, ENABLE, or DISABLE.
+      - When quic-override is set to NONE, Google manages whether QUIC is
+      used.  - When quic-override is set to ENABLE, the load balancer uses
+      QUIC when possible.  - When quic-override is set to DISABLE, the load
+      balancer doesn't use QUIC.  - If the quic-override flag is not
+      specified, NONE is implied. -
     region: [Output Only] URL of the region where the regional
       TargetHttpsProxy resides. This field is not applicable to global
       TargetHttpsProxies.
@@ -48883,8 +48916,8 @@ class TargetHttpsProxy(_messages.Message):
       one SSL certificate must be specified. Currently, you may specify up to
       15 SSL certificates.
     sslPolicy: URL of SslPolicy resource that will be associated with the
-      TargetHttpsProxy resource. If not set, the TargetHttpsProxy resource
-      will not have any SSL policy configured.
+      TargetHttpsProxy resource. If not set, the TargetHttpsProxy resource has
+      no SSL policy configured.
     urlMap: A fully-qualified or valid partial URL to the UrlMap resource that
       defines the mapping from URL to the BackendService. For example, the
       following are all valid URLs for specifying a URL map:   -
@@ -48894,12 +48927,12 @@ class TargetHttpsProxy(_messages.Message):
 
   class QuicOverrideValueValuesEnum(_messages.Enum):
     r"""Specifies the QUIC override policy for this TargetHttpsProxy resource.
-    This determines whether the load balancer will attempt to negotiate QUIC
-    with clients or not. Can specify one of NONE, ENABLE, or DISABLE. Specify
-    ENABLE to always enable QUIC, Enables QUIC when set to ENABLE, and
-    disables QUIC when set to DISABLE. If NONE is specified, uses the QUIC
-    policy with no user overrides, which is equivalent to DISABLE. Not
-    specifying this field is equivalent to specifying NONE.
+    This setting determines whether the load balancer attempts to negotiate
+    QUIC with clients. You can specify NONE, ENABLE, or DISABLE.   - When
+    quic-override is set to NONE, Google manages whether QUIC is used.  - When
+    quic-override is set to ENABLE, the load balancer uses QUIC when possible.
+    - When quic-override is set to DISABLE, the load balancer doesn't use
+    QUIC.  - If the quic-override flag is not specified, NONE is implied. -
 
     Values:
       DISABLE: <no description>

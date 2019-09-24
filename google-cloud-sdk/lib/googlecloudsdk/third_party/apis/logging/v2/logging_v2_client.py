@@ -291,7 +291,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned.
+      r"""Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty and locked, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned.
 
       Args:
         request: (LoggingBillingAccountsLocationsBucketsDeleteRequest) input message
@@ -1108,7 +1108,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned.
+      r"""Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty and locked, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned.
 
       Args:
         request: (LoggingFoldersLocationsBucketsDeleteRequest) input message
@@ -1509,7 +1509,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned.
+      r"""Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty and locked, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned.
 
       Args:
         request: (LoggingLocationsBucketsDeleteRequest) input message
@@ -1828,7 +1828,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned.
+      r"""Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty and locked, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned.
 
       Args:
         request: (LoggingOrganizationsLocationsBucketsDeleteRequest) input message
@@ -2428,7 +2428,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned.
+      r"""Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty and locked, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned.
 
       Args:
         request: (LoggingProjectsLocationsBucketsDeleteRequest) input message

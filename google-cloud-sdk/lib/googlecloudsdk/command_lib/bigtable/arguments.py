@@ -322,13 +322,13 @@ def AddInstancesResourceArg(parser, verb, positional=False):
       plural=True).AddToParser(parser)
 
 
-def AddInstanceResourceArg(parser, verb, positional=False):
+def AddInstanceResourceArg(parser, verb, positional=False, required=True):
   """Add --instance resource argument to the parser."""
   concept_parsers.ConceptParser.ForResource(
       'instance' if positional else '--instance',
       GetInstanceResourceSpec(),
       'The instance {}.'.format(verb),
-      required=True,
+      required=required,
       plural=False).AddToParser(parser)
 
 

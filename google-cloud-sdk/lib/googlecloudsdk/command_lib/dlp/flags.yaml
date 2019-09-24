@@ -45,10 +45,12 @@ include_quote:
   type: bool
   default: false
   help_text: |
-    If True, the server will attempt to filter out profanities, replacing
-    all but the initial character in each filtered word with asterisks,
-    e.g. "f***".
-
+    If True, a contextual quote from the data that triggered a
+    finding is included in the response. Even if the content is not
+    text, it may be converted to a textual representation in the
+    response. For example, given the input value 'My phone number is
+    (415) 555-0890' and a search for the infoType PHONE_NUMBER, the
+    contextual quote would be '(415) 555-0890.'
 exclude_info_types:
   api_field: googlePrivacyDlpV2InspectContentRequest.inspectConfig.excludeInfoTypes
   arg_name: exclude-info-types

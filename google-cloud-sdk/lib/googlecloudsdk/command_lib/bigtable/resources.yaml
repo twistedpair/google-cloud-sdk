@@ -52,5 +52,15 @@ backup:
   - &backup
     parameter_name: backupsId
     attribute_name: backup
-    help: A Cloud Bigtable backup.
+    help: The name of the Cloud Bigtable backup.
+  disable_auto_completers: false
+
+operation:
+  name: operation
+  collection: bigtableadmin.operations
+  attributes:
+  - &operation
+    parameter_name: operationsId
+    attribute_name: operation
+    help: The name of the Cloud Bigtable operation.
   disable_auto_completers: false

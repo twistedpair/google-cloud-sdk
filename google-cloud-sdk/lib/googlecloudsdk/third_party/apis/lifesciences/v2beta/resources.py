@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://lifesciences.googleapis.com/v2beta/'
-DOCS_URL = ''
+DOCS_URL = 'https://cloud.google.com/life-sciences'
 
 
 class Collections(enum.Enum):

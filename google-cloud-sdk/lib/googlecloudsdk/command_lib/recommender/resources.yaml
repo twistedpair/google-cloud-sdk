@@ -39,10 +39,33 @@ recommendation:
   - *project
   - *location
   - *recommender
-  - &recommendation
-    parameter_name: recommendationsId
+  - parameter_name: recommendationsId
     attribute_name: recommendation
     help: The recommendation ID.
+
+insight-type:
+  name: insight-type
+  collection: recommender.projects.locations.insightTypes
+  request_id_field: insightTypesId
+  attributes:
+  - *project
+  - *location
+  - &insight_type
+    parameter_name: insightTypesId
+    attribute_name: insight-type
+    help: The insight type.
+
+insight:
+  name: insight
+  collection: recommender.projects.locations.insightTypes.insights
+  request_id_field: insightsId
+  attributes:
+  - *project
+  - *location
+  - *insight_type
+  - parameter_name: insightsId
+    attribute_name: insight
+    help: The insight ID.
 
 rule:
   name: rule
@@ -50,7 +73,6 @@ rule:
   request_id_field: rulesId
   attributes:
   - *project
-  - &rule
-    parameter_name: rulesId
+  - parameter_name: rulesId
     attribute_name: rule
     help: The rule ID.

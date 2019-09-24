@@ -273,6 +273,8 @@ class ExecutePatchJobRequest(_messages.Message):
   Fields:
     description: Description of the PatchJob. Length of the description is
       limited to 1024 characters.
+    displayName: Display name for this patch job. This does not have to be
+      unique.
     dryRun: Should this patch be a dry-run only.  Instances will be contacted,
       but they will do nothing.
     duration: Optional. Duration of the patch job. After the duration ends,
@@ -285,10 +287,11 @@ class ExecutePatchJobRequest(_messages.Message):
   """
 
   description = _messages.StringField(1)
-  dryRun = _messages.BooleanField(2)
-  duration = _messages.StringField(3)
-  filter = _messages.StringField(4)
-  patchConfig = _messages.MessageField('PatchConfig', 5)
+  displayName = _messages.StringField(2)
+  dryRun = _messages.BooleanField(3)
+  duration = _messages.StringField(4)
+  filter = _messages.StringField(5)
+  patchConfig = _messages.MessageField('PatchConfig', 6)
 
 
 class Expr(_messages.Message):
@@ -1237,6 +1240,8 @@ class PatchJob(_messages.Message):
     createTime: Output only. Time this PatchJob was created.
     description: Description of the patch job. Length of the description is
       limited to 1024 characters.
+    displayName: Display name for this patch job. This is not a unique
+      identifier.
     dryRun: If this patch job is a dry run, the agent will report that it has
       finished without running any updates on the VM.
     duration: Duration of the patch job. After the duration ends, the patch
@@ -1281,16 +1286,17 @@ class PatchJob(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  dryRun = _messages.BooleanField(3)
-  duration = _messages.StringField(4)
-  errorMessage = _messages.StringField(5)
-  filter = _messages.StringField(6)
-  instanceDetailsSummary = _messages.MessageField('PatchJobInstanceDetailsSummary', 7)
-  name = _messages.StringField(8)
-  patchConfig = _messages.MessageField('PatchConfig', 9)
-  percentComplete = _messages.FloatField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
+  displayName = _messages.StringField(3)
+  dryRun = _messages.BooleanField(4)
+  duration = _messages.StringField(5)
+  errorMessage = _messages.StringField(6)
+  filter = _messages.StringField(7)
+  instanceDetailsSummary = _messages.MessageField('PatchJobInstanceDetailsSummary', 8)
+  name = _messages.StringField(9)
+  patchConfig = _messages.MessageField('PatchConfig', 10)
+  percentComplete = _messages.FloatField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  updateTime = _messages.StringField(13)
 
 
 class PatchJobInstanceDetails(_messages.Message):

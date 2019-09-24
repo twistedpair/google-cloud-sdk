@@ -3,6 +3,7 @@
   "discoveryVersion": "v1",
   "id": "dns:v1alpha2",
   "name": "dns",
+  "canonicalName": "dns",
   "version": "v1alpha2",
   "revision": "0",
   "title": "Google Cloud DNS API",

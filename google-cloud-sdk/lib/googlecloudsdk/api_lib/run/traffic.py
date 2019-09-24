@@ -352,6 +352,16 @@ class TrafficTargets(collections.MutableMapping):
     del self._m[:]
     self._m.extend(new_targets)
 
+# Human readable indicator for a missing traffic percentage.
+_MISSING_PERCENT = '-'
+
+
+def FormatPercentage(percent):
+  if percent == _MISSING_PERCENT:
+    return _MISSING_PERCENT
+  else:
+    return '{}%'.format(percent)
+
 
 class TrafficTargetPair(object):
   """Holder for a TrafficTarget status information.
@@ -423,7 +433,10 @@ class TrafficTargetPair(object):
 
   @property
   def specPercent(self):  # pylint: disable=invalid-name
-    return str(self._spec_target.percent) if self._spec_target else '-'
+    if self._spec_target:
+      return str(self._spec_target.percent)
+    else:
+      return _MISSING_PERCENT
 
   @property
   def statusPercent(self):  # pylint: disable=invalid-name
@@ -431,7 +444,18 @@ class TrafficTargetPair(object):
       return str(self._status_percent_override)
     elif self._status_target:
       return str(self._status_target.percent)
-    return '-'
+    return _MISSING_PERCENT
+
+  @property
+  def displayPercent(self):  # pylint: disable=invalid-name
+    """Returns human readable revision percent."""
+
+    if self.statusPercent == self.specPercent:
+      return FormatPercentage(self.statusPercent)
+    else:
+      return '{:4} (currently {})'.format(
+          FormatPercentage(self.specPercent),
+          FormatPercentage(self.statusPercent))
 
   @property
   def displayRevisionId(self):  # pylint: disable=invalid-name

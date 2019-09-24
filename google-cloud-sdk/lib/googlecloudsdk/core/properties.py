@@ -293,6 +293,8 @@ class _Sections(object):
       Cloud SDK.
     interactive: Section, The section containing interactive properties for the
       Cloud SDK.
+    lifesciences: Section, The section containing lifesciencs properties for the
+      Cloud SDK.
     metrics: Section, The section containing metrics properties for the Cloud
       SDK.
     ml_engine: Section, The section containing ml_engine properties for the
@@ -347,6 +349,7 @@ class _Sections(object):
     self.gcloudignore = _SectionGcloudignore()
     self.healthcare = _SectionHealthcare()
     self.interactive = _SectionInteractive()
+    self.lifesciences = _SectionLifeSciences()
     self.metrics = _SectionMetrics()
     self.ml_engine = _SectionMlEngine()
     self.proxy = _SectionProxy()
@@ -389,6 +392,7 @@ class _Sections(object):
         self.gcloudignore,
         self.healthcare,
         self.interactive,
+        self.lifesciences,
         self.metrics,
         self.ml_engine,
         self.proxy,
@@ -835,6 +839,19 @@ class _SectionHealthcare(_Section):
         help_text='Default dataset to use when working with Cloud Healthcare '
         'resources. When a `--dataset` flag is required but not provided, the '
         'command will fall back to this value, if set.')
+
+
+class _SectionLifeSciences(_Section):
+  """Contains the properties for the 'lifesciences' section."""
+
+  def __init__(self):
+    super(_SectionLifeSciences, self).__init__('lifesciences')
+    self.location = self._Add(
+        'location',
+        default='us-central1',
+        help_text='Default location to use when working with Cloud Life Sciences  '
+        'resources. When a `--location` flag is required but not provided, the  '
+        'command will fall back to this value.')
 
 
 class _SectionGameServices(_Section):
@@ -1677,6 +1694,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.iamassist = self._Add('iamassist')
     self.kubernetespolicy = self._Add('kubernetespolicy')
     self.language = self._Add('language')
+    self.lifesciences = self._Add('lifesciences')
     self.logging = self._Add('logging')
     self.managedidentities = self._Add('managedidentities')
     self.manager = self._Add('manager')
@@ -1790,8 +1808,8 @@ class _SectionContextAware(_Section):
     super(_SectionContextAware, self).__init__('context_aware')
     self.use_client_certificate = self._AddBool(
         'use_client_certificate',
-        help_text='If True, use client certificate to assert client identity.',
-        hidden=True)
+        help_text=('If True, use client certificate to authorize user '
+                   'device using context aware access.'))
     self.auto_discovery_file_path = self._Add(
         'auto_discovery_file_path',
         validator=ExistingAbsoluteFilepathValidator,

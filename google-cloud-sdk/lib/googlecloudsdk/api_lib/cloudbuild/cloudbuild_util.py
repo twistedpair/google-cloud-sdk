@@ -249,6 +249,72 @@ def LoadMessageFromStream(stream,
   if not isinstance(structured_data, dict):
     raise ParserError(path, 'Could not parse as a dictionary.')
 
+  return _YamlToMessage(structured_data, msg_type, msg_friendly_name,
+                        skip_camel_case, path)
+
+
+def LoadMessagesFromStream(stream,
+                           msg_type,
+                           msg_friendly_name,
+                           skip_camel_case=None,
+                           path=None):
+  """Load multiple proto message from a stream of JSON or YAML text.
+
+  Args:
+    stream: file-like object containing the JSON or YAML data to be decoded.
+    msg_type: The protobuf message type to create.
+    msg_friendly_name: A readable name for the message type, for use in error
+      messages.
+    skip_camel_case: Contains proto field names or map keys whose values should
+      not have camel case applied.
+    path: str or None. Optional path to be used in error messages.
+
+  Raises:
+    ParserError: If there was a problem parsing the stream.
+    ParseProtoException: If there was a problem interpreting the stream as the
+    given message type.
+
+  Returns:
+    Proto message list of the messages that got decoded.
+  """
+  if skip_camel_case is None:
+    skip_camel_case = []
+  # Turn the data into a dict
+  try:
+    structured_data = yaml.load_all(stream, file_hint=path)
+  except yaml.Error as e:
+    raise ParserError(path, e.inner_error)
+
+  return [
+      _YamlToMessage(item, msg_type, msg_friendly_name, skip_camel_case, path)
+      for item in structured_data
+  ]
+
+
+def _YamlToMessage(structured_data,
+                   msg_type,
+                   msg_friendly_name,
+                   skip_camel_case=None,
+                   path=None):
+  """Load a proto message from a file containing JSON or YAML text.
+
+  Args:
+    structured_data: Dict containing the decoded YAML data.
+    msg_type: The protobuf message type to create.
+    msg_friendly_name: A readable name for the message type, for use in error
+      messages.
+    skip_camel_case: Contains proto field names or map keys whose values should
+      not have camel case applied.
+    path: str or None. Optional path to be used in error messages.
+
+  Raises:
+    ParseProtoException: If there was a problem interpreting the file as the
+    given message type.
+
+  Returns:
+    Proto message, The message that got decoded.
+  """
+
   # Transform snake_case into camelCase.
   structured_data = SnakeToCamel(structured_data, skip_camel_case)
 
@@ -264,7 +330,9 @@ def LoadMessageFromStream(stream,
   return msg
 
 
-def LoadMessageFromPath(path, msg_type, msg_friendly_name,
+def LoadMessageFromPath(path,
+                        msg_type,
+                        msg_friendly_name,
                         skip_camel_case=None):
   """Load a proto message from a file containing JSON or YAML text.
 
@@ -288,6 +356,33 @@ def LoadMessageFromPath(path, msg_type, msg_friendly_name,
   with files.FileReader(path) as f:  # Returns user-friendly error messages
     return LoadMessageFromStream(f, msg_type, msg_friendly_name,
                                  skip_camel_case, path)
+
+
+def LoadMessagesFromPath(path,
+                         msg_type,
+                         msg_friendly_name,
+                         skip_camel_case=None):
+  """Load a proto message from a file containing JSON or YAML text.
+
+  Args:
+    path: The path to a file containing the JSON or YAML data to be decoded.
+    msg_type: The protobuf message type to create.
+    msg_friendly_name: A readable name for the message type, for use in error
+      messages.
+    skip_camel_case: Contains proto field names or map keys whose values should
+      not have camel case applied.
+
+  Raises:
+    files.MissingFileError: If the file does not exist.
+    ParseProtoException: If there was a problem interpreting the file as the
+    given message type.
+
+  Returns:
+    Proto message list of the messages that got decoded.
+  """
+  with files.FileReader(path) as f:  # Returns user-friendly error messages
+    return LoadMessagesFromStream(f, msg_type, msg_friendly_name,
+                                  skip_camel_case, path)
 
 
 def GenerateRegionChoiceToEnum():

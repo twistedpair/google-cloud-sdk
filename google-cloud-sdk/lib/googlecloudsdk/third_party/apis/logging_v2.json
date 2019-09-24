@@ -175,6 +175,20 @@
           "description": "Whether the bucket has been locked. The retention period on a locked bucket may not be changed. A locked bucket may not have any retention rules. Logs may not be deleted from a locked bucket.",
           "type": "boolean"
         },
+        "lifecycleState": {
+          "description": "The bucket lifecycle state.Output only.",
+          "enumDescriptions": [
+            "Unspecified state. This is only used\/useful for distinguishing unset values.",
+            "The normal and active state.",
+            "The bucket has been marked for deletion by the user (by invoking DeleteBucket). This can be reversed by invoking UndeleteBucket."
+          ],
+          "type": "string",
+          "enum": [
+            "LIFECYCLE_STATE_UNSPECIFIED",
+            "ACTIVE",
+            "DELETE_REQUESTED"
+          ]
+        },
         "etag": {
           "description": "etag is used for optimistic concurrency control as a way to help prevent simultaneous updates of a bucket from overwriting each other. It is strongly suggested that systems make use of the etag in the read-modify-write cycle to perform bucket updates in order to avoid race conditions: An etag is returned in the response to getBucket, and systems are expected to put that etag in the request to setIamPolicy to ensure that their change will be applied to the same version of the bucket.If no etag is provided in the call to UpdateBucket, then the existing bucket is overwritten blindly.",
           "type": "string",
@@ -1677,7 +1691,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned"
+                  "description": "Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty and locked, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned"
                 }
               }
             }
@@ -2455,7 +2469,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned"
+                  "description": "Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty and locked, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned"
                 }
               }
             }
@@ -3047,7 +3061,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned"
+                  "description": "Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty and locked, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned"
                 }
               }
             }
@@ -3595,7 +3609,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned"
+              "description": "Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty and locked, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned"
             }
           }
         }
@@ -4232,7 +4246,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned"
+                  "description": "Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty and locked, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned"
                 }
               }
             }

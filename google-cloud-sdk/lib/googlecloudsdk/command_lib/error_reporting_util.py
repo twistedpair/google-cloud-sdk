@@ -21,6 +21,8 @@ from __future__ import unicode_literals
 
 import re
 
+from googlecloudsdk.core.util import encoding
+
 PARTITION_TRACEBACK_PATTERN = (
     r'(?P<stacktrace>'
     r'Traceback \(most recent call last\):\n'
@@ -71,7 +73,7 @@ def RemovePrivateInformationFromTraceback(traceback):
   # Last line will be the exception type followed by message.
   # Remove the message since it could contain PII.
   exception_line = remove_path_stacktrace_list[-1]
-  exception_line = exception_line.split(':', 1)[0]
+  exception_line = encoding.Decode(exception_line).split(':', 1)[0]
   remove_path_stacktrace_list[-1] = exception_line
 
   formatted_stacktrace = '\n'.join(

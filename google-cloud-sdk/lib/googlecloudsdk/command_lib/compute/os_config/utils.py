@@ -22,6 +22,7 @@ from apitools.base.py import encoding
 from enum import Enum
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util.args import common_args
+from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 import six
 
@@ -49,6 +50,9 @@ INSTANCE_DETAILS_KEY_MAP = {
     'instancesRunningPrePatchStep': InstanceDetailsStates.PATCHING,
     'instancesRunningPostPatchStep': InstanceDetailsStates.PATCHING,
 }
+
+_GCS_PREFIXES = ('gs://', 'https://www.googleapis.com/storage/v1/',
+                 'https://storage.googleapis.com/')
 
 
 def GetParentUriPath(parent_name, parent_id):
@@ -144,3 +148,38 @@ def GetResourceAndUpdateFieldsFromFile(file_path, resource_message_type):
         'file. {1}'.format(file_path, six.text_type(e)))
 
   return (resource, update_fields)
+
+
+def GetGcsParams(arg_name, path):
+  """Returns information for a Google Cloud Storage object.
+
+  Args:
+      arg_name: The name of the argument whose value may be a GCS object path.
+      path: A string whose value may be a GCS object path.
+  """
+  obj_ref = None
+  for prefix in _GCS_PREFIXES:
+    if path.startswith(prefix):
+      obj_ref = resources.REGISTRY.Parse(path)
+      break
+
+  if not obj_ref:
+    return None
+
+  if not hasattr(obj_ref, 'bucket') or not hasattr(obj_ref, 'object'):
+    raise exceptions.InvalidArgumentException(
+        arg_name,
+        'The provided Google Cloud Storage path [{}] is invalid.'.format(path))
+
+  obj_str = obj_ref.object.split('#')
+  if len(obj_str) != 2 or not obj_str[1].isdigit():
+    raise exceptions.InvalidArgumentException(
+        arg_name,
+        'The provided Google Cloud Storage path [{}] does not contain a valid '
+        'generation number.'.format(path))
+
+  return {
+      'bucket': obj_ref.bucket,
+      'object': obj_str[0],
+      'generationNumber': int(obj_str[1]),
+  }

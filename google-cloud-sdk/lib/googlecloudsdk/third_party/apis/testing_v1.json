@@ -212,6 +212,9 @@
             "XC tests which run on physical devices must have\n\"IsAppHostedTestBundle\" == \"true\" in the xctestrun file.",
             "An Info.plist file in the XCTest zip could not be parsed.",
             "The APK is marked as \"testOnly\".\nDeprecated and not currently used.",
+            "The input IPA could not be parsed.",
+            "The application doesn't register the game loop URL scheme.",
+            "The iOS application bundle (.app) couldn't be processed.",
             "APK contains no code.\nSee also\nhttps:\/\/developer.android.com\/guide\/topics\/manifest\/application-element.html#code",
             "Either the provided input APK path was malformed,\nthe APK file does not exist, or the user does not have permission to\naccess the APK file.",
             "APK is built for a preview SDK which is unsupported"
@@ -247,6 +250,9 @@
             "TEST_NOT_APP_HOSTED",
             "PLIST_CANNOT_BE_PARSED",
             "TEST_ONLY_APK",
+            "MALFORMED_IPA",
+            "MISSING_URL_SCHEME",
+            "MALFORMED_APP_BUNDLE",
             "NO_CODE_APK",
             "INVALID_INPUT_APK",
             "INVALID_APK_PREVIEW_SDK"
@@ -343,6 +349,10 @@
         "iosXcTest": {
           "description": "An iOS XCTest, via an .xctestrun file.",
           "$ref": "IosXcTest"
+        },
+        "iosTestLoop": {
+          "description": "An iOS application with a test loop.",
+          "$ref": "IosTestLoop"
         },
         "disableVideoRecording": {
           "description": "Disables video recording. May reduce test latency.",
@@ -756,6 +766,29 @@
         "xcodeVersion": {
           "description": "The Xcode version that should be used for the test.\nUse the TestEnvironmentDiscoveryService to get supported options.\nDefaults to the latest Xcode version Firebase Test Lab supports.",
           "type": "string"
+        },
+        "appBundleId": {
+          "description": "Output only. The bundle id for the application under test.",
+          "type": "string"
+        }
+      }
+    },
+    "IosTestLoop": {
+      "id": "IosTestLoop",
+      "description": "A test of an iOS application that implements one or more game loop scenarios.\nThis test type accepts an archived application (.ipa file) and a list of\ninteger scenarios that will be executed on the app sequentially.",
+      "type": "object",
+      "properties": {
+        "appIpa": {
+          "description": "Required. The .ipa of the application to test.",
+          "$ref": "FileReference"
+        },
+        "scenarios": {
+          "description": "The list of scenarios that should be run during the test. Defaults to the\nsingle scenario 0 if unspecified.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
         },
         "appBundleId": {
           "description": "Output only. The bundle id for the application under test.",

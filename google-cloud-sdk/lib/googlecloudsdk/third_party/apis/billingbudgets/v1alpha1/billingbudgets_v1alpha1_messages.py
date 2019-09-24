@@ -166,40 +166,50 @@ class GoogleCloudBillingBudgetsV1alpha1Filter(_messages.Message):
   r"""A filter for a budget, limiting the scope of the cost to calculate.
 
   Enums:
-    CreditTypesValueListEntryValuesEnum:
+    CreditTypesTreatmentValueValuesEnum: Optional. If not set, default
+      behavior is `ADD_CREDIT_TYPES_TO_NET`. Because credit types cannot be
+      specified yet, in practice, the default behavior means that the cost
+      used for budgets is net cost, and SUBTRACT_CREDIT_TYPES_FROM_GROSS means
+      the cost is gross cost.
 
   Fields:
-    creditTypes: Optional. Which types of credits to include when calculating
-      the actual spend against the budget. If this is empty, then no credit
-      types are used in the calculation; the calculated amount will be the
-      gross spend.
+    creditTypesTreatment: Optional. If not set, default behavior is
+      `ADD_CREDIT_TYPES_TO_NET`. Because credit types cannot be specified yet,
+      in practice, the default behavior means that the cost used for budgets
+      is net cost, and SUBTRACT_CREDIT_TYPES_FROM_GROSS means the cost is
+      gross cost.
     projects: Optional. A set of projects of the form `projects/{project_id}`,
       specifying that usage from only this set of projects should be included
       in the budget. If omitted, the report will include all usage for the
       billing account, regardless of which project the usage occurred on. Only
       zero or one project can be specified currently.
+    services: Optional. A set of services of the form `services/{service_id}`,
+      specifying that usage from only this set of services should be included
+      in the budget. If omitted, the report will include usage for all the
+      services. The service names are available through the Catalog API:
+      https://cloud.google.com/billing/v1/how-tos/catalog-api.
   """
 
-  class CreditTypesValueListEntryValuesEnum(_messages.Enum):
-    r"""CreditTypesValueListEntryValuesEnum enum type.
+  class CreditTypesTreatmentValueValuesEnum(_messages.Enum):
+    r"""Optional. If not set, default behavior is `ADD_CREDIT_TYPES_TO_NET`.
+    Because credit types cannot be specified yet, in practice, the default
+    behavior means that the cost used for budgets is net cost, and
+    SUBTRACT_CREDIT_TYPES_FROM_GROSS means the cost is gross cost.
 
     Values:
-      CREDIT_TYPE_UNSPECIFIED: <no description>
-      PROMOTION: <no description>
-      SUSTAINED_USAGE_DISCOUNT: <no description>
-      SPENDING_BASED_DISCOUNT: <no description>
-      COMMITTED_USAGE_DISCOUNT: <no description>
-      FREE_TIER: <no description>
+      CREDIT_TYPES_TREATMENT_UNSPECIFIED: <no description>
+      ADD_CREDIT_TYPES_TO_NET: All types of credit are added to the net cost
+        to determine the spend for threshold calculations.
+      SUBTRACT_CREDIT_TYPES_FROM_GROSS: All types of credit are subtracted
+        from the gross cost to determine the spend for threshold calculations.
     """
-    CREDIT_TYPE_UNSPECIFIED = 0
-    PROMOTION = 1
-    SUSTAINED_USAGE_DISCOUNT = 2
-    SPENDING_BASED_DISCOUNT = 3
-    COMMITTED_USAGE_DISCOUNT = 4
-    FREE_TIER = 5
+    CREDIT_TYPES_TREATMENT_UNSPECIFIED = 0
+    ADD_CREDIT_TYPES_TO_NET = 1
+    SUBTRACT_CREDIT_TYPES_FROM_GROSS = 2
 
-  creditTypes = _messages.EnumField('CreditTypesValueListEntryValuesEnum', 1, repeated=True)
+  creditTypesTreatment = _messages.EnumField('CreditTypesTreatmentValueValuesEnum', 1)
   projects = _messages.StringField(2, repeated=True)
+  services = _messages.StringField(3, repeated=True)
 
 
 class GoogleCloudBillingBudgetsV1alpha1LastPeriodAmount(_messages.Message):
@@ -272,7 +282,9 @@ class GoogleCloudBillingBudgetsV1alpha1UpdateBudgetRequest(_messages.Message):
       specified by the budget name in the budget.
     updateMask: Optional. Indicates which fields in the provided budget to
       update. Read-only fields (such as `name`) cannot be changed. If this is
-      not provided, then all fields are updated.
+      not provided, then only fields with non-default values are updated. See
+      https://developers.google.com/protocol-buffers/docs/proto3#default for
+      more details.
   """
 
   budget = _messages.MessageField('GoogleCloudBillingBudgetsV1alpha1Budget', 1)

@@ -39,6 +39,7 @@ from googlecloudsdk.core.util import files as file_utils
 _BASE_CLOUD_SQL_PROXY_ERROR = 'Failed to start the Cloud SQL Proxy'
 
 _POSTGRES_DATABASE_VERSION_PREFIX = 'POSTGRES'
+_SQLSERVER_DATABASE_VERSION_PREFIX = 'SQLSERVER'
 
 
 def GetRegionFromZone(gce_zone):
@@ -225,6 +226,11 @@ class _BaseInstances(object):
   def IsPostgresDatabaseVersion(database_version):
     """Returns a boolean indicating if the database version is Postgres."""
     return _POSTGRES_DATABASE_VERSION_PREFIX in database_version
+
+  @staticmethod
+  def IsSqlServerDatabaseVersion(database_version):
+    """Returns a boolean indicating if the database version is SQL Server."""
+    return _SQLSERVER_DATABASE_VERSION_PREFIX in database_version
 
 
 class InstancesV1Beta3(_BaseInstances):

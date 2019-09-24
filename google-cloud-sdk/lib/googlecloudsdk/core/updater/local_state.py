@@ -115,8 +115,9 @@ def _RaisesPermissionsError(func):
     except (OSError, IOError) as e:
       if e.errno == errno.EACCES:
         exceptions.reraise(
-            PermissionsError(message=e.strerror,
-                             path=os.path.abspath(e.filename)))
+            PermissionsError(
+                message=encoding.Decode(e.strerror),
+                path=encoding.Decode(os.path.abspath(e.filename))))
       raise
   return _TryFunc
 

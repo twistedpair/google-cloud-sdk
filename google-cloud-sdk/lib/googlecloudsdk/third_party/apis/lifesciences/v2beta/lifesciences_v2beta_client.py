@@ -172,7 +172,7 @@ Service Agent the required permissions.
 Authorization requires the following [Google
 IAM](https://cloud.google.com/iam/) permission:
 
-* `lifesciences.operations.create`
+* `lifesciences.workflows.run`
 
       Args:
         request: (LifesciencesProjectsLocationsPipelinesRunRequest) input message

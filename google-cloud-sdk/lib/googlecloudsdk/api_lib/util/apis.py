@@ -150,7 +150,7 @@ def ResolveVersion(api_name, default_override=None):
 
 API_ENABLEMENT_REGEX = re.compile(
     '(?:Access Not Configured. )?.*has not been used in project \\S+ before or '
-    'it is disabled. Enable it by visiting https://console.developers.google'
+    'it is disabled. Enable it by visiting https://console.\\S+.google'
     '.com/apis/api/([^/]+)/overview\\?project=(\\S+) then retry. If you '
     'enabled this API recently, wait a few minutes for the action to propagate '
     'to our systems and retry.')

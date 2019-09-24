@@ -48,13 +48,16 @@ class PromptRecord(object):
         self.ReadPromptRecordFromFile())
     self._dirty = False
 
+  def CacheFileExists(self):
+    return os.path.isfile(self._cache_file_path)
+
   def ReadPromptRecordFromFile(self):
     """Loads the prompt record from the cache file.
 
     Returns:
        Two-value tuple (last_prompt_time, last_answer_survey_time)
     """
-    if not os.path.isfile(self._cache_file_path):
+    if not self.CacheFileExists():
       return None, None
 
     try:
@@ -145,6 +148,13 @@ class SurveyPrompter(object):
     return True
 
   def PromptForSurvey(self):
+    """Prompts user for survey if user should be prompted."""
+    # Don't prompt users right after users install gcloud. Wait for 14 days.
+    if not self._prompt_record.CacheFileExists():
+      with self._prompt_record as pr:
+        pr.last_prompt_time = time.time()
+      return
+
     if self.ShouldPrompt():
       self.PrintPromptMsg()
       with self._prompt_record as pr:

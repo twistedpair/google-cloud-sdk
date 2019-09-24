@@ -5,6 +5,63 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 264.0.0 (2019-09-24)
+
+### Cloud SDK
+
+*   Fixed issue where the Google Cloud SDK Windows installer would break the
+    PSModulePath environment variable when installing the "Cloud Tools for
+    PowerShell" component. This issue was reported at
+    <https://github.com/GoogleCloudPlatform/google-cloud-powershell/issues/524>.
+    *   Users affected by this breakage may need to manually add
+        %HomeDrive%%HomePath%\Documents\WindowsPowerShell\Modules
+        to their PSModulePath user environment variable. See the instructions
+        here for adding a persistent value:
+        <https://docs.microsoft.com/en-us/powershell/developer/module/modifying-the-psmodulepath-installation-path#to-add-locations-to-the-psmodulepath-variable>.
+
+### Cloud Bigtable
+
+* Added `gcloud bigtable operations describe|list` which provides the functionality to describe an operation or list operations to GA.
+
+### Cloud DNS
+
+* Promoted `gcloud dns polices` to GA.
+* Promoted `gcloud dns managed-zones forwarding-targets` to GA.
+
+### Cloud Dataproc
+
+* Fixes issues where `--region` flag is passed to `gcloud dataproc autoscaling-policies` or `gcloud dataproc workflow-templates`, but the commands still fail with the error "The required property [region] is not currently set.".
+
+
+### Cloud SQL
+
+* Added Postgres 11 option to `--database-version` flag.
+
+### Compute Engine
+
+* Promoted instance health state field of `gcloud compute instance-groups
+  managed list-instances` to beta.
+* Made `--os` flag optional in `gcloud <alpha|beta> compute instances import`.
+* Updated `gcloud compute ssh` to add support for reading SSH host keys from
+  instance guest attributes. For more information, see
+  <https://cloud.google.com/compute/docs/instances/connecting-to-instance#store-host-key>.
+
+### Kubernetes Engine
+
+* Google Kubernetes Engine default kubectl is updated to 1.13.11.
+* Addresses CVE-2019-11251.
+* Additional kubectl versions:
+  *   kubectl.1.13 (1.13.11)
+  *   kubectl.1.14 (1.14.7)
+  *   kubectl.1.15 (1.15.4)
+*   Fixed `gcloud container binauthz` IAM commands to call the correct v1 API
+    routes.
+
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 263.0.0 (2019-09-17)
 
 ### Breaking Changes

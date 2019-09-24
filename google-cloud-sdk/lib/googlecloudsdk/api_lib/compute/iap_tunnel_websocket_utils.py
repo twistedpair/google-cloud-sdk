@@ -24,6 +24,7 @@ import os
 import struct
 import sys
 
+from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -121,7 +122,7 @@ def CheckPythonVersion(ignore_certs):
          sys.version_info.micro))
 
 
-def CreateWebSocketConnectUrl(tunnel_target, use_mtls=False):
+def CreateWebSocketConnectUrl(tunnel_target):
   """Create Connect URL for WebSocket connection."""
   return _CreateWebSocketUrl(CONNECT_ENDPOINT,
                              {'project': tunnel_target.project,
@@ -129,22 +130,20 @@ def CreateWebSocketConnectUrl(tunnel_target, use_mtls=False):
                               'instance': tunnel_target.instance,
                               'interface': tunnel_target.interface,
                               'port': tunnel_target.port},
-                             tunnel_target.url_override,
-                             use_mtls)
+                             tunnel_target.url_override)
 
 
-def CreateWebSocketReconnectUrl(tunnel_target, sid, ack_bytes, use_mtls=False):
+def CreateWebSocketReconnectUrl(tunnel_target, sid, ack_bytes):
   """Create Reconnect URL for WebSocket connection."""
   return _CreateWebSocketUrl(RECONNECT_ENDPOINT,
                              {'sid': sid, 'ack': ack_bytes},
-                             tunnel_target.url_override,
-                             use_mtls)
+                             tunnel_target.url_override)
 
 
-def _CreateWebSocketUrl(endpoint, url_query_pieces, url_override,
-                        use_mtls=False):
+def _CreateWebSocketUrl(endpoint, url_query_pieces, url_override):
   """Create URL for WebSocket connection."""
   scheme = URL_SCHEME
+  use_mtls = context_aware.Config().use_client_certificate
   hostname = MTLS_URL_HOST if use_mtls else URL_HOST
   path_root = URL_PATH_ROOT
   if url_override:

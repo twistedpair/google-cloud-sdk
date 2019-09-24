@@ -170,27 +170,25 @@
             "type": "string"
           }
         },
-        "creditTypes": {
-          "description": "Optional. Which types of credits to include when calculating the\nactual spend against the budget. If this is empty, then no credit types\nare used in the calculation; the calculated amount will be the gross spend.",
+        "creditTypesTreatment": {
+          "description": "Optional. If not set, default behavior is `ADD_CREDIT_TYPES_TO_NET`.\nBecause credit types cannot be specified yet, in practice, the default\nbehavior means that the cost used for budgets is net cost, and\nSUBTRACT_CREDIT_TYPES_FROM_GROSS means the cost is gross cost.",
           "enumDescriptions": [
-            "Default value",
-            "A promotional credit.",
-            "A discount for sustained usage of VMs.",
-            "A discount based on a level of spending.",
-            "A discount based on committed usage of VMs.",
-            "Product free tier discount, e.g. Maps Free Tier. (Not a SKU that happens\nto be free.)"
+            "",
+            "All types of credit are added to the net cost to determine the spend for\nthreshold calculations.",
+            "All types of credit are subtracted from the gross cost to determine the\nspend for threshold calculations."
           ],
+          "type": "string",
+          "enum": [
+            "CREDIT_TYPES_TREATMENT_UNSPECIFIED",
+            "ADD_CREDIT_TYPES_TO_NET",
+            "SUBTRACT_CREDIT_TYPES_FROM_GROSS"
+          ]
+        },
+        "services": {
+          "description": "Optional. A set of services of the form `services\/{service_id}`,\nspecifying that usage from only this set of services should be\nincluded in the budget. If omitted, the report will include usage for\nall the services.\nThe service names are available through the Catalog API:\nhttps:\/\/cloud.google.com\/billing\/v1\/how-tos\/catalog-api.",
           "type": "array",
           "items": {
-            "type": "string",
-            "enum": [
-              "CREDIT_TYPE_UNSPECIFIED",
-              "PROMOTION",
-              "SUSTAINED_USAGE_DISCOUNT",
-              "SPENDING_BASED_DISCOUNT",
-              "COMMITTED_USAGE_DISCOUNT",
-              "FREE_TIER"
-            ]
+            "type": "string"
           }
         }
       }
@@ -289,7 +287,7 @@
           "$ref": "GoogleCloudBillingBudgetsV1alpha1Budget"
         },
         "updateMask": {
-          "description": "Optional. Indicates which fields in the provided budget to update.\nRead-only fields (such as `name`) cannot be changed.\nIf this is not provided, then all fields are updated.",
+          "description": "Optional. Indicates which fields in the provided budget to update.\nRead-only fields (such as `name`) cannot be changed. If this is not\nprovided, then only fields with non-default values are updated. See\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#default for more\ndetails.",
           "type": "string",
           "format": "google-fieldmask"
         }

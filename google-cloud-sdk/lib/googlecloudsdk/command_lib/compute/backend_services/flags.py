@@ -555,20 +555,27 @@ def AddTimeout(parser, default='30s'):
       default=default,
       type=arg_parsers.Duration(),
       help="""\
-      Only applicable to HTTP(S), SSL Proxy, and TCP Proxy load balancers:
-      The amount of time to wait for a backend to return a full response for
-      the request and for the load balancer to proxy the response to the
-      client before considering the request failed.
+      Applicable to all load balancers except internal TCP/UDP load
+      balancers. For internal TCP/UDP load balancers
+      (``load-balancing-scheme'' INTERNAL), ``timeout'' is ignored.
 
-      For example, specifying 10s gives instances 10 seconds to respond to
-      requests. The load balancer will retry GET requests once if the backend
-      closes the connection or times out before sending response headers to
-      the proxy. If the backend produces any response headers, the load
-      balancer does not retry. If the backend does not reply at all, the load
-      balancer returns a 502 Bad Gateway error to the client. See $ gcloud
-      topic datetimes for information on duration formats.
+      If the ``protocol'' is HTTP, HTTPS, or HTTP2, ``timeout'' is a
+      request/response timeout for HTTP(S) traffic, meaning the amount
+      of time that the load balancer waits for a backend to return a
+      full response to a request. If WebSockets traffic is supported, the
+      ``timeout'' parameter sets the maximum amount of time that a
+      WebSocket can be open (idle or not).
 
-      This parameter has no effect if the load-balancing-scheme is INTERNAL.
+      For example, for HTTP, HTTPS, or HTTP2 traffic, specifying a ``timeout''
+      of 10s means that backends have 10 seconds to respond to the load
+      balancer's requests. The load balancer retries the HTTP GET request one
+      time if the backend closes the connection or times out before sending
+      response headers to the load balancer. If the backend sends response
+      headers or if the request sent to the backend is not an HTTP GET request,
+      the load balancer does not retry. If the backend does not reply at all,
+      the load balancer returns a 502 Bad Gateway error to the client.
+
+      If the ``protocol'' is SSL or TCP, ``timeout'' is an idle timeout.
       """)
 
 

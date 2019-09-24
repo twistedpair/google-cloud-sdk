@@ -762,6 +762,23 @@ class IosRuntimeConfiguration(_messages.Message):
   orientations = _messages.MessageField('Orientation', 2, repeated=True)
 
 
+class IosTestLoop(_messages.Message):
+  r"""A test of an iOS application that implements one or more game loop
+  scenarios. This test type accepts an archived application (.ipa file) and a
+  list of integer scenarios that will be executed on the app sequentially.
+
+  Fields:
+    appBundleId: Output only. The bundle id for the application under test.
+    appIpa: Required. The .ipa of the application to test.
+    scenarios: The list of scenarios that should be run during the test.
+      Defaults to the single scenario 0 if unspecified.
+  """
+
+  appBundleId = _messages.StringField(1)
+  appIpa = _messages.MessageField('FileReference', 2)
+  scenarios = _messages.IntegerField(3, repeated=True, variant=_messages.Variant.INT32)
+
+
 class IosTestSetup(_messages.Message):
   r"""A description of how to set up an iOS device prior to running the test.
 
@@ -1300,6 +1317,11 @@ class TestMatrix(_messages.Message):
         be parsed.
       TEST_ONLY_APK: The APK is marked as "testOnly". Deprecated and not
         currently used.
+      MALFORMED_IPA: The input IPA could not be parsed.
+      MISSING_URL_SCHEME: The application doesn't register the game loop URL
+        scheme.
+      MALFORMED_APP_BUNDLE: The iOS application bundle (.app) couldn't be
+        processed.
       NO_CODE_APK: APK contains no code. See also
         https://developer.android.com/guide/topics/manifest/application-
         element.html#code
@@ -1338,9 +1360,12 @@ class TestMatrix(_messages.Message):
     TEST_NOT_APP_HOSTED = 26
     PLIST_CANNOT_BE_PARSED = 27
     TEST_ONLY_APK = 28
-    NO_CODE_APK = 29
-    INVALID_INPUT_APK = 30
-    INVALID_APK_PREVIEW_SDK = 31
+    MALFORMED_IPA = 29
+    MISSING_URL_SCHEME = 30
+    MALFORMED_APP_BUNDLE = 31
+    NO_CODE_APK = 32
+    INVALID_INPUT_APK = 33
+    INVALID_APK_PREVIEW_SDK = 34
 
   class OutcomeSummaryValueValuesEnum(_messages.Enum):
     r"""Output Only. The overall outcome of the test. Only set when the test
@@ -1466,6 +1491,7 @@ class TestSpecification(_messages.Message):
     disablePerformanceMetrics: Disables performance metrics recording. May
       reduce test latency.
     disableVideoRecording: Disables video recording. May reduce test latency.
+    iosTestLoop: An iOS application with a test loop.
     iosTestSetup: Test setup requirements for iOS.
     iosXcTest: An iOS XCTest, via an .xctestrun file.
     testSetup: Test setup requirements for Android e.g. files to install,
@@ -1479,10 +1505,11 @@ class TestSpecification(_messages.Message):
   androidTestLoop = _messages.MessageField('AndroidTestLoop', 3)
   disablePerformanceMetrics = _messages.BooleanField(4)
   disableVideoRecording = _messages.BooleanField(5)
-  iosTestSetup = _messages.MessageField('IosTestSetup', 6)
-  iosXcTest = _messages.MessageField('IosXcTest', 7)
-  testSetup = _messages.MessageField('TestSetup', 8)
-  testTimeout = _messages.StringField(9)
+  iosTestLoop = _messages.MessageField('IosTestLoop', 6)
+  iosTestSetup = _messages.MessageField('IosTestSetup', 7)
+  iosXcTest = _messages.MessageField('IosXcTest', 8)
+  testSetup = _messages.MessageField('TestSetup', 9)
+  testTimeout = _messages.StringField(10)
 
 
 class TestingProjectsTestMatricesCancelRequest(_messages.Message):

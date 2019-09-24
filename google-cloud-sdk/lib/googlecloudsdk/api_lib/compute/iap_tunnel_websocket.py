@@ -80,7 +80,7 @@ class IapTunnelWebSocket(object):
 
   def __init__(self, tunnel_target, get_access_token_callback,
                data_handler_callback, close_handler_callback,
-               ignore_certs=False, caa_config=None):
+               ignore_certs=False):
     self._tunnel_target = tunnel_target
     self._get_access_token_callback = get_access_token_callback
     self._data_handler_callback = data_handler_callback
@@ -88,7 +88,6 @@ class IapTunnelWebSocket(object):
     self._ignore_certs = ignore_certs
 
     self._websocket_helper = None
-    self._caa_config = caa_config
     self._connect_msg_received = False
     self._connection_sid = None
     self._stopping = False
@@ -229,24 +228,18 @@ class IapTunnelWebSocket(object):
     if self._get_access_token_callback:
       headers += ['Authorization: Bearer ' + self._get_access_token_callback()]
 
-    use_mtls = False
-    if self._caa_config is not None:
-      use_mtls = self._caa_config.use_client_certificate
     if self._connection_sid:
       url = utils.CreateWebSocketReconnectUrl(
-          self._tunnel_target, self._connection_sid, self._total_bytes_received,
-          use_mtls)
+          self._tunnel_target, self._connection_sid, self._total_bytes_received)
       log.info('Reconnecting with URL [%r]', url)
     else:
-      url = utils.CreateWebSocketConnectUrl(
-          self._tunnel_target,
-          use_mtls)
+      url = utils.CreateWebSocketConnectUrl(self._tunnel_target)
       log.info('Connecting with URL [%r]', url)
 
     self._connect_msg_received = False
     self._websocket_helper = helper.IapTunnelWebSocketHelper(
         url, headers, self._ignore_certs, self._tunnel_target.proxy_info,
-        self._OnData, self._OnClose, self._caa_config)
+        self._OnData, self._OnClose)
     self._websocket_helper.StartReceivingThread()
 
   def _SendAck(self):

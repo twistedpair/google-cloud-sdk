@@ -410,39 +410,45 @@ def AddVpcConnectorArg(parser):
 
 
 def AddSecretsFlags(parser):
-  """Add flags for creating, updating, and deleting secrets."""
+  """Adds flags for creating, updating, and deleting secrets."""
   AddMapFlagsNoFile(
       parser,
-      group_help='Specify where to mount which secrets. '
-      'Mount paths map to a secret name. '
-      'Optionally, add a colon and an additional parameter to specify a '
-      'specific key in the secret data to use. For example, '
-      '\'--update-secrets=/my/path=mysecret:mykey\' will '
-      'create a volume named with a secret named \'mysecret\' '
-      'that has an item with key and path \'mykey\', '
-      'and mount that volume at \'/my/path\'. '
-      'If the additional parameter is not provided, all items in the '
-      'secret data will be included.',
-      flag_name='secrets',
-      long_name='secret mount paths')
+      group_help=('Specify secrets to mount or provide as environment '
+                  "variables. Keys starting with a forward slash '/' are mount "
+                  'paths. All other keys correspond to environment variables. '
+                  'The values associated with each of these should be in the '
+                  'form SECRET_NAME:KEY_IN_SECRET; you may omit the '
+                  'key within the secret to specify a mount of all keys '
+                  'within the secret. For example: '
+                  "'--update-secrets=/my/path=mysecret,"
+                  "ENV=othersecret:key.json' "
+                  "will create a volume with secret 'mysecret' "
+                  "and mount that volume at '/my/path'. Because no secret "
+                  "key was specified, all keys in 'mysecret' will be included. "
+                  'An environment variable named ENV will also be created '
+                  "whose value is the value of 'key.json' in 'othersecret'."),
+      flag_name='secrets')
 
 
 def AddConfigMapsFlags(parser):
-  """Add flags for creating, updating, and deleting config maps."""
+  """Adds flags for creating, updating, and deleting config maps."""
   AddMapFlagsNoFile(
       parser,
-      group_help='Specify where to mount which config maps. '
-      'Mount paths map to a config map name. '
-      'Optionally, add a colon and an additional parameter to specify a '
-      'specific key in the config map data to use. For example, '
-      '\'--update-config-maps=/my/path=myconfig:mykey\' will '
-      'create a volume with a config map named \'myconfig\' '
-      'that has an item with key and path \'myitem\' '
-      'and mount that volume at \'/my/path\'. '
-      'If the additional parameter is not provided, all items in the '
-      'secret data will be included.',
-      flag_name='config-maps',
-      long_name='config map mount paths')
+      group_help=('Specify config map to mount or provide as environment '
+                  "variables. Keys starting with a forward slash '/' are mount "
+                  'paths. All other keys correspond to environment variables. '
+                  'The values associated with each of these should be in the '
+                  'form CONFIG_MAP_NAME:KEY_IN_CONFIG_MAP; you may omit the '
+                  'key within the config map to specify a mount of all keys '
+                  'within the config map. For example: '
+                  "'--update-config-maps=/my/path=myconfig,"
+                  "ENV=otherconfig:key.json' "
+                  "will create a volume with config map 'myconfig' "
+                  "and mount that volume at '/my/path'. Because no config map "
+                  "key was specified, all keys in 'myconfig' will be included. "
+                  'An environment variable named ENV will also be created '
+                  "whose value is the value of 'key.json' in 'otherconfig'."),
+      flag_name='config-maps')
 
 
 def AddLabelsFlags(parser, add_create=True):
@@ -566,7 +572,7 @@ def _HasTrafficChanges(args):
 
 
 def _GetEnvChanges(args):
-  """Return config_changes.EnvVarChanges for given args."""
+  """Return config_changes.EnvVarLiteralChanges for given args."""
   kwargs = {}
 
   update = args.update_env_vars or args.set_env_vars
@@ -580,7 +586,7 @@ def _GetEnvChanges(args):
   if args.set_env_vars or args.clear_env_vars:
     kwargs['clear_others'] = True
 
-  return config_changes.EnvVarChanges(**kwargs)
+  return config_changes.EnvVarLiteralChanges(**kwargs)
 
 
 def _GetScalingChanges(args):
@@ -605,40 +611,80 @@ def _GetScalingChanges(args):
   return result
 
 
+def _IsVolumeMountKey(key):
+  """Returns True if the key refers to a volume mount."""
+  return key.startswith('/')
+
+
 def _GetSecretsChanges(args):
-  """Return config_changes.SecretVolumeChanges for given args."""
-  kwargs = {}
+  """Return secret env var and volume changes for given args."""
+  volume_kwargs = {}
+  env_kwargs = {}
 
   update = args.update_secrets or args.set_secrets
   if update:
-    kwargs['mounts_to_update'] = update
+    volume_update = {k: v for k, v in update.items() if _IsVolumeMountKey(k)}
+    if volume_update:
+      volume_kwargs['mounts_to_update'] = volume_update
+    env_update = {k: v for k, v in update.items() if not _IsVolumeMountKey(k)}
+    if env_update:
+      env_kwargs['env_vars_to_update'] = env_update
 
   remove = args.remove_secrets
   if remove:
-    kwargs['mounts_to_remove'] = remove
+    volume_remove = [k for k in remove if _IsVolumeMountKey(k)]
+    if volume_remove:
+      volume_kwargs['mounts_to_remove'] = volume_remove
+    env_remove = [k for k in remove if not _IsVolumeMountKey(k)]
+    if env_remove:
+      env_kwargs['env_vars_to_remove'] = env_remove
 
   if args.set_secrets or args.clear_secrets:
-    kwargs['clear_others'] = True
+    env_kwargs['clear_others'] = True
+    volume_kwargs['clear_others'] = True
 
-  return config_changes.SecretVolumeChanges(**kwargs)
+  secret_changes = []
+  if env_kwargs:
+    secret_changes.append(config_changes.SecretEnvVarChanges(**env_kwargs))
+  if volume_kwargs:
+    secret_changes.append(config_changes.SecretVolumeChanges(**volume_kwargs))
+  return secret_changes
 
 
 def _GetConfigMapsChanges(args):
-  """Return config_changes.ConfigMapVolumeChanges for given args."""
-  kwargs = {}
+  """Return config map env var and volume changes for given args."""
+  volume_kwargs = {}
+  env_kwargs = {}
 
   update = args.update_config_maps or args.set_config_maps
   if update:
-    kwargs['mounts_to_update'] = update
+    volume_update = {k: v for k, v in update.items() if _IsVolumeMountKey(k)}
+    if volume_update:
+      volume_kwargs['mounts_to_update'] = volume_update
+    env_update = {k: v for k, v in update.items() if not _IsVolumeMountKey(k)}
+    if env_update:
+      env_kwargs['env_vars_to_update'] = env_update
 
   remove = args.remove_config_maps
   if remove:
-    kwargs['mounts_to_remove'] = remove
+    volume_remove = [k for k in remove if _IsVolumeMountKey(k)]
+    if volume_remove:
+      volume_kwargs['mounts_to_remove'] = volume_remove
+    env_remove = [k for k in remove if not _IsVolumeMountKey(k)]
+    if env_remove:
+      env_kwargs['env_vars_to_remove'] = env_remove
 
   if args.set_config_maps or args.clear_config_maps:
-    kwargs['clear_others'] = True
+    env_kwargs['clear_others'] = True
+    volume_kwargs['clear_others'] = True
 
-  return config_changes.ConfigMapVolumeChanges(**kwargs)
+  secret_changes = []
+  if env_kwargs:
+    secret_changes.append(config_changes.ConfigMapEnvVarChanges(**env_kwargs))
+  if volume_kwargs:
+    secret_changes.append(
+        config_changes.ConfigMapVolumeChanges(**volume_kwargs))
+  return secret_changes
 
 
 def PromptToEnableApi(service_name):
@@ -699,10 +745,10 @@ def GetConfigurationChanges(args):
     changes.append(config_changes.CloudSQLChanges(project, region, args))
 
   if _HasSecretsChanges(args):
-    changes.append(_GetSecretsChanges(args))
+    changes.extend(_GetSecretsChanges(args))
 
   if _HasConfigMapsChanges(args):
-    changes.append(_GetConfigMapsChanges(args))
+    changes.extend(_GetConfigMapsChanges(args))
 
   if 'cpu' in args and args.cpu:
     changes.append(config_changes.ResourceChanges(cpu=args.cpu))

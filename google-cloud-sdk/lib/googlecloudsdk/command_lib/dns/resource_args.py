@@ -25,24 +25,22 @@ from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
 
-_API_VERSION = 'v1beta2'
-
 
 class PolicyCompleter(completers.ListCommandCompleter):
 
-  def __init__(self, **kwargs):
+  def __init__(self, api_version, **kwargs):
     super(PolicyCompleter, self).__init__(
         collection='dns.policies',
-        api_version=_API_VERSION,
+        api_version=api_version,
         list_command='alpha dns policies list --format=value(name)',
         parse_output=True,
         **kwargs)
 
 
-def PolicyAttributeConfig():
+def PolicyAttributeConfig(api_version):
   return concepts.ResourceParameterAttributeConfig(
       name='policy',
-      completer=PolicyCompleter,
+      completer=PolicyCompleter(api_version=api_version),
       help_text='The Cloud DNS policy name {resource}.')
 
 
@@ -53,21 +51,26 @@ def ProjectAttributeConfig():
       fallthroughs=[deps.PropertyFallthrough(properties.VALUES.core.project)])
 
 
-def GetPolicyResourceSpec():
+def GetPolicyResourceSpec(api_version):
   return concepts.ResourceSpec(
       'dns.policies',
-      api_version=_API_VERSION,
+      api_version=api_version,
       resource_name='policy',
-      policy=PolicyAttributeConfig(),
+      policy=PolicyAttributeConfig(api_version=api_version),
       project=ProjectAttributeConfig())
 
 
-def AddPolicyResourceArg(parser, verb, positional=True, required=True):
+def AddPolicyResourceArg(parser,
+                         verb,
+                         api_version,
+                         positional=True,
+                         required=True):
   """Add a resource argument for a Cloud DNS Policy.
 
   Args:
     parser: the parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
+    api_version: str, the version of the API to use.
     positional: bool, if True, means that the policy name is a positional rather
       than a flag.
     required: bool, if True, means that the arg will be required.
@@ -78,6 +81,6 @@ def AddPolicyResourceArg(parser, verb, positional=True, required=True):
     name = '--policy'
   concept_parsers.ConceptParser.ForResource(
       name,
-      GetPolicyResourceSpec(),
+      GetPolicyResourceSpec(api_version),
       'The policy {}.'.format(verb),
       required=required).AddToParser(parser)

@@ -135,10 +135,10 @@ def ParseManagedZoneForwardingConfig(server_list, messages):
   return messages.ManagedZoneForwardingConfig(targetNameServers=target_servers)
 
 
-def PolicyNetworkProcessor(parsed_value):
+def PolicyNetworkProcessor(parsed_value, version='v1'):
   """Build PolicyNetwork message from parsed_value."""
   # Parsed Value should be a list of compute.network resources
-  m = GetMessages()
+  m = GetMessages(version)
   if not parsed_value:
     return []
 
@@ -148,34 +148,45 @@ def PolicyNetworkProcessor(parsed_value):
   ]
 
 
-def TargetNameServerType(value):
+def BetaPolicyNetworkProcessor(parsed_value):
+  """Build Beta PolicyNetwork message from parsed_value."""
+  # Parsed Value should be a list of compute.network resources
+  return PolicyNetworkProcessor(parsed_value, version='v1beta2')
+
+
+def TargetNameServerType(value, version='v1'):
   """Build PolicyAlternativeNameServerConfigTargetNameServer msg from value."""
-  m = GetMessages()
+  m = GetMessages(version)
   return m.PolicyAlternativeNameServerConfigTargetNameServer(ipv4Address=value)
 
 
-def ParseNetworks(value, project):
+def BetaTargetNameServerType(value):
+  """Build PolicyAlternativeNameServerConfigTargetNameServer msg from value."""
+  return TargetNameServerType(value, version='v1beta2')
+
+
+def ParseNetworks(value, project, version):
   """Build a list of PolicyNetworks from command line args."""
   if not value:
     return []
-  registry = api_util.GetRegistry('v1beta2')
+  registry = api_util.GetRegistry(version)
   networks = [
       registry.Parse(
           network_name,
           collection='compute.networks',
           params={'project': project}) for network_name in value
   ]
-  return PolicyNetworkProcessor(networks)
+  return PolicyNetworkProcessor(networks, version)
 
 
-def ParseAltNameServers(value):
+def ParseAltNameServers(value, version):
   """Build a list of TargetNameServers from command line args."""
   if not value:
     return None
-  m = GetMessages()
-  name_servers = [TargetNameServerType(ipv4) for ipv4 in value]
+  m = GetMessages(version)
+  name_servers = [TargetNameServerType(ipv4, version) for ipv4 in value]
   return m.PolicyAlternativeNameServerConfig(targetNameServers=name_servers)
 
 
-def GetMessages():
-  return apis.GetMessagesModule('dns', 'v1beta2')
+def GetMessages(version='v1'):
+  return apis.GetMessagesModule('dns', version)

@@ -103,8 +103,8 @@ def YieldExceptionWrapper(generator, job_id='', project_id='', region_id=''):
       the service.
   """
   try:
-    while True:
-      yield next(generator)
+    for x in generator:
+      yield x
   except exceptions.HttpError as e:
     raise dataflow_exceptions.ServiceException(
         MakeErrorMessage(e, job_id, project_id, region_id))

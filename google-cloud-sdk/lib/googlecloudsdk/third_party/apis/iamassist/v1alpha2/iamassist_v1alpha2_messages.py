@@ -423,6 +423,112 @@ class GoogleIamAssistV1alpha2ExplainedPolicy(_messages.Message):
   policy = _messages.MessageField('GoogleIamV1Policy', 4)
 
 
+class GoogleIamAssistV1alpha2LogsMetadata(_messages.Message):
+  r"""Metatdata about the logs used for replay.
+
+  Fields:
+    differenceCount: Number of analyzed log entries with a difference between
+      baseline and simulated policies.
+    newestTime: Timestamp of newest log entry queried.
+    oldestTime: Timestamp of oldest log entry queried.
+    uniqueLogCount: Number of unique log entries analyzed.
+  """
+
+  differenceCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  newestTime = _messages.StringField(2)
+  oldestTime = _messages.StringField(3)
+  uniqueLogCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class GoogleIamAssistV1alpha2ReplayDiff(_messages.Message):
+  r"""The differences found between baseline and simulated policies for a
+  single access tuple.
+
+  Fields:
+    accessDiff: The difference in AccessState between replays.
+    accessTuple: The access tuple with a difference between replays.
+  """
+
+  accessDiff = _messages.MessageField('GoogleIamAssistV1alpha2ReplayDiffAccessStateDiff', 1)
+  accessTuple = _messages.MessageField('GoogleIamAssistV1alpha2AccessTuple', 2)
+
+
+class GoogleIamAssistV1alpha2ReplayDiffAccessStateDiff(_messages.Message):
+  r"""A GoogleIamAssistV1alpha2ReplayDiffAccessStateDiff object.
+
+  Enums:
+    BaselineValueValuesEnum: The access state when replayed against the
+      baseline policies.
+    SimulatedValueValuesEnum: The access state when replayed against the
+      simulated policies.
+
+  Fields:
+    baseline: The access state when replayed against the baseline policies.
+    simulated: The access state when replayed against the simulated policies.
+  """
+
+  class BaselineValueValuesEnum(_messages.Enum):
+    r"""The access state when replayed against the baseline policies.
+
+    Values:
+      ACCESS_STATE_UNSPECIFIED: Reserved
+      GRANTED: The access is granted due to one or multiple bindings found.
+      NOT_GRANTED: The access is not granted by the policy.
+      UNKNOWN_CONDITIONAL: At least one binding was found but it is
+        conditional. undecided, undetermined ,uncertain, open, tentative,
+        contingent
+      UNKNOWN_INFO_DENIED: Indicating that lack of access to the underlying
+        information causes the result to be undetermined. This can be due to
+        1) The caller has no access to the policy. In this case
+        ExplainedPolicy    will have not policy set.  2) The caller has no
+        access to some of the items referenced in the policy.    In this case
+        the policy in ExplainedPolicy will be set but the    explanations
+        field will contain at least one inconclusive element.
+    """
+    ACCESS_STATE_UNSPECIFIED = 0
+    GRANTED = 1
+    NOT_GRANTED = 2
+    UNKNOWN_CONDITIONAL = 3
+    UNKNOWN_INFO_DENIED = 4
+
+  class SimulatedValueValuesEnum(_messages.Enum):
+    r"""The access state when replayed against the simulated policies.
+
+    Values:
+      ACCESS_STATE_UNSPECIFIED: Reserved
+      GRANTED: The access is granted due to one or multiple bindings found.
+      NOT_GRANTED: The access is not granted by the policy.
+      UNKNOWN_CONDITIONAL: At least one binding was found but it is
+        conditional. undecided, undetermined ,uncertain, open, tentative,
+        contingent
+      UNKNOWN_INFO_DENIED: Indicating that lack of access to the underlying
+        information causes the result to be undetermined. This can be due to
+        1) The caller has no access to the policy. In this case
+        ExplainedPolicy    will have not policy set.  2) The caller has no
+        access to some of the items referenced in the policy.    In this case
+        the policy in ExplainedPolicy will be set but the    explanations
+        field will contain at least one inconclusive element.
+    """
+    ACCESS_STATE_UNSPECIFIED = 0
+    GRANTED = 1
+    NOT_GRANTED = 2
+    UNKNOWN_CONDITIONAL = 3
+    UNKNOWN_INFO_DENIED = 4
+
+  baseline = _messages.EnumField('BaselineValueValuesEnum', 1)
+  simulated = _messages.EnumField('SimulatedValueValuesEnum', 2)
+
+
+class GoogleIamAssistV1alpha2ReplayOperationMetadata(_messages.Message):
+  r"""Metadata about a ReplayAccessLogs operation.
+
+  Fields:
+    startTime: Time when the request was received.
+  """
+
+  startTime = _messages.StringField(1)
+
+
 class GoogleIamAssistV1alpha2ReplayRecentAccessesRequest(_messages.Message):
   r"""Request for recent accesses replay.
 
@@ -461,6 +567,18 @@ class GoogleIamAssistV1alpha2ReplayRecentAccessesRequest(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   policyOverlay = _messages.MessageField('PolicyOverlayValue', 1)
+
+
+class GoogleIamAssistV1alpha2ReplayRecentAccessesResponse(_messages.Message):
+  r"""Result of a ReplayRecentAccesses.
+
+  Fields:
+    diffs: List of differences found during replay.
+    logsMetadata: Metadata about the replayed logs.
+  """
+
+  diffs = _messages.MessageField('GoogleIamAssistV1alpha2ReplayDiff', 1, repeated=True)
+  logsMetadata = _messages.MessageField('GoogleIamAssistV1alpha2LogsMetadata', 2)
 
 
 class GoogleIamV1AuditConfig(_messages.Message):

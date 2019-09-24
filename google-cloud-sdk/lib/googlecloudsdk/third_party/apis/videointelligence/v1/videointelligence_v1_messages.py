@@ -619,13 +619,21 @@ class GoogleCloudVideointelligenceV1VideoAnnotationResults(_messages.Message):
       label.
     segmentPresenceLabelAnnotations: Presence label annotations on video level
       or user specified segment level. There is exactly one element for each
-      unique label.
+      unique label. Compared to the existing topical
+      `segment_label_annotations`, this field presents more fine-grained,
+      segment-level labels detected in video content and is made available
+      only when the client sets `LabelDetectionConfig.model` to
+      "builtin/latest" in the request.
     shotAnnotations: Shot annotations. Each shot is represented as a video
       segment.
     shotLabelAnnotations: Topical label annotations on shot level. There is
       exactly one element for each unique label.
     shotPresenceLabelAnnotations: Presence label annotations on shot level.
-      There is exactly one element for each unique label.
+      There is exactly one element for each unique label. Compared to the
+      existing topical `shot_label_annotations`, this field presents more
+      fine-grained, shot-level labels detected in video content and is made
+      available only when the client sets `LabelDetectionConfig.model` to
+      "builtin/latest" in the request.
     speechTranscriptions: Speech transcription.
     textAnnotations: OCR text detection and tracking. Annotations for list of
       detected text snippets. Each will have list of frame information
@@ -1089,13 +1097,21 @@ class GoogleCloudVideointelligenceV1beta2VideoAnnotationResults(_messages.Messag
       label.
     segmentPresenceLabelAnnotations: Presence label annotations on video level
       or user specified segment level. There is exactly one element for each
-      unique label.
+      unique label. Compared to the existing topical
+      `segment_label_annotations`, this field presents more fine-grained,
+      segment-level labels detected in video content and is made available
+      only when the client sets `LabelDetectionConfig.model` to
+      "builtin/latest" in the request.
     shotAnnotations: Shot annotations. Each shot is represented as a video
       segment.
     shotLabelAnnotations: Topical label annotations on shot level. There is
       exactly one element for each unique label.
     shotPresenceLabelAnnotations: Presence label annotations on shot level.
-      There is exactly one element for each unique label.
+      There is exactly one element for each unique label. Compared to the
+      existing topical `shot_label_annotations`, this field presents more
+      fine-grained, shot-level labels detected in video content and is made
+      available only when the client sets `LabelDetectionConfig.model` to
+      "builtin/latest" in the request.
     speechTranscriptions: Speech transcription.
     textAnnotations: OCR text detection and tracking. Annotations for list of
       detected text snippets. Each will have list of frame information
@@ -1535,13 +1551,21 @@ class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationResults(_messages.Mess
       label.
     segmentPresenceLabelAnnotations: Presence label annotations on video level
       or user specified segment level. There is exactly one element for each
-      unique label.
+      unique label. Compared to the existing topical
+      `segment_label_annotations`, this field presents more fine-grained,
+      segment-level labels detected in video content and is made available
+      only when the client sets `LabelDetectionConfig.model` to
+      "builtin/latest" in the request.
     shotAnnotations: Shot annotations. Each shot is represented as a video
       segment.
     shotLabelAnnotations: Topical label annotations on shot level. There is
       exactly one element for each unique label.
     shotPresenceLabelAnnotations: Presence label annotations on shot level.
-      There is exactly one element for each unique label.
+      There is exactly one element for each unique label. Compared to the
+      existing topical `shot_label_annotations`, this field presents more
+      fine-grained, shot-level labels detected in video content and is made
+      available only when the client sets `LabelDetectionConfig.model` to
+      "builtin/latest" in the request.
     speechTranscriptions: Speech transcription.
     textAnnotations: OCR text detection and tracking. Annotations for list of
       detected text snippets. Each will have list of frame information
@@ -1981,13 +2005,21 @@ class GoogleCloudVideointelligenceV1p2beta1VideoAnnotationResults(_messages.Mess
       label.
     segmentPresenceLabelAnnotations: Presence label annotations on video level
       or user specified segment level. There is exactly one element for each
-      unique label.
+      unique label. Compared to the existing topical
+      `segment_label_annotations`, this field presents more fine-grained,
+      segment-level labels detected in video content and is made available
+      only when the client sets `LabelDetectionConfig.model` to
+      "builtin/latest" in the request.
     shotAnnotations: Shot annotations. Each shot is represented as a video
       segment.
     shotLabelAnnotations: Topical label annotations on shot level. There is
       exactly one element for each unique label.
     shotPresenceLabelAnnotations: Presence label annotations on shot level.
-      There is exactly one element for each unique label.
+      There is exactly one element for each unique label. Compared to the
+      existing topical `shot_label_annotations`, this field presents more
+      fine-grained, shot-level labels detected in video content and is made
+      available only when the client sets `LabelDetectionConfig.model` to
+      "builtin/latest" in the request.
     speechTranscriptions: Speech transcription.
     textAnnotations: OCR text detection and tracking. Annotations for list of
       detected text snippets. Each will have list of frame information
@@ -2540,13 +2572,21 @@ class GoogleCloudVideointelligenceV1p3beta1VideoAnnotationResults(_messages.Mess
       label.
     segmentPresenceLabelAnnotations: Presence label annotations on video level
       or user specified segment level. There is exactly one element for each
-      unique label.
+      unique label. Compared to the existing topical
+      `segment_label_annotations`, this field presents more fine-grained,
+      segment-level labels detected in video content and is made available
+      only when the client sets `LabelDetectionConfig.model` to
+      "builtin/latest" in the request.
     shotAnnotations: Shot annotations. Each shot is represented as a video
       segment.
     shotLabelAnnotations: Topical label annotations on shot level. There is
       exactly one element for each unique label.
     shotPresenceLabelAnnotations: Presence label annotations on shot level.
-      There is exactly one element for each unique label.
+      There is exactly one element for each unique label. Compared to the
+      existing topical `shot_label_annotations`, this field presents more
+      fine-grained, shot-level labels detected in video content and is made
+      available only when the client sets `LabelDetectionConfig.model` to
+      "builtin/latest" in the request.
     speechTranscriptions: Speech transcription.
     textAnnotations: OCR text detection and tracking. Annotations for list of
       detected text snippets. Each will have list of frame information

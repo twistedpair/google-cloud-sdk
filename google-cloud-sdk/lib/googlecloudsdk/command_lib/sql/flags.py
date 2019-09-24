@@ -37,7 +37,6 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util import completers
 
-
 _IP_ADDRESS_PART = r'(25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})'  # Match decimal 0-255
 _CIDR_PREFIX_PART = r'([0-9]|[1-2][0-9]|3[0-2])'  # Match decimal 0-32
 # Matches either IPv4 range in CIDR notation or a naked IPv4 address.
@@ -88,9 +87,7 @@ def AddInstance(parser):
 def AddInstanceArgument(parser):
   """Add the 'instance' argument to the parser."""
   parser.add_argument(
-      'instance',
-      completer=InstanceCompleter,
-      help='Cloud SQL instance ID.')
+      'instance', completer=InstanceCompleter, help='Cloud SQL instance ID.')
 
 
 # Currently, 10230 is the max storage size one can set, and 10 is the minimum.
@@ -105,9 +102,7 @@ def AddInstanceResizeLimit(parser):
 
 def AddUsername(parser):
   parser.add_argument(
-      'username',
-      completer=UserCompleter,
-      help='Cloud SQL username.')
+      'username', completer=UserCompleter, help='Cloud SQL username.')
 
 
 def AddHost(parser):
@@ -130,11 +125,9 @@ def AddHost(parser):
           'deprecated_host',
           removed=True,
           error='Positional argument {flag_name} has been removed. Use '
-                '--host instead.'),
+          '--host instead.'),
       hidden=True).is_required = False
-  host.add_argument(
-      '--host',
-      help=help_text)
+  host.add_argument('--host', help=help_text)
 
 
 def AddAvailabilityType(parser):
@@ -153,9 +146,7 @@ def AddAvailabilityType(parser):
 
 
 def AddPassword(parser):
-  parser.add_argument(
-      '--password',
-      help='Cloud SQL user\'s password.')
+  parser.add_argument('--password', help='Cloud SQL user\'s password.')
 
 
 def AddRootPassword(parser):
@@ -188,16 +179,16 @@ def AddActivationPolicy(parser):
                 'the instance should be activated and is applicable only when '
                 'the instance state is `RUNNABLE`. The default is `on-demand`. '
                 'More information on activation policies can be found here: '
-                'https://cloud.google.com/sql/faq#activation_policy')
-  ).AddToParser(parser)
+                'https://cloud.google.com/sql/faq#activation_policy'
+               )).AddToParser(parser)
 
 
 def AddAssignIp(parser):
   parser.add_argument(
       '--assign-ip',
       help='Assign an IPv4 external address to this instance. This setting is '
-           'enabled by default when creating a new instance, but can be '
-           'disabled to use private IP connectivity.',
+      'enabled by default when creating a new instance, but can be '
+      'disabled to use private IP connectivity.',
       action=arg_parsers.StoreTrueFalseAction)
 
 
@@ -267,14 +258,19 @@ def AddDatabaseFlags(parser, update=False):
 
 def AddDatabaseVersion(parser, restrict_choices=True):
   """Adds `--database-version` to the parser with choices restricted or not."""
-  choices = ['MYSQL_5_5', 'MYSQL_5_6', 'MYSQL_5_7', 'POSTGRES_9_6']
+  choices = [
+      'MYSQL_5_5',
+      'MYSQL_5_6',
+      'MYSQL_5_7',
+      'POSTGRES_9_6',
+      'POSTGRES_11',
+  ]
   help_text = (
       'The database engine type and version. If left unspecified, the API '
       'defaults will be used.')
   if not restrict_choices:
     help_text = ' '.join([
-        help_text,
-        'See the list of database versions at '
+        help_text, 'See the list of database versions at '
         'https://cloud.google.com/sql/docs/mysql/admin-api/v1beta4/instances'
         '#databaseVersion'
     ])
@@ -302,10 +298,7 @@ def _GetKwargsForBoolFlag(show_negated_in_help):
         'action': arg_parsers.StoreTrueFalseAction,
     }
   else:
-    return {
-        'action': 'store_true',
-        'default': None
-    }
+    return {'action': 'store_true', 'default': None}
 
 
 def AddEnableBinLog(parser, show_negated_in_help=False):
@@ -313,9 +306,8 @@ def AddEnableBinLog(parser, show_negated_in_help=False):
   parser.add_argument(
       '--enable-bin-log',
       required=False,
-      help=(
-          'Specified if binary log should be enabled. If backup '
-          'configuration is disabled, binary log must be disabled as well.'),
+      help=('Specified if binary log should be enabled. If backup '
+            'configuration is disabled, binary log must be disabled as well.'),
       **kwargs)
 
 
@@ -420,10 +412,9 @@ def AddMaintenanceReleaseChannel(parser):
                      'their compatibility with your application prior '
                      'to the production release.'
       },
-
       help_str=("Which channel's updates to apply during the maintenance "
-                "window. If not specified, Cloud SQL chooses the timing of "
-                "updates to your instance.")).AddToParser(parser)
+                'window. If not specified, Cloud SQL chooses the timing of '
+                'updates to your instance.')).AddToParser(parser)
 
 
 def AddMaintenanceWindowDay(parser):
@@ -534,10 +525,7 @@ def AddZone(parser, help_text):
           warn=('Flag `{flag_name}` is deprecated and will be removed by '
                 'release 255.0.0. Use `--zone` instead.')),
       help=help_text)
-  zone_group.add_argument(
-      '--zone',
-      required=False,
-      help=help_text)
+  zone_group.add_argument('--zone', required=False, help=help_text)
 
 
 # Database specific flags
@@ -545,9 +533,7 @@ def AddZone(parser, help_text):
 
 def AddDatabaseName(parser):
   parser.add_argument(
-      'database',
-      completer=DatabaseCompleter,
-      help='Cloud SQL database name.')
+      'database', completer=DatabaseCompleter, help='Cloud SQL database name.')
 
 
 def AddCharset(parser):
@@ -578,9 +564,7 @@ def AddOperationArgument(parser):
 
 def AddUriArgument(parser, help_text):
   """Add the 'uri' argument to the parser, with help text help_text."""
-  parser.add_argument(
-      'uri',
-      help=help_text)
+  parser.add_argument('uri', help=help_text)
 
 
 DEFAULT_DATABASE_IMPORT_HELP_TEXT = (
@@ -592,11 +576,7 @@ DEFAULT_DATABASE_IMPORT_HELP_TEXT = (
 
 def AddDatabase(parser, help_text, required=False):
   """Add the '--database' flag to the parser, with help text help_text."""
-  parser.add_argument(
-      '--database',
-      '-d',
-      required=required,
-      help=help_text)
+  parser.add_argument('--database', '-d', required=required, help=help_text)
 
 
 DEFAULT_DATABASE_LIST_EXPORT_HELP_TEXT = (
@@ -604,21 +584,42 @@ DEFAULT_DATABASE_LIST_EXPORT_HELP_TEXT = (
     'can be found here: https://cloud.google.com/sql/docs/mysql/admin-api/'
     'v1beta4/instances/export#exportContext.databases')
 
+SQLSERVER_DATABASE_LIST_EXPORT_HELP_TEXT = (
+    'Database from which the export is made. Information on requirements '
+    'can be found here: https://cloud.google.com/sql/docs/sqlserver/admin-api/'
+    'v1beta4/instances/export#exportContext.databases')
 
-def AddDatabaseList(parser, help_text):
-  """Add the '--database' list flag to the parser, with help text help_text."""
-  parser.add_argument(
-      '--database',
-      '-d',
-      type=arg_parsers.ArgList(min_length=1),
-      metavar='DATABASE',
-      required=False,
-      help=help_text)
+
+def AddDatabaseList(parser, help_text, required=False):
+  """Add the '--database' and '-d' list flags to the parser.
+
+  Args:
+    parser: The current argparse parser to add these database flags to.
+    help_text: String, specifies the help text for the database flags.
+    required: Boolean, specifies whether the database flag is required.
+  """
+  if required:
+    group = parser.add_group(mutex=False, required=True)
+    group.add_argument(
+        '--database',
+        '-d',
+        type=arg_parsers.ArgList(min_length=1),
+        metavar='DATABASE',
+        help=help_text)
+  else:
+    parser.add_argument(
+        '--database',
+        '-d',
+        type=arg_parsers.ArgList(min_length=1),
+        metavar='DATABASE',
+        required=False,
+        help=help_text)
 
 
 def AddUser(parser, help_text):
   """Add the '--user' flag to the parser, with help text help_text."""
   parser.add_argument('--user', help=help_text)
+
 
 INSTANCES_USERLABELS_FORMAT = ':(settings.userLabels:alias=labels:label=LABELS)'
 
@@ -628,8 +629,7 @@ INSTANCES_FORMAT_COLUMNS = [
     'ip_addresses.filter("type:PRIMARY").*extract(ip_address).flatten()'
     '.yesno(no="-"):label=PRIMARY_ADDRESS',
     'ip_addresses.filter("type:PRIVATE").*extract(ip_address).flatten()'
-    '.yesno(no="-"):label=PRIVATE_ADDRESS',
-    'state:label=STATUS'
+    '.yesno(no="-"):label=PRIVATE_ADDRESS', 'state:label=STATUS'
 ]
 
 

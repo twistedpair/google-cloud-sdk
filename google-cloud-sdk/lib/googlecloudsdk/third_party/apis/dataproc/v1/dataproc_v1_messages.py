@@ -511,7 +511,7 @@ class ClusterStatus(_messages.Message):
       includes status reported by the agent.
 
   Fields:
-    detail: Output only. Optional details of cluster's state.
+    detail: Optional. Output only. Details of cluster's state.
     state: Output only. The cluster's state.
     stateStartTime: Output only. Time when this state was entered.
     substate: Output only. Additional state information that includes status
@@ -2056,11 +2056,11 @@ class InstanceGroupAutoscalingPolicyConfig(_messages.Message):
   proportional size to other groups.
 
   Fields:
-    maxInstances: Optional. Maximum number of instances for this group.
+    maxInstances: Required. Maximum number of instances for this group.
       Required for primary workers. Note that by default, clusters will not
       use secondary workers. Required for secondary workers if the minimum
       secondary instances is set.Primary workers - Bounds: [min_instances, ).
-      Required. Secondary workers - Bounds: [min_instances, ). Default: 0.
+      Secondary workers - Bounds: [min_instances, ). Default: 0.
     minInstances: Optional. Minimum number of instances for this group.Primary
       workers - Bounds: 2, max_instances. Default: 2. Secondary workers -
       Bounds: 0, max_instances. Default: 0.
@@ -2336,7 +2336,7 @@ class JobStatus(_messages.Message):
       includes status reported by the agent.
 
   Fields:
-    details: Output only. Optional job state details, such as an error
+    details: Optional. Output only. Job state details, such as an error
       description if the state is <code>ERROR</code>.
     state: Output only. A state message specifying the overall job state.
     stateStartTime: Output only. The time when this state was entered.
@@ -3187,7 +3187,7 @@ class SoftwareConfig(_messages.Message):
       must be one of the supported Cloud Dataproc Versions, such as "1.2"
       (including a subminor version, such as "1.2.29"), or the "preview"
       version. If unspecified, it defaults to the latest Debian version.
-    optionalComponents: The set of optional components to activate on the
+    optionalComponents: Optional. The set of components to activate on the
       cluster.
     properties: Optional. The properties to set on daemon config
       files.Property keys are specified in prefix:property format, for example
@@ -3843,9 +3843,7 @@ class WorkflowTemplate(_messages.Message):
 
   Fields:
     createTime: Output only. The time template was created.
-    id: Required. The template id.The id must contain only letters (a-z, A-Z),
-      numbers (0-9), underscores (_), and hyphens (-). Cannot begin or end
-      with underscore or hyphen. Must consist of between 3 and 50 characters.
+    id: A string attribute.
     jobs: Required. The Directed Acyclic Graph of Jobs to submit.
     labels: Optional. The labels to associate with this template. These labels
       will be propagated to all jobs and clusters created by the workflow
@@ -3862,9 +3860,9 @@ class WorkflowTemplate(_messages.Message):
       For projects.locations.workflowTemplates, the resource name of the
       template has the following format:  projects/{project_id}/locations/{loc
       ation}/workflowTemplates/{template_id}
-    parameters: Optional. Template parameters whose values are substituted
-      into the template. Values for parameters must be provided when the
-      template is instantiated.
+    parameters: Optional. emplate parameters whose values are substituted into
+      the template. Values for parameters must be provided when the template
+      is instantiated.
     placement: Required. WorkflowTemplate scheduling information.
     updateTime: Output only. The time template was last updated.
     version: Optional. Used to perform a consistent read-modify-write.This
@@ -3926,7 +3924,7 @@ class WorkflowTemplatePlacement(_messages.Message):
     clusterSelector: Optional. A selector that chooses target cluster for jobs
       based on metadata.The selector is evaluated at the time each job is
       submitted.
-    managedCluster: Optional. A cluster that is managed by the workflow.
+    managedCluster: A cluster that is managed by the workflow.
   """
 
   clusterSelector = _messages.MessageField('ClusterSelector', 1)

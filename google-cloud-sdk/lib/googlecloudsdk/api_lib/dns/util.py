@@ -17,6 +17,7 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
+
 from googlecloudsdk.calliope import base
 
 from googlecloudsdk.core import resources
@@ -37,3 +38,5 @@ def GetApiFromTrack(track):
     return 'v1beta2'
   if track == base.ReleaseTrack.ALPHA:
     return 'v1alpha2'
+  if track == base.ReleaseTrack.GA:
+    return 'v1'

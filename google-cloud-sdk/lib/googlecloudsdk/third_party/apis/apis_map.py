@@ -745,6 +745,14 @@ MAP = {
             default_version=True
         ),
     },
+    'labelmanager': {
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.labelmanager.v1alpha1',
+            client_classpath='labelmanager_v1alpha1_client.LabelmanagerV1alpha1',
+            messages_modulepath='labelmanager_v1alpha1_messages',
+            default_version=True
+        ),
+    },
     'language': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.language.v1',
@@ -923,6 +931,12 @@ MAP = {
             client_classpath='run_v1alpha1_client.RunV1alpha1',
             messages_modulepath='run_v1alpha1_messages',
             default_version=True
+        ),
+        'v1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.run.v1beta1',
+            client_classpath='run_v1beta1_client.RunV1beta1',
+            messages_modulepath='run_v1beta1_messages',
+            default_version=False
         ),
     },
     'runtimeconfig': {

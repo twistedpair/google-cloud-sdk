@@ -435,6 +435,9 @@ class ListSinksResponse(_messages.Message):
 class LogBucket(_messages.Message):
   r"""Describes a repository of logs.
 
+  Enums:
+    LifecycleStateValueValuesEnum: The bucket lifecycle state.Output only.
+
   Fields:
     createTime: Output only. The creation timestamp of the bucket. This is not
       set for any of the default buckets.
@@ -449,6 +452,7 @@ class LogBucket(_messages.Message):
       ensure that their change will be applied to the same version of the
       bucket.If no etag is provided in the call to UpdateBucket, then the
       existing bucket is overwritten blindly.
+    lifecycleState: The bucket lifecycle state.Output only.
     locked: Whether the bucket has been locked. The retention period on a
       locked bucket may not be changed. A locked bucket may not have any
       retention rules. Logs may not be deleted from a locked bucket.
@@ -463,14 +467,30 @@ class LogBucket(_messages.Message):
     updateTime: Output only. The last update timestamp of the bucket.
   """
 
+  class LifecycleStateValueValuesEnum(_messages.Enum):
+    r"""The bucket lifecycle state.Output only.
+
+    Values:
+      LIFECYCLE_STATE_UNSPECIFIED: Unspecified state. This is only used/useful
+        for distinguishing unset values.
+      ACTIVE: The normal and active state.
+      DELETE_REQUESTED: The bucket has been marked for deletion by the user
+        (by invoking DeleteBucket). This can be reversed by invoking
+        UndeleteBucket.
+    """
+    LIFECYCLE_STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DELETE_REQUESTED = 2
+
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   displayName = _messages.StringField(3)
   etag = _messages.BytesField(4)
-  locked = _messages.BooleanField(5)
-  name = _messages.StringField(6)
-  retentionDays = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  updateTime = _messages.StringField(8)
+  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 5)
+  locked = _messages.BooleanField(6)
+  name = _messages.StringField(7)
+  retentionDays = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  updateTime = _messages.StringField(9)
 
 
 class LogEntry(_messages.Message):

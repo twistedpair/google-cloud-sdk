@@ -166,6 +166,24 @@ class BinaryauthorizationProjectsAttestorsDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class BinaryauthorizationProjectsAttestorsGetIamPolicyRequest(_messages.Message):
+  r"""A BinaryauthorizationProjectsAttestorsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.  Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class BinaryauthorizationProjectsAttestorsGetRequest(_messages.Message):
   r"""A BinaryauthorizationProjectsAttestorsGetRequest object.
 
@@ -195,6 +213,36 @@ class BinaryauthorizationProjectsAttestorsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class BinaryauthorizationProjectsAttestorsSetIamPolicyRequest(_messages.Message):
+  r"""A BinaryauthorizationProjectsAttestorsSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class BinaryauthorizationProjectsAttestorsTestIamPermissionsRequest(_messages.Message):
+  r"""A BinaryauthorizationProjectsAttestorsTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class BinaryauthorizationProjectsGetPolicyRequest(_messages.Message):
   r"""A BinaryauthorizationProjectsGetPolicyRequest object.
 
@@ -206,6 +254,84 @@ class BinaryauthorizationProjectsGetPolicyRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class BinaryauthorizationProjectsPolicyGetIamPolicyRequest(_messages.Message):
+  r"""A BinaryauthorizationProjectsPolicyGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.  Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class BinaryauthorizationProjectsPolicySetIamPolicyRequest(_messages.Message):
+  r"""A BinaryauthorizationProjectsPolicySetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class BinaryauthorizationProjectsPolicyTestIamPermissionsRequest(_messages.Message):
+  r"""A BinaryauthorizationProjectsPolicyTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class Binding(_messages.Message):
+  r"""Associates `members` with a `role`.
+
+  Fields:
+    condition: The condition that is associated with this binding. NOTE: An
+      unsatisfied condition will not allow user access via current binding.
+      Different bindings, including their conditions, are examined
+      independently.
+    members: Specifies the identities requesting access for a Cloud Platform
+      resource. `members` can have the following values:  * `allUsers`: A
+      special identifier that represents anyone who is    on the internet;
+      with or without a Google account.  * `allAuthenticatedUsers`: A special
+      identifier that represents anyone    who is authenticated with a Google
+      account or a service account.  * `user:{emailid}`: An email address that
+      represents a specific Google    account. For example,
+      `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
+      that represents a service    account. For example, `my-other-
+      app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
+      that represents a Google group.    For example, `admins@example.com`.
+      * `domain:{domain}`: The G Suite domain (primary) that represents all
+      the    users of that domain. For example, `google.com` or `example.com`.
+    role: Role that is assigned to `members`. For example, `roles/viewer`,
+      `roles/editor`, or `roles/owner`.
+  """
+
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -214,6 +340,74 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class Expr(_messages.Message):
+  r"""Represents an expression text. Example:      title: "User account
+  presence"     description: "Determines whether the request has a user
+  account"     expression: "size(request.user) > 0"
+
+  Fields:
+    description: An optional description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.  The application context of the containing message
+      determines which well-known feature set of CEL is supported.
+    location: An optional string indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: An optional title for the expression, i.e. a short string
+      describing its purpose. This can be used e.g. in UIs which allow to
+      enter the expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
+
+
+class IamPolicy(_messages.Message):
+  r"""Defines an Identity and Access Management (IAM) policy. It is used to
+  specify access control policies for Cloud Platform resources.   A `Policy`
+  consists of a list of `bindings`. A `binding` binds a list of `members` to a
+  `role`, where the members can be user accounts, Google groups, Google
+  domains, and service accounts. A `role` is a named list of permissions
+  defined by IAM.  **JSON Example**      {       "bindings": [         {
+  "role": "roles/owner",           "members": [
+  "user:mike@example.com",             "group:admins@example.com",
+  "domain:google.com",             "serviceAccount:my-other-
+  app@appspot.gserviceaccount.com"           ]         },         {
+  "role": "roles/viewer",           "members": ["user:sean@example.com"]
+  }       ]     }  **YAML Example**      bindings:     - members:       -
+  user:mike@example.com       - group:admins@example.com       -
+  domain:google.com       - serviceAccount:my-other-
+  app@appspot.gserviceaccount.com       role: roles/owner     - members:
+  - user:sean@example.com       role: roles/viewer   For a description of IAM
+  and its features, see the [IAM developer's
+  guide](https://cloud.google.com/iam/docs).
+
+  Fields:
+    bindings: Associates a list of `members` to a `role`. `bindings` with no
+      members will result in an error.
+    etag: `etag` is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a policy from overwriting each other. It
+      is strongly suggested that systems make use of the `etag` in the read-
+      modify-write cycle to perform policy updates in order to avoid race
+      conditions: An `etag` is returned in the response to `getIamPolicy`, and
+      systems are expected to put that etag in the request to `setIamPolicy`
+      to ensure that their change will be applied to the same version of the
+      policy.  If no `etag` is provided in the call to `setIamPolicy`, then
+      the existing policy is overwritten.
+    version: Specifies the format of the policy.  Valid values are 0, 1, and
+      3. Requests specifying an invalid value will be rejected.  Policies with
+      any conditional bindings must specify version 3. Policies without any
+      conditional bindings may specify any valid value or leave the field
+      unset.
+  """
+
+  bindings = _messages.MessageField('Binding', 1, repeated=True)
+  etag = _messages.BytesField(2)
+  version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class ListAttestorsResponse(_messages.Message):
@@ -391,6 +585,19 @@ class Policy(_messages.Message):
   updateTime = _messages.StringField(7)
 
 
+class SetIamPolicyRequest(_messages.Message):
+  r"""Request message for `SetIamPolicy` method.
+
+  Fields:
+    policy: REQUIRED: The complete policy to be applied to the `resource`. The
+      size of the policy is limited to a few 10s of KB. An empty policy is a
+      valid policy but certain Cloud Platform services (such as Projects)
+      might reject them.
+  """
+
+  policy = _messages.MessageField('IamPolicy', 1)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -452,6 +659,30 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class TestIamPermissionsRequest(_messages.Message):
+  r"""Request message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
+class TestIamPermissionsResponse(_messages.Message):
+  r"""Response message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: A subset of `TestPermissionsRequest.permissions` that the
+      caller is allowed.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
 
 
 class UserOwnedGrafeasNote(_messages.Message):

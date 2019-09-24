@@ -48,8 +48,8 @@ class LongRunningRecognizeRequest(_messages.Message):
   method.
 
   Fields:
-    audio: *Required* The audio data to be recognized.
-    config: *Required* Provides information to the recognizer that specifies
+    audio: Required. The audio data to be recognized.
+    config: Required. Provides information to the recognizer that specifies
       how to process the request.
   """
 
@@ -65,8 +65,8 @@ class LongRunningRecognizeResponse(_messages.Message):
   `google::longrunning::Operations` service.
 
   Fields:
-    results: Output only. Sequential list of transcription results
-      corresponding to sequential portions of audio.
+    results: Sequential list of transcription results corresponding to
+      sequential portions of audio.
   """
 
   results = _messages.MessageField('SpeechRecognitionResult', 1, repeated=True)
@@ -214,28 +214,26 @@ class RecognitionConfig(_messages.Message):
       AudioEncoding.
 
   Fields:
-    audioChannelCount: *Optional* The number of channels in the input audio
-      data. ONLY set this for MULTI-CHANNEL recognition. Valid values for
-      LINEAR16 and FLAC are `1`-`8`. Valid values for OGG_OPUS are '1'-'254'.
-      Valid value for MULAW, AMR, AMR_WB and SPEEX_WITH_HEADER_BYTE is only
-      `1`. If `0` or omitted, defaults to one channel (mono). Note: We only
-      recognize the first channel by default. To perform independent
-      recognition on each channel set
-      `enable_separate_recognition_per_channel` to 'true'.
-    diarizationConfig: *Optional* Config to enable speaker diarization and set
-      additional parameters to make diarization better suited for your
-      application. Note: When this is enabled, we send all the words from the
-      beginning of the audio for the top alternative in every consecutive
-      STREAMING responses. This is done in order to improve our speaker tags
-      as our models learn to identify the speakers in the conversation over
-      time. For non-streaming requests, the diarization results will be
-      provided only in the top alternative of the FINAL
-      SpeechRecognitionResult.
-    enableAutomaticPunctuation: *Optional* If 'true', adds punctuation to
-      recognition result hypotheses. This feature is only available in select
-      languages. Setting this for requests in other languages has no effect at
-      all. The default 'false' value does not add punctuation to result
-      hypotheses. Note: This is currently offered as an experimental service,
+    audioChannelCount: The number of channels in the input audio data. ONLY
+      set this for MULTI-CHANNEL recognition. Valid values for LINEAR16 and
+      FLAC are `1`-`8`. Valid values for OGG_OPUS are '1'-'254'. Valid value
+      for MULAW, AMR, AMR_WB and SPEEX_WITH_HEADER_BYTE is only `1`. If `0` or
+      omitted, defaults to one channel (mono). Note: We only recognize the
+      first channel by default. To perform independent recognition on each
+      channel set `enable_separate_recognition_per_channel` to 'true'.
+    diarizationConfig: Config to enable speaker diarization and set additional
+      parameters to make diarization better suited for your application. Note:
+      When this is enabled, we send all the words from the beginning of the
+      audio for the top alternative in every consecutive STREAMING responses.
+      This is done in order to improve our speaker tags as our models learn to
+      identify the speakers in the conversation over time. For non-streaming
+      requests, the diarization results will be provided only in the top
+      alternative of the FINAL SpeechRecognitionResult.
+    enableAutomaticPunctuation: If 'true', adds punctuation to recognition
+      result hypotheses. This feature is only available in select languages.
+      Setting this for requests in other languages has no effect at all. The
+      default 'false' value does not add punctuation to result hypotheses.
+      Note: This is currently offered as an experimental service,
       complimentary to all users. In the future this may be exclusively
       available as a premium feature.
     enableSeparateRecognitionPerChannel: This needs to be set to `true`
@@ -245,30 +243,30 @@ class RecognitionConfig(_messages.Message):
       only recognize the first channel. The request is billed cumulatively for
       all channels recognized: `audio_channel_count` multiplied by the length
       of the audio.
-    enableWordTimeOffsets: *Optional* If `true`, the top result includes a
-      list of words and the start and end time offsets (timestamps) for those
-      words. If `false`, no word-level time offset information is returned.
-      The default is `false`.
+    enableWordTimeOffsets: If `true`, the top result includes a list of words
+      and the start and end time offsets (timestamps) for those words. If
+      `false`, no word-level time offset information is returned. The default
+      is `false`.
     encoding: Encoding of audio data sent in all `RecognitionAudio` messages.
       This field is optional for `FLAC` and `WAV` audio files and required for
       all other audio formats. For details, see AudioEncoding.
-    languageCode: *Required* The language of the supplied audio as a
+    languageCode: Required. The language of the supplied audio as a
       [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
       Example: "en-US". See [Language Support](https://cloud.google.com
       /speech-to-text/docs/languages) for a list of the currently supported
       language codes.
-    maxAlternatives: *Optional* Maximum number of recognition hypotheses to be
-      returned. Specifically, the maximum number of
-      `SpeechRecognitionAlternative` messages within each
-      `SpeechRecognitionResult`. The server may return fewer than
-      `max_alternatives`. Valid values are `0`-`30`. A value of `0` or `1`
-      will return a maximum of one. If omitted, will return a maximum of one.
-    metadata: *Optional* Metadata regarding this request.
-    model: *Optional* Which model to select for the given request. Select the
-      model best suited to your domain to get best results. If a model is not
-      explicitly specified, then we auto-select a model based on the
-      parameters in the RecognitionConfig. <table>   <tr>
-      <td><b>Model</b></td>     <td><b>Description</b></td>   </tr>   <tr>
+    maxAlternatives: Maximum number of recognition hypotheses to be returned.
+      Specifically, the maximum number of `SpeechRecognitionAlternative`
+      messages within each `SpeechRecognitionResult`. The server may return
+      fewer than `max_alternatives`. Valid values are `0`-`30`. A value of `0`
+      or `1` will return a maximum of one. If omitted, will return a maximum
+      of one.
+    metadata: Metadata regarding this request.
+    model: Which model to select for the given request. Select the model best
+      suited to your domain to get best results. If a model is not explicitly
+      specified, then we auto-select a model based on the parameters in the
+      RecognitionConfig. <table>   <tr>     <td><b>Model</b></td>
+      <td><b>Description</b></td>   </tr>   <tr>
       <td><code>command_and_search</code></td>     <td>Best for short queries
       such as voice commands or voice search.</td>   </tr>   <tr>
       <td><code>phone_call</code></td>     <td>Best for audio that originated
@@ -281,9 +279,9 @@ class RecognitionConfig(_messages.Message):
       <td>Best for audio that is not one of the specific audio models.
       For example, long-form audio. Ideally the audio is high-fidelity,
       recorded at a 16khz or greater sampling rate.</td>   </tr> </table>
-    profanityFilter: *Optional* If set to `true`, the server will attempt to
-      filter out profanities, replacing all but the initial character in each
-      filtered word with asterisks, e.g. "f***". If set to `false` or omitted,
+    profanityFilter: If set to `true`, the server will attempt to filter out
+      profanities, replacing all but the initial character in each filtered
+      word with asterisks, e.g. "f***". If set to `false` or omitted,
       profanities won't be filtered out.
     sampleRateHertz: Sample rate in Hertz of the audio data sent in all
       `RecognitionAudio` messages. Valid values are: 8000-48000. 16000 is
@@ -292,16 +290,16 @@ class RecognitionConfig(_messages.Message):
       audio source (instead of re-sampling). This field is optional for FLAC
       and WAV audio files, but is required for all other audio formats. For
       details, see AudioEncoding.
-    speechContexts: *Optional* array of SpeechContext. A means to provide
-      context to assist the speech recognition. For more information, see
-      [speech adaptation](https://cloud.google.com/speech-to-text/docs
-      /context-strength).
-    useEnhanced: *Optional* Set to true to use an enhanced model for speech
-      recognition. If `use_enhanced` is set to true and the `model` field is
-      not set, then an appropriate enhanced model is chosen if an enhanced
-      model exists for the audio.  If `use_enhanced` is true and an enhanced
-      version of the specified model does not exist, then the speech is
-      recognized using the standard version of the specified model.
+    speechContexts: Array of SpeechContext. A means to provide context to
+      assist the speech recognition. For more information, see [speech
+      adaptation](https://cloud.google.com/speech-to-text/docs/context-
+      strength).
+    useEnhanced: Set to true to use an enhanced model for speech recognition.
+      If `use_enhanced` is set to true and the `model` field is not set, then
+      an appropriate enhanced model is chosen if an enhanced model exists for
+      the audio.  If `use_enhanced` is true and an enhanced version of the
+      specified model does not exist, then the speech is recognized using the
+      standard version of the specified model.
   """
 
   class EncodingValueValuesEnum(_messages.Enum):
@@ -499,8 +497,8 @@ class RecognizeRequest(_messages.Message):
   r"""The top-level message sent by the client for the `Recognize` method.
 
   Fields:
-    audio: *Required* The audio data to be recognized.
-    config: *Required* Provides information to the recognizer that specifies
+    audio: Required. The audio data to be recognized.
+    config: Required. Provides information to the recognizer that specifies
       how to process the request.
   """
 
@@ -514,28 +512,28 @@ class RecognizeResponse(_messages.Message):
   messages.
 
   Fields:
-    results: Output only. Sequential list of transcription results
-      corresponding to sequential portions of audio.
+    results: Sequential list of transcription results corresponding to
+      sequential portions of audio.
   """
 
   results = _messages.MessageField('SpeechRecognitionResult', 1, repeated=True)
 
 
 class SpeakerDiarizationConfig(_messages.Message):
-  r"""*Optional* Config to enable speaker diarization.
+  r"""Config to enable speaker diarization.
 
   Fields:
-    enableSpeakerDiarization: *Optional* If 'true', enables speaker detection
-      for each recognized word in the top alternative of the recognition
-      result using a speaker_tag provided in the WordInfo.
-    maxSpeakerCount: *Optional* Maximum number of speakers in the
-      conversation. This range gives you more flexibility by allowing the
-      system to automatically determine the correct number of speakers. If not
-      set, the default value is 6.
-    minSpeakerCount: *Optional* Minimum number of speakers in the
-      conversation. This range gives you more flexibility by allowing the
-      system to automatically determine the correct number of speakers. If not
-      set, the default value is 2.
+    enableSpeakerDiarization: If 'true', enables speaker detection for each
+      recognized word in the top alternative of the recognition result using a
+      speaker_tag provided in the WordInfo.
+    maxSpeakerCount: Maximum number of speakers in the conversation. This
+      range gives you more flexibility by allowing the system to automatically
+      determine the correct number of speakers. If not set, the default value
+      is 6.
+    minSpeakerCount: Minimum number of speakers in the conversation. This
+      range gives you more flexibility by allowing the system to automatically
+      determine the correct number of speakers. If not set, the default value
+      is 2.
   """
 
   enableSpeakerDiarization = _messages.BooleanField(1)
@@ -548,9 +546,9 @@ class SpeechContext(_messages.Message):
   phrases in the results.
 
   Fields:
-    phrases: *Optional* A list of strings containing words and phrases "hints"
-      so that the speech recognition is more likely to recognize them. This
-      can be used to improve the accuracy for specific words and phrases, for
+    phrases: A list of strings containing words and phrases "hints" so that
+      the speech recognition is more likely to recognize them. This can be
+      used to improve the accuracy for specific words and phrases, for
       example, if specific commands are typically spoken by the user. This can
       also be used to add additional words to the vocabulary of the
       recognizer. See [usage limits](https://cloud.google.com/speech-to-
@@ -620,18 +618,17 @@ class SpeechRecognitionAlternative(_messages.Message):
   r"""Alternative hypotheses (a.k.a. n-best list).
 
   Fields:
-    confidence: Output only. The confidence estimate between 0.0 and 1.0. A
-      higher number indicates an estimated greater likelihood that the
-      recognized words are correct. This field is set only for the top
-      alternative of a non-streaming result or, of a streaming result where
-      `is_final=true`. This field is not guaranteed to be accurate and users
-      should not rely on it to be always provided. The default of 0.0 is a
-      sentinel value indicating `confidence` was not set.
-    transcript: Output only. Transcript text representing the words that the
-      user spoke.
-    words: Output only. A list of word-specific information for each
-      recognized word. Note: When `enable_speaker_diarization` is true, you
-      will see all the words from the beginning of the audio.
+    confidence: The confidence estimate between 0.0 and 1.0. A higher number
+      indicates an estimated greater likelihood that the recognized words are
+      correct. This field is set only for the top alternative of a non-
+      streaming result or, of a streaming result where `is_final=true`. This
+      field is not guaranteed to be accurate and users should not rely on it
+      to be always provided. The default of 0.0 is a sentinel value indicating
+      `confidence` was not set.
+    transcript: Transcript text representing the words that the user spoke.
+    words: A list of word-specific information for each recognized word. Note:
+      When `enable_speaker_diarization` is true, you will see all the words
+      from the beginning of the audio.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -643,10 +640,10 @@ class SpeechRecognitionResult(_messages.Message):
   r"""A speech recognition result corresponding to a portion of the audio.
 
   Fields:
-    alternatives: Output only. May contain one or more recognition hypotheses
-      (up to the maximum specified in `max_alternatives`). These alternatives
-      are ordered in terms of accuracy, with the top (first) alternative being
-      the most probable, as ranked by the recognizer.
+    alternatives: May contain one or more recognition hypotheses (up to the
+      maximum specified in `max_alternatives`). These alternatives are ordered
+      in terms of accuracy, with the top (first) alternative being the most
+      probable, as ranked by the recognizer.
     channelTag: For multi-channel audio, this is the channel number
       corresponding to the recognized result for the audio from that channel.
       For audio_channel_count = N, its output values can range from '1' to
@@ -775,21 +772,20 @@ class WordInfo(_messages.Message):
   r"""Word-specific information for recognized words.
 
   Fields:
-    endTime: Output only. Time offset relative to the beginning of the audio,
-      and corresponding to the end of the spoken word. This field is only set
-      if `enable_word_time_offsets=true` and only in the top hypothesis. This
-      is an experimental feature and the accuracy of the time offset can vary.
-    speakerTag: Output only. A distinct integer value is assigned for every
-      speaker within the audio. This field specifies which one of those
-      speakers was detected to have spoken this word. Value ranges from '1' to
+    endTime: Time offset relative to the beginning of the audio, and
+      corresponding to the end of the spoken word. This field is only set if
+      `enable_word_time_offsets=true` and only in the top hypothesis. This is
+      an experimental feature and the accuracy of the time offset can vary.
+    speakerTag: A distinct integer value is assigned for every speaker within
+      the audio. This field specifies which one of those speakers was detected
+      to have spoken this word. Value ranges from '1' to
       diarization_speaker_count. speaker_tag is set if
       enable_speaker_diarization = 'true' and only in the top alternative.
-    startTime: Output only. Time offset relative to the beginning of the
-      audio, and corresponding to the start of the spoken word. This field is
-      only set if `enable_word_time_offsets=true` and only in the top
-      hypothesis. This is an experimental feature and the accuracy of the time
-      offset can vary.
-    word: Output only. The word corresponding to this set of information.
+    startTime: Time offset relative to the beginning of the audio, and
+      corresponding to the start of the spoken word. This field is only set if
+      `enable_word_time_offsets=true` and only in the top hypothesis. This is
+      an experimental feature and the accuracy of the time offset can vary.
+    word: The word corresponding to this set of information.
   """
 
   endTime = _messages.StringField(1)

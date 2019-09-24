@@ -193,7 +193,7 @@
           "format": "int32"
         },
         "maxInstances": {
-          "description": "Optional. Maximum number of instances for this group. Required for primary workers. Note that by default, clusters will not use secondary workers. Required for secondary workers if the minimum secondary instances is set.Primary workers - Bounds: [min_instances, ). Required. Secondary workers - Bounds: [min_instances, ). Default: 0.",
+          "description": "Required. Maximum number of instances for this group. Required for primary workers. Note that by default, clusters will not use secondary workers. Required for secondary workers if the minimum secondary instances is set.Primary workers - Bounds: [min_instances, ). Secondary workers - Bounds: [min_instances, ). Default: 0.",
           "type": "integer",
           "format": "int32"
         },
@@ -575,7 +575,7 @@
           }
         },
         "optionalComponents": {
-          "description": "The set of optional components to activate on the cluster.",
+          "description": "Optional. The set of components to activate on the cluster.",
           "enumDescriptions": [
             "Unspecified component.",
             "The Anaconda python distribution.",
@@ -785,7 +785,7 @@
           ]
         },
         "detail": {
-          "description": "Output only. Optional details of cluster's state.",
+          "description": "Optional. Output only. Details of cluster's state.",
           "type": "string"
         },
         "stateStartTime": {
@@ -1391,7 +1391,7 @@
           ]
         },
         "details": {
-          "description": "Output only. Optional job state details, such as an error description if the state is <code>ERROR<\/code>.",
+          "description": "Optional. Output only. Job state details, such as an error description if the state is <code>ERROR<\/code>.",
           "type": "string"
         },
         "stateStartTime": {
@@ -1506,7 +1506,6 @@
       "type": "object",
       "properties": {
         "id": {
-          "description": "Required. The template id.The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). Cannot begin or end with underscore or hyphen. Must consist of between 3 and 50 characters.",
           "type": "string"
         },
         "name": {
@@ -1547,7 +1546,7 @@
           }
         },
         "parameters": {
-          "description": "Optional. Template parameters whose values are substituted into the template. Values for parameters must be provided when the template is instantiated.",
+          "description": "Optional. emplate parameters whose values are substituted into the template. Values for parameters must be provided when the template is instantiated.",
           "type": "array",
           "items": {
             "$ref": "TemplateParameter"
@@ -1561,7 +1560,7 @@
       "type": "object",
       "properties": {
         "managedCluster": {
-          "description": "Optional. A cluster that is managed by the workflow.",
+          "description": "A cluster that is managed by the workflow.",
           "$ref": "ManagedCluster"
         },
         "clusterSelector": {

@@ -795,6 +795,10 @@
         "dryRun": {
           "description": "Should this patch be a dry-run only.  Instances will be contacted, but\nthey will do nothing.",
           "type": "boolean"
+        },
+        "displayName": {
+          "description": "Display name for this patch job. This does not have to be unique.",
+          "type": "string"
         }
       }
     },
@@ -985,6 +989,10 @@
       "properties": {
         "name": {
           "description": "Output only. Unique identifier for this patch job in the form\n`projects\/*\/patchJobs\/*`",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Display name for this patch job. This is not a unique identifier.",
           "type": "string"
         },
         "description": {

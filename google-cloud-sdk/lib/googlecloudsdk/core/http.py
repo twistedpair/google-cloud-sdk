@@ -26,6 +26,7 @@ import uuid
 import enum
 
 from googlecloudsdk.core import config
+from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import http_proxy
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
@@ -110,11 +111,20 @@ def HttpClient(
   else:
     http_class = httplib2.Http
 
-  return http_class(
+  result = http_class(
       timeout=timeout,
       proxy_info=proxy_info,
       ca_certs=ca_certs,
       disable_ssl_certificate_validation=disable_ssl_certificate_validation)
+
+  if properties.VALUES.context_aware.use_client_certificate.Get():
+    ca_config = context_aware.Config()
+    log.debug('Using client certificate %s', ca_config.client_cert_path)
+    result.add_certificate(ca_config.client_cert_path,
+                           ca_config.client_cert_path, '',
+                           password=ca_config.client_cert_password)
+
+  return result
 
 
 def _CreateRawHttpClient(timeout='unset', ca_certs=None):

@@ -470,6 +470,9 @@ apis:
           path: projects/{project}/iap_web/{iapWebId}/services/{serviceId}
         projects.iap_web.services.versions:
           path: projects/{project}/iap_web/{iapWebId}/services/{serviceId}/versions/{versionId}
+  labelmanager:
+    v1alpha1:
+      discovery_doc: labelmanager_v1alpha1.json
   language:
     v1beta2:
       discovery_doc: language_v1beta2.json
@@ -535,6 +538,8 @@ apis:
     v1alpha1:
       discovery_doc: run_v1alpha1.json
       default: true
+    v1beta1:
+      discovery_doc: run_v1beta1.json
     v1:
       discovery_doc: run_v1.json
   runtimeconfig:

@@ -50,8 +50,8 @@ class Revision(k8s_object.KubernetesObject):
     nested env vars fields.
     """
     if self.container:
-      return k8s_object.ListAsDictionaryWrapper(
-          self.container.env, self._messages.EnvVar)
+      return EnvVarsAsDictionaryWrapper(self.container.env,
+                                        self._messages.EnvVar)
 
   @property
   def author(self):
@@ -215,6 +215,59 @@ class Revision(k8s_object.KubernetesObject):
                                              self._messages.VolumeMount)
 
 
+class EnvVarsAsDictionaryWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):
+  """Wraps a list of env vars in a dict-like object.
+
+  Additionally provides properties to access env vars of specific type in a
+  mutable dict-like object.
+  """
+
+  def __init__(self, env_vars_to_wrap, env_var_class):
+    """Wraps a list of env vars in a dict-like object.
+
+    Args:
+      env_vars_to_wrap: list[EnvVar], list of env vars to treat as a dict.
+      env_var_class: type of the underlying EnvVar objects.
+    """
+    super(EnvVarsAsDictionaryWrapper, self).__init__(env_vars_to_wrap)
+    self._env_vars = env_vars_to_wrap
+    self._env_var_class = env_var_class
+
+  @property
+  def literals(self):
+    """Mutable dict-like object for env vars with a string literal."""
+    return k8s_object.ListAsDictionaryWrapper(
+        self._env_vars,
+        self._env_var_class,
+        filter_func=lambda env_var: env_var.value is not None)
+
+  @property
+  def secrets(self):
+    """Mutable dict-like object for volumes with a secret source type."""
+    def _FilterSecretEnvVars(env_var):
+      return (env_var.valueFrom is not None and
+              env_var.valueFrom.secretKeyRef is not None)
+
+    return k8s_object.ListAsDictionaryWrapper(
+        self._env_vars,
+        self._env_var_class,
+        value_field='valueFrom',
+        filter_func=_FilterSecretEnvVars)
+
+  @property
+  def config_maps(self):
+    """Mutable dict-like object for volumes with a config map source type."""
+    def _FilterConfigMapEnvVars(env_var):
+      return (env_var.valueFrom is not None and
+              env_var.valueFrom.configMapKeyRef is not None)
+
+    return k8s_object.ListAsDictionaryWrapper(
+        self._env_vars,
+        self._env_var_class,
+        value_field='valueFrom',
+        filter_func=_FilterConfigMapEnvVars)
+
+
 class VolumesAsDictionaryWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):
   """Wraps a list of volumes in a dict-like object.
 
@@ -223,9 +276,9 @@ class VolumesAsDictionaryWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):
   """
 
   def __init__(self, volumes_to_wrap, volume_class):
-    """Wrap a list of volumes in a dict-like object.
+    """Wraps a list of volumes in a dict-like object.
 
-    Arguments:
+    Args:
       volumes_to_wrap: list[Volume], list of volumes to treat as a dict.
       volume_class: type of the underlying Volume objects.
     """
@@ -236,26 +289,20 @@ class VolumesAsDictionaryWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):
   @property
   def secrets(self):
     """Mutable dict-like object for volumes with a secret source type."""
-    def _FilterSecretVolumes(volume):
-      return volume.secret is not None
-
     return k8s_object.ListAsDictionaryWrapper(
         self._volumes,
         self._volume_class,
         value_field='secret',
-        filter_func=_FilterSecretVolumes)
+        filter_func=lambda volume: volume.secret is not None)
 
   @property
   def config_maps(self):
     """Mutable dict-like object for volumes with a config map source type."""
-    def _FilterConfigMapVolumes(volume):
-      return volume.configMap is not None
-
     return k8s_object.ListAsDictionaryWrapper(
         self._volumes,
         self._volume_class,
         value_field='configMap',
-        filter_func=_FilterConfigMapVolumes)
+        filter_func=lambda volume: volume.configMap is not None)
 
 
 class VolumeMountsAsDictionaryWrapper(k8s_object.ListAsDictionaryWrapper):
@@ -266,11 +313,11 @@ class VolumeMountsAsDictionaryWrapper(k8s_object.ListAsDictionaryWrapper):
   """
 
   def __init__(self, volumes, mounts_to_wrap, mount_class):
-    """Wrap a list of volume mounts in a mutable dict-like object.
+    """Wraps a list of volume mounts in a mutable dict-like object.
 
     Forces readOnly=True on creation of new volume mounts.
 
-    Arguments:
+    Args:
       volumes: associated VolumesAsDictionaryWrapper obj
       mounts_to_wrap: list[VolumeMount], list of mounts to treat as a dict.
       mount_class: type of the underlying VolumeMount objects.
@@ -285,25 +332,19 @@ class VolumeMountsAsDictionaryWrapper(k8s_object.ListAsDictionaryWrapper):
   @property
   def secrets(self):
     """Mutable dict-like object for mounts whose volumes have a secret source type."""
-    def _FilterSecretMounts(mount):
-      return mount.name in self._volumes.secrets
-
     return k8s_object.ListAsDictionaryWrapper(
         self._m,
         self._item_class,
         key_field=self._key_field,
         value_field=self._value_field,
-        filter_func=_FilterSecretMounts)
+        filter_func=lambda mount: mount.name in self._volumes.secrets)
 
   @property
   def config_maps(self):
     """Mutable dict-like object for mounts whose volumes have a config map source type."""
-    def _FilterConfigMapMounts(mount):
-      return mount.name in self._volumes.config_maps
-
     return k8s_object.ListAsDictionaryWrapper(
         self._m,
         self._item_class,
         key_field=self._key_field,
         value_field=self._value_field,
-        filter_func=_FilterConfigMapMounts)
+        filter_func=lambda mount: mount.name in self._volumes.config_maps)

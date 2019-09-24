@@ -2838,18 +2838,6 @@ class GoogleCloudDialogflowV2beta1AnnotatedConversationDataset(_messages.Message
   questionTypeName = _messages.StringField(7)
 
 
-class GoogleCloudDialogflowV2beta1ArticleSuggestionModelMetadata(_messages.Message):
-  r"""Metadata for article suggestion models.
-
-  Fields:
-    modelType: Optional. Type of the article suggestion model. The available
-      values are: *   `article-suggestion-gbt-1` - (default) Article
-      Suggestion Gbt model.
-  """
-
-  modelType = _messages.StringField(1)
-
-
 class GoogleCloudDialogflowV2beta1BatchUpdateEntityTypesResponse(_messages.Message):
   r"""The response message for EntityTypes.BatchUpdateEntityTypes.
 
@@ -2926,59 +2914,6 @@ class GoogleCloudDialogflowV2beta1Context(_messages.Message):
   lifespanCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   name = _messages.StringField(2)
   parameters = _messages.MessageField('ParametersValue', 3)
-
-
-class GoogleCloudDialogflowV2beta1ConversationModel(_messages.Message):
-  r"""Represents a conversation model.
-
-  Enums:
-    StateValueValuesEnum: Output only. State of the model. A model can only
-      serve prediction requests after it gets deployed.
-
-  Fields:
-    articleSuggestionModelMetadata: Metadata for article suggestion models.
-    createTime: Output only. Creation time of this model.
-    datasets: Required. Datasets used to create model.
-    displayName: Required. The display name of the model. At most 64 bytes
-      long.
-    name: Output only. ConversationModel resource name. Format:
-      `projects/<Project ID>/conversationModels/<Conversation Model ID>`
-    smartReplyModelMetadata: Metadata for smart reply models.
-    state: Output only. State of the model. A model can only serve prediction
-      requests after it gets deployed.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. State of the model. A model can only serve prediction
-    requests after it gets deployed.
-
-    Values:
-      STATE_UNSPECIFIED: Should not be used, an un-set enum has this value by
-        default.
-      CREATING: Model is creating.
-      UNDEPLOYED: Model is not deployed but ready to deploy.
-      DEPLOYING: Model is deploying.
-      DEPLOYED: Model is deployed and ready to use.
-      UNDEPLOYING: Model is undeploying.
-      DELETING: Model is deleting.
-      FAILED: Model is in error state. Not ready to deploy and use.
-    """
-    STATE_UNSPECIFIED = 0
-    CREATING = 1
-    UNDEPLOYED = 2
-    DEPLOYING = 3
-    DEPLOYED = 4
-    UNDEPLOYING = 5
-    DELETING = 6
-    FAILED = 7
-
-  articleSuggestionModelMetadata = _messages.MessageField('GoogleCloudDialogflowV2beta1ArticleSuggestionModelMetadata', 1)
-  createTime = _messages.StringField(2)
-  datasets = _messages.MessageField('GoogleCloudDialogflowV2beta1InputDataset', 3, repeated=True)
-  displayName = _messages.StringField(4)
-  name = _messages.StringField(5)
-  smartReplyModelMetadata = _messages.MessageField('GoogleCloudDialogflowV2beta1SmartReplyModelMetadata', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
 
 
 class GoogleCloudDialogflowV2beta1EntityType(_messages.Message):
@@ -3131,19 +3066,6 @@ class GoogleCloudDialogflowV2beta1ExportAgentResponse(_messages.Message):
 
   agentContent = _messages.BytesField(1)
   agentUri = _messages.StringField(2)
-
-
-class GoogleCloudDialogflowV2beta1InputDataset(_messages.Message):
-  r"""InputDataset used to create model or do evaluation.
-
-  Fields:
-    dataset: Required. ConversationDataset resource name. Format:
-      `projects/<Project ID>/conversationDatasets/<Conversation Dataset ID>`
-      or `projects/<Project ID>/conversationDatasets/<Conversation Dataset
-      ID>/annotatedConversationDatasets/<Annotated Conversation Dataset ID>`
-  """
-
-  dataset = _messages.StringField(1)
 
 
 class GoogleCloudDialogflowV2beta1Intent(_messages.Message):
@@ -3318,12 +3240,14 @@ class GoogleCloudDialogflowV2beta1IntentMessage(_messages.Message):
 
   Fields:
     basicCard: Displays a basic card for Actions on Google.
+    browseCarouselCard: Browse carousel card for Actions on Google.
     card: Displays a card.
     carouselSelect: Displays a carousel card for Actions on Google.
     image: Displays an image.
     linkOutSuggestion: Displays a link out suggestion chip for Actions on
       Google.
     listSelect: Displays a list card for Actions on Google.
+    mediaContent: The media content card for Actions on Google.
     payload: Returns a response containing a custom, platform-specific
       payload. See the Intent.Message.Platform type for a description of the
       structure that may be required for your platform.
@@ -3339,6 +3263,7 @@ class GoogleCloudDialogflowV2beta1IntentMessage(_messages.Message):
     simpleResponses: Returns a voice or text-only response for Actions on
       Google.
     suggestions: Displays suggestion chips for Actions on Google.
+    tableCard: Table card for Actions on Google.
     telephonyPlayAudio: Plays audio from a file in Telephony Gateway.
     telephonySynthesizeSpeech: Synthesizes speech in Telephony Gateway.
     telephonyTransferCall: Transfers the call in Telephony Gateway.
@@ -3423,23 +3348,26 @@ class GoogleCloudDialogflowV2beta1IntentMessage(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   basicCard = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageBasicCard', 1)
-  card = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageCard', 2)
-  carouselSelect = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageCarouselSelect', 3)
-  image = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageImage', 4)
-  linkOutSuggestion = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageLinkOutSuggestion', 5)
-  listSelect = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageListSelect', 6)
-  payload = _messages.MessageField('PayloadValue', 7)
-  platform = _messages.EnumField('PlatformValueValuesEnum', 8)
-  quickReplies = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageQuickReplies', 9)
-  rbmCarouselRichCard = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageRbmCarouselCard', 10)
-  rbmStandaloneRichCard = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageRbmStandaloneCard', 11)
-  rbmText = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageRbmText', 12)
-  simpleResponses = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageSimpleResponses', 13)
-  suggestions = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageSuggestions', 14)
-  telephonyPlayAudio = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageTelephonyPlayAudio', 15)
-  telephonySynthesizeSpeech = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageTelephonySynthesizeSpeech', 16)
-  telephonyTransferCall = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageTelephonyTransferCall', 17)
-  text = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageText', 18)
+  browseCarouselCard = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageBrowseCarouselCard', 2)
+  card = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageCard', 3)
+  carouselSelect = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageCarouselSelect', 4)
+  image = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageImage', 5)
+  linkOutSuggestion = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageLinkOutSuggestion', 6)
+  listSelect = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageListSelect', 7)
+  mediaContent = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageMediaContent', 8)
+  payload = _messages.MessageField('PayloadValue', 9)
+  platform = _messages.EnumField('PlatformValueValuesEnum', 10)
+  quickReplies = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageQuickReplies', 11)
+  rbmCarouselRichCard = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageRbmCarouselCard', 12)
+  rbmStandaloneRichCard = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageRbmStandaloneCard', 13)
+  rbmText = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageRbmText', 14)
+  simpleResponses = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageSimpleResponses', 15)
+  suggestions = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageSuggestions', 16)
+  tableCard = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageTableCard', 17)
+  telephonyPlayAudio = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageTelephonyPlayAudio', 18)
+  telephonySynthesizeSpeech = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageTelephonySynthesizeSpeech', 19)
+  telephonyTransferCall = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageTelephonyTransferCall', 20)
+  text = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageText', 21)
 
 
 class GoogleCloudDialogflowV2beta1IntentMessageBasicCard(_messages.Message):
@@ -3481,6 +3409,102 @@ class GoogleCloudDialogflowV2beta1IntentMessageBasicCardButtonOpenUriAction(_mes
   """
 
   uri = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageBrowseCarouselCard(_messages.Message):
+  r"""Browse Carousel Card for Actions on Google.
+  https://developers.google.com/actions/assistant/responses#browsing_carousel
+
+  Enums:
+    ImageDisplayOptionsValueValuesEnum: Optional. Settings for displaying the
+      image. Applies to every image in items.
+
+  Fields:
+    imageDisplayOptions: Optional. Settings for displaying the image. Applies
+      to every image in items.
+    items: Required. List of items in the Browse Carousel Card. Minimum of two
+      items, maximum of ten.
+  """
+
+  class ImageDisplayOptionsValueValuesEnum(_messages.Enum):
+    r"""Optional. Settings for displaying the image. Applies to every image in
+    items.
+
+    Values:
+      IMAGE_DISPLAY_OPTIONS_UNSPECIFIED: Fill the gaps between the image and
+        the image container with gray bars.
+      GRAY: Fill the gaps between the image and the image container with gray
+        bars.
+      WHITE: Fill the gaps between the image and the image container with
+        white bars.
+      CROPPED: Image is scaled such that the image width and height match or
+        exceed the container dimensions. This may crop the top and bottom of
+        the image if the scaled image height is greater than the container
+        height, or crop the left and right of the image if the scaled image
+        width is greater than the container width. This is similar to "Zoom
+        Mode" on a widescreen TV when playing a 4:3 video.
+      BLURRED_BACKGROUND: Pad the gaps between image and image frame with a
+        blurred copy of the same image.
+    """
+    IMAGE_DISPLAY_OPTIONS_UNSPECIFIED = 0
+    GRAY = 1
+    WHITE = 2
+    CROPPED = 3
+    BLURRED_BACKGROUND = 4
+
+  imageDisplayOptions = _messages.EnumField('ImageDisplayOptionsValueValuesEnum', 1)
+  items = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageBrowseCarouselCardBrowseCarouselCardItem', 2, repeated=True)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageBrowseCarouselCardBrowseCarouselCardItem(_messages.Message):
+  r"""Browsing carousel tile
+
+  Fields:
+    description: Optional. Description of the carousel item. Maximum of four
+      lines of text.
+    footer: Optional. Text that appears at the bottom of the Browse Carousel
+      Card. Maximum of one line of text.
+    image: Optional. Hero image for the carousel item.
+    openUriAction: Required. Action to present to the user.
+    title: Required. Title of the carousel item. Maximum of two lines of text.
+  """
+
+  description = _messages.StringField(1)
+  footer = _messages.StringField(2)
+  image = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageImage', 3)
+  openUriAction = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageBrowseCarouselCardBrowseCarouselCardItemOpenUrlAction', 4)
+  title = _messages.StringField(5)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageBrowseCarouselCardBrowseCarouselCardItemOpenUrlAction(_messages.Message):
+  r"""Actions on Google action to open a given url.
+
+  Enums:
+    UrlTypeHintValueValuesEnum: Optional. Specifies the type of viewer that is
+      used when opening the URL. Defaults to opening via web browser.
+
+  Fields:
+    url: Required. URL
+    urlTypeHint: Optional. Specifies the type of viewer that is used when
+      opening the URL. Defaults to opening via web browser.
+  """
+
+  class UrlTypeHintValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the type of viewer that is used when opening the
+    URL. Defaults to opening via web browser.
+
+    Values:
+      URL_TYPE_HINT_UNSPECIFIED: Unspecified
+      AMP_ACTION: Url would be an amp action
+      AMP_CONTENT: URL that points directly to AMP content, or to a canonical
+        URL which refers to AMP content via <link rel="amphtml">.
+    """
+    URL_TYPE_HINT_UNSPECIFIED = 0
+    AMP_ACTION = 1
+    AMP_CONTENT = 2
+
+  url = _messages.StringField(1)
+  urlTypeHint = _messages.EnumField('UrlTypeHintValueValuesEnum', 2)
 
 
 class GoogleCloudDialogflowV2beta1IntentMessageCard(_messages.Message):
@@ -3538,6 +3562,38 @@ class GoogleCloudDialogflowV2beta1IntentMessageCarouselSelectItem(_messages.Mess
   title = _messages.StringField(4)
 
 
+class GoogleCloudDialogflowV2beta1IntentMessageColumnProperties(_messages.Message):
+  r"""Column properties for TableCard.
+
+  Enums:
+    HorizontalAlignmentValueValuesEnum: Optional. Defines text alignment for
+      all cells in this column.
+
+  Fields:
+    header: Required. Column heading.
+    horizontalAlignment: Optional. Defines text alignment for all cells in
+      this column.
+  """
+
+  class HorizontalAlignmentValueValuesEnum(_messages.Enum):
+    r"""Optional. Defines text alignment for all cells in this column.
+
+    Values:
+      HORIZONTAL_ALIGNMENT_UNSPECIFIED: Text is aligned to the leading edge of
+        the column.
+      LEADING: Text is aligned to the leading edge of the column.
+      CENTER: Text is centered in the column.
+      TRAILING: Text is aligned to the trailing edge of the column.
+    """
+    HORIZONTAL_ALIGNMENT_UNSPECIFIED = 0
+    LEADING = 1
+    CENTER = 2
+    TRAILING = 3
+
+  header = _messages.StringField(1)
+  horizontalAlignment = _messages.EnumField('HorizontalAlignmentValueValuesEnum', 2)
+
+
 class GoogleCloudDialogflowV2beta1IntentMessageImage(_messages.Message):
   r"""The image response message.
 
@@ -3593,6 +3649,50 @@ class GoogleCloudDialogflowV2beta1IntentMessageListSelectItem(_messages.Message)
   image = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageImage', 2)
   info = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageSelectItemInfo', 3)
   title = _messages.StringField(4)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageMediaContent(_messages.Message):
+  r"""The media content card for Actions on Google.
+
+  Enums:
+    MediaTypeValueValuesEnum: Optional. What type of media is the content (ie
+      "audio").
+
+  Fields:
+    mediaObjects: Required. List of media objects.
+    mediaType: Optional. What type of media is the content (ie "audio").
+  """
+
+  class MediaTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. What type of media is the content (ie "audio").
+
+    Values:
+      RESPONSE_MEDIA_TYPE_UNSPECIFIED: Unspecified.
+      AUDIO: Response media type is audio.
+    """
+    RESPONSE_MEDIA_TYPE_UNSPECIFIED = 0
+    AUDIO = 1
+
+  mediaObjects = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageMediaContentResponseMediaObject', 1, repeated=True)
+  mediaType = _messages.EnumField('MediaTypeValueValuesEnum', 2)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageMediaContentResponseMediaObject(_messages.Message):
+  r"""Response media object for media content card.
+
+  Fields:
+    contentUrl: Required. Url where the media is stored.
+    description: Optional. Description of media card.
+    icon: Optional. Icon to display above media content.
+    largeImage: Optional. Image to display above media content.
+    name: Required. Name of media card.
+  """
+
+  contentUrl = _messages.StringField(1)
+  description = _messages.StringField(2)
+  icon = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageImage', 3)
+  largeImage = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageImage', 4)
+  name = _messages.StringField(5)
 
 
 class GoogleCloudDialogflowV2beta1IntentMessageQuickReplies(_messages.Message):
@@ -3922,6 +4022,49 @@ class GoogleCloudDialogflowV2beta1IntentMessageSuggestions(_messages.Message):
   """
 
   suggestions = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageSuggestion', 1, repeated=True)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageTableCard(_messages.Message):
+  r"""Table card for Actions on Google.
+
+  Fields:
+    buttons: Optional. List of buttons for the card.
+    columnProperties: Optional. Display properties for the columns in this
+      table.
+    image: Optional. Image which should be displayed on the card.
+    rows: Optional. Rows in this table of data.
+    subtitle: Optional. Subtitle to the title.
+    title: Required. Title of the card.
+  """
+
+  buttons = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageBasicCardButton', 1, repeated=True)
+  columnProperties = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageColumnProperties', 2, repeated=True)
+  image = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageImage', 3)
+  rows = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageTableCardRow', 4, repeated=True)
+  subtitle = _messages.StringField(5)
+  title = _messages.StringField(6)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageTableCardCell(_messages.Message):
+  r"""Cell of TableCardRow.
+
+  Fields:
+    text: Required. Text in this cell.
+  """
+
+  text = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowV2beta1IntentMessageTableCardRow(_messages.Message):
+  r"""Row of TableCard.
+
+  Fields:
+    cells: Optional. List of cells that make up this row.
+    dividerAfter: Optional. Whether to add a visual divider after this row.
+  """
+
+  cells = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessageTableCardCell', 1, repeated=True)
+  dividerAfter = _messages.BooleanField(2)
 
 
 class GoogleCloudDialogflowV2beta1IntentMessageTelephonyPlayAudio(_messages.Message):
@@ -4461,18 +4604,6 @@ class GoogleCloudDialogflowV2beta1SentimentAnalysisResult(_messages.Message):
   queryTextSentiment = _messages.MessageField('GoogleCloudDialogflowV2beta1Sentiment', 1)
 
 
-class GoogleCloudDialogflowV2beta1SmartReplyModelMetadata(_messages.Message):
-  r"""Metadata for smart reply models.
-
-  Fields:
-    modelType: Optional. Type of the article suggestion model. The available
-      values are: *  `smart-reply-dual-encoder-model-1` - (default) Smart
-      Reply Dual Encoder model.
-  """
-
-  modelType = _messages.StringField(1)
-
-
 class GoogleCloudDialogflowV2beta1WebhookRequest(_messages.Message):
   r"""The request message for a webhook call.
 
@@ -4587,30 +4718,6 @@ class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
   outputContexts = _messages.MessageField('GoogleCloudDialogflowV2beta1Context', 5, repeated=True)
   payload = _messages.MessageField('PayloadValue', 6)
   source = _messages.StringField(7)
-
-
-class GoogleCloudDialogflowV3alpha1ExportAgentResponse(_messages.Message):
-  r"""The response message for Agents.ExportAgent.
-
-  Fields:
-    agentContent: The exported agent.  Example for how to export an agent to a
-      zip file via a command line: <pre>curl \
-      'https://dialogflow.googleapis.com/v3alpha1/projects/&lt;project-
-      id&gt;/locations/&lt;location-id&gt;/agents/&lt;agent-id&gt;:export'\
-      -X POST \   -H 'Authorization: Bearer' \   $(gcloud auth application-
-      default print-access-token) \   -H 'Accept: application/json'</pre>
-      <pre>curl \   'https://dialogflow.googleapis.com/v3alpha1/projects/&lt
-      ;project-id&gt;/locations/&lt;location-id&gt;/operations/&lt;operation-
-      id&gt;'\   -H 'Authorization: Bearer' \   $(gcloud auth application-
-      default print-access-token) \   -H 'Accept: application/json' \
-      --compressed \   | grep agentContent | sed -e 's/.*"agentContent":
-      "\([^"]*\)".*/\1/' \ | base64 --decode > &lt;agent zip file&gt;</pre>
-    agentUri: The URI to a file containing the exported agent. This field is
-      populated only if `agent_uri` is specified in ExportAgentRequest.
-  """
-
-  agentContent = _messages.BytesField(1)
-  agentUri = _messages.StringField(2)
 
 
 class GoogleLongrunningListOperationsResponse(_messages.Message):

@@ -56,6 +56,8 @@ SSH_KEY_PROPAGATION_TIMEOUT_MS = 60 * 1000
 _TROUBLESHOOTING_URL = (
     'https://cloud.google.com/compute/docs/troubleshooting#ssherrors')
 
+GUEST_ATTRIBUTES_METADATA_KEY = 'enable-guest-attributes'
+
 
 class UnallocatedIPAddressError(core_exceptions.Error):
   """An exception to be raised when a network interface's IP address is yet
@@ -253,6 +255,25 @@ def _GetSSHKeysFromMetadata(metadata):
       ssh_legacy_keys = _GetSSHKeyListFromMetadataEntry(item.value)
 
   return ssh_keys, ssh_legacy_keys
+
+
+def _MetadataHasGuestAttributesEnabled(metadata):
+  """Returns true if the metadata has 'enable-guest-attributes' set to 'true'.
+
+  Args:
+    metadata: Instance or Project metadata
+
+  Returns:
+    True if Enabled, False if Disabled, None if key is not present.
+  """
+  if not (metadata and metadata.items):
+    return None
+  matching_values = [item.value for item in metadata.items
+                     if item.key == GUEST_ATTRIBUTES_METADATA_KEY]
+
+  if not matching_values:
+    return None
+  return matching_values[0].lower() == 'true'
 
 
 def _SSHKeyExpiration(ssh_key):
@@ -488,17 +509,35 @@ class BaseSSHHelper(object):
               project=project or
               properties.VALUES.core.project.Get(required=True),))])[0]
 
-  def GetHostKeysFromGuestAttributes(self, client, instance_ref):
+  def GetHostKeysFromGuestAttributes(self, client, instance_ref,
+                                     instance=None, project=None):
     """Get host keys from guest attributes.
 
     Args:
       client: The compute client.
       instance_ref: The instance object.
+      instance: The object representing the instance we are connecting to. If
+        either project or instance is None, metadata won't be checked to
+        determine if Guest Attributes are enabled.
+      project: The object representing the current project. If either project
+        or instance is None, metadata won't be checked to determine if
+        Guest Attributes are enabled.
 
     Returns:
       A dictionary of host keys, with the type as the key and the host key
-      as the value.
+      as the value, or None if Guest Attributes is not enabled.
     """
+    if instance and project:
+      # Instance metadata has priority.
+      guest_attributes_enabled = _MetadataHasGuestAttributesEnabled(
+          instance.metadata)
+      if guest_attributes_enabled is None:
+        project_metadata = project.commonInstanceMetadata
+        guest_attributes_enabled = _MetadataHasGuestAttributesEnabled(
+            project_metadata)
+      if not guest_attributes_enabled:
+        return None
+
     requests = [(client.apitools_client.instances,
                  'GetGuestAttributes',
                  client.messages.ComputeInstancesGetGuestAttributesRequest(

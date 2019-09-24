@@ -480,8 +480,9 @@ class GroupAssetsRequest(_messages.Message):
       should be milliseconds since epoch or an RFC3339 string.   Examples:
       "create_time = \"2019-06-10T16:07:18-07:00\""     "create_time =
       1560208038000"  * iam_policy.policy_blob: `=`, `:` *
-      resource_properties: `=`, `:`, `>`, `<`, `>=`, `<=` * security_marks:
-      `=`, `:` * security_center_properties.resource_name: `=`, `:` *
+      resource_properties: `=`, `:`, `>`, `<`, `>=`, `<=` *
+      security_marks.marks: `=`, `:` *
+      security_center_properties.resource_name: `=`, `:` *
       security_center_properties.resource_type: `=`, `:` *
       security_center_properties.resource_parent: `=`, `:` *
       security_center_properties.resource_project: `=`, `:` *
@@ -576,7 +577,7 @@ class GroupFindingsRequest(_messages.Message):
       external_uri: `=`, `:` * event_time: `=`, `>`, `<`, `>=`, `<=`    Usage:
       This should be milliseconds since epoch or an RFC3339 string.
       Examples:     "event_time = \"2019-06-10T16:07:18-07:00\""
-      "event_time = 1560208038000"  * security_marks: `=`, `:` *
+      "event_time = 1560208038000"  * security_marks.marks: `=`, `:` *
       source_properties: `=`, `:`, `>`, `<`, `>=`, `<=`  For example,
       `source_properties.size = 100` is a valid filter string.
     groupBy: Expression that defines what assets fields to use for grouping

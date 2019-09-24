@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20190910",
+ "revision": "20190913",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -2390,7 +2390,7 @@
     },
     "loadBalancingScheme": {
      "type": "string",
-     "description": "Indicates whether the backend service will be used with internal or external load balancing. A backend service created for one type of load balancing cannot be used with the other. Possible values are INTERNAL and EXTERNAL.",
+     "description": "Specifies the load balancer type. Choose EXTERNAL for load balancers that receive traffic from external clients. Choose INTERNAL for Internal TCP/UDP Load Balancing. Choose INTERNAL_MANAGED for Internal HTTP(S) Load Balancing. Choose INTERNAL_SELF_MANAGED for Traffic Director. A backend service created for one type of load balancing cannot be used with another. For more information, refer to Choosing a load balancer.",
      "enum": [
       "EXTERNAL",
       "INTERNAL",
@@ -4085,7 +4085,8 @@
      "description": "The name of the encryption key that is stored in Google Cloud KMS."
     },
     "kmsKeyServiceAccount": {
-     "type": "string"
+     "type": "string",
+     "description": "The service account being used for the encryption request for the given KMS key. If absent, default GCE compute robot account will be used"
     },
     "rawKey": {
      "type": "string",
@@ -5929,7 +5930,7 @@
     },
     "IPProtocol": {
      "type": "string",
-     "description": "The IP protocol to which this rule applies. Valid options are TCP, UDP, ESP, AH, SCTP or ICMP.\n\nWhen the load balancing scheme is INTERNAL, only TCP and UDP are valid. When the load balancing scheme is INTERNAL_SELF_MANAGED, only TCPis valid.",
+     "description": "The IP protocol to which this rule applies. Valid options are TCP, UDP, ESP, AH, SCTP or ICMP.\n\nFor Internal TCP/UDP Load Balancing, the load balancing scheme is INTERNAL, and one of TCP or UDP are valid. For Traffic Director, the load balancing scheme is INTERNAL_SELF_MANAGED, and only TCPis valid. For Internal HTTP(S) Load Balancing, the load balancing scheme is INTERNAL_MANAGED, and only TCP is valid. For HTTP(S), SSL Proxy, and TCP Proxy Load Balancing, the load balancing scheme is EXTERNAL and only TCP is valid. For Network TCP/UDP Load Balancing, the load balancing scheme is EXTERNAL, and one of TCP or UDP is valid.",
      "enum": [
       "AH",
       "ESP",
@@ -6014,7 +6015,7 @@
     },
     "loadBalancingScheme": {
      "type": "string",
-     "description": "This signifies what the ForwardingRule will be used for and can only take the following values: INTERNAL, INTERNAL_SELF_MANAGED, EXTERNAL. The value of INTERNAL means that this will be used for Internal Network Load Balancing (TCP, UDP). The value of INTERNAL_SELF_MANAGED means that this will be used for Internal Global HTTP(S) LB. The value of EXTERNAL means that this will be used for External Load Balancing (HTTP(S) LB, External TCP/UDP LB, SSL Proxy)",
+     "description": "Specifies the forwarding rule type. EXTERNAL is used for: - Classic Cloud VPN gateways - Protocol forwarding to VMs from an external IP address - The following load balancers: HTTP(S), SSL Proxy, TCP Proxy, and Network TCP/UDP.\n\nINTERNAL is used for: - Protocol forwarding to VMs from an internal IP address - Internal TCP/UDP load balancers\n\nINTERNAL_MANAGED is used for: - Internal HTTP(S) load balancers\n\nINTERNAL_SELF_MANAGED is used for: - Traffic Director\n\nFor more information about forwarding rules, refer to Forwarding rule concepts.",
      "enum": [
       "EXTERNAL",
       "INTERNAL",
@@ -26953,7 +26954,7 @@
     },
     "quicOverride": {
      "type": "string",
-     "description": "Specifies the QUIC override policy for this TargetHttpsProxy resource. This determines whether the load balancer will attempt to negotiate QUIC with clients or not. Can specify one of NONE, ENABLE, or DISABLE. Specify ENABLE to always enable QUIC, Enables QUIC when set to ENABLE, and disables QUIC when set to DISABLE. If NONE is specified, uses the QUIC policy with no user overrides, which is equivalent to DISABLE. Not specifying this field is equivalent to specifying NONE.",
+     "description": "Specifies the QUIC override policy for this TargetHttpsProxy resource. This setting determines whether the load balancer attempts to negotiate QUIC with clients. You can specify NONE, ENABLE, or DISABLE.  \n- When quic-override is set to NONE, Google manages whether QUIC is used. \n- When quic-override is set to ENABLE, the load balancer uses QUIC when possible. \n- When quic-override is set to DISABLE, the load balancer doesn't use QUIC. \n- If the quic-override flag is not specified, NONE is implied.\n-",
      "enum": [
       "DISABLE",
       "ENABLE",
@@ -26986,7 +26987,7 @@
     },
     "sslPolicy": {
      "type": "string",
-     "description": "URL of SslPolicy resource that will be associated with the TargetHttpsProxy resource. If not set, the TargetHttpsProxy resource will not have any SSL policy configured."
+     "description": "URL of SslPolicy resource that will be associated with the TargetHttpsProxy resource. If not set, the TargetHttpsProxy resource has no SSL policy configured."
     },
     "urlMap": {
      "type": "string",
@@ -34295,7 +34296,7 @@
      "id": "compute.firewalls.update",
      "path": "{project}/global/firewalls/{firewall}",
      "httpMethod": "PUT",
-     "description": "Updates the specified firewall rule with the data included in the request. The PUT method can only update the following fields of firewall rule: allowed, description, sourceRanges, sourceTags, targetTags.",
+     "description": "Updates the specified firewall rule with the data included in the request. Note that all fields will be updated if using PUT, even fields that are not specified. To update individual fields, please use PATCH instead.",
      "parameters": {
       "firewall": {
        "type": "string",

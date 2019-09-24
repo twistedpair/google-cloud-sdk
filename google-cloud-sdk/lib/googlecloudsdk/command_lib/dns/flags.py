@@ -232,7 +232,7 @@ def GetForwardingTargetsArg():
       type=arg_parsers.ArgList(),
       metavar='IP_ADDRESSES',
       help=('List of IPv4 addresses of target name servers that the zone '
-            'will forward queries to. Ignored for `public` visibility.'
+            'will forward queries to. Ignored for `public` visibility. '
             'Non-RFC1918 addresses will forward to the target through the '
             'Internet. RFC1918 addresses will forward through the VPC.'))
 

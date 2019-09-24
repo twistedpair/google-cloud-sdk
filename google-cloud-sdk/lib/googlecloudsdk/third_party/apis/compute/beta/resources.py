@@ -258,6 +258,13 @@ class Collections(enum.Enum):
       [u'project', u'zone', u'nodeType'],
       True
   )
+  PACKETMIRRORINGS = (
+      'packetMirrorings',
+      'projects/{project}/regions/{region}/packetMirrorings/{packetMirroring}',
+      {},
+      [u'project', u'region', u'packetMirroring'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{project}',
