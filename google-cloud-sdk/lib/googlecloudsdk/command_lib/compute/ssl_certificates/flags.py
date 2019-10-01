@@ -71,45 +71,46 @@ class RegionSslCertificatesCompleter(compute_completers.ListCommandCompleter):
         **kwargs)
 
 
-class SslCertificatesCompleterAlpha(completers.MultiResourceCompleter):
+class SslCertificatesCompleterBeta(completers.MultiResourceCompleter):
 
   def __init__(self, **kwargs):
-    super(SslCertificatesCompleterAlpha, self).__init__(
+    super(SslCertificatesCompleterBeta, self).__init__(
         completers=[
             GlobalSslCertificatesCompleter, RegionSslCertificatesCompleter
         ],
         **kwargs)
 
 
-def SslCertificateArgument(required=True, plural=False, include_alpha=False):
+def SslCertificateArgument(required=True,
+                           plural=False,
+                           include_l7_internal_load_balancing=False):
   return compute_flags.ResourceArgument(
       resource_name='SSL certificate',
-      completer=SslCertificatesCompleterAlpha
-      if include_alpha else SslCertificatesCompleter,
+      completer=SslCertificatesCompleterBeta
+      if include_l7_internal_load_balancing else SslCertificatesCompleter,
       plural=plural,
       required=required,
       global_collection='compute.sslCertificates',
       regional_collection='compute.regionSslCertificates'
-      if include_alpha else None,
+      if include_l7_internal_load_balancing else None,
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
-      if include_alpha else None)
+      if include_l7_internal_load_balancing else None)
 
 
-def SslCertificatesArgumentForOtherResource(resource,
-                                            required=True,
-                                            include_alpha=False):
+def SslCertificatesArgumentForOtherResource(
+    resource, required=True, include_l7_internal_load_balancing=False):
   return compute_flags.ResourceArgument(
       name='--ssl-certificates',
       resource_name='ssl certificate',
-      completer=SslCertificatesCompleterAlpha
-      if include_alpha else SslCertificatesCompleter,
+      completer=SslCertificatesCompleterBeta
+      if include_l7_internal_load_balancing else SslCertificatesCompleter,
       plural=True,
       required=required,
       global_collection='compute.sslCertificates',
       regional_collection='compute.regionSslCertificates'
-      if include_alpha else None,
+      if include_l7_internal_load_balancing else None,
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
-      if include_alpha else None,
+      if include_l7_internal_load_balancing else None,
       short_help=('A reference to SSL certificate resources that are used for '
                   'server-side authentication.'),
       detailed_help="""\

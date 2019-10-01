@@ -94,9 +94,9 @@ class GoogleCloudBillingBudgetsV1alpha1AllUpdatesRule(_messages.Message):
       google/pubsub/v1/pubsub.proto. On creation of a budget, the topic must
       be owned by the user, and Google must be granted publishing permissions
       on it.
-    schemaVersion: Required. The schema version of the notification. "1.0" is
-      a JSON schema, as defined in https://cloud.google.com/billing/docs/how-
-      to/budgets#notification_format
+    schemaVersion: Required. The schema version of the notification. Only
+      "1.0" is accepted. It represents the JSON schema as defined in
+      https://cloud.google.com/billing/docs/how-to/budgets#notification_format
   """
 
   pubsubTopic = _messages.StringField(1)
@@ -282,9 +282,9 @@ class GoogleCloudBillingBudgetsV1alpha1UpdateBudgetRequest(_messages.Message):
       specified by the budget name in the budget.
     updateMask: Optional. Indicates which fields in the provided budget to
       update. Read-only fields (such as `name`) cannot be changed. If this is
-      not provided, then only fields with non-default values are updated. See
-      https://developers.google.com/protocol-buffers/docs/proto3#default for
-      more details.
+      not provided, then only fields with non-default values from the request
+      are updated. See https://developers.google.com/protocol-
+      buffers/docs/proto3#default for more details about default values.
   """
 
   budget = _messages.MessageField('GoogleCloudBillingBudgetsV1alpha1Budget', 1)

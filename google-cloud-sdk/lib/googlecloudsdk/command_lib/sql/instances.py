@@ -143,10 +143,7 @@ def _ShowCmekPrompt():
   log.warning(
       'You are creating a Cloud SQL instance encrypted with a customer-managed '
       'key. If anyone destroys a customer-managed key, all data encrypted with '
-      'it will be permanently lost.\n\n'
-      'Make sure you have the following permission, which is needed for this '
-      'instance\'s service account to encrypt/decrypt with the selected key: '
-      'resourcemanager.projects.setIamPolicy\n')
+      'it will be permanently lost.\n')
   console_io.PromptContinue(cancel_on_no=True)
 
 

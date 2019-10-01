@@ -96,10 +96,25 @@ class MatrixCreator(object):
             xcodeVersion=self._args.xcode_version))
     return spec
 
+  def _BuildIosTestLoopTestSpec(self):
+    """Build a TestSpecification for an IosXcTest."""
+    setup = self._messages.IosTestSetup(
+        networkProfile=getattr(self._args, 'network_profile', None))
+    spec = self._messages.TestSpecification(
+        disableVideoRecording=not self._args.record_video,
+        iosTestSetup=setup,
+        testTimeout=matrix_ops.ReformatDuration(self._args.timeout),
+        iosTestLoop=self._messages.IosTestLoop(
+            appIpa=self._BuildFileReference(self._args.app),
+            scenarios=self._args.scenario_numbers))
+    return spec
+
   def _TestSpecFromType(self, test_type):
     """Map a test type into its corresponding TestSpecification message ."""
     if test_type == 'xctest':
       return self._BuildIosXcTestSpec()
+    elif test_type == 'game-loop':
+      return self._BuildIosTestLoopTestSpec()
     else:  # It's a bug in our arg validation if we ever get here.
       raise exceptions.InvalidArgumentException(
           'type', 'Unknown test type "{}".'.format(test_type))

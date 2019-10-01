@@ -107,6 +107,9 @@
         },
         "https://www.googleapis.com/auth/cloud-identity.groups.readonly": {
           "description": "See any Cloud Identity Groups that you can access, including group members and their emails"
+        },
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "View and manage your data across Google Cloud Platform services"
         }
       }
     }
@@ -464,7 +467,8 @@
             "$ref": "Operation"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity.groups"
+            "https://www.googleapis.com/auth/cloud-identity.groups",
+            "https://www.googleapis.com/auth/cloud-platform"
           ],
           "description": "Creates a Group."
         },
@@ -490,7 +494,8 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-identity.groups",
-            "https://www.googleapis.com/auth/cloud-identity.groups.readonly"
+            "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
+            "https://www.googleapis.com/auth/cloud-platform"
           ],
           "description": "Retrieves a Group."
         },
@@ -524,7 +529,8 @@
             "$ref": "Operation"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity.groups"
+            "https://www.googleapis.com/auth/cloud-identity.groups",
+            "https://www.googleapis.com/auth/cloud-platform"
           ],
           "description": "Updates a Group."
         },
@@ -549,7 +555,8 @@
             "$ref": "Operation"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity.groups"
+            "https://www.googleapis.com/auth/cloud-identity.groups",
+            "https://www.googleapis.com/auth/cloud-platform"
           ],
           "description": "Deletes a Group."
         },
@@ -577,7 +584,8 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-identity.groups",
-            "https://www.googleapis.com/auth/cloud-identity.groups.readonly"
+            "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
+            "https://www.googleapis.com/auth/cloud-platform"
           ],
           "description": "Looks up [resource\nname](https:\/\/cloud.google.com\/apis\/design\/resource_names) of a Group by\nits EntityKey."
         },
@@ -621,7 +629,8 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-identity.groups",
-            "https://www.googleapis.com/auth/cloud-identity.groups.readonly"
+            "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
+            "https://www.googleapis.com/auth/cloud-platform"
           ],
           "description": "Searches for Groups."
         },
@@ -665,7 +674,8 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-identity.groups",
-            "https://www.googleapis.com/auth/cloud-identity.groups.readonly"
+            "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
+            "https://www.googleapis.com/auth/cloud-platform"
           ],
           "description": "List groups within a customer or a domain."
         }
@@ -698,7 +708,8 @@
                 "$ref": "Operation"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity.groups"
+                "https://www.googleapis.com/auth/cloud-identity.groups",
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Creates a Membership."
             },
@@ -724,7 +735,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-identity.groups",
-                "https://www.googleapis.com/auth/cloud-identity.groups.readonly"
+                "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Retrieves a Membership."
             },
@@ -757,7 +769,8 @@
                 "$ref": "Operation"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity.groups"
+                "https://www.googleapis.com/auth/cloud-identity.groups",
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Updates a Membership."
             },
@@ -782,7 +795,8 @@
                 "$ref": "Operation"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity.groups"
+                "https://www.googleapis.com/auth/cloud-identity.groups",
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Deletes a Membership."
             },
@@ -818,7 +832,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-identity.groups",
-                "https://www.googleapis.com/auth/cloud-identity.groups.readonly"
+                "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Looks up [resource\nname](https:\/\/cloud.google.com\/apis\/design\/resource_names) of a Membership\nwithin a Group by member's EntityKey."
             },
@@ -865,7 +880,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-identity.groups",
-                "https://www.googleapis.com/auth/cloud-identity.groups.readonly"
+                "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "List Memberships within a Group."
             }

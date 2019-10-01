@@ -63,7 +63,7 @@ RUNTIME_MISMATCH_MSG = ("You've generated a Dockerfile that may be customized "
 QUEUE_TASKS_WARNING = """\
 Caution: You are updating queue configuration. This will override any changes
 performed using 'gcloud tasks'. More details at
-https://cloud.google.com/cloud-tasks/docs/queue-yaml
+https://cloud.google.com/tasks/docs/queue-yaml
 """
 
 

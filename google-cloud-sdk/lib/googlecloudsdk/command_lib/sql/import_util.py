@@ -28,16 +28,31 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
 
-def AddBaseImportFlags(parser, filetype):
+def AddBaseImportFlags(parser,
+                       filetype,
+                       gz_supported=True,
+                       user_supported=True):
+  """Adds the base flags for importing data.
+
+  Args:
+    parser: An argparse parser that you can use to add arguments that go on the
+      command line after this command. Positional arguments are allowed.
+    filetype: String, description of the file type being imported.
+    gz_supported: Boolean, if True then .gz compressed files are supported.
+    user_supported: Boolean, if True then a Postgres user can be specified.
+  """
   base.ASYNC_FLAG.AddToParser(parser)
   flags.AddInstanceArgument(parser)
-  flags.AddUriArgument(
-      parser,
-      'Path to the {filetype} file in Google Cloud Storage from which'
-      ' the import is made. The URI is in the form gs://bucketName/fileName.'
-      ' Compressed gzip files (.gz) are also supported.'
-      .format(filetype=filetype))
-  flags.AddUser(parser, 'PostgreSQL user for this import operation.')
+  uri_help_text = ('Path to the {filetype} file in Google Cloud Storage from '
+                   'which the import is made. The URI is in the form '
+                   '`gs://bucketName/fileName`.')
+  if gz_supported:
+    uri_help_text = uri_help_text + (' Compressed gzip files (.gz) are also '
+                                     'supported.')
+  flags.AddUriArgument(parser, uri_help_text.format(filetype=filetype))
+
+  if user_supported:
+    flags.AddUser(parser, 'PostgreSQL user for this import operation.')
 
 
 def RunImportCommand(args, client, import_context):
@@ -46,7 +61,7 @@ def RunImportCommand(args, client, import_context):
   Args:
     args: argparse.Namespace, The arguments that this command was invoked with.
     client: SqlClient instance, with sql_client and sql_messages props, for use
-        in generating messages and making API calls.
+      in generating messages and making API calls.
     import_context: ImportContext; format-specific import metadata.
 
   Returns:
@@ -105,17 +120,17 @@ def RunSqlImportCommand(args, client):
   """Imports data from a SQL dump file into Cloud SQL instance.
 
   Args:
-    args: argparse.Namespace, The arguments that this command was invoked
-        with.
+    args: argparse.Namespace, The arguments that this command was invoked with.
     client: SqlClient instance, with sql_client and sql_messages props, for use
-        in generating messages and making API calls.
+      in generating messages and making API calls.
 
   Returns:
     A dict representing the import operation resource, if '--async' is used,
     or else None.
   """
-  sql_import_context = import_util.SqlImportContext(
-      client.sql_messages, args.uri, args.database, args.user)
+  sql_import_context = import_util.SqlImportContext(client.sql_messages,
+                                                    args.uri, args.database,
+                                                    args.user)
   return RunImportCommand(args, client, sql_import_context)
 
 
@@ -123,16 +138,36 @@ def RunCsvImportCommand(args, client):
   """Imports data from a CSV file into Cloud SQL instance.
 
   Args:
-    args: argparse.Namespace, The arguments that this command was invoked
-        with.
+    args: argparse.Namespace, The arguments that this command was invoked with.
     client: SqlClient instance, with sql_client and sql_messages props, for use
-        in generating messages and making API calls.
+      in generating messages and making API calls.
 
   Returns:
     A dict representing the import operation resource, if '--async' is used,
     or else None.
   """
-  csv_import_context = import_util.CsvImportContext(
-      client.sql_messages, args.uri, args.database, args.table, args.columns,
-      args.user)
+  csv_import_context = import_util.CsvImportContext(client.sql_messages,
+                                                    args.uri, args.database,
+                                                    args.table, args.columns,
+                                                    args.user)
   return RunImportCommand(args, client, csv_import_context)
+
+
+def RunBakImportCommand(args, client):
+  """Imports data from a BAK file into Cloud SQL instance.
+
+  Args:
+    args: argparse.Namespace, The arguments that this command was invoked with.
+    client: SqlClient instance, with sql_client and sql_messages props, for use
+      in generating messages and making API calls.
+
+  Returns:
+    A dict representing the import operation resource, if '--async' is used,
+    or else None.
+  """
+  sql_import_context = import_util.BakImportContext(client.sql_messages,
+                                                    args.uri, args.database,
+                                                    args.cert_path,
+                                                    args.pvk_path,
+                                                    args.pvk_password)
+  return RunImportCommand(args, client, sql_import_context)

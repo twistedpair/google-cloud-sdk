@@ -28,12 +28,12 @@ from googlecloudsdk.core import properties
 
 def _CompileDestination(source):
   """Converts model[.tflite] style filename to model_edgetpu.tflite."""
-  return re.sub(r'(\.tflite)?$', '_edgetpu.tflite', source)
+  return re.sub(r'(\.tflite)?$', '_edgetpu.tflite', source, count=1)
 
 
 def _ConvertDestination(source):
   """Converts model[/saved_model.(pb|pbtxt)] style filename to model.tflite."""
-  return re.sub(r'(/saved_model\.(pb|pbtxt))?$', '.tflite', source)
+  return re.sub(r'(/saved_model\.(pb|pbtxt))?$', '.tflite', source, count=1)
 
 
 class EdgeMlClient(object):

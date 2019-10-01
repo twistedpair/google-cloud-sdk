@@ -29,7 +29,7 @@ def AppendFindingArg():
   finding_spec_data = yaml_data.ResourceYAMLData.FromPath("scc.finding")
   arg_specs = [
       resource_args.GetResourcePresentationSpec(
-          verb="to be used for the SCC command",
+          verb="to be used for the SCC (Security Command Center) command",
           name="finding",
           required=True,
           prefixes=False,

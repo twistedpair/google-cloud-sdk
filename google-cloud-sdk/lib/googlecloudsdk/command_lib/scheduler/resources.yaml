@@ -6,7 +6,7 @@ location:
     parameter_name: locationsId
     attribute_name: location
     help: |
-      The location of the job. See `gcloud alpha scheduler locations list`
+      The location of the job. See `{top_command} compute regions list`
       for options.
 
       By default, uses the location of the current project's App Engine App.

@@ -21,9 +21,8 @@ from __future__ import unicode_literals
 # Defaults for instance creation.
 DEFAULT_MACHINE_TYPE = 'db-n1-standard-1'
 
-
 # Determining what executables, flags, and defaults to use for sql connect.
-DB_EXE = {'MYSQL': 'mysql', 'POSTGRES': 'psql'}
+DB_EXE = {'MYSQL': 'mysql', 'POSTGRES': 'psql', 'SQLSERVER': 'mssql-cli'}
 
 EXE_FLAGS = {
     'mysql': {
@@ -38,15 +37,23 @@ EXE_FLAGS = {
         'hostname': '-h',
         'port': '-p',
         'database': '-d'
+    },
+    'mssql-cli': {
+        'user': '-U',
+        'password': '-P',
+        'hostname': '-S',
+        'database': '-d'
     }
 }
 
-DEFAULT_SQL_USER = {'mysql': 'root', 'psql': 'postgres'}
-
+DEFAULT_SQL_USER = {
+    'mysql': 'root',
+    'psql': 'postgres',
+    'mssql-cli': 'sqlserver'
+}
 
 # Size conversions.
 BYTES_TO_GB = 1 << 30
-
 
 # Cloud SQL Proxy constants.
 

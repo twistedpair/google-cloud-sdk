@@ -1841,19 +1841,9 @@
           "description": "Optional. Name for the Cloud KMS key for the job.\nKey format is:\nprojects\/<project>\/locations\/<location>\/keyRings\/<keyring>\/cryptoKeys\/<key>",
           "type": "string"
         },
-        "ipConfiguration": {
-          "description": "Configuration for VM IPs.",
-          "enumDescriptions": [
-            "The configuration is unknown, or unspecified.",
-            "Workers should have public IP addresses.",
-            "Workers should have private IP addresses."
-          ],
-          "type": "string",
-          "enum": [
-            "WORKER_IP_UNSPECIFIED",
-            "WORKER_IP_PUBLIC",
-            "WORKER_IP_PRIVATE"
-          ]
+        "usePrivateIps": {
+          "description": "Optional. Specifies whether worker pools should be started with private IP addresses.\nFalse by default.",
+          "type": "boolean"
         },
         "workerRegion": {
           "description": "The Compute Engine region\n(https:\/\/cloud.google.com\/compute\/docs\/regions-zones\/regions-zones) in\nwhich worker processing should occur, e.g. \"us-west1\". Mutually exclusive\nwith worker_zone. If neither worker_region nor worker_zone is specified,\ndefault to the control plane's region.",

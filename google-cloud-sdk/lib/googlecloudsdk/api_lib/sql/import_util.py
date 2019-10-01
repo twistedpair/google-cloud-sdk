@@ -61,3 +61,35 @@ def CsvImportContext(sql_messages,
       database=database,
       fileType='CSV',
       importUser=user)
+
+
+def BakImportContext(sql_messages, uri, database, cert_path, pvk_path,
+                     pvk_password):
+  """Generates the ImportContext for the given args, for importing from BAK.
+
+  Args:
+    sql_messages: module, The messages module that should be used.
+    uri: The URI of the bucket to import from; the output of the `uri` arg.
+    database: The database to import to; the output of the `--database` flag.
+    cert_path: The certificate used for encrypted .bak; the output of the
+      `--cert-path` flag.
+    pvk_path: The private key used for encrypted .bak; the output of the
+      `--pvk-path` flag.
+    pvk_password: The private key password used for encrypted .bak; the output
+      of the `--pvk-password` or `--prompt-for-pvk-password` flag.
+
+  Returns:
+    ImportContext, for use in InstancesImportRequest.importContext.
+  """
+  bak_import_options = None
+  if cert_path and pvk_path and pvk_password:
+    bak_import_options = sql_messages.ImportContext.BakImportOptionsValue(
+        encryptionOptions=sql_messages.ImportContext.BakImportOptionsValue
+        .EncryptionOptionsValue(
+            certPath=cert_path, pvkPath=pvk_path, pvkPassword=pvk_password))
+
+  return sql_messages.ImportContext(
+      uri=uri,
+      database=database,
+      fileType='BAK',
+      bakImportOptions=bak_import_options)

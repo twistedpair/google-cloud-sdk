@@ -7,7 +7,7 @@
   "version": "v1alpha1",
   "revision": "0",
   "title": "Label Manager API",
-  "description": "The Label Manager API allows users to create and manage definitions of labels across the Cloud Resource Hierarchy. With these user-provided definitions, the API can provide the applicable label definitions for a resource based on its hierarchical position.",
+  "description": "The Label Manager API allows users to create and manage definitions and permissions of labels (keys and values) across the Cloud Resource Hierarchy. The API also allows binding these user-created labels to cloud resources to affect policy evaluation.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -97,6 +97,15 @@
         "v2 error format"
       ],
       "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "View and manage your data across Google Cloud Platform services"
+        }
+      }
     }
   },
   "schemas": {
@@ -383,7 +392,7 @@
     },
     "Policy": {
       "id": "Policy",
-      "description": "Defines an Identity and Access Management (IAM) policy. It is used to\nspecify access control policies for Cloud Platform resources.\n\n\nA `Policy` is a collection of `bindings`. A `binding` binds one or more\n`members` to a single `role`. Members can be user accounts, service accounts,\nGoogle groups, and domains (such as G Suite). A `role` is a named list of\npermissions (defined by IAM or configured by users). A `binding` can\noptionally specify a `condition`, which is a logic expression that further\nconstrains the role binding based on attributes about the request and\/or\ntarget resource.\n\n**JSON Example**\n\n    {\n      \"bindings\": [\n        {\n          \"role\": \"role\/resourcemanager.organizationAdmin\",\n          \"members\": [\n            \"user:mike@example.com\",\n            \"group:admins@example.com\",\n            \"domain:google.com\",\n            \"serviceAccount:my-project-id@appspot.gserviceaccount.com\"\n          ]\n        },\n        {\n          \"role\": \"roles\/resourcemanager.organizationViewer\",\n          \"members\": [\"user:eve@example.com\"],\n          \"condition\": {\n            \"title\": \"expirable access\",\n            \"description\": \"Does not grant access after Sep 2020\",\n            \"expression\": \"request.time <\n            timestamp('2020-10-01T00:00:00.000Z')\",\n          }\n        }\n      ]\n    }\n\n**YAML Example**\n\n    bindings:\n    - members:\n      - user:mike@example.com\n      - group:admins@example.com\n      - domain:google.com\n      - serviceAccount:my-project-id@appspot.gserviceaccount.com\n      role: roles\/resourcemanager.organizationAdmin\n    - members:\n      - user:eve@example.com\n      role: roles\/resourcemanager.organizationViewer\n      condition:\n        title: expirable access\n        description: Does not grant access after Sep 2020\n        expression: request.time < timestamp('2020-10-01T00:00:00.000Z')\n\nFor a description of IAM and its features, see the\n[IAM developer's guide](https:\/\/cloud.google.com\/iam\/docs).",
+      "description": "Defines an Identity and Access Management (IAM) policy. It is used to\nspecify access control policies for Cloud Platform resources.\n\n\nA `Policy` is a collection of `bindings`. A `binding` binds one or more\n`members` to a single `role`. Members can be user accounts, service accounts,\nGoogle groups, and domains (such as G Suite). A `role` is a named list of\npermissions (defined by IAM or configured by users). A `binding` can\noptionally specify a `condition`, which is a logic expression that further\nconstrains the role binding based on attributes about the request and\/or\ntarget resource.\n\n**JSON Example**\n\n    {\n      \"bindings\": [\n        {\n          \"role\": \"roles\/resourcemanager.organizationAdmin\",\n          \"members\": [\n            \"user:mike@example.com\",\n            \"group:admins@example.com\",\n            \"domain:google.com\",\n            \"serviceAccount:my-project-id@appspot.gserviceaccount.com\"\n          ]\n        },\n        {\n          \"role\": \"roles\/resourcemanager.organizationViewer\",\n          \"members\": [\"user:eve@example.com\"],\n          \"condition\": {\n            \"title\": \"expirable access\",\n            \"description\": \"Does not grant access after Sep 2020\",\n            \"expression\": \"request.time <\n            timestamp('2020-10-01T00:00:00.000Z')\",\n          }\n        }\n      ]\n    }\n\n**YAML Example**\n\n    bindings:\n    - members:\n      - user:mike@example.com\n      - group:admins@example.com\n      - domain:google.com\n      - serviceAccount:my-project-id@appspot.gserviceaccount.com\n      role: roles\/resourcemanager.organizationAdmin\n    - members:\n      - user:eve@example.com\n      role: roles\/resourcemanager.organizationViewer\n      condition:\n        title: expirable access\n        description: Does not grant access after Sep 2020\n        expression: request.time < timestamp('2020-10-01T00:00:00.000Z')\n\nFor a description of IAM and its features, see the\n[IAM developer's guide](https:\/\/cloud.google.com\/iam\/docs).",
       "type": "object",
       "properties": {
         "version": {
@@ -565,6 +574,9 @@
           "response": {
             "$ref": "Empty"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
           "description": "Deletes a binding between a label value and a cloud resource\n(project, folder, org)."
         },
         "list": {
@@ -595,6 +607,9 @@
           "response": {
             "$ref": "ListLabelValuesResponse"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
           "description": "Lists all label values for a specific label key."
         },
         "get": {
@@ -617,6 +632,9 @@
           "response": {
             "$ref": "LabelValue"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
           "description": "Retrieves label value. This method will return PERMISSION_DENIED if the\nvalue does not exist or the user does not have permission to view it."
         },
         "create": {
@@ -634,6 +652,9 @@
           "response": {
             "$ref": "Operation"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
           "description": "Creates a label value as a child of the specified label key. If a another\nrequest with the same parameters is sent while the original request is in\nprocess the second request will receive an error."
         },
         "patch": {
@@ -665,6 +686,9 @@
           "response": {
             "$ref": "LabelValue"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
           "description": "Updates the attributes of the LabelValue resource."
         },
         "delete": {
@@ -687,6 +711,9 @@
           "response": {
             "$ref": "Operation"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
           "description": "Requests deletion of a LabelValue. The Label Value is moved into the\nDELETE_REQUESTED state\nimmediately, and is deleted approximately 30 days later. The Label Value\ncannot have any bindings when it is deleted."
         },
         "undelete": {
@@ -712,6 +739,9 @@
           "response": {
             "$ref": "Operation"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
           "description": "Cancels the deletion request for a Label Value. This method may only be\ncalled on a Label Value in the\nDELETE_REQUESTED state.\nIn order to succeed, the Label Value's parent must be in the\nACTIVE state."
         }
       }
@@ -740,6 +770,9 @@
               "response": {
                 "$ref": "LabelBinding"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
               "description": "Binds a label value to a cloud resource (project, folder, org)."
             },
             "list": {
@@ -781,6 +814,9 @@
               "response": {
                 "$ref": "ListLabelBindingsResponse"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
               "description": "Lists the bindings for the given label value."
             }
           }
@@ -817,6 +853,9 @@
           "response": {
             "$ref": "ListLabelKeysResponse"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
           "description": "Lists all label keys for a parent resource."
         },
         "get": {
@@ -839,6 +878,9 @@
           "response": {
             "$ref": "LabelKey"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
           "description": "Retrieves a label key. This method will return PERMISSION_DENIED if the\nkey does not exist or the user does not have permission to view it."
         },
         "create": {
@@ -856,6 +898,9 @@
           "response": {
             "$ref": "Operation"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
           "description": "Creates a new label key. If a another request with the same parameters is\nsent while the original request is in process the second request\nwill receive an error."
         },
         "patch": {
@@ -887,6 +932,9 @@
           "response": {
             "$ref": "LabelKey"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
           "description": "Updates the attributes of the LabelKey resource."
         },
         "delete": {
@@ -909,6 +957,9 @@
           "response": {
             "$ref": "Operation"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
           "description": "Requests deletion of a LabelKey. The Label Key is moved into the\nDELETE_REQUESTED state\nimmediately, and is deleted approximately 30 days later. The Label Key\ncannot have any child label values in the\nACTIVE state."
         },
         "undelete": {
@@ -934,6 +985,9 @@
           "response": {
             "$ref": "Operation"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
           "description": "Cancels the deletion request for a Label Key. This method may only be\ncalled on a Label Key in the\nDELETE_REQUESTED state.\nIn order to succeed, the Label Key's parent must be in the active state."
         },
         "setIamPolicy": {
@@ -959,6 +1013,9 @@
           "response": {
             "$ref": "Policy"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
           "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy."
         },
         "getIamPolicy": {
@@ -987,6 +1044,9 @@
           "response": {
             "$ref": "Policy"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
           "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset."
         },
         "testIamPermissions": {
@@ -1012,6 +1072,9 @@
           "response": {
             "$ref": "TestIamPermissionsResponse"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
           "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning."
         }
       }

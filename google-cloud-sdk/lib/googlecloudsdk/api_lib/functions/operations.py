@@ -42,7 +42,9 @@ def OperationErrorToString(error):
       error.code, encoding.Decode(error.message))
 
 
-def _GetOperationStatus(client, get_request, progress_tracker=None):
+# TODO(b/139026575): Remove do_every_poll option.
+def _GetOperationStatus(client, get_request,
+                        progress_tracker=None, do_every_poll=None):
   """Helper function for getting the status of an operation.
 
   Args:
@@ -50,6 +52,7 @@ def _GetOperationStatus(client, get_request, progress_tracker=None):
     get_request: A GetOperationRequest message.
     progress_tracker: progress_tracker.ProgressTracker, A reference for the
         progress tracker to tick, in case this function is used in a Retryer.
+    do_every_poll: An optional side effect to do before getting the status.
 
   Returns:
     True if the operation succeeded without error.
@@ -58,6 +61,8 @@ def _GetOperationStatus(client, get_request, progress_tracker=None):
   Raises:
     FunctionsError: If the operation is finished with error.
   """
+  if do_every_poll:
+    do_every_poll()
   if progress_tracker:
     progress_tracker.Tick()
   op = client.operations.Get(get_request)
@@ -66,7 +71,8 @@ def _GetOperationStatus(client, get_request, progress_tracker=None):
   return op.done
 
 
-def _WaitForOperation(client, get_request, message):
+# TODO(b/139026575): Remove do_every_poll option.
+def _WaitForOperation(client, get_request, message, do_every_poll=None):
   """Wait for an operation to complete.
 
   No operation is done instantly. Wait for it to finish following this logic:
@@ -80,6 +86,7 @@ def _WaitForOperation(client, get_request, message):
     client:  The client used to make requests.
     get_request: A GetOperatioRequest message.
     message: str, The string to print while polling.
+    do_every_poll: function, A function to execute every time we poll.
 
   Returns:
     True if the operation succeeded without error.
@@ -96,7 +103,10 @@ def _WaitForOperation(client, get_request, message):
     try:
       retryer.RetryOnResult(_GetOperationStatus,
                             [client, get_request],
-                            {'progress_tracker': pt},
+                            {
+                                'progress_tracker': pt,
+                                'do_every_poll': do_every_poll,
+                            },
                             should_retry_if=None,
                             sleep_ms=SLEEP_MS)
     except retry.WaitException:
@@ -104,7 +114,7 @@ def _WaitForOperation(client, get_request, message):
           'Operation {0} is taking too long'.format(get_request.name))
 
 
-def Wait(operation, messages, client, notice=None):
+def Wait(operation, messages, client, notice=None, do_every_poll=None):
   """Initialize waiting for operation to finish.
 
   Generate get request based on the operation and wait for an operation
@@ -115,6 +125,7 @@ def Wait(operation, messages, client, notice=None):
     messages: GCF messages module.
     client: GCF client module.
     notice: str, displayed when waiting for the operation to finish.
+    do_every_poll: function, A function to execute every time we poll.
 
   Raises:
     FunctionsError: If the operation takes more than 620s.
@@ -123,4 +134,4 @@ def Wait(operation, messages, client, notice=None):
     notice = 'Waiting for operation to finish'
   request = messages.CloudfunctionsOperationsGetRequest()
   request.name = operation.name
-  _WaitForOperation(client, request, notice)
+  _WaitForOperation(client, request, notice, do_every_poll)

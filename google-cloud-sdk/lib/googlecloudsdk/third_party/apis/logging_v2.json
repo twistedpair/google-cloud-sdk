@@ -1064,6 +1064,13 @@
             "GA",
             "DEPRECATED"
           ]
+        },
+        "monitoredResourceTypes": {
+          "description": "Read-only. If present, then a time series, which is identified partially by a metric type and a MonitoredResourceDescriptor, that is associated with this metric type can only be associated with one of the monitored resource types listed here.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1073,7 +1080,7 @@
       "type": "object",
       "properties": {
         "launchStage": {
-          "description": "Deprecated. Please use the MetricDescriptor.launch_stage instead. The launch stage of the metric definition.",
+          "description": "Deprecated. Must use the MetricDescriptor.launch_stage instead.",
           "enumDescriptions": [
             "Do not use this default value.",
             "Early Access features are limited to a closed group of testers. To use these features, you must sign up in advance and sign a Trusted Tester agreement (which includes confidentiality provisions). These features may be unstable, changed in backward-incompatible ways, and are not guaranteed to be released.",
@@ -1612,7 +1619,7 @@
                       "type": "string"
                     },
                     "bucketId": {
-                      "description": "Required. The bucket_id to use for this bucket.",
+                      "description": "Required. A client-assigned identifier such as \"my-bucket\". Identifiers are limited to 100 characters and can include only letters, digits, underscores, hyphens, and periods.",
                       "location": "query",
                       "type": "string"
                     }
@@ -2390,7 +2397,7 @@
                       "type": "string"
                     },
                     "bucketId": {
-                      "description": "Required. The bucket_id to use for this bucket.",
+                      "description": "Required. A client-assigned identifier such as \"my-bucket\". Identifiers are limited to 100 characters and can include only letters, digits, underscores, hyphens, and periods.",
                       "location": "query",
                       "type": "string"
                     }
@@ -2982,7 +2989,7 @@
                       "type": "string"
                     },
                     "bucketId": {
-                      "description": "Required. The bucket_id to use for this bucket.",
+                      "description": "Required. A client-assigned identifier such as \"my-bucket\". Identifiers are limited to 100 characters and can include only letters, digits, underscores, hyphens, and periods.",
                       "location": "query",
                       "type": "string"
                     }
@@ -3565,7 +3572,7 @@
                   "type": "string"
                 },
                 "bucketId": {
-                  "description": "Required. The bucket_id to use for this bucket.",
+                  "description": "Required. A client-assigned identifier such as \"my-bucket\". Identifiers are limited to 100 characters and can include only letters, digits, underscores, hyphens, and periods.",
                   "location": "query",
                   "type": "string"
                 }
@@ -4167,7 +4174,7 @@
                       "type": "string"
                     },
                     "bucketId": {
-                      "description": "Required. The bucket_id to use for this bucket.",
+                      "description": "Required. A client-assigned identifier such as \"my-bucket\". Identifiers are limited to 100 characters and can include only letters, digits, underscores, hyphens, and periods.",
                       "location": "query",
                       "type": "string"
                     }

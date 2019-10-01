@@ -309,35 +309,6 @@ server template.
         supports_download=False,
     )
 
-    def GetDeploymentTarget(self, request, global_params=None):
-      r"""Retrieves information on the rollout target of the deployment, e.g. the.
-target percentage of game servers running stable_game_server_template and
-new_game_server_template in clusters.
-
-      Args:
-        request: (GameservicesProjectsLocationsGameServerDeploymentsGetDeploymentTargetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (DeploymentTarget) The response message.
-      """
-      config = self.GetMethodConfig('GetDeploymentTarget')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetDeploymentTarget.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}:getDeploymentTarget',
-        http_method=u'GET',
-        method_id=u'gameservices.projects.locations.gameServerDeployments.getDeploymentTarget',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1alpha/{+name}:getDeploymentTarget',
-        request_field='',
-        request_type_name=u'GameservicesProjectsLocationsGameServerDeploymentsGetDeploymentTargetRequest',
-        response_type_name=u'DeploymentTarget',
-        supports_download=False,
-    )
-
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource.
 Returns an empty policy if the resource exists and does not have a policy

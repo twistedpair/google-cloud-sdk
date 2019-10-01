@@ -1142,6 +1142,12 @@ MAP = {
         ),
     },
     'vpcaccess': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.vpcaccess.v1',
+            client_classpath='vpcaccess_v1_client.VpcaccessV1',
+            messages_modulepath='vpcaccess_v1_messages',
+            default_version=True
+        ),
         'v1alpha1': APIDef(
             class_path='googlecloudsdk.third_party.apis.vpcaccess.v1alpha1',
             client_classpath='vpcaccess_v1alpha1_client.VpcaccessV1alpha1',
@@ -1152,7 +1158,7 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.vpcaccess.v1beta1',
             client_classpath='vpcaccess_v1beta1_client.VpcaccessV1beta1',
             messages_modulepath='vpcaccess_v1beta1_messages',
-            default_version=True
+            default_version=False
         ),
     },
     'websecurityscanner': {

@@ -38,13 +38,9 @@ _INTERCONNECT_TYPE_CHOICES_BETA_AND_ALPHA = {
         'Partner interconnect. Only available to approved partners.',
 }
 
-_LINK_TYPE_CHOICES_100G = {
-    'LINK_TYPE_ETHERNET_10G_LR': '10Gbps Ethernet, LR Optics.',
-    'LINK_TYPE_ETHERNET_100G_LR': '100Gbps Ethernet, LR Optics.'
-}
-
 _LINK_TYPE_CHOICES = {
     'LINK_TYPE_ETHERNET_10G_LR': '10Gbps Ethernet, LR Optics.',
+    'LINK_TYPE_ETHERNET_100G_LR': '100Gbps Ethernet, LR Optics.'
 }
 
 
@@ -112,12 +108,12 @@ def GetLinkType(messages, link_type_arg):
     return messages.Interconnect.LinkTypeValueValuesEnum(link_type_arg)
 
 
-def AddCreateCommonArgs(parser, supports_100g=False):
+def AddCreateCommonArgs(parser):
   """Adds shared flags for create command to the argparse.ArgumentParser."""
   AddAdminEnabled(parser)
   AddDescription(parser)
   AddCustomerName(parser)
-  AddLinkType(parser, supports_100g)
+  AddLinkType(parser)
   AddNocContactEmail(parser)
   AddRequestedLinkCount(parser)
 
@@ -130,7 +126,7 @@ def AddCreateGaArgs(parser):
 
 def AddCreateBetaArgs(parser):
   """Adds beta flags for create command to the argparse.ArgumentParser."""
-  AddCreateCommonArgs(parser, supports_100g=True)
+  AddCreateCommonArgs(parser)
   AddInterconnectTypeBetaAndAlpha(parser)
 
 
@@ -176,11 +172,9 @@ def AddInterconnectTypeBetaAndAlpha(parser):
       """)
 
 
-def AddLinkType(parser, supports_100g=False):
+def AddLinkType(parser):
   """Adds link-type flag to the argparse.ArgumentParser."""
   link_types = _LINK_TYPE_CHOICES
-  if supports_100g:
-    link_types = _LINK_TYPE_CHOICES_100G
   parser.add_argument(
       '--link-type',
       choices=link_types,

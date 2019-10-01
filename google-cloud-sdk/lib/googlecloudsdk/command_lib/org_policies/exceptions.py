@@ -37,6 +37,10 @@ class OrgPolicyValuesNotFoundError(OrgPolicyError):
   """Exception for nonexistent values on an organization policy rule."""
 
 
+class BooleanPolicyValidationError(OrgPolicyError):
+  """Exception for an invalid boolean policy."""
+
+
 class LabelKeyNotFoundError(OrgPolicyError):
   """Exception for a nonexistent label key."""
 
@@ -47,3 +51,7 @@ class LabelValueNotFoundError(OrgPolicyError):
 
 class ConcurrencyError(OrgPolicyError):
   """Exception for a concurrency issue."""
+
+
+class OperationNotSupportedError(OrgPolicyError):
+  """Exception for an operation that is not supported."""

@@ -1176,6 +1176,11 @@ class MetricDescriptor(_messages.Message):
     metricKind: Whether the metric records instantaneous values, changes to a
       value, etc. Some combinations of `metric_kind` and `value_type` might
       not be supported.
+    monitoredResourceTypes: Read-only. If present, then a time series, which
+      is identified partially by a metric type and a
+      MonitoredResourceDescriptor, that is associated with this metric type
+      can only be associated with one of the monitored resource types listed
+      here.
     name: The resource name of the metric descriptor.
     type: The metric type, including its DNS name prefix. The type is not URL-
       encoded.  All user-defined metric types have the DNS name
@@ -1303,26 +1308,26 @@ class MetricDescriptor(_messages.Message):
   launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 4)
   metadata = _messages.MessageField('MetricDescriptorMetadata', 5)
   metricKind = _messages.EnumField('MetricKindValueValuesEnum', 6)
-  name = _messages.StringField(7)
-  type = _messages.StringField(8)
-  unit = _messages.StringField(9)
-  valueType = _messages.EnumField('ValueTypeValueValuesEnum', 10)
+  monitoredResourceTypes = _messages.StringField(7, repeated=True)
+  name = _messages.StringField(8)
+  type = _messages.StringField(9)
+  unit = _messages.StringField(10)
+  valueType = _messages.EnumField('ValueTypeValueValuesEnum', 11)
 
 
 class MetricDescriptorMetadata(_messages.Message):
   r"""Additional annotations that can be used to guide the usage of a metric.
 
   Enums:
-    LaunchStageValueValuesEnum: Deprecated. Please use the
-      MetricDescriptor.launch_stage instead. The launch stage of the metric
-      definition.
+    LaunchStageValueValuesEnum: Deprecated. Must use the
+      MetricDescriptor.launch_stage instead.
 
   Fields:
     ingestDelay: The delay of data points caused by ingestion. Data points
       older than this age are guaranteed to be ingested and available to be
       read, excluding data loss due to errors.
-    launchStage: Deprecated. Please use the MetricDescriptor.launch_stage
-      instead. The launch stage of the metric definition.
+    launchStage: Deprecated. Must use the MetricDescriptor.launch_stage
+      instead.
     samplePeriod: The sampling period of metric data points. For metrics which
       are written periodically, consecutive data points are stored at this
       time interval, excluding data loss due to errors. Metrics with a higher
@@ -1330,8 +1335,7 @@ class MetricDescriptorMetadata(_messages.Message):
   """
 
   class LaunchStageValueValuesEnum(_messages.Enum):
-    r"""Deprecated. Please use the MetricDescriptor.launch_stage instead. The
-    launch stage of the metric definition.
+    r"""Deprecated. Must use the MetricDescriptor.launch_stage instead.
 
     Values:
       LAUNCH_STAGE_UNSPECIFIED: Do not use this default value.

@@ -1461,3 +1461,36 @@ class StoreTrueFalseAction(argparse._StoreTrueAction):  # pylint: disable=protec
 
   def __init__(self, *args, **kwargs):
     super(StoreTrueFalseAction, self).__init__(*args, default=None, **kwargs)
+
+
+def StoreFilePathAndContentsAction(binary=False):
+  """Returns Action that stores both file content and file path.
+
+  Args:
+   binary: boolean, whether or not this is a binary file.
+
+  Returns:
+   An argparse action.
+  """
+
+  class Action(argparse.Action):
+    """Stores both file content and file path.
+
+      Stores file contents under original flag DEST and stores file path under
+      DEST_path.
+    """
+
+    def __init__(self, *args, **kwargs):
+      super(Action, self).__init__(*args, **kwargs)
+
+    def __call__(self, parser, namespace, value, option_string=None):
+      """Stores the contents of the file and the file name in namespace."""
+      try:
+        content = console_io.ReadFromFileOrStdin(value, binary=binary)
+      except files.Error as e:
+        raise ArgumentTypeError(e)
+      setattr(namespace, self.dest, content)
+      new_dest = '{}_path'.format(self.dest)
+      setattr(namespace, new_dest, value)
+
+  return Action

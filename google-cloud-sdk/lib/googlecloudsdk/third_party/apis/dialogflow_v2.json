@@ -323,7 +323,7 @@
       "type": "object",
       "properties": {
         "agentUri": {
-          "description": "Optional. The\n[Google Cloud Storage](https:\/\/cloud.google.com\/storage\/docs\/)\nURI to export the agent to.\nThe format of this URI must be `gs:\/\/<bucket-name>\/<object-name>`.\nIf left unspecified, the serialized agent is returned inline.",
+          "description": "Required. The [Google Cloud Storage](https:\/\/cloud.google.com\/storage\/docs\/)\nURI to export the agent to.\nThe format of this URI must be `gs:\/\/<bucket-name>\/<object-name>`.\nIf left unspecified, the serialized agent is returned inline.",
           "type": "string"
         }
       }
@@ -338,7 +338,7 @@
           "type": "string"
         },
         "agentContent": {
-          "description": "The agent to import.\n\nExample for how to import an agent via the command line:\n<pre>curl \\\n  'https:\/\/dialogflow.googleapis.com\/v2\/projects\/&lt;project_id&gt;\/agent:import'\\\n   -X POST \\\n   -H 'Authorization: Bearer'\\\n   $(gcloud auth application-default print-access-token) \\\n   -H 'Accept: application\/json' \\\n   -H 'Content-Type: application\/json' \\\n   --data-binary \"{\n      'agentContent': '$(cat &lt;agent zip file&gt; | base64 -w 0)'\n   }\"<\/pre>",
+          "description": "Zip compressed raw byte content for agent.",
           "type": "string",
           "format": "byte"
         }
@@ -354,7 +354,7 @@
           "type": "string"
         },
         "agentContent": {
-          "description": "The agent to restore.\n\nExample for how to restore an agent via the command line:\n<pre>curl \\\n  'https:\/\/dialogflow.googleapis.com\/v2\/projects\/&lt;project_id&gt;\/agent:restore'\\\n   -X POST \\\n   -H 'Authorization: Bearer' \\\n   $(gcloud auth application-default print-access-token) \\\n   -H 'Accept: application\/json' \\\n   -H 'Content-Type: application\/json' \\\n   --data-binary \"{\n       'agentContent': '$(cat &lt;agent zip file&gt; | base64 -w 0)'\n   }\"<\/pre>",
+          "description": "Zip compressed raw byte content for agent.",
           "type": "string",
           "format": "byte"
         }
@@ -1019,7 +1019,7 @@
     },
     "GoogleCloudDialogflowV2IntentMessageCardButton": {
       "id": "GoogleCloudDialogflowV2IntentMessageCardButton",
-      "description": "Optional. Contains information about a button.",
+      "description": "Contains information about a button.",
       "type": "object",
       "properties": {
         "text": {
@@ -1852,7 +1852,7 @@
           "type": "string"
         },
         "agentContent": {
-          "description": "The exported agent.\n\nExample for how to export an agent to a zip file via a command line:\n<pre>curl \\\n  'https:\/\/dialogflow.googleapis.com\/v2\/projects\/&lt;project_id&gt;\/agent:export'\\\n  -X POST \\\n  -H 'Authorization: Bearer' \\\n  $(gcloud auth application-default print-access-token) \\\n  -H 'Accept: application\/json'\n  --compressed \\\n  | grep agentContent | sed -e 's\/.*\"agentContent\": \"\\([^\"]*\\)\".*\/\\1\/' \\\n  | base64 --decode > &lt;agent zip file&gt;<\/pre>",
+          "description": "Zip compressed raw byte content for agent.",
           "type": "string",
           "format": "byte"
         }
@@ -1970,6 +1970,13 @@
         "followupEventInput": {
           "description": "Optional. Makes the platform immediately invoke another `DetectIntent` call\ninternally with the specified event as input.\nWhen this field is set, Dialogflow ignores the `fulfillment_text`,\n`fulfillment_messages`, and `payload` fields.",
           "$ref": "GoogleCloudDialogflowV2EventInput"
+        },
+        "sessionEntityTypes": {
+          "description": "Optional. Additional session entity types to replace or extend developer\nentity types with. The entity synonyms apply to all languages and persist\nfor the session of this query. Setting the session entity types inside\nwebhook overwrites the session entity types that have been set through\n`DetectIntentRequest.query_params.session_entity_types`.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDialogflowV2SessionEntityType"
+          }
         }
       }
     },
@@ -3304,7 +3311,7 @@
           "type": "string"
         },
         "agentContent": {
-          "description": "The exported agent.\n\nExample for how to export an agent to a zip file via a command line:\n<pre>curl \\\n  'https:\/\/dialogflow.googleapis.com\/v2beta1\/projects\/&lt;project_id&gt;\/agent:export'\\\n  -X POST \\\n  -H 'Authorization: Bearer' \\\n  $(gcloud auth application-default print-access-token) \\\n  -H 'Accept: application\/json'\n  --compressed \\\n  | grep agentContent | sed -e 's\/.*\"agentContent\": \"\\([^\"]*\\)\".*\/\\1\/' \\\n  | base64 --decode > &lt;agent zip file&gt;<\/pre>",
+          "description": "Zip compressed raw byte content for agent.",
           "type": "string",
           "format": "byte"
         }
@@ -3601,6 +3608,13 @@
         "endInteraction": {
           "description": "Optional. Indicates that this intent ends an interaction. Some integrations\n(e.g., Actions on Google or Dialogflow phone gateway) use this information\nto close interaction with an end user. Default is false.",
           "type": "boolean"
+        },
+        "sessionEntityTypes": {
+          "description": "Optional. Additional session entity types to replace or extend developer\nentity types with. The entity synonyms apply to all languages and persist\nfor the session of this query. Setting the session entity types inside\nwebhook overwrites the session entity types that have been set through\n`DetectIntentRequest.query_params.session_entity_types`.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDialogflowV2beta1SessionEntityType"
+          }
         }
       }
     },
@@ -3624,6 +3638,38 @@
         "languageCode": {
           "description": "Required. The language of this query. See [Language\nSupport](https:\/\/cloud.google.com\/dialogflow\/docs\/reference\/language)\nfor a list of the currently supported language codes. Note that queries in\nthe same session do not necessarily need to specify the same language.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2beta1SessionEntityType": {
+      "id": "GoogleCloudDialogflowV2beta1SessionEntityType",
+      "description": "Represents a session entity type.\n\nExtends or replaces a developer entity type at the user session level (we\nrefer to the entity types defined at the agent level as \"developer entity\ntypes\").\n\nNote: session entity types apply to all queries, regardless of the language.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The unique identifier of this session entity type. Format:\n`projects\/<Project ID>\/agent\/sessions\/<Session ID>\/entityTypes\/<Entity Type\nDisplay Name>`, or\n`projects\/<Project ID>\/agent\/environments\/<Environment ID>\/users\/<User\nID>\/sessions\/<Session ID>\/entityTypes\/<Entity Type Display Name>`.\nIf `Environment ID` is not specified, we assume default 'draft'\nenvironment. If `User ID` is not specified, we assume default '-' user.\n\n`<Entity Type Display Name>` must be the display name of an existing entity\ntype in the same agent that will be overridden or supplemented.",
+          "type": "string"
+        },
+        "entityOverrideMode": {
+          "description": "Required. Indicates whether the additional data should override or\nsupplement the developer entity type definition.",
+          "enumDescriptions": [
+            "Not specified. This value should be never used.",
+            "The collection of session entities overrides the collection of entities\nin the corresponding developer entity type.",
+            "The collection of session entities extends the collection of entities in\nthe corresponding developer entity type.\n\nNote: Even in this override mode calls to `ListSessionEntityTypes`,\n`GetSessionEntityType`, `CreateSessionEntityType` and\n`UpdateSessionEntityType` only return the additional entities added in\nthis session entity type. If you want to get the supplemented list,\nplease call EntityTypes.GetEntityType on the developer entity type\nand merge."
+          ],
+          "type": "string",
+          "enum": [
+            "ENTITY_OVERRIDE_MODE_UNSPECIFIED",
+            "ENTITY_OVERRIDE_MODE_OVERRIDE",
+            "ENTITY_OVERRIDE_MODE_SUPPLEMENT"
+          ]
+        },
+        "entities": {
+          "description": "Required. The collection of entities associated with this session entity\ntype.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDialogflowV2beta1EntityTypeEntity"
+          }
         }
       }
     },
@@ -3992,7 +4038,7 @@
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "Optional. The next_page_token value returned from a previous list request.",
+                  "description": "The next_page_token value returned from a previous list request.",
                   "location": "query",
                   "type": "string"
                 }

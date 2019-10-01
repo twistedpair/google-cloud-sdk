@@ -433,7 +433,12 @@ def _Load(account, scopes, prevent_refresh):
   return cred
 
 
-def Refresh(credentials, http_client=None, is_impersonated_credential=False):
+def Refresh(credentials,
+            http_client=None,
+            is_impersonated_credential=False,
+            include_email=False,
+            gce_token_format='standard',
+            gce_include_license=False):
   """Refresh credentials.
 
   Calls credentials.refresh(), unless they're SignedJwtAssertionCredentials.
@@ -447,6 +452,14 @@ def Refresh(credentials, http_client=None, is_impersonated_credential=False):
       impersonated service account credential. If False, treat as service
       account or user credential. Needed to avoid circular dependency on
       IMPERSONATION_TOKEN_PROVIDER.
+    include_email: bool, Specifies whether or not the service account email is
+      included in the identity token. Only applicable to impersonated service
+      account.
+    gce_token_format: str, Specifies whether or not the project and instance
+      details are included in the identity token. Choices are "standard",
+      "full".
+    gce_include_license: bool, Specifies whether or not license codes for images
+      associated with GCE instance are included in their identity tokens.
 
   Raises:
     TokenRefreshError: If the credentials fail to refresh.
@@ -468,12 +481,16 @@ def Refresh(credentials, http_client=None, is_impersonated_credential=False):
           credentials):
         raise AccountImpersonationError(
             'Invalid impersonation account for refresh {}'.format(credentials))
-      id_token = _RefreshImpersonatedAccountIdToken(credentials)
+      id_token = _RefreshImpersonatedAccountIdToken(
+          credentials, include_email=include_email)
     # Service accounts require an additional request to receive a fresh id_token
     elif isinstance(credentials, service_account.ServiceAccountCredentials):
       id_token = _RefreshServiceAccountIdToken(credentials, request_client)
     elif isinstance(credentials, oauth2client_gce.AppAssertionCredentials):
-      id_token = c_gce.Metadata().GetIdToken(config.CLOUDSDK_CLIENT_ID)
+      id_token = c_gce.Metadata().GetIdToken(
+          config.CLOUDSDK_CLIENT_ID,
+          token_format=gce_token_format,
+          include_license=gce_include_license)
 
     if id_token:
       if credentials.token_response:
@@ -486,12 +503,12 @@ def Refresh(credentials, http_client=None, is_impersonated_credential=False):
     raise TokenRefreshReauthError(e.message)
 
 
-def _RefreshImpersonatedAccountIdToken(cred):
+def _RefreshImpersonatedAccountIdToken(cred, include_email):
   """Get a fresh id_token for the given impersonated service account."""
   # pylint: disable=protected-access
   service_account_email = cred._service_account_id
   return IMPERSONATION_TOKEN_PROVIDER.GetElevationIdToken(
-      service_account_email, config.CLOUDSDK_CLIENT_ID)
+      service_account_email, config.CLOUDSDK_CLIENT_ID, include_email)
   # pylint: enable=protected-access
 
 

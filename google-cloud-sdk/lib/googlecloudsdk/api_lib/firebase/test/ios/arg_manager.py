@@ -37,10 +37,17 @@ def TypedArgRules():
   """
   return {
       'xctest': {
-          'required': [],
+          'required': ['test'],
           'optional': ['xcode_version', 'xctestrun_file'],
           'defaults': {}
       },
+      'game-loop': {
+          'required': ['app'],
+          'optional': ['scenario_numbers'],
+          'defaults': {
+              'scenario_numbers': [1]
+          }
+      }
   }
 
 
@@ -55,7 +62,7 @@ def SharedArgRules():
     nested dict containing any default values for those shared args.
   """
   return {
-      'required': ['type', 'test'],
+      'required': ['type'],
       'optional': [
           'async_',
           'client_details',
@@ -66,6 +73,7 @@ def SharedArgRules():
           'results_bucket',
           'results_dir',
           'results_history_name',
+          'scenario_numbers',
           'timeout',
       ],
       'defaults': {
@@ -124,6 +132,7 @@ class IosArgsManager(object):
                                                      self._shared_arg_rules)
     args_from_file = arg_file.GetArgsFromArgFile(args.argspec,
                                                  all_test_args_set)
+
     arg_util.ApplyLowerPriorityArgs(args, args_from_file, True)
 
     test_type = self.GetTestTypeOrRaise(args)
@@ -131,7 +140,6 @@ class IosArgsManager(object):
     shared_arg_defaults = self._shared_arg_rules['defaults']
     arg_util.ApplyLowerPriorityArgs(args, typed_arg_defaults)
     arg_util.ApplyLowerPriorityArgs(args, shared_arg_defaults)
-
     arg_validate.ValidateArgsForTestType(args, test_type, self._typed_arg_rules,
                                          self._shared_arg_rules,
                                          all_test_args_set)
@@ -139,6 +147,7 @@ class IosArgsManager(object):
     arg_validate.ValidateXcodeVersion(args, self._catalog_mgr)
     arg_validate.ValidateResultsBucket(args)
     arg_validate.ValidateResultsDir(args)
+    arg_validate.ValidateScenarioNumbers(args)
 
   def GetTestTypeOrRaise(self, args):
     """If the test type is not user-specified, infer the most reasonable value.

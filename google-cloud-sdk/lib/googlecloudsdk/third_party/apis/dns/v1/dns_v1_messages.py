@@ -1117,6 +1117,8 @@ class Policy(_messages.Message):
       DNS queries sent by VMs or applications over VPN connections. When
       enabled, a virtual IP address will be allocated from each of the sub-
       networks that are bound to this policy.
+    enableLogging: Controls whether logging is enabled for the networks bound
+      to this policy. Defaults to no logging if not set.
     id: Unique identifier for the resource; defined by the server (output
       only).
     kind: Identifies what kind of resource this is. Value: the fixed string
@@ -1129,10 +1131,11 @@ class Policy(_messages.Message):
   alternativeNameServerConfig = _messages.MessageField('PolicyAlternativeNameServerConfig', 1)
   description = _messages.StringField(2)
   enableInboundForwarding = _messages.BooleanField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'dns#policy')
-  name = _messages.StringField(6)
-  networks = _messages.MessageField('PolicyNetwork', 7, repeated=True)
+  enableLogging = _messages.BooleanField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default=u'dns#policy')
+  name = _messages.StringField(7)
+  networks = _messages.MessageField('PolicyNetwork', 8, repeated=True)
 
 
 class PolicyAlternativeNameServerConfig(_messages.Message):

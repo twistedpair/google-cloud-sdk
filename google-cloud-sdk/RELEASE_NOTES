@@ -5,6 +5,96 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 265.0.0 (2019-10-01)
+
+### Cloud SDK
+
+*   Added `--include-email` flag to `gcloud auth print-identity-token` to
+    include service account email in the identity token of an impersonated
+    service account.
+*   Added `--token-format` and `--include-license` flags to
+    `gcloud auth print-identity-token` to include project and instance
+    information in the identity token of a Compute Engine instance.
+
+### App Engine
+
+* Added support for deploying Java11 fatjar directly.
+* Added support for Class-Path entry dependent jars for deploying a Java11 fatjar.
+* Updated the Go SDK to version 1.9.71.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/go/release-notes
+
+### BigQuery
+
+* Modified the output of `bq show` for models to also show encryption info.
+* Added functionality to `bq update` with `--clustering_fields` flag to convert
+  a clustered table to an unclustered table.
+* Added `--use_avro_logical_types` flag to `bq extract` to extract some columns
+  to their AVRO logical types rather than raw types.
+* Fixed issue where the formatting of unicode table names in some error messages
+  was incorrect.
+* Modified `bq query` to display the results of each statement in a script,
+  instead of only the last statement.
+* Added `--parent_job_id` flag to `bq ls` for listing child jobs of a script
+  job.
+
+### Cloud DNS
+
+* Promoted `--enable-logging` flag of `gcloud dns polices` to GA.
+
+### Cloud Dataproc
+
+* Promoted `gcloud dataproc autoscaling-policies` command group to GA.
+* Promoted `--autoscaling-policy` flag of `gcloud dataproc clusters create` and `gcloud dataproc clusters update` to GA.
+
+### Cloud Functions
+
+* Fixed a bug in `gcloud beta functions deploy` where new functions were
+  incorrectly made publicly invokable when the user specified they should be
+  private.
+
+### Cloud Pub/Sub
+
+* Promoted `--message-storage-policy-allowed-regions` flag of
+  `gcloud pubsub topics create`, and `--recompute-message-storage-policy` and
+  `--message-storage-policy-allowed-regions` flags of
+  `gcloud pubsub topics update` to GA. This allows users to control
+  the Cloud regions where published messages are stored at rest.
+
+### Cloud Run
+
+* Promoted `--max-instances` flag of `gcloud run deploy` and
+  `gcloud run services update` to beta.
+
+### Cloud Storage
+
+* Updated gsutil component to 4.43.
+
+### Compute Engine
+
+* Promoted 100G interconnect link type support for `gcloud compute interconnects create` to GA.
+* Promoted `gcloud compute instances os-inventory` command group to GA.
+* Promoted `gcloud compute instances import` to GA.
+
+### Firebase Test Lab
+
+*   Added beta support for iOS Game Loop tests.
+*   Added `--type` flag to `gcloud firebase test ios run`.
+*   Added `--app` to `gcloud firebase test ios run`.
+*   Added `--scenario-numbers` to `gcloud firebase test ios run`.
+
+### Miscellaneous
+
+* Added `separator` attribute to `--format=multi` flag.
+
+### Translation API
+
+* Added `gcloud beta ml translate` command group.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 264.0.0 (2019-09-24)
 
 ### Cloud SDK

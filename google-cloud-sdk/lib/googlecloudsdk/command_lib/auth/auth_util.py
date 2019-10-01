@@ -54,20 +54,17 @@ def AllAccounts():
 
 
 def IsGceAccountCredentials(cred):
-  if isinstance(cred, oauth2client_gce.AppAssertionCredentials):
-    return True
-  return False
+  """Checks if the credential is a Compute Engine service account credential."""
+  return isinstance(cred, oauth2client_gce.AppAssertionCredentials)
 
 
 def IsServiceAccountCredential(cred):
-  """check account type."""
-  if isinstance(cred, service_account.ServiceAccountCredentials):
-    return True
-  return False
+  """Checks if the credential is a service account credential."""
+  return isinstance(cred, service_account.ServiceAccountCredentials)
 
 
 def IsImpersonationCredential(cred):
-  """check account type."""
+  """Checks if the credential is an impersonated service account credential."""
   return (impersonation_util.
           ImpersonationAccessTokenProvider.IsImpersonationCredential(cred))
 

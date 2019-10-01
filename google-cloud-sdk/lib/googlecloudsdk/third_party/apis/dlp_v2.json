@@ -138,7 +138,7 @@
       "type": "object",
       "properties": {
         "infoTypes": {
-          "description": "Restricts what info_types to look for. The values must correspond to\nInfoType values returned by ListInfoTypes or listed at\nhttps:\/\/cloud.google.com\/dlp\/docs\/infotypes-reference.\n\nWhen no InfoTypes or CustomInfoTypes are specified in a request, the\nsystem may automatically choose what detectors to run. By default this may\nbe all types, but may change over time as detectors are updated.\n\nThe special InfoType name \"ALL_BASIC\" can be used to trigger all detectors,\nbut may change over time as new InfoTypes are added. If you need precise\ncontrol and predictability as to what detectors are run you should specify\nspecific InfoTypes listed in the reference.",
+          "description": "Restricts what info_types to look for. The values must correspond to\nInfoType values returned by ListInfoTypes or listed at\nhttps:\/\/cloud.google.com\/dlp\/docs\/infotypes-reference.\n\nWhen no InfoTypes or CustomInfoTypes are specified in a request, the\nsystem may automatically choose what detectors to run. By default this may\nbe all types, but may change over time as detectors are updated.\n\nIf you need precise control and predictability as to what detectors are\nrun you should specify specific InfoTypes listed in the reference,\notherwise a default list will be used, which may change over time.",
           "type": "array",
           "items": {
             "$ref": "GooglePrivacyDlpV2InfoType"
@@ -1957,7 +1957,7 @@
       "type": "object",
       "properties": {
         "reidentifyConfig": {
-          "description": "Configuration for the re-identification of the content item.\nThis field shares the same proto message type that is used for\nde-identification, however its usage here is for the reversal of the\nprevious de-identification. Re-identification is performed by examining\nthe transformations used to de-identify the items and executing the\nreverse. This requires that only reversible transformations\nbe provided here. The reversible transformations are:\n\n - `CryptoReplaceFfxFpeConfig`",
+          "description": "Configuration for the re-identification of the content item.\nThis field shares the same proto message type that is used for\nde-identification, however its usage here is for the reversal of the\nprevious de-identification. Re-identification is performed by examining\nthe transformations used to de-identify the items and executing the\nreverse. This requires that only reversible transformations\nbe provided here. The reversible transformations are:\n\n - `CryptoDeterministicConfig`\n - `CryptoReplaceFfxFpeConfig`",
           "$ref": "GooglePrivacyDlpV2DeidentifyConfig"
         },
         "inspectConfig": {
@@ -2552,7 +2552,7 @@
           "format": "google-datetime"
         },
         "timestampField": {
-          "description": "Specification of the field containing the timestamp of scanned items.\nUsed for data sources like Datastore or BigQuery.\nIf not specified for BigQuery, table last modification timestamp\nis checked against given time span.\nThe valid data types of the timestamp field are:\nfor BigQuery - timestamp, date, datetime;\nfor Datastore - timestamp.\nDatastore entity will be scanned if the timestamp property does not exist\nor its value is empty or invalid.",
+          "description": "Specification of the field containing the timestamp of scanned items.\nUsed for data sources like Datastore and BigQuery.\n\nFor BigQuery:\nRequired to filter out rows based on the given start and\nend times. If not specified and the table was modified between the given\nstart and end times, the entire table will be scanned.\nThe valid data types of the timestamp field are: `INTEGER`, `DATE`,\n`TIMESTAMP`, or `DATETIME` BigQuery column.\n\nFor Datastore.\nValid data types of the timestamp field are: `TIMESTAMP`.\nDatastore entity will be scanned if the timestamp property does not\nexist or its value is empty or invalid.",
           "$ref": "GooglePrivacyDlpV2FieldId"
         },
         "enableAutoPopulationOfTimespanConfig": {

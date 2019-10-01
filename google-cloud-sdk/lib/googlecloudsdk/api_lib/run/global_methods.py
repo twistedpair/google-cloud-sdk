@@ -74,15 +74,10 @@ def ListServices(client, locations):
   response = client.projects_locations_services.List(request)
 
   # Log the regions that did not respond.
-  additional_properties = ((response.regionDetails and
-                            response.regionDetails.additionalProperties) or [])
-  missing_regions = [
-      prop.key for prop in additional_properties if prop.value.error.code
-  ]
-  if missing_regions:
+  if response.unreachable:
     log.warning('The following Cloud Run regions did not respond: {}. '
                 'List results may be incomplete.'.format(', '.join(
-                    sorted(missing_regions))))
+                    sorted(response.unreachable))))
 
   return [
       service.Service(item, client.MESSAGES_MODULE) for item in response.items

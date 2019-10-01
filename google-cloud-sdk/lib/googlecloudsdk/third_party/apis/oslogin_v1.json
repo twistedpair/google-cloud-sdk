@@ -200,6 +200,10 @@
             "LINUX",
             "WINDOWS"
           ]
+        },
+        "name": {
+          "description": "Output only. The canonical resource name.",
+          "type": "string"
         }
       }
     },
@@ -219,6 +223,10 @@
         },
         "fingerprint": {
           "description": "Output only. The SHA-256 fingerprint of the SSH public key.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Output only. The canonical resource name.",
           "type": "string"
         }
       }

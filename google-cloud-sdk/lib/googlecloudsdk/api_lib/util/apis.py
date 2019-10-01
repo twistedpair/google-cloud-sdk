@@ -149,14 +149,15 @@ def ResolveVersion(api_name, default_override=None):
 
 
 API_ENABLEMENT_REGEX = re.compile(
-    '(?:Access Not Configured. )?.*has not been used in project \\S+ before or '
-    'it is disabled. Enable it by visiting https://console.\\S+.google'
-    '.com/apis/api/([^/]+)/overview\\?project=(\\S+) then retry. If you '
-    'enabled this API recently, wait a few minutes for the action to propagate '
-    'to our systems and retry.')
+    '.*Enable it by visiting https://console.(?:cloud|developers).google.com'
+    '/apis/api/([^/]+)/overview\\?project=(\\S+) then retry. If you '
+    'enabled this API recently, wait a few minutes for the action to propagate'
+    ' to our systems and retry.\\w*')
 
 
 API_ENABLEMENT_ERROR_EXPECTED_STATUS_CODE = 403  # retry status code
+# TODO(b/141556680): delete this special case when KMS throws 403.
+KMS_ENABLEMENT_ERROR_EXPECTED_STATUS_CODE = 400  # retry status code
 
 
 def _GetApiEnablementInfo(exc):
@@ -184,6 +185,15 @@ def _GetApiEnablementInfo(exc):
 _PROJECTS_NOT_TO_ENABLE = {'google.com:cloudsdktool'}
 
 
+# TODO(b/141556680): delete this function when KMS throws 403.
+def _GetApiEnablementInfoKMS(exc):
+  match = API_ENABLEMENT_REGEX.match(exc.payload.status_message)
+  if (exc.payload.status_code == KMS_ENABLEMENT_ERROR_EXPECTED_STATUS_CODE
+      and match is not None):
+    return (match.group(2), match.group(1))
+  return (None, None)
+
+
 def ShouldAttemptProjectEnable(project):
   return project not in _PROJECTS_NOT_TO_ENABLE
 
@@ -203,6 +213,9 @@ def GetApiEnablementInfo(exception):
   """
   parsed_error = api_exceptions.HttpException(exception)
   (project, service_token) = _GetApiEnablementInfo(parsed_error)
+# TODO(b/141556680): delete this when KMS throws 403.
+  if parsed_error.payload.api_name == 'cloudkms':
+    (project, service_token) = _GetApiEnablementInfoKMS(parsed_error)
   if (project is not None and ShouldAttemptProjectEnable(project)
       and service_token is not None):
     return (project, service_token, parsed_error)
@@ -240,30 +253,39 @@ def PromptToEnableApi(project, service_token, exception,
     raise exception
 
 
-def CheckResponseForApiEnablement(response):
-  """Checks API error and if it's an enablement error, prompt to enable & retry.
+def CheckResponseForApiEnablement():
+  """Returns a callback for checking API errors."""
+  state = {'already_prompted_to_enable': False}
 
-  Args:
-    response: response that had an error.
+  def _CheckResponseForApiEnablement(response):
+    """Checks API error and if it's an enablement error, prompt to enable & retry.
 
-  Raises:
-    apitools_exceptions.RequestError: error which should signal apitools to
-      retry.
-    api_exceptions.HttpException: the parsed error.
-  """
-  # This will throw if there was a specific type of error. If not, then we can
-  # parse and deal with our own class of errors.
-  http_wrapper.CheckResponse(response)
-  if not properties.VALUES.core.should_prompt_to_enable_api.GetBool():
-    return
-  # Once we get here, we check if it was an API enablement error and if so,
-  # prompt the user to enable the API. If yes, we make that call and then
-  # raise a RequestError, which will prompt the caller to retry. If not, we
-  # raise the actual HTTP error.
-  response_as_error = apitools_exceptions.HttpError.FromResponse(response)
-  enablement_info = GetApiEnablementInfo(response_as_error)
-  if enablement_info:
-    PromptToEnableApi(*enablement_info)
+    Args:
+      response: response that had an error.
+
+    Raises:
+      apitools_exceptions.RequestError: error which should signal apitools to
+        retry.
+      api_exceptions.HttpException: the parsed error.
+    """
+    # This will throw if there was a specific type of error. If not, then we can
+    # parse and deal with our own class of errors.
+    http_wrapper.CheckResponse(response)
+    if not properties.VALUES.core.should_prompt_to_enable_api.GetBool():
+      return
+    # Once we get here, we check if it was an API enablement error and if so,
+    # prompt the user to enable the API. If yes, we make that call and then
+    # raise a RequestError, which will prompt the caller to retry. If not, we
+    # raise the actual HTTP error.
+    response_as_error = apitools_exceptions.HttpError.FromResponse(response)
+    enablement_info = GetApiEnablementInfo(response_as_error)
+    if enablement_info:
+      if state['already_prompted_to_enable']:
+        raise apitools_exceptions.RequestError('Retry')
+      state['already_prompted_to_enable'] = True
+      PromptToEnableApi(*enablement_info)
+
+  return _CheckResponseForApiEnablement
 
 
 def GetClientClass(api_name, api_version):
@@ -295,7 +317,7 @@ def GetClientInstance(api_name, api_version, no_http=False):
   return apis_internal._GetClientInstance(
       api_name, api_version,
       no_http=no_http,
-      check_response_func=CheckResponseForApiEnablement)
+      check_response_func=CheckResponseForApiEnablement())
 
 
 def GetEffectiveApiEndpoint(api_name, api_version, client_class=None):

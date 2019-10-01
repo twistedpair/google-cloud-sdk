@@ -30740,24 +30740,35 @@ class PathRule(_messages.Message):
 class Policy(_messages.Message):
   r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.    A `Policy`
-  consists of a list of `bindings`. A `binding` binds a list of `members` to a
-  `role`, where the members can be user accounts, Google groups, Google
-  domains, and service accounts. A `role` is a named list of permissions
-  defined by IAM.  **JSON Example**  { "bindings": [ { "role": "roles/owner",
-  "members": [ "user:mike@example.com", "group:admins@example.com",
-  "domain:google.com", "serviceAccount:my-other-
-  app@appspot.gserviceaccount.com" ] }, { "role": "roles/viewer", "members":
-  ["user:sean@example.com"] } ] }  **YAML Example**  bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-other-app@appspot.gserviceaccount.com role: roles/owner -
-  members: - user:sean@example.com role: roles/viewer    For a description of
-  IAM and its features, see the [IAM developer's
+  is a collection of `bindings`. A `binding` binds one or more `members` to a
+  single `role`. Members can be user accounts, service accounts, Google
+  groups, and domains (such as G Suite). A `role` is a named list of
+  permissions (defined by IAM or configured by users). A `binding` can
+  optionally specify a `condition`, which is a logic expression that further
+  constrains the role binding based on attributes about the request and/or
+  target resource.  **JSON Example**  { "bindings": [ { "role":
+  "roles/resourcemanager.organizationAdmin", "members": [
+  "user:mike@example.com", "group:admins@example.com", "domain:google.com",
+  "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
+  "roles/resourcemanager.organizationViewer", "members":
+  ["user:eve@example.com"], "condition": { "title": "expirable access",
+  "description": "Does not grant access after Sep 2020", "expression":
+  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ] }  **YAML
+  Example**  bindings: - members: - user:mike@example.com -
+  group:admins@example.com - domain:google.com - serviceAccount:my-project-
+  id@appspot.gserviceaccount.com role: roles/resourcemanager.organizationAdmin
+  - members: - user:eve@example.com role:
+  roles/resourcemanager.organizationViewer condition: title: expirable access
+  description: Does not grant access after Sep 2020 expression: request.time <
+  timestamp('2020-10-01T00:00:00.000Z')  For a description of IAM and its
+  features, see the [IAM developer's
   guide](https://cloud.google.com/iam/docs).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. `bindings` with no
-      members will result in an error.
+    bindings: Associates a list of `members` to a `role`. Optionally may
+      specify a `condition` that determines when binding is in effect.
+      `bindings` with no members will result in an error.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -30766,7 +30777,9 @@ class Policy(_messages.Message):
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten.
+      the existing policy is overwritten. Due to blind-set semantics of an
+      etag-less policy, 'setIamPolicy' will not fail even if either of
+      incoming or stored policy does not meet the version requirements.
     iamOwned:
     rules: If more than one rule is specified, the rules are applied in the
       following manner: - All matching LOG rules are always applied. - If any
@@ -30776,10 +30789,14 @@ class Policy(_messages.Message):
       will be applied if one or more matching rule requires logging. -
       Otherwise, if no rule applies, permission is denied.
     version: Specifies the format of the policy.  Valid values are 0, 1, and
-      3. Requests specifying an invalid value will be rejected.  Policies with
-      any conditional bindings must specify version 3. Policies without any
-      conditional bindings may specify any valid value or leave the field
-      unset.
+      3. Requests specifying an invalid value will be rejected.  Operations
+      affecting conditional bindings must specify version 3. This can be
+      either setting a conditional policy, modifying a conditional binding, or
+      removing a conditional binding from the stored conditional policy.
+      Operations on non-conditional policies may specify any valid value or
+      leave the field unset.  If no etag is provided in the call to
+      `setIamPolicy`, any version compliance checks on the incoming and/or
+      stored policy is skipped.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -33434,6 +33451,12 @@ class Route(_messages.Message):
     nextHopGateway: The URL to a gateway that should handle matching packets.
       You can only specify the internet gateway using a full or partial valid
       URL:  projects/project/global/gateways/default-internet-gateway
+    nextHopIlb: The URL to a forwarding rule of type
+      loadBalancingScheme=INTERNAL that should handle matching packets. You
+      can only specify the forwarding rule as a partial or full URL. For
+      example, the following are all valid URLs:   - https://www.googleapis.co
+      m/compute/v1/projects/project/regions/region/forwardingRules/forwardingR
+      ule  - regions/region/forwardingRules/forwardingRule
     nextHopInstance: The URL to an instance that should handle matching
       packets. You can specify this as a full or partial URL. For example: htt
       ps://www.googleapis.com/compute/v1/projects/project/zones/zone/instances
@@ -33562,15 +33585,16 @@ class Route(_messages.Message):
   name = _messages.StringField(6)
   network = _messages.StringField(7)
   nextHopGateway = _messages.StringField(8)
-  nextHopInstance = _messages.StringField(9)
-  nextHopIp = _messages.StringField(10)
-  nextHopNetwork = _messages.StringField(11)
-  nextHopPeering = _messages.StringField(12)
-  nextHopVpnTunnel = _messages.StringField(13)
-  priority = _messages.IntegerField(14, variant=_messages.Variant.UINT32)
-  selfLink = _messages.StringField(15)
-  tags = _messages.StringField(16, repeated=True)
-  warnings = _messages.MessageField('WarningsValueListEntry', 17, repeated=True)
+  nextHopIlb = _messages.StringField(9)
+  nextHopInstance = _messages.StringField(10)
+  nextHopIp = _messages.StringField(11)
+  nextHopNetwork = _messages.StringField(12)
+  nextHopPeering = _messages.StringField(13)
+  nextHopVpnTunnel = _messages.StringField(14)
+  priority = _messages.IntegerField(15, variant=_messages.Variant.UINT32)
+  selfLink = _messages.StringField(16)
+  tags = _messages.StringField(17, repeated=True)
+  warnings = _messages.MessageField('WarningsValueListEntry', 18, repeated=True)
 
 
 class RouteList(_messages.Message):
@@ -34277,6 +34301,9 @@ class RouterNat(_messages.Message):
       other Router.Nat section in any Router for this network in this region.
 
   Fields:
+    drainNatIps: A list of URLs of the IP resources to be drained. These IPs
+      must be valid static external IPs that have been assigned to the NAT.
+      These IPs should be used for updating/patching a NAT only.
     icmpIdleTimeoutSec: Timeout (in seconds) for ICMP connections. Defaults to
       30s if not set.
     logConfig: Configure logging on this NAT.
@@ -34352,17 +34379,18 @@ class RouterNat(_messages.Message):
     ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES = 1
     LIST_OF_SUBNETWORKS = 2
 
-  icmpIdleTimeoutSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  logConfig = _messages.MessageField('RouterNatLogConfig', 2)
-  minPortsPerVm = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  name = _messages.StringField(4)
-  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 5)
-  natIps = _messages.StringField(6, repeated=True)
-  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 7)
-  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 8, repeated=True)
-  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  udpIdleTimeoutSec = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  drainNatIps = _messages.StringField(1, repeated=True)
+  icmpIdleTimeoutSec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  logConfig = _messages.MessageField('RouterNatLogConfig', 3)
+  minPortsPerVm = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  name = _messages.StringField(5)
+  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 6)
+  natIps = _messages.StringField(7, repeated=True)
+  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 8)
+  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 9, repeated=True)
+  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  udpIdleTimeoutSec = _messages.IntegerField(12, variant=_messages.Variant.INT32)
 
 
 class RouterNatLogConfig(_messages.Message):
@@ -34500,6 +34528,10 @@ class RouterStatusNatStatus(_messages.Message):
   Fields:
     autoAllocatedNatIps: A list of IPs auto-allocated for NAT. Example:
       ["1.1.1.1", "129.2.16.89"]
+    drainAutoAllocatedNatIps: A list of IPs auto-allocated for NAT that are in
+      drain mode. Example: ["1.1.1.1", ?179.12.26.133?].
+    drainUserAllocatedNatIps: A list of IPs user-allocated for NAT that are in
+      drain mode. Example: ["1.1.1.1", ?179.12.26.133?].
     minExtraNatIpsNeeded: The number of extra IPs to allocate. This will be
       greater than 0 only if user-specified IPs are NOT enough to allow all
       configured VMs to use NAT. This value is meaningful only when auto-
@@ -34514,11 +34546,13 @@ class RouterStatusNatStatus(_messages.Message):
   """
 
   autoAllocatedNatIps = _messages.StringField(1, repeated=True)
-  minExtraNatIpsNeeded = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  name = _messages.StringField(3)
-  numVmEndpointsWithNatMappings = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  userAllocatedNatIpResources = _messages.StringField(5, repeated=True)
-  userAllocatedNatIps = _messages.StringField(6, repeated=True)
+  drainAutoAllocatedNatIps = _messages.StringField(2, repeated=True)
+  drainUserAllocatedNatIps = _messages.StringField(3, repeated=True)
+  minExtraNatIpsNeeded = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  name = _messages.StringField(5)
+  numVmEndpointsWithNatMappings = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  userAllocatedNatIpResources = _messages.StringField(7, repeated=True)
+  userAllocatedNatIps = _messages.StringField(8, repeated=True)
 
 
 class RouterStatusResponse(_messages.Message):
@@ -40718,10 +40752,17 @@ class VmEndpointNatMappingsInterfaceNatMappings(_messages.Message):
   r"""Contain information of Nat mapping for an interface of this endpoint.
 
   Fields:
+    drainNatIpPortRanges: List of all drain IP:port-range mappings assigned to
+      this interface. These ranges are inclusive, that is, both the first and
+      the last ports can be used for NAT. Example: ["2.2.2.2:12345-12355",
+      "1.1.1.1:2234-2234"].
     natIpPortRanges: A list of all IP:port-range mappings assigned to this
       interface. These ranges are inclusive, that is, both the first and the
       last ports can be used for NAT. Example: ["2.2.2.2:12345-12355",
       "1.1.1.1:2234-2234"].
+    numTotalDrainNatPorts: Total number of drain ports across all NAT IPs
+      allocated to this interface. It equals to the aggregated port number in
+      the field drain_nat_ip_port_ranges.
     numTotalNatPorts: Total number of ports across all NAT IPs allocated to
       this interface. It equals to the aggregated port number in the field
       nat_ip_port_ranges.
@@ -40731,10 +40772,12 @@ class VmEndpointNatMappingsInterfaceNatMappings(_messages.Message):
     sourceVirtualIp: Primary IP of the VM for this NIC.
   """
 
-  natIpPortRanges = _messages.StringField(1, repeated=True)
-  numTotalNatPorts = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  sourceAliasIpRange = _messages.StringField(3)
-  sourceVirtualIp = _messages.StringField(4)
+  drainNatIpPortRanges = _messages.StringField(1, repeated=True)
+  natIpPortRanges = _messages.StringField(2, repeated=True)
+  numTotalDrainNatPorts = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  numTotalNatPorts = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  sourceAliasIpRange = _messages.StringField(5)
+  sourceVirtualIp = _messages.StringField(6)
 
 
 class VmEndpointNatMappingsList(_messages.Message):

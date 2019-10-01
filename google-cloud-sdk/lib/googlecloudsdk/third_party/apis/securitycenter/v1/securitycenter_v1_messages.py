@@ -488,11 +488,11 @@ class GroupAssetsRequest(_messages.Message):
       security_center_properties.resource_project: `=`, `:` *
       security_center_properties.resource_owners: `=`, `:`  For example,
       `resource_properties.size = 100` is a valid filter string.
-    groupBy: Expression that defines what assets fields to use for grouping.
-      The string value should follow SQL syntax: comma separated list of
-      fields. For example: "security_center_properties.resource_project,securi
-      ty_center_properties.project".  The following fields are supported when
-      compare_duration is not set:  *
+    groupBy: Required. Expression that defines what assets fields to use for
+      grouping. The string value should follow SQL syntax: comma separated
+      list of fields. For example: "security_center_properties.resource_projec
+      t,security_center_properties.project".  The following fields are
+      supported when compare_duration is not set:  *
       security_center_properties.resource_project *
       security_center_properties.resource_type *
       security_center_properties.resource_parent  The following fields are
@@ -580,12 +580,12 @@ class GroupFindingsRequest(_messages.Message):
       "event_time = 1560208038000"  * security_marks.marks: `=`, `:` *
       source_properties: `=`, `:`, `>`, `<`, `>=`, `<=`  For example,
       `source_properties.size = 100` is a valid filter string.
-    groupBy: Expression that defines what assets fields to use for grouping
-      (including `state_change`). The string value should follow SQL syntax:
-      comma separated list of fields. For example: "parent,resource_name".
-      The following fields are supported:  * resource_name * category * state
-      * parent  The following fields are supported when compare_duration is
-      set:  * state_change
+    groupBy: Required. Expression that defines what assets fields to use for
+      grouping (including `state_change`). The string value should follow SQL
+      syntax: comma separated list of fields. For example:
+      "parent,resource_name".  The following fields are supported:  *
+      resource_name * category * state * parent  The following fields are
+      supported when compare_duration is set:  * state_change
     pageSize: The maximum number of results to return in a single response.
       Default is 10, minimum is 1, maximum is 1000.
     pageToken: The value returned by the last `GroupFindingsResponse`;
@@ -935,27 +935,38 @@ class OrganizationSettings(_messages.Message):
 class Policy(_messages.Message):
   r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
-  consists of a list of `bindings`. A `binding` binds a list of `members` to a
-  `role`, where the members can be user accounts, Google groups, Google
-  domains, and service accounts. A `role` is a named list of permissions
-  defined by IAM.  **JSON Example**      {       "bindings": [         {
-  "role": "roles/owner",           "members": [
+  is a collection of `bindings`. A `binding` binds one or more `members` to a
+  single `role`. Members can be user accounts, service accounts, Google
+  groups, and domains (such as G Suite). A `role` is a named list of
+  permissions (defined by IAM or configured by users). A `binding` can
+  optionally specify a `condition`, which is a logic expression that further
+  constrains the role binding based on attributes about the request and/or
+  target resource.  **JSON Example**      {       "bindings": [         {
+  "role": "roles/resourcemanager.organizationAdmin",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
-  "domain:google.com",             "serviceAccount:my-other-
-  app@appspot.gserviceaccount.com"           ]         },         {
-  "role": "roles/viewer",           "members": ["user:sean@example.com"]
-  }       ]     }  **YAML Example**      bindings:     - members:       -
-  user:mike@example.com       - group:admins@example.com       -
-  domain:google.com       - serviceAccount:my-other-
-  app@appspot.gserviceaccount.com       role: roles/owner     - members:
-  - user:sean@example.com       role: roles/viewer   For a description of IAM
-  and its features, see the [IAM developer's
+  "domain:google.com",             "serviceAccount:my-project-
+  id@appspot.gserviceaccount.com"           ]         },         {
+  "role": "roles/resourcemanager.organizationViewer",           "members":
+  ["user:eve@example.com"],           "condition": {             "title":
+  "expirable access",             "description": "Does not grant access after
+  Sep 2020",             "expression": "request.time <
+  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ]     }
+  **YAML Example**      bindings:     - members:       - user:mike@example.com
+  - group:admins@example.com       - domain:google.com       - serviceAccount
+  :my-project-id@appspot.gserviceaccount.com       role:
+  roles/resourcemanager.organizationAdmin     - members:       -
+  user:eve@example.com       role: roles/resourcemanager.organizationViewer
+  condition:         title: expirable access         description: Does not
+  grant access after Sep 2020         expression: request.time <
+  timestamp('2020-10-01T00:00:00.000Z')  For a description of IAM and its
+  features, see the [IAM developer's
   guide](https://cloud.google.com/iam/docs).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. `bindings` with no
-      members will result in an error.
+    bindings: Associates a list of `members` to a `role`. Optionally may
+      specify a `condition` that determines when binding is in effect.
+      `bindings` with no members will result in an error.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -964,12 +975,18 @@ class Policy(_messages.Message):
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten.
+      the existing policy is overwritten. Due to blind-set semantics of an
+      etag-less policy, 'setIamPolicy' will not fail even if either of
+      incoming or stored policy does not meet the version requirements.
     version: Specifies the format of the policy.  Valid values are 0, 1, and
-      3. Requests specifying an invalid value will be rejected.  Policies with
-      any conditional bindings must specify version 3. Policies without any
-      conditional bindings may specify any valid value or leave the field
-      unset.
+      3. Requests specifying an invalid value will be rejected.  Operations
+      affecting conditional bindings must specify version 3. This can be
+      either setting a conditional policy, modifying a conditional binding, or
+      removing a conditional binding from the stored conditional policy.
+      Operations on non-conditional policies may specify any valid value or
+      leave the field unset.  If no etag is provided in the call to
+      `setIamPolicy`, any version compliance checks on the incoming and/or
+      stored policy is skipped.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -1076,7 +1093,7 @@ class SecuritycenterOrganizationsAssetsGroupRequest(_messages.Message):
   Fields:
     groupAssetsRequest: A GroupAssetsRequest resource to be passed as the
       request body.
-    parent: Name of the organization to groupBy. Its format is
+    parent: Required. Name of the organization to groupBy. Its format is
       "organizations/[organization_id]".
   """
 
@@ -1154,8 +1171,8 @@ class SecuritycenterOrganizationsAssetsListRequest(_messages.Message):
     pageToken: The value returned by the last `ListAssetsResponse`; indicates
       that this is a continuation of a prior `ListAssets` call, and that the
       system should return the next page of data.
-    parent: Name of the organization assets should belong to. Its format is
-      "organizations/[organization_id]".
+    parent: Required. Name of the organization assets should belong to. Its
+      format is "organizations/[organization_id]".
     readTime: Time used as a reference point when filtering assets. The filter
       is limited to assets existing at the supplied time and their values are
       those at that specific time. Absence of this field will default to the
@@ -1176,8 +1193,8 @@ class SecuritycenterOrganizationsAssetsRunDiscoveryRequest(_messages.Message):
   r"""A SecuritycenterOrganizationsAssetsRunDiscoveryRequest object.
 
   Fields:
-    parent: Name of the organization to run asset discovery for. Its format is
-      "organizations/[organization_id]".
+    parent: Required. Name of the organization to run asset discovery for. Its
+      format is "organizations/[organization_id]".
     runAssetDiscoveryRequest: A RunAssetDiscoveryRequest resource to be passed
       as the request body.
   """
@@ -1214,8 +1231,8 @@ class SecuritycenterOrganizationsGetOrganizationSettingsRequest(_messages.Messag
   r"""A SecuritycenterOrganizationsGetOrganizationSettingsRequest object.
 
   Fields:
-    name: Name of the organization to get organization settings for. Its
-      format is "organizations/[organization_id]/organizationSettings".
+    name: Required. Name of the organization to get organization settings for.
+      Its format is "organizations/[organization_id]/organizationSettings".
   """
 
   name = _messages.StringField(1, required=True)
@@ -1271,8 +1288,8 @@ class SecuritycenterOrganizationsSourcesCreateRequest(_messages.Message):
   r"""A SecuritycenterOrganizationsSourcesCreateRequest object.
 
   Fields:
-    parent: Resource name of the new source's parent. Its format should be
-      "organizations/[organization_id]".
+    parent: Required. Resource name of the new source's parent. Its format
+      should be "organizations/[organization_id]".
     source: A Source resource to be passed as the request body.
   """
 
@@ -1285,11 +1302,11 @@ class SecuritycenterOrganizationsSourcesFindingsCreateRequest(_messages.Message)
 
   Fields:
     finding: A Finding resource to be passed as the request body.
-    findingId: Unique identifier provided by the client within the parent
-      scope. It must be alphanumeric and less than or equal to 32 characters
-      and greater than 0 characters in length.
-    parent: Resource name of the new finding's parent. Its format should be
-      "organizations/[organization_id]/sources/[source_id]".
+    findingId: Required. Unique identifier provided by the client within the
+      parent scope. It must be alphanumeric and less than or equal to 32
+      characters and greater than 0 characters in length.
+    parent: Required. Resource name of the new finding's parent. Its format
+      should be "organizations/[organization_id]/sources/[source_id]".
   """
 
   finding = _messages.MessageField('Finding', 1)
@@ -1303,7 +1320,7 @@ class SecuritycenterOrganizationsSourcesFindingsGroupRequest(_messages.Message):
   Fields:
     groupFindingsRequest: A GroupFindingsRequest resource to be passed as the
       request body.
-    parent: Name of the source to groupBy. Its format is
+    parent: Required. Name of the source to groupBy. Its format is
       "organizations/[organization_id]/sources/[source_id]". To groupBy across
       all sources provide a source_id of `-`. For example:
       organizations/123/sources/-
@@ -1372,7 +1389,7 @@ class SecuritycenterOrganizationsSourcesFindingsListRequest(_messages.Message):
     pageToken: The value returned by the last `ListFindingsResponse`;
       indicates that this is a continuation of a prior `ListFindings` call,
       and that the system should return the next page of data.
-    parent: Name of the source the findings belong to. Its format is
+    parent: Required. Name of the source the findings belong to. Its format is
       "organizations/[organization_id]/sources/[source_id]". To list across
       all sources provide a source_id of `-`. For example:
       organizations/123/sources/-
@@ -1417,7 +1434,7 @@ class SecuritycenterOrganizationsSourcesFindingsSetStateRequest(_messages.Messag
   r"""A SecuritycenterOrganizationsSourcesFindingsSetStateRequest object.
 
   Fields:
-    name: The relative resource name of the finding. See:
+    name: Required. The relative resource name of the finding. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
       me Example: "organizations/123/sources/456/finding/789".
     setFindingStateRequest: A SetFindingStateRequest resource to be passed as
@@ -1472,7 +1489,7 @@ class SecuritycenterOrganizationsSourcesGetRequest(_messages.Message):
   r"""A SecuritycenterOrganizationsSourcesGetRequest object.
 
   Fields:
-    name: Relative resource name of the source. Its format is
+    name: Required. Relative resource name of the source. Its format is
       "organizations/[organization_id]/source/[source_id]".
   """
 
@@ -1488,8 +1505,8 @@ class SecuritycenterOrganizationsSourcesListRequest(_messages.Message):
     pageToken: The value returned by the last `ListSourcesResponse`; indicates
       that this is a continuation of a prior `ListSources` call, and that the
       system should return the next page of data.
-    parent: Resource name of the parent of sources to list. Its format should
-      be "organizations/[organization_id]".
+    parent: Required. Resource name of the parent of sources to list. Its
+      format should be "organizations/[organization_id]".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1566,15 +1583,15 @@ class SetFindingStateRequest(_messages.Message):
   r"""Request message for updating a finding's state.
 
   Enums:
-    StateValueValuesEnum: The desired State of the finding.
+    StateValueValuesEnum: Required. The desired State of the finding.
 
   Fields:
-    startTime: The time at which the updated state takes effect.
-    state: The desired State of the finding.
+    startTime: Required. The time at which the updated state takes effect.
+    state: Required. The desired State of the finding.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The desired State of the finding.
+    r"""Required. The desired State of the finding.
 
     Values:
       STATE_UNSPECIFIED: Unspecified state.

@@ -453,8 +453,8 @@ class VpcaccessProjectsLocationsConnectorsCreateRequest(_messages.Message):
 
   Fields:
     connector: A Connector resource to be passed as the request body.
-    parent: The project and location in which the configuration should be
-      created, specified in the format `projects/*/locations/*`.
+    parent: Required. The project and location in which the configuration
+      should be created, specified in the format `projects/*/locations/*`.
   """
 
   connector = _messages.MessageField('Connector', 1)
@@ -465,7 +465,7 @@ class VpcaccessProjectsLocationsConnectorsDeleteRequest(_messages.Message):
   r"""A VpcaccessProjectsLocationsConnectorsDeleteRequest object.
 
   Fields:
-    name: Name of a Serverless VPC Access connector to delete.
+    name: Required. Name of a Serverless VPC Access connector to delete.
   """
 
   name = _messages.StringField(1, required=True)
@@ -475,7 +475,7 @@ class VpcaccessProjectsLocationsConnectorsGetRequest(_messages.Message):
   r"""A VpcaccessProjectsLocationsConnectorsGetRequest object.
 
   Fields:
-    name: Name of a Serverless VPC Access connector to get.
+    name: Required. Name of a Serverless VPC Access connector to get.
   """
 
   name = _messages.StringField(1, required=True)
@@ -487,7 +487,8 @@ class VpcaccessProjectsLocationsConnectorsListRequest(_messages.Message):
   Fields:
     pageSize: Maximum number of functions to return per call.
     pageToken: Continuation token.
-    parent: The project and location from which the routes should be listed.
+    parent: Required. The project and location from which the routes should be
+      listed.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)

@@ -37,4 +37,4 @@ APP_ENGINE_ROUTING_KEYS = ['service', 'version', 'instance']
 QUEUE_MANAGEMENT_WARNING = (
     'You are managing queues with gcloud, do not use queue.yaml or queue.xml '
     'in the future. More details at: '
-    'https://cloud.google.com/cloud-tasks/docs/queue-yaml.')
+    'https://cloud.google.com/tasks/docs/queue-yaml.')

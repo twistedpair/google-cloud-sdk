@@ -50,7 +50,7 @@ GOOGLE_GCE_METADATA_ZONE_URI = (
 
 GOOGLE_GCE_METADATA_ID_TOKEN_URI = (
     GOOGLE_GCE_METADATA_URI + '/instance/service-accounts/default/identity?'
-                              'audience={audience}')
+    'audience={audience}&format={format}&licenses={licenses}')
 
 
 GOOGLE_GCE_METADATA_HEADERS = {'Metadata-Flavor': 'Google'}

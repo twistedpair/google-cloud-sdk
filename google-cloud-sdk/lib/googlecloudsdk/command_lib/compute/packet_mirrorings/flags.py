@@ -69,8 +69,8 @@ def _AddArgs(parser, is_for_update=False):
       type=int,
       help="""\
       Priority of applying this packet mirroring. Priority is used to
-      break ties in cases where there is more than one matching rule. In
-      the case of two rules that apply for a given Instance, the one with
+      break ties in cases where there is more than one matching policy. In
+      the case of two policies that apply for a given Instance, the one with
       the lowest-numbered priority value wins. Mirroring all instances in
       a region for the network may produce a lot of mirrored traffic. If
       you want to "zoom in" on a subset of that traffic you can create
@@ -80,8 +80,8 @@ def _AddArgs(parser, is_for_update=False):
       to multiple sets of collector, you should set the priority for the more
       specific packet mirroring configuration to a lower value to ensure the
       packets are sent to the desired collector. Default value is 1000. Valid
-      range is 0 through 65535. If multiple rules end up having the same
-      priority, then one of the rules is picked non-deterministically.
+      range is 0 through 65535. If multiple policies end up having the same
+      priority, then one of the policies is picked non-deterministically.
       """)
 
   parser.add_argument(

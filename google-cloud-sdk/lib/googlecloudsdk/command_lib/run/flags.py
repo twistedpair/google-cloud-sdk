@@ -486,18 +486,22 @@ class _ScaleValue(object):
         raise ArgumentError('Instance count value %s is negative.' % value)
 
 
-def AddScalingFlags(parser):
-  """Add flags for scaling knobs."""
-
-  help_msg = (
-      'The {bound} number of container instances of the Service to run or '
-      '\'default\' to remove any {bound}.')
+def AddMinInstancesFlag(parser):
+  """Add min scaling flag."""
   GetClusterArgGroup(parser).add_argument(
-      '--min-instances', type=_ScaleValue,
-      help=help_msg.format(bound='minimum'))
+      '--min-instances',
+      type=_ScaleValue,
+      help=('The minimum number of container instances of the Service to run '
+            "or 'default' to remove any minimum."))
+
+
+def AddMaxInstancesFlag(parser):
+  """Add max scaling flag."""
   parser.add_argument(
-      '--max-instances', type=_ScaleValue,
-      help=help_msg.format(bound='maximum'))
+      '--max-instances',
+      type=_ScaleValue,
+      help=('The maximum number of container instances of the Service to run '
+            "or 'default' to remove any maximum."))
 
 
 def AddCommandFlag(parser):

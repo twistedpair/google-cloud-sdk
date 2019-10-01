@@ -35,7 +35,7 @@ def AppendOrgArg():
   org_spec_data = yaml_data.ResourceYAMLData.FromPath("scc.organization")
   arg_specs = [
       resource_args.GetResourcePresentationSpec(
-          verb="to be used for the SCC command",
+          verb="to be used for the SCC (Security Command Center) command",
           name="organization",
           required=True,
           prefixes=False,

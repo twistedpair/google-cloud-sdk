@@ -272,7 +272,7 @@
           "type": "string"
         },
         "schemaVersion": {
-          "description": "Required. The schema version of the notification.\n\"1.0\" is a JSON schema, as defined in\nhttps:\/\/cloud.google.com\/billing\/docs\/how-to\/budgets#notification_format",
+          "description": "Required. The schema version of the notification.\nOnly \"1.0\" is accepted. It represents the JSON schema as defined in\nhttps:\/\/cloud.google.com\/billing\/docs\/how-to\/budgets#notification_format",
           "type": "string"
         }
       }
@@ -287,7 +287,7 @@
           "$ref": "GoogleCloudBillingBudgetsV1alpha1Budget"
         },
         "updateMask": {
-          "description": "Optional. Indicates which fields in the provided budget to update.\nRead-only fields (such as `name`) cannot be changed. If this is not\nprovided, then only fields with non-default values are updated. See\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#default for more\ndetails.",
+          "description": "Optional. Indicates which fields in the provided budget to update.\nRead-only fields (such as `name`) cannot be changed. If this is not\nprovided, then only fields with non-default values from the request are\nupdated. See\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#default for more\ndetails about default values.",
           "type": "string",
           "format": "google-fieldmask"
         }

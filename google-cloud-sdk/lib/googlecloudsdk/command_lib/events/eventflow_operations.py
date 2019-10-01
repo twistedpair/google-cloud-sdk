@@ -61,7 +61,7 @@ def Connect(conn_context):
         conn_info.api_name,
         conn_info.api_version,
         # Only check response if not connecting to GKE
-        check_response_func=apis.CheckResponseForApiEnablement
+        check_response_func=apis.CheckResponseForApiEnablement()
         if conn_context.supports_one_platform else None,
         http_client=conn_context.HttpClient())
     # pylint: enable=protected-access

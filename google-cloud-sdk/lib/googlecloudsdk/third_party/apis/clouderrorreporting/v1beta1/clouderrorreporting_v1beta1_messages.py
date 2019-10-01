@@ -16,7 +16,7 @@ class ClouderrorreportingProjectsDeleteEventsRequest(_messages.Message):
   r"""A ClouderrorreportingProjectsDeleteEventsRequest object.
 
   Fields:
-    projectName: [Required] The resource name of the Google Cloud Platform
+    projectName: Required. The resource name of the Google Cloud Platform
       project. Written as `projects/` plus the [Google Cloud Platform project
       ID](https://support.google.com/cloud/answer/6158840). Example: `projects
       /my-project-123`.
@@ -33,20 +33,20 @@ class ClouderrorreportingProjectsEventsListRequest(_messages.Message):
       range.
 
   Fields:
-    groupId: [Required] The group for which events shall be returned.
-    pageSize: [Optional] The maximum number of results to return per response.
-    pageToken: [Optional] A `next_page_token` provided by a previous response.
-    projectName: [Required] The resource name of the Google Cloud Platform
+    groupId: Required. The group for which events shall be returned.
+    pageSize: Optional. The maximum number of results to return per response.
+    pageToken: Optional. A `next_page_token` provided by a previous response.
+    projectName: Required. The resource name of the Google Cloud Platform
       project. Written as `projects/` plus the [Google Cloud Platform project
       ID](https://support.google.com/cloud/answer/6158840). Example: `projects
       /my-project-123`.
-    serviceFilter_resourceType: [Optional] The exact value to match against
+    serviceFilter_resourceType: Optional. The exact value to match against
       [`ServiceContext.resource_type`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.resource_type).
-    serviceFilter_service: [Optional] The exact value to match against
+    serviceFilter_service: Optional. The exact value to match against
       [`ServiceContext.service`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.service).
-    serviceFilter_version: [Optional] The exact value to match against
+    serviceFilter_version: Optional. The exact value to match against
       [`ServiceContext.version`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.version).
     timeRange_period: Restricts the query to the specified time range.
@@ -84,7 +84,7 @@ class ClouderrorreportingProjectsEventsReportRequest(_messages.Message):
   r"""A ClouderrorreportingProjectsEventsReportRequest object.
 
   Fields:
-    projectName: [Required] The resource name of the Google Cloud Platform
+    projectName: Required. The resource name of the Google Cloud Platform
       project. Written as `projects/` plus the [Google Cloud Platform project
       ID](https://support.google.com/cloud/answer/6158840). Example: `projects
       /my-project-123`.
@@ -100,47 +100,47 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
   r"""A ClouderrorreportingProjectsGroupStatsListRequest object.
 
   Enums:
-    AlignmentValueValuesEnum: [Optional] The alignment of the timed counts to
+    AlignmentValueValuesEnum: Optional. The alignment of the timed counts to
       be returned. Default is `ALIGNMENT_EQUAL_AT_END`.
-    OrderValueValuesEnum: [Optional] The sort order in which the results are
+    OrderValueValuesEnum: Optional. The sort order in which the results are
       returned. Default is `COUNT_DESC`.
     TimeRangePeriodValueValuesEnum: Restricts the query to the specified time
       range.
 
   Fields:
-    alignment: [Optional] The alignment of the timed counts to be returned.
+    alignment: Optional. The alignment of the timed counts to be returned.
       Default is `ALIGNMENT_EQUAL_AT_END`.
-    alignmentTime: [Optional] Time where the timed counts shall be aligned if
+    alignmentTime: Optional. Time where the timed counts shall be aligned if
       rounded alignment is chosen. Default is 00:00 UTC.
-    groupId: [Optional] List all <code>ErrorGroupStats</code> with these IDs.
-    order: [Optional] The sort order in which the results are returned.
-      Default is `COUNT_DESC`.
-    pageSize: [Optional] The maximum number of results to return per response.
+    groupId: Optional. List all <code>ErrorGroupStats</code> with these IDs.
+    order: Optional. The sort order in which the results are returned. Default
+      is `COUNT_DESC`.
+    pageSize: Optional. The maximum number of results to return per response.
       Default is 20.
-    pageToken: [Optional] A `next_page_token` provided by a previous response.
+    pageToken: Optional. A `next_page_token` provided by a previous response.
       To view additional results, pass this token along with the identical
       query parameters as the first request.
-    projectName: [Required] The resource name of the Google Cloud Platform
+    projectName: Required. The resource name of the Google Cloud Platform
       project. Written as <code>projects/</code> plus the <a
       href="https://support.google.com/cloud/answer/6158840">Google Cloud
       Platform project ID</a>.  Example: <code>projects/my-project-123</code>.
-    serviceFilter_resourceType: [Optional] The exact value to match against
+    serviceFilter_resourceType: Optional. The exact value to match against
       [`ServiceContext.resource_type`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.resource_type).
-    serviceFilter_service: [Optional] The exact value to match against
+    serviceFilter_service: Optional. The exact value to match against
       [`ServiceContext.service`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.service).
-    serviceFilter_version: [Optional] The exact value to match against
+    serviceFilter_version: Optional. The exact value to match against
       [`ServiceContext.version`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.version).
     timeRange_period: Restricts the query to the specified time range.
-    timedCountDuration: [Optional] The preferred duration for a single
-      returned `TimedCount`. If not set, no timed counts are returned.
+    timedCountDuration: Optional. The preferred duration for a single returned
+      `TimedCount`. If not set, no timed counts are returned.
   """
 
   class AlignmentValueValuesEnum(_messages.Enum):
-    r"""[Optional] The alignment of the timed counts to be returned. Default
-    is `ALIGNMENT_EQUAL_AT_END`.
+    r"""Optional. The alignment of the timed counts to be returned. Default is
+    `ALIGNMENT_EQUAL_AT_END`.
 
     Values:
       ERROR_COUNT_ALIGNMENT_UNSPECIFIED: <no description>
@@ -152,8 +152,8 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
     ALIGNMENT_EQUAL_AT_END = 2
 
   class OrderValueValuesEnum(_messages.Enum):
-    r"""[Optional] The sort order in which the results are returned. Default
-    is `COUNT_DESC`.
+    r"""Optional. The sort order in which the results are returned. Default is
+    `COUNT_DESC`.
 
     Values:
       GROUP_ORDER_UNSPECIFIED: <no description>
@@ -204,7 +204,7 @@ class ClouderrorreportingProjectsGroupsGetRequest(_messages.Message):
   r"""A ClouderrorreportingProjectsGroupsGetRequest object.
 
   Fields:
-    groupName: [Required] The group resource name. Written as
+    groupName: Required. The group resource name. Written as
       <code>projects/<var>projectID</var>/groups/<var>group_name</var></code>.
       Call <a href="/error-
       reporting/reference/rest/v1beta1/projects.groupStats/list">
@@ -404,12 +404,12 @@ class ReportedErrorEvent(_messages.Message):
   r"""An error event which is reported to the Error Reporting system.
 
   Fields:
-    context: [Optional] A description of the context in which the error
+    context: Optional. A description of the context in which the error
       occurred.
-    eventTime: [Optional] Time when the event occurred. If not provided, the
+    eventTime: Optional. Time when the event occurred. If not provided, the
       time when the event was received by the Error Reporting system will be
       used.
-    message: [Required] The error message. If no `context.reportLocation` is
+    message: Required. The error message. If no `context.reportLocation` is
       provided, the message must contain a header (typically consisting of the
       exception type name and an error message) and an exception stack trace
       in one of the supported programming languages and formats. Supported
@@ -430,7 +430,7 @@ class ReportedErrorEvent(_messages.Message):
       [`(string)$exception`](http://php.net/manual/en/exception.tostring.php).
       * **Go**: Must be the return value of
       [`runtime.Stack()`](https://golang.org/pkg/runtime/debug/#Stack).
-    serviceContext: [Required] The service context in which this error has
+    serviceContext: Required. The service context in which this error has
       occurred.
   """
 

@@ -283,7 +283,7 @@ If you want to enable all scopes use the 'cloud-platform' scope.
   parser.add_argument(
       '--preemptible-worker-boot-disk-type', help=boot_disk_type_detailed_help)
 
-  autoscaling_group = parser.add_argument_group(hidden=(not beta))
+  autoscaling_group = parser.add_argument_group()
   flags.AddAutoscalingPolicyResourceArgForCluster(
       autoscaling_group, api_version=('v1beta2' if beta else 'v1'))
 
@@ -617,13 +617,14 @@ def GetClusterConfig(args,
         kerberos_config.kmsKeyUri = kerberos_kms_ref.RelativeName()
       cluster_config.securityConfig.kerberosConfig = kerberos_config
 
+  if args.autoscaling_policy:
+    cluster_config.autoscalingConfig = dataproc.messages.AutoscalingConfig(
+        policyUri=args.CONCEPTS.autoscaling_policy.Parse().RelativeName())
+
   if beta:
     if args.enable_component_gateway:
       cluster_config.endpointConfig = dataproc.messages.EndpointConfig(
           enableHttpPortAccess=args.enable_component_gateway)
-    if args.autoscaling_policy:
-      cluster_config.autoscalingConfig = dataproc.messages.AutoscalingConfig(
-          policyUri=args.CONCEPTS.autoscaling_policy.Parse().RelativeName())
 
   if include_ttl_config:
     lifecycle_config = dataproc.messages.LifecycleConfig()

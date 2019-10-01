@@ -40,10 +40,12 @@ import abc
 import io
 import os
 import re
+import shutil
 import tempfile
 
 from googlecloudsdk.api_lib.app import env
 from googlecloudsdk.api_lib.app import runtime_registry
+from googlecloudsdk.command_lib.app import jarfile
 from googlecloudsdk.command_lib.util import java
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
@@ -53,7 +55,6 @@ from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 import six
-
 
 _JAVA_APPCFG_ENTRY_POINT = 'com.google.appengine.tools.admin.AppCfg'
 
@@ -172,10 +173,10 @@ class _Command(six.with_metaclass(abc.ABCMeta, object)):
     log.info('Executing staging command: [{0}]\n\n'.format(' '.join(args)))
     out = io.StringIO()
     err = io.StringIO()
-    return_code = execution_utils.Exec(args, no_exit=True, out_func=out.write,
-                                       err_func=err.write)
-    message = _STAGING_COMMAND_OUTPUT_TEMPLATE.format(out=out.getvalue(),
-                                                      err=err.getvalue())
+    return_code = execution_utils.Exec(
+        args, no_exit=True, out_func=out.write, err_func=err.write)
+    message = _STAGING_COMMAND_OUTPUT_TEMPLATE.format(
+        out=out.getvalue(), err=err.getvalue())
     log.info(message)
     if return_code:
       raise StagingCommandFailedError(args, return_code, message)
@@ -203,6 +204,48 @@ class NoopCommand(_Command):
 
   def __eq__(self, other):
     return isinstance(other, NoopCommand)
+
+
+class CreateJava11YamlCommand(_Command):
+  """A command that creates a java11 runtime app.yaml from a jar file."""
+
+  def EnsureInstalled(self):
+    pass
+
+  def GetPath(self):
+    return None
+
+  def GetArgs(self, descriptor, jar_file, staging_dir):
+    return None
+
+  def Run(self, staging_area, jar_file, app_dir):
+    # Logic is simple: copy the jar in the staged area, and create a simple
+    # file app.yaml for runtime: java11.
+    shutil.copy2(jar_file, staging_area)
+    files.WriteFileContents(
+        os.path.join(staging_area, 'app.yaml'),
+        'runtime: java11\n',
+        private=True)
+    manifest = jarfile.ReadManifest(jar_file)
+    if manifest:
+      classpath_entry = manifest.main_section.get('Class-Path')
+      if classpath_entry:
+        libs = classpath_entry.split()
+        for lib in libs:
+          dependent_file = os.path.join(app_dir, lib)
+          # We copy the dep jar in the correct staging sub directories
+          # and only if it exists,
+          if os.path.isfile(dependent_file):
+            destination = os.path.join(staging_area, lib)
+            files.MakeDir(os.path.abspath(os.path.join(destination, os.pardir)))
+            if hasattr(os, 'symlink'):
+              os.symlink(dependent_file, destination)
+            else:
+              shutil.copy(dependent_file, destination)
+    return staging_area
+
+  def __eq__(self, other):
+    return isinstance(other, CreateJava11YamlCommand)
 
 
 class _BundledCommand(_Command):
@@ -322,15 +365,13 @@ class ExecutableCommand(_Command):
 _GO_APP_STAGER_DIR = os.path.join('platform', 'google_appengine')
 
 # Path to the jar which contains the staging command
-_APPENGINE_TOOLS_JAR = os.path.join(
-    'platform', 'google_appengine', 'google', 'appengine', 'tools', 'java',
-    'lib', 'appengine-tools-api.jar')
+_APPENGINE_TOOLS_JAR = os.path.join('platform', 'google_appengine', 'google',
+                                    'appengine', 'tools', 'java', 'lib',
+                                    'appengine-tools-api.jar')
 
 _STAGING_REGISTRY = {
     runtime_registry.RegistryEntry(
-        re.compile(r'(go|go1\..+)$'), {
-            env.FLEX, env.MANAGED_VMS
-        }):
+        re.compile(r'(go|go1\..+)$'), {env.FLEX, env.MANAGED_VMS}):
         _BundledCommand(
             os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager'),
             os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager.exe'),
@@ -349,6 +390,8 @@ _STAGING_REGISTRY = {
             _APPENGINE_TOOLS_JAR,
             component='app-engine-java',
             mapper=_JavaStagingMapper),
+    runtime_registry.RegistryEntry('java-jar', {env.STANDARD}):
+        CreateJava11YamlCommand(),
 }
 
 # _STAGING_REGISTRY_BETA extends _STAGING_REGISTRY, overriding entries if the
@@ -370,7 +413,7 @@ class Stager(object):
       app_dir: str, path to the unstaged app directory
       runtime: str, the name of the runtime for the application to stage
       environment: api_lib.app.env.Environment, the environment for the
-          application to stage
+        application to stage
 
     Returns:
       str, the path to the staged directory or None if no corresponding staging

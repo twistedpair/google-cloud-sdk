@@ -155,7 +155,7 @@ def AddCommonDaisyArgs(parser, add_log_location=True):
       default='2h',
       help="""\
           Maximum time a build can last before it fails as "TIMEOUT".
-          For example, specifying `2h` fails the process after  2 hours.
+          For example, specifying `2h` fails the process after 2 hours.
           See $ gcloud topic datetimes for information about duration formats.
           """)
   base.ASYNC_FLAG.AddToParser(parser)
@@ -575,7 +575,8 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
   AppendArg(ovf_importer_args, 'timeout', ovf_import_timeout, '-{0}={1}s')
   AppendArg(ovf_importer_args, 'project', project)
   _AppendNodeAffinityLabelArgs(ovf_importer_args, args, compute_client.messages)
-  AppendArg(ovf_importer_args, 'release-track', compute_release_track)
+  if compute_release_track:
+    AppendArg(ovf_importer_args, 'release-track', compute_release_track)
 
   build_tags = ['gce-ovf-import']
 

@@ -20,7 +20,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import contextlib
-import copy
+import datetime
 import functools
 import random
 import string
@@ -104,7 +104,7 @@ def Connect(conn_context):
         conn_info.api_name,
         conn_info.api_version,
         # Only check response if not connecting to GKE
-        check_response_func=apis.CheckResponseForApiEnablement
+        check_response_func=apis.CheckResponseForApiEnablement()
         if conn_context.supports_one_platform else None,
         http_client=conn_context.HttpClient())
     # pylint: enable=protected-access
@@ -146,7 +146,11 @@ class ConditionPoller(waiter.OperationPoller):
   Takes in a reference to a StagedProgressTracker, and updates it with progress.
   """
 
-  def __init__(self, resource_getter, tracker, dependencies=None):
+  def __init__(self,
+               resource_getter,
+               tracker,
+               dependencies=None,
+               ready_message='Done.'):
     """Initialize the ConditionPoller.
 
     Start any unblocked stages in the tracker immediately.
@@ -170,19 +174,29 @@ class ConditionPoller(waiter.OperationPoller):
 
         If the entire dependencies dict is None, the poller will assume that
         all keys in the tracker are relevant and none have dependencies.
+
+      ready_message: str, message to display in header of tracker when
+        conditions are ready.
     """
     # _dependencies is a map of condition -> {preceding conditions}
     # It is meant to be checked off as we finish things.
     self._dependencies = {k: set() for k in tracker}
     if dependencies is not None:
       for k in dependencies:
+        error_msg = 'Condition {} is not in the dependency tracker.'
         if k not in tracker:
-          raise ValueError(
-              'Condition {} is not in the dependency tracker.'.format(k))
-        self._dependencies[k] = copy.copy(dependencies[k])
+          raise ValueError(error_msg.format(k))
+        for c in dependencies[k]:
+          if c not in tracker:
+            raise ValueError(error_msg.format(c))
+        # Add dependencies, only if they're still not complete
+        self._dependencies[k] = {
+            c for c in dependencies[k] if not tracker.IsComplete(c)
+        }
     self._resource_getter = resource_getter
     self._tracker = tracker
     self._resource_fail_type = exceptions.Error
+    self._ready_message = ready_message
     self._StartUnblocked()
 
   def _IsBlocked(self, condition):
@@ -201,13 +215,13 @@ class ConditionPoller(waiter.OperationPoller):
       return False
     return conditions.IsTerminal()
 
-  def _PollTerminalSubconditions(self, conditions, ready_message):
+  def _PollTerminalSubconditions(self, conditions, conditions_message):
     for condition in conditions.TerminalSubconditions():
       if condition not in self._dependencies:
         continue
       message = conditions[condition]['message']
       status = conditions[condition]['status']
-      self._PossiblyUpdateMessage(condition, message, ready_message)
+      self._PossiblyUpdateMessage(condition, message, conditions_message)
       if status is None:
         continue
       elif status:
@@ -216,7 +230,7 @@ class ConditionPoller(waiter.OperationPoller):
           # Check all terminal subconditions again to ensure any stages that
           # were unblocked by this stage completing are re-checked before we
           # check the ready condition
-          self._PollTerminalSubconditions(conditions, ready_message)
+          self._PollTerminalSubconditions(conditions, conditions_message)
           break
       else:
         self._PossiblyFailStage(condition, message)
@@ -236,28 +250,29 @@ class ConditionPoller(waiter.OperationPoller):
     if conditions is None or not conditions.IsFresh():
       return None
 
-    ready_message = conditions.DescriptiveMessage()
-    if ready_message:
-      self._tracker.UpdateHeaderMessage(ready_message)
+    conditions_message = conditions.DescriptiveMessage()
+    if conditions_message:
+      self._tracker.UpdateHeaderMessage(conditions_message)
 
-    self._PollTerminalSubconditions(conditions, ready_message)
+    self._PollTerminalSubconditions(conditions, conditions_message)
 
     if conditions.IsReady():
-      self._tracker.UpdateHeaderMessage('Done.')
+      self._tracker.UpdateHeaderMessage(self._ready_message)
       # TODO(b/120679874): Should not have to manually call Tick()
       self._tracker.Tick()
     elif conditions.IsFailed():
-      raise self._resource_fail_type(ready_message)
+      raise self._resource_fail_type(conditions_message)
 
     return conditions
 
-  def _PossiblyUpdateMessage(self, condition, message, ready_message):
+  def _PossiblyUpdateMessage(self, condition, message, conditions_message):
     """Update the stage message.
 
     Args:
       condition: str, The name of the status condition.
       message: str, The new message to display
-      ready_message: str, The ready message we're displaying.
+      conditions_message: str, The message from the conditions object we're
+        displaying..
     """
 
     if self._tracker.IsComplete(condition):
@@ -266,7 +281,7 @@ class ConditionPoller(waiter.OperationPoller):
     if self._IsBlocked(condition):
       return
 
-    if message != ready_message:
+    if message != conditions_message:
       self._tracker.UpdateStage(condition, message)
 
   def _RecordConditionComplete(self, condition):
@@ -358,17 +373,45 @@ class ConditionPoller(waiter.OperationPoller):
       A condition.Conditions object.
     """
     resource = self._resource_getter()
+
     if resource is None:
       return None
     return resource.conditions
 
 
 class ServiceConditionPoller(ConditionPoller):
+  """A ConditionPoller for services."""
 
-  def __init__(self, getter, tracker):
+  def __init__(self, getter, tracker, dependencies=None, serv=None):
+    def GetIfProbablyNewer():
+      """Workaround for https://github.com/knative/serving/issues/4149).
+
+      The workaround is to wait for the condition lastTransitionTime to
+      change. Note that the granularity of lastTransitionTime is seconds
+      so to avoid hanging in the unlikely case that two updates happen
+      in the same second we limit waiting for the change to 5 seconds.
+
+      Returns:
+        The requested resource or None if it seems stale.
+      """
+      resource = getter()
+      if (resource
+          and self._old_last_transition_time
+          and self._old_last_transition_time == resource.last_transition_time
+          and not self.HaveFiveSecondsPassed()):
+        return None
+      else:
+        return resource
+
     super(ServiceConditionPoller, self).__init__(
-        getter, tracker, stages.ServiceDependencies())
+        GetIfProbablyNewer, tracker, dependencies)
     self._resource_fail_type = serverless_exceptions.DeploymentFailedError
+    self._old_last_transition_time = serv.last_transition_time if serv else None
+    self._start_time = datetime.datetime.now()
+    self._five_seconds = datetime.timedelta(seconds=5)
+
+  def HaveFiveSecondsPassed(self):
+    return datetime.datetime.now() - self._start_time > self._five_seconds
 
 
 def _Nonce():
@@ -894,7 +937,7 @@ class ServerlessOperations(object):
 
     if not asyn:
       getter = functools.partial(self.GetService, service_ref)
-      self.WaitForCondition(ServiceConditionPoller(getter, tracker))
+      self.WaitForCondition(ServiceConditionPoller(getter, tracker, serv=serv))
 
   def ReleaseService(self, service_ref, config_changes, tracker=None,
                      asyn=False, allow_unauthenticated=None, for_replace=False):
@@ -950,7 +993,11 @@ class ServerlessOperations(object):
 
     if not asyn:
       getter = functools.partial(self.GetService, service_ref)
-      poller = ServiceConditionPoller(getter, tracker)
+      poller = ServiceConditionPoller(
+          getter,
+          tracker,
+          dependencies=stages.ServiceDependencies(),
+          serv=serv)
       self.WaitForCondition(poller)
       for msg in run_condition.GetNonTerminalMessages(poller.GetConditions()):
         tracker.AddWarning(msg)

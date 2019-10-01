@@ -143,6 +143,38 @@ def ServiceYamlMatcher(path, stager):
   return None
 
 
+def JarMatcher(jar_path, stager):
+  """Generate a Service from a Java fatjar path.
+
+  This function is a path matcher that returns if and only if:
+  - `jar_path` points to  a jar file .
+
+  The service will be staged according to the stager as a jar runtime,
+  which is defined in staging.py.
+
+  Args:
+    jar_path: str, Unsanitized absolute path pointing to a file of jar type.
+    stager: staging.Stager, stager that will be invoked if there is a runtime
+      and environment match.
+
+  Raises:
+    staging.StagingCommandFailedError, staging command failed.
+
+  Returns:
+    Service, fully populated with entries that respect a staged deployable
+        service, or None if the path does not match the pattern described.
+  """
+  _, ext = os.path.splitext(jar_path)
+  if os.path.exists(jar_path) and ext in ['.jar']:
+    app_dir = os.path.abspath(os.path.join(jar_path, os.pardir))
+    descriptor = jar_path
+    staging_dir = stager.Stage(descriptor, app_dir, 'java-jar', env.STANDARD)
+    yaml_path = os.path.join(staging_dir, 'app.yaml')
+    service_info = yaml_parsing.ServiceYamlInfo.FromFile(yaml_path)
+    return Service(descriptor, app_dir, service_info, staging_dir)
+  return None
+
+
 def AppengineWebMatcher(path, stager):
   """Generate a Service from an appengine-web.xml source path.
 
@@ -205,9 +237,9 @@ def GetPathMatchers():
     where fn returns a Service or None if no match.
   """
   return [
-      ServiceYamlMatcher,
-      AppengineWebMatcher,
-      UnidentifiedDirMatcher]
+      ServiceYamlMatcher, AppengineWebMatcher, JarMatcher,
+      UnidentifiedDirMatcher
+  ]
 
 
 class Services(object):
@@ -337,4 +369,3 @@ def GetDeployables(args, stager, path_matchers):
       continue
     raise exceptions.UnknownSourceError(path)
   return services.GetAll(), configs.GetAll()
-

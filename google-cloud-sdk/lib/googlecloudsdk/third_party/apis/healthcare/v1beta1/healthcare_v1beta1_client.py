@@ -1431,7 +1431,7 @@ GCP error might be returned instead.
         method_id=u'healthcare.projects.locations.datasets.fhirStores.fhir.history',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'at', u'count', u'page', u'since'],
+        query_params=[u'_page_token', u'at', u'count', u'page', u'since'],
         relative_path=u'v1beta1/{+name}/_history',
         request_field='',
         request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresFhirHistoryRequest',

@@ -1547,6 +1547,13 @@
             "GA",
             "DEPRECATED"
           ]
+        },
+        "monitoredResourceTypes": {
+          "description": "Read-only. If present, then a time\nseries, which is identified partially by\na metric type and a MonitoredResourceDescriptor, that is associated\nwith this metric type can only be associated with one of the monitored\nresource types listed here.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1556,7 +1563,7 @@
       "type": "object",
       "properties": {
         "launchStage": {
-          "description": "Deprecated. Please use the MetricDescriptor.launch_stage instead.\nThe launch stage of the metric definition.",
+          "description": "Deprecated. Must use the MetricDescriptor.launch_stage instead.",
           "enumDescriptions": [
             "Do not use this default value.",
             "Early Access features are limited to a closed group of testers. To use\nthese features, you must sign up in advance and sign a Trusted Tester\nagreement (which includes confidentiality provisions). These features may\nbe unstable, changed in backward-incompatible ways, and are not\nguaranteed to be released.",

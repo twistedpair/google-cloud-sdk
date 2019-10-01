@@ -335,8 +335,7 @@ def AddIosTestArgs(parser):
   parser.add_argument(
       '--type',
       category=base.COMMONLY_USED_FLAGS,
-      hidden=True,
-      choices=['xctest'],
+      choices=['xctest', 'game-loop'],
       help='The type of iOS test to run.')
   parser.add_argument(
       '--test',
@@ -482,6 +481,34 @@ def AddAndroidBetaArgs(parser):
       This flag only copies files to the device. To install files, like OBB or
       APK files, see --obb-files and --additional-apks.
       """)
+
+
+def AddIosBetaArgs(parser):
+  """Register args which are only available in the iOS beta run command.
+
+  Args:
+    parser: An argparse parser used to add args that follow a command.
+  """
+
+  # The following args are specific to iOS game-loop tests.
+
+  parser.add_argument(
+      '--scenario-numbers',
+      metavar='int',
+      type=arg_parsers.ArgList(element_type=int, min_length=1, max_length=1024),
+      help='A list of game-loop scenario numbers which will be run as part of '
+           'the test (default: scenario 1). A maximum of 1024 scenarios may be '
+           'specified in one test matrix, but the maximum number may also be '
+           'limited by the overall test *--timeout* setting. This flag is only '
+           'valid when *--type=game-loop* is also set.'
+  )
+  parser.add_argument(
+      '--app',
+      help='The path to the application archive (.ipa file) for game-loop '
+           'testing. The path may be in the local filesystem or in Google '
+           'Cloud Storage using gs:// notation. This flag is only valid when '
+           '*--type=game-loop* is also set.'
+  )
 
 
 def AddMatrixArgs(parser):

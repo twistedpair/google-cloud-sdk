@@ -44,3 +44,7 @@ class InvalidIdentityTokenError(exceptions.Error):
 
 class WrongAccountTypeError(exceptions.Error):
   """Raised when audiences are specified but account type is not service account."""
+
+
+class GCEIdentityTokenError(exceptions.Error):
+  """Raised when request for GCE ID token is wrong."""

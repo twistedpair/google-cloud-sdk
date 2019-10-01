@@ -51,7 +51,7 @@ def GenerateAccessToken(service_account_id, scopes):
   return response
 
 
-def GenerateIdToken(service_account_id, audience):
+def GenerateIdToken(service_account_id, audience, include_email=False):
   """Generates an id token for the given service account."""
   service_account_ref = resources.REGISTRY.Parse(
       service_account_id, collection='iamcredentials.serviceAccounts',
@@ -68,7 +68,7 @@ def GenerateIdToken(service_account_id, audience):
       .IamcredentialsProjectsServiceAccountsGenerateIdTokenRequest(
           name=service_account_ref.RelativeName(),
           generateIdTokenRequest=iam_client.MESSAGES_MODULE
-          .GenerateIdTokenRequest(audience=audience)
+          .GenerateIdTokenRequest(audience=audience, includeEmail=include_email)
       )
   )
   return response.token
@@ -85,8 +85,8 @@ class ImpersonationAccessTokenProvider(object):
     return ImpersonationCredentials(
         service_account_id, response.accessToken, response.expireTime, scopes)
 
-  def GetElevationIdToken(self, service_account_id, audience):
-    return GenerateIdToken(service_account_id, audience)
+  def GetElevationIdToken(self, service_account_id, audience, include_email):
+    return GenerateIdToken(service_account_id, audience, include_email)
 
   @classmethod
   def IsImpersonationCredential(cls, cred):

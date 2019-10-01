@@ -1785,9 +1785,8 @@ class DiskConfig(_messages.Message):
     bootDiskType: Optional. Type of the boot disk (default is "pd-standard").
       Valid values: "pd-ssd" (Persistent Disk Solid State Drive) or "pd-
       standard" (Persistent Disk Hard Disk Drive).
-    numLocalSsds: Optional. Number of attached SSDs, from 0 to 4 (default is
-      0). If SSDs are not attached, the boot disk is used to store runtime
-      logs and HDFS
+    numLocalSsds: Number of attached SSDs, from 0 to 4 (default is 0). If SSDs
+      are not attached, the boot disk is used to store runtime logs and HDFS
       (https://hadoop.apache.org/docs/r1.2.1/hdfs_user_guide.html) data. If
       one or more SSDs are attached, this runtime bulk data is spread across
       them, and the boot disk contains only basic config and installed
@@ -2222,8 +2221,8 @@ class InstanceGroupAutoscalingPolicyConfig(_messages.Message):
 
 
 class InstanceGroupConfig(_messages.Message):
-  r"""Optional. The config settings for Compute Engine resources in an
-  instance group, such as a master or worker group.
+  r"""The config settings for Compute Engine resources in an instance group,
+  such as a master or worker group.
 
   Fields:
     accelerators: Optional. The Compute Engine accelerator configuration for
@@ -2249,8 +2248,8 @@ class InstanceGroupConfig(_messages.Message):
     managedGroupConfig: Output only. The config for Compute Engine Instance
       Group Manager that manages this group. This is only used for preemptible
       instance groups.
-    minCpuPlatform: Optional. Specifies the minimum cpu platform for the
-      Instance Group. See Cloud Dataproc&rarr;Minimum CPU Platform.
+    minCpuPlatform: Specifies the minimum cpu platform for the Instance Group.
+      See Cloud Dataproc&rarr;Minimum CPU Platform.
     numInstances: Optional. The number of VM instances in the instance group.
       For master instance groups, must be set to 1.
   """
@@ -3154,24 +3153,36 @@ class PigJob(_messages.Message):
 
 class Policy(_messages.Message):
   r"""Defines an Identity and Access Management (IAM) policy. It is used to
-  specify access control policies for Cloud Platform resources.A Policy
-  consists of a list of bindings. A binding binds a list of members to a role,
-  where the members can be user accounts, Google groups, Google domains, and
-  service accounts. A role is a named list of permissions defined by IAM.JSON
-  Example {   "bindings": [     {       "role": "roles/owner",
+  specify access control policies for Cloud Platform resources.A Policy is a
+  collection of bindings. A binding binds one or more members to a single
+  role. Members can be user accounts, service accounts, Google groups, and
+  domains (such as G Suite). A role is a named list of permissions (defined by
+  IAM or configured by users). A binding can optionally specify a condition,
+  which is a logic expression that further constrains the role binding based
+  on attributes about the request and/or target resource.JSON Example {
+  "bindings": [     {       "role": "roles/resourcemanager.organizationAdmin",
   "members": [         "user:mike@example.com",
   "group:admins@example.com",         "domain:google.com",
-  "serviceAccount:my-other-app@appspot.gserviceaccount.com"       ]     },
-  {       "role": "roles/viewer",       "members": ["user:sean@example.com"]
-  }   ] } YAML Example bindings: - members:   - user:mike@example.com   -
-  group:admins@example.com   - domain:google.com   - serviceAccount:my-other-
-  app@appspot.gserviceaccount.com   role: roles/owner - members:   -
-  user:sean@example.com   role: roles/viewer For a description of IAM and its
-  features, see the IAM developer's guide (https://cloud.google.com/iam/docs).
+  "serviceAccount:my-project-id@appspot.gserviceaccount.com"       ]     },
+  {       "role": "roles/resourcemanager.organizationViewer",       "members":
+  ["user:eve@example.com"],       "condition": {         "title": "expirable
+  access",         "description": "Does not grant access after Sep 2020",
+  "expression": "request.time <
+  timestamp('2020-10-01T00:00:00.000Z')",       }     }   ] } YAML Example
+  bindings: - members:   - user:mike@example.com   - group:admins@example.com
+  - domain:google.com   - serviceAccount:my-project-
+  id@appspot.gserviceaccount.com   role:
+  roles/resourcemanager.organizationAdmin - members:   - user:eve@example.com
+  role: roles/resourcemanager.organizationViewer   condition:     title:
+  expirable access     description: Does not grant access after Sep 2020
+  expression: request.time < timestamp('2020-10-01T00:00:00.000Z') For a
+  description of IAM and its features, see the IAM developer's guide
+  (https://cloud.google.com/iam/docs).
 
   Fields:
-    bindings: Associates a list of members to a role. bindings with no members
-      will result in an error.
+    bindings: Associates a list of members to a role. Optionally may specify a
+      condition that determines when binding is in effect. bindings with no
+      members will result in an error.
     etag: etag is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the etag in the read-
@@ -3180,12 +3191,18 @@ class Policy(_messages.Message):
       systems are expected to put that etag in the request to setIamPolicy to
       ensure that their change will be applied to the same version of the
       policy.If no etag is provided in the call to setIamPolicy, then the
-      existing policy is overwritten.
+      existing policy is overwritten. Due to blind-set semantics of an etag-
+      less policy, 'setIamPolicy' will not fail even if either of incoming or
+      stored policy does not meet the version requirements.
     version: Specifies the format of the policy.Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected.Policies with any
-      conditional bindings must specify version 3. Policies without any
-      conditional bindings may specify any valid value or leave the field
-      unset.
+      Requests specifying an invalid value will be rejected.Operations
+      affecting conditional bindings must specify version 3. This can be
+      either setting a conditional policy, modifying a conditional binding, or
+      removing a conditional binding from the stored conditional policy.
+      Operations on non-conditional policies may specify any valid value or
+      leave the field unset.If no etag is provided in the call to
+      setIamPolicy, any version compliance checks on the incoming and/or
+      stored policy is skipped.
   """
 
   bindings = _messages.MessageField('Binding', 1, repeated=True)
@@ -3450,6 +3467,7 @@ class SoftwareConfig(_messages.Message):
       ZOOKEEPER: <no description>
       SOLR: <no description>
       HBASE: <no description>
+      RANGER: <no description>
     """
     COMPONENT_UNSPECIFIED = 0
     ANACONDA = 1
@@ -3462,6 +3480,7 @@ class SoftwareConfig(_messages.Message):
     ZOOKEEPER = 8
     SOLR = 9
     HBASE = 10
+    RANGER = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
@@ -3500,7 +3519,11 @@ class SoftwareConfig(_messages.Message):
 
 class SparkJob(_messages.Message):
   r"""A Cloud Dataproc job for running Apache Spark (http://spark.apache.org/)
-  applications on YARN.
+  applications on YARN. The specification of the main method to call to drive
+  the job. Specify either the jar file that contains the main class or the
+  main class name. To pass both a main jar and a main class in that jar, add
+  the jar to CommonJob.jar_file_uris, and then specify the main class name in
+  main_class.
 
   Messages:
     PropertiesValue: Optional. A mapping of property names to values, used to
@@ -4177,21 +4200,21 @@ class YarnApplication(_messages.Message):
   be changed before final release.
 
   Enums:
-    StateValueValuesEnum: Required. The application state.
+    StateValueValuesEnum: Output only. The application state.
 
   Fields:
-    name: Required. The application name.
-    progress: Required. The numerical progress of the application, from 1 to
-      100.
-    state: Required. The application state.
-    trackingUrl: Optional. The HTTP URL of the ApplicationMaster,
+    name: Output only. The application name.
+    progress: Output only. The numerical progress of the application, from 1
+      to 100.
+    state: Output only. The application state.
+    trackingUrl: Optional. Output only. The HTTP URL of the ApplicationMaster,
       HistoryServer, or TimelineServer that provides application-specific
       information. The URL uses the internal hostname, and requires a proxy
       server for resolution and, possibly, access.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Required. The application state.
+    r"""Output only. The application state.
 
     Values:
       STATE_UNSPECIFIED: Status is unspecified.

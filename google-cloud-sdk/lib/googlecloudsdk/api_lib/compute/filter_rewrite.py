@@ -69,12 +69,30 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import re
-
 from apitools.base.protorpclite import messages
 from googlecloudsdk.core.resource import resource_expr_rewrite
 from googlecloudsdk.core.util import times
+
 import six
+
+
+def _EscapePattern(pattern):
+  """Escapes special regex characters and double quotes in the pattern.
+
+  This is basically identical to Python 3.7's implementation of re.escape(),
+  except that it also includes double quotes in the set of characters that need
+  escaping (needed for proper filter rewriting behavior).
+
+  Args:
+    pattern: A regex pattern.
+
+  Returns:
+    The pattern with double quotes and special regex characters escaped.
+  """
+  special_chars_map = {
+      i: '\\' + chr(i)
+      for i in six.iterbytes(b'"()[]{}?*+-|^$\\.&~# \t\n\r\v\f')}
+  return pattern.translate(special_chars_map)
 
 
 def ConvertEQPatternToFullMatch(pattern):
@@ -83,7 +101,7 @@ def ConvertEQPatternToFullMatch(pattern):
   This function converts pattern such that the compute filter expression
     subject eq ConvertEQPatternToFullMatch(pattern)
   matches (the entire subject matches) IFF
-    re.search(r'\b' + re.escape(pattern) + r'\b', subject)
+    re.search(r'\b' + _EscapePattern(pattern) + r'\b', subject)
   matches (pattern matches anywhere in subject).
 
   Args:
@@ -92,8 +110,7 @@ def ConvertEQPatternToFullMatch(pattern):
   Returns:
     The converted = pattern suitable for the compute eq filter match operator.
   """
-  # re.escape() also escapes " which is a good thing in this context.
-  return r'".*\b{pattern}\b.*"'.format(pattern=re.escape(pattern))
+  return r'".*\b{pattern}\b.*"'.format(pattern=_EscapePattern(pattern))
 
 
 def ConvertHASPatternToFullMatch(pattern):
@@ -102,8 +119,8 @@ def ConvertHASPatternToFullMatch(pattern):
   This function converts pattern such that the compute filter expression
     subject eq ConvertREPatternToFullMatch(pattern)
   matches (the entire subject matches) IFF
-    re.search(r'\b' + re.escape(pattern) + r'\b', subject)  # no trailing '*'
-    re.search(r'\b' + re.escape(pattern[:-1]), subject)     # trailing '*'
+    re.search(r'\b' + _EscapePattern(pattern) + r'\b', subject)  # no trailing *
+    re.search(r'\b' + _EscapePattern(pattern[:-1]), subject)     # trailing *
   matches (pattern matches anywhere in subject).
 
   Args:
@@ -119,9 +136,8 @@ def ConvertHASPatternToFullMatch(pattern):
     right = '.*'
   else:
     right = r'\b.*'
-  # re.escape() also escapes " which is a good thing in this context.
   return r'"{left}{pattern}{right}"'.format(
-      left=left, pattern=re.escape(pattern), right=right)
+      left=left, pattern=_EscapePattern(pattern), right=right)
 
 
 def ConvertREPatternToFullMatch(pattern, wordmatch=False):

@@ -49,7 +49,7 @@ _URL_RE = re.compile(r'(https?://[^/]+/[^/]+/[^/]+/)(.+)')
 _METHOD_ID_RE = re.compile(r'(?P<collection>{collection})\.get'.format(
     collection=_COLLECTION_SUB_RE))
 _GCS_URL_RE = re.compile('^gs://([^/]*)(?:/(.*))?$')
-_GCS_URL = 'https://www.googleapis.com/storage/v1/'
+_GCS_URL = 'https://storage.googleapis.com/storage/v1/'
 _GCS_ALT_URL = 'https://storage.googleapis.com/'
 
 

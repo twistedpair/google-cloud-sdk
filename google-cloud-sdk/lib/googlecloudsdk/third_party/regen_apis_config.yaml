@@ -677,6 +677,8 @@ apis:
       discovery_doc: vpcaccess_v1alpha1.json
     v1beta1:
       discovery_doc: vpcaccess_v1beta1.json
+    v1:
+      discovery_doc: vpcaccess_v1.json
       default: true
   remotebuildexecution:
     v1alpha:

@@ -65,6 +65,8 @@ IMAGE_PULL_SECRET_NAME = 'connect-image-pull-secret'
 
 CONNECT_RESOURCE_LABEL = 'hub.gke.io/project'
 
+DEFAULT_NAMESPACE = 'gke-connect'
+
 MANIFEST_SAVED_MESSAGE = """\
 Manifest saved to [{0}]. Please apply the manifest to your cluster with \
 `kubectl apply -f {0}`. You must have `cluster-admin` privilege in order to \
@@ -269,17 +271,6 @@ def AddCommonArgs(parser):
           $KUBECONFIG if it is set in the environment, otherwise defaults to
           to $HOME/.kube/config.
         """),
-  )
-  parser.add_argument(
-      '--kubeconfig-file',
-      type=str,
-      hidden=True,
-      help=textwrap.dedent("""\
-          The kubeconfig file containing an entry for the cluster. Defaults to
-          $KUBECONFIG if it is set in the environment, otherwise defaults to
-          to $HOME/.kube/config.
-        """),
-      dest='kubeconfig',
   )
 
 
@@ -605,7 +596,7 @@ def _GetConnectAgentOptions(args, upgrade, namespace, image_pull_secret_data,
 
 
 def _GenerateManifest(args, service_account_key_data, image_pull_secret_data,
-                      upgrade, namespace, membership_ref):
+                      upgrade, membership_ref):
   """Generate the manifest for connect agent from API.
 
   Args:
@@ -615,7 +606,6 @@ def _GenerateManifest(args, service_account_key_data, image_pull_secret_data,
     image_pull_secret_data: The image pull secret content to use for private
       registries.
     upgrade: if this is an upgrade operation.
-    namespace: namespace to deploy the connect agent.
     membership_ref: The membership associated with the connect agent in the
       format of `projects/[PROJECT]/locations/global/memberships/[MEMBERSHIP]`
 
@@ -625,7 +615,7 @@ def _GenerateManifest(args, service_account_key_data, image_pull_secret_data,
   adapter = api_adapter.NewV1Beta1APIAdapter()
   connect_agent_ref = _GetConnectAgentOptions(args,
                                               upgrade,
-                                              namespace,
+                                              DEFAULT_NAMESPACE,
                                               image_pull_secret_data,
                                               membership_ref)
   manifest_resources = adapter.GenerateConnectAgentManifest(connect_agent_ref)
@@ -637,7 +627,7 @@ def _GenerateManifest(args, service_account_key_data, image_pull_secret_data,
 
   # Append creds secret.
   full_manifest = full_manifest + CREDENTIAL_SECRET_TEMPLATE.format(
-      namespace=namespace,
+      namespace=DEFAULT_NAMESPACE,
       gcp_sa_key_secret_name=GCP_SA_KEY_SECRET_NAME,
       gcp_sa_key=service_account_key_data)
   return full_manifest
@@ -648,17 +638,13 @@ def _PurgeAlphaInstaller(kube_client, namespace, project_id):
 
   Args:
     kube_client: Kubernetes client to operate on the cluster.
-    namespace: namespace of connect agent deployment.
+    namespace: the namespace of Alpha installation.
     project_id: the GCP project ID.
 
   Raises:
     exceptions.Error: if Alpha resources deletion failed.
   """
   project_number = p_util.GetProjectNumber(project_id)
-  # GKE On-Prem Alpha installation uses `gke-connect` namespace.
-  on_prem_namespace = 'gke-connect'
-  if kube_client.NamespaceExists(on_prem_namespace):
-    namespace = on_prem_namespace
   err = kube_client.Delete(INSTALL_ALPHA_TEMPLATE.format(
       namespace=namespace,
       connect_resource_label=CONNECT_RESOURCE_LABEL,
@@ -701,7 +687,6 @@ def DeployConnectAgent(args,
   """
   kube_client = KubernetesClient(args)
   project_id = properties.VALUES.core.project.GetOrFail()
-  namespace = _GKEConnectNamespace(kube_client, project_id)
 
   log.status.Print('Generating connect agent manifest...')
 
@@ -709,7 +694,6 @@ def DeployConnectAgent(args,
                                     service_account_key_data,
                                     image_pull_secret_data,
                                     False,
-                                    namespace,
                                     membership_ref)
 
   # Generate a manifest file if necessary.
@@ -727,6 +711,7 @@ def DeployConnectAgent(args,
 
   log.status.Print('Deploying GKE Connect agent to cluster...')
 
+  namespace = _GKEConnectNamespace(kube_client, project_id)
   # Delete the ns if necessary
   _DeleteNamespaceForReinstall(kube_client, namespace)
 
@@ -1053,7 +1038,27 @@ class KubernetesClient(object):
     return out
 
   def NamespacesWithLabelSelector(self, label):
-    cmd = ['get', 'namespace', '-l', label, '-o', 'jsonpath={.metadata.name}']
+    """Get the GKE Connect namespace by label.
+
+    Args:
+      label: the label used for namespace selection
+
+    Raises:
+      exceptions.Error: if failing to get namespaces.
+
+    Returns:
+      The first namespace with the label selector.
+    """
+    # Check if any namespace with label exists.
+    out, err = self._RunKubectl(['get', 'namespaces', '--selector', label,
+                                 '-o', 'jsonpath={.items}'], None)
+    if err:
+      raise exceptions.Error(
+          'Failed to list namespaces in the cluster: {}'.format(err))
+    if out == '[]':
+      return []
+    cmd = ['get', 'namespaces', '--selector', label, '-o',
+           'jsonpath={.items[0].metadata.name}']
     out, err = self._RunKubectl(cmd, None)
     if err:
       raise exceptions.Error(
@@ -1259,8 +1264,8 @@ def _GKEConnectNamespace(kube_client, project_id):
 
   Connect namespaces are identified by the presence of the hub.gke.io/project
   label. If there is one existing namespace with this label in the cluster, its
-  name is returned; otherwise, a connect agent namespace with the project
-  number as a suffix is returned. If there are multiple namespaces with the
+  name is returned; otherwise, the default connect namespace is returned.
+  If there are multiple namespaces with the
   hub.gke.io/project label, an error is raised.
 
   Args:
@@ -1276,7 +1281,7 @@ def _GKEConnectNamespace(kube_client, project_id):
   selector = '{}={}'.format(CONNECT_RESOURCE_LABEL, project_id)
   namespaces = kube_client.NamespacesWithLabelSelector(selector)
   if not namespaces:
-    return 'gke-connect-{}'.format(p_util.GetProjectNumber(project_id))
+    return DEFAULT_NAMESPACE
   if len(namespaces) == 1:
     return namespaces[0]
   raise exceptions.Error(

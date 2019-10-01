@@ -170,6 +170,7 @@ class PosixAccount(_messages.Message):
     gecos: The GECOS (user information) entry for this account.
     gid: The default group ID.
     homeDirectory: The path to the home directory for this account.
+    name: Output only. The canonical resource name.
     operatingSystemType: The operating system type where this account applies.
     primary: Only one POSIX account can be marked as primary.
     shell: The path to the logic shell for this account.
@@ -196,12 +197,13 @@ class PosixAccount(_messages.Message):
   gecos = _messages.StringField(2)
   gid = _messages.IntegerField(3)
   homeDirectory = _messages.StringField(4)
-  operatingSystemType = _messages.EnumField('OperatingSystemTypeValueValuesEnum', 5)
-  primary = _messages.BooleanField(6)
-  shell = _messages.StringField(7)
-  systemId = _messages.StringField(8)
-  uid = _messages.IntegerField(9)
-  username = _messages.StringField(10)
+  name = _messages.StringField(5)
+  operatingSystemType = _messages.EnumField('OperatingSystemTypeValueValuesEnum', 6)
+  primary = _messages.BooleanField(7)
+  shell = _messages.StringField(8)
+  systemId = _messages.StringField(9)
+  uid = _messages.IntegerField(10)
+  username = _messages.StringField(11)
 
 
 class SshPublicKey(_messages.Message):
@@ -213,11 +215,13 @@ class SshPublicKey(_messages.Message):
     key: Public key text in SSH format, defined by <a
       href="https://www.ietf.org/rfc/rfc4253.txt" target="_blank">RFC4253</a>
       section 6.6.
+    name: Output only. The canonical resource name.
   """
 
   expirationTimeUsec = _messages.IntegerField(1)
   fingerprint = _messages.StringField(2)
   key = _messages.StringField(3)
+  name = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):

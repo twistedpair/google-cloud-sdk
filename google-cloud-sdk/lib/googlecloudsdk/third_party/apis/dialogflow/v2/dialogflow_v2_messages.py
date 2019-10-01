@@ -445,8 +445,8 @@ class DialogflowProjectsAgentSearchRequest(_messages.Message):
   Fields:
     pageSize: Optional. The maximum number of items to return in a single
       page. By default 100 and at most 1000.
-    pageToken: Optional. The next_page_token value returned from a previous
-      list request.
+    pageToken: The next_page_token value returned from a previous list
+      request.
     parent: Required. The project to list agents from. Format:
       `projects/<Project ID or '-'>`.
   """
@@ -1269,7 +1269,7 @@ class GoogleCloudDialogflowV2ExportAgentRequest(_messages.Message):
   r"""The request message for Agents.ExportAgent.
 
   Fields:
-    agentUri: Optional. The [Google Cloud
+    agentUri: Required. The [Google Cloud
       Storage](https://cloud.google.com/storage/docs/) URI to export the agent
       to. The format of this URI must be `gs://<bucket-name>/<object-name>`.
       If left unspecified, the serialized agent is returned inline.
@@ -1282,13 +1282,7 @@ class GoogleCloudDialogflowV2ExportAgentResponse(_messages.Message):
   r"""The response message for Agents.ExportAgent.
 
   Fields:
-    agentContent: The exported agent.  Example for how to export an agent to a
-      zip file via a command line: <pre>curl \   'https://dialogflow.googleapi
-      s.com/v2/projects/&lt;project_id&gt;/agent:export'\   -X POST \   -H
-      'Authorization: Bearer' \   $(gcloud auth application-default print-
-      access-token) \   -H 'Accept: application/json'   --compressed \   |
-      grep agentContent | sed -e 's/.*"agentContent": "\([^"]*\)".*/\1/' \   |
-      base64 --decode > &lt;agent zip file&gt;</pre>
+    agentContent: Zip compressed raw byte content for agent.
     agentUri: The URI to a file containing the exported agent. This field is
       populated only if `agent_uri` is specified in `ExportAgentRequest`.
   """
@@ -1301,13 +1295,7 @@ class GoogleCloudDialogflowV2ImportAgentRequest(_messages.Message):
   r"""The request message for Agents.ImportAgent.
 
   Fields:
-    agentContent: The agent to import.  Example for how to import an agent via
-      the command line: <pre>curl \   'https://dialogflow.googleapis.com/v2/pr
-      ojects/&lt;project_id&gt;/agent:import'\    -X POST \    -H
-      'Authorization: Bearer'\    $(gcloud auth application-default print-
-      access-token) \    -H 'Accept: application/json' \    -H 'Content-Type:
-      application/json' \    --data-binary "{       'agentContent': '$(cat
-      &lt;agent zip file&gt; | base64 -w 0)'    }"</pre>
+    agentContent: Zip compressed raw byte content for agent.
     agentUri: The URI to a Google Cloud Storage file containing the agent to
       import. Note: The URI must start with "gs://".
   """
@@ -1762,7 +1750,7 @@ class GoogleCloudDialogflowV2IntentMessageCard(_messages.Message):
 
 
 class GoogleCloudDialogflowV2IntentMessageCardButton(_messages.Message):
-  r"""Optional. Contains information about a button.
+  r"""Contains information about a button.
 
   Fields:
     postback: Optional. The text to send back to the Dialogflow API or a URI
@@ -2471,13 +2459,7 @@ class GoogleCloudDialogflowV2RestoreAgentRequest(_messages.Message):
   r"""The request message for Agents.RestoreAgent.
 
   Fields:
-    agentContent: The agent to restore.  Example for how to restore an agent
-      via the command line: <pre>curl \   'https://dialogflow.googleapis.com/v
-      2/projects/&lt;project_id&gt;/agent:restore'\    -X POST \    -H
-      'Authorization: Bearer' \    $(gcloud auth application-default print-
-      access-token) \    -H 'Accept: application/json' \    -H 'Content-Type:
-      application/json' \    --data-binary "{        'agentContent': '$(cat
-      &lt;agent zip file&gt; | base64 -w 0)'    }"</pre>
+    agentContent: Zip compressed raw byte content for agent.
     agentUri: The URI to a Google Cloud Storage file containing the agent to
       restore. Note: The URI must start with "gs://".
   """
@@ -2754,6 +2736,12 @@ class GoogleCloudDialogflowV2WebhookResponse(_messages.Message):
       "items": [         {           "simpleResponse": {
       "textToSpeech": "this is a simple response"           }         }
       ]     }   } }</pre>
+    sessionEntityTypes: Optional. Additional session entity types to replace
+      or extend developer entity types with. The entity synonyms apply to all
+      languages and persist for the session of this query. Setting the session
+      entity types inside webhook overwrites the session entity types that
+      have been set through
+      `DetectIntentRequest.query_params.session_entity_types`.
     source: Optional. This value is passed directly to
       `QueryResult.webhook_source`.
   """
@@ -2797,7 +2785,8 @@ class GoogleCloudDialogflowV2WebhookResponse(_messages.Message):
   fulfillmentText = _messages.StringField(3)
   outputContexts = _messages.MessageField('GoogleCloudDialogflowV2Context', 4, repeated=True)
   payload = _messages.MessageField('PayloadValue', 5)
-  source = _messages.StringField(6)
+  sessionEntityTypes = _messages.MessageField('GoogleCloudDialogflowV2SessionEntityType', 6, repeated=True)
+  source = _messages.StringField(7)
 
 
 class GoogleCloudDialogflowV2beta1AnnotatedConversationDataset(_messages.Message):
@@ -3053,13 +3042,7 @@ class GoogleCloudDialogflowV2beta1ExportAgentResponse(_messages.Message):
   r"""The response message for Agents.ExportAgent.
 
   Fields:
-    agentContent: The exported agent.  Example for how to export an agent to a
-      zip file via a command line: <pre>curl \   'https://dialogflow.googleapi
-      s.com/v2beta1/projects/&lt;project_id&gt;/agent:export'\   -X POST \
-      -H 'Authorization: Bearer' \   $(gcloud auth application-default print-
-      access-token) \   -H 'Accept: application/json'   --compressed \   |
-      grep agentContent | sed -e 's/.*"agentContent": "\([^"]*\)".*/\1/' \   |
-      base64 --decode > &lt;agent zip file&gt;</pre>
+    agentContent: Zip compressed raw byte content for agent.
     agentUri: The URI to a file containing the exported agent. This field is
       populated only if `agent_uri` is specified in `ExportAgentRequest`.
   """
@@ -4604,6 +4587,61 @@ class GoogleCloudDialogflowV2beta1SentimentAnalysisResult(_messages.Message):
   queryTextSentiment = _messages.MessageField('GoogleCloudDialogflowV2beta1Sentiment', 1)
 
 
+class GoogleCloudDialogflowV2beta1SessionEntityType(_messages.Message):
+  r"""Represents a session entity type.  Extends or replaces a developer
+  entity type at the user session level (we refer to the entity types defined
+  at the agent level as "developer entity types").  Note: session entity types
+  apply to all queries, regardless of the language.
+
+  Enums:
+    EntityOverrideModeValueValuesEnum: Required. Indicates whether the
+      additional data should override or supplement the developer entity type
+      definition.
+
+  Fields:
+    entities: Required. The collection of entities associated with this
+      session entity type.
+    entityOverrideMode: Required. Indicates whether the additional data should
+      override or supplement the developer entity type definition.
+    name: Required. The unique identifier of this session entity type. Format:
+      `projects/<Project ID>/agent/sessions/<Session ID>/entityTypes/<Entity
+      Type Display Name>`, or `projects/<Project
+      ID>/agent/environments/<Environment ID>/users/<User
+      ID>/sessions/<Session ID>/entityTypes/<Entity Type Display Name>`. If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
+      `<Entity Type Display Name>` must be the display name of an existing
+      entity type in the same agent that will be overridden or supplemented.
+  """
+
+  class EntityOverrideModeValueValuesEnum(_messages.Enum):
+    r"""Required. Indicates whether the additional data should override or
+    supplement the developer entity type definition.
+
+    Values:
+      ENTITY_OVERRIDE_MODE_UNSPECIFIED: Not specified. This value should be
+        never used.
+      ENTITY_OVERRIDE_MODE_OVERRIDE: The collection of session entities
+        overrides the collection of entities in the corresponding developer
+        entity type.
+      ENTITY_OVERRIDE_MODE_SUPPLEMENT: The collection of session entities
+        extends the collection of entities in the corresponding developer
+        entity type.  Note: Even in this override mode calls to
+        `ListSessionEntityTypes`, `GetSessionEntityType`,
+        `CreateSessionEntityType` and `UpdateSessionEntityType` only return
+        the additional entities added in this session entity type. If you want
+        to get the supplemented list, please call EntityTypes.GetEntityType on
+        the developer entity type and merge.
+    """
+    ENTITY_OVERRIDE_MODE_UNSPECIFIED = 0
+    ENTITY_OVERRIDE_MODE_OVERRIDE = 1
+    ENTITY_OVERRIDE_MODE_SUPPLEMENT = 2
+
+  entities = _messages.MessageField('GoogleCloudDialogflowV2beta1EntityTypeEntity', 1, repeated=True)
+  entityOverrideMode = _messages.EnumField('EntityOverrideModeValueValuesEnum', 2)
+  name = _messages.StringField(3)
+
+
 class GoogleCloudDialogflowV2beta1WebhookRequest(_messages.Message):
   r"""The request message for a webhook call.
 
@@ -4673,6 +4711,12 @@ class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
       "items": [         {           "simpleResponse": {
       "textToSpeech": "this is a simple response"           }         }
       ]     }   } }</pre>
+    sessionEntityTypes: Optional. Additional session entity types to replace
+      or extend developer entity types with. The entity synonyms apply to all
+      languages and persist for the session of this query. Setting the session
+      entity types inside webhook overwrites the session entity types that
+      have been set through
+      `DetectIntentRequest.query_params.session_entity_types`.
     source: Optional. This value is passed directly to
       `QueryResult.webhook_source`.
   """
@@ -4717,7 +4761,8 @@ class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
   fulfillmentText = _messages.StringField(4)
   outputContexts = _messages.MessageField('GoogleCloudDialogflowV2beta1Context', 5, repeated=True)
   payload = _messages.MessageField('PayloadValue', 6)
-  source = _messages.StringField(7)
+  sessionEntityTypes = _messages.MessageField('GoogleCloudDialogflowV2beta1SessionEntityType', 7, repeated=True)
+  source = _messages.StringField(8)
 
 
 class GoogleLongrunningListOperationsResponse(_messages.Message):

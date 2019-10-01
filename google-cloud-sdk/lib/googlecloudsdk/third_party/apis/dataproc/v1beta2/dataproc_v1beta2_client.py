@@ -851,7 +851,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Diagnose(self, request, global_params=None):
-      r"""Gets cluster diagnostic information. The returned Operation.metadata will be ClusterOperationMetadata. After the operation completes, Operation.response contains DiagnoseClusterResults.
+      r"""Gets cluster diagnostic information. The returned Operation.metadata will be ClusterOperationMetadata. After the operation completes, Operation.response contains Empty.
 
       Args:
         request: (DataprocProjectsRegionsClustersDiagnoseRequest) input message

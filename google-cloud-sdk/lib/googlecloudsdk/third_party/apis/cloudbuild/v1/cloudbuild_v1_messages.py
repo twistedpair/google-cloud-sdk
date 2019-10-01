@@ -643,8 +643,8 @@ class CloudbuildProjectsBuildsCancelRequest(_messages.Message):
   Fields:
     cancelBuildRequest: A CancelBuildRequest resource to be passed as the
       request body.
-    id: ID of the build.
-    projectId: ID of the project.
+    id: Required. ID of the build.
+    projectId: Required. ID of the project.
   """
 
   cancelBuildRequest = _messages.MessageField('CancelBuildRequest', 1)
@@ -657,7 +657,7 @@ class CloudbuildProjectsBuildsCreateRequest(_messages.Message):
 
   Fields:
     build: A Build resource to be passed as the request body.
-    projectId: ID of the project.
+    projectId: Required. ID of the project.
   """
 
   build = _messages.MessageField('Build', 1)
@@ -668,8 +668,8 @@ class CloudbuildProjectsBuildsGetRequest(_messages.Message):
   r"""A CloudbuildProjectsBuildsGetRequest object.
 
   Fields:
-    id: ID of the build.
-    projectId: ID of the project.
+    id: Required. ID of the build.
+    projectId: Required. ID of the project.
   """
 
   id = _messages.StringField(1, required=True)
@@ -683,7 +683,7 @@ class CloudbuildProjectsBuildsListRequest(_messages.Message):
     filter: The raw filter text to constrain the results.
     pageSize: Number of results to return in the list.
     pageToken: Token to provide to skip to a particular spot in the list.
-    projectId: ID of the project.
+    projectId: Required. ID of the project.
   """
 
   filter = _messages.StringField(1)
@@ -696,8 +696,8 @@ class CloudbuildProjectsBuildsRetryRequest(_messages.Message):
   r"""A CloudbuildProjectsBuildsRetryRequest object.
 
   Fields:
-    id: Build ID of the original build.
-    projectId: ID of the project.
+    id: Required. Build ID of the original build.
+    projectId: Required. ID of the project.
     retryBuildRequest: A RetryBuildRequest resource to be passed as the
       request body.
   """
@@ -712,7 +712,8 @@ class CloudbuildProjectsTriggersCreateRequest(_messages.Message):
 
   Fields:
     buildTrigger: A BuildTrigger resource to be passed as the request body.
-    projectId: ID of the project for which to configure automatic builds.
+    projectId: Required. ID of the project for which to configure automatic
+      builds.
   """
 
   buildTrigger = _messages.MessageField('BuildTrigger', 1)
@@ -723,8 +724,8 @@ class CloudbuildProjectsTriggersDeleteRequest(_messages.Message):
   r"""A CloudbuildProjectsTriggersDeleteRequest object.
 
   Fields:
-    projectId: ID of the project that owns the trigger.
-    triggerId: ID of the `BuildTrigger` to delete.
+    projectId: Required. ID of the project that owns the trigger.
+    triggerId: Required. ID of the `BuildTrigger` to delete.
   """
 
   projectId = _messages.StringField(1, required=True)
@@ -735,8 +736,8 @@ class CloudbuildProjectsTriggersGetRequest(_messages.Message):
   r"""A CloudbuildProjectsTriggersGetRequest object.
 
   Fields:
-    projectId: ID of the project that owns the trigger.
-    triggerId: ID of the `BuildTrigger` to get.
+    projectId: Required. ID of the project that owns the trigger.
+    triggerId: Required. ID of the `BuildTrigger` to get.
   """
 
   projectId = _messages.StringField(1, required=True)
@@ -749,7 +750,7 @@ class CloudbuildProjectsTriggersListRequest(_messages.Message):
   Fields:
     pageSize: Number of results to return in the list.
     pageToken: Token to provide to skip to a particular spot in the list.
-    projectId: ID of the project for which to list BuildTriggers.
+    projectId: Required. ID of the project for which to list BuildTriggers.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -762,8 +763,8 @@ class CloudbuildProjectsTriggersPatchRequest(_messages.Message):
 
   Fields:
     buildTrigger: A BuildTrigger resource to be passed as the request body.
-    projectId: ID of the project that owns the trigger.
-    triggerId: ID of the `BuildTrigger` to update.
+    projectId: Required. ID of the project that owns the trigger.
+    triggerId: Required. ID of the `BuildTrigger` to update.
   """
 
   buildTrigger = _messages.MessageField('BuildTrigger', 1)
@@ -775,9 +776,9 @@ class CloudbuildProjectsTriggersRunRequest(_messages.Message):
   r"""A CloudbuildProjectsTriggersRunRequest object.
 
   Fields:
-    projectId: ID of the project.
+    projectId: Required. ID of the project.
     repoSource: A RepoSource resource to be passed as the request body.
-    triggerId: ID of the trigger.
+    triggerId: Required. ID of the trigger.
   """
 
   projectId = _messages.StringField(1, required=True)

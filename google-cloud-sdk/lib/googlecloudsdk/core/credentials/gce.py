@@ -224,13 +224,21 @@ class _GCEMetadata(object):
     return '-'.join(zone.split('-')[:-1]) if zone else None
 
   @_HandleMissingMetadataServer()
-  def GetIdToken(self, audience):
+  def GetIdToken(self,
+                 audience,
+                 token_format='standard',
+                 include_license=False):
     """Get a valid identity token on the host GCE instance.
 
     Fetches GOOGLE_GCE_METADATA_ID_TOKEN_URI and returns its contents.
 
     Args:
       audience: str, target audience for ID token.
+      token_format: str, Specifies whether or not the project and instance
+        details are included in the identity token. Choices are "standard",
+        "full".
+      include_license: bool, Specifies whether or not license codes for images
+        associated with GCE instance are included in their identity tokens
 
     Raises:
       CannotConnectToMetadataServerException: If the metadata server
@@ -250,8 +258,10 @@ class _GCEMetadata(object):
     if not audience:
       raise MissingAudienceForIdTokenError()
 
+    include_license = 'TRUE' if include_license else 'FALSE'
     return _ReadNoProxyWithCleanFailures(
-        gce_read.GOOGLE_GCE_METADATA_ID_TOKEN_URI.format(audience=audience),
+        gce_read.GOOGLE_GCE_METADATA_ID_TOKEN_URI.format(
+            audience=audience, format=token_format, licenses=include_license),
         http_errors_to_ignore=(404,))
 
 _metadata = None

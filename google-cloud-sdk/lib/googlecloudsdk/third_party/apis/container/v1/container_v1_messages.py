@@ -70,6 +70,21 @@ class AutoUpgradeOptions(_messages.Message):
   description = _messages.StringField(2)
 
 
+class AutoprovisioningNodePoolDefaults(_messages.Message):
+  r"""AutoprovisioningNodePoolDefaults contains defaults for a node pool
+  created by NAP.
+
+  Fields:
+    oauthScopes: Scopes that are used by NAP when creating node pools. If
+      oauth_scopes are specified, service_account should be empty.
+    serviceAccount: The Google Cloud Platform Service Account to be used by
+      the node VMs. If service_account is specified, scopes should be empty.
+  """
+
+  oauthScopes = _messages.StringField(1, repeated=True)
+  serviceAccount = _messages.StringField(2)
+
+
 class BigQueryDestination(_messages.Message):
   r"""Parameters for using BigQuery as the destination of resource usage
   export.
@@ -150,6 +165,7 @@ class Cluster(_messages.Message):
   Fields:
     addonsConfig: Configurations for the various addons available to run in
       the cluster.
+    autoscaling: Cluster-level autoscaling configuration.
     binaryAuthorization: Configuration for Binary Authorization.
     clusterIpv4Cidr: The IP address range of the container pods in this
       cluster, in [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
@@ -219,10 +235,10 @@ class Cluster(_messages.Message):
       should be located.
     loggingService: The logging service the cluster should use to write logs.
       Currently available options:  * "logging.googleapis.com/kubernetes" -
-      the Google Cloud Logging service with Kubernetes-native resource model
-      in Stackdriver * `logging.googleapis.com` - the Google Cloud Logging
-      service. * `none` - no logs will be exported from the cluster. * if left
-      as an empty string,`logging.googleapis.com` will be used.
+      the Google Cloud Logging service with Kubernetes-native resource model *
+      `logging.googleapis.com` - the Google Cloud Logging service. * `none` -
+      no logs will be exported from the cluster. * if left as an empty
+      string,`logging.googleapis.com` will be used.
     maintenancePolicy: Configure the maintenance policy for this cluster.
     masterAuth: The authentication information for accessing the master
       endpoint. If unspecified, the defaults are used: For clusters before
@@ -279,6 +295,8 @@ class Cluster(_messages.Message):
     tpuIpv4CidrBlock: [Output only] The IP address range of the Cloud TPUs in
       this cluster, in [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
       Domain_Routing) notation (e.g. `1.2.3.4/29`).
+    verticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
+      configuration.
     zone: [Output only] The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides. This
       field is deprecated, use location instead.
@@ -338,50 +356,75 @@ class Cluster(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   addonsConfig = _messages.MessageField('AddonsConfig', 1)
-  binaryAuthorization = _messages.MessageField('BinaryAuthorization', 2)
-  clusterIpv4Cidr = _messages.StringField(3)
-  conditions = _messages.MessageField('StatusCondition', 4, repeated=True)
-  createTime = _messages.StringField(5)
-  currentMasterVersion = _messages.StringField(6)
-  currentNodeCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  currentNodeVersion = _messages.StringField(8)
-  databaseEncryption = _messages.MessageField('DatabaseEncryption', 9)
-  defaultMaxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 10)
-  description = _messages.StringField(11)
-  enableKubernetesAlpha = _messages.BooleanField(12)
-  enableTpu = _messages.BooleanField(13)
-  endpoint = _messages.StringField(14)
-  expireTime = _messages.StringField(15)
-  initialClusterVersion = _messages.StringField(16)
-  initialNodeCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(18, repeated=True)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 19)
-  labelFingerprint = _messages.StringField(20)
-  legacyAbac = _messages.MessageField('LegacyAbac', 21)
-  location = _messages.StringField(22)
-  locations = _messages.StringField(23, repeated=True)
-  loggingService = _messages.StringField(24)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 25)
-  masterAuth = _messages.MessageField('MasterAuth', 26)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 27)
-  monitoringService = _messages.StringField(28)
-  name = _messages.StringField(29)
-  network = _messages.StringField(30)
-  networkConfig = _messages.MessageField('NetworkConfig', 31)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 32)
-  nodeConfig = _messages.MessageField('NodeConfig', 33)
-  nodeIpv4CidrSize = _messages.IntegerField(34, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 35, repeated=True)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 36)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 37)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 38)
-  selfLink = _messages.StringField(39)
-  servicesIpv4Cidr = _messages.StringField(40)
-  status = _messages.EnumField('StatusValueValuesEnum', 41)
-  statusMessage = _messages.StringField(42)
-  subnetwork = _messages.StringField(43)
-  tpuIpv4CidrBlock = _messages.StringField(44)
-  zone = _messages.StringField(45)
+  autoscaling = _messages.MessageField('ClusterAutoscaling', 2)
+  binaryAuthorization = _messages.MessageField('BinaryAuthorization', 3)
+  clusterIpv4Cidr = _messages.StringField(4)
+  conditions = _messages.MessageField('StatusCondition', 5, repeated=True)
+  createTime = _messages.StringField(6)
+  currentMasterVersion = _messages.StringField(7)
+  currentNodeCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  currentNodeVersion = _messages.StringField(9)
+  databaseEncryption = _messages.MessageField('DatabaseEncryption', 10)
+  defaultMaxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 11)
+  description = _messages.StringField(12)
+  enableKubernetesAlpha = _messages.BooleanField(13)
+  enableTpu = _messages.BooleanField(14)
+  endpoint = _messages.StringField(15)
+  expireTime = _messages.StringField(16)
+  initialClusterVersion = _messages.StringField(17)
+  initialNodeCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(19, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 20)
+  labelFingerprint = _messages.StringField(21)
+  legacyAbac = _messages.MessageField('LegacyAbac', 22)
+  location = _messages.StringField(23)
+  locations = _messages.StringField(24, repeated=True)
+  loggingService = _messages.StringField(25)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 26)
+  masterAuth = _messages.MessageField('MasterAuth', 27)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 28)
+  monitoringService = _messages.StringField(29)
+  name = _messages.StringField(30)
+  network = _messages.StringField(31)
+  networkConfig = _messages.MessageField('NetworkConfig', 32)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 33)
+  nodeConfig = _messages.MessageField('NodeConfig', 34)
+  nodeIpv4CidrSize = _messages.IntegerField(35, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 36, repeated=True)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 37)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 38)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 39)
+  selfLink = _messages.StringField(40)
+  servicesIpv4Cidr = _messages.StringField(41)
+  status = _messages.EnumField('StatusValueValuesEnum', 42)
+  statusMessage = _messages.StringField(43)
+  subnetwork = _messages.StringField(44)
+  tpuIpv4CidrBlock = _messages.StringField(45)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 46)
+  zone = _messages.StringField(47)
+
+
+class ClusterAutoscaling(_messages.Message):
+  r"""ClusterAutoscaling contains global, per-cluster information required by
+  Cluster Autoscaler to automatically adjust the size of the cluster and
+  create/delete node pools based on the current needs.
+
+  Fields:
+    autoprovisioningLocations: The list of Google Compute Engine
+      [zones](/compute/docs/zones#available) in which the NodePool's nodes can
+      be created by NAP.
+    autoprovisioningNodePoolDefaults: AutoprovisioningNodePoolDefaults
+      contains defaults for a node pool created by NAP.
+    enableNodeAutoprovisioning: Enables automatic node pool creation and
+      deletion.
+    resourceLimits: Contains global constraints regarding minimum and maximum
+      amount of resources in the cluster.
+  """
+
+  autoprovisioningLocations = _messages.StringField(1, repeated=True)
+  autoprovisioningNodePoolDefaults = _messages.MessageField('AutoprovisioningNodePoolDefaults', 2)
+  enableNodeAutoprovisioning = _messages.BooleanField(3)
+  resourceLimits = _messages.MessageField('ResourceLimit', 4, repeated=True)
 
 
 class ClusterUpdate(_messages.Message):
@@ -394,6 +437,7 @@ class ClusterUpdate(_messages.Message):
       run in the cluster.
     desiredBinaryAuthorization: The desired configuration options for the
       Binary Authorization feature.
+    desiredClusterAutoscaling: Cluster-level autoscaling configuration.
     desiredDatabaseEncryption: Configuration of etcd encryption.
     desiredImage: The desired name of the image to use for this node. This is
       used to create clusters using a custom image. NOTE: Set the
@@ -414,9 +458,9 @@ class ClusterUpdate(_messages.Message):
     desiredLoggingService: The logging service the cluster should use to write
       logs. Currently available options:  *
       "logging.googleapis.com/kubernetes" - the Google Cloud Logging service
-      with Kubernetes-native resource model in Stackdriver *
-      "logging.googleapis.com" - the Google Cloud Logging service * "none" -
-      no logs will be exported from the cluster
+      with Kubernetes-native resource model * "logging.googleapis.com" - the
+      Google Cloud Logging service * "none" - no logs will be exported from
+      the cluster
     desiredMasterAuthorizedNetworksConfig: The desired configuration options
       for master authorized networks feature.
     desiredMasterVersion: The Kubernetes version to change the master to.
@@ -429,7 +473,7 @@ class ClusterUpdate(_messages.Message):
     desiredMonitoringService: The monitoring service the cluster should use to
       write metrics. Currently available options:  *
       "monitoring.googleapis.com/kubernetes" - the Google Cloud Monitoring
-      service with Kubernetes-native resource model in Stackdriver *
+      service with Kubernetes-native resource model *
       "monitoring.googleapis.com" - the Google Cloud Monitoring service *
       "none" - no metrics will be exported from the cluster
     desiredNodePoolAutoscaling: Autoscaler configuration for the node pool
@@ -450,24 +494,28 @@ class ClusterUpdate(_messages.Message):
       picks the Kubernetes master version
     desiredResourceUsageExportConfig: The desired configuration for exporting
       resource usage.
+    desiredVerticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
+      configuration.
   """
 
   desiredAddonsConfig = _messages.MessageField('AddonsConfig', 1)
   desiredBinaryAuthorization = _messages.MessageField('BinaryAuthorization', 2)
-  desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 3)
-  desiredImage = _messages.StringField(4)
-  desiredImageProject = _messages.StringField(5)
-  desiredImageType = _messages.StringField(6)
-  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 7)
-  desiredLocations = _messages.StringField(8, repeated=True)
-  desiredLoggingService = _messages.StringField(9)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 10)
-  desiredMasterVersion = _messages.StringField(11)
-  desiredMonitoringService = _messages.StringField(12)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 13)
-  desiredNodePoolId = _messages.StringField(14)
-  desiredNodeVersion = _messages.StringField(15)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 16)
+  desiredClusterAutoscaling = _messages.MessageField('ClusterAutoscaling', 3)
+  desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 4)
+  desiredImage = _messages.StringField(5)
+  desiredImageProject = _messages.StringField(6)
+  desiredImageType = _messages.StringField(7)
+  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 8)
+  desiredLocations = _messages.StringField(9, repeated=True)
+  desiredLoggingService = _messages.StringField(10)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 11)
+  desiredMasterVersion = _messages.StringField(12)
+  desiredMonitoringService = _messages.StringField(13)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 14)
+  desiredNodePoolId = _messages.StringField(15)
+  desiredNodeVersion = _messages.StringField(16)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 17)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 18)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1799,6 +1847,7 @@ class NodePoolAutoscaling(_messages.Message):
   to adjust the size of the node pool to the current cluster usage.
 
   Fields:
+    autoprovisioned: Can this node pool be deleted automatically.
     enabled: Is autoscaling enabled for this node pool.
     maxNodeCount: Maximum number of nodes in the NodePool. Must be >=
       min_node_count. There has to enough quota to scale up the cluster.
@@ -1806,9 +1855,10 @@ class NodePoolAutoscaling(_messages.Message):
       max_node_count.
   """
 
-  enabled = _messages.BooleanField(1)
-  maxNodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  minNodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  autoprovisioned = _messages.BooleanField(1)
+  enabled = _messages.BooleanField(2)
+  maxNodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minNodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class NodeTaint(_messages.Message):
@@ -1973,6 +2023,21 @@ class PrivateClusterConfig(_messages.Message):
   masterIpv4CidrBlock = _messages.StringField(3)
   privateEndpoint = _messages.StringField(4)
   publicEndpoint = _messages.StringField(5)
+
+
+class ResourceLimit(_messages.Message):
+  r"""Contains information about amount of some resource in the cluster. For
+  memory, value should be in GB.
+
+  Fields:
+    maximum: Maximum amount of the resource in the cluster.
+    minimum: Minimum amount of the resource in the cluster.
+    resourceType: Resource name "cpu", "memory" or gpu-specific string.
+  """
+
+  maximum = _messages.IntegerField(1)
+  minimum = _messages.IntegerField(2)
+  resourceType = _messages.StringField(3)
 
 
 class ResourceUsageExportConfig(_messages.Message):
@@ -2288,7 +2353,7 @@ class SetMonitoringServiceRequest(_messages.Message):
     monitoringService: The monitoring service the cluster should use to write
       metrics. Currently available options:  *
       "monitoring.googleapis.com/kubernetes" - the Google Cloud Monitoring
-      service with Kubernetes-native resource model in Stackdriver *
+      service with Kubernetes-native resource model *
       "monitoring.googleapis.com" - the Google Cloud Monitoring service *
       "none" - no metrics will be exported from the cluster
     name: The name (project, location, cluster) of the cluster to set
@@ -2729,6 +2794,18 @@ class UsableSubnetworkSecondaryRange(_messages.Message):
   ipCidrRange = _messages.StringField(1)
   rangeName = _messages.StringField(2)
   status = _messages.EnumField('StatusValueValuesEnum', 3)
+
+
+class VerticalPodAutoscaling(_messages.Message):
+  r"""VerticalPodAutoscaling contains global, per-cluster information required
+  by Vertical Pod Autoscaler to automatically adjust the resources of pods
+  controlled by it.
+
+  Fields:
+    enabled: Enables vertical pod autoscaling.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

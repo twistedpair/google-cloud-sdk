@@ -573,9 +573,18 @@ DEFAULT_DATABASE_IMPORT_HELP_TEXT = (
     'dump file includes a database statement, it will override the '
     'database set in this flag.')
 
+SQLSERVER_DATABASE_IMPORT_HELP_TEXT = (
+    'A new database into which the import is made.')
+
 
 def AddDatabase(parser, help_text, required=False):
-  """Add the '--database' flag to the parser, with help text help_text."""
+  """Add the '--database' and '-d' flags to the parser.
+
+  Args:
+    parser: The current argparse parser to add these database flags to.
+    help_text: String, specifies the help text for the database flags.
+    required: Boolean, specifies whether the database flag is required.
+  """
   parser.add_argument('--database', '-d', required=required, help=help_text)
 
 
@@ -619,6 +628,44 @@ def AddDatabaseList(parser, help_text, required=False):
 def AddUser(parser, help_text):
   """Add the '--user' flag to the parser, with help text help_text."""
   parser.add_argument('--user', help=help_text)
+
+
+def AddEncryptedBakFlags(parser):
+  """Add the flags for importing encrypted BAK files.
+
+  Add the --cert-path, --pvk-path, --pvk-password and
+  --prompt-for-pvk-password flags to the parser
+
+  Args:
+    parser: The current argparse parser to add these database flags to.
+  """
+  enc_group = parser.add_group(
+      mutex=False,
+      required=False,
+      help='Encryption info to support importing an encrypted .bak file')
+  enc_group.add_argument(
+      '--cert-path',
+      required=True,
+      help=('Path to the encryption certificate file in Google Cloud Storage '
+            'associated with the BAK file. The URI is in the form '
+            '`gs://bucketName/fileName`.'))
+  enc_group.add_argument(
+      '--pvk-path',
+      required=True,
+      help=('Path to the encryption private key file in Google Cloud Storage '
+            'associated with the BAK file. The URI is in the form '
+            '`gs://bucketName/fileName`.'))
+  password_group = enc_group.add_group(mutex=True, required=True)
+  password_group.add_argument(
+      '--pvk-password',
+      help='The private key password associated with the BAK file.')
+  password_group.add_argument(
+      '--prompt-for-pvk-password',
+      action='store_true',
+      help=(
+          'Prompt for the private key password associated with the BAK file '
+          'with character echo disabled. The password is all typed characters '
+          'up to but not including the RETURN or ENTER key.'))
 
 
 INSTANCES_USERLABELS_FORMAT = ':(settings.userLabels:alias=labels:label=LABELS)'

@@ -512,14 +512,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "The project and location in which the configuration should be created,\nspecified in the format `projects\/*\/locations\/*`.",
+                      "description": "Required. The project and location in which the configuration should be created,\nspecified in the format `projects\/*\/locations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "connectorId": {
-                      "description": "The ID to use for this connector.",
+                      "description": "Required. The ID to use for this connector.",
                       "location": "query",
                       "type": "string"
                     }
@@ -545,7 +545,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Name of a Serverless VPC Access connector to get.",
+                      "description": "Required. Name of a Serverless VPC Access connector to get.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectors\/[^\/]+$",
@@ -570,7 +570,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The project and location from which the routes should be listed.",
+                      "description": "Required. The project and location from which the routes should be listed.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -606,7 +606,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Name of a Serverless VPC Access connector to delete.",
+                      "description": "Required. Name of a Serverless VPC Access connector to delete.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectors\/[^\/]+$",

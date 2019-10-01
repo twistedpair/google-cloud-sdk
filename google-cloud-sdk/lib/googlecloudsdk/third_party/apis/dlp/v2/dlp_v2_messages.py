@@ -2650,11 +2650,10 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
       https://cloud.google.com/dlp/docs/infotypes-reference.  When no
       InfoTypes or CustomInfoTypes are specified in a request, the system may
       automatically choose what detectors to run. By default this may be all
-      types, but may change over time as detectors are updated.  The special
-      InfoType name "ALL_BASIC" can be used to trigger all detectors, but may
-      change over time as new InfoTypes are added. If you need precise control
-      and predictability as to what detectors are run you should specify
-      specific InfoTypes listed in the reference.
+      types, but may change over time as detectors are updated.  If you need
+      precise control and predictability as to what detectors are run you
+      should specify specific InfoTypes listed in the reference, otherwise a
+      default list will be used, which may change over time.
     limits: A GooglePrivacyDlpV2FindingLimits attribute.
     minLikelihood: Only returns findings equal or above this threshold. The
       default is POSSIBLE. See https://cloud.google.com/dlp/docs/likelihood to
@@ -3825,7 +3824,7 @@ class GooglePrivacyDlpV2ReidentifyContentRequest(_messages.Message):
       the transformations used to de-identify the items and executing the
       reverse. This requires that only reversible transformations be provided
       here. The reversible transformations are:   -
-      `CryptoReplaceFfxFpeConfig`
+      `CryptoDeterministicConfig`  - `CryptoReplaceFfxFpeConfig`
     reidentifyTemplateName: Optional template to use. References an instance
       of `DeidentifyTemplate`. Any configuration directly specified in
       `reidentify_config` or `inspect_config` will override those set in the
@@ -4248,12 +4247,14 @@ class GooglePrivacyDlpV2TimespanConfig(_messages.Message):
       upper time limit is applied.
     startTime: Exclude files or rows older than this value.
     timestampField: Specification of the field containing the timestamp of
-      scanned items. Used for data sources like Datastore or BigQuery. If not
-      specified for BigQuery, table last modification timestamp is checked
-      against given time span. The valid data types of the timestamp field
-      are: for BigQuery - timestamp, date, datetime; for Datastore -
-      timestamp. Datastore entity will be scanned if the timestamp property
-      does not exist or its value is empty or invalid.
+      scanned items. Used for data sources like Datastore and BigQuery.  For
+      BigQuery: Required to filter out rows based on the given start and end
+      times. If not specified and the table was modified between the given
+      start and end times, the entire table will be scanned. The valid data
+      types of the timestamp field are: `INTEGER`, `DATE`, `TIMESTAMP`, or
+      `DATETIME` BigQuery column.  For Datastore. Valid data types of the
+      timestamp field are: `TIMESTAMP`. Datastore entity will be scanned if
+      the timestamp property does not exist or its value is empty or invalid.
   """
 
   enableAutoPopulationOfTimespanConfig = _messages.BooleanField(1)

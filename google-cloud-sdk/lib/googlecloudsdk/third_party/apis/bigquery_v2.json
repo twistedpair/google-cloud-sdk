@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20190913",
+ "revision": "20190923",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -1491,6 +1491,10 @@
      "type": "string",
      "description": "[Output-only] Name of the primary reservation assigned to this job. Note that this could be different than reservations reported in the reservation usage field if parent reservations were used to execute this job."
     },
+    "scriptStatistics": {
+     "$ref": "ScriptStatistics",
+     "description": "[Output-only] Statistics for a child job of a script."
+    },
     "startTime": {
      "type": "string",
      "description": "[Output-only] Start time of this job, in milliseconds since the epoch. This field will be present when the job transitions from the PENDING state to either RUNNING or DONE.",
@@ -2137,6 +2141,57 @@
     "routineId": {
      "type": "string",
      "description": "[Required] The ID of the routine. The ID must contain only letters (a-z, A-Z), numbers (0-9), or underscores (_). The maximum length is 256 characters."
+    }
+   }
+  },
+  "ScriptStackFrame": {
+   "id": "ScriptStackFrame",
+   "type": "object",
+   "properties": {
+    "endColumn": {
+     "type": "integer",
+     "description": "[Output-only] One-based end column.",
+     "format": "int32"
+    },
+    "endLine": {
+     "type": "integer",
+     "description": "[Output-only] One-based end line.",
+     "format": "int32"
+    },
+    "procedureId": {
+     "type": "string",
+     "description": "[Output-only] Name of the active procedure, empty if in a top-level script."
+    },
+    "startColumn": {
+     "type": "integer",
+     "description": "[Output-only] One-based start column.",
+     "format": "int32"
+    },
+    "startLine": {
+     "type": "integer",
+     "description": "[Output-only] One-based start line.",
+     "format": "int32"
+    },
+    "text": {
+     "type": "string",
+     "description": "[Output-only] Text of the current statement/expression."
+    }
+   }
+  },
+  "ScriptStatistics": {
+   "id": "ScriptStatistics",
+   "type": "object",
+   "properties": {
+    "evaluationKind": {
+     "type": "string",
+     "description": "[Output-only] Whether this child job was a statement or expression."
+    },
+    "stackFrames": {
+     "type": "array",
+     "description": "Stack trace showing the line/column/procedure name of each frame on the stack at the point where the current evaluation happened. The leaf frame is first, the primary script is last. Never empty.",
+     "items": {
+      "$ref": "ScriptStackFrame"
+     }
     }
    }
   },

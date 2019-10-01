@@ -36,6 +36,7 @@ from googlecloudsdk.command_lib.run import flags
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 
+import httplib2
 import six
 from six.moves.urllib import parse as urlparse
 
@@ -218,16 +219,24 @@ class _KubeconfigConnectionContext(ConnectionInfo):
   def Connect(self):
     _CheckTLSSupport()
     with self._LoadClusterDetails():
-      if self.ca_data:
-        with gke.MonkeypatchAddressChecking(
-            'kubernetes.default', self.raw_hostname) as endpoint:
-          self.endpoint = 'https://{}/'.format(endpoint)
+      try:
+        if self.ca_data:
+          with gke.MonkeypatchAddressChecking(
+              'kubernetes.default', self.raw_hostname) as endpoint:
+            self.endpoint = 'https://{}/'.format(endpoint)
+            with _OverrideEndpointOverrides(self.endpoint):
+              yield self
+        else:
+          self.endpoint = 'https://{}/'.format(self.raw_hostname)
           with _OverrideEndpointOverrides(self.endpoint):
             yield self
-      else:
-        self.endpoint = 'https://{}/'.format(self.raw_hostname)
-        with _OverrideEndpointOverrides(self.endpoint):
-          yield self
+      except httplib2.SSLHandshakeError as e:
+        if 'CERTIFICATE_VERIFY_FAILED' in str(e):
+          raise gke.NoCaCertError(
+              'Missing or invalid [certificate-authority] or '
+              '[certificate-authority-data] field in kubeconfig file.')
+        else:
+          raise
 
   def HttpClient(self):
     assert self.active

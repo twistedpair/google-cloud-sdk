@@ -1878,6 +1878,7 @@ class JobStatistics(_messages.Message):
       this job. Note that this could be different than reservations reported
       in the reservation usage field if parent reservations were used to
       execute this job.
+    scriptStatistics: [Output-only] Statistics for a child job of a script.
     startTime: [Output-only] Start time of this job, in milliseconds since the
       epoch. This field will be present when the job transitions from the
       PENDING state to either RUNNING or DONE.
@@ -1910,9 +1911,10 @@ class JobStatistics(_messages.Message):
   quotaDeferments = _messages.StringField(9, repeated=True)
   reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 10, repeated=True)
   reservation_id = _messages.StringField(11)
-  startTime = _messages.IntegerField(12)
-  totalBytesProcessed = _messages.IntegerField(13)
-  totalSlotMs = _messages.IntegerField(14)
+  scriptStatistics = _messages.MessageField('ScriptStatistics', 12)
+  startTime = _messages.IntegerField(13)
+  totalBytesProcessed = _messages.IntegerField(14)
+  totalSlotMs = _messages.IntegerField(15)
 
 
 class JobStatistics2(_messages.Message):
@@ -2501,6 +2503,42 @@ class RoutineReference(_messages.Message):
   datasetId = _messages.StringField(1)
   projectId = _messages.StringField(2)
   routineId = _messages.StringField(3)
+
+
+class ScriptStackFrame(_messages.Message):
+  r"""A ScriptStackFrame object.
+
+  Fields:
+    endColumn: [Output-only] One-based end column.
+    endLine: [Output-only] One-based end line.
+    procedureId: [Output-only] Name of the active procedure, empty if in a
+      top-level script.
+    startColumn: [Output-only] One-based start column.
+    startLine: [Output-only] One-based start line.
+    text: [Output-only] Text of the current statement/expression.
+  """
+
+  endColumn = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  endLine = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  procedureId = _messages.StringField(3)
+  startColumn = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  startLine = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  text = _messages.StringField(6)
+
+
+class ScriptStatistics(_messages.Message):
+  r"""A ScriptStatistics object.
+
+  Fields:
+    evaluationKind: [Output-only] Whether this child job was a statement or
+      expression.
+    stackFrames: Stack trace showing the line/column/procedure name of each
+      frame on the stack at the point where the current evaluation happened.
+      The leaf frame is first, the primary script is last. Never empty.
+  """
+
+  evaluationKind = _messages.StringField(1)
+  stackFrames = _messages.MessageField('ScriptStackFrame', 2, repeated=True)
 
 
 class StandardQueryParameters(_messages.Message):
