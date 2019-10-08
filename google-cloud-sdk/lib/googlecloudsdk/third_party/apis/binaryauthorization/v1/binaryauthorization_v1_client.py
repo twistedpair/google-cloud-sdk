@@ -196,6 +196,8 @@ Returns INVALID_ARGUMENT if the project does not exist.
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+
       Args:
         request: (BinaryauthorizationProjectsAttestorsSetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -323,6 +325,8 @@ set.
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
+
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
 
       Args:
         request: (BinaryauthorizationProjectsPolicySetIamPolicyRequest) input message

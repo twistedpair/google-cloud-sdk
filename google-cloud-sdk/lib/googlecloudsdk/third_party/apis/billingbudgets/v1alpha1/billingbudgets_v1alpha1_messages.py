@@ -167,17 +167,11 @@ class GoogleCloudBillingBudgetsV1alpha1Filter(_messages.Message):
 
   Enums:
     CreditTypesTreatmentValueValuesEnum: Optional. If not set, default
-      behavior is `ADD_CREDIT_TYPES_TO_NET`. Because credit types cannot be
-      specified yet, in practice, the default behavior means that the cost
-      used for budgets is net cost, and SUBTRACT_CREDIT_TYPES_FROM_GROSS means
-      the cost is gross cost.
+      behavior is `INCLUDE_ALL_CREDITS`.
 
   Fields:
     creditTypesTreatment: Optional. If not set, default behavior is
-      `ADD_CREDIT_TYPES_TO_NET`. Because credit types cannot be specified yet,
-      in practice, the default behavior means that the cost used for budgets
-      is net cost, and SUBTRACT_CREDIT_TYPES_FROM_GROSS means the cost is
-      gross cost.
+      `INCLUDE_ALL_CREDITS`.
     projects: Optional. A set of projects of the form `projects/{project_id}`,
       specifying that usage from only this set of projects should be included
       in the budget. If omitted, the report will include all usage for the
@@ -191,21 +185,18 @@ class GoogleCloudBillingBudgetsV1alpha1Filter(_messages.Message):
   """
 
   class CreditTypesTreatmentValueValuesEnum(_messages.Enum):
-    r"""Optional. If not set, default behavior is `ADD_CREDIT_TYPES_TO_NET`.
-    Because credit types cannot be specified yet, in practice, the default
-    behavior means that the cost used for budgets is net cost, and
-    SUBTRACT_CREDIT_TYPES_FROM_GROSS means the cost is gross cost.
+    r"""Optional. If not set, default behavior is `INCLUDE_ALL_CREDITS`.
 
     Values:
       CREDIT_TYPES_TREATMENT_UNSPECIFIED: <no description>
-      ADD_CREDIT_TYPES_TO_NET: All types of credit are added to the net cost
-        to determine the spend for threshold calculations.
-      SUBTRACT_CREDIT_TYPES_FROM_GROSS: All types of credit are subtracted
-        from the gross cost to determine the spend for threshold calculations.
+      INCLUDE_ALL_CREDITS: All types of credit are subtracted from the gross
+        cost to determine the spend for threshold calculations.
+      EXCLUDE_ALL_CREDITS: All types of credit are added to the net cost to
+        determine the spend for threshold calculations.
     """
     CREDIT_TYPES_TREATMENT_UNSPECIFIED = 0
-    ADD_CREDIT_TYPES_TO_NET = 1
-    SUBTRACT_CREDIT_TYPES_FROM_GROSS = 2
+    INCLUDE_ALL_CREDITS = 1
+    EXCLUDE_ALL_CREDITS = 2
 
   creditTypesTreatment = _messages.EnumField('CreditTypesTreatmentValueValuesEnum', 1)
   projects = _messages.StringField(2, repeated=True)

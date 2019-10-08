@@ -85,7 +85,7 @@ class AuditLogConfig(_messages.Message):
 
 
 class AuthorizationCode(_messages.Message):
-  r"""Defines an authorization code.
+  r"""Defines an authorization code. Output only.
 
   Fields:
     code: The Authorization Code in ASCII. It can be used to e.g. transfer the
@@ -323,12 +323,29 @@ class CounterOptions(_messages.Message):
   support multiple field names (though this may be supported in the future).
 
   Fields:
+    customFields: Custom fields.
     field: The field value to attribute.
     metric: The metric to update.
   """
 
-  field = _messages.StringField(1)
-  metric = _messages.StringField(2)
+  customFields = _messages.MessageField('CustomField', 1, repeated=True)
+  field = _messages.StringField(2)
+  metric = _messages.StringField(3)
+
+
+class CustomField(_messages.Message):
+  r"""Custom fields. These can be used to create a counter with arbitrary
+  field/value pairs. See: go/rpcsp-custom-fields.
+
+  Fields:
+    name: Name is the field name.
+    value: Value is the field value. It is important that in contrast to the
+      CounterOptions.field, the value here is a constant that is not derived
+      from the IAMContext.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class DataAccessOptions(_messages.Message):
@@ -386,7 +403,7 @@ class DnsConfig(_messages.Message):
 
 
 class DomainAvailability(_messages.Message):
-  r"""Provides information of domain availability.
+  r"""Provides information of domain availability. Output only.
 
   Enums:
     AvailableValueValuesEnum: Availability of the domain.
@@ -398,8 +415,6 @@ class DomainAvailability(_messages.Message):
     domainName: The domain name. Unicode domain names are converted to
       Punycode.
     notices: Notices about special properties of certain domains.
-    registrationPrice: Deprecated, use yearly_price.
-    renewalPrice: Deprecated, use yearly_price.
     supportedWhoisPrivacy: Supported whois privacy settings.
     yearlyPrice: Yearly price to register or renew the domain.
   """
@@ -449,10 +464,8 @@ class DomainAvailability(_messages.Message):
   available = _messages.EnumField('AvailableValueValuesEnum', 1)
   domainName = _messages.StringField(2)
   notices = _messages.EnumField('NoticesValueListEntryValuesEnum', 3, repeated=True)
-  registrationPrice = _messages.MessageField('Money', 4)
-  renewalPrice = _messages.MessageField('Money', 5)
-  supportedWhoisPrivacy = _messages.EnumField('SupportedWhoisPrivacyValueListEntryValuesEnum', 6, repeated=True)
-  yearlyPrice = _messages.MessageField('Money', 7)
+  supportedWhoisPrivacy = _messages.EnumField('SupportedWhoisPrivacyValueListEntryValuesEnum', 4, repeated=True)
+  yearlyPrice = _messages.MessageField('Money', 5)
 
 
 class DomainsProjectsLocationsGetRequest(_messages.Message):
@@ -738,8 +751,8 @@ class GlueRecord(_messages.Message):
   subdomains of your domain.
 
   Fields:
-    hostName: Fully qualified host name, from least to most significant order.
-      Required to be set. e.g. subdomain.domain.com
+    hostName: Required. Fully qualified host name, from least to most
+      significant order, e.g. "subdomain.domain.com".
     ipv4Addresses: List of IPv4 addresses corresponding to this host. At least
       one of ipv4_address and ipv6_address must be set.
     ipv6Addresses: List of IPv6 addresses corresponding to this host. At least
@@ -1015,16 +1028,15 @@ class Operation(_messages.Message):
 
 
 class OperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
+  r"""Represents the metadata of the long-running operation. Output only.
 
   Fields:
-    apiVersion: Output only. API version used to start the operation.
-    createTime: Output only. The time the operation was created.
-    endTime: Output only. The time the operation finished running.
-    statusDetail: Output only. Human-readable status of the operation, if any.
-    target: Output only. Server-defined resource path for the target of the
-      operation.
-    verb: Output only. Name of the verb executed by the operation.
+    apiVersion: API version used to start the operation.
+    createTime: The time the operation was created.
+    endTime: The time the operation finished running.
+    statusDetail: Human-readable status of the operation, if any.
+    target: Server-defined resource path for the target of the operation.
+    verb: Name of the verb executed by the operation.
   """
 
   apiVersion = _messages.StringField(1)
@@ -1212,33 +1224,26 @@ class Registration(_messages.Message):
     detachTime: Output only. The detach timestamp of the Registration. Set
       only for Registrations in state DETACHED.
     dnsConfig: DNS configuration of the Registration.
-    domainName: Immutable. The domain name in ASCII-only format, without a dot
-      at the end. Unicode domain names have to be converted to Punycode.
+    domainName: Required. Immutable. The domain name in ASCII-only format,
+      without a dot at the end. Unicode domain names have to be converted to
+      Punycode.
     expireTime: Output only. The expiration timestamp of the Registration. For
       registrations in state DETACHED this is the expiration timestamp at
       detach time.
     labels: Set of labels associated with the Registration.
     name: Output only. Name of the Registration resource. It matches pattern
       `projects/*/locations/*/registrations/<domain_name>`.
-    notices: Create only. List of accepted Notices about the domain. Needed
-      e.g. for accepting the HSTS notice when registering .app domains. The
-      list of notices for each domain can be retrieved with
+    notices: Input only. Create only. List of accepted Notices about the
+      domain. Needed e.g. for accepting the HSTS notice when registering .app
+      domains. The list of notices for each domain can be retrieved with
       CheckDomainAvailability call.
-    registrationPrice: [Create only] Registration price. Required for
-      confirmation of the price when creating new registration. Price that
-      should be put here can be obtained from CheckAvailability or
-      SearchAvailability calls. Deprecated, use yearly_price.
-    renewalPrice: [Create only] Renewal price. Required for confirmation of
-      the price when creating new registration. Renewal price that should be
-      put here can be obtained from CheckAvailability or SearchAvailability
-      calls. Deprecated, use yearly_price.
     state: Output only. The State of the Registration.
     updateTime: Output only. The update timestamp of the Registration.
-    whoisConfig: Whois configuration of the Registration.
-    yearlyPrice: Create only. Yearly price to register or renew the domain.
-      Required for confirmation of the price when creating a new registration.
-      Yearly price that should be put here can be obtained from
-      CheckAvailability or SearchAvailability calls.
+    whoisConfig: Required. Whois configuration of the Registration.
+    yearlyPrice: Required. Input only. Create only. Yearly price to register
+      or renew the domain. Used for confirmation of the price when creating a
+      new registration. Yearly price that should be put here can be obtained
+      from CheckAvailability or SearchAvailability calls.
   """
 
   class NoticesValueListEntryValuesEnum(_messages.Enum):
@@ -1310,12 +1315,10 @@ class Registration(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
   notices = _messages.EnumField('NoticesValueListEntryValuesEnum', 8, repeated=True)
-  registrationPrice = _messages.MessageField('Money', 9)
-  renewalPrice = _messages.MessageField('Money', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
-  whoisConfig = _messages.MessageField('WhoisConfig', 13)
-  yearlyPrice = _messages.MessageField('Money', 14)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
+  whoisConfig = _messages.MessageField('WhoisConfig', 11)
+  yearlyPrice = _messages.MessageField('Money', 12)
 
 
 class ResetAuthorizationCodeRequest(_messages.Message):
@@ -1547,15 +1550,16 @@ class WhoisConfig(_messages.Message):
   r"""Defines Whois configuration of the Registration.
 
   Enums:
-    PrivacyValueValuesEnum: Whois privacy settings of the Registration.
+    PrivacyValueValuesEnum: Required. Whois privacy settings of the
+      Registration.
 
   Fields:
-    privacy: Whois privacy settings of the Registration.
-    registrantContact: Registrant whois contact of the Registration.
+    privacy: Required. Whois privacy settings of the Registration.
+    registrantContact: Required. Registrant whois contact of the Registration.
   """
 
   class PrivacyValueValuesEnum(_messages.Enum):
-    r"""Whois privacy settings of the Registration.
+    r"""Required. Whois privacy settings of the Registration.
 
     Values:
       WHOIS_PRIVACY_UNSPECIFIED: The Privacy settings are undefined.

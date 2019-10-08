@@ -946,6 +946,10 @@ The YAML file is formatted as follows:
   # hours. If not specified, or user specifies 0, then default
   # value 10 will be used.
   tgt_lifetime_hours: 1
+
+  # Optional. The name of the Kerberos realm. If not specified,
+  # the uppercased domain name of the cluster will be used.
+  realm: REALM.NAME
 ```
         """)
 
@@ -981,6 +985,7 @@ def ParseKerberosConfigFile(dataproc, kerberos_config_file):
       kmsKeyUri=kerberos_config_data.get('kms_key_uri'),
       kdcDbKeyUri=kerberos_config_data.get('kdc_db_key_uri'),
       tgtLifetimeHours=kerberos_config_data.get('tgt_lifetime_hours'),
+      realm=kerberos_config_data.get('realm'),
       keystoreUri=keystore_uri,
       keystorePasswordUri=keystore_password_uri,
       keyPasswordUri=key_password_uri,

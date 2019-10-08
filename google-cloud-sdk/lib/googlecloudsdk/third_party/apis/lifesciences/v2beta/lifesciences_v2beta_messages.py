@@ -785,8 +785,6 @@ class Metadata(_messages.Message):
       of this operation.
     labels: The user-defined labels associated with this operation.
     pipeline: The pipeline this operation represents.
-    pubSubTopic: The name of the Cloud Pub/Sub topic where notifications of
-      operation status changes are sent.
     startTime: The first time at which resources were allocated to execute the
       pipeline.
   """
@@ -820,8 +818,7 @@ class Metadata(_messages.Message):
   events = _messages.MessageField('Event', 3, repeated=True)
   labels = _messages.MessageField('LabelsValue', 4)
   pipeline = _messages.MessageField('Pipeline', 5)
-  pubSubTopic = _messages.StringField(6)
-  startTime = _messages.StringField(7)
+  startTime = _messages.StringField(6)
 
 
 class Mount(_messages.Message):
@@ -1027,9 +1024,6 @@ class Resources(_messages.Message):
   must be specified or the pipeline run will fail.
 
   Fields:
-    defaultContainerRegistryUri: The default Docker registry host to fetch
-      images from.  This will be prepended to all non-library image names that
-      don't already contain a hostname.
     regions: The list of regions allowed for VM allocation. If set, the
       `zones` field must not be set.
     virtualMachine: The virtual machine specification.
@@ -1037,10 +1031,9 @@ class Resources(_messages.Message):
       field must not be set.
   """
 
-  defaultContainerRegistryUri = _messages.StringField(1)
-  regions = _messages.StringField(2, repeated=True)
-  virtualMachine = _messages.MessageField('VirtualMachine', 3)
-  zones = _messages.StringField(4, repeated=True)
+  regions = _messages.StringField(1, repeated=True)
+  virtualMachine = _messages.MessageField('VirtualMachine', 2)
+  zones = _messages.StringField(3, repeated=True)
 
 
 class RunPipelineRequest(_messages.Message):

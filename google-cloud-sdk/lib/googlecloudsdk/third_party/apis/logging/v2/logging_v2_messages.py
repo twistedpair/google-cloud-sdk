@@ -307,7 +307,7 @@ class ListLogEntriesRequest(_messages.Message):
 
   Fields:
     filter: Optional. A filter that chooses which log entries to return. See
-      Advanced Logs Filters. Only log entries that match the filter are
+      Advanced Logs Queries. Only log entries that match the filter are
       returned. An empty filter matches all log entries in the resources
       listed in resource_names. Referencing a parent resource that is not
       listed in resource_names will cause the filter to return no results. The
@@ -1035,6 +1035,7 @@ class LogSink(_messages.Message):
       not export any log entries.
     dlpOptions: Optional. Settings for Data Loss Prevention (DLP) enabled
       sinks.
+    endTime: Do not use. This field is ignored.
     exclusions: Optional. Log entries that match any of the exclusion filters
       will not be exported. If a log entry is matched by both filter and one
       of exclusion_filters it will not be exported.
@@ -1062,6 +1063,7 @@ class LogSink(_messages.Message):
     outputVersionFormat: Deprecated. The log entry format to use for this
       sink's exported log entries. The v2 format is used by default and cannot
       be changed.
+    startTime: Do not use. This field is ignored.
     updateTime: Output only. The last update timestamp of the sink.This field
       may not be present for older sinks.
     writerIdentity: Output only. An IAM identity&mdash;a service account or
@@ -1094,13 +1096,15 @@ class LogSink(_messages.Message):
   destination = _messages.StringField(4)
   disabled = _messages.BooleanField(5)
   dlpOptions = _messages.MessageField('DlpOptions', 6)
-  exclusions = _messages.MessageField('LogExclusion', 7, repeated=True)
-  filter = _messages.StringField(8)
-  includeChildren = _messages.BooleanField(9)
-  name = _messages.StringField(10)
-  outputVersionFormat = _messages.EnumField('OutputVersionFormatValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
-  writerIdentity = _messages.StringField(13)
+  endTime = _messages.StringField(7)
+  exclusions = _messages.MessageField('LogExclusion', 8, repeated=True)
+  filter = _messages.StringField(9)
+  includeChildren = _messages.BooleanField(10)
+  name = _messages.StringField(11)
+  outputVersionFormat = _messages.EnumField('OutputVersionFormatValueValuesEnum', 12)
+  startTime = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
+  writerIdentity = _messages.StringField(15)
 
 
 class LoggingBillingAccountsBucketsGetRequest(_messages.Message):

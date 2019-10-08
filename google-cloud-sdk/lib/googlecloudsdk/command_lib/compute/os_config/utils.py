@@ -123,7 +123,7 @@ def GetResourceAndUpdateFieldsFromFile(file_path, resource_message_type):
   """Return the resource message and update fields in file."""
   try:
     resource_to_parse = yaml.load_path(file_path)
-  except yaml.YAMLParseError:
+  except yaml.YAMLParseError as e:
     raise exceptions.BadFileException(
         'Policy config file [{0}] cannot be parsed. {1}'
         .format(file_path, six.text_type(e)))

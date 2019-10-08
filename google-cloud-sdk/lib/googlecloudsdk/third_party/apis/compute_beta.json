@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20190923",
+ "revision": "20191001",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -2155,7 +2155,7 @@
     },
     "circuitBreakers": {
      "$ref": "CircuitBreakers",
-     "description": "Settings controlling the volume of connections to a backend service.\n\nThis field is applicable to either:  \n- A regional backend service with the service_protocol set to HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED. \n- A global backend service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED."
+     "description": "Settings controlling the volume of connections to a backend service. If not set, this feature is considered disabled.\n\nThis field is applicable to either:  \n- A regional backend service with the service_protocol set to HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED. \n- A global backend service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED."
     },
     "connectionDraining": {
      "$ref": "ConnectionDraining"
@@ -2267,7 +2267,7 @@
     },
     "outlierDetection": {
      "$ref": "OutlierDetection",
-     "description": "Settings controlling eviction of unhealthy hosts from the load balancing pool. This field is applicable to either:  \n- A regional backend service with the service_protocol set to HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED. \n- A global backend service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED."
+     "description": "Settings controlling eviction of unhealthy hosts from the load balancing pool for the backend service. If not set, this feature is considered disabled.\n\nThis field is applicable to either:  \n- A regional backend service with the service_protocol set to HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED. \n- A global backend service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED."
     },
     "port": {
      "type": "integer",
@@ -3086,27 +3086,27 @@
     },
     "maxConnections": {
      "type": "integer",
-     "description": "The maximum number of connections to the backend cluster. If not specified, the default is 1024.",
+     "description": "The maximum number of connections to the backend service. If not specified, there is no limit.",
      "format": "int32"
     },
     "maxPendingRequests": {
      "type": "integer",
-     "description": "The maximum number of pending requests allowed to the backend cluster. If not specified, the default is 1024.",
+     "description": "The maximum number of pending requests allowed to the backend service. If not specified, there is no limit.",
      "format": "int32"
     },
     "maxRequests": {
      "type": "integer",
-     "description": "The maximum number of parallel requests that allowed to the backend cluster. If not specified, the default is 1024.",
+     "description": "The maximum number of parallel requests that allowed to the backend service. If not specified, there is no limit.",
      "format": "int32"
     },
     "maxRequestsPerConnection": {
      "type": "integer",
-     "description": "Maximum requests for a single backend connection. This parameter is respected by both the HTTP/1.1 and HTTP/2 implementations. If not specified, there is no limit. Setting this parameter to 1 will effectively disable keep alive.",
+     "description": "Maximum requests for a single connection to the backend service. This parameter is respected by both the HTTP/1.1 and HTTP/2 implementations. If not specified, there is no limit. Setting this parameter to 1 will effectively disable keep alive.",
      "format": "int32"
     },
     "maxRetries": {
      "type": "integer",
-     "description": "The maximum number of parallel retries allowed to the backend cluster. If not specified, the default is 3.",
+     "description": "The maximum number of parallel retries allowed to the backend cluster. If not specified, the default is 1.",
      "format": "int32"
     }
    }
@@ -7267,6 +7267,10 @@
    "type": "object",
    "description": "An HttpRouteRule specifies how to match an HTTP request and the corresponding routing action that load balancing proxies will perform.",
    "properties": {
+    "description": {
+     "type": "string",
+     "description": "The short description conveying the intent of this routeRule.\nThe description can have a maximum length of 1024 characters."
+    },
     "headerAction": {
      "$ref": "HttpHeaderAction",
      "description": "Specifies changes to request and response headers that need to take effect for the selected backendService.\nThe headerAction specified here are applied before the matching pathMatchers[].headerAction and after pathMatchers[].routeRules[].routeAction.weightedBackendService.backendServiceWeightAction[].headerAction"
@@ -7276,6 +7280,11 @@
      "items": {
       "$ref": "HttpRouteRuleMatch"
      }
+    },
+    "priority": {
+     "type": "integer",
+     "description": "For routeRules within a given pathMatcher, priority determines the order in which load balancer will interpret routeRules. RouteRules are evaluated in order of priority, from the lowest to highest number. The priority of a rule decreases as its number increases (1, 2, 3, N+1). The first rule that matches the request is applied.\nYou cannot configure two or more routeRules with the same priority. Priority for each rule must be set to a number between 0 and 2147483647 inclusive.\nPriority numbers can have gaps, which enable you to add or remove rules in the future without affecting the rest of the rules. For example, 1, 2, 3, 4, 5, 9, 12, 16 is a valid series of priority numbers to which you could add rules numbered from 6 to 8, 10 to 11, and 13 to 15 in the future without any impact on existing rules.",
+     "format": "int32"
     },
     "routeAction": {
      "$ref": "HttpRouteAction",
@@ -11862,6 +11871,13 @@
    "type": "object",
    "description": "Increment a streamz counter with the specified metric and field names.\n\nMetric names should start with a '/', generally be lowercase-only, and end in \"_count\". Field names should not contain an initial slash. The actual exported metric names will have \"/iam/policy\" prepended.\n\nField names correspond to IAM request parameters and field values are their respective values.\n\nSupported field names: - \"authority\", which is \"[token]\" if IAMContext.token is present, otherwise the value of IAMContext.authority_selector if present, and otherwise a representation of IAMContext.principal; or - \"iam_principal\", a representation of IAMContext.principal even if a token or authority selector is present; or - \"\" (empty string), resulting in a counter with no fields.\n\nExamples: counter { metric: \"/debug_access_count\" field: \"iam_principal\" } ==\u003e increment counter /iam/policy/backend_debug_access_count {iam_principal=[value of IAMContext.principal]}\n\nAt this time we do not support multiple field names (though this may be supported in the future).",
    "properties": {
+    "customFields": {
+     "type": "array",
+     "description": "Custom fields.",
+     "items": {
+      "$ref": "LogConfigCounterOptionsCustomField"
+     }
+    },
     "field": {
      "type": "string",
      "description": "The field value to attribute."
@@ -11869,6 +11885,21 @@
     "metric": {
      "type": "string",
      "description": "The metric to update."
+    }
+   }
+  },
+  "LogConfigCounterOptionsCustomField": {
+   "id": "LogConfigCounterOptionsCustomField",
+   "type": "object",
+   "description": "Custom fields. These can be used to create a counter with arbitrary field/value pairs. See: go/rpcsp-custom-fields.",
+   "properties": {
+    "name": {
+     "type": "string",
+     "description": "Name is the field name."
+    },
+    "value": {
+     "type": "string",
+     "description": "Value is the field value. It is important that in contrast to the CounterOptions.field, the value here is a constant that is not derived from the IAMContext."
     }
    }
   },
@@ -15371,11 +15402,11 @@
   "OutlierDetection": {
    "id": "OutlierDetection",
    "type": "object",
-   "description": "Settings controlling eviction of unhealthy hosts from the load balancing pool.",
+   "description": "Settings controlling eviction of unhealthy hosts from the load balancing pool for the backend service.",
    "properties": {
     "baseEjectionTime": {
      "$ref": "Duration",
-     "description": "The base time that a host is ejected for. The real time is equal to the base time multiplied by the number of times the host has been ejected. Defaults to 30000ms or 30s."
+     "description": "The base time that a host is ejected for. The real ejection time is equal to the base ejection time multiplied by the number of times the host has been ejected. Defaults to 30000ms or 30s."
     },
     "consecutiveErrors": {
      "type": "integer",
@@ -15384,17 +15415,17 @@
     },
     "consecutiveGatewayFailure": {
      "type": "integer",
-     "description": "The number of consecutive gateway failures (502, 503, 504 status or connection errors that are mapped to one of those status codes) before a consecutive gateway failure ejection occurs. Defaults to 5.",
+     "description": "The number of consecutive gateway failures (502, 503, 504 status or connection errors that are mapped to one of those status codes) before a consecutive gateway failure ejection occurs. Defaults to 3.",
      "format": "int32"
     },
     "enforcingConsecutiveErrors": {
      "type": "integer",
-     "description": "The percentage chance that a host will be actually ejected when an outlier status is detected through consecutive 5xx. This setting can be used to disable ejection or to ramp it up slowly. Defaults to 100.",
+     "description": "The percentage chance that a host will be actually ejected when an outlier status is detected through consecutive 5xx. This setting can be used to disable ejection or to ramp it up slowly. Defaults to 0.",
      "format": "int32"
     },
     "enforcingConsecutiveGatewayFailure": {
      "type": "integer",
-     "description": "The percentage chance that a host will be actually ejected when an outlier status is detected through consecutive gateway failures. This setting can be used to disable ejection or to ramp it up slowly. Defaults to 0.",
+     "description": "The percentage chance that a host will be actually ejected when an outlier status is detected through consecutive gateway failures. This setting can be used to disable ejection or to ramp it up slowly. Defaults to 100.",
      "format": "int32"
     },
     "enforcingSuccessRate": {
@@ -15404,11 +15435,11 @@
     },
     "interval": {
      "$ref": "Duration",
-     "description": "Time interval between ejection sweep analysis. This can result in both new ejections as well as hosts being returned to service. Defaults to 10 seconds."
+     "description": "Time interval between ejection sweep analysis. This can result in both new ejections as well as hosts being returned to service. Defaults to 1 seconds."
     },
     "maxEjectionPercent": {
      "type": "integer",
-     "description": "Maximum percentage of hosts in the load balancing pool for the backend service that can be ejected. Defaults to 10%.",
+     "description": "Maximum percentage of hosts in the load balancing pool for the backend service that can be ejected. Defaults to 50%.",
      "format": "int32"
     },
     "successRateMinimumHosts": {
@@ -16329,6 +16360,7 @@
       "INTERCONNECTS",
       "INTERCONNECT_ATTACHMENTS_PER_REGION",
       "INTERCONNECT_ATTACHMENTS_TOTAL_MBPS",
+      "INTERCONNECT_TOTAL_GBPS",
       "INTERNAL_ADDRESSES",
       "IN_USE_ADDRESSES",
       "IN_USE_BACKUP_SCHEDULES",
@@ -16380,6 +16412,7 @@
       "VPN_TUNNELS"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -26053,7 +26086,7 @@
     },
     "status": {
      "type": "string",
-     "description": "[Output Only] The status of the VPN tunnel, which can be one of the following: \n- PROVISIONING: Resource is being allocated for the VPN tunnel. \n- WAITING_FOR_FULL_CONFIG: Waiting to receive all VPN-related configs from the user. Network, TargetVpnGateway, VpnTunnel, ForwardingRule, and Route resources are needed to setup the VPN tunnel. \n- FIRST_HANDSHAKE: Successful first handshake with the peer VPN. \n- ESTABLISHED: Secure session is successfully established with the peer VPN. \n- NETWORK_ERROR: Deprecated, replaced by NO_INCOMING_PACKETS \n- AUTHORIZATION_ERROR: Auth error (for example, bad shared secret). \n- NEGOTIATION_FAILURE: Handshake failed. \n- DEPROVISIONING: Resources are being deallocated for the VPN tunnel. \n- FAILED: Tunnel creation has failed and the tunnel is not ready to be used.",
+     "description": "[Output Only] The status of the VPN tunnel, which can be one of the following: \n- PROVISIONING: Resource is being allocated for the VPN tunnel. \n- WAITING_FOR_FULL_CONFIG: Waiting to receive all VPN-related configs from the user. Network, TargetVpnGateway, VpnTunnel, ForwardingRule, and Route resources are needed to setup the VPN tunnel. \n- FIRST_HANDSHAKE: Successful first handshake with the peer VPN. \n- ESTABLISHED: Secure session is successfully established with the peer VPN. \n- NETWORK_ERROR: Deprecated, replaced by NO_INCOMING_PACKETS \n- AUTHORIZATION_ERROR: Auth error (for example, bad shared secret). \n- NEGOTIATION_FAILURE: Handshake failed. \n- DEPROVISIONING: Resources are being deallocated for the VPN tunnel. \n- FAILED: Tunnel creation has failed and the tunnel is not ready to be used. \n- NO_INCOMING_PACKETS: No incoming packets from peer. \n- REJECTED: Tunnel configuration was rejected, can be result of being blacklisted. \n- ALLOCATING_RESOURCES: Cloud VPN is in the process of allocating all required resources. \n- STOPPED: Tunnel is stopped due to its Forwarding Rules being deleted for Classic VPN tunnels or the project is in frozen state. \n- PEER_IDENTITY_MISMATCH: Peer identity does not match peer IP, probably behind NAT. \n- TS_NARROWING_NOT_ALLOWED: Traffic selector narrowing not allowed for an HA-VPN tunnel.",
      "enum": [
       "ALLOCATING_RESOURCES",
       "AUTHORIZATION_ERROR",

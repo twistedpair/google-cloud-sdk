@@ -334,6 +334,8 @@ managed_identities_admin_name
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+
       Args:
         request: (ManagedidentitiesProjectsLocationsGlobalDomainsSetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments

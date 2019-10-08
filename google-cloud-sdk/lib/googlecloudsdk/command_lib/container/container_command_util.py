@@ -276,9 +276,11 @@ def ParseUpdateOptionsBase(args, locations):
       enable_stackdriver_kubernetes=args.enable_stackdriver_kubernetes,
       disable_addons=args.disable_addons,
       enable_autoscaling=args.enable_autoscaling,
+      enable_binauthz=args.enable_binauthz,
       min_nodes=args.min_nodes,
       max_nodes=args.max_nodes,
       node_pool=args.node_pool,
       locations=locations,
       enable_master_authorized_networks=args.enable_master_authorized_networks,
-      master_authorized_networks=args.master_authorized_networks)
+      master_authorized_networks=args.master_authorized_networks,
+      enable_vertical_pod_autoscaling=args.enable_vertical_pod_autoscaling)

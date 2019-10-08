@@ -41,7 +41,7 @@ connector:
       Name of a VPC Access connector.
   disable_auto_completers: false
 
-connector_v1beta1:
+connector_v1:
   name: connector
   collection: vpcaccess.projects.locations.connectors
   request_id_field: connectorId

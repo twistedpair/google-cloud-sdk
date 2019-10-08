@@ -172,7 +172,7 @@ class CloudassetOrganizationsBatchGetAssetsHistoryRequest(_messages.Message):
   r"""A CloudassetOrganizationsBatchGetAssetsHistoryRequest object.
 
   Enums:
-    ContentTypeValueValuesEnum: Required. The content type.
+    ContentTypeValueValuesEnum: Optional. The content type.
 
   Fields:
     assetNames: A list of the full names of the assets. For example: `//comput
@@ -181,7 +181,7 @@ class CloudassetOrganizationsBatchGetAssetsHistoryRequest(_messages.Message):
       mes#full_resource_name) for more info.  The request becomes a no-op if
       the asset name list is empty, and the max size of the asset name list is
       100 in one request.
-    contentType: Required. The content type.
+    contentType: Optional. The content type.
     parent: Required. The relative name of the root asset. It can only be an
       organization number (such as "organizations/123"), a project ID (such as
       "projects/my-project-id")", or a project number (such as
@@ -192,7 +192,7 @@ class CloudassetOrganizationsBatchGetAssetsHistoryRequest(_messages.Message):
   """
 
   class ContentTypeValueValuesEnum(_messages.Enum):
-    r"""Required. The content type.
+    r"""Optional. The content type.
 
     Values:
       CONTENT_TYPE_UNSPECIFIED: <no description>
@@ -240,7 +240,7 @@ class CloudassetProjectsBatchGetAssetsHistoryRequest(_messages.Message):
   r"""A CloudassetProjectsBatchGetAssetsHistoryRequest object.
 
   Enums:
-    ContentTypeValueValuesEnum: Required. The content type.
+    ContentTypeValueValuesEnum: Optional. The content type.
 
   Fields:
     assetNames: A list of the full names of the assets. For example: `//comput
@@ -249,7 +249,7 @@ class CloudassetProjectsBatchGetAssetsHistoryRequest(_messages.Message):
       mes#full_resource_name) for more info.  The request becomes a no-op if
       the asset name list is empty, and the max size of the asset name list is
       100 in one request.
-    contentType: Required. The content type.
+    contentType: Optional. The content type.
     parent: Required. The relative name of the root asset. It can only be an
       organization number (such as "organizations/123"), a project ID (such as
       "projects/my-project-id")", or a project number (such as
@@ -260,7 +260,7 @@ class CloudassetProjectsBatchGetAssetsHistoryRequest(_messages.Message):
   """
 
   class ContentTypeValueValuesEnum(_messages.Enum):
-    r"""Required. The content type.
+    r"""Optional. The content type.
 
     Values:
       CONTENT_TYPE_UNSPECIFIED: <no description>

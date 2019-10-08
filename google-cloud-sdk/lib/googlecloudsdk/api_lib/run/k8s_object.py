@@ -79,59 +79,74 @@ class KubernetesObject(object):
   FIELD_BLACKLIST = []
 
   @classmethod
-  def SpecOnly(cls, spec, messages_mod):
-    """Produce a wrapped message with only the given spec.
+  def Kind(cls, kind=None):
+    """Returns the passed str if given, else the class KIND."""
+    return kind if kind is not None else cls.KIND
+
+  @classmethod
+  def ApiCategory(cls, api_category=None):
+    """Returns the passed str if given, else the class API_CATEGORY."""
+    return api_category if api_category is not None else cls.API_CATEGORY
+
+  @classmethod
+  def SpecOnly(cls, spec, messages_mod, kind=None):
+    """Produces a wrapped message with only the given spec.
 
     It is meant to be used as part of another message; it will error if you
     try to access the metadata or status.
 
     Arguments:
-      spec: The spec to include
+      spec: messages.Message, The spec to include
       messages_mod: the messages module
+      kind: str, the resource kind
 
     Returns:
-      a new k8s_object with only the given spec.
+      A new k8s_object with only the given spec.
     """
-    msg_cls = getattr(messages_mod, cls.KIND)
-    return cls(msg_cls(spec=spec), messages_mod)
+    msg_cls = getattr(messages_mod, cls.Kind(kind))
+    return cls(msg_cls(spec=spec), messages_mod, kind)
 
   @classmethod
-  def Template(cls, template, messages_mod):
-    """Wrap a template object: spec and metadata only, no status."""
-    msg_cls = getattr(messages_mod, cls.KIND)
+  def Template(cls, template, messages_mod, kind=None):
+    """Wraps a template object: spec and metadata only, no status."""
+    msg_cls = getattr(messages_mod, cls.Kind(kind))
     return cls(msg_cls(spec=template.spec, metadata=template.metadata),
-               messages_mod)
+               messages_mod, kind)
 
   @classmethod
-  def New(cls, client, namespace):
-    """Produce a new wrapped message of the appropriate type.
+  def New(cls, client, namespace, kind=None, api_category=None):
+    """Produces a new wrapped message of the appropriate type.
 
     All the sub-objects in it are recursively initialized to the appropriate
     message types, and the kind, apiVersion, and namespace set.
 
     Arguments:
       client: the API client to use
-      namespace: The namespace to create the object in
+      namespace: str, The namespace to create the object in
+      kind: str, the resource kind
+      api_category: str, the api group of the resource
 
     Returns:
       The newly created wrapped message.
     """
-    api_version = '{}/{}'.format(cls.API_CATEGORY, getattr(client, '_VERSION'))
+    api_category = cls.ApiCategory(api_category)
+    api_version = '{}/{}'.format(api_category, getattr(client, '_VERSION'))
     messages_mod = client.MESSAGES_MODULE
-    ret = InitializedInstance(getattr(messages_mod, cls.KIND),
-                              cls.FIELD_BLACKLIST)
+    kind = cls.Kind(kind)
+    ret = InitializedInstance(getattr(messages_mod, kind), cls.FIELD_BLACKLIST)
     try:
-      ret.kind = cls.KIND
+      ret.kind = kind
       ret.apiVersion = api_version
     except AttributeError:
       # TODO(b/113172423): Workaround. Some top-level messages don't have
       # apiVersion and kind yet but they should
       pass
     ret.metadata.namespace = namespace
-    return cls(ret, messages_mod)
+    return cls(ret, messages_mod, kind)
 
-  def __init__(self, to_wrap, messages_mod):
-    if not isinstance(to_wrap, getattr(messages_mod, self.KIND)):
+  def __init__(self, to_wrap, messages_mod, kind=None):
+    msg_cls = getattr(messages_mod, self.Kind(kind))
+    if not isinstance(to_wrap, msg_cls):
       raise ValueError('Oops, trying to wrap wrong kind of message')
     self._m = to_wrap
     self._messages = messages_mod
@@ -206,6 +221,16 @@ class KubernetesObject(object):
     return self._m.metadata.selfLink.lstrip('/')
 
   @property
+  def uid(self):
+    self.AssertFullObject()
+    return self._m.metadata.uid
+
+  @property
+  def owners(self):
+    self.AssertFullObject()
+    return self._m.metadata.ownerReferences
+
+  @property
   def region(self):
     self.AssertFullObject()
     return self.labels[REGION_LABEL]
@@ -274,12 +299,25 @@ class KubernetesObject(object):
     else:
       return 'X'
 
+  def AsObjectReference(self):
+    return self._messages.ObjectReference(
+        kind=self.kind,
+        namespace=self.namespace,
+        name=self.name,
+        uid=self.uid,
+        apiVersion=self.apiVersion)
+
   def Message(self):
     """Return the actual message we've wrapped."""
     return self._m
 
   def MakeSerializable(self):
     return self.Message()
+
+  def __eq__(self, other):
+    if isinstance(other, type(self)):
+      return self.Message() == other.Message()
+    return False
 
   def __repr__(self):
     return '{}({})'.format(type(self).__name__, repr(self._m))

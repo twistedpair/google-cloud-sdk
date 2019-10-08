@@ -851,6 +851,28 @@
         "field": {
           "description": "The field value to attribute.",
           "type": "string"
+        },
+        "customFields": {
+          "description": "Custom fields.",
+          "type": "array",
+          "items": {
+            "$ref": "CustomField"
+          }
+        }
+      }
+    },
+    "CustomField": {
+      "id": "CustomField",
+      "description": "Custom fields.\nThese can be used to create a counter with arbitrary field\/value\npairs.\nSee: go\/rpcsp-custom-fields.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name is the field name.",
+          "type": "string"
+        },
+        "value": {
+          "description": "Value is the field value. It is important that in contrast to the\nCounterOptions.field, the value here is a constant that is not\nderived from the IAMContext.",
+          "type": "string"
         }
       }
     },
@@ -1777,7 +1799,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy."
+                      "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.\n\nCan return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED"
                     },
                     "getIamPolicy": {
                       "id": "managedidentities.projects.locations.global.domains.getIamPolicy",

@@ -696,7 +696,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy."
+              "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.\n\nCan return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED"
             },
             "getIamPolicy": {
               "id": "binaryauthorization.projects.attestors.getIamPolicy",
@@ -787,7 +787,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy."
+              "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.\n\nCan return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED"
             },
             "getIamPolicy": {
               "id": "binaryauthorization.projects.policy.getIamPolicy",

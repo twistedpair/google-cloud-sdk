@@ -2704,10 +2704,11 @@ class BackendService(_messages.Message):
     backends: The list of backends that serve this BackendService.
     cdnPolicy: Cloud CDN configuration for this BackendService.
     circuitBreakers: Settings controlling the volume of connections to a
-      backend service.  This field is applicable to either:   - A regional
-      backend service with the service_protocol set to HTTP, HTTPS, or HTTP2,
-      and load_balancing_scheme set to INTERNAL_MANAGED.  - A global backend
-      service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED.
+      backend service. If not set, this feature is considered disabled.  This
+      field is applicable to either:   - A regional backend service with the
+      service_protocol set to HTTP, HTTPS, or HTTP2, and load_balancing_scheme
+      set to INTERNAL_MANAGED.  - A global backend service with the
+      load_balancing_scheme set to INTERNAL_SELF_MANAGED.
     connectionDraining: A ConnectionDraining attribute.
     consistentHash: Consistent Hash-based load balancing can be used to
       provide soft session affinity based on HTTP headers, cookies or other
@@ -2792,8 +2793,9 @@ class BackendService(_messages.Message):
       This field can only be spcified when the load balancing scheme is set to
       INTERNAL.
     outlierDetection: Settings controlling eviction of unhealthy hosts from
-      the load balancing pool. This field is applicable to either:   - A
-      regional backend service with the service_protocol set to HTTP, HTTPS,
+      the load balancing pool for the backend service. If not set, this
+      feature is considered disabled.  This field is applicable to either:   -
+      A regional backend service with the service_protocol set to HTTP, HTTPS,
       or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED.  - A global
       backend service with the load_balancing_scheme set to
       INTERNAL_SELF_MANAGED.
@@ -3797,18 +3799,18 @@ class CircuitBreakers(_messages.Message):
 
   Fields:
     connectTimeout: The timeout for new network connections to hosts.
-    maxConnections: The maximum number of connections to the backend cluster.
-      If not specified, the default is 1024.
+    maxConnections: The maximum number of connections to the backend service.
+      If not specified, there is no limit.
     maxPendingRequests: The maximum number of pending requests allowed to the
-      backend cluster. If not specified, the default is 1024.
+      backend service. If not specified, there is no limit.
     maxRequests: The maximum number of parallel requests that allowed to the
-      backend cluster. If not specified, the default is 1024.
-    maxRequestsPerConnection: Maximum requests for a single backend
-      connection. This parameter is respected by both the HTTP/1.1 and HTTP/2
-      implementations. If not specified, there is no limit. Setting this
-      parameter to 1 will effectively disable keep alive.
+      backend service. If not specified, there is no limit.
+    maxRequestsPerConnection: Maximum requests for a single connection to the
+      backend service. This parameter is respected by both the HTTP/1.1 and
+      HTTP/2 implementations. If not specified, there is no limit. Setting
+      this parameter to 1 will effectively disable keep alive.
     maxRetries: The maximum number of parallel retries allowed to the backend
-      cluster. If not specified, the default is 3.
+      cluster. If not specified, the default is 1.
   """
 
   connectTimeout = _messages.MessageField('Duration', 1)
@@ -23655,12 +23657,26 @@ class HttpRouteRule(_messages.Message):
   corresponding routing action that load balancing proxies will perform.
 
   Fields:
+    description: The short description conveying the intent of this routeRule.
+      The description can have a maximum length of 1024 characters.
     headerAction: Specifies changes to request and response headers that need
       to take effect for the selected backendService. The headerAction
       specified here are applied before the matching
       pathMatchers[].headerAction and after pathMatchers[].routeRules[].routeA
       ction.weightedBackendService.backendServiceWeightAction[].headerAction
     matchRules: A HttpRouteRuleMatch attribute.
+    priority: For routeRules within a given pathMatcher, priority determines
+      the order in which load balancer will interpret routeRules. RouteRules
+      are evaluated in order of priority, from the lowest to highest number.
+      The priority of a rule decreases as its number increases (1, 2, 3, N+1).
+      The first rule that matches the request is applied. You cannot configure
+      two or more routeRules with the same priority. Priority for each rule
+      must be set to a number between 0 and 2147483647 inclusive. Priority
+      numbers can have gaps, which enable you to add or remove rules in the
+      future without affecting the rest of the rules. For example, 1, 2, 3, 4,
+      5, 9, 12, 16 is a valid series of priority numbers to which you could
+      add rules numbered from 6 to 8, 10 to 11, and 13 to 15 in the future
+      without any impact on existing rules.
     routeAction: In response to a matching matchRule, the load balancer
       performs advanced routing actions like URL rewrites, header
       transformations, etc. prior to forwarding the request to the selected
@@ -23681,11 +23697,13 @@ class HttpRouteRule(_messages.Message):
       routeAction must not be set.
   """
 
-  headerAction = _messages.MessageField('HttpHeaderAction', 1)
-  matchRules = _messages.MessageField('HttpRouteRuleMatch', 2, repeated=True)
-  routeAction = _messages.MessageField('HttpRouteAction', 3)
-  service = _messages.StringField(4)
-  urlRedirect = _messages.MessageField('HttpRedirectAction', 5)
+  description = _messages.StringField(1)
+  headerAction = _messages.MessageField('HttpHeaderAction', 2)
+  matchRules = _messages.MessageField('HttpRouteRuleMatch', 3, repeated=True)
+  priority = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  routeAction = _messages.MessageField('HttpRouteAction', 5)
+  service = _messages.StringField(6)
+  urlRedirect = _messages.MessageField('HttpRedirectAction', 7)
 
 
 class HttpRouteRuleMatch(_messages.Message):
@@ -29113,12 +29131,29 @@ class LogConfigCounterOptions(_messages.Message):
   (though this may be supported in the future).
 
   Fields:
+    customFields: Custom fields.
     field: The field value to attribute.
     metric: The metric to update.
   """
 
-  field = _messages.StringField(1)
-  metric = _messages.StringField(2)
+  customFields = _messages.MessageField('LogConfigCounterOptionsCustomField', 1, repeated=True)
+  field = _messages.StringField(2)
+  metric = _messages.StringField(3)
+
+
+class LogConfigCounterOptionsCustomField(_messages.Message):
+  r"""Custom fields. These can be used to create a counter with arbitrary
+  field/value pairs. See: go/rpcsp-custom-fields.
+
+  Fields:
+    name: Name is the field name.
+    value: Value is the field value. It is important that in contrast to the
+      CounterOptions.field, the value here is a constant that is not derived
+      from the IAMContext.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class LogConfigDataAccessOptions(_messages.Message):
@@ -33235,36 +33270,36 @@ class OperationsScopedList(_messages.Message):
 
 class OutlierDetection(_messages.Message):
   r"""Settings controlling eviction of unhealthy hosts from the load balancing
-  pool.
+  pool for the backend service.
 
   Fields:
-    baseEjectionTime: The base time that a host is ejected for. The real time
-      is equal to the base time multiplied by the number of times the host has
-      been ejected. Defaults to 30000ms or 30s.
+    baseEjectionTime: The base time that a host is ejected for. The real
+      ejection time is equal to the base ejection time multiplied by the
+      number of times the host has been ejected. Defaults to 30000ms or 30s.
     consecutiveErrors: Number of errors before a host is ejected from the
       connection pool. When the backend host is accessed over HTTP, a 5xx
       return code qualifies as an error. Defaults to 5.
     consecutiveGatewayFailure: The number of consecutive gateway failures
       (502, 503, 504 status or connection errors that are mapped to one of
       those status codes) before a consecutive gateway failure ejection
-      occurs. Defaults to 5.
+      occurs. Defaults to 3.
     enforcingConsecutiveErrors: The percentage chance that a host will be
       actually ejected when an outlier status is detected through consecutive
       5xx. This setting can be used to disable ejection or to ramp it up
-      slowly. Defaults to 100.
+      slowly. Defaults to 0.
     enforcingConsecutiveGatewayFailure: The percentage chance that a host will
       be actually ejected when an outlier status is detected through
       consecutive gateway failures. This setting can be used to disable
-      ejection or to ramp it up slowly. Defaults to 0.
+      ejection or to ramp it up slowly. Defaults to 100.
     enforcingSuccessRate: The percentage chance that a host will be actually
       ejected when an outlier status is detected through success rate
       statistics. This setting can be used to disable ejection or to ramp it
       up slowly. Defaults to 100.
     interval: Time interval between ejection sweep analysis. This can result
       in both new ejections as well as hosts being returned to service.
-      Defaults to 10 seconds.
+      Defaults to 1 seconds.
     maxEjectionPercent: Maximum percentage of hosts in the load balancing pool
-      for the backend service that can be ejected. Defaults to 10%.
+      for the backend service that can be ejected. Defaults to 50%.
     successRateMinimumHosts: The number of hosts in a cluster that must have
       enough request volume to detect success rate outliers. If the number of
       hosts is less than this setting, outlier detection via success rate
@@ -34321,6 +34356,7 @@ class Quota(_messages.Message):
       INTERCONNECTS: <no description>
       INTERCONNECT_ATTACHMENTS_PER_REGION: <no description>
       INTERCONNECT_ATTACHMENTS_TOTAL_MBPS: <no description>
+      INTERCONNECT_TOTAL_GBPS: <no description>
       INTERNAL_ADDRESSES: <no description>
       IN_USE_ADDRESSES: <no description>
       IN_USE_BACKUP_SCHEDULES: <no description>
@@ -34402,55 +34438,56 @@ class Quota(_messages.Message):
     INTERCONNECTS = 28
     INTERCONNECT_ATTACHMENTS_PER_REGION = 29
     INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 30
-    INTERNAL_ADDRESSES = 31
-    IN_USE_ADDRESSES = 32
-    IN_USE_BACKUP_SCHEDULES = 33
-    IN_USE_SNAPSHOT_SCHEDULES = 34
-    LOCAL_SSD_TOTAL_GB = 35
-    N2_CPUS = 36
-    NETWORKS = 37
-    NETWORK_ENDPOINT_GROUPS = 38
-    NVIDIA_K80_GPUS = 39
-    NVIDIA_P100_GPUS = 40
-    NVIDIA_P100_VWS_GPUS = 41
-    NVIDIA_P4_GPUS = 42
-    NVIDIA_P4_VWS_GPUS = 43
-    NVIDIA_T4_GPUS = 44
-    NVIDIA_T4_VWS_GPUS = 45
-    NVIDIA_V100_GPUS = 46
-    PREEMPTIBLE_CPUS = 47
-    PREEMPTIBLE_LOCAL_SSD_GB = 48
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 49
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 50
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 51
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 52
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 53
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 54
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 55
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 56
-    REGIONAL_AUTOSCALERS = 57
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 58
-    RESERVATIONS = 59
-    RESOURCE_POLICIES = 60
-    ROUTERS = 61
-    ROUTES = 62
-    SECURITY_POLICIES = 63
-    SECURITY_POLICY_RULES = 64
-    SNAPSHOTS = 65
-    SSD_TOTAL_GB = 66
-    SSL_CERTIFICATES = 67
-    STATIC_ADDRESSES = 68
-    SUBNETWORKS = 69
-    TARGET_HTTPS_PROXIES = 70
-    TARGET_HTTP_PROXIES = 71
-    TARGET_INSTANCES = 72
-    TARGET_POOLS = 73
-    TARGET_SSL_PROXIES = 74
-    TARGET_TCP_PROXIES = 75
-    TARGET_VPN_GATEWAYS = 76
-    URL_MAPS = 77
-    VPN_GATEWAYS = 78
-    VPN_TUNNELS = 79
+    INTERCONNECT_TOTAL_GBPS = 31
+    INTERNAL_ADDRESSES = 32
+    IN_USE_ADDRESSES = 33
+    IN_USE_BACKUP_SCHEDULES = 34
+    IN_USE_SNAPSHOT_SCHEDULES = 35
+    LOCAL_SSD_TOTAL_GB = 36
+    N2_CPUS = 37
+    NETWORKS = 38
+    NETWORK_ENDPOINT_GROUPS = 39
+    NVIDIA_K80_GPUS = 40
+    NVIDIA_P100_GPUS = 41
+    NVIDIA_P100_VWS_GPUS = 42
+    NVIDIA_P4_GPUS = 43
+    NVIDIA_P4_VWS_GPUS = 44
+    NVIDIA_T4_GPUS = 45
+    NVIDIA_T4_VWS_GPUS = 46
+    NVIDIA_V100_GPUS = 47
+    PREEMPTIBLE_CPUS = 48
+    PREEMPTIBLE_LOCAL_SSD_GB = 49
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 50
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 51
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 52
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 53
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 54
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 55
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 56
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 57
+    REGIONAL_AUTOSCALERS = 58
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 59
+    RESERVATIONS = 60
+    RESOURCE_POLICIES = 61
+    ROUTERS = 62
+    ROUTES = 63
+    SECURITY_POLICIES = 64
+    SECURITY_POLICY_RULES = 65
+    SNAPSHOTS = 66
+    SSD_TOTAL_GB = 67
+    SSL_CERTIFICATES = 68
+    STATIC_ADDRESSES = 69
+    SUBNETWORKS = 70
+    TARGET_HTTPS_PROXIES = 71
+    TARGET_HTTP_PROXIES = 72
+    TARGET_INSTANCES = 73
+    TARGET_POOLS = 74
+    TARGET_SSL_PROXIES = 75
+    TARGET_TCP_PROXIES = 76
+    TARGET_VPN_GATEWAYS = 77
+    URL_MAPS = 78
+    VPN_GATEWAYS = 79
+    VPN_TUNNELS = 80
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -45451,7 +45488,15 @@ class VpnTunnel(_messages.Message):
       error (for example, bad shared secret).  - NEGOTIATION_FAILURE:
       Handshake failed.  - DEPROVISIONING: Resources are being deallocated for
       the VPN tunnel.  - FAILED: Tunnel creation has failed and the tunnel is
-      not ready to be used.
+      not ready to be used.  - NO_INCOMING_PACKETS: No incoming packets from
+      peer.  - REJECTED: Tunnel configuration was rejected, can be result of
+      being blacklisted.  - ALLOCATING_RESOURCES: Cloud VPN is in the process
+      of allocating all required resources.  - STOPPED: Tunnel is stopped due
+      to its Forwarding Rules being deleted for Classic VPN tunnels or the
+      project is in frozen state.  - PEER_IDENTITY_MISMATCH: Peer identity
+      does not match peer IP, probably behind NAT.  -
+      TS_NARROWING_NOT_ALLOWED: Traffic selector narrowing not allowed for an
+      HA-VPN tunnel.
 
   Messages:
     LabelsValue: Labels to apply to this VpnTunnel. These can be later
@@ -45529,7 +45574,15 @@ class VpnTunnel(_messages.Message):
       AUTHORIZATION_ERROR: Auth error (for example, bad shared secret).  -
       NEGOTIATION_FAILURE: Handshake failed.  - DEPROVISIONING: Resources are
       being deallocated for the VPN tunnel.  - FAILED: Tunnel creation has
-      failed and the tunnel is not ready to be used.
+      failed and the tunnel is not ready to be used.  - NO_INCOMING_PACKETS:
+      No incoming packets from peer.  - REJECTED: Tunnel configuration was
+      rejected, can be result of being blacklisted.  - ALLOCATING_RESOURCES:
+      Cloud VPN is in the process of allocating all required resources.  -
+      STOPPED: Tunnel is stopped due to its Forwarding Rules being deleted for
+      Classic VPN tunnels or the project is in frozen state.  -
+      PEER_IDENTITY_MISMATCH: Peer identity does not match peer IP, probably
+      behind NAT.  - TS_NARROWING_NOT_ALLOWED: Traffic selector narrowing not
+      allowed for an HA-VPN tunnel.
     targetVpnGateway: URL of the Target VPN gateway with which this VPN tunnel
       is associated. Provided by the client when the VPN tunnel is created.
     vpnGateway: URL of the VPN gateway with which this VPN tunnel is
@@ -45552,7 +45605,15 @@ class VpnTunnel(_messages.Message):
     AUTHORIZATION_ERROR: Auth error (for example, bad shared secret).  -
     NEGOTIATION_FAILURE: Handshake failed.  - DEPROVISIONING: Resources are
     being deallocated for the VPN tunnel.  - FAILED: Tunnel creation has
-    failed and the tunnel is not ready to be used.
+    failed and the tunnel is not ready to be used.  - NO_INCOMING_PACKETS: No
+    incoming packets from peer.  - REJECTED: Tunnel configuration was
+    rejected, can be result of being blacklisted.  - ALLOCATING_RESOURCES:
+    Cloud VPN is in the process of allocating all required resources.  -
+    STOPPED: Tunnel is stopped due to its Forwarding Rules being deleted for
+    Classic VPN tunnels or the project is in frozen state.  -
+    PEER_IDENTITY_MISMATCH: Peer identity does not match peer IP, probably
+    behind NAT.  - TS_NARROWING_NOT_ALLOWED: Traffic selector narrowing not
+    allowed for an HA-VPN tunnel.
 
     Values:
       ALLOCATING_RESOURCES: <no description>

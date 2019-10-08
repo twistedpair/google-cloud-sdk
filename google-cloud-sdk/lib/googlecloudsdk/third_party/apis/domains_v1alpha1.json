@@ -189,20 +189,23 @@
         }
       }
     },
-    "CheckDomainAvailabilityResponse": {
-      "id": "CheckDomainAvailabilityResponse",
-      "description": "Response for the `CheckDomainAvailability` method.",
+    "SearchDomainAvailabilityResponse": {
+      "id": "SearchDomainAvailabilityResponse",
+      "description": "Response for the `SearchDomainAvailability` method.",
       "type": "object",
       "properties": {
         "availability": {
-          "description": "Information about domain availability.",
-          "$ref": "DomainAvailability"
+          "description": "Information about availability of domains with names similar to the query.",
+          "type": "array",
+          "items": {
+            "$ref": "DomainAvailability"
+          }
         }
       }
     },
     "DomainAvailability": {
       "id": "DomainAvailability",
-      "description": "Provides information of domain availability.",
+      "description": "Provides information of domain availability. Output only.",
       "type": "object",
       "properties": {
         "domainName": {
@@ -224,14 +227,6 @@
             "UNAVAILABLE",
             "UNSUPPORTED"
           ]
-        },
-        "registrationPrice": {
-          "description": "Deprecated, use yearly_price.",
-          "$ref": "Money"
-        },
-        "renewalPrice": {
-          "description": "Deprecated, use yearly_price.",
-          "$ref": "Money"
         },
         "yearlyPrice": {
           "description": "Yearly price to register or renew the domain.",
@@ -294,35 +289,14 @@
         }
       }
     },
-    "SearchDomainAvailabilityResponse": {
-      "id": "SearchDomainAvailabilityResponse",
-      "description": "Response for the `SearchDomainAvailability` method.",
+    "CheckDomainAvailabilityResponse": {
+      "id": "CheckDomainAvailabilityResponse",
+      "description": "Response for the `CheckDomainAvailability` method.",
       "type": "object",
       "properties": {
         "availability": {
-          "description": "Information about availability of domains with names similar to the query.",
-          "type": "array",
-          "items": {
-            "$ref": "DomainAvailability"
-          }
-        }
-      }
-    },
-    "ListRegistrationsResponse": {
-      "id": "ListRegistrationsResponse",
-      "description": "Response for the `ListRegistrations` method.",
-      "type": "object",
-      "properties": {
-        "registrations": {
-          "description": "List of Registrations.",
-          "type": "array",
-          "items": {
-            "$ref": "Registration"
-          }
-        },
-        "nextPageToken": {
-          "description": "If there might be more results than those appearing in this response, then\n`next_page_token` is included. To get the next set of results, call this\nmethod again using the value of `next_page_token` as `page_token`.",
-          "type": "string"
+          "description": "Information about domain availability.",
+          "$ref": "DomainAvailability"
         }
       }
     },
@@ -336,7 +310,7 @@
           "type": "string"
         },
         "domainName": {
-          "description": "Immutable. The domain name in ASCII-only format, without a dot at the end.\nUnicode domain names have to be converted to Punycode.",
+          "description": "Required. Immutable. The domain name in ASCII-only format, without a dot at the end.\nUnicode domain names have to be converted to Punycode.",
           "type": "string"
         },
         "createTime": {
@@ -382,7 +356,7 @@
           "$ref": "DnsConfig"
         },
         "whoisConfig": {
-          "description": "Whois configuration of the Registration.",
+          "description": "Required. Whois configuration of the Registration.",
           "$ref": "WhoisConfig"
         },
         "labels": {
@@ -393,7 +367,7 @@
           }
         },
         "notices": {
-          "description": "Create only. List of accepted Notices about the domain.\nNeeded e.g. for accepting the HSTS notice when registering .app domains.\nThe list of notices for each domain can be retrieved with\nCheckDomainAvailability call.",
+          "description": "Input only. Create only. List of accepted Notices about the domain.\nNeeded e.g. for accepting the HSTS notice when registering .app domains.\nThe list of notices for each domain can be retrieved with\nCheckDomainAvailability call.",
           "enumDescriptions": [
             "The notice is undefined.",
             "HSTS_PRELOADED indicates that the domain is preloaded on the HTTP Strict\nTransport Security list in browsers.\nServing a website on such domain will require an SSL certificate.\nSee https:\/\/support.google.com\/domains\/answer\/7638036 for details."
@@ -407,16 +381,8 @@
             ]
           }
         },
-        "registrationPrice": {
-          "description": "[Create only] Registration price. Required for confirmation of the price\nwhen creating new registration.\nPrice that should be put here can be obtained from CheckAvailability or\nSearchAvailability calls.\nDeprecated, use yearly_price.",
-          "$ref": "Money"
-        },
-        "renewalPrice": {
-          "description": "[Create only] Renewal price. Required for confirmation of the price\nwhen creating new registration.\nRenewal price that should be put here can be obtained from\nCheckAvailability or SearchAvailability calls.\nDeprecated, use yearly_price.",
-          "$ref": "Money"
-        },
         "yearlyPrice": {
-          "description": "Create only. Yearly price to register or renew the domain.\nRequired for confirmation of the price when creating a new registration.\nYearly price that should be put here can be obtained from\nCheckAvailability or SearchAvailability calls.",
+          "description": "Required. Input only. Create only. Yearly price to register or renew the domain.\nUsed for confirmation of the price when creating a new registration.\nYearly price that should be put here can be obtained from\nCheckAvailability or SearchAvailability calls.",
           "$ref": "Money"
         }
       }
@@ -448,7 +414,7 @@
       "type": "object",
       "properties": {
         "hostName": {
-          "description": "Fully qualified host name, from least to most significant order.\nRequired to be set. e.g. subdomain.domain.com",
+          "description": "Required. Fully qualified host name, from least to most significant order, e.g.\n\"subdomain.domain.com\".",
           "type": "string"
         },
         "ipv4Addresses": {
@@ -473,7 +439,7 @@
       "type": "object",
       "properties": {
         "privacy": {
-          "description": "Whois privacy settings of the Registration.",
+          "description": "Required. Whois privacy settings of the Registration.",
           "enumDescriptions": [
             "The Privacy settings are undefined.",
             "All the data from WHOIS config is publicly available (not supported yet).",
@@ -489,7 +455,7 @@
           ]
         },
         "registrantContact": {
-          "description": "Registrant whois contact of the Registration.",
+          "description": "Required. Registrant whois contact of the Registration.",
           "$ref": "WhoisContact"
         }
       }
@@ -571,6 +537,24 @@
         }
       }
     },
+    "ListRegistrationsResponse": {
+      "id": "ListRegistrationsResponse",
+      "description": "Response for the `ListRegistrations` method.",
+      "type": "object",
+      "properties": {
+        "registrations": {
+          "description": "List of Registrations.",
+          "type": "array",
+          "items": {
+            "$ref": "Registration"
+          }
+        },
+        "nextPageToken": {
+          "description": "If there might be more results than those appearing in this response, then\n`next_page_token` is included. To get the next set of results, call this\nmethod again using the value of `next_page_token` as `page_token`.",
+          "type": "string"
+        }
+      }
+    },
     "DetachRegistrationRequest": {
       "id": "DetachRegistrationRequest",
       "description": "Request for the `DetachRegistration` method.",
@@ -580,7 +564,7 @@
     },
     "AuthorizationCode": {
       "id": "AuthorizationCode",
-      "description": "Defines an authorization code.",
+      "description": "Defines an authorization code. Output only.",
       "type": "object",
       "properties": {
         "code": {
@@ -982,6 +966,28 @@
         "field": {
           "description": "The field value to attribute.",
           "type": "string"
+        },
+        "customFields": {
+          "description": "Custom fields.",
+          "type": "array",
+          "items": {
+            "$ref": "CustomField"
+          }
+        }
+      }
+    },
+    "CustomField": {
+      "id": "CustomField",
+      "description": "Custom fields.\nThese can be used to create a counter with arbitrary field\/value\npairs.\nSee: go\/rpcsp-custom-fields.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name is the field name.",
+          "type": "string"
+        },
+        "value": {
+          "description": "Value is the field value. It is important that in contrast to the\nCounterOptions.field, the value here is a constant that is not\nderived from the IAMContext.",
+          "type": "string"
         }
       }
     },
@@ -1084,33 +1090,33 @@
     },
     "OperationMetadata": {
       "id": "OperationMetadata",
-      "description": "Represents the metadata of the long-running operation.",
+      "description": "Represents the metadata of the long-running operation. Output only.",
       "type": "object",
       "properties": {
         "createTime": {
-          "description": "Output only. The time the operation was created.",
+          "description": "The time the operation was created.",
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
-          "description": "Output only. The time the operation finished running.",
+          "description": "The time the operation finished running.",
           "type": "string",
           "format": "google-datetime"
         },
         "target": {
-          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "description": "Server-defined resource path for the target of the operation.",
           "type": "string"
         },
         "verb": {
-          "description": "Output only. Name of the verb executed by the operation.",
+          "description": "Name of the verb executed by the operation.",
           "type": "string"
         },
         "statusDetail": {
-          "description": "Output only. Human-readable status of the operation, if any.",
+          "description": "Human-readable status of the operation, if any.",
           "type": "string"
         },
         "apiVersion": {
-          "description": "Output only. API version used to start the operation.",
+          "description": "API version used to start the operation.",
           "type": "string"
         }
       }
@@ -1262,6 +1268,36 @@
             },
             "registrations": {
               "methods": {
+                "searchAvailability": {
+                  "id": "domains.projects.locations.registrations.searchAvailability",
+                  "path": "v1alpha1/{+parent}/registrations:searchAvailability",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations:searchAvailability",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource of the Registration. Must be in the\nformat `projects\/*\/locations\/*`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "query": {
+                      "description": "Required. Nonempty string used to search for available domain names.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "SearchDomainAvailabilityResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Searches available domains similar to the given query.\nReturned domain availability allows some staleness."
+                },
                 "checkAvailability": {
                   "id": "domains.projects.locations.registrations.checkAvailability",
                   "path": "v1alpha1/{+parent}/registrations:checkAvailability",
@@ -1292,11 +1328,11 @@
                   ],
                   "description": "Checks for availability of the given domain name."
                 },
-                "searchAvailability": {
-                  "id": "domains.projects.locations.registrations.searchAvailability",
-                  "path": "v1alpha1/{+parent}/registrations:searchAvailability",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations:searchAvailability",
-                  "httpMethod": "GET",
+                "create": {
+                  "id": "domains.projects.locations.registrations.create",
+                  "path": "v1alpha1/{+parent}/registrations",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations",
+                  "httpMethod": "POST",
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource of the Registration. Must be in the\nformat `projects\/*\/locations\/*`.",
@@ -1305,22 +1341,25 @@
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
-                    "query": {
-                      "description": "Required. Nonempty string used to search for available domain names.",
+                    "validateOnly": {
+                      "description": "When true, only validation will be performed, without actually registering\nthe domain. Follows:\nhttps:\/\/cloud.google.com\/apis\/design\/design_patterns#request_validation",
                       "location": "query",
-                      "type": "string"
+                      "type": "boolean"
                     }
                   },
                   "parameterOrder": [
                     "parent"
                   ],
+                  "request": {
+                    "$ref": "Registration"
+                  },
                   "response": {
-                    "$ref": "SearchDomainAvailabilityResponse"
+                    "$ref": "Operation"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Searches available domains similar to the given query.\nReturned domain availability allows some staleness."
+                  "description": "Creates a new Registration, i.e. attempts to register the domain, in a\ngiven project and location"
                 },
                 "list": {
                   "id": "domains.projects.locations.registrations.list",
@@ -1387,39 +1426,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Gets details of a single Registration."
-                },
-                "create": {
-                  "id": "domains.projects.locations.registrations.create",
-                  "path": "v1alpha1/{+parent}/registrations",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The parent resource of the Registration. Must be in the\nformat `projects\/*\/locations\/*`.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "validateOnly": {
-                      "description": "When true, only validation will be performed, without actually registering\nthe domain. Follows:\nhttps:\/\/cloud.google.com\/apis\/design\/design_patterns#request_validation",
-                      "location": "query",
-                      "type": "boolean"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "request": {
-                    "$ref": "Registration"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Creates a new Registration, i.e. attempts to register the domain, in a\ngiven project and location"
                 },
                 "patch": {
                   "id": "domains.projects.locations.registrations.patch",
@@ -1564,7 +1570,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy."
+                  "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.\n\nCan return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED"
                 },
                 "getIamPolicy": {
                   "id": "domains.projects.locations.registrations.getIamPolicy",

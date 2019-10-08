@@ -425,7 +425,8 @@ class CreateClusterOptions(object):
                node_config=None,
                maintenance_window_start=None,
                maintenance_window_end=None,
-               maintenance_window_recurrence=None):
+               maintenance_window_recurrence=None,
+               enable_cost_management=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -519,6 +520,7 @@ class CreateClusterOptions(object):
     self.maintenance_window_start = maintenance_window_start
     self.maintenance_window_end = maintenance_window_end
     self.maintenance_window_recurrence = maintenance_window_recurrence
+    self.enable_cost_management = enable_cost_management
 
 
 class UpdateClusterOptions(object):
@@ -564,7 +566,8 @@ class UpdateClusterOptions(object):
                enable_network_egress_metering=None,
                enable_resource_consumption_metering=None,
                database_encryption_key=None,
-               disable_database_encryption=None):
+               disable_database_encryption=None,
+               enable_cost_management=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -606,6 +609,7 @@ class UpdateClusterOptions(object):
         enable_resource_consumption_metering)
     self.database_encryption_key = database_encryption_key
     self.disable_database_encryption = disable_database_encryption
+    self.enable_cost_management = enable_cost_management
 
 
 class SetMasterAuthOptions(object):
@@ -2660,6 +2664,9 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       cluster.privateClusterConfig.enablePeeringRouteSharing = \
         options.enable_peering_route_sharing
     _AddReleaseChannelToCluster(cluster, options, self.messages)
+    if options.enable_cost_management:
+      cluster.costManagementConfig = self.messages.CostManagementConfig(
+          enabled=True)
 
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
@@ -2690,6 +2697,10 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           desiredDatabaseEncryption=self.messages.DatabaseEncryption(
               state=self.messages.DatabaseEncryption.StateValueValuesEnum
               .DECRYPTED))
+    elif options.enable_cost_management is not None:
+      update = self.messages.ClusterUpdate(
+          desiredCostManagementConfig=self.messages.CostManagementConfig(
+              enabled=options.enable_cost_management))
 
     if options.enable_shielded_nodes is not None:
       update = self.messages.ClusterUpdate(

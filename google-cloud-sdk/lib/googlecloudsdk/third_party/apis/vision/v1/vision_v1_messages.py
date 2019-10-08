@@ -4804,8 +4804,6 @@ class GoogleCloudVisionV1p4beta1AnnotateImageResponse(_messages.Message):
       structural hierarchy for the OCR detected text.
     imagePropertiesAnnotation: If present, image properties were extracted
       successfully.
-    imageQualityAnnotation: If present, image quality calculation has
-      completed successfully.
     labelAnnotations: If present, label detection has completed successfully.
     landmarkAnnotations: If present, landmark detection has completed
       successfully.
@@ -4815,8 +4813,6 @@ class GoogleCloudVisionV1p4beta1AnnotateImageResponse(_messages.Message):
     logoAnnotations: If present, logo detection has completed successfully.
     productSearchResults: If present, product search has completed
       successfully.
-    qualityOptimizationResult: If present, image quality optimization has
-      completed successfully.
     safeSearchAnnotation: If present, safe-search annotation has completed
       successfully.
     textAnnotations: If present, text (OCR) detection has completed
@@ -4830,16 +4826,14 @@ class GoogleCloudVisionV1p4beta1AnnotateImageResponse(_messages.Message):
   faceAnnotations = _messages.MessageField('GoogleCloudVisionV1p4beta1FaceAnnotation', 4, repeated=True)
   fullTextAnnotation = _messages.MessageField('GoogleCloudVisionV1p4beta1TextAnnotation', 5)
   imagePropertiesAnnotation = _messages.MessageField('GoogleCloudVisionV1p4beta1ImageProperties', 6)
-  imageQualityAnnotation = _messages.MessageField('GoogleCloudVisionV1p4beta1ImageQuality', 7)
-  labelAnnotations = _messages.MessageField('GoogleCloudVisionV1p4beta1EntityAnnotation', 8, repeated=True)
-  landmarkAnnotations = _messages.MessageField('GoogleCloudVisionV1p4beta1EntityAnnotation', 9, repeated=True)
-  localizedObjectAnnotations = _messages.MessageField('GoogleCloudVisionV1p4beta1LocalizedObjectAnnotation', 10, repeated=True)
-  logoAnnotations = _messages.MessageField('GoogleCloudVisionV1p4beta1EntityAnnotation', 11, repeated=True)
-  productSearchResults = _messages.MessageField('GoogleCloudVisionV1p4beta1ProductSearchResults', 12)
-  qualityOptimizationResult = _messages.MessageField('GoogleCloudVisionV1p4beta1QualityOptimizationResult', 13)
-  safeSearchAnnotation = _messages.MessageField('GoogleCloudVisionV1p4beta1SafeSearchAnnotation', 14)
-  textAnnotations = _messages.MessageField('GoogleCloudVisionV1p4beta1EntityAnnotation', 15, repeated=True)
-  webDetection = _messages.MessageField('GoogleCloudVisionV1p4beta1WebDetection', 16)
+  labelAnnotations = _messages.MessageField('GoogleCloudVisionV1p4beta1EntityAnnotation', 7, repeated=True)
+  landmarkAnnotations = _messages.MessageField('GoogleCloudVisionV1p4beta1EntityAnnotation', 8, repeated=True)
+  localizedObjectAnnotations = _messages.MessageField('GoogleCloudVisionV1p4beta1LocalizedObjectAnnotation', 9, repeated=True)
+  logoAnnotations = _messages.MessageField('GoogleCloudVisionV1p4beta1EntityAnnotation', 10, repeated=True)
+  productSearchResults = _messages.MessageField('GoogleCloudVisionV1p4beta1ProductSearchResults', 11)
+  safeSearchAnnotation = _messages.MessageField('GoogleCloudVisionV1p4beta1SafeSearchAnnotation', 12)
+  textAnnotations = _messages.MessageField('GoogleCloudVisionV1p4beta1EntityAnnotation', 13, repeated=True)
+  webDetection = _messages.MessageField('GoogleCloudVisionV1p4beta1WebDetection', 14)
 
 
 class GoogleCloudVisionV1p4beta1AsyncAnnotateFileResponse(_messages.Message):
@@ -5424,20 +5418,6 @@ class GoogleCloudVisionV1p4beta1ImageProperties(_messages.Message):
   dominantColors = _messages.MessageField('GoogleCloudVisionV1p4beta1DominantColorsAnnotation', 1)
 
 
-class GoogleCloudVisionV1p4beta1ImageQuality(_messages.Message):
-  r"""Stores image quality scores, could be aesthetic quality or technical
-  quality.
-
-  Fields:
-    qualityScore: A score representing the aesthetic/technical quality of the
-      image. The score is in range [0, 1]. Higher value corresponds to more
-      professional looking photos. 0 means the image looks very bad, 1 means
-      the image with very high quality.
-  """
-
-  qualityScore = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-
-
 class GoogleCloudVisionV1p4beta1ImportProductSetsResponse(_messages.Message):
   r"""Response message for the `ImportProductSets` method.  This message is
   returned by the google.longrunning.Operations.GetOperation method in the
@@ -5763,47 +5743,6 @@ class GoogleCloudVisionV1p4beta1Property(_messages.Message):
   value = _messages.StringField(3)
 
 
-class GoogleCloudVisionV1p4beta1QualityOptimizationResult(_messages.Message):
-  r"""Stores enhanced image bytes.
-
-  Enums:
-    QualityOptimizationTypeValueValuesEnum: Required optimization type.
-
-  Fields:
-    image: Optimized image bytes.
-    mimeType: Mime type of the output image.
-    qualityOptimizationType: Required optimization type.
-  """
-
-  class QualityOptimizationTypeValueValuesEnum(_messages.Enum):
-    r"""Required optimization type.
-
-    Values:
-      TYPE_UNSPECIFIED: Invalid. Customer must select one Type.
-      COMPRESSION: Reduce image file size. Detailed params specified in
-        CompressionConfig. If customer do not specify CompressionConfig, it
-        will reduce image file size while not reducing image quality. If
-        customer specify CompressionConfig, we will reduce file size while
-        keeping CompressionParams.target_quality.
-      ENHANCEMENT: Denoise, sharpening, HDR and upscaling. Detailed params
-        specified in EnhancementConfig. If customer do not specify
-        EnhancmentConfig, it will do image enhancement using default values.
-        If upscale_ratio not specified, the output image will have the same
-        resolution as input image.
-      QUALITY_SCORE: Query quality score for an image. Detailed params
-        specified in QualityScoreConfig. If customer does not specify
-        QualityScoreConfig, aesthetic score of image will be returned.
-    """
-    TYPE_UNSPECIFIED = 0
-    COMPRESSION = 1
-    ENHANCEMENT = 2
-    QUALITY_SCORE = 3
-
-  image = _messages.BytesField(1)
-  mimeType = _messages.StringField(2)
-  qualityOptimizationType = _messages.EnumField('QualityOptimizationTypeValueValuesEnum', 3)
-
-
 class GoogleCloudVisionV1p4beta1ReferenceImage(_messages.Message):
   r"""A `ReferenceImage` represents a product image and its associated
   metadata, such as bounding boxes.
@@ -5852,26 +5791,14 @@ class GoogleCloudVisionV1p4beta1SafeSearchAnnotation(_messages.Message):
     adult: Represents the adult content likelihood for the image. Adult
       content may contain elements such as nudity, pornographic images or
       cartoons, or sexual activities.
-    adultConfidence: Confidence of adult_score. Range [0, 1]. 0 means not
-      confident, 1 means very confident.
     medical: Likelihood that this is a medical image.
-    medicalConfidence: Confidence of medical_score. Range [0, 1]. 0 means not
-      confident, 1 means very confident.
-    nsfwConfidence: Confidence of nsfw_score. Range [0, 1]. 0 means not
-      confident, 1 means very confident.
     racy: Likelihood that the request image contains racy content. Racy
       content may include (but is not limited to) skimpy or sheer clothing,
       strategically covered nudity, lewd or provocative poses, or close-ups of
       sensitive body areas.
-    racyConfidence: Confidence of racy_score. Range [0, 1]. 0 means not
-      confident, 1 means very confident.
     spoof: Spoof likelihood. The likelihood that an modification was made to
       the image's canonical version to make it appear funny or offensive.
-    spoofConfidence: Confidence of spoof_score. Range [0, 1]. 0 means not
-      confident, 1 means very confident.
     violence: Likelihood that this image contains violent content.
-    violenceConfidence: Confidence of violence_score. Range [0, 1]. 0 means
-      not confident, 1 means very confident.
   """
 
   class AdultValueValuesEnum(_messages.Enum):
@@ -5971,16 +5898,10 @@ class GoogleCloudVisionV1p4beta1SafeSearchAnnotation(_messages.Message):
     VERY_LIKELY = 5
 
   adult = _messages.EnumField('AdultValueValuesEnum', 1)
-  adultConfidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  medical = _messages.EnumField('MedicalValueValuesEnum', 3)
-  medicalConfidence = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
-  nsfwConfidence = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
-  racy = _messages.EnumField('RacyValueValuesEnum', 6)
-  racyConfidence = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
-  spoof = _messages.EnumField('SpoofValueValuesEnum', 8)
-  spoofConfidence = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
-  violence = _messages.EnumField('ViolenceValueValuesEnum', 10)
-  violenceConfidence = _messages.FloatField(11, variant=_messages.Variant.FLOAT)
+  medical = _messages.EnumField('MedicalValueValuesEnum', 2)
+  racy = _messages.EnumField('RacyValueValuesEnum', 3)
+  spoof = _messages.EnumField('SpoofValueValuesEnum', 4)
+  violence = _messages.EnumField('ViolenceValueValuesEnum', 5)
 
 
 class GoogleCloudVisionV1p4beta1Symbol(_messages.Message):
@@ -7134,26 +7055,14 @@ class SafeSearchAnnotation(_messages.Message):
     adult: Represents the adult content likelihood for the image. Adult
       content may contain elements such as nudity, pornographic images or
       cartoons, or sexual activities.
-    adultConfidence: Confidence of adult_score. Range [0, 1]. 0 means not
-      confident, 1 means very confident.
     medical: Likelihood that this is a medical image.
-    medicalConfidence: Confidence of medical_score. Range [0, 1]. 0 means not
-      confident, 1 means very confident.
-    nsfwConfidence: Confidence of nsfw_score. Range [0, 1]. 0 means not
-      confident, 1 means very confident.
     racy: Likelihood that the request image contains racy content. Racy
       content may include (but is not limited to) skimpy or sheer clothing,
       strategically covered nudity, lewd or provocative poses, or close-ups of
       sensitive body areas.
-    racyConfidence: Confidence of racy_score. Range [0, 1]. 0 means not
-      confident, 1 means very confident.
     spoof: Spoof likelihood. The likelihood that an modification was made to
       the image's canonical version to make it appear funny or offensive.
-    spoofConfidence: Confidence of spoof_score. Range [0, 1]. 0 means not
-      confident, 1 means very confident.
     violence: Likelihood that this image contains violent content.
-    violenceConfidence: Confidence of violence_score. Range [0, 1]. 0 means
-      not confident, 1 means very confident.
   """
 
   class AdultValueValuesEnum(_messages.Enum):
@@ -7253,16 +7162,10 @@ class SafeSearchAnnotation(_messages.Message):
     VERY_LIKELY = 5
 
   adult = _messages.EnumField('AdultValueValuesEnum', 1)
-  adultConfidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  medical = _messages.EnumField('MedicalValueValuesEnum', 3)
-  medicalConfidence = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
-  nsfwConfidence = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
-  racy = _messages.EnumField('RacyValueValuesEnum', 6)
-  racyConfidence = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
-  spoof = _messages.EnumField('SpoofValueValuesEnum', 8)
-  spoofConfidence = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
-  violence = _messages.EnumField('ViolenceValueValuesEnum', 10)
-  violenceConfidence = _messages.FloatField(11, variant=_messages.Variant.FLOAT)
+  medical = _messages.EnumField('MedicalValueValuesEnum', 2)
+  racy = _messages.EnumField('RacyValueValuesEnum', 3)
+  spoof = _messages.EnumField('SpoofValueValuesEnum', 4)
+  violence = _messages.EnumField('ViolenceValueValuesEnum', 5)
 
 
 class StandardQueryParameters(_messages.Message):

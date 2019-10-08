@@ -32,3 +32,8 @@ def SetParentCollection(ref, args, request):
   del ref, args
   request.parent = request.parent + '/locations/global'
   return request
+
+
+def SetLocation():
+  """Set default location to global."""
+  return 'global'

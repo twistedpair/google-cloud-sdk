@@ -497,20 +497,22 @@ def AddUserCodeArgs(parser):
 def GetAcceleratorFlag():
   return base.Argument(
       '--accelerator',
-      type=arg_parsers.ArgDict(spec={
-          'type': str,
-          'count': int,
-      }, required_keys=['type', 'count']),
+      type=arg_parsers.ArgDict(
+          spec={
+              'type': str,
+              'count': int,
+          }, required_keys=['type', 'count']),
       help="""\
 Manage the accelerator config for GPU serving. When deploying a model with the
-new Alpha Google Compute Engine Machine Types, a GPU accelerator may also be selected.
-You can see what accelerators are supported in what location via the
-'gcloud alpha ml-engine locations list' command.
+new Alpha Google Compute Engine Machine Types, a GPU accelerator may also
+be selected. Accelerator config for version creation is currently available
+in us-central1 only.
 
 *type*::: The type of the accelerator. Choices are {}.
 
 *count*::: The number of accelerators to attach to each machine running the job.
-""".format(', '.join(["'{}'".format(c) for c in _ACCELERATOR_TYPE_MAPPER.choices])))
+""".format(', '.join(
+    ["'{}'".format(c) for c in _OP_ACCELERATOR_TYPE_MAPPER.choices])))
 
 
 def ParseAcceleratorFlag(accelerator):
@@ -558,6 +560,14 @@ _ACCELERATOR_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
     ).GoogleCloudMlV1AcceleratorConfig.TypeValueValuesEnum,
     help_str='The available types of accelerators.',
     include_filter=lambda x: x != 'ACCELERATOR_TYPE_UNSPECIFIED',
+    required=False)
+
+_OP_ACCELERATOR_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
+    'generic-accelerator',
+    jobs.GetMessagesModule().GoogleCloudMlV1AcceleratorConfig
+    .TypeValueValuesEnum,
+    help_str='The available types of accelerators.',
+    include_filter=lambda x: x.startswith('NVIDIA'),
     required=False)
 
 _ACCELERATOR_TYPE_HELP = """\

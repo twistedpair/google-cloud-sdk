@@ -176,9 +176,6 @@ RUNTIME_RE_STRING = r'((gs://[a-z0-9\-\._/]+)|([a-z][a-z0-9\-\.]{0,29}))'
 API_VERSION_RE_STRING = r'[\w.]{1,32}'
 ENV_RE_STRING = r'(1|2|standard|flex|flexible)'
 
-# MAIN should match any file path or class path (eg with dots).
-MAIN_RE_STRING = r'[\w.\\\/:]+'
-
 SOURCE_LANGUAGE_RE_STRING = r'[\w.\-]{1,32}'
 
 HANDLER_STATIC_FILES = 'static_files'
@@ -2275,7 +2272,7 @@ class AppInfoExternal(validation.Validated):
       # A new `api_version` requires a release of the `dev_appserver`, so it
       # is ok to hardcode the version names here.
       API_VERSION: validation.Optional(API_VERSION_RE_STRING),
-      MAIN: validation.Optional(MAIN_RE_STRING),
+      MAIN: validation.Optional(_FILES_REGEX),
       # The App Engine environment to run this version in. (VM vs. non-VM, etc.)
       ENV: validation.Optional(ENV_RE_STRING),
       ENDPOINTS_API_SERVICE: validation.Optional(EndpointsApiService),

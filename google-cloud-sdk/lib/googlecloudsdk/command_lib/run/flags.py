@@ -54,10 +54,10 @@ _PLATFORMS = collections.OrderedDict([
     ('managed', 'Fully managed version of Cloud Run. Use with the `--region` '
                 'flag or set the [run/region] property to specify a Cloud Run '
                 'region.'),
-    ('gke', 'Cloud Run on Google Kubernetes Engine. Use with the `--cluster` '
-            'and `--cluster-location` flags or set the [run/cluster] and '
-            '[run/cluster_location] properties to specify a cluster in a given '
-            'zone.'),
+    ('gke', 'Cloud Run for Anthos on Google Kubernetes Engine. Use with the '
+            '`--cluster` and `--cluster-location` flags or set the '
+            '[run/cluster] and [run/cluster_location] properties to specify a '
+            'cluster in a given zone.'),
     ('kubernetes', 'Use a Knative-compatible kubernetes cluster. Use with the '
                    '`--kubeconfig` and `--context` flags to specify a '
                    'kubeconfig file and the context for connecting.'),
@@ -65,8 +65,8 @@ _PLATFORMS = collections.OrderedDict([
 
 _PLATFORM_SHORT_DESCRIPTIONS = {
     'managed': 'Cloud Run (fully managed)',
-    'gke': 'Cloud Run on GKE',
-    'kubernetes': 'a Kubernetes cluster',
+    'gke': 'Cloud Run for Anthos deployed on GKE',
+    'kubernetes': 'Cloud Run for Anthos deployed on VMware',
 }
 
 _DEFAULT_KUBECONFIG_PATH = '~/.kube/config'
@@ -205,6 +205,23 @@ def AddFunctionArg(parser):
       """)
 
 
+def AddNoTrafficFlag(parser):
+  """Add flag to deploy a revision with no traffic."""
+
+  group = GetGkeArgGroup(parser).add_mutually_exclusive_group()
+
+  group.add_argument(
+      '--no-traffic',
+      default=False,
+      action='store_true',
+      help='True to avoid sending traffic to the revision beign deployed. '
+      'Setting this flag assigns any traffic assigned to the LATEST revision '
+      'to the specific revision bound to LATEST before the deployment. The '
+      'effect is that the revsion being deployed will not receive traffic. '
+      'After a deployment with this flag the LATEST revision will not recieve '
+      'traffic on future deployments.')
+
+
 def AddUpdateTrafficFlags(parser):
   """Add flags for updating traffic assignments for a service."""
 
@@ -231,7 +248,7 @@ def AddUpdateTrafficFlags(parser):
   group = GetGkeArgGroup(parser).add_mutually_exclusive_group()
 
   group.add_argument(
-      '--to-revision',
+      '--to-revisions',
       metavar='REVISION-NAME=PERCENTAGE',
       action=arg_parsers.UpdateAction,
       type=arg_parsers.ArgDict(
@@ -451,19 +468,20 @@ def AddConfigMapsFlags(parser):
       flag_name='config-maps')
 
 
-def AddLabelsFlags(parser, add_create=True):
+def AddLabelsFlags(parser):
   """Adds update command labels flags to an argparse parser.
 
   Args:
     parser: The argparse parser to add the flags to.
-    add_create: bool, If True, add the --labels flag.
   """
-  if add_create:
-    labels_util.GetCreateLabelsFlag(
-        validate_keys=False, validate_values=False).AddToParser(parser)
+  group = parser.add_group()
+  add_group = group.add_mutually_exclusive_group()
+  labels_util.GetCreateLabelsFlag(
+      'An alias to --update-labels.',
+      validate_keys=False, validate_values=False).AddToParser(add_group)
   labels_util.GetUpdateLabelsFlag(
-      '', validate_keys=False, validate_values=False).AddToParser(parser)
-  remove_group = parser.add_mutually_exclusive_group()
+      '', validate_keys=False, validate_values=False).AddToParser(add_group)
+  remove_group = group.add_mutually_exclusive_group()
   labels_util.GetClearLabelsFlag().AddToParser(remove_group)
   labels_util.GetRemoveLabelsFlag('').AddToParser(remove_group)
 
@@ -571,7 +589,7 @@ def _HasConfigMapsChanges(args):
 
 def _HasTrafficChanges(args):
   """True iff any of the traffic flags are set."""
-  traffic_flags = ['to_revision', 'to_latest']
+  traffic_flags = ['to_revisions', 'to_latest']
   return _HasChanges(args, traffic_flags)
 
 
@@ -725,7 +743,7 @@ def _CheckCloudSQLApiEnablement():
 
 def _GetTrafficChanges(args):
   """Returns a changes for traffic assignment based on the flags."""
-  new_percentages = args.to_revision if args.to_revision else {}
+  new_percentages = args.to_revisions if args.to_revisions else {}
   new_latest_percentage = 100 if args.to_latest else None
   return config_changes.TrafficChanges(new_percentages, new_latest_percentage)
 
@@ -753,6 +771,9 @@ def GetConfigurationChanges(args):
 
   if _HasConfigMapsChanges(args):
     changes.extend(_GetConfigMapsChanges(args))
+
+  if 'no_traffic' in args and args.no_traffic:
+    changes.append(config_changes.NoTrafficChange())
 
   if 'cpu' in args and args.cpu:
     changes.append(config_changes.ResourceChanges(cpu=args.cpu))
@@ -1049,10 +1070,17 @@ def VerifyOnePlatformFlags(args):
             platform='kubernetes',
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['kubernetes']))
 
-  if _FlagIsExplicitlySet(args, 'to_revision'):
+  if _FlagIsExplicitlySet(args, 'no_traffic'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
-            flag='--to-revision',
+            flag='--no-traffic',
+            platform='kubernetes',
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['kubernetes']))
+
+  if _FlagIsExplicitlySet(args, 'to_revisions'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--to-revisions',
             platform='kubernetes',
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['kubernetes']))
 

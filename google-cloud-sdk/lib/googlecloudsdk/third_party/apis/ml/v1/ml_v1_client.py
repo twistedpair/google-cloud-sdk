@@ -225,6 +225,8 @@ Currently the only supported fields to update are `labels`.
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+
       Args:
         request: (MlProjectsJobsSetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -750,6 +752,8 @@ Currently the only supported fields to update are `description` and
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
+
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
 
       Args:
         request: (MlProjectsModelsSetIamPolicyRequest) input message

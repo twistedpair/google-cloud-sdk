@@ -31,6 +31,7 @@ class AddonsConfig(_messages.Message):
   cluster, enabling additional functionality.
 
   Fields:
+    cloudBuildConfig: Configuration for the Cloud Build addon.
     cloudRunConfig: Configuration for the Cloud Run addon. The `IstioConfig`
       addon must be enabled in order to enable Cloud Run. This option can only
       be enabled at cluster creation time.
@@ -62,16 +63,17 @@ class AddonsConfig(_messages.Message):
       whether network policy is enabled for the nodes.
   """
 
-  cloudRunConfig = _messages.MessageField('CloudRunConfig', 1)
-  configConnectorConfig = _messages.MessageField('ConfigConnectorConfig', 2)
-  dnsCacheConfig = _messages.MessageField('DnsCacheConfig', 3)
-  gcePersistentDiskCsiDriverConfig = _messages.MessageField('GcePersistentDiskCsiDriverConfig', 4)
-  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 5)
-  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 6)
-  istioConfig = _messages.MessageField('IstioConfig', 7)
-  kalmConfig = _messages.MessageField('KalmConfig', 8)
-  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 9)
-  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 10)
+  cloudBuildConfig = _messages.MessageField('CloudBuildConfig', 1)
+  cloudRunConfig = _messages.MessageField('CloudRunConfig', 2)
+  configConnectorConfig = _messages.MessageField('ConfigConnectorConfig', 3)
+  dnsCacheConfig = _messages.MessageField('DnsCacheConfig', 4)
+  gcePersistentDiskCsiDriverConfig = _messages.MessageField('GcePersistentDiskCsiDriverConfig', 5)
+  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 6)
+  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 7)
+  istioConfig = _messages.MessageField('IstioConfig', 8)
+  kalmConfig = _messages.MessageField('KalmConfig', 9)
+  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 10)
+  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 11)
 
 
 class AuthenticatorGroupsConfig(_messages.Message):
@@ -184,6 +186,16 @@ class ClientCertificateConfig(_messages.Message):
   """
 
   issueClientCertificate = _messages.BooleanField(1)
+
+
+class CloudBuildConfig(_messages.Message):
+  r"""Configuration options for the Cloud Build addon.
+
+  Fields:
+    enabled: Whether the Cloud Build addon is enabled for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class CloudNatStatus(_messages.Message):
@@ -605,9 +617,9 @@ class ClusterUpdate(_messages.Message):
     desiredLoggingService: The logging service the cluster should use to write
       metrics. Currently available options:  *
       "logging.googleapis.com/kubernetes" - the Google Cloud Logging service
-      with Kubernetes-native resource model in Stackdriver *
-      "logging.googleapis.com" - the Google Cloud Logging service * "none" -
-      no logs will be exported from the cluster
+      with Kubernetes-native resource model * "logging.googleapis.com" - the
+      Google Cloud Logging service * "none" - no logs will be exported from
+      the cluster
     desiredMasterAuthorizedNetworksConfig: The desired configuration options
       for master authorized networks feature.
     desiredMasterVersion: The Kubernetes version to change the master to.
@@ -620,7 +632,7 @@ class ClusterUpdate(_messages.Message):
     desiredMonitoringService: The monitoring service the cluster should use to
       write metrics. Currently available options:  *
       "monitoring.googleapis.com/kubernetes" - the Google Cloud Monitoring
-      service with Kubernetes-native resource model in Stackdriver *
+      service with Kubernetes-native resource model *
       "monitoring.googleapis.com" - the Google Cloud Monitoring service *
       "none" - no metrics will be exported from the cluster
     desiredNodePoolAutoscaling: Autoscaler configuration for the node pool
@@ -1573,26 +1585,37 @@ class GoogleIamV1GetPolicyOptions(_messages.Message):
 class GoogleIamV1Policy(_messages.Message):
   r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
-  consists of a list of `bindings`. A `binding` binds a list of `members` to a
-  `role`, where the members can be user accounts, Google groups, Google
-  domains, and service accounts. A `role` is a named list of permissions
-  defined by IAM.  **JSON Example**      {       "bindings": [         {
-  "role": "roles/owner",           "members": [
+  is a collection of `bindings`. A `binding` binds one or more `members` to a
+  single `role`. Members can be user accounts, service accounts, Google
+  groups, and domains (such as G Suite). A `role` is a named list of
+  permissions (defined by IAM or configured by users). A `binding` can
+  optionally specify a `condition`, which is a logic expression that further
+  constrains the role binding based on attributes about the request and/or
+  target resource.  **JSON Example**      {       "bindings": [         {
+  "role": "roles/resourcemanager.organizationAdmin",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
-  "domain:google.com",             "serviceAccount:my-other-
-  app@appspot.gserviceaccount.com"           ]         },         {
-  "role": "roles/viewer",           "members": ["user:sean@example.com"]
-  }       ]     }  **YAML Example**      bindings:     - members:       -
-  user:mike@example.com       - group:admins@example.com       -
-  domain:google.com       - serviceAccount:my-other-
-  app@appspot.gserviceaccount.com       role: roles/owner     - members:
-  - user:sean@example.com       role: roles/viewer   For a description of IAM
-  and its features, see the [IAM developer's
+  "domain:google.com",             "serviceAccount:my-project-
+  id@appspot.gserviceaccount.com"           ]         },         {
+  "role": "roles/resourcemanager.organizationViewer",           "members":
+  ["user:eve@example.com"],           "condition": {             "title":
+  "expirable access",             "description": "Does not grant access after
+  Sep 2020",             "expression": "request.time <
+  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ]     }
+  **YAML Example**      bindings:     - members:       - user:mike@example.com
+  - group:admins@example.com       - domain:google.com       - serviceAccount
+  :my-project-id@appspot.gserviceaccount.com       role:
+  roles/resourcemanager.organizationAdmin     - members:       -
+  user:eve@example.com       role: roles/resourcemanager.organizationViewer
+  condition:         title: expirable access         description: Does not
+  grant access after Sep 2020         expression: request.time <
+  timestamp('2020-10-01T00:00:00.000Z')  For a description of IAM and its
+  features, see the [IAM developer's
   guide](https://cloud.google.com/iam/docs).
 
   Fields:
-    bindings: Associates a list of `members` to a `role`. `bindings` with no
-      members will result in an error.
+    bindings: Associates a list of `members` to a `role`. Optionally may
+      specify a `condition` that determines when binding is in effect.
+      `bindings` with no members will result in an error.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -1601,12 +1624,18 @@ class GoogleIamV1Policy(_messages.Message):
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten.
+      the existing policy is overwritten. Due to blind-set semantics of an
+      etag-less policy, 'setIamPolicy' will not fail even if either of
+      incoming or stored policy does not meet the version requirements.
     version: Specifies the format of the policy.  Valid values are 0, 1, and
-      3. Requests specifying an invalid value will be rejected.  Policies with
-      any conditional bindings must specify version 3. Policies without any
-      conditional bindings may specify any valid value or leave the field
-      unset.
+      3. Requests specifying an invalid value will be rejected.  Operations
+      affecting conditional bindings must specify version 3. This can be
+      either setting a conditional policy, modifying a conditional binding, or
+      removing a conditional binding from the stored conditional policy.
+      Operations on non-conditional policies may specify any valid value or
+      leave the field unset.  If no etag is provided in the call to
+      `setIamPolicy`, any version compliance checks on the incoming and/or
+      stored policy is skipped.
   """
 
   bindings = _messages.MessageField('GoogleIamV1Binding', 1, repeated=True)
@@ -3937,12 +3966,11 @@ class UpgradeSettings(_messages.Message):
   nodes are being upgraded at the same time).  Note: upgrades inevitably
   introduce some disruption since workloads need to be moved from old nodes to
   new, upgraded ones. Even if maxUnavailable=0, this holds true. (Disruption
-  stays within the limits of PodDisruptionBudget, if it is configured.)
-  Consider a hypothetical node pool with 5 nodes having maxSurge=2,
-  maxUnavailable=1. This means the upgrade process upgrades 3 nodes
-  simultaneously. It creates 2 additional (upgraded) nodes, then it brings
-  down 3 old (not yet upgraded) nodes at the same time. This ensures that
-  there are always at least 4 nodes available.
+  stays within the limits of PodDisruptionBudget, if it is configured.)    For
+  example, a 5-node pool is created with maxSurge set to 2 and maxUnavailable
+  set to 1. During an upgrade, GKE creates 2 upgraded nodes, then brings down
+  up to 3 existing nodes after the upgraded nodes are ready. GKE will only
+  bring down 1 node at a time.
 
   Fields:
     maxSurge: The maximum number of nodes that can be created beyond the

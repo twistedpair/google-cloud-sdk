@@ -21,6 +21,15 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.run import k8s_object
 
 
+# TODO(b/141719436): Don't hardcode v1alpha1 version
+_SERVICE_API_VERSION = 'serving.knative.dev/v1alpha1'
+_SERVICE_KIND = 'Service'
+
+EVENT_TYPE_FIELD = 'type'
+# k8s OwnerReference serialized to a json string
+DEPENDENCY_ANNOTATION_FIELD = 'knative.dev/dependency'
+
+
 class Trigger(k8s_object.KubernetesObject):
   """Wraps an Events Trigger message, making fields more convenient."""
 
@@ -38,3 +47,18 @@ class Trigger(k8s_object.KubernetesObject):
   @property
   def subscriber(self):
     return self._m.spec.subscriber.ref.name
+
+  @subscriber.setter
+  def subscriber(self, service_name):
+    """Set the subscriber to a Cloud Run service."""
+    self._m.spec.subscriber.ref.apiVersion = _SERVICE_API_VERSION
+    self._m.spec.subscriber.ref.kind = _SERVICE_KIND
+    self._m.spec.subscriber.ref.name = service_name
+
+  @property
+  def filter_attributes(self):
+    return k8s_object.ListAsDictionaryWrapper(
+        self._m.spec.filter.attributes.additionalProperties,
+        self._messages.TriggerFilter.AttributesValue.AdditionalProperty,
+        key_field='key',
+        value_field='value')

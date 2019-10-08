@@ -912,8 +912,7 @@ class ServerlessOperations(object):
       raise serverless_exceptions.KubernetesError('Error{}:\n{}\n'.format(
           's' if len(k8s_error.causes) > 1 else '', causes))
 
-  def UpdateTraffic(
-      self, service_ref, config_changes, tracker, asyn, is_managed):
+  def UpdateTraffic(self, service_ref, config_changes, tracker, asyn):
     """Update traffic splits for service."""
     if tracker is None:
       tracker = progress_tracker.NoOpStagedProgressTracker(
@@ -925,14 +924,12 @@ class ServerlessOperations(object):
       raise serverless_exceptions.ServiceNotFoundError(
           'Service [{}] could not be found.'.format(service_ref.servicesId))
 
-    if not serv.spec.template:
-      if is_managed:
-        raise serverless_exceptions.UnsupportedOperationError(
-            'Your provider does not support updating traffic for this service.')
-      else:
-        raise serverless_exceptions.UnsupportedOperationError(
-            'You must upgrade your cluster to version 0.61 or greater '
-            'to update traffic.')
+    if serv.configuration:
+      raise serverless_exceptions.UnsupportedOperationError(
+          'This service is using an old version of Cloud Run for Anthos '
+          'that does not support traffic features. Please upgrade to 0.8 '
+          'or later.')
+
     self._UpdateOrCreateService(service_ref, config_changes, False, serv)
 
     if not asyn:

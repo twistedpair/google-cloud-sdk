@@ -8,11 +8,25 @@ project:
     help: The project name.
     property: core/project
 
-membership:
-  name: membership
-  collection: gkehub.projects.locations.global.memberships
+location:
+  name: location
+  collection: gkehub.projects.locations
   attributes:
   - *project
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: The location name.
+    fallthroughs:
+    - hook: googlecloudsdk.command_lib.container.memberships.util:SetLocation
+      hint: use global location
+
+membership:
+  name: membership
+  collection: gkehub.projects.locations.memberships
+  attributes:
+  - *project
+  - *location
   - &membership
     parameter_name: membershipsId
     attribute_name: membership

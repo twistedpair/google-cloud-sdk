@@ -409,58 +409,22 @@
         }
       }
     },
-    "Dataset": {
-      "id": "Dataset",
-      "description": "A message representing a health dataset.\n\nA health dataset represents a collection of healthcare data pertaining to one\nor more patients. This may include multiple modalities of healthcare data,\nsuch as electronic medical records or medical imaging data.",
+    "DeidentifyFhirStoreRequest": {
+      "id": "DeidentifyFhirStoreRequest",
+      "description": "Creates a new FHIR store with sensitive information de-identified.",
       "type": "object",
       "properties": {
-        "name": {
-          "description": "Output only. Resource name of the dataset, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}`.",
-          "type": "string"
-        },
-        "timeZone": {
-          "description": "The default timezone used by this dataset. Must be a either a valid IANA\ntime zone name such as \"America\/New_York\" or empty, which defaults to UTC.\nThis is used for parsing times in resources, such as HL7 messages, where no\nexplicit timezone is specified.",
-          "type": "string"
-        }
-      }
-    },
-    "ListDatasetsResponse": {
-      "id": "ListDatasetsResponse",
-      "description": "Lists the available datasets.",
-      "type": "object",
-      "properties": {
-        "datasets": {
-          "description": "The first page of datasets.",
-          "type": "array",
-          "items": {
-            "$ref": "Dataset"
-          }
-        },
-        "nextPageToken": {
-          "description": "Token to retrieve the next page of results, or empty if there are no\nmore results in the list.",
-          "type": "string"
-        }
-      }
-    },
-    "Empty": {
-      "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "DeidentifyDatasetRequest": {
-      "id": "DeidentifyDatasetRequest",
-      "description": "Redacts identifying information from the specified dataset.",
-      "type": "object",
-      "properties": {
-        "destinationDataset": {
-          "description": "The name of the dataset resource to create and write the redacted data to.\n\n * The destination dataset must not exist.\n * The destination dataset must be in the same project as the source\n   dataset. De-identifying data across multiple projects is not supported.",
+        "destinationStore": {
+          "description": "The name of the FHIR store to create and write the redacted data to.\nFor example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/fhirStores\/{fhir_store_id}`.\n\n * The destination dataset must exist.\n * The source dataset and destination dataset must both reside in the same\n   project. De-identifying data across multiple projects is not supported.\n * The destination FHIR store must not exist.\n * The caller must have the necessary permissions to create the destination\n   FHIR store.",
           "type": "string"
         },
         "config": {
           "description": "Deidentify configuration.",
           "$ref": "DeidentifyConfig"
+        },
+        "resourceFilter": {
+          "description": "A filter specifying the resources to include in the output. If not\nspecified, all resources are included in the output.",
+          "$ref": "FhirFilter"
         }
       }
     },
@@ -699,6 +663,116 @@
       "description": "When using the INSPECT_AND_TRANSFORM action, each match is replaced with\nthe name of the info_type. For example, \"My name is Jake\" becomes \"My name is\n[PERSON_NAME].\" The TRANSFORM action is equivalent to redacting.",
       "type": "object",
       "properties": {
+      }
+    },
+    "FhirFilter": {
+      "id": "FhirFilter",
+      "description": "Filter configuration.",
+      "type": "object",
+      "properties": {
+        "resources": {
+          "description": "List of resources to include in the output. If this list is empty or\nnot specified, all resources are included in the output.",
+          "$ref": "Resources"
+        }
+      }
+    },
+    "Resources": {
+      "id": "Resources",
+      "description": "A list of FHIR resources.",
+      "type": "object",
+      "properties": {
+        "resources": {
+          "description": "List of resources IDs. For example, \"Patient\/1234\".",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "DeidentifyDicomStoreRequest": {
+      "id": "DeidentifyDicomStoreRequest",
+      "description": "Creates a new DICOM store with sensitive information de-identified.",
+      "type": "object",
+      "properties": {
+        "destinationStore": {
+          "description": "The name of the DICOM store to create and write the redacted data to.\nFor example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.\n\n * The destination dataset must exist.\n * The source dataset and destination dataset must both reside in the same\n   project. De-identifying data across multiple projects is not supported.\n * The destination DICOM store must not exist.\n * The caller must have the necessary permissions to create the destination\n   DICOM store.",
+          "type": "string"
+        },
+        "config": {
+          "description": "De-identify configuration.",
+          "$ref": "DeidentifyConfig"
+        },
+        "filterConfig": {
+          "description": "Filter configuration.",
+          "$ref": "DicomFilterConfig"
+        }
+      }
+    },
+    "DicomFilterConfig": {
+      "id": "DicomFilterConfig",
+      "description": "Specifies the filter configuration for DICOM resources.",
+      "type": "object",
+      "properties": {
+        "resourcePathsGcsUri": {
+          "description": "The Cloud Storage location of the filter configuration file.\nThe `gcs_uri` must be in the format `gs:\/\/bucket\/path\/to\/object`.\nThe filter configuration file must contain a list of resource paths\nseparated by newline characters (\\n or \\r\\n). Each resource path\nmust be in the format\n\"\/studies\/{studyUID}[\/series\/{seriesUID}[\/instances\/{instanceUID}]]\"\n\nThe Cloud Healthcare API service account must have the\n`roles\/storage.objectViewer` Cloud IAM role for this Cloud Storage\nlocation.",
+          "type": "string"
+        }
+      }
+    },
+    "Dataset": {
+      "id": "Dataset",
+      "description": "A message representing a health dataset.\n\nA health dataset represents a collection of healthcare data pertaining to one\nor more patients. This may include multiple modalities of healthcare data,\nsuch as electronic medical records or medical imaging data.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Resource name of the dataset, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}`.",
+          "type": "string"
+        },
+        "timeZone": {
+          "description": "The default timezone used by this dataset. Must be a either a valid IANA\ntime zone name such as \"America\/New_York\" or empty, which defaults to UTC.\nThis is used for parsing times in resources, such as HL7 messages, where no\nexplicit timezone is specified.",
+          "type": "string"
+        }
+      }
+    },
+    "ListDatasetsResponse": {
+      "id": "ListDatasetsResponse",
+      "description": "Lists the available datasets.",
+      "type": "object",
+      "properties": {
+        "datasets": {
+          "description": "The first page of datasets.",
+          "type": "array",
+          "items": {
+            "$ref": "Dataset"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no\nmore results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "DeidentifyDatasetRequest": {
+      "id": "DeidentifyDatasetRequest",
+      "description": "Redacts identifying information from the specified dataset.",
+      "type": "object",
+      "properties": {
+        "destinationDataset": {
+          "description": "The name of the dataset resource to create and write the redacted data to.\n\n * The destination dataset must not exist.\n * The destination dataset must be in the same project as the source\n   dataset. De-identifying data across multiple projects is not supported.",
+          "type": "string"
+        },
+        "config": {
+          "description": "Deidentify configuration.",
+          "$ref": "DeidentifyConfig"
+        }
       }
     },
     "DicomStore": {
@@ -1333,6 +1407,35 @@
         }
       }
     },
+    "GoogleCloudHealthcareV1beta1DeidentifyDeidentifyDicomStoreSummary": {
+      "id": "GoogleCloudHealthcareV1beta1DeidentifyDeidentifyDicomStoreSummary",
+      "description": "Contains a summary of the DeidentifyDicomStore operation.",
+      "type": "object",
+      "properties": {
+        "successResourceCount": {
+          "description": "Number of objects successfully processed.",
+          "type": "string",
+          "format": "int64"
+        },
+        "failureResourceCount": {
+          "description": "Number of objects that processing failed for.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudHealthcareV1beta1DeidentifyDeidentifyFhirStoreSummary": {
+      "id": "GoogleCloudHealthcareV1beta1DeidentifyDeidentifyFhirStoreSummary",
+      "description": "Contains a summary of the DeidentifyFhirStore operation.",
+      "type": "object",
+      "properties": {
+        "successResourceCount": {
+          "description": "Number of resources successfully processed.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "ImportDicomDataErrorDetails": {
       "id": "ImportDicomDataErrorDetails",
       "description": "Returns the errors encountered during DICOM store import.",
@@ -1380,7 +1483,7 @@
     },
     "GoogleCloudHealthcareV1beta1FhirRestImportResourcesErrorDetails": {
       "id": "GoogleCloudHealthcareV1beta1FhirRestImportResourcesErrorDetails",
-      "description": "Error response of importing resources.\nThis structure will be included in the\nerror details to describe the\ndetailed error. It will only be included when the operation finishes with\nsome failure.",
+      "description": "Error response of importing resources.\nThis structure will be included in the\nerror\ndetails to describe the detailed error. It will\nonly be included when the operation finishes with some failure.",
       "type": "object",
       "properties": {
         "fhirStore": {
@@ -1422,7 +1525,7 @@
     },
     "GoogleCloudHealthcareV1beta1FhirRestExportResourcesErrorDetails": {
       "id": "GoogleCloudHealthcareV1beta1FhirRestExportResourcesErrorDetails",
-      "description": "Response when errors occur while exporting resources.\nThis structure is included in the\nerror details to describe the\ndetailed outcome. It is only included when the operation finishes with\nerrors.",
+      "description": "Response when errors occur while exporting resources.\nThis structure is included in the\nerror\ndetails to describe the detailed outcome. It is\nonly included when the operation finishes with errors.",
       "type": "object",
       "properties": {
         "fhirStore": {
@@ -1549,7 +1652,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy."
+                  "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.\n\nCan return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED"
                 },
                 "getIamPolicy": {
                   "id": "healthcare.projects.locations.datasets.getIamPolicy",
@@ -1789,7 +1892,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new dataset containing de-identified data from the source\ndataset. The metadata field type\nis OperationMetadata.\nIf the request is successful, the\nresponse field type is\nDeidentifySummary.\nIf errors occur,\ndetails field type is\nDeidentifyErrorDetails.\nErrors are also logged to Stackdriver Logging. For more information,\nsee [Viewing logs](\/healthcare\/docs\/how-tos\/stackdriver-logging)."
+                  "description": "Creates a new dataset containing de-identified data from the source\ndataset. The metadata field type\nis OperationMetadata.\nIf the request is successful, the\nresponse field type is\nDeidentifySummary.\nIf errors occur,\nerror\ndetails field type is\nDeidentifyErrorDetails.\nErrors are also logged to Stackdriver Logging. For more information,\nsee [Viewing logs](\/healthcare\/docs\/how-tos\/stackdriver-logging)."
                 }
               }
               ,
@@ -1822,7 +1925,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy."
+                      "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.\n\nCan return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED"
                     },
                     "getIamPolicy": {
                       "id": "healthcare.projects.locations.datasets.dicomStores.getIamPolicy",
@@ -1882,6 +1985,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning."
+                    },
+                    "deidentify": {
+                      "id": "healthcare.projects.locations.datasets.dicomStores.deidentify",
+                      "path": "v1beta1/{+sourceStore}:deidentify",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}:deidentify",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "sourceStore": {
+                          "description": "Source DICOM store resource name. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "sourceStore"
+                      ],
+                      "request": {
+                        "$ref": "DeidentifyDicomStoreRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new DICOM store containing de-identified data from the source\nstore. The metadata field type\nis OperationMetadata.\nIf the request is successful, the\nresponse field type is\nDeidentifyDicomStoreSummary. If errors occur,\nerror\ndetails field type is\nDeidentifyErrorDetails.\nErrors are also logged to Stackdriver\n(see [Viewing logs](\/healthcare\/docs\/how-tos\/stackdriver-logging))."
                     },
                     "create": {
                       "id": "healthcare.projects.locations.datasets.dicomStores.create",
@@ -2821,7 +2952,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy."
+                      "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.\n\nCan return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED"
                     },
                     "getIamPolicy": {
                       "id": "healthcare.projects.locations.datasets.hl7V2Stores.getIamPolicy",
@@ -3274,7 +3405,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy."
+                      "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.\n\nCan return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED"
                     },
                     "getIamPolicy": {
                       "id": "healthcare.projects.locations.datasets.fhirStores.getIamPolicy",
@@ -3334,6 +3465,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning."
+                    },
+                    "deidentify": {
+                      "id": "healthcare.projects.locations.datasets.fhirStores.deidentify",
+                      "path": "v1beta1/{+sourceStore}:deidentify",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:deidentify",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "sourceStore": {
+                          "description": "Source FHIR store resource name. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/fhirStores\/{fhir_store_id}`.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "sourceStore"
+                      ],
+                      "request": {
+                        "$ref": "DeidentifyFhirStoreRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new FHIR store containing de-identified data from the source\nstore. The metadata field type\nis OperationMetadata.\nIf the request is successful, the\nresponse field type is\nDeidentifyFhirStoreSummary. If errors occur,\nerror\ndetails field type is\nDeidentifyErrorDetails.\nErrors are also logged to Stackdriver\n(see [Viewing logs](\/healthcare\/docs\/how-tos\/stackdriver-logging))."
                     },
                     "import": {
                       "id": "healthcare.projects.locations.datasets.fhirStores.import",
@@ -3991,7 +4150,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Retrieves the N most recent `Observation` resources for a subject matching\nsearch criteria specified as query parameters, grouped by\n`Observation.code`, sorted from most recent to oldest.\n\nImplements the FHIR extended operation\n[Observation-lastn](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/observation-operations.html#lastn).\n\nSearch terms are provided as query parameters following the same pattern as\nthe search method. This operation accepts an additional\nquery parameter `max`, which specifies N, the maximum number of\nObservations to return from each group, with a default of 1.\n\nOn success, the response body will contain a JSON-encoded representation\nof a `Bundle` resource of type `searchset`, containing the results of the\noperation.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead."
+                          "description": "Retrieves the N most recent `Observation` resources for a subject matching\nsearch criteria specified as query parameters, grouped by\n`Observation.code`, sorted from most recent to oldest.\n\nImplements the FHIR extended operation\n[Observation-lastn](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/observation-operations.html#lastn).\n\nSearch terms are provided as query parameters following the same pattern as\nthe search method. The following search parameters must\nbe provided\n    - `subject` or `patient` to specify a subject for the Observation.\n    - `code`, `category` or any of the composite parameters that include\n      `code`.\nAny other valid Observation search parameters can also be provided. This\noperation accepts an additional query parameter `max`, which specifies N,\nthe maximum number of Observations to return from each group, with a\ndefault of 1.\n\nOn success, the response body will contain a JSON-encoded representation\nof a `Bundle` resource of type `searchset`, containing the results of the\noperation.\nErrors generated by the FHIR store will contain a JSON-encoded\n`OperationOutcome` resource describing the reason for the error. If the\nrequest cannot be mapped to a valid API method on a FHIR store, a generic\nGCP error might be returned instead."
                         },
                         "capabilities": {
                           "id": "healthcare.projects.locations.datasets.fhirStores.fhir.capabilities",
@@ -4076,12 +4235,12 @@
                               "type": "string"
                             },
                             "page": {
-                              "description": "Used to retrieve the first, previous, next, or last page of resource\nversions when using pagination. Value should be set to the value of\n`page` set in next or previous page links' URLs. Next and previous\npage are returned in the response bundle's links field, where\n`link.relation` is \"previous\" or \"next\".\n\nOmit `page` if no previous request has been made.",
+                              "description": "DEPRECATED! Use `_page_token`.",
                               "location": "query",
                               "type": "string"
                             },
                             "_page_token": {
-                              "description": "Same as `page`. Please use either `page` or `_page_token`.",
+                              "description": "Used to retrieve the first, previous, next, or last page of resource\nversions when using pagination. Value should be set to the value of\n`_page_token` set in next or previous page links' URLs. Next and previous\npage are returned in the response bundle's links field, where\n`link.relation` is \"previous\" or \"next\".\n\nOmit `_page_token` if no previous request has been made.",
                               "location": "query",
                               "type": "string"
                             }

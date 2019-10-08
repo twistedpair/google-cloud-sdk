@@ -47,9 +47,7 @@ def _CreateServiceRestriction(restriction_message_type, mask_prefix,
 def _CreateServicePerimeterConfig(
     messages, mask_prefix, include_unrestricted_services, resources,
     restricted_services, unrestricted_services, levels,
-    ingress_allowed_services, vpc_allowed_services, bridge_allowed_services,
-    enable_ingress_service_restriction, enable_vpc_service_restriction,
-    enable_bridge_service_restriction):
+    vpc_allowed_services, enable_vpc_service_restriction):
   """Returns a ServicePerimeterConfig and its update mask."""
 
   config = messages.ServicePerimeterConfig()
@@ -67,15 +65,6 @@ def _CreateServicePerimeterConfig(
     mask.append('accessLevels')
     config.accessLevels = [l.RelativeName() for l in levels]
 
-  if (enable_ingress_service_restriction is not None or
-      ingress_allowed_services is not None):
-    config.ingressServiceRestriction, mask_updates = _CreateServiceRestriction(
-        messages.IngressServiceRestriction,
-        'ingressServiceRestriction',
-        enable_restriction=enable_ingress_service_restriction,
-        allowed_services=ingress_allowed_services)
-    mask += mask_updates
-
   if (enable_vpc_service_restriction is not None or
       vpc_allowed_services is not None):
     config.vpcServiceRestriction, mask_updates = _CreateServiceRestriction(
@@ -83,15 +72,6 @@ def _CreateServicePerimeterConfig(
         'vpcServiceRestriction',
         enable_restriction=enable_vpc_service_restriction,
         allowed_services=vpc_allowed_services)
-    mask += mask_updates
-
-  if (enable_bridge_service_restriction is not None or
-      bridge_allowed_services is not None):
-    config.bridgeServiceRestriction, mask_updates = _CreateServiceRestriction(
-        messages.BridgeServiceRestriction,
-        'bridgeServiceRestriction',
-        enable_restriction=enable_bridge_service_restriction,
-        allowed_services=bridge_allowed_services)
     mask += mask_updates
 
   if not mask:
@@ -127,12 +107,8 @@ class Client(object):
             restricted_services=None,
             unrestricted_services=None,
             levels=None,
-            ingress_allowed_services=None,
             vpc_allowed_services=None,
-            bridge_allowed_services=None,
-            enable_ingress_service_restriction=None,
             enable_vpc_service_restriction=None,
-            enable_bridge_service_restriction=None,
             apply_to_dry_run_config=False,
             clear_dry_run=False):
     """Patch a service perimeter.
@@ -153,22 +129,11 @@ class Client(object):
         or None if not updating.
       levels: list of Resource, the access levels (in the same policy) that must
         be satisfied for calls into this zone or None if not updating.
-      ingress_allowed_services: list of str, the names of services
-        ('example.googleapis.com') that *are* allowed to use Access Levels to
-        make a cross access zone boundary call, or None if not updating.
       vpc_allowed_services: list of str, the names of services
         ('example.googleapis.com') that *are* allowed to be made within the
         access zone, or None if not updating.
-      bridge_allowed_services: list of str, the names of services
-        ('example.googleapis.com') that *are* allowed to use the bridge access
-        zone, or None if not updating.
-      enable_ingress_service_restriction: bool, whether to restrict the set of
-        APIs callable outside the access zone via Access Levels, or None if not
-        updating.
       enable_vpc_service_restriction: bool, whether to restrict the set of APIs
         callable within the access zone, or None if not updating.
-      enable_bridge_service_restriction: bool, whether to restrict the set of
-        APIs callable using the bridge access zone, or None if not updating.
       apply_to_dry_run_config: When true, the configuration will be place in the
         'spec' field instead of the 'status' field of the Service Perimeter.
       clear_dry_run: When true, the ServicePerimeterConfig field for dry-run
@@ -198,9 +163,8 @@ class Client(object):
       config, config_mask_additions = _CreateServicePerimeterConfig(
           m, mask_prefix, self.include_unrestricted_services, resources,
           restricted_services, unrestricted_services, levels,
-          ingress_allowed_services, vpc_allowed_services,
-          bridge_allowed_services, enable_ingress_service_restriction,
-          enable_vpc_service_restriction, enable_bridge_service_restriction)
+          vpc_allowed_services,
+          enable_vpc_service_restriction)
 
       if not apply_to_dry_run_config:
         perimeter.status = config

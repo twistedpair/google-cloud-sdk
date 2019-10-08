@@ -2092,8 +2092,7 @@ class InstanceGroupConfig(_messages.Message):
 
   Fields:
     accelerators: Optional. The Compute Engine accelerator configuration for
-      these instances.Beta Feature: This feature is still under development.
-      It may be changed before final release.
+      these instances.
     diskConfig: Optional. Disk option config settings.
     imageUri: Optional. The Compute Engine image resource used for cluster
       instances. It can be specified or may be inferred from

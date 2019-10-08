@@ -267,6 +267,73 @@ contained within it.
         supports_download=False,
     )
 
+    def Evaluate(self, request, global_params=None):
+      r"""Evaluate an Annotation store against a.
+ground truth Annotation store.
+When the operation finishes successfully, a detailed response is returned
+of type EvaluateAnnotationStoreResponse, contained in the response. The metadata field type is
+OperationMetadata.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsAnnotationStoresEvaluateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Evaluate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Evaluate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:evaluate',
+        http_method=u'POST',
+        method_id=u'healthcare.projects.locations.datasets.annotationStores.evaluate',
+        ordered_params=[u'evalStore'],
+        path_params=[u'evalStore'],
+        query_params=[],
+        relative_path=u'v1alpha2/{+evalStore}:evaluate',
+        request_field=u'evaluateAnnotationStoreRequest',
+        request_type_name=u'HealthcareProjectsLocationsDatasetsAnnotationStoresEvaluateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Export(self, request, global_params=None):
+      r"""Export.
+Annotations from
+the Annotation
+store.
+Errors are noted in the error
+field. Otherwise, a detailed response is returned of type
+ExportAnnotationsResponse, contained in the
+response field when the
+operation finishes. The metadata
+field type is OperationMetadata.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsAnnotationStoresExportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Export')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Export.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:export',
+        http_method=u'POST',
+        method_id=u'healthcare.projects.locations.datasets.annotationStores.export',
+        ordered_params=[u'annotationStore'],
+        path_params=[u'annotationStore'],
+        query_params=[],
+        relative_path=u'v1alpha2/{+annotationStore}:export',
+        request_field=u'exportAnnotationsRequest',
+        request_type_name=u'HealthcareProjectsLocationsDatasetsAnnotationStoresExportRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets the specified Annotation store or returns NOT_FOUND if it does not.
 exist.
@@ -325,6 +392,44 @@ resource
         request_field=u'getIamPolicyRequest',
         request_type_name=u'HealthcareProjectsLocationsDatasetsAnnotationStoresGetIamPolicyRequest',
         response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def Import(self, request, global_params=None):
+      r"""Import.
+Annotations to
+the Annotation
+store by
+loading data from the specified sources.
+Errors are noted in the error
+field. Otherwise, a detailed response is returned as of type
+ImportAnnotationsResponse contained in the
+response field when the
+operation finishes.
+The metadata field type is
+OperationMetadata.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsAnnotationStoresImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:import',
+        http_method=u'POST',
+        method_id=u'healthcare.projects.locations.datasets.annotationStores.import',
+        ordered_params=[u'annotationStore'],
+        path_params=[u'annotationStore'],
+        query_params=[],
+        relative_path=u'v1alpha2/{+annotationStore}:import',
+        request_field=u'importAnnotationsRequest',
+        request_type_name=u'HealthcareProjectsLocationsDatasetsAnnotationStoresImportRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -1312,6 +1417,8 @@ OperationMetadata.
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+
       Args:
         request: (HealthcareProjectsLocationsDatasetsDicomStoresSetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -1391,9 +1498,15 @@ DSTU2 doesn't define the Observation-lastn method, but the server supports
 it the same way it supports STU3.
 
 Search terms are provided as query parameters following the same pattern as
-the search method. This operation accepts an additional
-query parameter `max`, which specifies N, the maximum number of
-Observations to return from each group, with a default of 1.
+the search method. The following search parameters must
+be provided
+    - `subject` or `patient` to specify a subject for the Observation.
+    - `code`, `category` or any of the composite parameters that include
+      `code`.
+Any other valid Observation search parameters can also be provided. This
+operation accepts an additional query parameter `max`, which specifies N,
+the maximum number of Observations to return from each group, with a
+default of 1.
 
 On success, the response body contains a JSON-encoded representation
 of a `Bundle` resource of type `searchset`, containing the results of the
@@ -2479,6 +2592,8 @@ operation is OperationMetadata.
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresSetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -2900,6 +3015,8 @@ set.
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+
       Args:
         request: (HealthcareProjectsLocationsDatasetsHl7V2StoresSetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -3082,7 +3199,8 @@ is OperationMetadata.
 If the request is successful, the
 response field type is
 DeidentifySummary.
-If errors occur,
+If errors occur, the
+error
 details field type is
 DeidentifyErrorDetails.
 Errors are also logged to Stackdriver Logging. For more information, see
@@ -3254,6 +3372,8 @@ set.
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
+
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsSetIamPolicyRequest) input message

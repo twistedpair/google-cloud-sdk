@@ -392,6 +392,7 @@
           ]
         },
         "rolePermissionRelevance": {
+          "description": "The relevance of this permission with respect to the BindingExplanation.",
           "enumDescriptions": [
             "Default value, presence of this should be error.",
             "Fields annotated with this value contribute equally to evaluation\nresult. In other words the fields are NOT specially important. This is a\nsuperset of fields annotated as HIGH.",
@@ -433,9 +434,11 @@
     },
     "GoogleCloudPolicytroubleshooterV1betaBindingExplanationAnnotatedMembership": {
       "id": "GoogleCloudPolicytroubleshooterV1betaBindingExplanationAnnotatedMembership",
+      "description": "Encapsulated membership and the relevance of that membership with respect\nto BindingExplanation.",
       "type": "object",
       "properties": {
         "membership": {
+          "description": "Membership status.",
           "enumDescriptions": [
             "Reserved.",
             "Member is included in group\/domain\/allUsers or is a direct match.",
@@ -453,6 +456,7 @@
           ]
         },
         "relevance": {
+          "description": "Relevance of this membership with respect to BindingExplanation.",
           "enumDescriptions": [
             "Default value, presence of this should be error.",
             "Fields annotated with this value contribute equally to evaluation\nresult. In other words the fields are NOT specially important. This is a\nsuperset of fields annotated as HIGH.",

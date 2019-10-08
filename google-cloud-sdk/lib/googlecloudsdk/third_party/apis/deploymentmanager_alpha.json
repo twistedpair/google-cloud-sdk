@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager Alpha",
  "version": "alpha",
- "revision": "20190923",
+ "revision": "20191001",
  "title": "Google Cloud Deployment Manager Alpha API",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -687,6 +687,13 @@
    "type": "object",
    "description": "Increment a streamz counter with the specified metric and field names.\n\nMetric names should start with a '/', generally be lowercase-only, and end in \"_count\". Field names should not contain an initial slash. The actual exported metric names will have \"/iam/policy\" prepended.\n\nField names correspond to IAM request parameters and field values are their respective values.\n\nSupported field names: - \"authority\", which is \"[token]\" if IAMContext.token is present, otherwise the value of IAMContext.authority_selector if present, and otherwise a representation of IAMContext.principal; or - \"iam_principal\", a representation of IAMContext.principal even if a token or authority selector is present; or - \"\" (empty string), resulting in a counter with no fields.\n\nExamples: counter { metric: \"/debug_access_count\" field: \"iam_principal\" } ==\u003e increment counter /iam/policy/backend_debug_access_count {iam_principal=[value of IAMContext.principal]}\n\nAt this time we do not support multiple field names (though this may be supported in the future).",
    "properties": {
+    "customFields": {
+     "type": "array",
+     "description": "Custom fields.",
+     "items": {
+      "$ref": "LogConfigCounterOptionsCustomField"
+     }
+    },
     "field": {
      "type": "string",
      "description": "The field value to attribute."
@@ -694,6 +701,21 @@
     "metric": {
      "type": "string",
      "description": "The metric to update."
+    }
+   }
+  },
+  "LogConfigCounterOptionsCustomField": {
+   "id": "LogConfigCounterOptionsCustomField",
+   "type": "object",
+   "description": "Custom fields. These can be used to create a counter with arbitrary field/value pairs. See: go/rpcsp-custom-fields.",
+   "properties": {
+    "name": {
+     "type": "string",
+     "description": "Name is the field name."
+    },
+    "value": {
+     "type": "string",
+     "description": "Value is the field value. It is important that in contrast to the CounterOptions.field, the value here is a constant that is not derived from the IAMContext."
     }
    }
   },

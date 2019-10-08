@@ -277,7 +277,7 @@ Minimum number of nodes to which the node pool specified by --node-pool
 
 
 def AddNodePoolAutoprovisioningFlag(parser, hidden=True):
-  """Adds --enable-autoprovisioning flag for node-pool to parser.
+  """Adds --enable-autoprovisioning flag for node pool to parser.
 
   Args:
     parser: A given parser.
@@ -587,13 +587,13 @@ def AddNodeLabelsFlag(parser, for_node_pool=False):
   """Adds a --node-labels flag to the given parser."""
   if for_node_pool:
     help_text = """\
-Applies the given kubernetes labels on all nodes in the new node-pool. Example:
+Applies the given kubernetes labels on all nodes in the new node pool. Example:
 
   $ {command} node-pool-1 --cluster=example-cluster --node-labels=label1=value1,label2=value2
 """
   else:
     help_text = """\
-Applies the given kubernetes labels on all nodes in the new node-pool. Example:
+Applies the given kubernetes labels on all nodes in the new node pool. Example:
 
   $ {command} example-cluster --node-labels=label-a=value1,label-2=value2
 """
@@ -632,7 +632,7 @@ def AddLocalSSDAndLocalSSDVolumeConfigsFlag(parser,
 def AddLocalSSDVolumeConfigsFlag(parser, for_node_pool=False, help_text=''):
   """Adds a --local-ssd-volumes flag to the given parser."""
   help_text += """\
-Adds the requested local SSDs on all nodes in default node-pool(s) in new cluster. Example:
+Adds the requested local SSDs on all nodes in default node pool(s) in new cluster. Example:
 
   $ {{command}} {0} --local-ssd-volumes count=2,type=nvme,format=fs
 
@@ -673,13 +673,13 @@ def AddNodeTaintsFlag(parser, for_node_pool=False, hidden=False):
   """Adds a --node-taints flag to the given parser."""
   if for_node_pool:
     help_text = """\
-Applies the given kubernetes taints on all nodes in the new node-pool, which can be used with tolerations for pod scheduling. Example:
+Applies the given kubernetes taints on all nodes in the new node pool, which can be used with tolerations for pod scheduling. Example:
 
   $ {command} node-pool-1 --cluster=example-cluster --node-taints=key1=val1:NoSchedule,key2=val2:PreferNoSchedule
 """
   else:
     help_text = """\
-Applies the given kubernetes taints on all nodes in default node-pool(s) in new cluster, which can be used with tolerations for pod scheduling. Example:
+Applies the given kubernetes taints on all nodes in default node pool(s) in new cluster, which can be used with tolerations for pod scheduling. Example:
 
   $ {command} example-cluster --node-taints=key1=val1:NoSchedule,key2=val2:PreferNoSchedule
 """
@@ -701,7 +701,7 @@ def AddPreemptibleFlag(parser, for_node_pool=False, suppressed=False):
   """Adds a --preemptible flag to parser."""
   if for_node_pool:
     help_text = """\
-Create nodes using preemptible VM instances in the new nodepool.
+Create nodes using preemptible VM instances in the new node pool.
 
   $ {command} node-pool-1 --cluster=example-cluster --preemptible
 """
@@ -747,7 +747,7 @@ def AddEnableAutoRepairFlag(parser, for_node_pool=False, for_create=False):
   """Adds a --enable-autorepair flag to parser."""
   if for_node_pool:
     help_text = """\
-Enable node autorepair feature for a node-pool.
+Enable node autorepair feature for a node pool.
 
   $ {command} node-pool-1 --cluster=example-cluster --enable-autorepair
 """
@@ -758,7 +758,7 @@ as a base image, use --no-enable-autorepair to disable.
 """
   else:
     help_text = """\
-Enable node autorepair feature for a cluster's default node-pool(s).
+Enable node autorepair feature for a cluster's default node pool(s).
 
   $ {command} example-cluster --enable-autorepair
 """
@@ -782,13 +782,13 @@ def AddEnableAutoUpgradeFlag(parser,
   """Adds a --enable-autoupgrade flag to parser."""
   if for_node_pool:
     help_text = """\
-Sets autoupgrade feature for a node-pool.
+Sets autoupgrade feature for a node pool.
 
   $ {command} node-pool-1 --cluster=example-cluster --enable-autoupgrade
 """
   else:
     help_text = """\
-Sets autoupgrade feature for a cluster's default node-pool(s).
+Sets autoupgrade feature for a cluster's default node pool(s).
 
   $ {command} example-cluster --enable-autoupgrade
 """
@@ -1037,7 +1037,7 @@ def AddMaintenanceWindowGroup(parser,
   maintenance_group = parser.add_group(hidden=hidden, mutex=True)
   AddDailyMaintenanceWindowFlag(maintenance_group, add_emw_text=not emw_hidden)
   help_text = """\
-One of either maintenance-window or the group of maintenance-window-* flags can
+One of either maintenance-window or the group of maintenance-window flags can
 be set.
 """
   if add_emw_flags:
@@ -1098,34 +1098,33 @@ def AddRecurringMaintenanceWindowFlags(parser, hidden=False, is_update=False):
     group = parser.add_group(hidden=hidden, mutex=True)
   else:
     group = parser
+
+  # See core/document_renderers/render_document.py for the formatting
+  # weirdness. Newlines in group help text breaks help generation horribly.
+  # These + symbols get us our paragraphs. Also, note that gcloud can wrap
+  # long commands funny, so these examples have to be tailored to not go too
+  # long without whitespace.
   set_window_group = group.add_group(
       hidden=hidden_for_create,
       help="""\
 Set a flexible maintenance window by specifying a window that recurs per an
 RFC 5545 RRULE. Non-emergency maintenance will occur in the recurring windows.
-
-## EXAMPLES
-For a 9-5 M-F UTC-4 maintenance window:
-
++
+Examples:
++
+For a 9-5 Mon-Wed UTC-4 maintenance window:
++
   $ {command} example-cluster \
-    --maintenance-window-start=2000-01-01T09:00:00-04:00 \
-    --maintenance-window-end=2000-01-01T17:00:00-04:00 \
-    --maintenance-window-recurrence='FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR'
-
+  --maintenance-window-start=2000-01-01T09:00:00-04:00 \
+  --maintenance-window-end=2000-01-01T17:00:00-04:00 \
+  --maintenance-window-recurrence='FREQ=WEEKLY;BYDAY=MO,TU,WE'
++
 For a daily window from 22:00 - 04:00 UTC:
-
++
   $ {command} example-cluster \
-    --maintenance-window-start=2000-01-01T22:00:00Z \
-    --maintenance-window-end=2000-01-02T04:00:00Z \
-    --maintenance-window-recurrence=FREQ=DAILY
-
-For the first weekend of every month from midnight Saturday till the last minute
-of Sunday, local time:
-
-  $ {command} example-cluster \
-    --maintenance-window-start=2019-01-05T00:00:00 \
-    --maintenance-window-end=2019-01-07T23:59:00 \
-    --maintenance-window-recurrence='FREQ=MONTHLY;BYSETPOS=1;BYDAY=SA'
+  --maintenance-window-start=2000-01-01T22:00:00Z \
+  --maintenance-window-end=2000-01-02T04:00:00Z \
+  --maintenance-window-recurrence=FREQ=DAILY
 """)
 
   set_window_group.add_argument(
@@ -1170,7 +1169,8 @@ MINUTELY, and HOURLY are not supported.
         action='store_true',
         default=False,
         help="""\
-If set, remove the maintenance window that was set with --maintenance-window-*.
+If set, remove the maintenance window that was set with --maintenance-window
+family of flags.
 """)
     AddMaintenanceExclusionFlags(group)
 
@@ -1182,15 +1182,19 @@ def AddMaintenanceExclusionFlags(parser, hidden=False):
       help="""\
 Sets a period of time in which maintenance should not occur. This is compatible
 with both daily and recurring maintenance windows.
-
++
 Example:
-
-  $ {command} example-cluster --add-maintenance-exclusion-name=holidays-2000 --add-maintenance-exclusion-start=2000-11-20T00:00:00 --add-maintenance-exclusion-end=2000-12-31T23:59:59
++
+  $ {command} example-cluster \
+  --add-maintenance-exclusion-name=holidays-2000 \
+  --add-maintenance-exclusion-start=2000-11-20T00:00:00 \
+  --add-maintenance-exclusion-end=2000-12-31T23:59:59
 """)
 
   group.add_argument(
       '--add-maintenance-exclusion-name',
       type=str,
+      metavar='NAME',
       help="""\
 A descriptor for the exclusion that can be used to remove it. If not specified,
 it will be autogenerated.
@@ -1500,7 +1504,7 @@ def AddWorkloadMetadataFromNodeFlag(parser, hidden=False):
                     'being redesigned with significant security improvements. '
                     'This feature is scheduled to be deprecated in the future '
                     'and later removed.',
-          'EXPOSED': "Pods running in this nodepool have access to the node's "
+          'EXPOSED': "Pods running in this node pool have access to the node's "
                      'underlying Compute Engine Metadata Server.',
           'GKE_METADATA_SERVER':
               'Run the Kubernetes Engine Metadata Server on this node. The Kubernetes '
@@ -1512,7 +1516,8 @@ def AddWorkloadMetadataFromNodeFlag(parser, hidden=False):
       },
       type=lambda x: x.upper(),
       hidden=hidden,
-      help='Type of metadata server available to pods running in the nodepool.')
+      help='Type of metadata server available to pods running in the node pool.'
+  )
 
 
 def AddTagOrDigestPositional(parser,
@@ -1662,7 +1667,7 @@ def AddClusterNodeIdentityFlags(parser):
 def AddNodePoolNodeIdentityFlags(parser):
   """Adds node identity flags to the given parser.
 
-  This is a wrapper around AddNodeIdentityFlags for (GA) node-pools, as it
+  This is a wrapper around AddNodeIdentityFlags for (GA) node pools, as it
   provides node-pool-1 as the example and uses non-deprecated scopes behavior.
 
   Args:
@@ -2208,7 +2213,7 @@ def AddSandboxFlag(parser, hidden=False):
       metavar='type=TYPE',
       hidden=hidden,
       help="""\
-Enables the requested sandbox on all nodes in the node-pool. Example:
+Enables the requested sandbox on all nodes in the node pool. Example:
 
   $ {command} node-pool-1 --cluster=example-cluster --sandbox="type=gvisor"
 
@@ -2506,7 +2511,7 @@ def AddLinuxSysctlFlags(parser, for_node_pool=False):
   """Adds Linux sysctl flag to the given parser."""
   if for_node_pool:
     help_text = """\
-Linux kernel parameters to be applied to all nodes in the new node-pool as well
+Linux kernel parameters to be applied to all nodes in the new node pool as well
 as the pods running on the nodes.
 
 Example:
@@ -2572,14 +2577,14 @@ def AddNodePoolLocationsFlag(parser, for_create=False):
   """Adds a --node-locations flag for node pool to parser."""
   if for_create:
     help_text = """
-The set of zones in which the NodePool's nodes should be located.
+The set of zones in which the node pool's nodes should be located.
 
 Multiple locations can be specified, separated by commas. For example:
 
   $ {command} node-pool-1 --node-locations=us-central1-a,us-central1-b"""
   else:
     help_text = """\
-Set of zones in which the NodePool's nodes should be located.
+Set of zones in which the node pool's nodes should be located.
 Changing the locations for a node pool will result in nodes being either created or removed
 from the node pool, depending on whether locations are being added or removed.
 
@@ -2590,7 +2595,6 @@ Multiple locations can be specified, separated by commas. For example:
       '--node-locations',
       type=arg_parsers.ArgList(min_length=1),
       metavar='ZONE',
-      hidden=True,
       help=help_text)
 
 
@@ -2710,3 +2714,25 @@ net.ipv4.udp_rmem_min                      | Any positive integer
 net.ipv4.udp_wmem_min                      | Any positive integer
 net.netfilter.nf_conntrack_generic_timeout | Any positive integer
 """)
+
+
+def AddCostManagementConfigFlag(parser, is_update=False):
+  """Adds flags related to GKE cost management to the given parser."""
+  help_text = """
+Enable the cost management feature.
+
+When enabled, you can get informational GKE cost breakdowns by cluster,
+namespace and label in your billing data exported to BigQuery
+(https://cloud.google.com/billing/docs/how-to/export-data-bigquery).
+"""
+
+  if is_update:
+    help_text += """\
+
+Use --no-enable-cost-management to disable this feature.
+"""
+  parser.add_argument(
+      '--enable-cost-management',
+      action='store_true',
+      default=None,
+      help=help_text)

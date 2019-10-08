@@ -47,7 +47,8 @@ class GoogleCloudPolicytroubleshooterV1betaBindingExplanation(_messages.Message)
       is HIGH.
     RolePermissionValueValuesEnum: Whether the role of this binding contains
       the checked permission
-    RolePermissionRelevanceValueValuesEnum:
+    RolePermissionRelevanceValueValuesEnum: The relevance of this permission
+      with respect to the BindingExplanation.
 
   Messages:
     MembershipsValue: For each member in the binding, provides information
@@ -74,8 +75,8 @@ class GoogleCloudPolicytroubleshooterV1betaBindingExplanation(_messages.Message)
       "roles/compute.serviceAgent"
     rolePermission: Whether the role of this binding contains the checked
       permission
-    rolePermissionRelevance: A RolePermissionRelevanceValueValuesEnum
-      attribute.
+    rolePermissionRelevance: The relevance of this permission with respect to
+      the BindingExplanation.
   """
 
   class AccessValueValuesEnum(_messages.Enum):
@@ -122,7 +123,8 @@ class GoogleCloudPolicytroubleshooterV1betaBindingExplanation(_messages.Message)
     HIGH = 2
 
   class RolePermissionRelevanceValueValuesEnum(_messages.Enum):
-    r"""RolePermissionRelevanceValueValuesEnum enum type.
+    r"""The relevance of this permission with respect to the
+    BindingExplanation.
 
     Values:
       HEURISTIC_RELEVANCE_UNSPECIFIED: Default value, presence of this should
@@ -193,21 +195,22 @@ class GoogleCloudPolicytroubleshooterV1betaBindingExplanation(_messages.Message)
 
 
 class GoogleCloudPolicytroubleshooterV1betaBindingExplanationAnnotatedMembership(_messages.Message):
-  r"""A
-  GoogleCloudPolicytroubleshooterV1betaBindingExplanationAnnotatedMembership
-  object.
+  r"""Encapsulated membership and the relevance of that membership with
+  respect to BindingExplanation.
 
   Enums:
-    MembershipValueValuesEnum:
-    RelevanceValueValuesEnum:
+    MembershipValueValuesEnum: Membership status.
+    RelevanceValueValuesEnum: Relevance of this membership with respect to
+      BindingExplanation.
 
   Fields:
-    membership: A MembershipValueValuesEnum attribute.
-    relevance: A RelevanceValueValuesEnum attribute.
+    membership: Membership status.
+    relevance: Relevance of this membership with respect to
+      BindingExplanation.
   """
 
   class MembershipValueValuesEnum(_messages.Enum):
-    r"""MembershipValueValuesEnum enum type.
+    r"""Membership status.
 
     Values:
       MEMBERSHIP_UNSPECIFIED: Reserved.
@@ -227,7 +230,7 @@ class GoogleCloudPolicytroubleshooterV1betaBindingExplanationAnnotatedMembership
     MEMBERSHIP_UNKNOWN_UNSUPPORTED = 4
 
   class RelevanceValueValuesEnum(_messages.Enum):
-    r"""RelevanceValueValuesEnum enum type.
+    r"""Relevance of this membership with respect to BindingExplanation.
 
     Values:
       HEURISTIC_RELEVANCE_UNSPECIFIED: Default value, presence of this should

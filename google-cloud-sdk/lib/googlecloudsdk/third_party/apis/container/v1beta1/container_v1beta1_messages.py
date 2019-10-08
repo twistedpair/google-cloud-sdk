@@ -513,9 +513,9 @@ class ClusterUpdate(_messages.Message):
     desiredLoggingService: The logging service the cluster should use to write
       metrics. Currently available options:  *
       "logging.googleapis.com/kubernetes" - the Google Cloud Logging service
-      with Kubernetes-native resource model in Stackdriver *
-      "logging.googleapis.com" - the Google Cloud Logging service * "none" -
-      no logs will be exported from the cluster
+      with Kubernetes-native resource model * "logging.googleapis.com" - the
+      Google Cloud Logging service * "none" - no logs will be exported from
+      the cluster
     desiredMasterAuthorizedNetworksConfig: The desired configuration options
       for master authorized networks feature.
     desiredMasterVersion: The Kubernetes version to change the master to. The
@@ -529,7 +529,7 @@ class ClusterUpdate(_messages.Message):
     desiredMonitoringService: The monitoring service the cluster should use to
       write metrics. Currently available options:  *
       "monitoring.googleapis.com/kubernetes" - the Google Cloud Monitoring
-      service with Kubernetes-native resource model in Stackdriver *
+      service with Kubernetes-native resource model *
       "monitoring.googleapis.com" - the Google Cloud Monitoring service *
       "none" - no metrics will be exported from the cluster
     desiredNodePoolAutoscaling: Autoscaler configuration for the node pool

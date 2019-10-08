@@ -171,17 +171,17 @@
           }
         },
         "creditTypesTreatment": {
-          "description": "Optional. If not set, default behavior is `ADD_CREDIT_TYPES_TO_NET`.\nBecause credit types cannot be specified yet, in practice, the default\nbehavior means that the cost used for budgets is net cost, and\nSUBTRACT_CREDIT_TYPES_FROM_GROSS means the cost is gross cost.",
+          "description": "Optional. If not set, default behavior is `INCLUDE_ALL_CREDITS`.",
           "enumDescriptions": [
             "",
-            "All types of credit are added to the net cost to determine the spend for\nthreshold calculations.",
-            "All types of credit are subtracted from the gross cost to determine the\nspend for threshold calculations."
+            "All types of credit are subtracted from the gross cost to determine the\nspend for threshold calculations.",
+            "All types of credit are added to the net cost to determine the spend for\nthreshold calculations."
           ],
           "type": "string",
           "enum": [
             "CREDIT_TYPES_TREATMENT_UNSPECIFIED",
-            "ADD_CREDIT_TYPES_TO_NET",
-            "SUBTRACT_CREDIT_TYPES_FROM_GROSS"
+            "INCLUDE_ALL_CREDITS",
+            "EXCLUDE_ALL_CREDITS"
           ]
         },
         "services": {

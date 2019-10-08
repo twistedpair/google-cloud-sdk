@@ -267,6 +267,70 @@ used to create the tag must be from the same organization.
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Alpha feature.
+Creates an entry. Currently only entries of 'FILESET' type can be created.
+The user should enable the Data Catalog API in the project identified by
+the `parent` parameter (see [Data Catalog Resource Project]
+(/data-catalog/docs/concepts/resource-project) for more information).
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsEntriesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1beta1Entry) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries',
+        http_method=u'POST',
+        method_id=u'datacatalog.projects.locations.entryGroups.entries.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'entryId'],
+        relative_path=u'v1beta1/{+parent}/entries',
+        request_field=u'googleCloudDatacatalogV1beta1Entry',
+        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsEntriesCreateRequest',
+        response_type_name=u'GoogleCloudDatacatalogV1beta1Entry',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Alpha feature.
+Deletes an existing entry. Only entries created through
+CreateEntry
+method can be deleted.
+The user should enable the Data Catalog API in the project identified by
+the `name` parameter (see [Data Catalog Resource Project]
+(/data-catalog/docs/concepts/resource-project) for more information).
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsEntriesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}',
+        http_method=u'DELETE',
+        method_id=u'datacatalog.projects.locations.entryGroups.entries.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}',
+        request_field='',
+        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsEntriesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets an entry.
 
@@ -301,6 +365,8 @@ if the resource exists but does not have a policy set on it.
 
 Supported resources are:
   - Tag templates.
+  - Entries.
+  - Entry groups.
 Note, this method cannot be used to manage policies for BigQuery, Cloud
 Pub/Sub and any external Google Cloud Platform resources synced to Cloud
 Data Catalog.
@@ -308,6 +374,8 @@ Data Catalog.
 Callers must have following Google IAM permission
   - `datacatalog.tagTemplates.getIamPolicy` to get policies on tag
     templates.
+  - `datacatalog.entries.getIamPolicy` to get policies on entries.
+  - `datacatalog.entryGroups.getIamPolicy` to get policies on entry groups.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsEntriesGetIamPolicyRequest) input message
@@ -368,6 +436,8 @@ the `entry.name` parameter (see [Data Catalog Resource Project]
 policy.
 Supported resources are:
   - Tag templates.
+  - Entries.
+  - Entry groups.
 Note, this method cannot be used to manage policies for BigQuery, Cloud
 Pub/Sub and any external Google Cloud Platform resources synced to Cloud
 Data Catalog.
@@ -375,6 +445,8 @@ Data Catalog.
 Callers must have following Google IAM permission
   - `datacatalog.tagTemplates.setIamPolicy` to set policies on tag
     templates.
+  - `datacatalog.entries.setIamPolicy` to set policies on entries.
+  - `datacatalog.entryGroups.setIamPolicy` to set policies on entry groups.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsEntriesSetIamPolicyRequest) input message
@@ -400,6 +472,46 @@ Callers must have following Google IAM permission
         supports_download=False,
     )
 
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns the caller's permissions on a resource.
+If the resource does not exist, an empty set of permissions is returned
+(We don't return a `NOT_FOUND` error).
+
+Supported resources are:
+  - Tag templates.
+  - Entries.
+  - Entry groups.
+Note, this method cannot be used to manage policies for BigQuery, Cloud
+Pub/Sub and any external Google Cloud Platform resources synced to Cloud
+Data Catalog.
+
+A caller is not required to have Google IAM permission to make this
+request.
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsEntriesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:testIamPermissions',
+        http_method=u'POST',
+        method_id=u'datacatalog.projects.locations.entryGroups.entries.testIamPermissions',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1beta1/{+resource}:testIamPermissions',
+        request_field=u'testIamPermissionsRequest',
+        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsEntriesTestIamPermissionsRequest',
+        response_type_name=u'TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsEntryGroupsService(base_api.BaseApiService):
     """Service class for the projects_locations_entryGroups resource."""
 
@@ -410,6 +522,96 @@ Callers must have following Google IAM permission
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Alpha feature.
+Creates an EntryGroup.
+The user should enable the Data Catalog API in the project identified by
+the `parent` parameter (see [Data Catalog Resource Project]
+(/data-catalog/docs/concepts/resource-project) for more information).
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1beta1EntryGroup) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups',
+        http_method=u'POST',
+        method_id=u'datacatalog.projects.locations.entryGroups.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'entryGroupId'],
+        relative_path=u'v1beta1/{+parent}/entryGroups',
+        request_field=u'googleCloudDatacatalogV1beta1EntryGroup',
+        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsCreateRequest',
+        response_type_name=u'GoogleCloudDatacatalogV1beta1EntryGroup',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Alpha feature.
+Deletes an EntryGroup. Only entry groups that do not contain entries can be
+deleted. The user should enable the Data Catalog API in the project
+identified by the `name` parameter (see [Data Catalog Resource Project]
+(/data-catalog/docs/concepts/resource-project) for more information).
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}',
+        http_method=u'DELETE',
+        method_id=u'datacatalog.projects.locations.entryGroups.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}',
+        request_field='',
+        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Alpha feature.
+Gets an EntryGroup.
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1beta1EntryGroup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}',
+        http_method=u'GET',
+        method_id=u'datacatalog.projects.locations.entryGroups.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'readMask'],
+        relative_path=u'v1beta1/{+name}',
+        request_field='',
+        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsGetRequest',
+        response_type_name=u'GoogleCloudDatacatalogV1beta1EntryGroup',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. A `NOT_FOUND` error.
 is returned if the resource does not exist. An empty policy is returned
@@ -417,6 +619,8 @@ if the resource exists but does not have a policy set on it.
 
 Supported resources are:
   - Tag templates.
+  - Entries.
+  - Entry groups.
 Note, this method cannot be used to manage policies for BigQuery, Cloud
 Pub/Sub and any external Google Cloud Platform resources synced to Cloud
 Data Catalog.
@@ -424,6 +628,8 @@ Data Catalog.
 Callers must have following Google IAM permission
   - `datacatalog.tagTemplates.getIamPolicy` to get policies on tag
     templates.
+  - `datacatalog.entries.getIamPolicy` to get policies on entries.
+  - `datacatalog.entryGroups.getIamPolicy` to get policies on entry groups.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsGetIamPolicyRequest) input message
@@ -454,6 +660,8 @@ Callers must have following Google IAM permission
 policy.
 Supported resources are:
   - Tag templates.
+  - Entries.
+  - Entry groups.
 Note, this method cannot be used to manage policies for BigQuery, Cloud
 Pub/Sub and any external Google Cloud Platform resources synced to Cloud
 Data Catalog.
@@ -461,6 +669,8 @@ Data Catalog.
 Callers must have following Google IAM permission
   - `datacatalog.tagTemplates.setIamPolicy` to set policies on tag
     templates.
+  - `datacatalog.entries.setIamPolicy` to set policies on entries.
+  - `datacatalog.entryGroups.setIamPolicy` to set policies on entry groups.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsSetIamPolicyRequest) input message
@@ -483,6 +693,46 @@ Callers must have following Google IAM permission
         request_field=u'setIamPolicyRequest',
         request_type_name=u'DatacatalogProjectsLocationsEntryGroupsSetIamPolicyRequest',
         response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns the caller's permissions on a resource.
+If the resource does not exist, an empty set of permissions is returned
+(We don't return a `NOT_FOUND` error).
+
+Supported resources are:
+  - Tag templates.
+  - Entries.
+  - Entry groups.
+Note, this method cannot be used to manage policies for BigQuery, Cloud
+Pub/Sub and any external Google Cloud Platform resources synced to Cloud
+Data Catalog.
+
+A caller is not required to have Google IAM permission to make this
+request.
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}:testIamPermissions',
+        http_method=u'POST',
+        method_id=u'datacatalog.projects.locations.entryGroups.testIamPermissions',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1beta1/{+resource}:testIamPermissions',
+        request_field=u'testIamPermissionsRequest',
+        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsTestIamPermissionsRequest',
+        response_type_name=u'TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -721,6 +971,8 @@ if the resource exists but does not have a policy set on it.
 
 Supported resources are:
   - Tag templates.
+  - Entries.
+  - Entry groups.
 Note, this method cannot be used to manage policies for BigQuery, Cloud
 Pub/Sub and any external Google Cloud Platform resources synced to Cloud
 Data Catalog.
@@ -728,6 +980,8 @@ Data Catalog.
 Callers must have following Google IAM permission
   - `datacatalog.tagTemplates.getIamPolicy` to get policies on tag
     templates.
+  - `datacatalog.entries.getIamPolicy` to get policies on entries.
+  - `datacatalog.entryGroups.getIamPolicy` to get policies on entry groups.
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesGetIamPolicyRequest) input message
@@ -790,6 +1044,8 @@ the `tag_template.name` parameter (see [Data Catalog Resource Project]
 policy.
 Supported resources are:
   - Tag templates.
+  - Entries.
+  - Entry groups.
 Note, this method cannot be used to manage policies for BigQuery, Cloud
 Pub/Sub and any external Google Cloud Platform resources synced to Cloud
 Data Catalog.
@@ -797,6 +1053,8 @@ Data Catalog.
 Callers must have following Google IAM permission
   - `datacatalog.tagTemplates.setIamPolicy` to set policies on tag
     templates.
+  - `datacatalog.entries.setIamPolicy` to set policies on entries.
+  - `datacatalog.entryGroups.setIamPolicy` to set policies on entry groups.
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesSetIamPolicyRequest) input message
@@ -827,8 +1085,10 @@ Callers must have following Google IAM permission
 If the resource does not exist, an empty set of permissions is returned
 (We don't return a `NOT_FOUND` error).
 
-Supported resource are:
-  - tag templates.
+Supported resources are:
+  - Tag templates.
+  - Entries.
+  - Entry groups.
 Note, this method cannot be used to manage policies for BigQuery, Cloud
 Pub/Sub and any external Google Cloud Platform resources synced to Cloud
 Data Catalog.

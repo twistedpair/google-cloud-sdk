@@ -1407,12 +1407,29 @@ class LogConfigCounterOptions(_messages.Message):
   (though this may be supported in the future).
 
   Fields:
+    customFields: Custom fields.
     field: The field value to attribute.
     metric: The metric to update.
   """
 
-  field = _messages.StringField(1)
-  metric = _messages.StringField(2)
+  customFields = _messages.MessageField('LogConfigCounterOptionsCustomField', 1, repeated=True)
+  field = _messages.StringField(2)
+  metric = _messages.StringField(3)
+
+
+class LogConfigCounterOptionsCustomField(_messages.Message):
+  r"""Custom fields. These can be used to create a counter with arbitrary
+  field/value pairs. See: go/rpcsp-custom-fields.
+
+  Fields:
+    name: Name is the field name.
+    value: Value is the field value. It is important that in contrast to the
+      CounterOptions.field, the value here is a constant that is not derived
+      from the IAMContext.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class LogConfigDataAccessOptions(_messages.Message):

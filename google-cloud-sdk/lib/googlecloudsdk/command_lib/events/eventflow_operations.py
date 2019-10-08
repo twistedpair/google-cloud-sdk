@@ -21,12 +21,19 @@ from __future__ import unicode_literals
 
 import contextlib
 
+from apitools.base.py import exceptions as api_exceptions
+from googlecloudsdk.api_lib.events import custom_resource_definition
 from googlecloudsdk.api_lib.events import metric_names
 from googlecloudsdk.api_lib.events import trigger
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
+from googlecloudsdk.command_lib.events import exceptions
 from googlecloudsdk.core import metrics
-from googlecloudsdk.core import resources
+
+
+_EVENT_SOURCES_LABEL_SELECTOR = 'eventing.knative.dev/source=true'
+
+_CRD_CLIENT_VERSION = 'v1beta1'
 
 
 @contextlib.contextmanager
@@ -49,11 +56,9 @@ def Connect(conn_context):
   # conventions. The One Platform client must be initialized outside of a
   # connection context so that it does not pick up the api_endpoint_overrides
   # values from the connection context.
-  # pylint: disable=protected-access
   op_client = apis.GetClientInstance(
       conn_context.api_name,
       conn_context.api_version)
-  # pylint: enable=protected-access
 
   with conn_context as conn_info:
     # pylint: disable=protected-access
@@ -64,45 +69,82 @@ def Connect(conn_context):
         check_response_func=apis.CheckResponseForApiEnablement()
         if conn_context.supports_one_platform else None,
         http_client=conn_context.HttpClient())
+    # This client is only used to get CRDs because the api group they are
+    # under uses different versioning in k8s
+    crd_client = apis_internal._GetClientInstance(
+        conn_context.api_name,
+        _CRD_CLIENT_VERSION,
+        http_client=conn_context.HttpClient())
     # pylint: enable=protected-access
     yield EventflowOperations(
         client,
-        conn_info.api_name,
-        conn_info.api_version,
         conn_info.region,
+        crd_client,
         op_client)
 
 
 class EventflowOperations(object):
   """Client used by Eventflow to communicate with the actual API."""
 
-  def __init__(self, client, api_name, api_version, region, op_client):
+  def __init__(self, client, region, crd_client, op_client):
     """Inits EventflowOperations with given API clients.
 
     Args:
       client: The API client for interacting with Kubernetes Cloud Run APIs.
-      api_name: str, The name of the Cloud Run API.
-      api_version: str, The version of the Cloud Run API.
       region: str, The region of the control plane if operating against
         hosted Cloud Run, else None.
+      crd_client: The API client for querying for CRDs. Or None if interacting
+        with managed Cloud Run.
       op_client: The API client for interacting with One Platform APIs. Or
         None if interacting with Cloud Run on GKE.
     """
     self._client = client
-    self._registry = resources.REGISTRY.Clone()
-    self._registry.RegisterApiByName(api_name, api_version)
-    self._temporary_build_template_registry = {}
+    self._crd_client = crd_client
     self._op_client = op_client
     self._region = region
 
   @property
-  def _messages_module(self):
+  def messages(self):
     return self._client.MESSAGES_MODULE
 
+  def GetTrigger(self, trigger_ref):
+    """Returns the referenced trigger."""
+    request = self.messages.RunNamespacesTriggersGetRequest(
+        name=trigger_ref.RelativeName())
+    try:
+      with metrics.RecordDuration(metric_names.GET_TRIGGER):
+        response = self._client.namespaces_triggers.Get(request)
+    except api_exceptions.HttpNotFoundError:
+      return None
+    return trigger.Trigger(response, self.messages)
+
   def ListTriggers(self, namespace_ref):
-    messages = self._messages_module
-    request = messages.RunNamespacesTriggersListRequest(
+    """Returns a list of existing triggers in the given namespace."""
+    request = self.messages.RunNamespacesTriggersListRequest(
         parent=namespace_ref.RelativeName())
     with metrics.RecordDuration(metric_names.LIST_TRIGGERS):
       response = self._client.namespaces_triggers.List(request)
-    return [trigger.Trigger(item, messages) for item in response.items]
+    return [trigger.Trigger(item, self.messages) for item in response.items]
+
+  def DeleteTrigger(self, trigger_ref):
+    """Deletes the referenced trigger."""
+    request = self.messages.RunNamespacesTriggersDeleteRequest(
+        name=trigger_ref.RelativeName())
+    try:
+      with metrics.RecordDuration(metric_names.DELETE_TRIGGER):
+        self._client.namespaces_triggers.Delete(request)
+    except api_exceptions.HttpNotFoundError:
+      raise exceptions.TriggerNotFound(
+          'Trigger [{}] not found.'.format(trigger_ref.Name()))
+
+  def ListSourceCustomResourceDefinitions(self):
+    """Returns a list of CRDs for event sources."""
+    messages = self._crd_client.MESSAGES_MODULE
+    request = messages.RunCustomresourcedefinitionsListRequest(
+        labelSelector=_EVENT_SOURCES_LABEL_SELECTOR)
+    with metrics.RecordDuration(metric_names.LIST_SOURCE_CRDS):
+      response = self._crd_client.customresourcedefinitions.List(request)
+    return [
+        custom_resource_definition.SourceCustomResourceDefinition(
+            item, messages) for item in response.items
+    ]

@@ -213,6 +213,27 @@ class DeidentifyDatasetRequest(_messages.Message):
   destinationDataset = _messages.StringField(2)
 
 
+class DeidentifyDicomStoreRequest(_messages.Message):
+  r"""Creates a new DICOM store with sensitive information de-identified.
+
+  Fields:
+    config: De-identify configuration.
+    destinationStore: The name of the DICOM store to create and write the
+      redacted data to. For example, `projects/{project_id}/locations/{locatio
+      n_id}/datasets/{dataset_id}/dicomStores/{dicom_store_id}`.   * The
+      destination dataset must exist.  * The source dataset and destination
+      dataset must both reside in the same    project. De-identifying data
+      across multiple projects is not supported.  * The destination DICOM
+      store must not exist.  * The caller must have the necessary permissions
+      to create the destination    DICOM store.
+    filterConfig: Filter configuration.
+  """
+
+  config = _messages.MessageField('DeidentifyConfig', 1)
+  destinationStore = _messages.StringField(2)
+  filterConfig = _messages.MessageField('DicomFilterConfig', 3)
+
+
 class DeidentifyErrorDetails(_messages.Message):
   r"""Contains the status of the Deidentify operation.
 
@@ -227,6 +248,28 @@ class DeidentifyErrorDetails(_messages.Message):
   failureStoreCount = _messages.IntegerField(2)
   successResourceCount = _messages.IntegerField(3)
   successStoreCount = _messages.IntegerField(4)
+
+
+class DeidentifyFhirStoreRequest(_messages.Message):
+  r"""Creates a new FHIR store with sensitive information de-identified.
+
+  Fields:
+    config: Deidentify configuration.
+    destinationStore: The name of the FHIR store to create and write the
+      redacted data to. For example, `projects/{project_id}/locations/{locatio
+      n_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}`.   * The
+      destination dataset must exist.  * The source dataset and destination
+      dataset must both reside in the same    project. De-identifying data
+      across multiple projects is not supported.  * The destination FHIR store
+      must not exist.  * The caller must have the necessary permissions to
+      create the destination    FHIR store.
+    resourceFilter: A filter specifying the resources to include in the
+      output. If not specified, all resources are included in the output.
+  """
+
+  config = _messages.MessageField('DeidentifyConfig', 1)
+  destinationStore = _messages.StringField(2)
+  resourceFilter = _messages.MessageField('FhirFilter', 3)
 
 
 class DeidentifySummary(_messages.Message):
@@ -296,6 +339,24 @@ class DicomConfig(_messages.Message):
   keepList = _messages.MessageField('TagFilterList', 2)
   removeList = _messages.MessageField('TagFilterList', 3)
   skipIdRedaction = _messages.BooleanField(4)
+
+
+class DicomFilterConfig(_messages.Message):
+  r"""Specifies the filter configuration for DICOM resources.
+
+  Fields:
+    resourcePathsGcsUri: The Cloud Storage location of the filter
+      configuration file. The `gcs_uri` must be in the format
+      `gs://bucket/path/to/object`. The filter configuration file must contain
+      a list of resource paths separated by newline characters (\n or \r\n).
+      Each resource path must be in the format
+      "/studies/{studyUID}[/series/{seriesUID}[/instances/{instanceUID}]]"
+      The Cloud Healthcare API service account must have the
+      `roles/storage.objectViewer` Cloud IAM role for this Cloud Storage
+      location.
+  """
+
+  resourcePathsGcsUri = _messages.StringField(1)
 
 
 class DicomStore(_messages.Message):
@@ -463,6 +524,17 @@ class FhirConfig(_messages.Message):
   fieldMetadataList = _messages.MessageField('FieldMetadata', 1, repeated=True)
 
 
+class FhirFilter(_messages.Message):
+  r"""Filter configuration.
+
+  Fields:
+    resources: List of resources to include in the output. If this list is
+      empty or not specified, all resources are included in the output.
+  """
+
+  resources = _messages.MessageField('Resources', 1)
+
+
 class FhirStore(_messages.Message):
   r"""Represents a FHIR store.
 
@@ -594,6 +666,28 @@ class FieldMetadata(_messages.Message):
 
   action = _messages.EnumField('ActionValueValuesEnum', 1)
   paths = _messages.StringField(2, repeated=True)
+
+
+class GoogleCloudHealthcareV1beta1DeidentifyDeidentifyDicomStoreSummary(_messages.Message):
+  r"""Contains a summary of the DeidentifyDicomStore operation.
+
+  Fields:
+    failureResourceCount: Number of objects that processing failed for.
+    successResourceCount: Number of objects successfully processed.
+  """
+
+  failureResourceCount = _messages.IntegerField(1)
+  successResourceCount = _messages.IntegerField(2)
+
+
+class GoogleCloudHealthcareV1beta1DeidentifyDeidentifyFhirStoreSummary(_messages.Message):
+  r"""Contains a summary of the DeidentifyFhirStore operation.
+
+  Fields:
+    successResourceCount: Number of resources successfully processed.
+  """
+
+  successResourceCount = _messages.IntegerField(1)
 
 
 class GoogleCloudHealthcareV1beta1DicomBigQueryDestination(_messages.Message):
@@ -842,6 +936,22 @@ class HealthcareProjectsLocationsDatasetsDicomStoresCreateRequest(_messages.Mess
   dicomStore = _messages.MessageField('DicomStore', 1)
   dicomStoreId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsDicomStoresDeidentifyRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsDicomStoresDeidentifyRequest
+  object.
+
+  Fields:
+    deidentifyDicomStoreRequest: A DeidentifyDicomStoreRequest resource to be
+      passed as the request body.
+    sourceStore: Source DICOM store resource name. For example, `projects/{pro
+      ject_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores/{dico
+      m_store_id}`.
+  """
+
+  deidentifyDicomStoreRequest = _messages.MessageField('DeidentifyDicomStoreRequest', 1)
+  sourceStore = _messages.StringField(2, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsDicomStoresDeleteRequest(_messages.Message):
@@ -1339,6 +1449,21 @@ class HealthcareProjectsLocationsDatasetsFhirStoresCreateRequest(_messages.Messa
   parent = _messages.StringField(3, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsFhirStoresDeidentifyRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresDeidentifyRequest object.
+
+  Fields:
+    deidentifyFhirStoreRequest: A DeidentifyFhirStoreRequest resource to be
+      passed as the request body.
+    sourceStore: Source FHIR store resource name. For example, `projects/{proj
+      ect_id}/locations/{location_id}/datasets/{dataset_id}/fhirStores/{fhir_s
+      tore_id}`.
+  """
+
+  deidentifyFhirStoreRequest = _messages.MessageField('DeidentifyFhirStoreRequest', 1)
+  sourceStore = _messages.StringField(2, required=True)
+
+
 class HealthcareProjectsLocationsDatasetsFhirStoresDeleteRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresDeleteRequest object.
 
@@ -1473,7 +1598,12 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirHistoryRequest(_messages.
   object.
 
   Fields:
-    _page_token: Same as `page`. Please use either `page` or `_page_token`.
+    _page_token: Used to retrieve the first, previous, next, or last page of
+      resource versions when using pagination. Value should be set to the
+      value of `_page_token` set in next or previous page links' URLs. Next
+      and previous page are returned in the response bundle's links field,
+      where `link.relation` is "previous" or "next".  Omit `_page_token` if no
+      previous request has been made.
     at: Only include resource versions that were current at some point during
       the time period specified in the date time value. The date parameter
       format is yyyy-mm-ddThh:mm:ss[Z|(+|-)hh:mm]  Clients may specify any of
@@ -1482,12 +1612,7 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirHistoryRequest(_messages.
       `_at=2018-12-31T23:59:58Z`
     count: The maximum number of search results on a page. Defaults to 1000.
     name: The name of the resource to retrieve.
-    page: Used to retrieve the first, previous, next, or last page of resource
-      versions when using pagination. Value should be set to the value of
-      `page` set in next or previous page links' URLs. Next and previous page
-      are returned in the response bundle's links field, where `link.relation`
-      is "previous" or "next".  Omit `page` if no previous request has been
-      made.
+    page: DEPRECATED! Use `_page_token`.
     since: Only include resource versions that were created at or after the
       given instant in time. The instant in time uses the format YYYY-MM-
       DDThh:mm:ss.sss+zz:zz (for example 2015-02-07T13:28:17.239+02:00 or
@@ -2945,6 +3070,16 @@ class ReplaceWithInfoTypeConfig(_messages.Message):
   is [PERSON_NAME]." The TRANSFORM action is equivalent to redacting.
   """
 
+
+
+class Resources(_messages.Message):
+  r"""A list of FHIR resources.
+
+  Fields:
+    resources: List of resources IDs. For example, "Patient/1234".
+  """
+
+  resources = _messages.StringField(1, repeated=True)
 
 
 class SchemaConfig(_messages.Message):

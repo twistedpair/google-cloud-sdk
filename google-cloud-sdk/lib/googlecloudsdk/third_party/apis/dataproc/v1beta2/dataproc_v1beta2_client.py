@@ -192,7 +192,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED.
 
       Args:
         request: (DataprocProjectsLocationsAutoscalingPoliciesSetIamPolicyRequest) input message
@@ -472,7 +472,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED.
 
       Args:
         request: (DataprocProjectsLocationsWorkflowTemplatesSetIamPolicyRequest) input message
@@ -708,7 +708,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED.
 
       Args:
         request: (DataprocProjectsRegionsAutoscalingPoliciesSetIamPolicyRequest) input message
@@ -982,7 +982,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED.
 
       Args:
         request: (DataprocProjectsRegionsClustersSetIamPolicyRequest) input message
@@ -1255,7 +1255,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED.
 
       Args:
         request: (DataprocProjectsRegionsJobsSetIamPolicyRequest) input message
@@ -1480,7 +1480,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED.
 
       Args:
         request: (DataprocProjectsRegionsOperationsSetIamPolicyRequest) input message
@@ -1733,7 +1733,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED.
 
       Args:
         request: (DataprocProjectsRegionsWorkflowTemplatesSetIamPolicyRequest) input message

@@ -33,9 +33,23 @@ entry_group:
     help: |
       Entry group of the {resource}.
 
+# TODO(b/124305522): Delete this and just use entry_group
+positional_entry_group:
+  name: entry group
+  collection: datacatalog.projects.locations.entryGroups
+  request_id_field: entryGroupId
+  attributes:
+  - *project
+  - *location
+  - parameter_name: entryGroupsId
+    attribute_name: entry_group
+    help: |
+      Entry group of the {resource}.
+
 entry:
   name: entry
   collection: datacatalog.projects.locations.entryGroups.entries
+  request_id_field: entryId
   disable_auto_completers: true
   attributes:
   - *project
@@ -43,6 +57,20 @@ entry:
   - *entry_group
   - &entry
     parameter_name: entriesId
+    attribute_name: entry
+    help: |
+      Entry of the {resource}.
+
+# TODO(b/141858337): Delete this and just use entry above.
+non_primary_entry:
+  name: entry
+  collection: datacatalog.projects.locations.entryGroups.entries
+  disable_auto_completers: true
+  attributes:
+  - *project
+  - *location
+  - *entry_group
+  - parameter_name: entriesId
     attribute_name: entry
     help: |
       Entry of the {resource}.

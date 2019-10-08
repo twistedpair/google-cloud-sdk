@@ -19,7 +19,16 @@ from __future__ import division
 from __future__ import unicode_literals
 
 # Reserved CSI metric prefix for eventflow
-_EVENTFLOW_PREFIX = 'events_'
+_EVENTS_PREFIX = 'events_'
+
+# Time to get a trigger
+GET_TRIGGER = _EVENTS_PREFIX + 'get_trigger'
 
 # Time to list triggers
-LIST_TRIGGERS = _EVENTFLOW_PREFIX + 'list_triggers'
+LIST_TRIGGERS = _EVENTS_PREFIX + 'list_triggers'
+
+# Time to delete a trigger
+DELETE_TRIGGER = _EVENTS_PREFIX + 'delete_trigger'
+
+# Time to list source CRDs
+LIST_SOURCE_CRDS = _EVENTS_PREFIX + 'list_source_crds'

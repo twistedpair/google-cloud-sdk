@@ -455,10 +455,6 @@
         "virtualMachine": {
           "description": "The virtual machine specification.",
           "$ref": "VirtualMachine"
-        },
-        "defaultContainerRegistryUri": {
-          "description": "The default Docker registry host to fetch images from.  This will be\nprepended to all non-library image names that don't already contain a\nhostname.",
-          "type": "string"
         }
       }
     },
@@ -898,10 +894,6 @@
           "description": "The time at which execution was completed and resources were cleaned up.",
           "type": "string",
           "format": "google-datetime"
-        },
-        "pubSubTopic": {
-          "description": "The name of the Cloud Pub\/Sub topic where notifications of operation status\nchanges are sent.",
-          "type": "string"
         }
       }
     },

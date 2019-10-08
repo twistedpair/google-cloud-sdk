@@ -237,6 +237,7 @@ def AddFeedAssetNamesArgs(parser):
       '--asset-names',
       metavar='ASSET_NAMES',
       type=arg_parsers.ArgList(),
+      default=[],
       help=(
           'A comma-separated list of the full names of the assets to '
           'receive updates. For example: '

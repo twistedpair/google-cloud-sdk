@@ -54,10 +54,13 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_ENTRYGROUPS = (
       'projects.locations.entryGroups',
-      'projects/{projectsId}/locations/{locationsId}/entryGroups/'
-      '{entryGroupsId}',
-      {},
-      [u'projectsId', u'locationsId', u'entryGroupsId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/entryGroups/'
+              '{entryGroupsId}',
+      },
+      [u'name'],
       True
   )
   PROJECTS_LOCATIONS_ENTRYGROUPS_ENTRIES = (

@@ -59,7 +59,15 @@ def Delete(session_ref):
   return client.projects_instances_databases_sessions.Delete(req)
 
 
-def ExecuteSql(session_ref, sql, query_mode, enable_partitioned_dml=False):
+def _GetClientInstance(api_name, api_version, http_timeout_sec=None):
+  client = apis.GetClientInstance(api_name, api_version)
+  if http_timeout_sec is not None:
+    client.http.timeout = http_timeout_sec
+  return client
+
+
+def ExecuteSql(session_ref, sql, query_mode, enable_partitioned_dml=False,
+               http_timeout_sec=None):
   """Execute an SQL command.
 
   Args:
@@ -69,11 +77,13 @@ def ExecuteSql(session_ref, sql, query_mode, enable_partitioned_dml=False):
     query_mode: String, The mode in which to run the query. Must be one of
       'NORMAL', 'PLAN', or 'PROFILE'
     enable_partitioned_dml: Boolean, whether partitioned dml is enabled.
+    http_timeout_sec: int, Maximum time in seconds to wait for the SQL query to
+      complete.
 
   Returns:
     (Repo) The capture repository.
   """
-  client = apis.GetClientInstance('spanner', 'v1')
+  client = _GetClientInstance('spanner', 'v1', http_timeout_sec)
   msgs = apis.GetMessagesModule('spanner', 'v1')
   _RegisterCustomMessageCodec(msgs)
 

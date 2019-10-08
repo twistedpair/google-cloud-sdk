@@ -313,7 +313,7 @@ def CreateMembership(project, membership_id, description,
   """
   client = _MembershipClient()
   messages = client.MESSAGES_MODULE
-  request = messages.GkehubProjectsLocationsGlobalMembershipsCreateRequest(
+  request = messages.GkehubProjectsLocationsMembershipsCreateRequest(
       membership=messages.Membership(description=description),
       parent='projects/{}/locations/global'.format(project),
       membershipId=membership_id,
@@ -323,11 +323,11 @@ def CreateMembership(project, membership_id, description,
         gkeCluster=messages.GkeCluster(resourceLink=gke_cluster_self_link))
     request.membership.endpoint = endpoint
 
-  op = client.projects_locations_global_memberships.Create(request)
+  op = client.projects_locations_memberships.Create(request)
   op_resource = resources.REGISTRY.ParseRelativeName(
       op.name, collection='gkehub.projects.locations.operations')
   return waiter.WaitFor(
-      waiter.CloudOperationPoller(client.projects_locations_global_memberships,
+      waiter.CloudOperationPoller(client.projects_locations_memberships,
                                   client.projects_locations_operations),
       op_resource, 'Waiting for membership to be created')
 
@@ -347,8 +347,8 @@ def GetMembership(name):
   """
 
   client = _MembershipClient()
-  return client.projects_locations_global_memberships.Get(
-      client.MESSAGES_MODULE.GkehubProjectsLocationsGlobalMembershipsGetRequest(
+  return client.projects_locations_memberships.Get(
+      client.MESSAGES_MODULE.GkehubProjectsLocationsMembershipsGetRequest(
           name=name))
 
 
@@ -415,9 +415,9 @@ def DeleteMembership(name):
   """
 
   client = _MembershipClient()
-  op = client.projects_locations_global_memberships.Delete(
+  op = client.projects_locations_memberships.Delete(
       client.MESSAGES_MODULE
-      .GkehubProjectsLocationsGlobalMembershipsDeleteRequest(name=name))
+      .GkehubProjectsLocationsMembershipsDeleteRequest(name=name))
   op_resource = resources.REGISTRY.ParseRelativeName(
       op.name, collection='gkehub.projects.locations.operations')
   waiter.WaitFor(

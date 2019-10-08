@@ -33,6 +33,7 @@ from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import times
 from googlecloudsdk.third_party.appengine.tools import context_util
@@ -198,11 +199,11 @@ def _BuildFileUploadMap(manifest, source_dir, bucket_ref, tmp_dir,
     # For generated files, the relative path is based on the tmp_dir rather
     # than source_dir. If the file is not in the source directory, look in
     # tmp_dir instead.
-    if not os.path.exists(full_path):
+    if not os.path.exists(encoding.Encode(full_path, encoding='utf-8')):
       full_path = os.path.join(tmp_dir, rel_path)
     # Perform this check when creating the upload map, so we catch too-large
     # files that have already been uploaded
-    size = os.path.getsize(full_path)
+    size = os.path.getsize(encoding.Encode(full_path, encoding='utf-8'))
     if max_file_size and size > max_file_size:
       raise LargeFileError(full_path, size, max_file_size)
 

@@ -624,6 +624,25 @@ class ConfigMapVolumeChanges(VolumeChanges):
     return resource.template.volume_mounts.config_maps
 
 
+class NoTrafficChange(ConfigChanger):
+  """Represents the user intent to block traffic for a new revision."""
+
+  def Adjust(self, resource):
+    """Removes LATEST from the services traffic assignments."""
+    if resource.configuration:
+      raise exceptions.UnsupportedOperationError(
+          'This service is using an old version of Cloud Run for Anthos '
+          'that does not support traffic features. Please upgrade to 0.8 '
+          'or later.')
+
+    if not resource.generation:
+      raise exceptions.ConfigurationError(
+          '--no-traffic not supported when creating a new service.')
+
+    resource.traffic.ZeroLatestTraffic(resource.status.latestReadyRevisionName)
+    return resource
+
+
 class TrafficChanges(ConfigChanger):
   """Represents the user intent to change a services traffic assignments."""
 

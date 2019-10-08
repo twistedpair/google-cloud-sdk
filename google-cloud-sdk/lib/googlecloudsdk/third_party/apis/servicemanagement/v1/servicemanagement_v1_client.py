@@ -354,6 +354,8 @@ To search across all services, specify {service_name} as '-'.
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+
       Args:
         request: (ServicemanagementServicesConsumersSetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -994,6 +996,8 @@ Operation<response: ManagedService>
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
+
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
 
       Args:
         request: (ServicemanagementServicesSetIamPolicyRequest) input message

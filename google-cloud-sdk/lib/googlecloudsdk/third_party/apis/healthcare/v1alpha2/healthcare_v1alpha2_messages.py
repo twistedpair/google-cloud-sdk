@@ -503,6 +503,99 @@ class ErrorDetail(_messages.Message):
   resource = _messages.StringField(2)
 
 
+class EvaluateAnnotationStoreRequest(_messages.Message):
+  r"""Request to evaluate an Annotation store against a ground truth
+  [Annotation store].
+
+  Fields:
+    bigqueryDestination: The BigQuery table where the server writes the
+      output. BigQueryDestination requires the `roles/bigquery.dataEditor` and
+      `roles/bigquery.jobUser` Cloud IAM roles.
+    goldenStore: The Annotation store to use as ground truth, in the format `p
+      rojects/{project_id}/locations/{location_id}/datasets/{dataset_id}/annot
+      ationStores/{annotation_store_id}`.
+  """
+
+  bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1alpha2AnnotationBigQueryDestination', 1)
+  goldenStore = _messages.StringField(2)
+
+
+class EvaluateAnnotationStoreResponse(_messages.Message):
+  r"""Response for successful Annotation store evaluation operations. This
+  structure is included in the response upon operation completion.
+
+  Fields:
+    evalStore: The evaluated Annotation store in the format `projects/{project
+      _id}/locations/{location_id}/datasets/{dataset_id}/annotationStores/{ann
+      otation_store_id}`.
+    goldenCount: The number of Annotations in the ground truth Annotation
+      store successfully processed.
+    goldenStore: The ground truth Annotation store in the format `projects/{pr
+      oject_id}/locations/{location_id}/datasets/{dataset_id}/annotationStores
+      /{annotation_store_id}`.
+    matchedCount: The number of Annotations in the eval store that match with
+      corresponding annotations in the ground truth Annotation store. Two
+      matched annotations both annotate the same resource defined in
+      AnnotationSource.
+  """
+
+  evalStore = _messages.StringField(1)
+  goldenCount = _messages.IntegerField(2)
+  goldenStore = _messages.StringField(3)
+  matchedCount = _messages.IntegerField(4)
+
+
+class ExportAnnotationsErrorDetails(_messages.Message):
+  r"""Response for failed annotation export operations. This structure is
+  included in the details field of the error upon operation completion.
+
+  Fields:
+    annotationStore: The annotation_store used for the export operation, in
+      the format `projects/{project_id}/locations/{location_id}/datasets/{data
+      set_id}/annotationStores/{annotation_store_id}`.
+    errorCount: The number of annotations that had errors.
+    processedAnnotationCount: The total number of annotations included in the
+      source data. This is the sum of the success and error counts.
+    successCount: The number of annotations successfully exported.
+  """
+
+  annotationStore = _messages.StringField(1)
+  errorCount = _messages.IntegerField(2)
+  processedAnnotationCount = _messages.IntegerField(3)
+  successCount = _messages.IntegerField(4)
+
+
+class ExportAnnotationsRequest(_messages.Message):
+  r"""Request to export Annotations. The export operation is not atomic. If a
+  failure occurs, any annotations already imported are not removed.
+
+  Fields:
+    bigqueryDestination: The BigQuery output destination, which requires two
+      IAM roles:   `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`.
+    gcsDestination: The Cloud Storage destination, which requires the
+      `roles/storage.objectAdmin` Cloud IAM role.
+  """
+
+  bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1alpha2AnnotationBigQueryDestination', 1)
+  gcsDestination = _messages.MessageField('GoogleCloudHealthcareV1alpha2AnnotationGcsDestination', 2)
+
+
+class ExportAnnotationsResponse(_messages.Message):
+  r"""Response for successful annotation export operations. This structure is
+  included in response upon operation completion.
+
+  Fields:
+    annotationStore: The annotation_store used for the export operation, in
+      the format `projects/{project_id}/locations/{location_id}/datasets/{data
+      set_id}/annotationStores/{annotation_store_id}`.
+    processedAnnotationCount: The total number of annotations successfully
+      exported.
+  """
+
+  annotationStore = _messages.StringField(1)
+  processedAnnotationCount = _messages.IntegerField(2)
+
+
 class ExportDicomDataRequest(_messages.Message):
   r"""Exports data from the specified DICOM store. If a given resource, such
   as a DICOM object with the same SOPInstance UID, already exists in the
@@ -772,6 +865,74 @@ class GetPolicyOptions(_messages.Message):
   """
 
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudHealthcareV1alpha2AnnotationBigQueryDestination(_messages.Message):
+  r"""The BigQuery table for export.
+
+  Enums:
+    SchemaTypeValueValuesEnum: Specifies the schema format to export.
+
+  Fields:
+    force: If the destination table already exists and this flag is `TRUE`,
+      the table is overwritten by the contents of the input store. If the flag
+      is not set and the destination table already exists, the export call
+      returns an error.
+    schemaType: Specifies the schema format to export.
+    tableUri: BigQuery URI to a table, up to 2000 characters long, must be of
+      the form bq://projectId.bqDatasetId.tableId.
+  """
+
+  class SchemaTypeValueValuesEnum(_messages.Enum):
+    r"""Specifies the schema format to export.
+
+    Values:
+      SCHEMA_TYPE_UNSPECIFIED: Same as SIMPLE.
+      SIMPLE: A flatterned version of Annotation.
+    """
+    SCHEMA_TYPE_UNSPECIFIED = 0
+    SIMPLE = 1
+
+  force = _messages.BooleanField(1)
+  schemaType = _messages.EnumField('SchemaTypeValueValuesEnum', 2)
+  tableUri = _messages.StringField(3)
+
+
+class GoogleCloudHealthcareV1alpha2AnnotationGcsDestination(_messages.Message):
+  r"""The Cloud Storage location for export.
+
+  Fields:
+    uriPrefix: The Cloud Storage destination to export to. URI for a Cloud
+      Storage directory where the server writes result files, in the format
+      `gs://{bucket-id}/{path/to/destination/dir}`. If there is no trailing
+      slash, the service appends one when composing the object path. The user
+      is responsible for creating the Cloud Storage bucket referenced in
+      `uri_prefix`.
+  """
+
+  uriPrefix = _messages.StringField(1)
+
+
+class GoogleCloudHealthcareV1alpha2AnnotationGcsSource(_messages.Message):
+  r"""Specifies the configuration for importing data from Cloud Storage.
+
+  Fields:
+    uri: Points to a Cloud Storage URI containing file(s) with content only.
+      The URI must be in the following format: `gs://{bucket_id}/{object_id}`.
+      The URI can include wildcards in `object_id` and thus identify multiple
+      files. Supported wildcards:  '*' to match 0 or more non-separator
+      characters  '**' to match 0 or more characters (including separators).
+      Must be used  at       the end of a path and with no other wildcards in
+      the       path. Can also be used with a file extension (such as .dcm),
+      which       imports all files with the extension in the specified
+      directory and       its sub-directories. For example,       `gs://my-
+      bucket/my-directory/**.json` imports all files with .json
+      extensions in `my-directory/` and its sub-directories.  '?' to match 1
+      character All other URI formats are invalid. Files matching the wildcard
+      are expected to contain content only, no metadata.
+  """
+
+  uri = _messages.StringField(1)
 
 
 class GoogleCloudHealthcareV1alpha2DicomBigQueryDestination(_messages.Message):
@@ -1087,6 +1248,38 @@ class HealthcareProjectsLocationsDatasetsAnnotationStoresDeleteRequest(_messages
   name = _messages.StringField(1, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsAnnotationStoresEvaluateRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsAnnotationStoresEvaluateRequest
+  object.
+
+  Fields:
+    evalStore: The Annotation store to compare against `golden_store`, in the
+      format `projects/{project_id}/locations/{location_id}/datasets/{dataset_
+      id}/annotationStores/{annotation_store_id}`.
+    evaluateAnnotationStoreRequest: A EvaluateAnnotationStoreRequest resource
+      to be passed as the request body.
+  """
+
+  evalStore = _messages.StringField(1, required=True)
+  evaluateAnnotationStoreRequest = _messages.MessageField('EvaluateAnnotationStoreRequest', 2)
+
+
+class HealthcareProjectsLocationsDatasetsAnnotationStoresExportRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsAnnotationStoresExportRequest
+  object.
+
+  Fields:
+    annotationStore: The Annotation store name to export annotations to, in
+      the format `projects/{project_id}/locations/{location_id}/datasets/{data
+      set_id}/annotationStores/{annotation_store_id}`.
+    exportAnnotationsRequest: A ExportAnnotationsRequest resource to be passed
+      as the request body.
+  """
+
+  annotationStore = _messages.StringField(1, required=True)
+  exportAnnotationsRequest = _messages.MessageField('ExportAnnotationsRequest', 2)
+
+
 class HealthcareProjectsLocationsDatasetsAnnotationStoresGetIamPolicyRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsAnnotationStoresGetIamPolicyRequest
   object.
@@ -1111,6 +1304,22 @@ class HealthcareProjectsLocationsDatasetsAnnotationStoresGetRequest(_messages.Me
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsAnnotationStoresImportRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsAnnotationStoresImportRequest
+  object.
+
+  Fields:
+    annotationStore: The name of the Annotation store to which the server
+      imports annotations, in the format `projects/{project_id}/locations/{loc
+      ation_id}/datasets/{dataset_id}/annotationStores/{annotation_store_id}`.
+    importAnnotationsRequest: A ImportAnnotationsRequest resource to be passed
+      as the request body.
+  """
+
+  annotationStore = _messages.StringField(1, required=True)
+  importAnnotationsRequest = _messages.MessageField('ImportAnnotationsRequest', 2)
 
 
 class HealthcareProjectsLocationsDatasetsAnnotationStoresListRequest(_messages.Message):
@@ -1892,12 +2101,7 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirHistoryRequest(_messages.
       `_at=2018-12-31T23:59:58Z`
     count: The maximum number of search results on a page. Defaults to 1000.
     name: The name of the resource to retrieve.
-    page: Used to retrieve the first, previous, next, or last page of resource
-      versions when using pagination. Value should be set to the value of
-      `page` set in next or previous page links' URLs. Next and previous page
-      are returned in the response bundle's links field, where `link.relation`
-      is "previous" or "next".  Omit `page` if no previous request has been
-      made.
+    page: DEPRECATED! Use `_page_token`.
     since: Only include resource versions that were created at or after the
       given instant in time. The instant in time uses the format YYYY-MM-
       DDThh:mm:ss.sss+zz:zz (for example 2015-02-07T13:28:17.239+02:00 or
@@ -2720,6 +2924,70 @@ class ImageConfig(_messages.Message):
     REDACT_NO_TEXT = 3
 
   textRedactionMode = _messages.EnumField('TextRedactionModeValueValuesEnum', 1)
+
+
+class ImportAnnotationsErrorDetails(_messages.Message):
+  r"""Final response of importing Annotations in partial or total failure
+  case. This structure is included in the details field of the error. It is
+  only included when the operation finishes.
+
+  Fields:
+    annotationStore: The annotation_store that the annotations were imported
+      to. The name is in the format `projects/{project_id}/locations/{location
+      _id}/datasets/{dataset_id}/annotationStores/{annotation_store_id}`.
+    errorCount: The number of annotations that had errors.
+    inputSize: The total number of annotations included in the source data.
+      This is the sum of the success and error counts.
+    successCount: The number of annotations that have been imported.
+  """
+
+  annotationStore = _messages.StringField(1)
+  errorCount = _messages.IntegerField(2)
+  inputSize = _messages.IntegerField(3)
+  successCount = _messages.IntegerField(4)
+
+
+class ImportAnnotationsRequest(_messages.Message):
+  r"""Request to import Annotations. The Annotations to be imported must have
+  client-supplied resource names which indicate the annotation resource. The
+  import operation is not atomic. If a failure occurs, any annotations already
+  imported are not removed.
+
+  Fields:
+    gcsSource: The Annotation must be provided in JSON format of the
+      Annotation. For example, an annotation might look like the following:
+      ```json {   "annotation_source": {     "cloud_healthcare_source": {
+      "name":       "projects/test_project/locations/test_location/datasets/te
+      st_dataset/fhirStores/test_fhir_store/resources/test_type/test_id"     }
+      },   "text_annotation": {     "details": {
+      "patient/text/div/value": {         "findings": [           {
+      "info_type": "PERSON_NAME",             "start": "4",             "end":
+      "12",             "quote": "John Doe",           },           {
+      "info_type": "DATE",             "start": "37",             "end": "47",
+      "quote": "1900-12-24",           }         ]       },
+      "patient/birth_date/value_us": {         "findings": [           {
+      "info_type": "DATE",             "start": "0",             "end": "10",
+      "quote": "1900-12-24",           }         ]       }     }   } } ```
+      Each file consists of exactly one annotation.
+  """
+
+  gcsSource = _messages.MessageField('GoogleCloudHealthcareV1alpha2AnnotationGcsSource', 1)
+
+
+class ImportAnnotationsResponse(_messages.Message):
+  r"""Final response of importing Annotations in successful case. This
+  structure is included in the response. It is only included when the
+  operation finishes.
+
+  Fields:
+    annotationStore: The annotation_store that the annotations were imported
+      to. The name is in the format `projects/{project_id}/locations/{location
+      _id}/datasets/{dataset_id}/annotationStores/{annotation_store_id}`.
+    inputSize: The total number of successfully imported annotations.
+  """
+
+  annotationStore = _messages.StringField(1)
+  inputSize = _messages.IntegerField(2)
 
 
 class ImportDicomDataErrorDetails(_messages.Message):

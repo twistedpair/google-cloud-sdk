@@ -17,7 +17,7 @@
 import enum
 
 
-BASE_URL = 'https://storage.googleapis.com/storage/v1/'
+BASE_URL = 'https://www.googleapis.com/storage/v1/'
 DOCS_URL = 'https://developers.google.com/storage/docs/json_api/'
 
 

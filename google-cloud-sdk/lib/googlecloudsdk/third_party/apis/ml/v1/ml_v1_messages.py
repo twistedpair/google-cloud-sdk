@@ -75,7 +75,8 @@ class GoogleApiHttpBody(_messages.Message):
 
 
 class GoogleCloudMlV1AcceleratorConfig(_messages.Message):
-  r"""Represents a hardware accelerator request config.
+  r"""Represents a hardware accelerator request config. Note that the
+  AcceleratorConfig could be used in both Jobs and Versions.
 
   Enums:
     TypeValueValuesEnum: The type of accelerator to use.

@@ -80,6 +80,13 @@ class NoSdkRootError(StagingCommandNotFoundError):
         'No SDK root could be found. Please check your installation.')
 
 
+class NoMainClassError(exceptions.Error):
+
+  def __init__(self):
+    super(NoMainClassError, self).__init__(
+        'Invalid jar file: it does not contain a Main-Class Manifest entry.')
+
+
 class StagingCommandFailedError(exceptions.Error):
 
   def __init__(self, args, return_code, output_message):
@@ -228,6 +235,9 @@ class CreateJava11YamlCommand(_Command):
         private=True)
     manifest = jarfile.ReadManifest(jar_file)
     if manifest:
+      main_entry = manifest.main_section.get('Main-Class')
+      if main_entry is None:
+        raise NoMainClassError()
       classpath_entry = manifest.main_section.get('Class-Path')
       if classpath_entry:
         libs = classpath_entry.split()

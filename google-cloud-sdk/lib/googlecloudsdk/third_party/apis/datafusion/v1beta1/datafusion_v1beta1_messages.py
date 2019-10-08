@@ -312,12 +312,29 @@ class CounterOptions(_messages.Message):
   support multiple field names (though this may be supported in the future).
 
   Fields:
+    customFields: Custom fields.
     field: The field value to attribute.
     metric: The metric to update.
   """
 
-  field = _messages.StringField(1)
-  metric = _messages.StringField(2)
+  customFields = _messages.MessageField('CustomField', 1, repeated=True)
+  field = _messages.StringField(2)
+  metric = _messages.StringField(3)
+
+
+class CustomField(_messages.Message):
+  r"""Custom fields. These can be used to create a counter with arbitrary
+  field/value pairs. See: go/rpcsp-custom-fields.
+
+  Fields:
+    name: Name is the field name.
+    value: Value is the field value. It is important that in contrast to the
+      CounterOptions.field, the value here is a constant that is not derived
+      from the IAMContext.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class DataAccessOptions(_messages.Message):
@@ -687,6 +704,7 @@ class Instance(_messages.Message):
       RESTARTING: Instance is being restarted
       UPDATING: Instance is being updated on customer request
       AUTO_UPDATING: Instance is being auto-updated
+      AUTO_UPGRADING: Instance is being auto-upgraded
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -697,6 +715,7 @@ class Instance(_messages.Message):
     RESTARTING = 6
     UPDATING = 7
     AUTO_UPDATING = 8
+    AUTO_UPGRADING = 9
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Required. Instance type.

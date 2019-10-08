@@ -352,6 +352,20 @@ class TrafficTargets(collections.MutableMapping):
     del self._m[:]
     self._m.extend(new_targets)
 
+  def ZeroLatestTraffic(self, latest_ready_revision_name):
+    """Reasign traffic form LATEST to the cuurent latest revision."""
+    targets = {GetKey(target): target for target in self._m}
+    if LATEST_REVISION_KEY in targets and targets[LATEST_REVISION_KEY].percent:
+      latest = targets.pop(LATEST_REVISION_KEY)
+      if latest_ready_revision_name in targets:
+        targets[latest_ready_revision_name].percent += latest.percent
+      else:
+        targets[latest_ready_revision_name] = NewTrafficTarget(
+            self._messages, latest_ready_revision_name, latest.percent)
+      sorted_targets = [targets[k] for k in sorted(targets, key=SortKeyFromKey)]
+      del self._m[:]
+      self._m.extend(sorted_targets)
+
 # Human readable indicator for a missing traffic percentage.
 _MISSING_PERCENT = '-'
 

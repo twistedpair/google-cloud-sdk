@@ -39,6 +39,7 @@ from googlecloudsdk.command_lib.util import glob
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 
 import six
@@ -194,7 +195,7 @@ class FileChooser(object):
 
   def _RaiseOnSymlinkLoop(self, full_path):
     """Raise SymlinkLoopError if the given path is a symlink loop."""
-    if not os.path.islink(full_path):
+    if not os.path.islink(encoding.Encode(full_path, encoding='utf-8')):
       return
 
     # Does it refer to itself somehow?
@@ -228,8 +229,11 @@ class FileChooser(object):
       SymlinkLoopError: if there is a symlink referring to its own containing
       dir or itself.
     """
-    for dirpath, dirnames, filenames in os.walk(
-        six.text_type(upload_directory), followlinks=True):
+    for dirpath, orig_dirnames, filenames in os.walk(
+        six.ensure_str(upload_directory), followlinks=True):
+      dirpath = encoding.Decode(dirpath)
+      dirnames = [encoding.Decode(dirname) for dirname in orig_dirnames]
+      filenames = [encoding.Decode(filename) for filename in filenames]
       if dirpath == upload_directory:
         relpath = ''
       else:
@@ -239,7 +243,7 @@ class FileChooser(object):
         self._RaiseOnSymlinkLoop(os.path.join(dirpath, filename))
         if self.IsIncluded(file_relpath):
           yield file_relpath
-      for dirname in dirnames[:]:  # make a copy since we modify the original
+      for dirname in dirnames:  # make a copy since we modify the original
         file_relpath = os.path.join(relpath, dirname)
         full_path = os.path.join(dirpath, dirname)
         if self.IsIncluded(file_relpath, is_dir=True):
@@ -248,7 +252,7 @@ class FileChooser(object):
             yield file_relpath
         else:
           # Don't bother recursing into skipped directories
-          dirnames.remove(dirname)
+          orig_dirnames.remove(dirname)
 
   @classmethod
   def FromString(cls, text, recurse=0, dirname=None):

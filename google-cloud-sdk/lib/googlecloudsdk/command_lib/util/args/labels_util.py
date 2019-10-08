@@ -121,8 +121,9 @@ def GetCreateLabelsFlag(extra_message='', labels_name='labels',
     format_help.append(_KEY_FORMAT_HELP)
   if validate_values:
     format_help.append(_VALUE_FORMAT_HELP)
-  help_parts = ['List of label KEY=VALUE pairs to add.',
-                ' '.join(format_help)]
+  help_parts = ['List of label KEY=VALUE pairs to add.']
+  if format_help:
+    help_parts.append(' '.join(format_help))
   if extra_message:
     help_parts.append(extra_message)
 
@@ -166,8 +167,9 @@ def GetUpdateLabelsFlag(extra_message, labels_name='labels',
     format_help.append(_VALUE_FORMAT_HELP)
   help_parts = [
       ('List of label KEY=VALUE pairs to update. If a label exists its value '
-       'is modified, otherwise a new label is created.'),
-      ' '.join(format_help)]
+       'is modified, otherwise a new label is created.')]
+  if format_help:
+    help_parts.append(' '.join(format_help))
   if extra_message:
     help_parts.append(extra_message)
 

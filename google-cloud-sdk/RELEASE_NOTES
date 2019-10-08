@@ -5,6 +5,90 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 266.0.0 (2019-10-08)
+
+### AI Platform
+
+* Promoted `--accelerator` in `gcloud ai-platform versions create` to beta.
+
+### App Engine
+
+* Loosen validation for Go main package paths. Hyphens and other characters are now valid.
+* Added error checking when a deployed jar does not contain a Main-Class manifest entry.
+
+
+### Cloud Build
+
+*   Promoted `gcloud builds triggers` command group to beta.
+
+### Cloud Data Catalog
+
+* Added `gcloud beta data-catalog entry-groups` command group.
+* Added `create` and `delete` commands to `gcloud beta data-catalog entries`.
+
+### Cloud Dataproc
+
+* Added `realm` field to the file specified by `--kerberos-config-file`,
+applicable to the following commands:
+    * `gcloud dataproc clusters create`
+    * `gcloud dataproc workflow-templates set-managed-cluster`
+    * `gcloud beta dataproc clusters create`
+    * `gcloud beta dataproc workflow-templates set-managed-cluster`
+
+### Cloud Functions
+
+* Promote `--vpc-connector` in functions deploy to GA.
+
+### Cloud Run
+
+* Made `routes` and `configurations` command groups hidden.
+* Changed the descriptions of the platforms for Cloud Run to match current
+  product names and functionality.
+
+### Cloud Spanner
+
+* Added `--timeout` flag to `gcloud spanner databases execute-sql` to support
+  long-running requests.
+
+### Cloud Storage
+
+* 
+* Updated gsutil component to 4.44.
+
+### Compute Engine
+
+* Promoted `--networks` flag of `compute backend-services create` to beta.
+* Promoted 'SHARED_LOADBALANCER_VIP' option of  `--purpose` flag of
+  `gcloud beta compute addresses create` to beta.
+
+### Kubernetes Engine
+
+*   Added the following flags to `gcloud beta container clusters create` and
+    `gcloud beta container clusters update` for specifying more flexible
+    maintenance windows:
+    *   `--maintenance-window-start`
+    *   `--maintenance-window-end`
+    *   `--maintenance-window-recurrence`
+*   Added the following flags to `gcloud beta container clusters update` for
+    specifying exclusions to maintenance windows:
+    *   `--add-maintenance-exclusion-name`
+    *   `--add-maintenance-exclusion-start`
+    *   `--add-maintenance-exclusion-end`
+*   Added the following flags to `gcloud beta container clusters update` for
+    removing maintenance windows and exclusions:
+    *   `--clear-maintenance-window`
+    *   `--remove-maintenance-exclusion`
+*   Promoted `--enable-binauthz` flag of `gcloud container clusters create` to
+    GA.
+*   Added `--node-locations` flag to `gcloud container create node-pool` and
+    `gcloud container update node-pool` commands. This flag specifies the
+    location(s) where nodes will be hosted when the node pool has been created
+    or updated.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 265.0.0 (2019-10-01)
 
 ### Cloud SDK

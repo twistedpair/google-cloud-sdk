@@ -1086,7 +1086,7 @@ class Step(_messages.Message):
   xml logs and returns a TestExecutionStep with updated TestResult(s). - user
   update the status of TestExecutionStep with id 100 to COMPLETE  A Step can
   be updated until its state is set to COMPLETE at which points it becomes
-  immutable.  Next tag: 25
+  immutable.  Next tag: 27
 
   Enums:
     StateValueValuesEnum: The initial state is IN_PROGRESS. The only legal

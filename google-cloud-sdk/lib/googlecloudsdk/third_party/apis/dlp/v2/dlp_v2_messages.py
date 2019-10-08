@@ -32,19 +32,22 @@ class DlpInfoTypesListRequest(_messages.Message):
   location = _messages.StringField(3)
 
 
-class DlpLocationsInfoTypesRequest(_messages.Message):
-  r"""A DlpLocationsInfoTypesRequest object.
+class DlpLocationsInfoTypesListRequest(_messages.Message):
+  r"""A DlpLocationsInfoTypesListRequest object.
 
   Fields:
-    googlePrivacyDlpV2ListInfoTypesRequest: A
-      GooglePrivacyDlpV2ListInfoTypesRequest resource to be passed as the
-      request body.
+    filter: Optional filter to only return infoTypes supported by certain
+      parts of the API. Defaults to supported_by=INSPECT.
+    languageCode: Optional BCP-47 language code for localized infoType
+      friendly names. If omitted, or if localized strings are not available,
+      en-US strings will be returned.
     location: The geographic location to list info types. Reserved for future
       extensions.
   """
 
-  googlePrivacyDlpV2ListInfoTypesRequest = _messages.MessageField('GooglePrivacyDlpV2ListInfoTypesRequest', 1)
-  location = _messages.StringField(2, required=True)
+  filter = _messages.StringField(1)
+  languageCode = _messages.StringField(2)
+  location = _messages.StringField(3, required=True)
 
 
 class DlpOrganizationsDeidentifyTemplatesCreateRequest(_messages.Message):
@@ -3269,21 +3272,6 @@ class GooglePrivacyDlpV2ListDlpJobsResponse(_messages.Message):
 
   jobs = _messages.MessageField('GooglePrivacyDlpV2DlpJob', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
-
-
-class GooglePrivacyDlpV2ListInfoTypesRequest(_messages.Message):
-  r"""Request for the list of infoTypes.
-
-  Fields:
-    filter: Optional filter to only return infoTypes supported by certain
-      parts of the API. Defaults to supported_by=INSPECT.
-    languageCode: Optional BCP-47 language code for localized infoType
-      friendly names. If omitted, or if localized strings are not available,
-      en-US strings will be returned.
-  """
-
-  filter = _messages.StringField(1)
-  languageCode = _messages.StringField(2)
 
 
 class GooglePrivacyDlpV2ListInfoTypesResponse(_messages.Message):

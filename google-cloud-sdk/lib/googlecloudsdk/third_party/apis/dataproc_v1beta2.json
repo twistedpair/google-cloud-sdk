@@ -537,7 +537,7 @@
           "$ref": "ManagedGroupConfig"
         },
         "accelerators": {
-          "description": "Optional. The Compute Engine accelerator configuration for these instances.Beta Feature: This feature is still under development. It may be changed before final release.",
+          "description": "Optional. The Compute Engine accelerator configuration for these instances.",
           "type": "array",
           "items": {
             "$ref": "AcceleratorConfig"
@@ -2421,7 +2421,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy."
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy.Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED"
                 },
                 "getIamPolicy": {
                   "id": "dataproc.projects.regions.operations.getIamPolicy",
@@ -2682,7 +2682,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy."
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy.Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED"
                 },
                 "getIamPolicy": {
                   "id": "dataproc.projects.regions.autoscalingPolicies.getIamPolicy",
@@ -3168,7 +3168,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy."
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy.Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED"
                 },
                 "getIamPolicy": {
                   "id": "dataproc.projects.regions.clusters.getIamPolicy",
@@ -3547,7 +3547,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy."
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy.Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED"
                 },
                 "getIamPolicy": {
                   "id": "dataproc.projects.regions.jobs.getIamPolicy",
@@ -3886,7 +3886,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy."
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy.Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED"
                 },
                 "getIamPolicy": {
                   "id": "dataproc.projects.regions.workflowTemplates.getIamPolicy",
@@ -4151,7 +4151,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy."
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy.Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED"
                 },
                 "getIamPolicy": {
                   "id": "dataproc.projects.locations.autoscalingPolicies.getIamPolicy",
@@ -4490,7 +4490,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy."
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy.Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED"
                 },
                 "getIamPolicy": {
                   "id": "dataproc.projects.locations.workflowTemplates.getIamPolicy",

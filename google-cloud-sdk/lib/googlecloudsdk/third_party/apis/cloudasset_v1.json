@@ -997,7 +997,7 @@
               "type": "string"
             },
             "contentType": {
-              "description": "Required. The content type.",
+              "description": "Optional. The content type.",
               "location": "query",
               "type": "string",
               "enum": [

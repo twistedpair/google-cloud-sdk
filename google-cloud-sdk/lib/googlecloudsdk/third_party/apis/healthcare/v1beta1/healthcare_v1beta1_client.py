@@ -586,6 +586,43 @@ http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_10.5.
         supports_download=False,
     )
 
+    def Deidentify(self, request, global_params=None):
+      r"""Creates a new DICOM store containing de-identified data from the source.
+store. The metadata field type
+is OperationMetadata.
+If the request is successful, the
+response field type is
+DeidentifyDicomStoreSummary. If errors occur,
+error
+details field type is
+DeidentifyErrorDetails.
+Errors are also logged to Stackdriver
+(see [Viewing logs](/healthcare/docs/how-tos/stackdriver-logging)).
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsDicomStoresDeidentifyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Deidentify')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Deidentify.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}:deidentify',
+        http_method=u'POST',
+        method_id=u'healthcare.projects.locations.datasets.dicomStores.deidentify',
+        ordered_params=[u'sourceStore'],
+        path_params=[u'sourceStore'],
+        query_params=[],
+        relative_path=u'v1beta1/{+sourceStore}:deidentify',
+        request_field=u'deidentifyDicomStoreRequest',
+        request_type_name=u'HealthcareProjectsLocationsDatasetsDicomStoresDeidentifyRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified DICOM store and removes all images that are contained.
 within it.
@@ -876,6 +913,8 @@ http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_10.6.
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+
       Args:
         request: (HealthcareProjectsLocationsDatasetsDicomStoresSetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -981,9 +1020,15 @@ Implements the FHIR extended operation
 [Observation-lastn](http://hl7.org/implement/standards/fhir/STU3/observation-operations.html#lastn).
 
 Search terms are provided as query parameters following the same pattern as
-the search method. This operation accepts an additional
-query parameter `max`, which specifies N, the maximum number of
-Observations to return from each group, with a default of 1.
+the search method. The following search parameters must
+be provided
+    - `subject` or `patient` to specify a subject for the Observation.
+    - `code`, `category` or any of the composite parameters that include
+      `code`.
+Any other valid Observation search parameters can also be provided. This
+operation accepts an additional query parameter `max`, which specifies N,
+the maximum number of Observations to return from each group, with a
+default of 1.
 
 On success, the response body will contain a JSON-encoded representation
 of a `Bundle` resource of type `searchset`, containing the results of the
@@ -1721,6 +1766,43 @@ GCP error might be returned instead.
         supports_download=False,
     )
 
+    def Deidentify(self, request, global_params=None):
+      r"""Creates a new FHIR store containing de-identified data from the source.
+store. The metadata field type
+is OperationMetadata.
+If the request is successful, the
+response field type is
+DeidentifyFhirStoreSummary. If errors occur,
+error
+details field type is
+DeidentifyErrorDetails.
+Errors are also logged to Stackdriver
+(see [Viewing logs](/healthcare/docs/how-tos/stackdriver-logging)).
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsFhirStoresDeidentifyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Deidentify')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Deidentify.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:deidentify',
+        http_method=u'POST',
+        method_id=u'healthcare.projects.locations.datasets.fhirStores.deidentify',
+        ordered_params=[u'sourceStore'],
+        path_params=[u'sourceStore'],
+        query_params=[],
+        relative_path=u'v1beta1/{+sourceStore}:deidentify',
+        request_field=u'deidentifyFhirStoreRequest',
+        request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresDeidentifyRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified FHIR store and removes all resources within it.
 
@@ -1998,6 +2080,8 @@ operation is OperationMetadata.
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
+
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresSetIamPolicyRequest) input message
@@ -2420,6 +2504,8 @@ set.
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+
       Args:
         request: (HealthcareProjectsLocationsDatasetsHl7V2StoresSetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -2603,6 +2689,7 @@ If the request is successful, the
 response field type is
 DeidentifySummary.
 If errors occur,
+error
 details field type is
 DeidentifyErrorDetails.
 Errors are also logged to Stackdriver Logging. For more information,
@@ -2774,6 +2861,8 @@ set.
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
+
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsSetIamPolicyRequest) input message

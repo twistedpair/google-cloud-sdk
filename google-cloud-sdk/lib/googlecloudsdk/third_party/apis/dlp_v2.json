@@ -2047,21 +2047,6 @@
         }
       }
     },
-    "GooglePrivacyDlpV2ListInfoTypesRequest": {
-      "id": "GooglePrivacyDlpV2ListInfoTypesRequest",
-      "description": "Request for the list of infoTypes.",
-      "type": "object",
-      "properties": {
-        "languageCode": {
-          "description": "Optional BCP-47 language code for localized infoType friendly\nnames. If omitted, or if localized strings are not available,\nen-US strings will be returned.",
-          "type": "string"
-        },
-        "filter": {
-          "description": "Optional filter to only return infoTypes supported by certain parts of the\nAPI. Defaults to supported_by=INSPECT.",
-          "type": "string"
-        }
-      }
-    },
     "GooglePrivacyDlpV2CreateInspectTemplateRequest": {
       "id": "GooglePrivacyDlpV2CreateInspectTemplateRequest",
       "description": "Request message for CreateInspectTemplate.",
@@ -4918,33 +4903,44 @@
       }
     },
     "locations": {
-      "methods": {
+      "resources": {
         "infoTypes": {
-          "id": "dlp.locations.infoTypes",
-          "path": "v2/locations/{location}/infoTypes",
-          "flatPath": "v2/locations/{location}/infoTypes",
-          "httpMethod": "POST",
-          "parameters": {
-            "location": {
-              "description": "The geographic location to list info types. Reserved for future\nextensions.",
-              "location": "path",
-              "required": true,
-              "type": "string"
+          "methods": {
+            "list": {
+              "id": "dlp.locations.infoTypes.list",
+              "path": "v2/locations/{location}/infoTypes",
+              "flatPath": "v2/locations/{location}/infoTypes",
+              "httpMethod": "GET",
+              "parameters": {
+                "location": {
+                  "description": "The geographic location to list info types. Reserved for future\nextensions.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "languageCode": {
+                  "description": "Optional BCP-47 language code for localized infoType friendly\nnames. If omitted, or if localized strings are not available,\nen-US strings will be returned.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "Optional filter to only return infoTypes supported by certain parts of the\nAPI. Defaults to supported_by=INSPECT.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "location"
+              ],
+              "response": {
+                "$ref": "GooglePrivacyDlpV2ListInfoTypesResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Returns a list of the sensitive information types that the DLP API\nsupports. See https:\/\/cloud.google.com\/dlp\/docs\/infotypes-reference to\nlearn more."
             }
-          },
-          "parameterOrder": [
-            "location"
-          ],
-          "request": {
-            "$ref": "GooglePrivacyDlpV2ListInfoTypesRequest"
-          },
-          "response": {
-            "$ref": "GooglePrivacyDlpV2ListInfoTypesResponse"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Returns a list of the sensitive information types that the DLP API\nsupports. See https:\/\/cloud.google.com\/dlp\/docs\/infotypes-reference to\nlearn more."
+          }
         }
       }
     },

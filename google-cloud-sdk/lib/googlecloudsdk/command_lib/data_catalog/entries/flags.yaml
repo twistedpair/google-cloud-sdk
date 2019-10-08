@@ -20,3 +20,25 @@ schema_from_file:
   help_text: |-
     Path to a JSON or YAML file containing the schema for the entry. This can be used to specify
     schemas with column descriptions, column modes other than NULLABLE, and nested subcolumns.
+gcs_file_patterns:
+  arg_name: gcs-file-patterns
+  api_field: googleCloudDatacatalogV1beta1Entry.gcsFilesetSpec.filePatterns
+  required: true
+  help_text: |-
+    Patterns to identify a set of files in Google Cloud Storage. A star (```*```) may be used at
+    the end of a pattern to match arbitrary files beginning with that pattern.
+
+    Examples of valid file patterns:
+    - gs://bucket_name/```*``` - Matches all files in 'bucket_name'.
+    - gs://bucket_name/file```*``` - Matches files prefixed by 'file' in 'bucket_name'.
+    - gs://another_bucket/a.txt - Matches 'gs://another_bucket/a.txt'.
+description:
+  arg_name: description
+  api_field: googleCloudDatacatalogV1beta1Entry.description
+  help_text: |-
+    Textual description of the entry.
+display_name:
+  arg_name: display-name
+  api_field: googleCloudDatacatalogV1beta1Entry.displayName
+  help_text: |-
+    Human-readable name for the entry.

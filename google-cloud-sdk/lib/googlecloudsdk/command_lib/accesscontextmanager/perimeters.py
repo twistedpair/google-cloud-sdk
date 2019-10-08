@@ -149,16 +149,6 @@ def _AddServiceFilterRestriction(args, req, version, restriction_type):
   return req
 
 
-def AddIngressServiceRestrictionBeta(ref, args, req):
-  del ref  # Unused
-  return AddIngressServiceRestriction(args, req, 'v1beta')
-
-
-def AddIngressServiceRestriction(args, req, version=None):
-  """Hook to add the IngressServiceRestriction to request."""
-  return _AddServiceFilterRestriction(args, req, version, 'ingress')
-
-
 def AddVpcServiceRestrictionBeta(ref, args, req):
   del ref  # Unused
   return AddVpcServiceRestriction(args, req, 'v1beta')
@@ -167,17 +157,6 @@ def AddVpcServiceRestrictionBeta(ref, args, req):
 def AddVpcServiceRestriction(args, req, version=None):
   """Hook to add the VpcServiceRestriction to request."""
   return _AddServiceFilterRestriction(args, req, version, 'vpc')
-
-
-def AddBridgeServiceRestrictionBeta(ref, args, req):
-  """Hook to add the v1beta BridgeServiceRestriction to request."""
-  del ref  # Unused
-  return AddBridgeServiceRestriction(args, req, 'v1beta')
-
-
-def AddBridgeServiceRestriction(args, req, version=None):
-  """Hook to add the BridgeServiceRestriction to request."""
-  return _AddServiceFilterRestriction(args, req, version, 'bridge')
 
 
 def AddAccessLevelsGA(ref, args, req):
@@ -303,9 +282,7 @@ def AddPerimeterUpdateArgs(parser, version=None, track=None):
   _AddRestrictedServices(parser)
   _AddLevelsUpdate(parser)
   if track == 'ALPHA':
-    _AddIngressRestrictionArgs(parser)
     _AddVpcRestrictionArgs(parser)
-    _AddBridgeRestrictionArgs(parser)
 
 
 def AddPerimeterUpdateDryRunConfigArgs(parser):
@@ -318,9 +295,7 @@ def AddPerimeterUpdateDryRunConfigArgs(parser):
   _AddResources(config_group, include_set=False)
   _AddRestrictedServices(config_group, include_set=False)
   _AddLevelsUpdate(config_group, include_set=False)
-  _AddIngressRestrictionArgs(config_group)
   _AddVpcRestrictionArgs(config_group)
-  _AddBridgeRestrictionArgs(config_group)
 
 
 def _AddClearDryRunConfigArg(parser):
@@ -423,28 +398,6 @@ def _ParseRestriction(args, perimeter_result, version, restriction_type,
                                      FetchAllowed)
 
 
-def _AddIngressRestrictionArgs(parser):
-  """Add arguments related to the Ingress Service Restriction to 'parser'."""
-  _AddServiceRestrictionArgs(
-      parser=parser,
-      restriction_type='ingress',
-      list_help='Services allowed to use Access Levels for access when '
-      'Ingress Service Restriction is enabled.',
-      enable_help=('When specified restrict API callable outside the Service '
-                   'Perimeter via Access Levels to the set of ingress allowed '
-                   'services. To disable use '
-                   '\'--no-enable-ingress-service-restriction\'.'))
-
-
-def ParseIngressRestriction(args, perimeter_result, version, dry_run=False):
-  return _ParseRestriction(
-      args=args,
-      perimeter_result=perimeter_result,
-      version=version,
-      restriction_type='ingress',
-      dry_run=dry_run)
-
-
 def _AddVpcRestrictionArgs(parser):
   """Add arguments related to the VPC Service Restriction to 'parser'."""
   _AddServiceRestrictionArgs(
@@ -463,27 +416,6 @@ def ParseVpcRestriction(args, perimeter_result, version, dry_run=False):
       perimeter_result=perimeter_result,
       version=version,
       restriction_type='vpc',
-      dry_run=dry_run)
-
-
-def _AddBridgeRestrictionArgs(parser):
-  """Add arguments related to the Bridge Service Restriction to 'parser'."""
-  _AddServiceRestrictionArgs(
-      parser=parser,
-      restriction_type='bridge',
-      list_help='List of services allowed through the Bridge Service Perimeter.',
-      enable_help=('When specified restrict API callable through the Bridge '
-                   'Service Perimeter to the set of bridge allowed services. '
-                   'To disable use '
-                   '\'--no-enable-bridge-service-restriction\'.'))
-
-
-def ParseBridgeRestriction(args, perimeter_result, version, dry_run=False):
-  return _ParseRestriction(
-      args=args,
-      perimeter_result=perimeter_result,
-      version=version,
-      restriction_type='bridge',
       dry_run=dry_run)
 
 

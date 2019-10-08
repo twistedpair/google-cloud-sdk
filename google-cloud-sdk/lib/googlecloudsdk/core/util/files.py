@@ -1117,7 +1117,7 @@ def BinaryFileReader(path):
   Returns:
     A file-like object opened for read in binary mode.
   """
-  return _FileOpener(path, 'rb', 'read')
+  return _FileOpener(encoding_util.Encode(path, encoding='utf-8'), 'rb', 'read')
 
 
 def FileWriter(path, private=False, append=False):

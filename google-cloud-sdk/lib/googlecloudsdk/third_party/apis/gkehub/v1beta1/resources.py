@@ -41,23 +41,15 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
-  PROJECTS_LOCATIONS_GLOBAL_MEMBERSHIPS = (
-      'projects.locations.global.memberships',
+  PROJECTS_LOCATIONS_MEMBERSHIPS = (
+      'projects.locations.memberships',
       '{+name}',
       {
           '':
-              'projects/{projectsId}/locations/global/memberships/'
+              'projects/{projectsId}/locations/{locationsId}/memberships/'
               '{membershipsId}',
       },
       [u'name'],
-      True
-  )
-  PROJECTS_LOCATIONS_MEMBERSHIPS = (
-      'projects.locations.memberships',
-      'projects/{projectsId}/locations/{locationsId}/memberships/'
-      '{membershipsId}',
-      {},
-      [u'projectsId', u'locationsId', u'membershipsId'],
       True
   )
   PROJECTS_LOCATIONS_OPERATIONS = (
