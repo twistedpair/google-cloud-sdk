@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20191001",
+ "revision": "20191007",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -2267,7 +2267,7 @@
     },
     "outlierDetection": {
      "$ref": "OutlierDetection",
-     "description": "Settings controlling eviction of unhealthy hosts from the load balancing pool for the backend service. If not set, this feature is considered disabled.\n\nThis field is applicable to either:  \n- A regional backend service with the service_protocol set to HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED. \n- A global backend service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED."
+     "description": "Settings controlling the eviction of unhealthy hosts from the load balancing pool for the backend service. If not set, this feature is considered disabled.\n\nThis field is applicable to either:  \n- A regional backend service with the service_protocol set to HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED. \n- A global backend service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED."
     },
     "port": {
      "type": "integer",
@@ -4653,7 +4653,7 @@
    "properties": {
     "resourcePolicies": {
      "type": "array",
-     "description": "Resource policies to be added to this disk.",
+     "description": "Resource policies to be added to this disk. Currently you can only specify one policy here.",
      "items": {
       "type": "string"
      }
@@ -7209,12 +7209,12 @@
    "properties": {
     "numRetries": {
      "type": "integer",
-     "description": "Specifies the allowed number retries. This number must be \u003e 0.",
+     "description": "Specifies the allowed number retries. This number must be \u003e 0. If not specified, defaults to 1.",
      "format": "uint32"
     },
     "perTryTimeout": {
      "$ref": "Duration",
-     "description": "Specifies a non-zero timeout per retry attempt."
+     "description": "Specifies a non-zero timeout per retry attempt.\nIf not specified, will use the timeout set in HttpRouteAction. If timeout in HttpRouteAction is not set, will use the largest timeout among all backend services associated with the route."
     },
     "retryConditions": {
      "type": "array",
@@ -7247,7 +7247,7 @@
     },
     "timeout": {
      "$ref": "Duration",
-     "description": "Specifies the timeout for the selected route. Timeout is computed from the time the request is has been fully processed (i.e. end-of-stream) up until the response has been completely processed. Timeout includes all retries.\nIf not specified, the default value is 15 seconds."
+     "description": "Specifies the timeout for the selected route. Timeout is computed from the time the request has been fully processed (i.e. end-of-stream) up until the response has been completely processed. Timeout includes all retries.\nIf not specified, will use the largest timeout among all backend services associated with the route."
     },
     "urlRewrite": {
      "$ref": "UrlRewrite",
@@ -11869,7 +11869,7 @@
   "LogConfigCounterOptions": {
    "id": "LogConfigCounterOptions",
    "type": "object",
-   "description": "Increment a streamz counter with the specified metric and field names.\n\nMetric names should start with a '/', generally be lowercase-only, and end in \"_count\". Field names should not contain an initial slash. The actual exported metric names will have \"/iam/policy\" prepended.\n\nField names correspond to IAM request parameters and field values are their respective values.\n\nSupported field names: - \"authority\", which is \"[token]\" if IAMContext.token is present, otherwise the value of IAMContext.authority_selector if present, and otherwise a representation of IAMContext.principal; or - \"iam_principal\", a representation of IAMContext.principal even if a token or authority selector is present; or - \"\" (empty string), resulting in a counter with no fields.\n\nExamples: counter { metric: \"/debug_access_count\" field: \"iam_principal\" } ==\u003e increment counter /iam/policy/backend_debug_access_count {iam_principal=[value of IAMContext.principal]}\n\nAt this time we do not support multiple field names (though this may be supported in the future).",
+   "description": "Increment a streamz counter with the specified metric and field names.\n\nMetric names should start with a '/', generally be lowercase-only, and end in \"_count\". Field names should not contain an initial slash. The actual exported metric names will have \"/iam/policy\" prepended.\n\nField names correspond to IAM request parameters and field values are their respective values.\n\nSupported field names: - \"authority\", which is \"[token]\" if IAMContext.token is present, otherwise the value of IAMContext.authority_selector if present, and otherwise a representation of IAMContext.principal; or - \"iam_principal\", a representation of IAMContext.principal even if a token or authority selector is present; or - \"\" (empty string), resulting in a counter with no fields.\n\nExamples: counter { metric: \"/debug_access_count\" field: \"iam_principal\" } ==\u003e increment counter /iam/policy/debug_access_count {iam_principal=[value of IAMContext.principal]}\n\nTODO(b/141846426): Consider supporting \"authority\" and \"iam_principal\" fields in the same counter.",
    "properties": {
     "customFields": {
      "type": "array",
@@ -15402,7 +15402,7 @@
   "OutlierDetection": {
    "id": "OutlierDetection",
    "type": "object",
-   "description": "Settings controlling eviction of unhealthy hosts from the load balancing pool for the backend service.",
+   "description": "Settings controlling the eviction of unhealthy hosts from the load balancing pool for the backend service.",
    "properties": {
     "baseEjectionTime": {
      "$ref": "Duration",
@@ -19575,7 +19575,7 @@
     },
     "filter": {
      "type": "string",
-     "description": "Specifies the desired filtering of logs on this NAT. If unspecified, logs are exported for all connections handled by this NAT.",
+     "description": "Specify the desired filtering of logs on this NAT. If unspecified, logs are exported for all connections handled by this NAT. This option can take one of the following values: \n- ERRORS_ONLY: Export logs only for connection failures. \n- TRANSLATIONS_ONLY: Export logs only for successful connections. \n- ALL: Export logs for all connections, successful and unsuccessful.",
      "enum": [
       "ALL",
       "ERRORS_ONLY",

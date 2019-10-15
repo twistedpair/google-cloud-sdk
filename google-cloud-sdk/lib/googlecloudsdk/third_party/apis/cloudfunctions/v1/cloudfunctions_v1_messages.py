@@ -358,13 +358,18 @@ class CloudfunctionsOperationsListRequest(_messages.Message):
 
   Fields:
     filter: Required. A filter for matching the requested operations.<br><br>
-      The supported formats of <b>filter</b> are:<br> To query for specific
+      The supported formats of <b>filter</b> are:<br> To query for a specific
       function: <code>project:*,location:*,function:*</code><br> To query for
       all of the latest operations for a project:
       <code>project:*,latest:true</code>
     name: Must not be set.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
+    pageSize: The maximum number of records that should be returned.<br>
+      Requested page size cannot exceed 100. If not set, the default page size
+      is 100.<br><br> Pagination is only supported when querying for a
+      specific function.
+    pageToken: Token identifying which result to start with, which is returned
+      by a previous list call.<br><br> Pagination is only supported when
+      querying for a specific function.
   """
 
   filter = _messages.StringField(1)

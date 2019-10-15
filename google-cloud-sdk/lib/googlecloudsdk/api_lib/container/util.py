@@ -72,7 +72,7 @@ NODEPOOLS_FORMAT = """
 HTTP_ERROR_FORMAT = (
     'ResponseError: code={status_code}, message={status_message}')
 
-WARN_GA_FUTURE_AUTOUPGRADE_CHANGE = ('In October 2019, node auto-upgrade will '
+WARN_GA_FUTURE_AUTOUPGRADE_CHANGE = ('In November 2019, node auto-upgrade will '
                                      'be enabled by default for newly created '
                                      'clusters and node pools. To disable it, '
                                      'use the `--no-enable-autoupgrade` flag.')

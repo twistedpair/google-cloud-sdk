@@ -1466,12 +1466,12 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebSearchForInstancesRe
   esRequest object.
 
   Fields:
-    dicomWebPath: The path of the SearchForInstancesRequest DICOMweb request
-      (for example, `instances` or `series/{series_uid}/instances` or
-      `studies/{study_uid}/instances`).
-    parent: The name of the DICOM store that is being accessed (for example, `
+    dicomWebPath: The path of the SearchForInstancesRequest DICOMweb request.
+      For example, `instances` or `series/{series_uid}/instances` or
+      `studies/{study_uid}/instances`.
+    parent: The name of the DICOM store that is being accessed. For example, `
       projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
-      mStores/{dicom_store_id}`).
+      mStores/{dicom_store_id}`.
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1484,11 +1484,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebSearchForSeriesReque
   object.
 
   Fields:
-    dicomWebPath: The path of the SearchForSeries DICOMweb request(for
-      example, `series` or `studies/{study_uid}/series`).
-    parent: The name of the DICOM store that is being accessed (for example, `
+    dicomWebPath: The path of the SearchForSeries DICOMweb request. For
+      example, `series` or `studies/{study_uid}/series`.
+    parent: The name of the DICOM store that is being accessed. For example, `
       projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
-      mStores/{dicom_store_id}`).
+      mStores/{dicom_store_id}`.
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1500,11 +1500,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebSearchForStudiesRequ
   Request object.
 
   Fields:
-    dicomWebPath: The path of the SearchForStudies DICOMweb request (for
-      example, `studies`).
-    parent: The name of the DICOM store that is being accessed (for example, `
+    dicomWebPath: The path of the SearchForStudies DICOMweb request. For
+      example, `studies`.
+    parent: The name of the DICOM store that is being accessed. For example, `
       projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
-      mStores/{dicom_store_id}`).
+      mStores/{dicom_store_id}`.
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1517,13 +1517,12 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStoreInstancesReques
   object.
 
   Fields:
-    dicomWebPath: The path of the StoreInstances DICOMweb request (for
-      example, `studies/[{study_uid}]`). Note that the `study_uid` is
-      optional.
+    dicomWebPath: The path of the StoreInstances DICOMweb request. For
+      example, `studies/[{study_uid}]`. Note that the `study_uid` is optional.
     httpBody: A HttpBody resource to be passed as the request body.
-    parent: The name of the DICOM store that is being accessed (for example, `
+    parent: The name of the DICOM store that is being accessed. For example, `
       projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
-      mStores/{dicom_store_id}`).
+      mStores/{dicom_store_id}`.
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1537,11 +1536,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesDeleteRequest
   object.
 
   Fields:
-    dicomWebPath: The path of the DeleteStudy request (for example,
-      `studies/{study_uid}`).
-    parent: The name of the DICOM store that is being accessed (for example, `
+    dicomWebPath: The path of the DeleteStudy request. For example,
+      `studies/{study_uid}`.
+    parent: The name of the DICOM store that is being accessed. For example, `
       projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
-      mStores/{dicom_store_id}`).
+      mStores/{dicom_store_id}`.
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1554,11 +1553,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesMetadataReque
   object.
 
   Fields:
-    dicomWebPath: The path of the RetrieveStudyMetadata DICOMweb request (for
-      example, `studies/{study_uid}/metadata`).
-    parent: The name of the DICOM store that is being accessed (for example, `
+    dicomWebPath: The path of the RetrieveStudyMetadata DICOMweb request. For
+      example, `studies/{study_uid}/metadata`.
+    parent: The name of the DICOM store that is being accessed. For example, `
       projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
-      mStores/{dicom_store_id}`).
+      mStores/{dicom_store_id}`.
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1570,11 +1569,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesRetrieveStudy
   tudyRequest object.
 
   Fields:
-    dicomWebPath: The path of the RetrieveStudy DICOMweb request (for example,
-      `studies/{study_uid}`).
-    parent: The name of the DICOM store that is being accessed (for example, `
+    dicomWebPath: The path of the RetrieveStudy DICOMweb request. For example,
+      `studies/{study_uid}`.
+    parent: The name of the DICOM store that is being accessed. For example, `
       projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
-      mStores/{dicom_store_id}`).
+      mStores/{dicom_store_id}`.
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1586,12 +1585,12 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSearchForInst
   InstancesRequest object.
 
   Fields:
-    dicomWebPath: The path of the SearchForInstancesRequest DICOMweb request
-      (for example, `instances` or `series/{series_uid}/instances` or
-      `studies/{study_uid}/instances`).
-    parent: The name of the DICOM store that is being accessed (for example, `
+    dicomWebPath: The path of the SearchForInstancesRequest DICOMweb request.
+      For example, `instances` or `series/{series_uid}/instances` or
+      `studies/{study_uid}/instances`.
+    parent: The name of the DICOM store that is being accessed. For example, `
       projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
-      mStores/{dicom_store_id}`).
+      mStores/{dicom_store_id}`.
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1603,11 +1602,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSearchForSeri
   SeriesRequest object.
 
   Fields:
-    dicomWebPath: The path of the SearchForSeries DICOMweb request(for
-      example, `series` or `studies/{study_uid}/series`).
-    parent: The name of the DICOM store that is being accessed (for example, `
+    dicomWebPath: The path of the SearchForSeries DICOMweb request. For
+      example, `series` or `studies/{study_uid}/series`.
+    parent: The name of the DICOM store that is being accessed. For example, `
       projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
-      mStores/{dicom_store_id}`).
+      mStores/{dicom_store_id}`.
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1619,11 +1618,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesDeleteR
   eteRequest object.
 
   Fields:
-    dicomWebPath: The path of the DeleteSeries request (for example,
-      `studies/{study_uid}/series/{series_uid}`).
-    parent: The name of the DICOM store that is being accessed (for example, `
+    dicomWebPath: The path of the DeleteSeries request. For example,
+      `studies/{study_uid}/series/{series_uid}`.
+    parent: The name of the DICOM store that is being accessed. For example, `
       projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
-      mStores/{dicom_store_id}`).
+      mStores/{dicom_store_id}`.
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1635,11 +1634,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstanc
   tancesDeleteRequest object.
 
   Fields:
-    dicomWebPath: The path of the DeleteInstance request (for example,
-      `studies/{study_uid}/series/{series_uid}/instances/{instance_uid}`).
-    parent: The name of the DICOM store that is being accessed (for example, `
+    dicomWebPath: The path of the DeleteInstance request. For example,
+      `studies/{study_uid}/series/{series_uid}/instances/{instance_uid}`.
+    parent: The name of the DICOM store that is being accessed. For example, `
       projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
-      mStores/{dicom_store_id}`).
+      mStores/{dicom_store_id}`.
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1651,12 +1650,12 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstanc
   tancesFramesRenderedRequest object.
 
   Fields:
-    dicomWebPath: The path of the RetrieveRenderedFrames DICOMweb request (for
+    dicomWebPath: The path of the RetrieveRenderedFrames DICOMweb request. For
       example, `studies/{study_uid}/series/{series_uid}/instances/{instance_ui
-      d}/frames/{frame_list}/rendered`).
-    parent: The name of the DICOM store that is being accessed (for example, `
+      d}/frames/{frame_list}/rendered`.
+    parent: The name of the DICOM store that is being accessed. For example, `
       projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
-      mStores/{dicom_store_id}`).
+      mStores/{dicom_store_id}`.
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1668,12 +1667,12 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstanc
   tancesFramesRetrieveFramesRequest object.
 
   Fields:
-    dicomWebPath: The path of the RetrieveFrames DICOMweb request (for
+    dicomWebPath: The path of the RetrieveFrames DICOMweb request. For
       example, `studies/{study_uid}/series/{series_uid}/instances/{instance_ui
-      d}/frames/{frame_list}`).
-    parent: The name of the DICOM store that is being accessed (for example, `
+      d}/frames/{frame_list}`.
+    parent: The name of the DICOM store that is being accessed. For example, `
       projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
-      mStores/{dicom_store_id}`).
+      mStores/{dicom_store_id}`.
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1685,12 +1684,12 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstanc
   tancesMetadataRequest object.
 
   Fields:
-    dicomWebPath: The path of the RetrieveInstanceMetadata DICOMweb request
-      (for example, `studies/{study_uid}/series/{series_uid}/instances/{instan
-      ce_uid}/metadata`).
-    parent: The name of the DICOM store that is being accessed (for example, `
+    dicomWebPath: The path of the RetrieveInstanceMetadata DICOMweb request.
+      For example, `studies/{study_uid}/series/{series_uid}/instances/{instanc
+      e_uid}/metadata`.
+    parent: The name of the DICOM store that is being accessed. For example, `
       projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
-      mStores/{dicom_store_id}`).
+      mStores/{dicom_store_id}`.
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1702,12 +1701,12 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstanc
   tancesRenderedRequest object.
 
   Fields:
-    dicomWebPath: The path of the RetrieveRenderedInstance DICOMweb request
-      (for example, `studies/{study_uid}/series/{series_uid}/instances/{instan
-      ce_uid}/rendered`).
-    parent: The name of the DICOM store that is being accessed (for example, `
+    dicomWebPath: The path of the RetrieveRenderedInstance DICOMweb request.
+      For example, `studies/{study_uid}/series/{series_uid}/instances/{instanc
+      e_uid}/rendered`.
+    parent: The name of the DICOM store that is being accessed. For example, `
       projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
-      mStores/{dicom_store_id}`).
+      mStores/{dicom_store_id}`.
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1719,12 +1718,12 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstanc
   tancesRetrieveInstanceRequest object.
 
   Fields:
-    dicomWebPath: The path of the RetrieveInstance DICOMweb request (for
+    dicomWebPath: The path of the RetrieveInstance DICOMweb request. For
       example,
-      `studies/{study_uid}/series/{series_uid}/instances/{instance_uid}`).
-    parent: The name of the DICOM store that is being accessed (for example, `
+      `studies/{study_uid}/series/{series_uid}/instances/{instance_uid}`.
+    parent: The name of the DICOM store that is being accessed. For example, `
       projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
-      mStores/{dicom_store_id}`).
+      mStores/{dicom_store_id}`.
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1736,11 +1735,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesMetadat
   adataRequest object.
 
   Fields:
-    dicomWebPath: The path of the RetrieveSeriesMetadata DICOMweb request (for
-      example, `studies/{study_uid}/series/{series_uid}/metadata`).
-    parent: The name of the DICOM store that is being accessed (for example, `
+    dicomWebPath: The path of the RetrieveSeriesMetadata DICOMweb request. For
+      example, `studies/{study_uid}/series/{series_uid}/metadata`.
+    parent: The name of the DICOM store that is being accessed. For example, `
       projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
-      mStores/{dicom_store_id}`).
+      mStores/{dicom_store_id}`.
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1752,11 +1751,11 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesRetriev
   rieveSeriesRequest object.
 
   Fields:
-    dicomWebPath: The path of the RetrieveSeries DICOMweb request (for
-      example, `studies/{study_uid}/series/{series_uid}`).
-    parent: The name of the DICOM store that is being accessed (for example, `
+    dicomWebPath: The path of the RetrieveSeries DICOMweb request. For
+      example, `studies/{study_uid}/series/{series_uid}`.
+    parent: The name of the DICOM store that is being accessed. For example, `
       projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
-      mStores/{dicom_store_id}`).
+      mStores/{dicom_store_id}`.
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1768,12 +1767,12 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesSearchF
   rchForInstancesRequest object.
 
   Fields:
-    dicomWebPath: The path of the SearchForInstancesRequest DICOMweb request
-      (for example, `instances` or `series/{series_uid}/instances` or
-      `studies/{study_uid}/instances`).
-    parent: The name of the DICOM store that is being accessed (for example, `
+    dicomWebPath: The path of the SearchForInstancesRequest DICOMweb request.
+      For example, `instances` or `series/{series_uid}/instances` or
+      `studies/{study_uid}/instances`.
+    parent: The name of the DICOM store that is being accessed. For example, `
       projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
-      mStores/{dicom_store_id}`).
+      mStores/{dicom_store_id}`.
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -1785,13 +1784,12 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesStoreInstance
   ancesRequest object.
 
   Fields:
-    dicomWebPath: The path of the StoreInstances DICOMweb request (for
-      example, `studies/[{study_uid}]`). Note that the `study_uid` is
-      optional.
+    dicomWebPath: The path of the StoreInstances DICOMweb request. For
+      example, `studies/[{study_uid}]`. Note that the `study_uid` is optional.
     httpBody: A HttpBody resource to be passed as the request body.
-    parent: The name of the DICOM store that is being accessed (for example, `
+    parent: The name of the DICOM store that is being accessed. For example, `
       projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
-      mStores/{dicom_store_id}`).
+      mStores/{dicom_store_id}`.
   """
 
   dicomWebPath = _messages.StringField(1, required=True)
@@ -3694,7 +3692,7 @@ class SchemaConfig(_messages.Message):
       resource is a recursive structure; when the depth is 2, the CodeSystem
       table will have a column called `concept.concept` but not
       `concept.concept.concept`. If not specified or set to 0, the server will
-      use the default value 2.
+      use the default value 2. The maximum depth allowed is 5.
     schemaType: Specifies the output schema type. If unspecified, the default
       is `LOSSLESS`.
   """

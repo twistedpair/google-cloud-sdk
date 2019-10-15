@@ -42,7 +42,6 @@ class LoggingV2(base_api.BaseApiClient):
     self.billingAccounts_logs = self.BillingAccountsLogsService(self)
     self.billingAccounts_sinks = self.BillingAccountsSinksService(self)
     self.billingAccounts = self.BillingAccountsService(self)
-    self.buckets = self.BucketsService(self)
     self.entries = self.EntriesService(self)
     self.exclusions = self.ExclusionsService(self)
     self.folders_exclusions = self.FoldersExclusionsService(self)
@@ -392,7 +391,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.
+      r"""Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted.
 
       Args:
         request: (LoggingBillingAccountsLogsDeleteRequest) input message
@@ -626,97 +625,6 @@ class LoggingV2(base_api.BaseApiClient):
       super(LoggingV2.BillingAccountsService, self).__init__(client)
       self._upload_configs = {
           }
-
-  class BucketsService(base_api.BaseApiService):
-    """Service class for the buckets resource."""
-
-    _NAME = u'buckets'
-
-    def __init__(self, client):
-      super(LoggingV2.BucketsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Gets a bucket.
-
-      Args:
-        request: (LoggingBucketsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (LogBucket) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/buckets/{bucketsId}',
-        http_method=u'GET',
-        method_id=u'logging.buckets.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v2/{+name}',
-        request_field='',
-        request_type_name=u'LoggingBucketsGetRequest',
-        response_type_name=u'LogBucket',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists buckets.
-
-      Args:
-        request: (LoggingBucketsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListBucketsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/buckets',
-        http_method=u'GET',
-        method_id=u'logging.buckets.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/buckets',
-        request_field='',
-        request_type_name=u'LoggingBucketsListRequest',
-        response_type_name=u'ListBucketsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created.
-
-      Args:
-        request: (LoggingBucketsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (LogBucket) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/{v2Id}/{v2Id1}/buckets/{bucketsId}',
-        http_method=u'PATCH',
-        method_id=u'logging.buckets.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'logBucket',
-        request_type_name=u'LoggingBucketsPatchRequest',
-        response_type_name=u'LogBucket',
-        supports_download=False,
-    )
 
   class EntriesService(base_api.BaseApiService):
     """Service class for the entries resource."""
@@ -1236,7 +1144,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.
+      r"""Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted.
 
       Args:
         request: (LoggingFoldersLogsDeleteRequest) input message
@@ -1535,6 +1443,87 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Gets a bucket.
+
+      Args:
+        request: (LoggingLocationsBucketsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogBucket) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}',
+        http_method=u'GET',
+        method_id=u'logging.locations.buckets.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}',
+        request_field='',
+        request_type_name=u'LoggingLocationsBucketsGetRequest',
+        response_type_name=u'LogBucket',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists buckets.
+
+      Args:
+        request: (LoggingLocationsBucketsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBucketsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets',
+        http_method=u'GET',
+        method_id=u'logging.locations.buckets.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v2/{+parent}/buckets',
+        request_field='',
+        request_type_name=u'LoggingLocationsBucketsListRequest',
+        response_type_name=u'ListBucketsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created.
+
+      Args:
+        request: (LoggingLocationsBucketsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogBucket) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}',
+        http_method=u'PATCH',
+        method_id=u'logging.locations.buckets.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v2/{+name}',
+        request_field=u'logBucket',
+        request_type_name=u'LoggingLocationsBucketsPatchRequest',
+        response_type_name=u'LogBucket',
+        supports_download=False,
+    )
+
   class LocationsService(base_api.BaseApiService):
     """Service class for the locations resource."""
 
@@ -1556,7 +1545,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.
+      r"""Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted.
 
       Args:
         request: (LoggingLogsDeleteRequest) input message
@@ -1956,7 +1945,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.
+      r"""Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted.
 
       Args:
         request: (LoggingOrganizationsLogsDeleteRequest) input message
@@ -2556,7 +2545,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.
+      r"""Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted.
 
       Args:
         request: (LoggingProjectsLogsDeleteRequest) input message

@@ -5,6 +5,73 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 267.0.0 (2019-10-15)
+
+### Breaking Changes
+
+*   **(Cloud Datastore Emulator)** Removed the deprecated component (gcd-emulator) for the legacy version that
+*   **(Cloud Datastore Emulator)** used the v1beta3 API.
+*   **(Cloud Datastore Emulator)** Removed the deprecated `--legacy` flag from `gcloud <alpha|beta> emulators
+*   **(Cloud Datastore Emulator)** datastore start` that invoked the legacy version of the emulator.
+
+
+### BigQuery
+
+* Fixed crash when displaying the results of a script query.
+* Added options to control the maximum time and bytes per script statement,
+  maximum time to run a script, and the maximum number of results to display for
+  a script.
+
+### Cloud Asset Inventory
+
+* Promoted group commands of `gcloud asset feeds` to beta.
+
+### Cloud Bigtable
+
+* Added support for authorization tokens via the `-auth-token` flag.
+
+### Cloud Dataproc
+
+* Fixed issue where `--region` flag was not honored for `gcloud beta dataproc
+  commands`. Specifically when passing resources as URIs.
+  * If `dataproc/region` was set `--region` flag still correctly overrode it.
+
+### Cloud Firestore
+
+* Promoted `gcloud firestore` command group to GA.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.9.0
+  * Serve WebChannel traffic on the same port as gRPC.
+
+### Cloud IAM
+
+* Promoted `--description` flag of `gcloud iam service-accounts create` to GA.
+* Promoted `--description` flag of `gcloud iam service-accounts update` to GA.
+
+### Cloud Run
+
+* Cloud Run will no longer require the Istio add-on for newer versions of GKE
+  (1.15.3-gke.19+, 1.14.3-gke.12+, and 1.13.10-gke.8+).
+
+### Compute Engine
+
+* Promoted `--family` flag of `gcloud compute images import` to GA.
+* Promoted `--description` flag of `gcloud compute images import` to GA.
+
+### Kubernetes Engine
+
+* Fixed defaulting of `--shielded-integrity-monitoring` to remain true when
+    `--shielded-secure-boot` is also enabled.
+* Removed validation condition that restricts
+    `--autoprovisioning-service-account`
+     and `--autoprovisioning-scopes` from being specified together.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 266.0.0 (2019-10-08)
 
 ### AI Platform

@@ -2664,8 +2664,8 @@ class BackendService(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
-    outlierDetection: Settings controlling eviction of unhealthy hosts from
-      the load balancing pool for the backend service. If not set, this
+    outlierDetection: Settings controlling the eviction of unhealthy hosts
+      from the load balancing pool for the backend service. If not set, this
       feature is considered disabled.  This field is applicable to either:   -
       A regional backend service with the service_protocol set to HTTP, HTTPS,
       or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED.  - A global
@@ -14858,6 +14858,14 @@ class ComputeSubnetworksPatchRequest(_messages.Message):
   r"""A ComputeSubnetworksPatchRequest object.
 
   Fields:
+    drainTimeoutSeconds: The drain timeout specifies the upper bound in
+      seconds on the amount of time allowed to drain connections from the
+      current ACTIVE subnetwork to the current BACKUP subnetwork. The drain
+      timeout is only applicable when the following conditions are true: - the
+      subnetwork being patched has purpose = INTERNAL_HTTPS_LOAD_BALANCER -
+      the subnetwork being patched has role = BACKUP - the patch request is
+      setting the role to ACTIVE. Note that after this patch operation the
+      roles of the ACTIVE and BACKUP subnetworks will be swapped.
     project: Project ID for this request.
     region: Name of the region scoping this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -14875,11 +14883,12 @@ class ComputeSubnetworksPatchRequest(_messages.Message):
       body.
   """
 
-  project = _messages.StringField(1, required=True)
-  region = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  subnetwork = _messages.StringField(4, required=True)
-  subnetworkResource = _messages.MessageField('Subnetwork', 5)
+  drainTimeoutSeconds = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  subnetwork = _messages.StringField(5, required=True)
+  subnetworkResource = _messages.MessageField('Subnetwork', 6)
 
 
 class ComputeSubnetworksSetIamPolicyRequest(_messages.Message):
@@ -18438,7 +18447,8 @@ class DisksAddResourcePoliciesRequest(_messages.Message):
   r"""A DisksAddResourcePoliciesRequest object.
 
   Fields:
-    resourcePolicies: Resource policies to be added to this disk.
+    resourcePolicies: Resource policies to be added to this disk. Currently
+      you can only specify one policy here.
   """
 
   resourcePolicies = _messages.StringField(1, repeated=True)
@@ -21333,7 +21343,11 @@ class HttpRetryPolicy(_messages.Message):
 
   Fields:
     numRetries: Specifies the allowed number retries. This number must be > 0.
-    perTryTimeout: Specifies a non-zero timeout per retry attempt.
+      If not specified, defaults to 1.
+    perTryTimeout: Specifies a non-zero timeout per retry attempt. If not
+      specified, will use the timeout set in HttpRouteAction. If timeout in
+      HttpRouteAction is not set, will use the largest timeout among all
+      backend services associated with the route.
     retryConditions: Specfies one or more conditions when this retry rule
       applies. Valid values are:   - 5xx: Loadbalancer will attempt a retry if
       the backend service responds with any 5xx response code, or if the
@@ -21382,9 +21396,10 @@ class HttpRouteAction(_messages.Message):
       suffixed with -shadow.
     retryPolicy: Specifies the retry policy associated with this route.
     timeout: Specifies the timeout for the selected route. Timeout is computed
-      from the time the request is has been fully processed (i.e. end-of-
-      stream) up until the response has been completely processed. Timeout
-      includes all retries. If not specified, the default value is 15 seconds.
+      from the time the request has been fully processed (i.e. end-of-stream)
+      up until the response has been completely processed. Timeout includes
+      all retries. If not specified, will use the largest timeout among all
+      backend services associated with the route.
     urlRewrite: The spec to modify the URL of the request, prior to forwarding
       the request to the matched service
     weightedBackendServices: A list of weighted backend services to send
@@ -26508,9 +26523,9 @@ class LogConfigCounterOptions(_messages.Message):
   IAMContext.principal even if a token or authority selector is present; or -
   "" (empty string), resulting in a counter with no fields.  Examples: counter
   { metric: "/debug_access_count" field: "iam_principal" } ==> increment
-  counter /iam/policy/backend_debug_access_count {iam_principal=[value of
-  IAMContext.principal]}  At this time we do not support multiple field names
-  (though this may be supported in the future).
+  counter /iam/policy/debug_access_count {iam_principal=[value of
+  IAMContext.principal]}  TODO(b/141846426): Consider supporting "authority"
+  and "iam_principal" fields in the same counter.
 
   Fields:
     customFields: Custom fields.
@@ -30608,8 +30623,8 @@ class OperationsScopedList(_messages.Message):
 
 
 class OutlierDetection(_messages.Message):
-  r"""Settings controlling eviction of unhealthy hosts from the load balancing
-  pool for the backend service.
+  r"""Settings controlling the eviction of unhealthy hosts from the load
+  balancing pool for the backend service.
 
   Fields:
     baseEjectionTime: The base time that a host is ejected for. The real
@@ -34434,19 +34449,30 @@ class RouterNatLogConfig(_messages.Message):
   r"""Configuration of logging on a NAT.
 
   Enums:
-    FilterValueValuesEnum: Specifies the desired filtering of logs on this
-      NAT. If unspecified, logs are exported for all connections handled by
-      this NAT.
+    FilterValueValuesEnum: Specify the desired filtering of logs on this NAT.
+      If unspecified, logs are exported for all connections handled by this
+      NAT. This option can take one of the following values:  - ERRORS_ONLY:
+      Export logs only for connection failures.  - TRANSLATIONS_ONLY: Export
+      logs only for successful connections.  - ALL: Export logs for all
+      connections, successful and unsuccessful.
 
   Fields:
     enable: Indicates whether or not to export logs. This is false by default.
-    filter: Specifies the desired filtering of logs on this NAT. If
-      unspecified, logs are exported for all connections handled by this NAT.
+    filter: Specify the desired filtering of logs on this NAT. If unspecified,
+      logs are exported for all connections handled by this NAT. This option
+      can take one of the following values:  - ERRORS_ONLY: Export logs only
+      for connection failures.  - TRANSLATIONS_ONLY: Export logs only for
+      successful connections.  - ALL: Export logs for all connections,
+      successful and unsuccessful.
   """
 
   class FilterValueValuesEnum(_messages.Enum):
-    r"""Specifies the desired filtering of logs on this NAT. If unspecified,
-    logs are exported for all connections handled by this NAT.
+    r"""Specify the desired filtering of logs on this NAT. If unspecified,
+    logs are exported for all connections handled by this NAT. This option can
+    take one of the following values:  - ERRORS_ONLY: Export logs only for
+    connection failures.  - TRANSLATIONS_ONLY: Export logs only for successful
+    connections.  - ALL: Export logs for all connections, successful and
+    unsuccessful.
 
     Values:
       ALL: <no description>

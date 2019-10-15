@@ -28,17 +28,9 @@ class InvalidTrafficSpecificationError(exceptions.Error):
   pass
 
 
-class _LatestRevisionKey(object):
-  """Key class for the latest revision in TrafficTargets."""
-
-  def __repr__(self):
-    return 'LATEST'
-
-
 # Designated key value for latest.
-#
-# Note this is not a str to avoid conflicts with revision names.
-LATEST_REVISION_KEY = _LatestRevisionKey()
+# Revisions' names may not be uppercase, so this is distinct.
+LATEST_REVISION_KEY = 'LATEST'
 
 
 def NewTrafficTarget(messages, key, percent):
@@ -303,7 +295,7 @@ class TrafficTargets(collections.MutableMapping):
           percent_to_assign)/percent_to_assign_from
     return assigned_percentages
 
-  def UpdateTraffic(self, new_percentages, new_latest_percentage):
+  def UpdateTraffic(self, new_percentages):
     """Update traffic assignments.
 
     The updated traffic assignments will include assignments explicitly
@@ -318,9 +310,7 @@ class TrafficTargets(collections.MutableMapping):
 
     Args:
       new_percentages: Dict[str, int], Map from revision to percent
-        traffric for the revision.
-      new_latest_percentage: int, Percent traffic to assign to the
-        latest revision or None to not explicitly specify.
+        traffic for the revision. 'LATEST' means the latest rev.
     Raises:
       ValueError: If the current traffic for the service is invalid.
       InvalidTrafficSpecificationError: If the caller attempts to set
@@ -329,8 +319,6 @@ class TrafficTargets(collections.MutableMapping):
     self._ValidateCurrentTraffic()
     original_targets = {GetKey(target): target for target in self._m}
     updated_percentages = new_percentages.copy()
-    if new_latest_percentage is not None:
-      updated_percentages[LATEST_REVISION_KEY] = new_latest_percentage
     unassigned_targets = self._GetUnassignedTargets(updated_percentages)
     self._ValidateNewPercentages(updated_percentages, unassigned_targets)
     updated_percentages.update(
@@ -338,8 +326,7 @@ class TrafficTargets(collections.MutableMapping):
     int_percentages = self._IntPercentages(updated_percentages)
     new_targets = []
     for key in int_percentages:
-      if (key in new_percentages and new_percentages[key] == 0) or (
-          key == LATEST_REVISION_KEY and new_latest_percentage == 0):
+      if key in new_percentages and new_percentages[key] == 0:
         continue
       elif key in original_targets:
         # Preserve state of retained targets.
@@ -353,7 +340,7 @@ class TrafficTargets(collections.MutableMapping):
     self._m.extend(new_targets)
 
   def ZeroLatestTraffic(self, latest_ready_revision_name):
-    """Reasign traffic form LATEST to the cuurent latest revision."""
+    """Reasign traffic from LATEST to the current latest revision."""
     targets = {GetKey(target): target for target in self._m}
     if LATEST_REVISION_KEY in targets and targets[LATEST_REVISION_KEY].percent:
       latest = targets.pop(LATEST_REVISION_KEY)

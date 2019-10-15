@@ -417,6 +417,10 @@ class FieldFilter(_messages.Message):
         come first in `order_by`.
       EQUAL: Equal.
       ARRAY_CONTAINS: Contains. Requires that the field is an array.
+      IN: In. Requires that `value` is a non-empty ArrayValue with at most 10
+        values.
+      ARRAY_CONTAINS_ANY: Contains any. Requires that the field is an array
+        and `value` is a non-empty ArrayValue with at most 10 values.
     """
     OPERATOR_UNSPECIFIED = 0
     LESS_THAN = 1
@@ -425,6 +429,8 @@ class FieldFilter(_messages.Message):
     GREATER_THAN_OR_EQUAL = 4
     EQUAL = 5
     ARRAY_CONTAINS = 6
+    IN = 7
+    ARRAY_CONTAINS_ANY = 8
 
   field = _messages.MessageField('FieldReference', 1)
   op = _messages.EnumField('OpValueValuesEnum', 2)

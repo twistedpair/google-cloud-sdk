@@ -40,7 +40,6 @@ EXE_FLAGS = {
     },
     'mssql-cli': {
         'user': '-U',
-        'password': '-P',
         'hostname': '-S',
         'database': '-d'
     }

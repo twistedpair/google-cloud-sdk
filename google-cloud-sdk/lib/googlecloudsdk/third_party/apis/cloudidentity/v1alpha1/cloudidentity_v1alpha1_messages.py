@@ -378,16 +378,6 @@ class EntityKey(_messages.Message):
   namespace = _messages.StringField(2)
 
 
-class ExpiryDetail(_messages.Message):
-  r"""Specifies Membership expiry attributes.
-
-  Fields:
-    expireTime: Expiration time for the Membership.
-  """
-
-  expireTime = _messages.StringField(1)
-
-
 class Group(_messages.Message):
   r"""Resource representing a Group.
 
@@ -534,22 +524,45 @@ class Membership(_messages.Message):
   """
 
   createTime = _messages.StringField(1)
-  expiryDetail = _messages.MessageField('ExpiryDetail', 2)
+  expiryDetail = _messages.MessageField('MembershipExpiryDetail', 2)
   name = _messages.StringField(3)
   preferredMemberKey = _messages.MessageField('EntityKey', 4)
   roles = _messages.MessageField('MembershipRole', 5, repeated=True)
   updateTime = _messages.StringField(6)
 
 
+class MembershipExpiryDetail(_messages.Message):
+  r"""Specifies Membership expiry attributes.
+
+  Fields:
+    expireTime: Expiration time for the Membership.
+  """
+
+  expireTime = _messages.StringField(1)
+
+
 class MembershipRole(_messages.Message):
   r"""Resource representing a role within a Membership.
 
   Fields:
-    name: MembershipRole in string format.  Currently supported
+    expiryDetail: Expiry details of the MembershipRole. Currently supported
       MembershipRoles: `"MEMBER"`.
+    name: MembershipRole in string format. Currently supported
+      MembershipRoles: `"MEMBER", "OWNER", "MANAGER"`.
   """
 
-  name = _messages.StringField(1)
+  expiryDetail = _messages.MessageField('MembershipRoleExpiryDetail', 1)
+  name = _messages.StringField(2)
+
+
+class MembershipRoleExpiryDetail(_messages.Message):
+  r"""Specifies Membership expiry attributes.
+
+  Fields:
+    expireTime: Expiration time for the Membership.
+  """
+
+  expireTime = _messages.StringField(1)
 
 
 class Operation(_messages.Message):

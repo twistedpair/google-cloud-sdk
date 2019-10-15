@@ -226,6 +226,14 @@ def AddEnableLogging(parser, required=False):
             'denied by this rule.'))
 
 
+def AddNewPriority(parser, operation=None):
+  """Adds the new security policy rule priority to the argparse."""
+  parser.add_argument(
+      '--new-priority',
+      help=('New priority for the rule to {}. Valid in [0, 65535]. '.format(
+          operation)))
+
+
 def AddTargetResources(parser, required=False):
   """Adds the target resources the rule is applied to."""
   parser.add_argument(

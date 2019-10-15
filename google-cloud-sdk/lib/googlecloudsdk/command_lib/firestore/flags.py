@@ -48,14 +48,13 @@ def GetIndexArg():
   def _OrderToEnum(order):
     return arg_utils.ChoiceToEnum(
         order,
-        messages.GoogleFirestoreAdminV1beta2IndexField.OrderValueValuesEnum,
+        messages.GoogleFirestoreAdminV1IndexField.OrderValueValuesEnum,
         valid_choices=['ascending', 'descending'])
 
   def _ArrayConfigToEnum(array_config):
     return arg_utils.ChoiceToEnum(
         array_config,
-        (messages.GoogleFirestoreAdminV1beta2IndexField.
-         ArrayConfigValueValuesEnum),
+        (messages.GoogleFirestoreAdminV1IndexField.ArrayConfigValueValuesEnum),
         valid_choices=['contains'])
 
   spec = {'order': _OrderToEnum,

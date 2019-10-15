@@ -2792,8 +2792,8 @@ class BackendService(_messages.Message):
     network: The URL of the network to which this backend service belongs.
       This field can only be spcified when the load balancing scheme is set to
       INTERNAL.
-    outlierDetection: Settings controlling eviction of unhealthy hosts from
-      the load balancing pool for the backend service. If not set, this
+    outlierDetection: Settings controlling the eviction of unhealthy hosts
+      from the load balancing pool for the backend service. If not set, this
       feature is considered disabled.  This field is applicable to either:   -
       A regional backend service with the service_protocol set to HTTP, HTTPS,
       or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED.  - A global
@@ -20451,7 +20451,8 @@ class DisksAddResourcePoliciesRequest(_messages.Message):
   r"""A DisksAddResourcePoliciesRequest object.
 
   Fields:
-    resourcePolicies: Resource policies to be added to this disk.
+    resourcePolicies: Resource policies to be added to this disk. Currently
+      you can only specify one policy here.
   """
 
   resourcePolicies = _messages.StringField(1, repeated=True)
@@ -23578,7 +23579,11 @@ class HttpRetryPolicy(_messages.Message):
 
   Fields:
     numRetries: Specifies the allowed number retries. This number must be > 0.
-    perTryTimeout: Specifies a non-zero timeout per retry attempt.
+      If not specified, defaults to 1.
+    perTryTimeout: Specifies a non-zero timeout per retry attempt. If not
+      specified, will use the timeout set in HttpRouteAction. If timeout in
+      HttpRouteAction is not set, will use the largest timeout among all
+      backend services associated with the route.
     retryConditions: Specfies one or more conditions when this retry rule
       applies. Valid values are:   - 5xx: Loadbalancer will attempt a retry if
       the backend service responds with any 5xx response code, or if the
@@ -23627,9 +23632,10 @@ class HttpRouteAction(_messages.Message):
       suffixed with -shadow.
     retryPolicy: Specifies the retry policy associated with this route.
     timeout: Specifies the timeout for the selected route. Timeout is computed
-      from the time the request is has been fully processed (i.e. end-of-
-      stream) up until the response has been completely processed. Timeout
-      includes all retries. If not specified, the default value is 15 seconds.
+      from the time the request has been fully processed (i.e. end-of-stream)
+      up until the response has been completely processed. Timeout includes
+      all retries. If not specified, will use the largest timeout among all
+      backend services associated with the route.
     urlRewrite: The spec to modify the URL of the request, prior to forwarding
       the request to the matched service
     weightedBackendServices: A list of weighted backend services to send
@@ -29126,9 +29132,9 @@ class LogConfigCounterOptions(_messages.Message):
   IAMContext.principal even if a token or authority selector is present; or -
   "" (empty string), resulting in a counter with no fields.  Examples: counter
   { metric: "/debug_access_count" field: "iam_principal" } ==> increment
-  counter /iam/policy/backend_debug_access_count {iam_principal=[value of
-  IAMContext.principal]}  At this time we do not support multiple field names
-  (though this may be supported in the future).
+  counter /iam/policy/debug_access_count {iam_principal=[value of
+  IAMContext.principal]}  TODO(b/141846426): Consider supporting "authority"
+  and "iam_principal" fields in the same counter.
 
   Fields:
     customFields: Custom fields.
@@ -33269,8 +33275,8 @@ class OperationsScopedList(_messages.Message):
 
 
 class OutlierDetection(_messages.Message):
-  r"""Settings controlling eviction of unhealthy hosts from the load balancing
-  pool for the backend service.
+  r"""Settings controlling the eviction of unhealthy hosts from the load
+  balancing pool for the backend service.
 
   Fields:
     baseEjectionTime: The base time that a host is ejected for. The real
@@ -37956,19 +37962,30 @@ class RouterNatLogConfig(_messages.Message):
   r"""Configuration of logging on a NAT.
 
   Enums:
-    FilterValueValuesEnum: Specifies the desired filtering of logs on this
-      NAT. If unspecified, logs are exported for all connections handled by
-      this NAT.
+    FilterValueValuesEnum: Specify the desired filtering of logs on this NAT.
+      If unspecified, logs are exported for all connections handled by this
+      NAT. This option can take one of the following values:  - ERRORS_ONLY:
+      Export logs only for connection failures.  - TRANSLATIONS_ONLY: Export
+      logs only for successful connections.  - ALL: Export logs for all
+      connections, successful and unsuccessful.
 
   Fields:
     enable: Indicates whether or not to export logs. This is false by default.
-    filter: Specifies the desired filtering of logs on this NAT. If
-      unspecified, logs are exported for all connections handled by this NAT.
+    filter: Specify the desired filtering of logs on this NAT. If unspecified,
+      logs are exported for all connections handled by this NAT. This option
+      can take one of the following values:  - ERRORS_ONLY: Export logs only
+      for connection failures.  - TRANSLATIONS_ONLY: Export logs only for
+      successful connections.  - ALL: Export logs for all connections,
+      successful and unsuccessful.
   """
 
   class FilterValueValuesEnum(_messages.Enum):
-    r"""Specifies the desired filtering of logs on this NAT. If unspecified,
-    logs are exported for all connections handled by this NAT.
+    r"""Specify the desired filtering of logs on this NAT. If unspecified,
+    logs are exported for all connections handled by this NAT. This option can
+    take one of the following values:  - ERRORS_ONLY: Export logs only for
+    connection failures.  - TRANSLATIONS_ONLY: Export logs only for successful
+    connections.  - ALL: Export logs for all connections, successful and
+    unsuccessful.
 
     Values:
       ALL: <no description>

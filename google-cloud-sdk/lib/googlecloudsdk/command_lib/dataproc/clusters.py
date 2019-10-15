@@ -699,11 +699,12 @@ def GetDiskConfig(dataproc, boot_disk_type, boot_disk_size, num_local_ssds):
       numLocalSsds=num_local_ssds)
 
 
-def CreateCluster(dataproc, cluster, is_async, timeout):
+def CreateCluster(dataproc, cluster_ref, cluster, is_async, timeout):
   """Create a cluster.
 
   Args:
     dataproc: Dataproc object that contains client, messages, and resources
+    cluster_ref: Full resource ref of cluster with name, region, and project id
     cluster: Cluster to create
     is_async: Whether to wait for the operation to complete
     timeout: Timeout used when waiting for the operation to complete
@@ -712,7 +713,6 @@ def CreateCluster(dataproc, cluster, is_async, timeout):
     Created cluster, or None if async
   """
   # Get project id and region.
-  cluster_ref = util.ParseCluster(cluster.clusterName, dataproc)
   request_id = util.GetUniqueId()
   request = dataproc.messages.DataprocProjectsRegionsClustersCreateRequest(
       cluster=cluster,

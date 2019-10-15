@@ -13,7 +13,7 @@
 # limitations under the License.
 
 query_scope:
-  api_field: googleFirestoreAdminV1beta2Index.queryScope
+  api_field: googleFirestoreAdminV1Index.queryScope
   arg_name: query-scope
   help_text: Query scope the index applies to.
   default: collection
@@ -22,7 +22,7 @@ query_scope:
     enum_value: COLLECTION
 
 field_config:
-  api_field: googleFirestoreAdminV1beta2Index.fields
+  api_field: googleFirestoreAdminV1Index.fields
   arg_name: field-config
   help_text: |
     Configuration for a field.

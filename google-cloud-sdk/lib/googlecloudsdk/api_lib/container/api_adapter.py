@@ -68,11 +68,6 @@ NO_AUTOPROVISIONING_LIMITS_ERROR_MSG = """\
 Must specify both --max-cpu and --max-memory to enable autoprovisioning.
 """
 
-AT_MOST_ONE_IDENTITY_FOR_AUTOPROVISIONING_ERROR_MSG = """\
-At most one of --autoprovisioning-service-account and \
---autoprovisioning-scopes \
-can be specified"""
-
 LIMITS_WITHOUT_AUTOPROVISIONING_MSG = """\
 Must enable node autoprovisioning to specify resource limits for autoscaling.
 """
@@ -146,10 +141,6 @@ Flag --enable-stackdriver-kubernetes requires Cloud Logging and Cloud Monitoring
 
 CLOUDRUN_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG = """\
 The CloudRun-on-GKE addon (--addons=CloudRun) requires Cloud Logging and Cloud Monitoring to be enabled via the --enable-stackdriver-kubernetes flag.
-"""
-
-CLOUDRUN_ISTIO_KUBERNETES_DISABLED_ERROR_MSG = """\
-The CloudRun-on-GKE addon (--addons=CloudRun) requires Istio to be enabled via the --addons=Istio flag.
 """
 
 CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG = """\
@@ -2319,8 +2310,6 @@ class V1Beta1Adapter(V1Adapter):
       if CLOUDRUN in options.addons:
         if not options.enable_stackdriver_kubernetes:
           raise util.Error(CLOUDRUN_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
-        if ISTIO not in options.addons:
-          raise util.Error(CLOUDRUN_ISTIO_KUBERNETES_DISABLED_ERROR_MSG)
         if INGRESS not in options.addons:
           raise util.Error(CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG)
         cluster.addonsConfig.cloudRunConfig = self.messages.CloudRunConfig(
@@ -2483,10 +2472,6 @@ class V1Beta1Adapter(V1Adapter):
             mem_found = True
         if not cpu_found or not mem_found:
           raise util.Error(NO_AUTOPROVISIONING_LIMITS_ERROR_MSG)
-      if autoscaling.autoprovisioningNodePoolDefaults \
-        and autoscaling.autoprovisioningNodePoolDefaults.serviceAccount \
-        and autoscaling.autoprovisioningNodePoolDefaults.oauthScopes:
-        raise util.Error(AT_MOST_ONE_IDENTITY_FOR_AUTOPROVISIONING_ERROR_MSG)
     elif autoscaling.resourceLimits:
       raise util.Error(LIMITS_WITHOUT_AUTOPROVISIONING_MSG)
     elif autoscaling.autoprovisioningNodePoolDefaults and \
@@ -2611,8 +2596,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       if CLOUDRUN in options.addons:
         if not options.enable_stackdriver_kubernetes:
           raise util.Error(CLOUDRUN_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
-        if ISTIO not in options.addons:
-          raise util.Error(CLOUDRUN_ISTIO_KUBERNETES_DISABLED_ERROR_MSG)
         if INGRESS not in options.addons:
           raise util.Error(CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG)
         cluster.addonsConfig.cloudRunConfig = self.messages.CloudRunConfig(

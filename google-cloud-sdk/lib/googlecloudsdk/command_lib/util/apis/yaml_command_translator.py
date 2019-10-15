@@ -385,6 +385,11 @@ class CommandBuilder(object):
         base.URI_FLAG.RemoveFromParser(parser)
 
       def Run(self_, args):
+        if self.spec.iam and self.spec.iam.policy_version:
+          self.spec.request.static_fields[
+              self.spec.iam
+              .get_iam_policy_version_path] = self.spec.iam.policy_version
+
         _, response = self._CommonRun(args)
         return self._HandleResponse(response, args)
 
@@ -423,8 +428,10 @@ class CommandBuilder(object):
         # Use Policy message and set IAM request field name overrides for API's
         # with non-standard naming (if provided)
         if self.spec.iam:
-          policy_type_name = (self.spec.iam.message_type_overrides['policy'] or
-                              policy_type_name)
+          if 'policy' in self.spec.iam.message_type_overrides:
+            policy_type_name = (self.spec.iam
+                                .message_type_overrides['policy'] or
+                                policy_type_name)
           policy_request_path = (self.spec.iam.set_iam_policy_request_path or
                                  policy_request_path)
 
@@ -435,6 +442,10 @@ class CommandBuilder(object):
               policy_type_name))
         policy, update_mask = iam_util.ParsePolicyFileWithUpdateMask(
             args.policy_file, policy_type)
+
+        # override policy version
+        if self.spec.iam and self.spec.iam.policy_version:
+          policy.version = self.spec.iam.policy_version
 
         self.spec.request.static_fields[policy_field_path] = policy
         self._SetPolicyUpdateMask(update_mask)
@@ -776,8 +787,9 @@ class CommandBuilder(object):
     # for API's with non-standard naming (if provided)
     if self.spec.iam:
       overrides = self.spec.iam.message_type_overrides
-      set_iam_policy_request = (overrides['set_iam_policy_request']
-                                or set_iam_policy_request)
+      if 'set_iam_policy_request' in overrides:
+        set_iam_policy_request = (overrides['set_iam_policy_request']
+                                  or set_iam_policy_request)
       policy_request_path = (self.spec.iam.set_iam_policy_request_path
                              or policy_request_path)
 

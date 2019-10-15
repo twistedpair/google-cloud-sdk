@@ -1113,14 +1113,8 @@ class ExternalDataConfiguration(_messages.Message):
     csvOptions: Additional properties to set if sourceFormat is set to CSV.
     googleSheetsOptions: [Optional] Additional options if sourceFormat is set
       to GOOGLE_SHEETS.
-    hivePartitioningMode: [Optional, Trusted Tester] If hive partitioning is
-      enabled, which mode to use. Two modes are supported: - AUTO:
-      automatically infer partition key name(s) and type(s). - STRINGS:
-      automatic infer partition key name(s). All types are strings. Not all
-      storage formats support hive partitioning -- requesting hive
-      partitioning on an unsupported format will lead to an error. Note: this
-      setting is in the process of being deprecated in favor of
-      hivePartitioningOptions.
+    hivePartitioningMode: [Optional, Trusted Tester] Deprecated, do not use.
+      Please set hivePartitioningOptions instead.
     hivePartitioningOptions: [Optional, Trusted Tester] Options to configure
       hive partitioning support.
     ignoreUnknownValues: [Optional] Indicates if BigQuery should allow extra
@@ -1474,12 +1468,8 @@ class JobConfigurationLoad(_messages.Message):
       first byte of the encoded string to split the data in its raw, binary
       state. BigQuery also supports the escape sequence "\t" to specify a tab
       separator. The default value is a comma (',').
-    hivePartitioningMode: [Optional, Trusted Tester] If hive partitioning is
-      enabled, which mode to use. Two modes are supported: - AUTO:
-      automatically infer partition key name(s) and type(s). - STRINGS:
-      automatic infer partition key name(s). All types are strings. Not all
-      storage formats support hive partitioning -- requesting hive
-      partitioning on an unsupported format will lead to an error.
+    hivePartitioningMode: [Optional, Trusted Tester] Deprecated, do not use.
+      Please set hivePartitioningOptions instead.
     hivePartitioningOptions: [Optional, Trusted Tester] Options to configure
       hive partitioning support.
     ignoreUnknownValues: [Optional] Indicates if BigQuery should allow extra
@@ -1967,14 +1957,14 @@ class JobStatistics2(_messages.Message):
       manipulation-language. "MERGE": MERGE query; see
       https://cloud.google.com/bigquery/docs/reference/standard-sql/data-
       manipulation-language. "ALTER_TABLE": ALTER TABLE query. "ALTER_VIEW":
-      ALTER VIEW query. "CREATE_FUNCTION": CREATE FUNCTION query.
-      "CREATE_MODEL": CREATE [OR REPLACE] MODEL ... AS SELECT ... .
-      "CREATE_PROCEDURE": CREATE PROCEDURE query. "CREATE_TABLE": CREATE [OR
-      REPLACE] TABLE without AS SELECT. "CREATE_TABLE_AS_SELECT": CREATE [OR
-      REPLACE] TABLE ... AS SELECT ... . "CREATE_VIEW": CREATE [OR REPLACE]
-      VIEW ... AS SELECT ... . "DROP_FUNCTION" : DROP FUNCTION query.
-      "DROP_PROCEDURE": DROP PROCEDURE query. "DROP_TABLE": DROP TABLE query.
-      "DROP_VIEW": DROP VIEW query.
+      ALTER VIEW query. "ASSERT": ASSERT condition AS 'description'.
+      "CREATE_FUNCTION": CREATE FUNCTION query. "CREATE_MODEL": CREATE [OR
+      REPLACE] MODEL ... AS SELECT ... . "CREATE_PROCEDURE": CREATE PROCEDURE
+      query. "CREATE_TABLE": CREATE [OR REPLACE] TABLE without AS SELECT.
+      "CREATE_TABLE_AS_SELECT": CREATE [OR REPLACE] TABLE ... AS SELECT ... .
+      "CREATE_VIEW": CREATE [OR REPLACE] VIEW ... AS SELECT ... .
+      "DROP_FUNCTION" : DROP FUNCTION query. "DROP_PROCEDURE": DROP PROCEDURE
+      query. "DROP_TABLE": DROP TABLE query. "DROP_VIEW": DROP VIEW query.
     timeline: [Output-only] [Beta] Describes a timeline of job execution.
     totalBytesBilled: [Output-only] Total bytes billed for the job.
     totalBytesProcessed: [Output-only] Total bytes processed for the job.

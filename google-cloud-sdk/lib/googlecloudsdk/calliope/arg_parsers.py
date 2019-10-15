@@ -58,6 +58,7 @@ import re
 
 from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.core import log
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files
@@ -1409,7 +1410,7 @@ class FileContents(object):
   a dangling file handle open. The argument stored in the argparse Namespace
   is the file's contents.
 
-  Args:
+  Attributes:
     binary: bool, If True, the contents of the file will be returned as bytes.
 
   Returns:
@@ -1437,6 +1438,64 @@ class FileContents(object):
     try:
       return console_io.ReadFromFileOrStdin(name, binary=self.binary)
     except files.Error as e:
+      raise ArgumentTypeError(e)
+
+
+class YAMLFileContents(object):
+  """Creates an argparse type that reads the contents of a YAML or JSON file.
+
+  This is similar to argparse.FileType, but unlike FileType it does not leave
+  a dangling file handle open. The argument stored in the argparse Namespace
+  is the file's contents parsed as a YAML object.
+
+  Attributes:
+    validator: function, Function that will validate the provided input
+    file contents.
+
+  Returns:
+    A function that accepts a filename that should be parsed as a YAML
+    or JSON file.
+  """
+
+  def __init__(self, validator=None):
+    if validator and not callable(validator):
+      raise ArgumentTypeError('Validator must be callable')
+    self.validator = validator
+
+  def _AssertJsonLike(self, yaml_data):
+    if not yaml.dict_like(yaml_data) or yaml.list_like(yaml_data):
+      raise ArgumentTypeError('Invalid YAML/JSON Data [{}]'.format(yaml_data))
+
+  def __call__(self, name):
+    """Load YAML data from file path (name).
+
+    If name is "-", stdin is read until EOF. Otherwise, the named file is read.
+    If self.validator is set, call it on the yaml data once it is loaded.
+
+    Args:
+      name: str, The file path to the file.
+
+    Returns:
+      The contents of the file parsed as a YAML data object.
+
+    Raises:
+      ArgumentTypeError: If the file cannot be read or is not a JSON/YAML like
+        object.
+      ValueError: If file content fails validation.
+    """
+    try:
+      if name == '-':
+        yaml_data = yaml.load(console_io.ReadStdin())
+      else:
+        yaml_data = yaml.load_path(name)
+      self._AssertJsonLike(yaml_data)
+      if self.validator:
+        if not self.validator(yaml_data):
+          raise ValueError('Invalid YAML/JSON content [{}]'.format(yaml_data))
+
+      return yaml_data
+
+    except (yaml.YAMLParseError, yaml.FileLoadError) as e:
       raise ArgumentTypeError(e)
 
 

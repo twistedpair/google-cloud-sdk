@@ -97,7 +97,7 @@ def SeparateDeclarativeCommandTracks(command_impls):
     command_impls = [command_impls]
   for impl in command_impls:
     release_tracks = impl.get(RELEASE_TRACKS, [])
-    if len(release_tracks) <= 1:
+    if not release_tracks:
       yield impl
     else:
       for track in release_tracks:

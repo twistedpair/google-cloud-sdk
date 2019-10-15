@@ -697,6 +697,12 @@ class ResourceArgument(object):
               int(self.plural) + 1, self.resource_name or '',
               self.custom_plural),
           operation_type)
+      if self.name.startswith('instance'):
+        params['help'] += (' For details on valid instance names, refer '
+                           'to the criteria documented under the field '
+                           '\'name\' at: '
+                           'https://cloud.google.com/compute/docs/reference/'
+                           'rest/v1/instances')
 
     if self.name_arg.startswith('--'):
       params['required'] = self.required

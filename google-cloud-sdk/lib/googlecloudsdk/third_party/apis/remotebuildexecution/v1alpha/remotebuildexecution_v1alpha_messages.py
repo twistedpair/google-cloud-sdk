@@ -693,23 +693,31 @@ class GoogleDevtoolsRemotebuildbotCommandDurations(_messages.Message):
   Fields:
     dockerPrep: The time spent preparing the command to be run in a Docker
       container (includes pulling the Docker image, if necessary).
+    dockerPrepStartTime: The timestamp when docker prepartion begins.
     download: The time spent downloading the input files and constructing the
       working directory.
+    downloadStartTime: The timestamp when downloading the input files begins.
+    execStartTime: The timestamp when execution begins.
     execution: The time spent executing the command (i.e., doing useful work).
     isoPrepDone: The timestamp when preparation is done and bot starts
       downloading files.
     overall: The time spent completing the command, in total.
     stdout: The time spent uploading the stdout logs.
     upload: The time spent uploading the output files.
+    uploadStartTime: The timestamp when uploading the output files begins.
   """
 
   dockerPrep = _messages.StringField(1)
-  download = _messages.StringField(2)
-  execution = _messages.StringField(3)
-  isoPrepDone = _messages.StringField(4)
-  overall = _messages.StringField(5)
-  stdout = _messages.StringField(6)
-  upload = _messages.StringField(7)
+  dockerPrepStartTime = _messages.StringField(2)
+  download = _messages.StringField(3)
+  downloadStartTime = _messages.StringField(4)
+  execStartTime = _messages.StringField(5)
+  execution = _messages.StringField(6)
+  isoPrepDone = _messages.StringField(7)
+  overall = _messages.StringField(8)
+  stdout = _messages.StringField(9)
+  upload = _messages.StringField(10)
+  uploadStartTime = _messages.StringField(11)
 
 
 class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):

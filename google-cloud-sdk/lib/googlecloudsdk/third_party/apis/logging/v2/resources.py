@@ -61,16 +61,6 @@ class Collections(enum.Enum):
       [u'sinkName'],
       True
   )
-  BUCKETS = (
-      'buckets',
-      '{+name}',
-      {
-          '':
-              '{v2Id}/{v2Id1}/buckets/{bucketsId}',
-      },
-      [u'name'],
-      True
-  )
   EXCLUSIONS = (
       'exclusions',
       '{+name}',
@@ -124,6 +114,23 @@ class Collections(enum.Enum):
               'folders/{foldersId}/sinks/{sinksId}',
       },
       [u'sinkName'],
+      True
+  )
+  LOCATIONS = (
+      'locations',
+      '{v2Id}/{v2Id1}/locations/{locationsId}',
+      {},
+      [u'v2Id', u'v2Id1', u'locationsId'],
+      True
+  )
+  LOCATIONS_BUCKETS = (
+      'locations.buckets',
+      '{+name}',
+      {
+          '':
+              '{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}',
+      },
+      [u'name'],
       True
   )
   ORGANIZATIONS = (

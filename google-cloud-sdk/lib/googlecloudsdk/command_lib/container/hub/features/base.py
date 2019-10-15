@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import os
+
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.api_lib.util import waiter
@@ -157,3 +159,26 @@ def DeleteFeature(name):
       waiter.CloudOperationPollerNoResources(
           client.projects_locations_operations), op_resource,
       'Waiting for feature to be deleted')
+
+
+def ListMemberships(project):
+  """Lists Membership IDs in Hub.
+
+  Args:
+    project: the project in which Membership resources exist.
+
+  Returns:
+    a list of Membership resource IDs in Hub.
+
+  Raises:
+    apitools.base.py.HttpError: if the request returns an HTTP error
+  """
+  parent = 'projects/{}/locations/global'.format(project)
+  api_version = core_apis.ResolveVersion('gkehub')
+  client = core_apis.GetClientInstance('gkehub', api_version)
+  response = client.projects_locations_memberships.List(
+      client.MESSAGES_MODULE
+      .GkehubProjectsLocationsMembershipsListRequest(parent=parent))
+
+  return [os.path.basename(membership.name)
+          for membership in response.resources]

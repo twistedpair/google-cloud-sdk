@@ -23,6 +23,7 @@ from googlecloudsdk.api_lib.pubsub import subscriptions
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.pubsub import resource_args
 from googlecloudsdk.command_lib.pubsub import util
 from googlecloudsdk.core import log
 
@@ -260,18 +261,18 @@ def AddSubscriptionSettingsFlags(parser,
       current_group = mutual_exclusive_group
 
     set_dead_letter_policy_group = current_group.add_argument_group(
-        'Dead Letter Queue Options')
-    set_dead_letter_policy_group.add_argument(
-        '--dead-letter-topic',
-        type=str,
-        default=None,
-        help="""Name of the topic to which dead letter messages should be
-            published. Format is `projects/{project}/topics/{topic}`. The Cloud
-            Pub/Sub service account associated with the enclosing
-            subscription's parent project (i.e.,
-            service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
-            must have permission to Publish() to this topic and Acknowledge()
-            messages on this subscription.""")
+        help="""Dead Letter Queue Options. The Cloud Pub/Sub service account
+             associated with the enclosing subscription's parent project (i.e.,
+             service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
+             must have permission to Publish() to this topic and Acknowledge()
+             messages on this subscription.""")
+    dead_letter_topic = resource_args.CreateTopicResourceArg(
+        'to publish dead letter messages to.',
+        flag_name='dead-letter-topic',
+        positional=False,
+        required=False)
+    resource_args.AddResourceArgs(set_dead_letter_policy_group,
+                                  [dead_letter_topic])
     set_dead_letter_policy_group.add_argument(
         '--max-delivery-attempts',
         type=arg_parsers.BoundedInt(5, 100),

@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
 import re
 
 from googlecloudsdk.api_lib.run import k8s_object
@@ -32,7 +33,7 @@ def _IsSecretProperty(property_name, property_type):
           property_type == 'object')
 
 
-class PropertyHolder(object):
+class SourceSpecProperty(object):
   """Has details for a spec property of a source. Not write-through."""
 
   def __init__(self, name, description, type_, required):
@@ -40,6 +41,52 @@ class PropertyHolder(object):
     self.description = description
     self.type = type_
     self.required = required
+
+
+_EVENT_TYPE_REGISTRY_KEY = 'registry.cloud.run/eventTypes'
+
+
+class EventType(object):
+  """Has details for an event type of a source. Not write-through."""
+
+  def __init__(self, source_crd, **kwargs):
+    """Initialize a holder of info about an event type.
+
+    Args:
+      source_crd: SourceCustomResourceDefinition, the event type's parent
+        source CRD.
+      **kwargs: properties of the event type.
+    """
+    self._crd = source_crd
+    self._properties = kwargs
+
+  def __getattr__(self, attr):
+    try:
+      return self._properties[attr]
+    except KeyError as e:
+      raise AttributeError(e.args[0])
+
+  @property
+  def crd(self):
+    """Returns the source crd."""
+    return self._crd
+
+  @property
+  def details(self):
+    """Returns a dict with details about this event type."""
+    details = self.AsDict()
+    details['category'] = self._crd.source_kind
+    return details
+
+  def AsDict(self):
+    """Returns a dict with properties of this event type."""
+    return self._properties.copy()
+
+  def __eq__(self, other):
+    if isinstance(other, type(self)):
+      # pylint:disable=protected-access
+      return self._properties == other._properties and self._crd == other._crd
+    return False
 
 
 class SourceCustomResourceDefinition(k8s_object.KubernetesObject):
@@ -53,12 +100,6 @@ class SourceCustomResourceDefinition(k8s_object.KubernetesObject):
   # set either because we'll provide another way to specify them, because
   # we'll set them ourselves, or because they're not meant to be set.
   _PRIVATE_PROPERTY_FIELDS = frozenset({'sink', 'ceOverrides'})
-
-  @property
-  def source_name(self):
-    if 'registry' not in self.schema:
-      return None
-    return self.schema['registry'].title
 
   @property
   def source_kind(self):
@@ -82,20 +123,25 @@ class SourceCustomResourceDefinition(k8s_object.KubernetesObject):
 
   @property
   def event_types(self):
-    if 'registry' not in self.schema:
+    """Returns List[EventType] from the registry annotation json string."""
+    if _EVENT_TYPE_REGISTRY_KEY not in self.annotations:
       return []
-    return [
-        EventTypeDefinition(name, et, self)
-        for name, et in self.schema['registry']['eventTypes'].items()
-    ]
+    event_types = json.loads(self.annotations[_EVENT_TYPE_REGISTRY_KEY])
+    return [EventType(self, **et) for et in event_types]
+
+  @event_types.setter
+  def event_types(self, event_type_holders):
+    """Sets the registry annotation given a List[EventType]."""
+    event_type_dicts = [et.AsDict() for et in event_type_holders]
+    self.annotations[_EVENT_TYPE_REGISTRY_KEY] = json.dumps(event_type_dicts)
 
   @property
   def secret_properties(self):
     """The properties used to define source secrets.
 
     Returns:
-      List[PropertyHolder], modifying this list does *not* modify the underlying
-        properties in the SourceCRD.
+      List[SourceSpecProperty], modifying this list does *not* modify the
+        underlying properties in the SourceCRD.
     """
     properties = []
     required_properties = self.schema['spec'].required
@@ -103,7 +149,7 @@ class SourceCustomResourceDefinition(k8s_object.KubernetesObject):
       if (k not in self._PRIVATE_PROPERTY_FIELDS and
           _IsSecretProperty(k, v.type)):
         properties.append(
-            PropertyHolder(
+            SourceSpecProperty(
                 name=k,
                 description=v.description,
                 type_=v.type,
@@ -115,8 +161,8 @@ class SourceCustomResourceDefinition(k8s_object.KubernetesObject):
     """The user-configurable properties of the source.
 
     Returns:
-      List[PropertyHolder], modifying this list does *not* modify the underlying
-        properties in the SourceCRD.
+      List[SourceSpecProperty], modifying this list does *not* modify the
+        underlying properties in the SourceCRD.
     """
     properties = []
     required_properties = self.schema['spec'].required
@@ -124,74 +170,12 @@ class SourceCustomResourceDefinition(k8s_object.KubernetesObject):
       if (k not in self._PRIVATE_PROPERTY_FIELDS and
           not _IsSecretProperty(k, v.type)):
         properties.append(
-            PropertyHolder(
+            SourceSpecProperty(
                 name=k,
                 description=v.description,
                 type_=v.type,
                 required=k in required_properties))
     return properties
-
-
-class EventTypeDefinition(object):
-  """Wrap an event type in a source CRD with its source."""
-
-  # These fields should not be exposed to the user as regular parameters to be
-  # set either because we'll provide another way to specify them, because
-  # we'll set them ourselves, or because they're not meant to be set.
-  _PRIVATE_PROPERTY_FIELDS = frozenset({'type', 'schema', 'specVersion'})
-
-  def __init__(self, name, wrapped_value, source_crd):
-    """Wrap an event type and its source.
-
-    Args:
-      name: str, event type name
-      wrapped_value: JsonSchemaPropsWrapper, wrapped event type json message
-      source_crd: SourceCustomResourceDefinition, event type's source CRD
-    """
-    self._name = name
-    self._wrapped_json = wrapped_value
-    self._crd = source_crd
-
-  @property
-  def crd(self):
-    """Source crd that produces this event type."""
-    return self._crd
-
-  @property
-  def name(self):
-    """Name of the event type."""
-    return self._name
-
-  @property
-  def type(self):
-    """Type pattern of the event type."""
-    return self._wrapped_json['type'].pattern
-
-  @property
-  def description(self):
-    """Description of the event type."""
-    return self._wrapped_json.description
-
-  @property
-  def schema(self):
-    """Build the dictionary of schema-related info."""
-    return {
-        'type': self.type,
-        'schema': self._wrapped_json['schema'].pattern,
-        'description': self.description,
-        'category': self._crd.source_name
-    }
-
-  def __repr__(self):
-    return '{}({})'.format(type(self).__name__, repr(self._wrapped_json))
-
-  def __eq__(self, other):
-    if isinstance(other, type(self)):
-      # pylint:disable=protected-access
-      return (self._name == other._name and
-              self._wrapped_json == other._wrapped_json and
-              self._crd == other._crd)
-    return False
 
 
 class JsonSchemaPropsWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):

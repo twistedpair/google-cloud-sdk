@@ -141,7 +141,7 @@
           "type": "string"
         },
         "recommenderSubtype": {
-          "description": "Contains an identifier for a subtype of recommendations produced for the\nsame recommender. Subtype is a function of content and impact, meaning a\nnew subtype will be added when either content or primary impact category\nchanges.\n\nExamples:\n  For recommender = \"google.iam.policy.Recommender\",\n  recommender_subtype can be one of \"REMOVE_ROLE\"\/\"REPLACE_ROLE\"",
+          "description": "Contains an identifier for a subtype of recommendations produced for the\nsame recommender. Subtype is a function of content and impact, meaning a\nnew subtype might be added when significant changes to `content` or\n`primary_impact.category` are introduced. See the Recommenders section\nto see a list of subtypes for a given Recommender.\n\nExamples:\n  For recommender = \"google.iam.policy.Recommender\",\n  recommender_subtype can be one of \"REMOVE_ROLE\"\/\"REPLACE_ROLE\"",
           "type": "string"
         },
         "lastRefreshTime": {

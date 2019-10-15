@@ -383,7 +383,7 @@
         },
         "expiryDetail": {
           "description": "Expiry details of the Membership. It can be set only during the\nMembership creation\/update time.",
-          "$ref": "ExpiryDetail"
+          "$ref": "MembershipExpiryDetail"
         }
       }
     },
@@ -393,13 +393,29 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "MembershipRole in string format.\n\nCurrently supported MembershipRoles: `\"MEMBER\"`.",
+          "description": "MembershipRole in string format.\nCurrently supported MembershipRoles: `\"MEMBER\", \"OWNER\", \"MANAGER\"`.",
           "type": "string"
+        },
+        "expiryDetail": {
+          "description": "Expiry details of the MembershipRole.\nCurrently supported MembershipRoles: `\"MEMBER\"`.",
+          "$ref": "MembershipRoleExpiryDetail"
         }
       }
     },
-    "ExpiryDetail": {
-      "id": "ExpiryDetail",
+    "MembershipRoleExpiryDetail": {
+      "id": "MembershipRoleExpiryDetail",
+      "description": "Specifies Membership expiry attributes.",
+      "type": "object",
+      "properties": {
+        "expireTime": {
+          "description": "Expiration time for the Membership.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "MembershipExpiryDetail": {
+      "id": "MembershipExpiryDetail",
       "description": "Specifies Membership expiry attributes.",
       "type": "object",
       "properties": {

@@ -1501,76 +1501,6 @@ class LoggingBillingAccountsSinksUpdateRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
-class LoggingBucketsGetRequest(_messages.Message):
-  r"""A LoggingBucketsGetRequest object.
-
-  Fields:
-    name: Required. The resource name of the bucket:
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
-      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
-      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
-      [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id".
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class LoggingBucketsListRequest(_messages.Message):
-  r"""A LoggingBucketsListRequest object.
-
-  Fields:
-    pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored. The presence of nextPageToken
-      in the response indicates that more results might be available.
-    pageToken: Optional. If present, then retrieve the next batch of results
-      from the preceding call to this method. pageToken must be the value of
-      nextPageToken from the previous response. The values of other method
-      parameters should be identical to those in the previous call.
-    parent: Required. The parent resource whose buckets are to be listed:
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
-      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" Note: The locations
-      portion of the resource is required, but supplying the character - in
-      place of LOCATION_ID will return all buckets.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class LoggingBucketsPatchRequest(_messages.Message):
-  r"""A LoggingBucketsPatchRequest object.
-
-  Fields:
-    logBucket: A LogBucket resource to be passed as the request body.
-    name: Required. The full resource name of the bucket to update.
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
-      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
-      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
-      [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id". Also requires permission
-      "resourcemanager.projects.updateLiens" to set the locked property
-    updateMask: Required. Field mask that specifies the fields in bucket that
-      need an update. A bucket field will be overwritten if, and only if, it
-      is in the update mask. name and output only fields cannot be updated.For
-      a detailed FieldMask definition, see https://developers.google.com
-      /protocol-
-      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
-      updateMask=retention_days.
-  """
-
-  logBucket = _messages.MessageField('LogBucket', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-
-
 class LoggingExclusionsCreateRequest(_messages.Message):
   r"""A LoggingExclusionsCreateRequest object.
 
@@ -2108,6 +2038,76 @@ class LoggingLocationsBucketsDeleteRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class LoggingLocationsBucketsGetRequest(_messages.Message):
+  r"""A LoggingLocationsBucketsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the bucket:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingLocationsBucketsListRequest(_messages.Message):
+  r"""A LoggingLocationsBucketsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The parent resource whose buckets are to be listed:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" Note: The locations
+      portion of the resource is required, but supplying the character - in
+      place of LOCATION_ID will return all buckets.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingLocationsBucketsPatchRequest(_messages.Message):
+  r"""A LoggingLocationsBucketsPatchRequest object.
+
+  Fields:
+    logBucket: A LogBucket resource to be passed as the request body.
+    name: Required. The full resource name of the bucket to update.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id". Also requires permission
+      "resourcemanager.projects.updateLiens" to set the locked property
+    updateMask: Required. Field mask that specifies the fields in bucket that
+      need an update. A bucket field will be overwritten if, and only if, it
+      is in the update mask. name and output only fields cannot be updated.For
+      a detailed FieldMask definition, see https://developers.google.com
+      /protocol-
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
+      updateMask=retention_days.
+  """
+
+  logBucket = _messages.MessageField('LogBucket', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class LoggingLogsDeleteRequest(_messages.Message):

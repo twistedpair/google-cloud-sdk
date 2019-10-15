@@ -33,6 +33,7 @@ class Dataproc(object):
 
   def __init__(self, release_track=base.ReleaseTrack.GA):
     super(Dataproc, self).__init__()
+    self.release_track = release_track
     if release_track == base.ReleaseTrack.GA:
       self.api_version = 'v1'
     else:

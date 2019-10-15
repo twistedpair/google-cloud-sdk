@@ -34,6 +34,8 @@ def MakeSubnetworkUpdateRequest(
     aggregation_interval=None,
     flow_sampling=None,
     metadata=None,
+    filter_expr=None,
+    metadata_fields=None,
     set_role_active=None,
     drain_timeout_seconds=None,
     enable_private_ipv6_access=None,
@@ -55,6 +57,8 @@ def MakeSubnetworkUpdateRequest(
     aggregation_interval: The internal at which to aggregate flow logs.
     flow_sampling: The sampling rate for flow logging in this subnet.
     metadata: Whether metadata fields should be added reported flow logs.
+    filter_expr: custom CEL expression for filtering flow logs
+    metadata_fields: custom metadata fields to be added to flow logs
     set_role_active: Updates the role of a BACKUP subnet to ACTIVE.
     drain_timeout_seconds: The maximum amount of time to drain connections from
       the active subnet to the backup subnet with set_role_active=True.
@@ -130,29 +134,24 @@ def MakeSubnetworkUpdateRequest(
     ])[0]
     subnetwork.fingerprint = original_subnetwork.fingerprint
 
-    if include_alpha_logging:
-      log_config = client.messages.SubnetworkLogConfig(enable=enable_flow_logs)
-      if aggregation_interval is not None:
-        log_config.aggregationInterval = (
-            flags.GetLoggingAggregationIntervalArgAlpha(
-                client.messages).GetEnumForChoice(aggregation_interval))
-      if flow_sampling is not None:
-        log_config.flowSampling = flow_sampling
-      if metadata is not None:
+    log_config = client.messages.SubnetworkLogConfig(enable=enable_flow_logs)
+    if aggregation_interval is not None:
+      log_config.aggregationInterval = flags.GetLoggingAggregationIntervalArg(
+          client.messages).GetEnumForChoice(aggregation_interval)
+    if flow_sampling is not None:
+      log_config.flowSampling = flow_sampling
+    if metadata is not None:
+      if include_alpha_logging:
         log_config.metadata = flags.GetLoggingMetadataArgAlpha(
             client.messages).GetEnumForChoice(metadata)
-      subnetwork.logConfig = log_config
-    else:
-      log_config = client.messages.SubnetworkLogConfig(enable=enable_flow_logs)
-      if aggregation_interval is not None:
-        log_config.aggregationInterval = flags.GetLoggingAggregationIntervalArg(
-            client.messages).GetEnumForChoice(aggregation_interval)
-      if flow_sampling is not None:
-        log_config.flowSampling = flow_sampling
-      if metadata is not None:
+      else:
         log_config.metadata = flags.GetLoggingMetadataArg(
             client.messages).GetEnumForChoice(metadata)
-      subnetwork.logConfig = log_config
+    if include_alpha_logging and filter_expr is not None:
+      log_config.filterExpr = filter_expr
+    if include_alpha_logging and metadata_fields is not None:
+      log_config.metadataFields = metadata_fields
+    subnetwork.logConfig = log_config
 
     return client.MakeRequests(
         [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])

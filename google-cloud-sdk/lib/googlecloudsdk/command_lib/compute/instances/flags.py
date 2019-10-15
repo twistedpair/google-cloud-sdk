@@ -1132,6 +1132,15 @@ def AddMinNodeCpuArg(parser):
       """)
 
 
+def AddLocationHintArg(parser):
+  parser.add_argument(
+      '--location-hint',
+      hidden=True,
+      help="""\
+      Used by internal tools to control sub-zone location of the instance.
+      """)
+
+
 def AddPreemptibleVmArgs(parser):
   parser.add_argument(
       '--preemptible',

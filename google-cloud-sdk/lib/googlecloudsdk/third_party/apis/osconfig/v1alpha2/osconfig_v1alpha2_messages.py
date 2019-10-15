@@ -238,6 +238,8 @@ class ExecutePatchJobRequest(_messages.Message):
   Fields:
     description: Description of the PatchJob. Length of the description is
       limited to 1024 characters.
+    displayName: Display name for this patch job. This does not have to be
+      unique.
     dryRun: Should this patch be a dry-run only.  Instances will be contacted,
       but they will do nothing.
     duration: Optional. Duration of the patch job. After the duration ends,
@@ -251,11 +253,12 @@ class ExecutePatchJobRequest(_messages.Message):
   """
 
   description = _messages.StringField(1)
-  dryRun = _messages.BooleanField(2)
-  duration = _messages.StringField(3)
-  filter = _messages.StringField(4)
-  instanceFilter = _messages.MessageField('PatchInstanceFilter', 5)
-  patchConfig = _messages.MessageField('PatchConfig', 6)
+  displayName = _messages.StringField(2)
+  dryRun = _messages.BooleanField(3)
+  duration = _messages.StringField(4)
+  filter = _messages.StringField(5)
+  instanceFilter = _messages.MessageField('PatchInstanceFilter', 6)
+  patchConfig = _messages.MessageField('PatchConfig', 7)
 
 
 class GcsObject(_messages.Message):
@@ -359,6 +362,19 @@ class ListGuestPoliciesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListPatchDeploymentsResponse(_messages.Message):
+  r"""A response message for listing patch deployments.
+
+  Fields:
+    nextPageToken: A pagination token that can be used to get the next page of
+      patch deployments.
+    patchDeployments: The list of patch deployments.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  patchDeployments = _messages.MessageField('PatchDeployment', 2, repeated=True)
+
+
 class ListPatchJobInstanceDetailsResponse(_messages.Message):
   r"""A response message for listing the instances' details for a patch job.
 
@@ -460,6 +476,32 @@ class LookupEffectiveGuestPoliciesResponseSourcedSoftwareRecipe(_messages.Messag
 
   softwareRecipe = _messages.MessageField('SoftwareRecipe', 1)
   source = _messages.StringField(2)
+
+
+class MonthlySchedule(_messages.Message):
+  r"""Represents a monthly schedule. An example of a valid monthly schedule is
+  "on the third Tuesday of the month" or "on the 15th of the month".
+
+  Fields:
+    monthDay: Required. One day of the month. 1-31 indicates the 1st to the
+      31st day. -1 indicates the last day of the month. Months without the
+      target day will be skipped. For example, a schedule to run "every month
+      on the 31st" will not run in February, April, June, etc.
+    weekDayOfMonth: Required. Week day in a month.
+  """
+
+  monthDay = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  weekDayOfMonth = _messages.MessageField('WeekDayOfMonth', 2)
+
+
+class OneTimeSchedule(_messages.Message):
+  r"""Represents the time for a patch job execution.
+
+  Fields:
+    executeTime: Required. The desired patch job execution time.
+  """
+
+  executeTime = _messages.StringField(1)
 
 
 class OsconfigFoldersGuestPoliciesCreateRequest(_messages.Message):
@@ -672,6 +714,66 @@ class OsconfigProjectsGuestPoliciesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class OsconfigProjectsPatchDeploymentsCreateRequest(_messages.Message):
+  r"""A OsconfigProjectsPatchDeploymentsCreateRequest object.
+
+  Fields:
+    parent: Required. The project to apply this patch deployment to in the
+      form `projects/*`.
+    patchDeployment: A PatchDeployment resource to be passed as the request
+      body.
+    patchDeploymentId: Required. The logical name of the patch deployment in
+      the project with the following restrictions: * Must contain only
+      lowercase letters, numbers, and hyphens. * Must start with a letter. *
+      Must be between 1-63 characters. * Must end with a number or a letter. *
+      Must be unique within the project.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  patchDeployment = _messages.MessageField('PatchDeployment', 2)
+  patchDeploymentId = _messages.StringField(3)
+
+
+class OsconfigProjectsPatchDeploymentsDeleteRequest(_messages.Message):
+  r"""A OsconfigProjectsPatchDeploymentsDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the patch deployment in the form
+      `projects/*/patchDeployments/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OsconfigProjectsPatchDeploymentsGetRequest(_messages.Message):
+  r"""A OsconfigProjectsPatchDeploymentsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the patch deployment in the form
+      `projects/*/patchDeployments/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OsconfigProjectsPatchDeploymentsListRequest(_messages.Message):
+  r"""A OsconfigProjectsPatchDeploymentsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of patch deployments to return.
+      Default is 100.
+    pageToken: Optional. A pagination token returned from a previous call to
+      ListPatchDeployments that indicates where this listing should continue
+      from.
+    parent: Required. The resource name of the parent in the form
+      `projects/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class OsconfigProjectsPatchJobsCancelRequest(_messages.Message):
   r"""A OsconfigProjectsPatchJobsCancelRequest object.
 
@@ -731,15 +833,19 @@ class OsconfigProjectsPatchJobsListRequest(_messages.Message):
   r"""A OsconfigProjectsPatchJobsListRequest object.
 
   Fields:
+    filter: If provided, this field specifies the criteria that must be met by
+      patch jobs to be included in the response. Currently, filtering is only
+      available on the patch_deployment field.
     pageSize: The maximum number of instance status to return.
     pageToken: A pagination token returned from a previous call that indicates
       where this listing should continue from. This field is optional.
     parent: In the form of `projects/*`
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class OsconfigProjectsZonesInstancesLookupGuestPoliciesRequest(_messages.Message):
@@ -924,6 +1030,41 @@ class PatchConfig(_messages.Message):
   zypper = _messages.MessageField('ZypperSettings', 9)
 
 
+class PatchDeployment(_messages.Message):
+  r"""An OS Config resource representing a patch deployment. These deployments
+  represent configurations that individual patch jobs should be executed with,
+  such as the instance filter, package repository settings, and a schedule.
+
+  Fields:
+    createTime: Output only. Time this patch deployment was created.
+    description: Optional. Description of the patch deployment. Length of the
+      description is limited to 1024 characters.
+    duration: Optional. Duration of the patch. After the duration ends, patch
+      will time out.
+    instanceFilter: Required. Instances to patch.
+    lastExecuteTime: Output only. The last execution time of a patch job
+      triggered by this deployment.
+    name: Unique name of the resource in this project using the form:
+      `projects/{project_id}/patchDeployments/{patch_deployment_id}`. Ignored
+      when creating a new PatchDeployment.
+    oneTimeSchedule: Required. Schedule with an one-time execution.
+    patchConfig: Optional. Patch configuration being applied.
+    recurringSchedule: Required. Schedule with recurring executions.
+    updateTime: Output only. Time this patch deployment was updated.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  duration = _messages.StringField(3)
+  instanceFilter = _messages.MessageField('PatchInstanceFilter', 4)
+  lastExecuteTime = _messages.StringField(5)
+  name = _messages.StringField(6)
+  oneTimeSchedule = _messages.MessageField('OneTimeSchedule', 7)
+  patchConfig = _messages.MessageField('PatchConfig', 8)
+  recurringSchedule = _messages.MessageField('RecurringSchedule', 9)
+  updateTime = _messages.StringField(10)
+
+
 class PatchInstanceFilter(_messages.Message):
   r"""A filter to target VM instances for patching. The targeted VMs must meet
   all criteria specified. So if both labels and zones are specified, the patch
@@ -1008,6 +1149,8 @@ class PatchJob(_messages.Message):
     createTime: Output only. Time this PatchJob was created.
     description: Description of the patch job. Length of the description is
       limited to 1024 characters.
+    displayName: Display name for this patch job. This is not a unique
+      identifier.
     dryRun: If this patch job is a dry run, the agent will report that it has
       finished without running any updates on the VM.
     duration: Duration of the patch job. After the duration ends, the patch
@@ -1021,6 +1164,8 @@ class PatchJob(_messages.Message):
     name: Output only. Unique identifier for this patch job in the form
       `projects/*/patchJobs/*`
     patchConfig: Patch configuration being applied.
+    patchDeployment: Output only. Name of the patch deployment that created
+      this patch job.
     percentComplete: Reflects the overall progress of the patch job in the
       range of 0.0 being no progress to 100.0 being complete.
     state: Output only. The current state of the PatchJob.
@@ -1052,17 +1197,19 @@ class PatchJob(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  dryRun = _messages.BooleanField(3)
-  duration = _messages.StringField(4)
-  errorMessage = _messages.StringField(5)
-  filter = _messages.StringField(6)
-  instanceDetailsSummary = _messages.MessageField('PatchJobInstanceDetailsSummary', 7)
-  instanceFilter = _messages.MessageField('PatchInstanceFilter', 8)
-  name = _messages.StringField(9)
-  patchConfig = _messages.MessageField('PatchConfig', 10)
-  percentComplete = _messages.FloatField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  updateTime = _messages.StringField(13)
+  displayName = _messages.StringField(3)
+  dryRun = _messages.BooleanField(4)
+  duration = _messages.StringField(5)
+  errorMessage = _messages.StringField(6)
+  filter = _messages.StringField(7)
+  instanceDetailsSummary = _messages.MessageField('PatchJobInstanceDetailsSummary', 8)
+  instanceFilter = _messages.MessageField('PatchInstanceFilter', 9)
+  name = _messages.StringField(10)
+  patchConfig = _messages.MessageField('PatchConfig', 11)
+  patchDeployment = _messages.StringField(12)
+  percentComplete = _messages.FloatField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  updateTime = _messages.StringField(15)
 
 
 class PatchJobInstanceDetails(_messages.Message):
@@ -1166,6 +1313,59 @@ class PatchJobInstanceDetailsSummary(_messages.Message):
   instancesSucceeded = _messages.IntegerField(12)
   instancesSucceededRebootRequired = _messages.IntegerField(13)
   instancesTimedOut = _messages.IntegerField(14)
+
+
+class RecurringSchedule(_messages.Message):
+  r"""Represents a recurring schedule for patch job executions.
+
+  Enums:
+    FrequencyValueValuesEnum: Required. The frequency unit of this recurring
+      schedule.
+
+  Fields:
+    endTime: Optional. The end time for a recurring schedule to be active.
+    frequency: Required. The frequency unit of this recurring schedule.
+    isActive: Output only. Indicates whether this recurring schedule is
+      active. A recurring schedule may be inactive past end_time or by user
+      setting.
+    lastExecuteTime: Output only. The last actual patch execution time for
+      display.
+    monthly: Required. Schedule with monthly executions.
+    nextExecuteTime: Output only. The next expected patch execution time for
+      display.
+    startTime: Optional. The start time for a recurring schedule to be active.
+      Defaults to create_time of the patch deployment.
+    timeOfDay: Required. Time of the day for an instance of the recurrence.
+    timeZone: Required. Defines the time zone that day_time will be relative
+      to. The rules for daylight saving time are determined by the chosen time
+      zone. , see b/141445686.
+    weekly: Required. Schedule with weekly executions.
+  """
+
+  class FrequencyValueValuesEnum(_messages.Enum):
+    r"""Required. The frequency unit of this recurring schedule.
+
+    Values:
+      FREQUENCY_UNSPECIFIED: Invalid. A frequency must be specified.
+      WEEKLY: Indicates that the recurrence frequency should be expressed in
+        terms of weeks.
+      MONTHLY: Indicates that the recurrence frequency should be expressed in
+        terms of months.
+    """
+    FREQUENCY_UNSPECIFIED = 0
+    WEEKLY = 1
+    MONTHLY = 2
+
+  endTime = _messages.StringField(1)
+  frequency = _messages.EnumField('FrequencyValueValuesEnum', 2)
+  isActive = _messages.BooleanField(3)
+  lastExecuteTime = _messages.StringField(4)
+  monthly = _messages.MessageField('MonthlySchedule', 5)
+  nextExecuteTime = _messages.StringField(6)
+  startTime = _messages.StringField(7)
+  timeOfDay = _messages.MessageField('TimeOfDay', 8)
+  timeZone = _messages.MessageField('TimeZone', 9)
+  weekly = _messages.MessageField('WeeklySchedule', 10)
 
 
 class ReportPatchJobInstanceDetailsRequest(_messages.Message):
@@ -1667,6 +1867,113 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class TimeOfDay(_messages.Message):
+  r"""Represents a time of day. The date and time zone are either not
+  significant or are specified elsewhere. An API may choose to allow leap
+  seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.
+
+  Fields:
+    hours: Hours of day in 24 hour format. Should be from 0 to 23. An API may
+      choose to allow the value "24:00:00" for scenarios like business closing
+      time.
+    minutes: Minutes of hour of day. Must be from 0 to 59.
+    nanos: Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.
+    seconds: Seconds of minutes of the time. Must normally be from 0 to 59. An
+      API may allow the value 60 if it allows leap-seconds.
+  """
+
+  hours = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  nanos = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  seconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class TimeZone(_messages.Message):
+  r"""Represents a time zone from the [IANA Time Zone
+  Database](https://www.iana.org/time-zones).
+
+  Fields:
+    id: IANA Time Zone Database time zone, e.g. "America/New_York".
+    version: Optional. IANA Time Zone Database version number, e.g. "2019a".
+  """
+
+  id = _messages.StringField(1)
+  version = _messages.StringField(2)
+
+
+class WeekDayOfMonth(_messages.Message):
+  r"""Represents one week day in a month. An example is "the 4th Sunday".
+
+  Enums:
+    DayOfWeekValueValuesEnum: Required. A day of the week.
+
+  Fields:
+    dayOfWeek: Required. A day of the week.
+    weekOrdinal: Required. Week number in a month. 1-4 indicates the 1st to
+      4th week of the month. -1 indicates the last week of the month.
+  """
+
+  class DayOfWeekValueValuesEnum(_messages.Enum):
+    r"""Required. A day of the week.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The unspecified day-of-week.
+      MONDAY: The day-of-week of Monday.
+      TUESDAY: The day-of-week of Tuesday.
+      WEDNESDAY: The day-of-week of Wednesday.
+      THURSDAY: The day-of-week of Thursday.
+      FRIDAY: The day-of-week of Friday.
+      SATURDAY: The day-of-week of Saturday.
+      SUNDAY: The day-of-week of Sunday.
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  dayOfWeek = _messages.EnumField('DayOfWeekValueValuesEnum', 1)
+  weekOrdinal = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class WeeklySchedule(_messages.Message):
+  r"""Represents a weekly schedule.
+
+  Enums:
+    DayOfWeekValueValuesEnum: Required. Day of the week.
+
+  Fields:
+    dayOfWeek: Required. Day of the week.
+  """
+
+  class DayOfWeekValueValuesEnum(_messages.Enum):
+    r"""Required. Day of the week.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The unspecified day-of-week.
+      MONDAY: The day-of-week of Monday.
+      TUESDAY: The day-of-week of Tuesday.
+      WEDNESDAY: The day-of-week of Wednesday.
+      THURSDAY: The day-of-week of Thursday.
+      FRIDAY: The day-of-week of Friday.
+      SATURDAY: The day-of-week of Saturday.
+      SUNDAY: The day-of-week of Sunday.
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  dayOfWeek = _messages.EnumField('DayOfWeekValueValuesEnum', 1)
 
 
 class WindowsUpdateSettings(_messages.Message):

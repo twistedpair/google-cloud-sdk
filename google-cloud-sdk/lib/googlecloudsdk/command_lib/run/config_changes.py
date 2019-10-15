@@ -646,14 +646,12 @@ class NoTrafficChange(ConfigChanger):
 class TrafficChanges(ConfigChanger):
   """Represents the user intent to change a services traffic assignments."""
 
-  def __init__(self, new_percentages, new_latest_percentage):
+  def __init__(self, new_percentages):
     self._new_percentages = new_percentages
-    self._new_latest_percentage = new_latest_percentage
 
   def Adjust(self, resource):
     """Mutates the given services traffic assignments."""
-    resource.traffic.UpdateTraffic(
-        self._new_percentages, self._new_latest_percentage)
+    resource.traffic.UpdateTraffic(self._new_percentages)
     return resource
 
 

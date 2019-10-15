@@ -40,6 +40,7 @@ class OsconfigV1alpha2(base_api.BaseApiClient):
     self.organizations_guestPolicies = self.OrganizationsGuestPoliciesService(self)
     self.organizations = self.OrganizationsService(self)
     self.projects_guestPolicies = self.ProjectsGuestPoliciesService(self)
+    self.projects_patchDeployments = self.ProjectsPatchDeploymentsService(self)
     self.projects_patchJobs_instanceDetails = self.ProjectsPatchJobsInstanceDetailsService(self)
     self.projects_patchJobs = self.ProjectsPatchJobsService(self)
     self.projects_zones_instances = self.ProjectsZonesInstancesService(self)
@@ -501,6 +502,124 @@ class OsconfigV1alpha2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsPatchDeploymentsService(base_api.BaseApiService):
+    """Service class for the projects_patchDeployments resource."""
+
+    _NAME = u'projects_patchDeployments'
+
+    def __init__(self, client):
+      super(OsconfigV1alpha2.ProjectsPatchDeploymentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create an OS Config Patch Deployment.
+
+      Args:
+        request: (OsconfigProjectsPatchDeploymentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PatchDeployment) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha2/projects/{projectsId}/patchDeployments',
+        http_method=u'POST',
+        method_id=u'osconfig.projects.patchDeployments.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'patchDeploymentId'],
+        relative_path=u'v1alpha2/{+parent}/patchDeployments',
+        request_field=u'patchDeployment',
+        request_type_name=u'OsconfigProjectsPatchDeploymentsCreateRequest',
+        response_type_name=u'PatchDeployment',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete an OS Config Patch Deployment.
+
+      Args:
+        request: (OsconfigProjectsPatchDeploymentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha2/projects/{projectsId}/patchDeployments/{patchDeploymentsId}',
+        http_method=u'DELETE',
+        method_id=u'osconfig.projects.patchDeployments.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha2/{+name}',
+        request_field='',
+        request_type_name=u'OsconfigProjectsPatchDeploymentsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get an OS Config Patch Deployment.
+
+      Args:
+        request: (OsconfigProjectsPatchDeploymentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PatchDeployment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha2/projects/{projectsId}/patchDeployments/{patchDeploymentsId}',
+        http_method=u'GET',
+        method_id=u'osconfig.projects.patchDeployments.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha2/{+name}',
+        request_field='',
+        request_type_name=u'OsconfigProjectsPatchDeploymentsGetRequest',
+        response_type_name=u'PatchDeployment',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Get a page of OS Config Patch Deployments.
+
+      Args:
+        request: (OsconfigProjectsPatchDeploymentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPatchDeploymentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha2/projects/{projectsId}/patchDeployments',
+        http_method=u'GET',
+        method_id=u'osconfig.projects.patchDeployments.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1alpha2/{+parent}/patchDeployments',
+        request_field='',
+        request_type_name=u'OsconfigProjectsPatchDeploymentsListRequest',
+        response_type_name=u'ListPatchDeploymentsResponse',
+        supports_download=False,
+    )
+
   class ProjectsPatchJobsInstanceDetailsService(base_api.BaseApiService):
     """Service class for the projects_patchJobs_instanceDetails resource."""
 
@@ -650,7 +769,7 @@ ongoing patch job or review the details of completed jobs.
         method_id=u'osconfig.projects.patchJobs.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
         relative_path=u'v1alpha2/{+parent}/patchJobs',
         request_field='',
         request_type_name=u'OsconfigProjectsPatchJobsListRequest',
@@ -700,7 +819,7 @@ called by users to see what configs are assigned to this instance.
 
     def ReportPatchJobInstanceDetails(self, request, global_params=None):
       r"""Deprecated:  Should use AgentEndpoint API going forward.  Will be removed.
-in v1beta1.
+in v1beta.
 
 Endpoint used by the agent to report back its state during a patch
 job. This endpoint will also return the patch job's state and

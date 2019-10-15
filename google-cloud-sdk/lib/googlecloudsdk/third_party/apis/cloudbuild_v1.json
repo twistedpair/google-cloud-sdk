@@ -892,11 +892,11 @@
           }
         },
         "triggerTemplate": {
-          "description": "Template describing the types of source changes to trigger a build.\n\nBranch and tag names in trigger templates are interpreted as regular\nexpressions. Any branch or tag change that matches that regular expression\nwill trigger a build.",
+          "description": "Template describing the types of source changes to trigger a build.\n\nBranch and tag names in trigger templates are interpreted as regular\nexpressions. Any branch or tag change that matches that regular expression\nwill trigger a build.\n\nMutually exclusive with `github`.",
           "$ref": "RepoSource"
         },
         "github": {
-          "description": "GitHubEventsConfig describes the configuration of a trigger that creates\na build whenever a GitHub event is received.",
+          "description": "GitHubEventsConfig describes the configuration of a trigger that creates\na build whenever a GitHub event is received.\n\nMutually exclusive with `trigger_template`.",
           "$ref": "GitHubEventsConfig"
         },
         "build": {

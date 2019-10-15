@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20190923",
+ "revision": "20191007",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1253,6 +1253,20 @@
       "type": "string"
      }
     },
+    "onUpdateAction": {
+     "type": "string",
+     "description": "Specifies which action to take on instance update with this disk. Default is to use the existing disk.",
+     "enum": [
+      "RECREATE_DISK",
+      "RECREATE_DISK_IF_SOURCE_CHANGED",
+      "USE_EXISTING_DISK"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    },
     "replicaZones": {
      "type": "array",
      "description": "URLs of the zones where the disk should be replicated to. Only applicable for regional resources.",
@@ -1920,11 +1934,9 @@
      "enum": [
       "OFF",
       "ON",
-      "ONLY_DOWN",
       "ONLY_UP"
      ],
      "enumDescriptions": [
-      "",
       "",
       "",
       ""
@@ -2331,7 +2343,7 @@
     },
     "circuitBreakers": {
      "$ref": "CircuitBreakers",
-     "description": "Settings controlling the volume of connections to a backend service.\n\nThis field is applicable to either:  \n- A regional backend service with the service_protocol set to HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED. \n- A global backend service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED."
+     "description": "Settings controlling the volume of connections to a backend service. If not set, this feature is considered disabled.\n\nThis field is applicable to either:  \n- A regional backend service with the service_protocol set to HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED. \n- A global backend service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED."
     },
     "connectionDraining": {
      "$ref": "ConnectionDraining"
@@ -2443,7 +2455,7 @@
     },
     "outlierDetection": {
      "$ref": "OutlierDetection",
-     "description": "Settings controlling eviction of unhealthy hosts from the load balancing pool. This field is applicable to either:  \n- A regional backend service with the service_protocol set to HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED. \n- A global backend service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED."
+     "description": "Settings controlling the eviction of unhealthy hosts from the load balancing pool for the backend service. If not set, this feature is considered disabled.\n\nThis field is applicable to either:  \n- A regional backend service with the service_protocol set to HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED. \n- A global backend service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED."
     },
     "port": {
      "type": "integer",
@@ -3315,7 +3327,7 @@
    "properties": {
     "callCredentialType": {
      "type": "string",
-     "description": "The type of call credentials to use for GRPC requests to the SDS server. This field can be set to one of the following: ACCESS_TOKEN: An access token is used as call credentials for the SDS server. GCE_VM: The local GCE VM service account credentials are used to access the SDS server. JWT_SERVICE_TOKEN: The user provisioned service account credentials are used to access the SDS server. FROM_PLUGIN: Custom authenticator credentials are used to access the SDS server.",
+     "description": "The type of call credentials to use for GRPC requests to the SDS server. This field can be set to one of the following:  \n- GCE_VM: The local GCE VM service account credentials are used to access the SDS server.\n- FROM_PLUGIN: Custom authenticator credentials are used to access the SDS server.",
      "enum": [
       "FROM_PLUGIN",
       "GCE_VM",
@@ -3329,7 +3341,7 @@
     },
     "fromPlugin": {
      "$ref": "MetadataCredentialsFromPlugin",
-     "description": "Custom authenticator credentials."
+     "description": "Custom authenticator credentials. Valid if callCredentialType is FROM_PLUGIN."
     }
    }
   },
@@ -3369,27 +3381,27 @@
     },
     "maxConnections": {
      "type": "integer",
-     "description": "The maximum number of connections to the backend cluster. If not specified, the default is 1024.",
+     "description": "The maximum number of connections to the backend service. If not specified, there is no limit.",
      "format": "int32"
     },
     "maxPendingRequests": {
      "type": "integer",
-     "description": "The maximum number of pending requests allowed to the backend cluster. If not specified, the default is 1024.",
+     "description": "The maximum number of pending requests allowed to the backend service. If not specified, there is no limit.",
      "format": "int32"
     },
     "maxRequests": {
      "type": "integer",
-     "description": "The maximum number of parallel requests that allowed to the backend cluster. If not specified, the default is 1024.",
+     "description": "The maximum number of parallel requests that allowed to the backend service. If not specified, there is no limit.",
      "format": "int32"
     },
     "maxRequestsPerConnection": {
      "type": "integer",
-     "description": "Maximum requests for a single backend connection. This parameter is respected by both the HTTP/1.1 and HTTP/2 implementations. If not specified, there is no limit. Setting this parameter to 1 will effectively disable keep alive.",
+     "description": "Maximum requests for a single connection to the backend service. This parameter is respected by both the HTTP/1.1 and HTTP/2 implementations. If not specified, there is no limit. Setting this parameter to 1 will effectively disable keep alive.",
      "format": "int32"
     },
     "maxRetries": {
      "type": "integer",
-     "description": "The maximum number of parallel retries allowed to the backend cluster. If not specified, the default is 3.",
+     "description": "The maximum number of parallel retries allowed to the backend cluster. If not specified, the default is 1.",
      "format": "int32"
     }
    }
@@ -5034,7 +5046,7 @@
    "properties": {
     "resourcePolicies": {
      "type": "array",
-     "description": "Resource policies to be added to this disk.",
+     "description": "Resource policies to be added to this disk. Currently you can only specify one policy here.",
      "items": {
       "type": "string"
      }
@@ -7928,12 +7940,12 @@
    "properties": {
     "numRetries": {
      "type": "integer",
-     "description": "Specifies the allowed number retries. This number must be \u003e 0.",
+     "description": "Specifies the allowed number retries. This number must be \u003e 0. If not specified, defaults to 1.",
      "format": "uint32"
     },
     "perTryTimeout": {
      "$ref": "Duration",
-     "description": "Specifies a non-zero timeout per retry attempt."
+     "description": "Specifies a non-zero timeout per retry attempt.\nIf not specified, will use the timeout set in HttpRouteAction. If timeout in HttpRouteAction is not set, will use the largest timeout among all backend services associated with the route."
     },
     "retryConditions": {
      "type": "array",
@@ -7966,7 +7978,7 @@
     },
     "timeout": {
      "$ref": "Duration",
-     "description": "Specifies the timeout for the selected route. Timeout is computed from the time the request is has been fully processed (i.e. end-of-stream) up until the response has been completely processed. Timeout includes all retries.\nIf not specified, the default value is 15 seconds."
+     "description": "Specifies the timeout for the selected route. Timeout is computed from the time the request has been fully processed (i.e. end-of-stream) up until the response has been completely processed. Timeout includes all retries.\nIf not specified, will use the largest timeout among all backend services associated with the route."
     },
     "urlRewrite": {
      "$ref": "UrlRewrite",
@@ -7986,6 +7998,10 @@
    "type": "object",
    "description": "An HttpRouteRule specifies how to match an HTTP request and the corresponding routing action that load balancing proxies will perform.",
    "properties": {
+    "description": {
+     "type": "string",
+     "description": "The short description conveying the intent of this routeRule.\nThe description can have a maximum length of 1024 characters."
+    },
     "headerAction": {
      "$ref": "HttpHeaderAction",
      "description": "Specifies changes to request and response headers that need to take effect for the selected backendService.\nThe headerAction specified here are applied before the matching pathMatchers[].headerAction and after pathMatchers[].routeRules[].routeAction.weightedBackendService.backendServiceWeightAction[].headerAction"
@@ -7995,6 +8011,11 @@
      "items": {
       "$ref": "HttpRouteRuleMatch"
      }
+    },
+    "priority": {
+     "type": "integer",
+     "description": "For routeRules within a given pathMatcher, priority determines the order in which load balancer will interpret routeRules. RouteRules are evaluated in order of priority, from the lowest to highest number. The priority of a rule decreases as its number increases (1, 2, 3, N+1). The first rule that matches the request is applied.\nYou cannot configure two or more routeRules with the same priority. Priority for each rule must be set to a number between 0 and 2147483647 inclusive.\nPriority numbers can have gaps, which enable you to add or remove rules in the future without affecting the rest of the rules. For example, 1, 2, 3, 4, 5, 9, 12, 16 is a valid series of priority numbers to which you could add rules numbered from 6 to 8, 10 to 11, and 13 to 15 in the future without any impact on existing rules.",
+     "format": "int32"
     },
     "routeAction": {
      "$ref": "HttpRouteAction",
@@ -8626,6 +8647,11 @@
     "eraseWindowsVssSignature": {
      "type": "boolean",
      "description": "Specifies whether the disks restored from source snapshots or source machine image should erase Windows specific VSS signature."
+    },
+    "fingerprint": {
+     "type": "string",
+     "description": "Specifies a fingerprint for this resource, which is essentially a hash of the instance's contents and used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update the instance. You must always provide an up-to-date fingerprint hash in order to update the instance.\n\nTo see the latest fingerprint, make get() request to the instance.",
+     "format": "byte"
     },
     "guestAccelerators": {
      "type": "array",
@@ -9702,6 +9728,10 @@
    "id": "InstanceGroupManagerStatus",
    "type": "object",
    "properties": {
+    "autoscaler": {
+     "type": "string",
+     "description": "[Output Only] The URL of the Autoscaler that targets this instance group manager."
+    },
     "isStable": {
      "type": "boolean",
      "description": "[Output Only] A bit indicating whether the managed instance group is in a stable state. A stable state means that: none of the instances in the managed instance group is currently undergoing any type of change (for example, creation, restart, or deletion); no future changes are scheduled for instances in the managed instance group; and the managed instance group itself is not being modified."
@@ -9936,13 +9966,6 @@
    "type": "object",
    "description": "InstanceGroupManagers.deletePerInstanceConfigs",
    "properties": {
-    "instances": {
-     "type": "array",
-     "description": "The list of instances for which we want to delete per-instance configs on this managed instance group.",
-     "items": {
-      "type": "string"
-     }
-    },
     "names": {
      "type": "array",
      "description": "The list of instance names for which we want to delete per-instance configs on this managed instance group.",
@@ -13473,8 +13496,15 @@
   "LogConfigCounterOptions": {
    "id": "LogConfigCounterOptions",
    "type": "object",
-   "description": "Increment a streamz counter with the specified metric and field names.\n\nMetric names should start with a '/', generally be lowercase-only, and end in \"_count\". Field names should not contain an initial slash. The actual exported metric names will have \"/iam/policy\" prepended.\n\nField names correspond to IAM request parameters and field values are their respective values.\n\nSupported field names: - \"authority\", which is \"[token]\" if IAMContext.token is present, otherwise the value of IAMContext.authority_selector if present, and otherwise a representation of IAMContext.principal; or - \"iam_principal\", a representation of IAMContext.principal even if a token or authority selector is present; or - \"\" (empty string), resulting in a counter with no fields.\n\nExamples: counter { metric: \"/debug_access_count\" field: \"iam_principal\" } ==\u003e increment counter /iam/policy/backend_debug_access_count {iam_principal=[value of IAMContext.principal]}\n\nAt this time we do not support multiple field names (though this may be supported in the future).",
+   "description": "Increment a streamz counter with the specified metric and field names.\n\nMetric names should start with a '/', generally be lowercase-only, and end in \"_count\". Field names should not contain an initial slash. The actual exported metric names will have \"/iam/policy\" prepended.\n\nField names correspond to IAM request parameters and field values are their respective values.\n\nSupported field names: - \"authority\", which is \"[token]\" if IAMContext.token is present, otherwise the value of IAMContext.authority_selector if present, and otherwise a representation of IAMContext.principal; or - \"iam_principal\", a representation of IAMContext.principal even if a token or authority selector is present; or - \"\" (empty string), resulting in a counter with no fields.\n\nExamples: counter { metric: \"/debug_access_count\" field: \"iam_principal\" } ==\u003e increment counter /iam/policy/debug_access_count {iam_principal=[value of IAMContext.principal]}\n\nTODO(b/141846426): Consider supporting \"authority\" and \"iam_principal\" fields in the same counter.",
    "properties": {
+    "customFields": {
+     "type": "array",
+     "description": "Custom fields.",
+     "items": {
+      "$ref": "LogConfigCounterOptionsCustomField"
+     }
+    },
     "field": {
      "type": "string",
      "description": "The field value to attribute."
@@ -13482,6 +13512,21 @@
     "metric": {
      "type": "string",
      "description": "The metric to update."
+    }
+   }
+  },
+  "LogConfigCounterOptionsCustomField": {
+   "id": "LogConfigCounterOptionsCustomField",
+   "type": "object",
+   "description": "Custom fields. These can be used to create a counter with arbitrary field/value pairs. See: go/rpcsp-custom-fields.",
+   "properties": {
+    "name": {
+     "type": "string",
+     "description": "Name is the field name."
+    },
+    "value": {
+     "type": "string",
+     "description": "Value is the field value. It is important that in contrast to the CounterOptions.field, the value here is a constant that is not derived from the IAMContext."
     }
    }
   },
@@ -15975,6 +16020,10 @@
      "$ref": "ServerBinding",
      "description": "Binding properties for the physical server."
     },
+    "serverId": {
+     "type": "string",
+     "description": "Server ID associated with this node."
+    },
     "status": {
      "type": "string",
      "enum": [
@@ -17795,11 +17844,11 @@
   "OutlierDetection": {
    "id": "OutlierDetection",
    "type": "object",
-   "description": "Settings controlling eviction of unhealthy hosts from the load balancing pool.",
+   "description": "Settings controlling the eviction of unhealthy hosts from the load balancing pool for the backend service.",
    "properties": {
     "baseEjectionTime": {
      "$ref": "Duration",
-     "description": "The base time that a host is ejected for. The real time is equal to the base time multiplied by the number of times the host has been ejected. Defaults to 30000ms or 30s."
+     "description": "The base time that a host is ejected for. The real ejection time is equal to the base ejection time multiplied by the number of times the host has been ejected. Defaults to 30000ms or 30s."
     },
     "consecutiveErrors": {
      "type": "integer",
@@ -17808,17 +17857,17 @@
     },
     "consecutiveGatewayFailure": {
      "type": "integer",
-     "description": "The number of consecutive gateway failures (502, 503, 504 status or connection errors that are mapped to one of those status codes) before a consecutive gateway failure ejection occurs. Defaults to 5.",
+     "description": "The number of consecutive gateway failures (502, 503, 504 status or connection errors that are mapped to one of those status codes) before a consecutive gateway failure ejection occurs. Defaults to 3.",
      "format": "int32"
     },
     "enforcingConsecutiveErrors": {
      "type": "integer",
-     "description": "The percentage chance that a host will be actually ejected when an outlier status is detected through consecutive 5xx. This setting can be used to disable ejection or to ramp it up slowly. Defaults to 100.",
+     "description": "The percentage chance that a host will be actually ejected when an outlier status is detected through consecutive 5xx. This setting can be used to disable ejection or to ramp it up slowly. Defaults to 0.",
      "format": "int32"
     },
     "enforcingConsecutiveGatewayFailure": {
      "type": "integer",
-     "description": "The percentage chance that a host will be actually ejected when an outlier status is detected through consecutive gateway failures. This setting can be used to disable ejection or to ramp it up slowly. Defaults to 0.",
+     "description": "The percentage chance that a host will be actually ejected when an outlier status is detected through consecutive gateway failures. This setting can be used to disable ejection or to ramp it up slowly. Defaults to 100.",
      "format": "int32"
     },
     "enforcingSuccessRate": {
@@ -17828,11 +17877,11 @@
     },
     "interval": {
      "$ref": "Duration",
-     "description": "Time interval between ejection sweep analysis. This can result in both new ejections as well as hosts being returned to service. Defaults to 10 seconds."
+     "description": "Time interval between ejection sweep analysis. This can result in both new ejections as well as hosts being returned to service. Defaults to 1 seconds."
     },
     "maxEjectionPercent": {
      "type": "integer",
-     "description": "Maximum percentage of hosts in the load balancing pool for the backend service that can be ejected. Defaults to 10%.",
+     "description": "Maximum percentage of hosts in the load balancing pool for the backend service that can be ejected. Defaults to 50%.",
      "format": "int32"
     },
     "successRateMinimumHosts": {
@@ -20364,13 +20413,6 @@
    "type": "object",
    "description": "RegionInstanceGroupManagers.deletePerInstanceConfigs",
    "properties": {
-    "instances": {
-     "type": "array",
-     "description": "The list of instances for which we want to delete per-instance configs on this managed instance group.",
-     "items": {
-      "type": "string"
-     }
-    },
     "names": {
      "type": "array",
      "description": "The list of instance names for which we want to delete per-instance configs on this managed instance group.",
@@ -23304,7 +23346,7 @@
     },
     "filter": {
      "type": "string",
-     "description": "Specifies the desired filtering of logs on this NAT. If unspecified, logs are exported for all connections handled by this NAT.",
+     "description": "Specify the desired filtering of logs on this NAT. If unspecified, logs are exported for all connections handled by this NAT. This option can take one of the following values: \n- ERRORS_ONLY: Export logs only for connection failures. \n- TRANSLATIONS_ONLY: Export logs only for successful connections. \n- ALL: Export logs for all connections, successful and unsuccessful.",
      "enum": [
       "ALL",
       "ERRORS_ONLY",
@@ -30581,7 +30623,7 @@
     },
     "status": {
      "type": "string",
-     "description": "[Output Only] The status of the VPN tunnel, which can be one of the following: \n- PROVISIONING: Resource is being allocated for the VPN tunnel. \n- WAITING_FOR_FULL_CONFIG: Waiting to receive all VPN-related configs from the user. Network, TargetVpnGateway, VpnTunnel, ForwardingRule, and Route resources are needed to setup the VPN tunnel. \n- FIRST_HANDSHAKE: Successful first handshake with the peer VPN. \n- ESTABLISHED: Secure session is successfully established with the peer VPN. \n- NETWORK_ERROR: Deprecated, replaced by NO_INCOMING_PACKETS \n- AUTHORIZATION_ERROR: Auth error (for example, bad shared secret). \n- NEGOTIATION_FAILURE: Handshake failed. \n- DEPROVISIONING: Resources are being deallocated for the VPN tunnel. \n- FAILED: Tunnel creation has failed and the tunnel is not ready to be used.",
+     "description": "[Output Only] The status of the VPN tunnel, which can be one of the following: \n- PROVISIONING: Resource is being allocated for the VPN tunnel. \n- WAITING_FOR_FULL_CONFIG: Waiting to receive all VPN-related configs from the user. Network, TargetVpnGateway, VpnTunnel, ForwardingRule, and Route resources are needed to setup the VPN tunnel. \n- FIRST_HANDSHAKE: Successful first handshake with the peer VPN. \n- ESTABLISHED: Secure session is successfully established with the peer VPN. \n- NETWORK_ERROR: Deprecated, replaced by NO_INCOMING_PACKETS \n- AUTHORIZATION_ERROR: Auth error (for example, bad shared secret). \n- NEGOTIATION_FAILURE: Handshake failed. \n- DEPROVISIONING: Resources are being deallocated for the VPN tunnel. \n- FAILED: Tunnel creation has failed and the tunnel is not ready to be used. \n- NO_INCOMING_PACKETS: No incoming packets from peer. \n- REJECTED: Tunnel configuration was rejected, can be result of being blacklisted. \n- ALLOCATING_RESOURCES: Cloud VPN is in the process of allocating all required resources. \n- STOPPED: Tunnel is stopped due to its Forwarding Rules being deleted for Classic VPN tunnels or the project is in frozen state. \n- PEER_IDENTITY_MISMATCH: Peer identity does not match peer IP, probably behind NAT. \n- TS_NARROWING_NOT_ALLOWED: Traffic selector narrowing not allowed for an HA-VPN tunnel.",
      "enum": [
       "ALLOCATING_RESOURCES",
       "AUTHORIZATION_ERROR",

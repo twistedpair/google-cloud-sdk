@@ -141,6 +141,10 @@
         "dryRun": {
           "description": "Should this patch be a dry-run only.  Instances will be contacted, but\nthey will do nothing.",
           "type": "boolean"
+        },
+        "displayName": {
+          "description": "Display name for this patch job. This does not have to be unique.",
+          "type": "string"
         }
       }
     },
@@ -466,6 +470,10 @@
           "description": "Output only. Unique identifier for this patch job in the form\n`projects\/*\/patchJobs\/*`",
           "type": "string"
         },
+        "displayName": {
+          "description": "Display name for this patch job. This is not a unique identifier.",
+          "type": "string"
+        },
         "description": {
           "description": "Description of the patch job. Length of the description is limited\nto 1024 characters.",
           "type": "string"
@@ -537,6 +545,10 @@
           "description": "Reflects the overall progress of the patch job in the range of\n0.0 being no progress to 100.0 being complete.",
           "type": "number",
           "format": "double"
+        },
+        "patchDeployment": {
+          "description": "Output only. Name of the patch deployment that created this patch job.",
+          "type": "string"
         }
       }
     },
@@ -819,6 +831,280 @@
           "type": "string",
           "format": "int64"
         }
+      }
+    },
+    "PatchDeployment": {
+      "id": "PatchDeployment",
+      "description": "An OS Config resource representing a patch deployment. These deployments\nrepresent configurations that individual patch jobs should be executed\nwith, such as the instance filter, package repository settings, and a\nschedule.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Unique name of the resource in this project using the form:\n`projects\/{project_id}\/patchDeployments\/{patch_deployment_id}`.\nIgnored when creating a new PatchDeployment.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. Description of the patch deployment. Length of the description is limited\nto 1024 characters.",
+          "type": "string"
+        },
+        "instanceFilter": {
+          "description": "Required. Instances to patch.",
+          "$ref": "PatchInstanceFilter"
+        },
+        "patchConfig": {
+          "description": "Optional. Patch configuration being applied.",
+          "$ref": "PatchConfig"
+        },
+        "duration": {
+          "description": "Optional. Duration of the patch. After the duration ends, patch will time out.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "oneTimeSchedule": {
+          "description": "Required. Schedule with an one-time execution.",
+          "$ref": "OneTimeSchedule"
+        },
+        "recurringSchedule": {
+          "description": "Required. Schedule with recurring executions.",
+          "$ref": "RecurringSchedule"
+        },
+        "createTime": {
+          "description": "Output only. Time this patch deployment was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Time this patch deployment was updated.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lastExecuteTime": {
+          "description": "Output only. The last execution time of a patch job triggered by this deployment.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "OneTimeSchedule": {
+      "id": "OneTimeSchedule",
+      "description": "Represents the time for a patch job execution.",
+      "type": "object",
+      "properties": {
+        "executeTime": {
+          "description": "Required. The desired patch job execution time.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "RecurringSchedule": {
+      "id": "RecurringSchedule",
+      "description": "Represents a recurring schedule for patch job executions.",
+      "type": "object",
+      "properties": {
+        "timeZone": {
+          "description": "Required. Defines the time zone that day_time will be relative to.\nThe rules for daylight saving time are determined by the chosen time zone.\n, see b\/141445686.",
+          "$ref": "TimeZone"
+        },
+        "startTime": {
+          "description": "Optional. The start time for a recurring schedule to be active.\nDefaults to create_time of the patch deployment.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Optional. The end time for a recurring schedule to be active.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "timeOfDay": {
+          "description": "Required. Time of the day for an instance of the recurrence.",
+          "$ref": "TimeOfDay"
+        },
+        "frequency": {
+          "description": "Required. The frequency unit of this recurring schedule.",
+          "enumDescriptions": [
+            "Invalid. A frequency must be specified.",
+            "Indicates that the recurrence frequency should be expressed in terms of\nweeks.",
+            "Indicates that the recurrence frequency should be expressed in terms of\nmonths."
+          ],
+          "type": "string",
+          "enum": [
+            "FREQUENCY_UNSPECIFIED",
+            "WEEKLY",
+            "MONTHLY"
+          ]
+        },
+        "weekly": {
+          "description": "Required. Schedule with weekly executions.",
+          "$ref": "WeeklySchedule"
+        },
+        "monthly": {
+          "description": "Required. Schedule with monthly executions.",
+          "$ref": "MonthlySchedule"
+        },
+        "lastExecuteTime": {
+          "description": "Output only. The last actual patch execution time for display.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "nextExecuteTime": {
+          "description": "Output only. The next expected patch execution time for display.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "isActive": {
+          "description": "Output only. Indicates whether this recurring schedule is active.\nA recurring schedule may be inactive past end_time or by user setting.",
+          "type": "boolean"
+        }
+      }
+    },
+    "TimeZone": {
+      "id": "TimeZone",
+      "description": "Represents a time zone from the\n[IANA Time Zone Database](https:\/\/www.iana.org\/time-zones).",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "IANA Time Zone Database time zone, e.g. \"America\/New_York\".",
+          "type": "string"
+        },
+        "version": {
+          "description": "Optional. IANA Time Zone Database version number, e.g. \"2019a\".",
+          "type": "string"
+        }
+      }
+    },
+    "TimeOfDay": {
+      "id": "TimeOfDay",
+      "description": "Represents a time of day. The date and time zone are either not significant\nor are specified elsewhere. An API may choose to allow leap seconds. Related\ntypes are google.type.Date and `google.protobuf.Timestamp`.",
+      "type": "object",
+      "properties": {
+        "hours": {
+          "description": "Hours of day in 24 hour format. Should be from 0 to 23. An API may choose\nto allow the value \"24:00:00\" for scenarios like business closing time.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "minutes": {
+          "description": "Minutes of hour of day. Must be from 0 to 59.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "seconds": {
+          "description": "Seconds of minutes of the time. Must normally be from 0 to 59. An API may\nallow the value 60 if it allows leap-seconds.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "nanos": {
+          "description": "Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "WeeklySchedule": {
+      "id": "WeeklySchedule",
+      "description": "Represents a weekly schedule.",
+      "type": "object",
+      "properties": {
+        "dayOfWeek": {
+          "description": "Required. Day of the week.",
+          "enumDescriptions": [
+            "The unspecified day-of-week.",
+            "The day-of-week of Monday.",
+            "The day-of-week of Tuesday.",
+            "The day-of-week of Wednesday.",
+            "The day-of-week of Thursday.",
+            "The day-of-week of Friday.",
+            "The day-of-week of Saturday.",
+            "The day-of-week of Sunday."
+          ],
+          "type": "string",
+          "enum": [
+            "DAY_OF_WEEK_UNSPECIFIED",
+            "MONDAY",
+            "TUESDAY",
+            "WEDNESDAY",
+            "THURSDAY",
+            "FRIDAY",
+            "SATURDAY",
+            "SUNDAY"
+          ]
+        }
+      }
+    },
+    "MonthlySchedule": {
+      "id": "MonthlySchedule",
+      "description": "Represents a monthly schedule. An example of a valid monthly schedule is\n\"on the third Tuesday of the month\" or \"on the 15th of the month\".",
+      "type": "object",
+      "properties": {
+        "weekDayOfMonth": {
+          "description": "Required. Week day in a month.",
+          "$ref": "WeekDayOfMonth"
+        },
+        "monthDay": {
+          "description": "Required. One day of the month. 1-31 indicates the 1st to the 31st day. -1\nindicates the last day of the month.\nMonths without the target day will be skipped. For example, a schedule to\nrun \"every month on the 31st\" will not run in February, April, June, etc.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "WeekDayOfMonth": {
+      "id": "WeekDayOfMonth",
+      "description": "Represents one week day in a month. An example is \"the 4th Sunday\".",
+      "type": "object",
+      "properties": {
+        "weekOrdinal": {
+          "description": "Required. Week number in a month. 1-4 indicates the 1st to 4th week of the month. -1\nindicates the last week of the month.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "dayOfWeek": {
+          "description": "Required. A day of the week.",
+          "enumDescriptions": [
+            "The unspecified day-of-week.",
+            "The day-of-week of Monday.",
+            "The day-of-week of Tuesday.",
+            "The day-of-week of Wednesday.",
+            "The day-of-week of Thursday.",
+            "The day-of-week of Friday.",
+            "The day-of-week of Saturday.",
+            "The day-of-week of Sunday."
+          ],
+          "type": "string",
+          "enum": [
+            "DAY_OF_WEEK_UNSPECIFIED",
+            "MONDAY",
+            "TUESDAY",
+            "WEDNESDAY",
+            "THURSDAY",
+            "FRIDAY",
+            "SATURDAY",
+            "SUNDAY"
+          ]
+        }
+      }
+    },
+    "ListPatchDeploymentsResponse": {
+      "id": "ListPatchDeploymentsResponse",
+      "description": "A response message for listing patch deployments.",
+      "type": "object",
+      "properties": {
+        "patchDeployments": {
+          "description": "The list of patch deployments.",
+          "type": "array",
+          "items": {
+            "$ref": "PatchDeployment"
+          }
+        },
+        "nextPageToken": {
+          "description": "A pagination token that can be used to get the next page of patch\ndeployments.",
+          "type": "string"
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
       }
     },
     "GuestPolicy": {
@@ -1463,13 +1749,6 @@
         }
       }
     },
-    "Empty": {
-      "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "LookupEffectiveGuestPoliciesRequest": {
       "id": "LookupEffectiveGuestPoliciesRequest",
       "description": "A request message for getting the policies assigned to the instance.",
@@ -1679,6 +1958,11 @@
                   "description": "A pagination token returned from a previous call\nthat indicates where this listing should continue from.\nThis field is optional.",
                   "location": "query",
                   "type": "string"
+                },
+                "filter": {
+                  "description": "If provided, this field specifies the criteria that must be met by patch\njobs to be included in the response.\nCurrently, filtering is only available on the patch_deployment field.",
+                  "location": "query",
+                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -1775,7 +2059,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/compute"
                   ],
-                  "description": "Deprecated:  Should use AgentEndpoint API going forward.  Will be removed\nin v1beta1.\n\nEndpoint used by the agent to report back its state during a patch\njob. This endpoint will also return the patch job's state and\nconfigurations that the agent needs to know in order to run or stop\npatching.\n\nThis endpoint is only used by the agent. Using it in other ways may\naffect the state of the active patch job and prevent the patches from\nbeing correctly applied to this instance."
+                  "description": "Deprecated:  Should use AgentEndpoint API going forward.  Will be removed\nin v1beta.\n\nEndpoint used by the agent to report back its state during a patch\njob. This endpoint will also return the patch job's state and\nconfigurations that the agent needs to know in order to run or stop\npatching.\n\nThis endpoint is only used by the agent. Using it in other ways may\naffect the state of the active patch job and prevent the patches from\nbeing correctly applied to this instance."
                 },
                 "lookupGuestPolicies": {
                   "id": "osconfig.projects.zones.instances.lookupGuestPolicies",
@@ -1807,6 +2091,133 @@
                   "description": "Lookup the guest policies that are assigned to a GCE VM instance. This\nlookup will merge all policies that are assigned to the instance. This is\nusually called by the agent running on the instance, but it can also be\ncalled by users to see what configs are assigned to this instance."
                 }
               }
+            }
+          }
+        },
+        "patchDeployments": {
+          "methods": {
+            "create": {
+              "id": "osconfig.projects.patchDeployments.create",
+              "path": "v1alpha2/{+parent}/patchDeployments",
+              "flatPath": "v1alpha2/projects/{projectsId}/patchDeployments",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The project to apply this patch deployment to in the form `projects\/*`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                },
+                "patchDeploymentId": {
+                  "description": "Required. The logical name of the patch deployment in the project with the following\nrestrictions:\n* Must contain only lowercase letters, numbers, and hyphens.\n* Must start with a letter.\n* Must be between 1-63 characters.\n* Must end with a number or a letter.\n* Must be unique within the project.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "PatchDeployment"
+              },
+              "response": {
+                "$ref": "PatchDeployment"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute"
+              ],
+              "description": "Create an OS Config Patch Deployment."
+            },
+            "get": {
+              "id": "osconfig.projects.patchDeployments.get",
+              "path": "v1alpha2/{+name}",
+              "flatPath": "v1alpha2/projects/{projectsId}/patchDeployments/{patchDeploymentsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the patch deployment in the form\n`projects\/*\/patchDeployments\/*`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "PatchDeployment"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute"
+              ],
+              "description": "Get an OS Config Patch Deployment."
+            },
+            "list": {
+              "id": "osconfig.projects.patchDeployments.list",
+              "path": "v1alpha2/{+parent}/patchDeployments",
+              "flatPath": "v1alpha2/projects/{projectsId}/patchDeployments",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The resource name of the parent in the form `projects\/*`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Optional. The maximum number of patch deployments to return. Default is 100.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Optional. A pagination token returned from a previous call to ListPatchDeployments\nthat indicates where this listing should continue from.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListPatchDeploymentsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute"
+              ],
+              "description": "Get a page of OS Config Patch Deployments."
+            },
+            "delete": {
+              "id": "osconfig.projects.patchDeployments.delete",
+              "path": "v1alpha2/{+name}",
+              "flatPath": "v1alpha2/projects/{projectsId}/patchDeployments/{patchDeploymentsId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the patch deployment in the form\n`projects\/*\/patchDeployments\/*`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute"
+              ],
+              "description": "Delete an OS Config Patch Deployment."
             }
           }
         },

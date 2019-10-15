@@ -22,11 +22,11 @@ from __future__ import unicode_literals
 from googlecloudsdk.command_lib.events import exceptions
 
 
-def EventTypeFromPattern(source_crds, type_pattern):
+def EventTypeFromTypeString(source_crds, type_string):
   """Returns the matching event type object given a list of source crds."""
   for crd in source_crds:
     for event_type in crd.event_types:
-      if type_pattern == event_type.type:
+      if type_string == event_type.type:
         return event_type
   raise exceptions.EventTypeNotFound(
-      'Unknown event type: {}.'.format(type_pattern))
+      'Unknown event type: {}.'.format(type_string))

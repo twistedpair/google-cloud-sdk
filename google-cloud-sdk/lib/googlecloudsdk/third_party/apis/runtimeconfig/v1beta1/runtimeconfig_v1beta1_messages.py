@@ -321,10 +321,8 @@ class CounterOptions(_messages.Message):
   representation of IAMContext.principal even if a      token or authority
   selector is present; or    - "" (empty string), resulting in a counter with
   no fields.  Examples:   counter { metric: "/debug_access_count"  field:
-  "iam_principal" }   ==> increment counter
-  /iam/policy/backend_debug_access_count
-  {iam_principal=[value of IAMContext.principal]}  At this time we do not
-  support multiple field names (though this may be supported in the future).
+  "iam_principal" }   ==> increment counter /iam/policy/debug_access_count
+  {iam_principal=[value of IAMContext.principal]}
 
   Fields:
     customFields: Custom fields.

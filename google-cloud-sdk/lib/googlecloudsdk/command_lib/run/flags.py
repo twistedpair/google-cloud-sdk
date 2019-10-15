@@ -25,6 +25,7 @@ import re
 
 from googlecloudsdk.api_lib.container import kubeconfig
 from googlecloudsdk.api_lib.run import global_methods
+from googlecloudsdk.api_lib.run import traffic
 from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
@@ -269,7 +270,9 @@ def AddUpdateTrafficFlags(parser):
       '40 percent of traffic and revision-2 is serving 60 percent. If '
       'revision-1 is assigned 45 percent of traffic and no assignment is '
       'made for revision-2, the service is updated with revsion-1 assigned '
-      '45 percent of traffic and revision-2 scaled down to 55 percent.')
+      '45 percent of traffic and revision-2 scaled down to 55 percent. '
+      'You can use "LATEST" as a special revision name to always put the given '
+      'percentage of traffic on the latest ready revision.')
 
   group.add_argument(
       '--to-latest',
@@ -278,7 +281,8 @@ def AddUpdateTrafficFlags(parser):
       help='True to assign 100 percent of traffic to the \'latest\' '
       'revision of this service. Note that when a new revision is '
       'created, it will become the \'latest\' and traffic will be '
-      'directed to it. Defaults to False.')
+      'directed to it. Defaults to False. Synonymous with '
+      '\'--to-revisions=LATEST=100\'.')
 
 
 def AddCloudSQLFlags(parser):
@@ -743,9 +747,11 @@ def _CheckCloudSQLApiEnablement():
 
 def _GetTrafficChanges(args):
   """Returns a changes for traffic assignment based on the flags."""
+  if args.to_latest:
+    # Mutually exlcusive flag with to-revisions
+    return config_changes.TrafficChanges({traffic.LATEST_REVISION_KEY: 100})
   new_percentages = args.to_revisions if args.to_revisions else {}
-  new_latest_percentage = 100 if args.to_latest else None
-  return config_changes.TrafficChanges(new_percentages, new_latest_percentage)
+  return config_changes.TrafficChanges(new_percentages)
 
 
 def GetConfigurationChanges(args):

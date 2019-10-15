@@ -765,13 +765,14 @@ def CheckForOsloginAndGetUser(instance, project, requested_user, public_key,
     return requested_user, use_oslogin
   user_email = properties.VALUES.core.account.Get()
 
-  # Check to see if public key is already in profile, import if not, and update
-  # the expiration if it is.
+  # Check to see if public key is already in profile and POSIX information
+  # exists associated with the project. If either are not set, import an SSH
+  # public key. Otherwise update the expiration time if needed.
   login_profile = oslogin.GetLoginProfile(user_email, project.name)
   keys = oslogin_utils.GetKeyDictionaryFromProfile(
       user_email, oslogin, profile=login_profile)
   fingerprint = oslogin_utils.FindKeyInKeyList(public_key, keys)
-  if not fingerprint:
+  if not fingerprint or not login_profile.posixAccounts:
     import_response = oslogin.ImportSshPublicKey(user_email, public_key,
                                                  expiration_time)
     login_profile = import_response.loginProfile

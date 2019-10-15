@@ -2076,6 +2076,8 @@ class NodePool(_messages.Message):
     status: [Output only] The status of the nodes in this pool instance.
     statusMessage: [Output only] Additional information about the current
       status of this node pool instance, if available.
+    upgradeSettings: Upgrade settings control disruption and speed of the
+      upgrade.
     version: The version of the Kubernetes of this node.
   """
 
@@ -2120,7 +2122,8 @@ class NodePool(_messages.Message):
   selfLink = _messages.StringField(11)
   status = _messages.EnumField('StatusValueValuesEnum', 12)
   statusMessage = _messages.StringField(13)
-  version = _messages.StringField(14)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 14)
+  version = _messages.StringField(15)
 
 
 class NodePoolAutoscaling(_messages.Message):
@@ -3302,6 +3305,8 @@ class UpdateNodePoolRequest(_messages.Message):
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
+    upgradeSettings: Upgrade settings control disruption and speed of the
+      upgrade.
     workloadMetadataConfig: The desired image type for the node pool.
     zone: Deprecated. The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides. This
@@ -3317,8 +3322,38 @@ class UpdateNodePoolRequest(_messages.Message):
   nodePoolId = _messages.StringField(7)
   nodeVersion = _messages.StringField(8)
   projectId = _messages.StringField(9)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 10)
-  zone = _messages.StringField(11)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 10)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 11)
+  zone = _messages.StringField(12)
+
+
+class UpgradeSettings(_messages.Message):
+  r"""These upgrade settings control the level of parallelism and the level of
+  disruption caused by an upgrade.  maxUnavailable controls the number of
+  nodes that can be simultaneously unavailable.  maxSurge controls the number
+  of additional nodes that can be added to the node pool temporarily for the
+  time of the upgrade to increase the number of available nodes.
+  (maxUnavailable + maxSurge) determines the level of parallelism (how many
+  nodes are being upgraded at the same time).  Note: upgrades inevitably
+  introduce some disruption since workloads need to be moved from old nodes to
+  new, upgraded ones. Even if maxUnavailable=0, this holds true. (Disruption
+  stays within the limits of PodDisruptionBudget, if it is configured.)
+  Consider a hypothetical node pool with 5 nodes having maxSurge=2,
+  maxUnavailable=1. This means the upgrade process upgrades 3 nodes
+  simultaneously. It creates 2 additional (upgraded) nodes, then it brings
+  down 3 old (not yet upgraded) nodes at the same time. This ensures that
+  there are always at least 4 nodes available.
+
+  Fields:
+    maxSurge: The maximum number of nodes that can be created beyond the
+      current size of the node pool during the upgrade process.
+    maxUnavailable: The maximum number of nodes that can be simultaneously
+      unavailable during the upgrade process. A node is considered available
+      if its status is Ready.
+  """
+
+  maxSurge = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  maxUnavailable = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class UsableSubnetwork(_messages.Message):

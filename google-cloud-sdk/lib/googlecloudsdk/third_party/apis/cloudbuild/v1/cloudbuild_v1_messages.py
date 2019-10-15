@@ -509,7 +509,8 @@ class BuildTrigger(_messages.Message):
     filename: Path, from the source root, to a file whose contents is used for
       the template.
     github: GitHubEventsConfig describes the configuration of a trigger that
-      creates a build whenever a GitHub event is received.
+      creates a build whenever a GitHub event is received.  Mutually exclusive
+      with `trigger_template`.
     id: Output only. Unique identifier of the trigger.
     ignoredFiles: ignored_files and included_files are file glob matches using
       http://godoc/pkg/path/filepath#Match extended with support for "**".  If
@@ -531,7 +532,8 @@ class BuildTrigger(_messages.Message):
     triggerTemplate: Template describing the types of source changes to
       trigger a build.  Branch and tag names in trigger templates are
       interpreted as regular expressions. Any branch or tag change that
-      matches that regular expression will trigger a build.
+      matches that regular expression will trigger a build.  Mutually
+      exclusive with `github`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')

@@ -799,13 +799,18 @@ class DisableServiceRequest(_messages.Message):
   r"""Request message for DisableService method.
 
   Fields:
-    consumerId: The identity of consumer resource which service disablement
-      will be applied to.  The Google Service Management implementation
-      accepts the following forms: - "project:<project_id>"  Note: this is
-      made compatible with google.api.servicecontrol.v1.Operation.consumer_id.
+    consumerId: Required. The identity of consumer resource which service
+      disablement will be applied to.  The Google Service Management
+      implementation accepts the following forms: - "project:<project_id>"
+      Note: this is made compatible with
+      google.api.servicecontrol.v1.Operation.consumer_id.
   """
 
   consumerId = _messages.StringField(1)
+
+
+class DisableServiceResponse(_messages.Message):
+  r"""Operation payload for DisableService method."""
 
 
 class Documentation(_messages.Message):
@@ -1025,13 +1030,18 @@ class EnableServiceRequest(_messages.Message):
   r"""Request message for EnableService method.
 
   Fields:
-    consumerId: The identity of consumer resource which service enablement
-      will be applied to.  The Google Service Management implementation
-      accepts the following forms: - "project:<project_id>"  Note: this is
-      made compatible with google.api.servicecontrol.v1.Operation.consumer_id.
+    consumerId: Required. The identity of consumer resource which service
+      enablement will be applied to.  The Google Service Management
+      implementation accepts the following forms: - "project:<project_id>"
+      Note: this is made compatible with
+      google.api.servicecontrol.v1.Operation.consumer_id.
   """
 
   consumerId = _messages.StringField(1)
+
+
+class EnableServiceResponse(_messages.Message):
+  r"""Operation payload for EnableService method."""
 
 
 class Endpoint(_messages.Message):
@@ -1253,30 +1263,30 @@ class GenerateConfigReportRequest(_messages.Message):
   r"""Request message for GenerateConfigReport method.
 
   Messages:
-    NewConfigValue: Service configuration for which we want to generate the
-      report. For this version of API, the supported types are
+    NewConfigValue: Required. Service configuration for which we want to
+      generate the report. For this version of API, the supported types are
       google.api.servicemanagement.v1.ConfigRef,
       google.api.servicemanagement.v1.ConfigSource, and google.api.Service
-    OldConfigValue: Service configuration against which the comparison will be
-      done. For this version of API, the supported types are
-      google.api.servicemanagement.v1.ConfigRef,
+    OldConfigValue: Optional. Service configuration against which the
+      comparison will be done. For this version of API, the supported types
+      are google.api.servicemanagement.v1.ConfigRef,
       google.api.servicemanagement.v1.ConfigSource, and google.api.Service
 
   Fields:
-    newConfig: Service configuration for which we want to generate the report.
-      For this version of API, the supported types are
+    newConfig: Required. Service configuration for which we want to generate
+      the report. For this version of API, the supported types are
       google.api.servicemanagement.v1.ConfigRef,
       google.api.servicemanagement.v1.ConfigSource, and google.api.Service
-    oldConfig: Service configuration against which the comparison will be
-      done. For this version of API, the supported types are
+    oldConfig: Optional. Service configuration against which the comparison
+      will be done. For this version of API, the supported types are
       google.api.servicemanagement.v1.ConfigRef,
       google.api.servicemanagement.v1.ConfigSource, and google.api.Service
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class NewConfigValue(_messages.Message):
-    r"""Service configuration for which we want to generate the report. For
-    this version of API, the supported types are
+    r"""Required. Service configuration for which we want to generate the
+    report. For this version of API, the supported types are
     google.api.servicemanagement.v1.ConfigRef,
     google.api.servicemanagement.v1.ConfigSource, and google.api.Service
 
@@ -1303,8 +1313,8 @@ class GenerateConfigReportRequest(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class OldConfigValue(_messages.Message):
-    r"""Service configuration against which the comparison will be done. For
-    this version of API, the supported types are
+    r"""Optional. Service configuration against which the comparison will be
+    done. For this version of API, the supported types are
     google.api.servicemanagement.v1.ConfigRef,
     google.api.servicemanagement.v1.ConfigSource, and google.api.Service
 
@@ -3182,7 +3192,7 @@ class Rollout(_messages.Message):
     createdBy: The user who created the Rollout. Readonly.
     deleteServiceStrategy: The strategy associated with a rollout to delete a
       `ManagedService`. Readonly.
-    rolloutId: Optional unique identifier of this Rollout. Only lower case
+    rolloutId: Optional. Unique identifier of this Rollout. Only lower case
       letters, digits  and '-' are allowed.  If not specified by client, the
       server will generate one. The generated id will have the form of
       <date><revision number>, where "date" is the create date in ISO 8601
@@ -3389,8 +3399,8 @@ class ServicemanagementServicesConfigsCreateRequest(_messages.Message):
 
   Fields:
     service: A Service resource to be passed as the request body.
-    serviceName: The name of the service.  See the [overview](/service-
-      management/overview) for naming requirements.  For example:
+    serviceName: Required. The name of the service.  See the [overview
+      ](/service-management/overview) for naming requirements.  For example:
       `example.googleapis.com`.
   """
 
@@ -3406,11 +3416,11 @@ class ServicemanagementServicesConfigsGetRequest(_messages.Message):
       returned in the response.
 
   Fields:
-    configId: The id of the service configuration resource.  This field must
-      be specified for the server to return all fields, including
+    configId: Required. The id of the service configuration resource.  This
+      field must be specified for the server to return all fields, including
       `SourceInfo`.
-    serviceName: The name of the service.  See the [overview](/service-
-      management/overview) for naming requirements.  For example:
+    serviceName: Required. The name of the service.  See the [overview
+      ](/service-management/overview) for naming requirements.  For example:
       `example.googleapis.com`.
     view: Specifies which parts of the Service Config should be returned in
       the response.
@@ -3439,8 +3449,8 @@ class ServicemanagementServicesConfigsListRequest(_messages.Message):
     pageSize: The max number of items to include in the response list. Page
       size is 50 if not specified. Maximum value is 100.
     pageToken: The token of the page to retrieve.
-    serviceName: The name of the service.  See the [overview](/service-
-      management/overview) for naming requirements.  For example:
+    serviceName: Required. The name of the service.  See the [overview
+      ](/service-management/overview) for naming requirements.  For example:
       `example.googleapis.com`.
   """
 
@@ -3453,8 +3463,8 @@ class ServicemanagementServicesConfigsSubmitRequest(_messages.Message):
   r"""A ServicemanagementServicesConfigsSubmitRequest object.
 
   Fields:
-    serviceName: The name of the service.  See the [overview](/service-
-      management/overview) for naming requirements.  For example:
+    serviceName: Required. The name of the service.  See the [overview
+      ](/service-management/overview) for naming requirements.  For example:
       `example.googleapis.com`.
     submitConfigSourceRequest: A SubmitConfigSourceRequest resource to be
       passed as the request body.
@@ -3606,8 +3616,8 @@ class ServicemanagementServicesDeleteRequest(_messages.Message):
   r"""A ServicemanagementServicesDeleteRequest object.
 
   Fields:
-    serviceName: The name of the service.  See the [overview](/service-
-      management/overview) for naming requirements.  For example:
+    serviceName: Required. The name of the service.  See the [overview
+      ](/service-management/overview) for naming requirements.  For example:
       `example.googleapis.com`.
   """
 
@@ -3620,8 +3630,8 @@ class ServicemanagementServicesDisableRequest(_messages.Message):
   Fields:
     disableServiceRequest: A DisableServiceRequest resource to be passed as
       the request body.
-    serviceName: Name of the service to disable. Specifying an unknown service
-      name will cause the request to fail.
+    serviceName: Required. Name of the service to disable. Specifying an
+      unknown service name will cause the request to fail.
   """
 
   disableServiceRequest = _messages.MessageField('DisableServiceRequest', 1)
@@ -3634,8 +3644,8 @@ class ServicemanagementServicesEnableRequest(_messages.Message):
   Fields:
     enableServiceRequest: A EnableServiceRequest resource to be passed as the
       request body.
-    serviceName: Name of the service to enable. Specifying an unknown service
-      name will cause the request to fail.
+    serviceName: Required. Name of the service to enable. Specifying an
+      unknown service name will cause the request to fail.
   """
 
   enableServiceRequest = _messages.MessageField('EnableServiceRequest', 1)
@@ -3650,11 +3660,11 @@ class ServicemanagementServicesGetConfigRequest(_messages.Message):
       returned in the response.
 
   Fields:
-    configId: The id of the service configuration resource.  This field must
-      be specified for the server to return all fields, including
+    configId: Required. The id of the service configuration resource.  This
+      field must be specified for the server to return all fields, including
       `SourceInfo`.
-    serviceName: The name of the service.  See the [overview](/service-
-      management/overview) for naming requirements.  For example:
+    serviceName: Required. The name of the service.  See the [overview
+      ](/service-management/overview) for naming requirements.  For example:
       `example.googleapis.com`.
     view: Specifies which parts of the Service Config should be returned in
       the response.
@@ -3706,8 +3716,9 @@ class ServicemanagementServicesGetRequest(_messages.Message):
       `project_settings.operations` - `quota_usage` (It requires
       `project_settings`) - `historical_quota_usage` (It requires
       `project_settings`)
-    serviceName: The name of the service.  See the `ServiceManager` overview
-      for naming requirements.  For example: `example.googleapis.com`.
+    serviceName: Required. The name of the service.  See the `ServiceManager`
+      overview for naming requirements.  For example:
+      `example.googleapis.com`.
     view: If project_settings is expanded, request only fields for the
       specified view.
   """
@@ -3866,8 +3877,8 @@ class ServicemanagementServicesRolloutsCreateRequest(_messages.Message):
       gradually dial down default quota limit, the recommended practice is to
       create multiple rollouts at least 1 hour apart.
     rollout: A Rollout resource to be passed as the request body.
-    serviceName: The name of the service.  See the [overview](/service-
-      management/overview) for naming requirements.  For example:
+    serviceName: Required. The name of the service.  See the [overview
+      ](/service-management/overview) for naming requirements.  For example:
       `example.googleapis.com`.
   """
 
@@ -3881,9 +3892,9 @@ class ServicemanagementServicesRolloutsGetRequest(_messages.Message):
   r"""A ServicemanagementServicesRolloutsGetRequest object.
 
   Fields:
-    rolloutId: The id of the rollout resource.
-    serviceName: The name of the service.  See the [overview](/service-
-      management/overview) for naming requirements.  For example:
+    rolloutId: Required. The id of the rollout resource.
+    serviceName: Required. The name of the service.  See the [overview
+      ](/service-management/overview) for naming requirements.  For example:
       `example.googleapis.com`.
   """
 
@@ -3895,8 +3906,8 @@ class ServicemanagementServicesRolloutsListRequest(_messages.Message):
   r"""A ServicemanagementServicesRolloutsListRequest object.
 
   Fields:
-    filter: Use `filter` to return subset of rollouts. The following filters
-      are supported:   -- To limit the results to only those in
+    filter: Required. Use `filter` to return subset of rollouts. The following
+      filters are supported:   -- To limit the results to only those in
       [status](google.api.servicemanagement.v1.RolloutStatus) 'SUCCESS',
       use filter='status=SUCCESS'   -- To limit the results to those in
       [status](google.api.servicemanagement.v1.RolloutStatus) 'CANCELLED'
@@ -3904,8 +3915,8 @@ class ServicemanagementServicesRolloutsListRequest(_messages.Message):
     pageSize: The max number of items to include in the response list. Page
       size is 50 if not specified. Maximum value is 100.
     pageToken: The token of the page to retrieve.
-    serviceName: The name of the service.  See the [overview](/service-
-      management/overview) for naming requirements.  For example:
+    serviceName: Required. The name of the service.  See the [overview
+      ](/service-management/overview) for naming requirements.  For example:
       `example.googleapis.com`.
   """
 
@@ -3949,8 +3960,8 @@ class ServicemanagementServicesUndeleteRequest(_messages.Message):
   r"""A ServicemanagementServicesUndeleteRequest object.
 
   Fields:
-    serviceName: The name of the service. See the [overview](/service-
-      management/overview) for naming requirements. For example:
+    serviceName: Required. The name of the service. See the [overview
+      ](/service-management/overview) for naming requirements. For example:
       `example.googleapis.com`.
   """
 
@@ -4179,7 +4190,7 @@ class SubmitConfigSourceRequest(_messages.Message):
   r"""Request message for SubmitConfigSource method.
 
   Fields:
-    configSource: The source configuration for the service.
+    configSource: Required. The source configuration for the service.
     validateOnly: Optional. If set, this will result in the generation of a
       `google.api.Service` configuration based on the `ConfigSource` provided,
       but the generated config and the sources will NOT be persisted.
@@ -4290,7 +4301,7 @@ class TestIamPermissionsResponse(_messages.Message):
 class TrafficPercentStrategy(_messages.Message):
   r"""Strategy that specifies how clients of Google Service Controller want to
   send traffic to use different config versions. This is generally used by API
-  proxy to split traffic based on your configured precentage for each config
+  proxy to split traffic based on your configured percentage for each config
   version.  One example of how to gradually rollout a new service
   configuration using this strategy: Day 1      Rollout {       id:
   "example.googleapis.com/rollout_20160206"       traffic_percent_strategy {

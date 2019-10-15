@@ -499,7 +499,7 @@ accelerator-types list``` to learn about all available accelerator types.
 to which the cluster can be scaled.
 """)
   identity_group = from_flags_group.add_argument_group(
-      'Flags to specify identity for autoprovisioned nodes:', mutex=True)
+      'Flags to specify identity for autoprovisioned nodes:')
   identity_group.add_argument(
       '--autoprovisioning-service-account',
       type=str,
@@ -2604,7 +2604,10 @@ def AddShieldedInstanceFlags(parser):
       The instance will boot with secure boot enabled.
       """
   parser.add_argument(
-      '--shielded-secure-boot', action='store_true', help=secure_boot_help)
+      '--shielded-secure-boot',
+      default=None,
+      action='store_true',
+      help=secure_boot_help)
 
   integrity_monitoring_help = """\
       Enables monitoring and attestation of the boot integrity of the
@@ -2614,6 +2617,7 @@ def AddShieldedInstanceFlags(parser):
       """
   parser.add_argument(
       '--shielded-integrity-monitoring',
+      default=True,
       action='store_true',
       help=integrity_monitoring_help)
 

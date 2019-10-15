@@ -722,7 +722,8 @@ class AppengineV1beta(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Stops a running instance.The instance will be automatically recreated based on the scaling settings of the version. If you want to stop all instances without re-creation (e.g. to avoid getting billed) use the apps.services.versions.patch (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1beta/apps.services.versions/patch) method and change the serving status of the version to STOPPED.
+      r"""Stops a running instance.The instance might be automatically recreated based on the scaling settings of the version. For more information, see "How Instances are Managed" (standard environment (https://cloud.google.com/appengine/docs/standard/python/how-instances-are-managed) | flexible environment (https://cloud.google.com/appengine/docs/flexible/python/how-instances-are-managed)).To ensure that instances are not re-created and avoid getting billed, you can stop all instances within the target version by changing the serving status of the version to 'STOPPEDwith the.
+[apps.services.versions.patch`](https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions/patch) method.
 
       Args:
         request: (AppengineAppsServicesVersionsInstancesDeleteRequest) input message

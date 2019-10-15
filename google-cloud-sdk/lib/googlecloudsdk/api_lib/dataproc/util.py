@@ -24,9 +24,11 @@ import time
 import uuid
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
+
 from googlecloudsdk.api_lib.dataproc import exceptions
 from googlecloudsdk.api_lib.dataproc import storage_helpers
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.export import util as export_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -446,40 +448,49 @@ def WaitForJobTermination(dataproc,
       'Job [{0}] timed out while in state [{1}].'.format(job_ref.jobId, state))
 
 
+# TODO(b/137899555): Remove and hard fail
+def ReturnDefaultRegionAndWarn():
+  log.warning('Dataproc --region flag will become required in January 2020. '
+              'Please either specify this flag, or set default by running '
+              "'gcloud config set dataproc/region <your-default-region>'")
+  return 'global'
+
+
+# This replicates the fallthrough logic of flags._RegionAttributeConfig.
+# It is necessary in cases like the --region flag where we are not parsing
+# ResourceSpecs
+def ResolveRegion(release_track):
+  region_prop = properties.VALUES.dataproc.region
+  if (release_track == base.ReleaseTrack.GA and
+      not region_prop.IsExplicitlySet()):
+    return ReturnDefaultRegionAndWarn()
+  else:
+    # Enforce flag or default value is required.
+    return region_prop.GetOrFail()
+
+
+# You probably want to use flags.AddClusterResourceArgument instead.
 def ParseCluster(name, dataproc):
-  """Parse Cluster name, ID, or URL into Cloud SDK reference."""
   ref = dataproc.resources.Parse(
       name,
       params={
-          'region': properties.VALUES.dataproc.region.GetOrFail,
+          'region': lambda: ResolveRegion(dataproc.release_track),
           'projectId': properties.VALUES.core.project.GetOrFail
       },
       collection='dataproc.projects.regions.clusters')
   return ref
 
 
+# You probably want to use flags.AddJobResourceArgument instead.
 def ParseJob(job_id, dataproc):
-  """Parse Job name, ID, or URL into Cloud SDK reference."""
   ref = dataproc.resources.Parse(
       job_id,
       params={
-          'region': properties.VALUES.dataproc.region.GetOrFail,
+          'region': lambda: ResolveRegion(dataproc.release_track),
           'projectId': properties.VALUES.core.project.GetOrFail
       },
       collection='dataproc.projects.regions.jobs')
   return ref
-
-
-def ParseOperation(operation, dataproc):
-  """Parse Operation name, ID, or URL into Cloud SDK reference."""
-  collection = 'dataproc.projects.regions.operations'
-  return dataproc.resources.Parse(
-      operation,
-      params={
-          'regionsId': properties.VALUES.dataproc.region.GetOrFail,
-          'projectsId': properties.VALUES.core.project.GetOrFail
-      },
-      collection=collection)
 
 
 def ParseOperationJsonMetadata(metadata_value, metadata_type):
@@ -490,27 +501,13 @@ def ParseOperationJsonMetadata(metadata_value, metadata_type):
                                 encoding.MessageToJson(metadata_value))
 
 
-def ParseWorkflowTemplates(template,
-                           dataproc,
-                           region=properties.VALUES.dataproc.region.GetOrFail):
-  """Returns a workflow template reference given name, ID or URL."""
-  # TODO(b/65845794): make caller to pass in region explicitly
-  ref = dataproc.resources.Parse(
-      template,
-      params={
-          'regionsId': region,
-          'projectsId': properties.VALUES.core.project.GetOrFail
-      },
-      collection='dataproc.projects.regions.workflowTemplates')
-  return ref
-
-
+# Used in bizarre scenarios where we want a qualified region rather than a
+# short name
 def ParseRegion(dataproc):
-  """Returns a region reference given name, ID or URL."""
   ref = dataproc.resources.Parse(
       None,
       params={
-          'regionId': properties.VALUES.dataproc.region.GetOrFail,
+          'regionId': lambda: ResolveRegion(dataproc.release_track),
           'projectId': properties.VALUES.core.project.GetOrFail
       },
       collection='dataproc.projects.regions')

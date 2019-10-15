@@ -18,20 +18,19 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.dataproc import util
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.dataproc import flags
 from googlecloudsdk.command_lib.util.args import labels_util
 
 # Fields to filter on export.
 TEMPLATE_FIELDS = ['id', 'name', 'version', 'createTime', 'updateTime']
 
 
-def AddWorkflowTemplatesArgs(parser):
+def AddWorkflowTemplatesArgs(parser, api_version):
   """Register flags for this command."""
   labels_util.AddCreateLabelsFlags(parser)
-  parser.add_argument(
-      '--workflow-template', required=True,
-      help='The dataproc workflow template ID.')
+  flags.AddTemplateResourceArg(
+      parser, 'add job to', api_version, positional=False)
 
   parser.add_argument(
       '--step-id',
@@ -56,7 +55,7 @@ def CreateWorkflowTemplateOrderedJob(args, dataproc):
 
 def AddJobToWorkflowTemplate(args, dataproc, ordered_job):
   """Add an ordered job to the workflow template."""
-  template = util.ParseWorkflowTemplates(args.workflow_template, dataproc)
+  template = args.CONCEPTS.workflow_template.Parse()
 
   workflow_template = dataproc.GetRegionsWorkflowTemplate(
       template, args.version)

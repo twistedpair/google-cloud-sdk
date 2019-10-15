@@ -45,6 +45,16 @@ apis:
     v1:
       discovery_doc: accesscontextmanager_v1.json
       default: true
+  # Admin SDK version - directory/v1 doesn't match the expected version of Gcloud scripts(v1).
+  # Hence, the files were generated locally, renamed and checked in.
+  # TODO(b/142448542): Fix automated generation for Beta/GA launches.
+  # admin:
+  #   v1:
+  #     discovery_doc: admin_v1.json
+  #     default: true
+  #     resources:
+  #       customer:
+  #         path: customer/{customerId}
   appengine:
     v1alpha:
       discovery_doc: appengine_v1alpha.json
@@ -386,7 +396,6 @@ apis:
   firestore:
     v1beta2:
       discovery_doc: firestore_v1beta2.json
-      default: true
       resources:
         projects.databases.operations:
           path: projects/{projectsId}/databases/{databasesId}/operations/{operationsId}
@@ -394,6 +403,7 @@ apis:
       discovery_doc: firestore_v1beta1.json
     v1:
       discovery_doc: firestore_v1.json
+      default: true
   genomics:
     v1:
       discovery_doc: genomics_v1.json

@@ -1254,7 +1254,7 @@
           ]
         },
         "recursiveStructureDepth": {
-          "description": "The depth for all recursive structures in the output analytics\nschema. For example, `concept` in the CodeSystem resource is a recursive\nstructure; when the depth is 2, the CodeSystem table will have a column\ncalled `concept.concept` but not `concept.concept.concept`. If not\nspecified or set to 0, the server will use the default value 2.",
+          "description": "The depth for all recursive structures in the output analytics\nschema. For example, `concept` in the CodeSystem resource is a recursive\nstructure; when the depth is 2, the CodeSystem table will have a column\ncalled `concept.concept` but not `concept.concept.concept`. If not\nspecified or set to 0, the server will use the default value 2. The\nmaximum depth allowed is 5.",
           "type": "string",
           "format": "int64"
         }
@@ -1401,7 +1401,7 @@
           "format": "int64"
         },
         "failureResourceCount": {
-          "description": "Number of resources that failed to process.\nThe failures might be caused by:\n  * Invalid user input data\n  * Transient errors that could be skipped",
+          "description": "Number of resources that failed to process.\nThe failures might be caused by:\n\n  * Invalid user input data\n  * Transient errors that could be skipped",
           "type": "string",
           "format": "int64"
         }
@@ -2235,14 +2235,14 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                          "description": "The name of the DICOM store that is being accessed. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                           "type": "string"
                         },
                         "dicomWebPath": {
-                          "description": "The path of the SearchForStudies DICOMweb request (for example, `studies`).",
+                          "description": "The path of the SearchForStudies DICOMweb request. For example, `studies`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^studies$",
@@ -2268,14 +2268,14 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                          "description": "The name of the DICOM store that is being accessed. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                           "type": "string"
                         },
                         "dicomWebPath": {
-                          "description": "The path of the SearchForSeries DICOMweb request(for example, `series` or\n`studies\/{study_uid}\/series`).",
+                          "description": "The path of the SearchForSeries DICOMweb request. For example, `series` or\n`studies\/{study_uid}\/series`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^series$",
@@ -2301,14 +2301,14 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                          "description": "The name of the DICOM store that is being accessed. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                           "type": "string"
                         },
                         "dicomWebPath": {
-                          "description": "The path of the SearchForInstancesRequest DICOMweb request (for example,\n`instances` or `series\/{series_uid}\/instances` or\n`studies\/{study_uid}\/instances`).",
+                          "description": "The path of the SearchForInstancesRequest DICOMweb request. For example,\n`instances`, `series\/{series_uid}\/instances`, or\n`studies\/{study_uid}\/instances`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^instances$",
@@ -2334,14 +2334,14 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                          "description": "The name of the DICOM store that is being accessed. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                           "type": "string"
                         },
                         "dicomWebPath": {
-                          "description": "The path of the StoreInstances DICOMweb request (for example,\n`studies\/[{study_uid}]`). Note that the `study_uid` is optional.",
+                          "description": "The path of the StoreInstances DICOMweb request. For example,\n`studies\/[{study_uid}]`. Note that the `study_uid` is optional.",
                           "location": "path",
                           "required": true,
                           "pattern": "^studies$",
@@ -2375,14 +2375,14 @@
                           "httpMethod": "GET",
                           "parameters": {
                             "parent": {
-                              "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                              "description": "The name of the DICOM store that is being accessed. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
                               "location": "path",
                               "required": true,
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                               "type": "string"
                             },
                             "dicomWebPath": {
-                              "description": "The path of the RetrieveStudy DICOMweb request (for example,\n`studies\/{study_uid}`).",
+                              "description": "The path of the RetrieveStudy DICOMweb request. For example,\n`studies\/{study_uid}`.",
                               "location": "path",
                               "required": true,
                               "pattern": "^studies\/[^\/]+$",
@@ -2408,14 +2408,14 @@
                           "httpMethod": "GET",
                           "parameters": {
                             "parent": {
-                              "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                              "description": "The name of the DICOM store that is being accessed. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
                               "location": "path",
                               "required": true,
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                               "type": "string"
                             },
                             "dicomWebPath": {
-                              "description": "The path of the RetrieveStudyMetadata DICOMweb request (for example,\n`studies\/{study_uid}\/metadata`).",
+                              "description": "The path of the RetrieveStudyMetadata DICOMweb request. For example,\n`studies\/{study_uid}\/metadata`.",
                               "location": "path",
                               "required": true,
                               "pattern": "^studies\/[^\/]+\/metadata$",
@@ -2441,14 +2441,14 @@
                           "httpMethod": "GET",
                           "parameters": {
                             "parent": {
-                              "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                              "description": "The name of the DICOM store that is being accessed. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
                               "location": "path",
                               "required": true,
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                               "type": "string"
                             },
                             "dicomWebPath": {
-                              "description": "The path of the SearchForSeries DICOMweb request(for example, `series` or\n`studies\/{study_uid}\/series`).",
+                              "description": "The path of the SearchForSeries DICOMweb request. For example, `series` or\n`studies\/{study_uid}\/series`.",
                               "location": "path",
                               "required": true,
                               "pattern": "^studies\/[^\/]+\/series$",
@@ -2474,14 +2474,14 @@
                           "httpMethod": "GET",
                           "parameters": {
                             "parent": {
-                              "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                              "description": "The name of the DICOM store that is being accessed. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
                               "location": "path",
                               "required": true,
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                               "type": "string"
                             },
                             "dicomWebPath": {
-                              "description": "The path of the SearchForInstancesRequest DICOMweb request (for example,\n`instances` or `series\/{series_uid}\/instances` or\n`studies\/{study_uid}\/instances`).",
+                              "description": "The path of the SearchForInstancesRequest DICOMweb request. For example,\n`instances`, `series\/{series_uid}\/instances`, or\n`studies\/{study_uid}\/instances`.",
                               "location": "path",
                               "required": true,
                               "pattern": "^studies\/[^\/]+\/instances$",
@@ -2507,14 +2507,13 @@
                           "httpMethod": "DELETE",
                           "parameters": {
                             "parent": {
-                              "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
                               "location": "path",
                               "required": true,
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                               "type": "string"
                             },
                             "dicomWebPath": {
-                              "description": "The path of the DeleteStudy request (for example, `studies\/{study_uid}`).",
+                              "description": "The path of the DeleteStudy request. For example, `studies\/{study_uid}`.",
                               "location": "path",
                               "required": true,
                               "pattern": "^studies\/[^\/]+$",
@@ -2540,14 +2539,14 @@
                           "httpMethod": "POST",
                           "parameters": {
                             "parent": {
-                              "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                              "description": "The name of the DICOM store that is being accessed. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
                               "location": "path",
                               "required": true,
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                               "type": "string"
                             },
                             "dicomWebPath": {
-                              "description": "The path of the StoreInstances DICOMweb request (for example,\n`studies\/[{study_uid}]`). Note that the `study_uid` is optional.",
+                              "description": "The path of the StoreInstances DICOMweb request. For example,\n`studies\/[{study_uid}]`. Note that the `study_uid` is optional.",
                               "location": "path",
                               "required": true,
                               "pattern": "^studies\/[^\/]+$",
@@ -2581,14 +2580,14 @@
                               "httpMethod": "GET",
                               "parameters": {
                                 "parent": {
-                                  "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                                  "description": "The name of the DICOM store that is being accessed. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
                                   "location": "path",
                                   "required": true,
                                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                                   "type": "string"
                                 },
                                 "dicomWebPath": {
-                                  "description": "The path of the RetrieveSeries DICOMweb request (for example,\n`studies\/{study_uid}\/series\/{series_uid}`).",
+                                  "description": "The path of the RetrieveSeries DICOMweb request. For example,\n`studies\/{study_uid}\/series\/{series_uid}`.",
                                   "location": "path",
                                   "required": true,
                                   "pattern": "^studies\/[^\/]+\/series\/[^\/]+$",
@@ -2614,14 +2613,14 @@
                               "httpMethod": "GET",
                               "parameters": {
                                 "parent": {
-                                  "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                                  "description": "The name of the DICOM store that is being accessed. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
                                   "location": "path",
                                   "required": true,
                                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                                   "type": "string"
                                 },
                                 "dicomWebPath": {
-                                  "description": "The path of the RetrieveSeriesMetadata DICOMweb request (for example,\n`studies\/{study_uid}\/series\/{series_uid}\/metadata`).",
+                                  "description": "The path of the RetrieveSeriesMetadata DICOMweb request. For example,\n`studies\/{study_uid}\/series\/{series_uid}\/metadata`.",
                                   "location": "path",
                                   "required": true,
                                   "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/metadata$",
@@ -2647,14 +2646,14 @@
                               "httpMethod": "GET",
                               "parameters": {
                                 "parent": {
-                                  "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                                  "description": "The name of the DICOM store that is being accessed. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
                                   "location": "path",
                                   "required": true,
                                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                                   "type": "string"
                                 },
                                 "dicomWebPath": {
-                                  "description": "The path of the SearchForInstancesRequest DICOMweb request (for example,\n`instances` or `series\/{series_uid}\/instances` or\n`studies\/{study_uid}\/instances`).",
+                                  "description": "The path of the SearchForInstancesRequest DICOMweb request. For example,\n`instances`, `series\/{series_uid}\/instances`, or\n`studies\/{study_uid}\/instances`.",
                                   "location": "path",
                                   "required": true,
                                   "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances$",
@@ -2680,14 +2679,14 @@
                               "httpMethod": "DELETE",
                               "parameters": {
                                 "parent": {
-                                  "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                                  "description": "The name of the DICOM store that is being accessed. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
                                   "location": "path",
                                   "required": true,
                                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                                   "type": "string"
                                 },
                                 "dicomWebPath": {
-                                  "description": "The path of the DeleteSeries request (for example,\n`studies\/{study_uid}\/series\/{series_uid}`).",
+                                  "description": "The path of the DeleteSeries request. For example,\n`studies\/{study_uid}\/series\/{series_uid}`.",
                                   "location": "path",
                                   "required": true,
                                   "pattern": "^studies\/[^\/]+\/series\/[^\/]+$",
@@ -2718,14 +2717,14 @@
                                   "httpMethod": "GET",
                                   "parameters": {
                                     "parent": {
-                                      "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                                      "description": "The name of the DICOM store that is being accessed. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
                                       "location": "path",
                                       "required": true,
                                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                                       "type": "string"
                                     },
                                     "dicomWebPath": {
-                                      "description": "The path of the RetrieveInstance DICOMweb request (for example,\n`studies\/{study_uid}\/series\/{series_uid}\/instances\/{instance_uid}`).",
+                                      "description": "The path of the RetrieveInstance DICOMweb request. For example,\n`studies\/{study_uid}\/series\/{series_uid}\/instances\/{instance_uid}`.",
                                       "location": "path",
                                       "required": true,
                                       "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances\/[^\/]+$",
@@ -2751,14 +2750,14 @@
                                   "httpMethod": "GET",
                                   "parameters": {
                                     "parent": {
-                                      "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                                      "description": "The name of the DICOM store that is being accessed. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
                                       "location": "path",
                                       "required": true,
                                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                                       "type": "string"
                                     },
                                     "dicomWebPath": {
-                                      "description": "The path of the RetrieveRenderedInstance DICOMweb request (for example,\n`studies\/{study_uid}\/series\/{series_uid}\/instances\/{instance_uid}\/rendered`).",
+                                      "description": "The path of the RetrieveRenderedInstance DICOMweb request. For example,\n`studies\/{study_uid}\/series\/{series_uid}\/instances\/{instance_uid}\/rendered`.",
                                       "location": "path",
                                       "required": true,
                                       "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances\/[^\/]+\/rendered$",
@@ -2784,14 +2783,14 @@
                                   "httpMethod": "GET",
                                   "parameters": {
                                     "parent": {
-                                      "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                                      "description": "The name of the DICOM store that is being accessed. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
                                       "location": "path",
                                       "required": true,
                                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                                       "type": "string"
                                     },
                                     "dicomWebPath": {
-                                      "description": "The path of the RetrieveInstanceMetadata DICOMweb request (for example,\n`studies\/{study_uid}\/series\/{series_uid}\/instances\/{instance_uid}\/metadata`).",
+                                      "description": "The path of the RetrieveInstanceMetadata DICOMweb request. For example,\n`studies\/{study_uid}\/series\/{series_uid}\/instances\/{instance_uid}\/metadata`.",
                                       "location": "path",
                                       "required": true,
                                       "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances\/[^\/]+\/metadata$",
@@ -2817,14 +2816,14 @@
                                   "httpMethod": "DELETE",
                                   "parameters": {
                                     "parent": {
-                                      "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                                      "description": "The name of the DICOM store that is being accessed. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
                                       "location": "path",
                                       "required": true,
                                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                                       "type": "string"
                                     },
                                     "dicomWebPath": {
-                                      "description": "The path of the DeleteInstance request (for example,\n`studies\/{study_uid}\/series\/{series_uid}\/instances\/{instance_uid}`).",
+                                      "description": "The path of the DeleteInstance request. For example,\n`studies\/{study_uid}\/series\/{series_uid}\/instances\/{instance_uid}`.",
                                       "location": "path",
                                       "required": true,
                                       "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances\/[^\/]+$",
@@ -2855,14 +2854,14 @@
                                       "httpMethod": "GET",
                                       "parameters": {
                                         "parent": {
-                                          "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                                          "description": "The name of the DICOM store that is being accessed. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
                                           "location": "path",
                                           "required": true,
                                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                                           "type": "string"
                                         },
                                         "dicomWebPath": {
-                                          "description": "The path of the RetrieveFrames DICOMweb request (for example,\n`studies\/{study_uid}\/series\/{series_uid}\/instances\/{instance_uid}\/frames\/{frame_list}`).",
+                                          "description": "The path of the RetrieveFrames DICOMweb request. For example,\n`studies\/{study_uid}\/series\/{series_uid}\/instances\/{instance_uid}\/frames\/{frame_list}`.",
                                           "location": "path",
                                           "required": true,
                                           "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances\/[^\/]+\/frames\/[^\/]+$",
@@ -2888,14 +2887,14 @@
                                       "httpMethod": "GET",
                                       "parameters": {
                                         "parent": {
-                                          "description": "The name of the DICOM store that is being accessed (for example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`).",
+                                          "description": "The name of the DICOM store that is being accessed. For example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
                                           "location": "path",
                                           "required": true,
                                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
                                           "type": "string"
                                         },
                                         "dicomWebPath": {
-                                          "description": "The path of the RetrieveRenderedFrames DICOMweb request (for example,\n`studies\/{study_uid}\/series\/{series_uid}\/instances\/{instance_uid}\/frames\/{frame_list}\/rendered`).",
+                                          "description": "The path of the RetrieveRenderedFrames DICOMweb request. For example,\n`studies\/{study_uid}\/series\/{series_uid}\/instances\/{instance_uid}\/frames\/{frame_list}\/rendered`.",
                                           "location": "path",
                                           "required": true,
                                           "pattern": "^studies\/[^\/]+\/series\/[^\/]+\/instances\/[^\/]+\/frames\/[^\/]+\/rendered$",

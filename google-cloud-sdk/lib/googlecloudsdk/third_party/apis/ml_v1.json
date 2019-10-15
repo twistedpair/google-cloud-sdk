@@ -280,6 +280,10 @@
           "description": "Optional. The set of Hyperparameters to tune.",
           "$ref": "GoogleCloudMlV1__HyperparameterSpec"
         },
+        "nasJobSpec": {
+          "description": "Optional. The spec of a Neural Architecture Search (NAS) job.",
+          "$ref": "GoogleCloudMlV1__NasSpec"
+        },
         "region": {
           "description": "Required. The Google Compute Engine region to run the training job in.\nSee the <a href=\"\/ml-engine\/docs\/tensorflow\/regions\">available regions<\/a>\nfor AI Platform services.",
           "type": "string"
@@ -488,6 +492,82 @@
             "UNIT_LINEAR_SCALE",
             "UNIT_LOG_SCALE",
             "UNIT_REVERSE_LOG_SCALE"
+          ]
+        }
+      }
+    },
+    "GoogleCloudMlV1__NasSpec": {
+      "id": "GoogleCloudMlV1__NasSpec",
+      "description": "Spec for Neural Architecture Search (NAS) jobs.",
+      "type": "object",
+      "properties": {
+        "searchSpaceSpec": {
+          "description": "Required. It defines the search space for Neural Architecture Search (NAS).",
+          "type": "string"
+        },
+        "multiTrialAlgorithmSpec": {
+          "description": "The spec of multi-trial algorithms.",
+          "$ref": "GoogleCloudMlV1_NasSpec_MultiTrialAlgorithmSpec"
+        },
+        "oneShotAlgorithmSpec": {
+          "description": "The spec of one-shot algorithms.",
+          "$ref": "GoogleCloudMlV1_NasSpec_OneShotAlgorithmSpec"
+        }
+      }
+    },
+    "GoogleCloudMlV1_NasSpec_MultiTrialAlgorithmSpec": {
+      "id": "GoogleCloudMlV1_NasSpec_MultiTrialAlgorithmSpec",
+      "description": "The spec of multi-trial Neural Architecture Search (NAS).",
+      "type": "object",
+      "properties": {
+        "multiTrialAlgorithm": {
+          "description": "Optional. The multi-trial Neural Architecture Search (NAS) algorithm\ntype. Defaults to `NAS_MULTI_TRIAL_ALGORITHM_REINFORCEMENT_LEARNING`.",
+          "enumDescriptions": [
+            "",
+            "The Reinforcement Learning Algorithm for Multi-trial Neural\nArchitecture Search (NAS)."
+          ],
+          "type": "string",
+          "enum": [
+            "MULTI_TRIAL_ALGORITHM_UNSPECIFIED",
+            "REINFORCEMENT_LEARNING"
+          ]
+        },
+        "nasTargetRewardMetric": {
+          "description": "Required. The TensorFlow summary tag that the controller tries to\noptimize. Its value needs to be consistent with the TensorFlow summary\ntag that is reported by trainer (customer provided dockers).",
+          "type": "string"
+        },
+        "maxNasTrials": {
+          "description": "Optional. How many Neural Architecture Search (NAS) trials should be\nattempted.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxParallelNasTrials": {
+          "description": "Required. The number of Neural Architecture Search (NAS) trials to run\nconcurrently.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxFailedNasTrials": {
+          "description": "Optional. It decides when a Neural Architecture Search (NAS) job should\nfail. Defaults to zero.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudMlV1_NasSpec_OneShotAlgorithmSpec": {
+      "id": "GoogleCloudMlV1_NasSpec_OneShotAlgorithmSpec",
+      "description": "The spec of one shot Neural Architecture Search (NAS).",
+      "type": "object",
+      "properties": {
+        "oneShotAlgorithm": {
+          "description": "Optional. The one-shot Neural Architecture Search (NAS) algorithm type.\nDefaults to `ONE_SHOT_ALGORITHM_REINFORCEMENT_LEARNING`.",
+          "enumDescriptions": [
+            "",
+            "The Reinforcement Learning Algorithm for one-shot Neural Architecture\nSearch (NAS)."
+          ],
+          "type": "string",
+          "enum": [
+            "ONE_SHOT_ALGORITHM_UNSPECIFIED",
+            "REINFORCEMENT_LEARNING"
           ]
         }
       }
@@ -798,6 +878,10 @@
             "$ref": "GoogleCloudMlV1__HyperparameterOutput"
           }
         },
+        "nasJobOutput": {
+          "description": "The output of a Neural Architecture Search (NAS) job.",
+          "$ref": "GoogleCloudMlV1__NasJobOutput"
+        },
         "consumedMLUnits": {
           "description": "The amount of ML units consumed by the job.",
           "type": "number",
@@ -929,6 +1013,107 @@
         "modelPath": {
           "description": "The Cloud Storage path to the `model\/` directory where the training job\nsaves the trained model. Only set for successful jobs that don't use\nhyperparameter tuning.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudMlV1__NasJobOutput": {
+      "id": "GoogleCloudMlV1__NasJobOutput",
+      "description": "The output of Neural Archhitecture Search (NAS) jobs.",
+      "type": "object",
+      "properties": {
+        "multiTrialJobOutputs": {
+          "description": "The output of a multi-trial Neural Architecture Search (NAS) job.",
+          "$ref": "GoogleCloudMlV1_NasJobOutput_MultiTrialJobOutputs"
+        }
+      }
+    },
+    "GoogleCloudMlV1_NasJobOutput_MultiTrialJobOutputs": {
+      "id": "GoogleCloudMlV1_NasJobOutput_MultiTrialJobOutputs",
+      "description": "The list of all MultiTrialJobOutput.",
+      "type": "object",
+      "properties": {
+        "multiTrialJobOutput": {
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudMlV1_NasJobOutput_MultiTrialJobOutput"
+          }
+        }
+      }
+    },
+    "GoogleCloudMlV1_NasJobOutput_MultiTrialJobOutput": {
+      "id": "GoogleCloudMlV1_NasJobOutput_MultiTrialJobOutput",
+      "description": "The output of Multi-trial Neural Architecture Search (NAS) jobs.",
+      "type": "object",
+      "properties": {
+        "trialId": {
+          "description": "The trial id for these results.",
+          "type": "string"
+        },
+        "nasParamsStr": {
+          "description": "The parameters that are associated with this Neural Architecture Search\n(NAS) job.",
+          "type": "string"
+        },
+        "startTime": {
+          "description": "Output only. Start time for the trial.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. End time for the trial.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "Output only. The detailed state of the trial.",
+          "enumDescriptions": [
+            "The job state is unspecified.",
+            "The job has been just created and processing has not yet begun.",
+            "The service is preparing to run the job.",
+            "The job is in progress.",
+            "The job completed successfully.",
+            "The job failed.\n`error_message` should contain the details of the failure.",
+            "The job is being cancelled.\n`error_message` should describe the reason for the cancellation.",
+            "The job has been cancelled.\n`error_message` should describe the reason for the cancellation."
+          ],
+          "type": "string",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "QUEUED",
+            "PREPARING",
+            "RUNNING",
+            "SUCCEEDED",
+            "FAILED",
+            "CANCELLING",
+            "CANCELLED"
+          ]
+        },
+        "allMetrics": {
+          "description": "All objective metrics for this Neural Architecture Search (NAS) job.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudMlV1_NasJobOutputMultiTrialJobOutput_NasParameterMetric"
+          }
+        },
+        "finalMetric": {
+          "description": "The final objective metric seen for this Neural Architecture Search (NAS)\njob.",
+          "$ref": "GoogleCloudMlV1_NasJobOutputMultiTrialJobOutput_NasParameterMetric"
+        }
+      }
+    },
+    "GoogleCloudMlV1_NasJobOutputMultiTrialJobOutput_NasParameterMetric": {
+      "id": "GoogleCloudMlV1_NasJobOutputMultiTrialJobOutput_NasParameterMetric",
+      "description": "An observed value of a metric of the trial.",
+      "type": "object",
+      "properties": {
+        "trainingStep": {
+          "description": "The global training step for this metric.",
+          "type": "string",
+          "format": "int64"
+        },
+        "objectiveValue": {
+          "description": "The objective value at this training step.",
+          "type": "number",
+          "format": "double"
         }
       }
     },

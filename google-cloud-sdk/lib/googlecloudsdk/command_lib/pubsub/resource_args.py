@@ -44,10 +44,10 @@ def GetSubscriptionResourceSpec():
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
-def GetTopicResourceSpec():
+def GetTopicResourceSpec(name='topic'):
   return concepts.ResourceSpec(
       'pubsub.projects.topics',
-      resource_name='topic',
+      resource_name=name,
       topicsId=TopicAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
@@ -88,7 +88,11 @@ def AddSubscriptionResourceArg(parser, verb, plural=False):
   ).AddToParser(parser)
 
 
-def CreateTopicResourceArg(verb, positional=True, plural=False):
+def CreateTopicResourceArg(verb,
+                           positional=True,
+                           plural=False,
+                           required=True,
+                           flag_name='topic'):
   """Create a resource argument for a Cloud Pub/Sub Topic.
 
   Args:
@@ -97,24 +101,26 @@ def CreateTopicResourceArg(verb, positional=True, plural=False):
       than a flag. If not positional, this also creates a '--topic-project' flag
       as subscriptions and topics do not need to be in the same project.
     plural: bool, if True, use a resource argument that returns a list.
+    required: bool, if True, create topic resource arg will be required.
+    flag_name: str, name of the topic resource arg (singular).
 
   Returns:
     the PresentationSpec for the resource argument.
   """
   if positional:
-    name = 'topic'
+    name = flag_name
     flag_name_overrides = {}
   else:
-    name = '--topic' if not plural else '--topics'
-    flag_name_overrides = {'project': '--topic-project'}
+    name = '--' + flag_name if not plural else '--' + flag_name + 's'
+    flag_name_overrides = {'project': '--' + flag_name + '-project'}
   help_stem = 'Name of the topic'
   if plural:
     help_stem = 'One or more topics'
   return presentation_specs.ResourcePresentationSpec(
       name,
-      GetTopicResourceSpec(),
+      GetTopicResourceSpec(flag_name),
       '{} {}'.format(help_stem, verb),
-      required=True,
+      required=required,
       flag_name_overrides=flag_name_overrides,
       plural=plural,
       prefixes=True)

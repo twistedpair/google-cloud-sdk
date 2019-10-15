@@ -43,11 +43,8 @@ class UnableToPrepareDataDir(exceptions.Error):
         'Unable to prepare the data directory for the emualtor')
 
 
-def GetGCDRoot(args):
+def GetGCDRoot():
   """Gets the directory of the GCD emulator installation in the Cloud SDK.
-
-  Args:
-    args: Arguments passed to the command.
 
   Raises:
     NoCloudSDKError: If there is no SDK root.
@@ -57,33 +54,29 @@ def GetGCDRoot(args):
     str, The path to the root of the GCD emulator installation within Cloud SDK.
   """
   sdk_root = util.GetCloudSDKRoot()
-  if args.legacy:
-    gcd_dir = os.path.join(sdk_root, 'platform', 'gcd')
-  else:
-    gcd_dir = os.path.join(sdk_root, 'platform', 'cloud-datastore-emulator')
+  gcd_dir = os.path.join(sdk_root, 'platform', 'cloud-datastore-emulator')
   if not os.path.isdir(gcd_dir):
     raise NoGCDError()
   return gcd_dir
 
 
-def ArgsForGCDEmulator(emulator_args, args):
-  """Constucts an argument list for calling the GCD emulator.
+def ArgsForGCDEmulator(emulator_args):
+  """Constructs an argument list for calling the GCD emulator.
 
   Args:
     emulator_args: args for the emulator.
-    args: args to the command.
 
   Returns:
     An argument list to execute the GCD emulator.
   """
   current_os = platforms.OperatingSystem.Current()
   if current_os is platforms.OperatingSystem.WINDOWS:
-    cmd = 'gcd.cmd' if args.legacy else 'cloud_datastore_emulator.cmd'
-    gcd_executable = os.path.join(GetGCDRoot(args), cmd)
+    cmd = 'cloud_datastore_emulator.cmd'
+    gcd_executable = os.path.join(GetGCDRoot(), cmd)
     return execution_utils.ArgsForCMDTool(gcd_executable, *emulator_args)
   else:
-    cmd = 'gcd.sh' if args.legacy else 'cloud_datastore_emulator'
-    gcd_executable = os.path.join(GetGCDRoot(args), cmd)
+    cmd = 'cloud_datastore_emulator'
+    gcd_executable = os.path.join(GetGCDRoot(), cmd)
     return execution_utils.ArgsForExecutableTool(gcd_executable, *emulator_args)
 
 
@@ -109,7 +102,7 @@ def PrepareGCDDataDir(args):
   project = properties.VALUES.core.project.Get(required=True)
   gcd_create_args.append('--project_id={0}'.format(project))
   gcd_create_args.append(data_dir)
-  exec_args = ArgsForGCDEmulator(gcd_create_args, args)
+  exec_args = ArgsForGCDEmulator(gcd_create_args)
 
   log.status.Print('Executing: {0}'.format(' '.join(exec_args)))
   with util.Exec(exec_args) as process:
@@ -136,7 +129,7 @@ def StartGCDEmulator(args, log_file=None):
   gcd_start_args.append('--consistency={0}'.format(args.consistency))
   gcd_start_args.append('--allow_remote_shutdown')
   gcd_start_args.append(args.data_dir)
-  exec_args = ArgsForGCDEmulator(gcd_start_args, args)
+  exec_args = ArgsForGCDEmulator(gcd_start_args)
 
   log.status.Print('Executing: {0}'.format(' '.join(exec_args)))
   return util.Exec(exec_args, log_file=log_file)
@@ -179,7 +172,6 @@ class DatastoreEmulator(util.Emulator):
         'store_on_disk': True,
         'consistency': 0.9,
         'data_dir': tempfile.mkdtemp(),
-        'legacy': False
     })
     PrepareGCDDataDir(args)
     return StartGCDEmulator(args, self._GetLogNo())

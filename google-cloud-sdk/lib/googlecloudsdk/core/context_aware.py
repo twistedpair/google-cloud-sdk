@@ -44,7 +44,20 @@ def _AutoDiscoveryFilePath():
 
 
 def _SplitPemIntoSections(contents):
-  """Returns dict with {name: section} by parsing contents in PEM format."""
+  """Returns dict with {name: section} by parsing contents in PEM format.
+
+  A simple parser for PEM file. Please see RFC 7468 for the format of PEM
+  file.
+  Note: this parser requires the post-encapsulation label of a section to
+  match its pre-encapsulation label, and ignores the section without a
+  matching label.
+
+  Args:
+    contents: contents of a PEM file.
+
+  Returns:
+    A diction of sections in a PEM file.
+  """
   def IsMarker(l):
     """Returns (begin:bool, end:bool, name:str)."""
     if l.startswith('-----BEGIN ') and l.endswith('-----'):
@@ -64,14 +77,32 @@ def _SplitPemIntoSections(contents):
       continue
 
     (begin, end, name) = IsMarker(line)
-    if not pem_section_name and begin and name:
+    if begin:
+      if pem_section_name:
+        log.warning('section %s misses end line, thus is ignored' %
+                    pem_section_name)
+      if name in result.keys():
+        log.warning('section %s already exists, and the older section will '
+                    'be ignored' % name)
       pem_section_name = name
       pem_lines = []
+    elif end:
+      if not pem_section_name:
+        log.warning('section %s misses a beginning line, thus is ignored' %
+                    name)
+      elif pem_section_name != name:
+        log.warning('section %s misses a matching end line, found %s' %
+                    (pem_section_name, name))
+        pem_section_name = None
+
     if pem_section_name:
       pem_lines.append(line)
-      if end and name == pem_section_name:
+      if end:
         result[name] = '\n'.join(pem_lines) + '\n'
         pem_section_name = None
+
+  if pem_section_name:
+    log.warning('section %s misses an end line' % pem_section_name)
 
   return result
 
@@ -85,6 +116,7 @@ class CertProviderUnexpectedExit(exceptions.Error):
 
 
 class CertProvisionException(exceptions.Error):
+  """Represents errors when provisioning a client certificate."""
   pass
 
 

@@ -903,6 +903,179 @@ class GoogleCloudMlV1Model(_messages.Message):
   regions = _messages.StringField(8, repeated=True)
 
 
+class GoogleCloudMlV1NasJobOutput(_messages.Message):
+  r"""The output of Neural Archhitecture Search (NAS) jobs.
+
+  Fields:
+    multiTrialJobOutputs: The output of a multi-trial Neural Architecture
+      Search (NAS) job.
+  """
+
+  multiTrialJobOutputs = _messages.MessageField('GoogleCloudMlV1NasJobOutputMultiTrialJobOutputs', 1)
+
+
+class GoogleCloudMlV1NasJobOutputMultiTrialJobOutput(_messages.Message):
+  r"""The output of Multi-trial Neural Architecture Search (NAS) jobs.
+
+  Enums:
+    StateValueValuesEnum: Output only. The detailed state of the trial.
+
+  Fields:
+    allMetrics: All objective metrics for this Neural Architecture Search
+      (NAS) job.
+    endTime: Output only. End time for the trial.
+    finalMetric: The final objective metric seen for this Neural Architecture
+      Search (NAS) job.
+    nasParamsStr: The parameters that are associated with this Neural
+      Architecture Search (NAS) job.
+    startTime: Output only. Start time for the trial.
+    state: Output only. The detailed state of the trial.
+    trialId: The trial id for these results.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The detailed state of the trial.
+
+    Values:
+      STATE_UNSPECIFIED: The job state is unspecified.
+      QUEUED: The job has been just created and processing has not yet begun.
+      PREPARING: The service is preparing to run the job.
+      RUNNING: The job is in progress.
+      SUCCEEDED: The job completed successfully.
+      FAILED: The job failed. `error_message` should contain the details of
+        the failure.
+      CANCELLING: The job is being cancelled. `error_message` should describe
+        the reason for the cancellation.
+      CANCELLED: The job has been cancelled. `error_message` should describe
+        the reason for the cancellation.
+    """
+    STATE_UNSPECIFIED = 0
+    QUEUED = 1
+    PREPARING = 2
+    RUNNING = 3
+    SUCCEEDED = 4
+    FAILED = 5
+    CANCELLING = 6
+    CANCELLED = 7
+
+  allMetrics = _messages.MessageField('GoogleCloudMlV1NasJobOutputMultiTrialJobOutputNasParameterMetric', 1, repeated=True)
+  endTime = _messages.StringField(2)
+  finalMetric = _messages.MessageField('GoogleCloudMlV1NasJobOutputMultiTrialJobOutputNasParameterMetric', 3)
+  nasParamsStr = _messages.StringField(4)
+  startTime = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  trialId = _messages.StringField(7)
+
+
+class GoogleCloudMlV1NasJobOutputMultiTrialJobOutputNasParameterMetric(_messages.Message):
+  r"""An observed value of a metric of the trial.
+
+  Fields:
+    objectiveValue: The objective value at this training step.
+    trainingStep: The global training step for this metric.
+  """
+
+  objectiveValue = _messages.FloatField(1)
+  trainingStep = _messages.IntegerField(2)
+
+
+class GoogleCloudMlV1NasJobOutputMultiTrialJobOutputs(_messages.Message):
+  r"""The list of all MultiTrialJobOutput.
+
+  Fields:
+    multiTrialJobOutput: A GoogleCloudMlV1NasJobOutputMultiTrialJobOutput
+      attribute.
+  """
+
+  multiTrialJobOutput = _messages.MessageField('GoogleCloudMlV1NasJobOutputMultiTrialJobOutput', 1, repeated=True)
+
+
+class GoogleCloudMlV1NasSpec(_messages.Message):
+  r"""Spec for Neural Architecture Search (NAS) jobs.
+
+  Fields:
+    multiTrialAlgorithmSpec: The spec of multi-trial algorithms.
+    oneShotAlgorithmSpec: The spec of one-shot algorithms.
+    searchSpaceSpec: Required. It defines the search space for Neural
+      Architecture Search (NAS).
+  """
+
+  multiTrialAlgorithmSpec = _messages.MessageField('GoogleCloudMlV1NasSpecMultiTrialAlgorithmSpec', 1)
+  oneShotAlgorithmSpec = _messages.MessageField('GoogleCloudMlV1NasSpecOneShotAlgorithmSpec', 2)
+  searchSpaceSpec = _messages.StringField(3)
+
+
+class GoogleCloudMlV1NasSpecMultiTrialAlgorithmSpec(_messages.Message):
+  r"""The spec of multi-trial Neural Architecture Search (NAS).
+
+  Enums:
+    MultiTrialAlgorithmValueValuesEnum: Optional. The multi-trial Neural
+      Architecture Search (NAS) algorithm type. Defaults to
+      `NAS_MULTI_TRIAL_ALGORITHM_REINFORCEMENT_LEARNING`.
+
+  Fields:
+    maxFailedNasTrials: Optional. It decides when a Neural Architecture Search
+      (NAS) job should fail. Defaults to zero.
+    maxNasTrials: Optional. How many Neural Architecture Search (NAS) trials
+      should be attempted.
+    maxParallelNasTrials: Required. The number of Neural Architecture Search
+      (NAS) trials to run concurrently.
+    multiTrialAlgorithm: Optional. The multi-trial Neural Architecture Search
+      (NAS) algorithm type. Defaults to
+      `NAS_MULTI_TRIAL_ALGORITHM_REINFORCEMENT_LEARNING`.
+    nasTargetRewardMetric: Required. The TensorFlow summary tag that the
+      controller tries to optimize. Its value needs to be consistent with the
+      TensorFlow summary tag that is reported by trainer (customer provided
+      dockers).
+  """
+
+  class MultiTrialAlgorithmValueValuesEnum(_messages.Enum):
+    r"""Optional. The multi-trial Neural Architecture Search (NAS) algorithm
+    type. Defaults to `NAS_MULTI_TRIAL_ALGORITHM_REINFORCEMENT_LEARNING`.
+
+    Values:
+      MULTI_TRIAL_ALGORITHM_UNSPECIFIED: <no description>
+      REINFORCEMENT_LEARNING: The Reinforcement Learning Algorithm for Multi-
+        trial Neural Architecture Search (NAS).
+    """
+    MULTI_TRIAL_ALGORITHM_UNSPECIFIED = 0
+    REINFORCEMENT_LEARNING = 1
+
+  maxFailedNasTrials = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  maxNasTrials = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  maxParallelNasTrials = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  multiTrialAlgorithm = _messages.EnumField('MultiTrialAlgorithmValueValuesEnum', 4)
+  nasTargetRewardMetric = _messages.StringField(5)
+
+
+class GoogleCloudMlV1NasSpecOneShotAlgorithmSpec(_messages.Message):
+  r"""The spec of one shot Neural Architecture Search (NAS).
+
+  Enums:
+    OneShotAlgorithmValueValuesEnum: Optional. The one-shot Neural
+      Architecture Search (NAS) algorithm type. Defaults to
+      `ONE_SHOT_ALGORITHM_REINFORCEMENT_LEARNING`.
+
+  Fields:
+    oneShotAlgorithm: Optional. The one-shot Neural Architecture Search (NAS)
+      algorithm type. Defaults to `ONE_SHOT_ALGORITHM_REINFORCEMENT_LEARNING`.
+  """
+
+  class OneShotAlgorithmValueValuesEnum(_messages.Enum):
+    r"""Optional. The one-shot Neural Architecture Search (NAS) algorithm
+    type. Defaults to `ONE_SHOT_ALGORITHM_REINFORCEMENT_LEARNING`.
+
+    Values:
+      ONE_SHOT_ALGORITHM_UNSPECIFIED: <no description>
+      REINFORCEMENT_LEARNING: The Reinforcement Learning Algorithm for one-
+        shot Neural Architecture Search (NAS).
+    """
+    ONE_SHOT_ALGORITHM_UNSPECIFIED = 0
+    REINFORCEMENT_LEARNING = 1
+
+  oneShotAlgorithm = _messages.EnumField('OneShotAlgorithmValueValuesEnum', 1)
+
+
 class GoogleCloudMlV1OperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
@@ -1405,6 +1578,7 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       See more about [using Compute Engine machine types](/ml-
       engine/docs/tensorflow/machine-types#compute-engine-machine-types).  You
       must set this value when `scaleTier` is set to `CUSTOM`.
+    nasJobSpec: Optional. The spec of a Neural Architecture Search (NAS) job.
     packageUris: Required. The Google Cloud Storage location of the packages
       with the training program and any additional dependencies. The maximum
       number of package URIs is 100.
@@ -1518,18 +1692,19 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
   jobDir = _messages.StringField(3)
   masterConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 4)
   masterType = _messages.StringField(5)
-  packageUris = _messages.StringField(6, repeated=True)
-  parameterServerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 7)
-  parameterServerCount = _messages.IntegerField(8)
-  parameterServerType = _messages.StringField(9)
-  pythonModule = _messages.StringField(10)
-  pythonVersion = _messages.StringField(11)
-  region = _messages.StringField(12)
-  runtimeVersion = _messages.StringField(13)
-  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 14)
-  workerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 15)
-  workerCount = _messages.IntegerField(16)
-  workerType = _messages.StringField(17)
+  nasJobSpec = _messages.MessageField('GoogleCloudMlV1NasSpec', 6)
+  packageUris = _messages.StringField(7, repeated=True)
+  parameterServerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 8)
+  parameterServerCount = _messages.IntegerField(9)
+  parameterServerType = _messages.StringField(10)
+  pythonModule = _messages.StringField(11)
+  pythonVersion = _messages.StringField(12)
+  region = _messages.StringField(13)
+  runtimeVersion = _messages.StringField(14)
+  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 15)
+  workerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 16)
+  workerCount = _messages.IntegerField(17)
+  workerType = _messages.StringField(18)
 
 
 class GoogleCloudMlV1TrainingOutput(_messages.Message):
@@ -1548,6 +1723,7 @@ class GoogleCloudMlV1TrainingOutput(_messages.Message):
     isBuiltInAlgorithmJob: Whether this job is a built-in Algorithm job.
     isHyperparameterTuningJob: Whether this job is a hyperparameter tuning
       job.
+    nasJobOutput: The output of a Neural Architecture Search (NAS) job.
     trials: Results for individual Hyperparameter trials. Only set for
       hyperparameter tuning jobs.
   """
@@ -1558,7 +1734,8 @@ class GoogleCloudMlV1TrainingOutput(_messages.Message):
   hyperparameterMetricTag = _messages.StringField(4)
   isBuiltInAlgorithmJob = _messages.BooleanField(5)
   isHyperparameterTuningJob = _messages.BooleanField(6)
-  trials = _messages.MessageField('GoogleCloudMlV1HyperparameterOutput', 7, repeated=True)
+  nasJobOutput = _messages.MessageField('GoogleCloudMlV1NasJobOutput', 7)
+  trials = _messages.MessageField('GoogleCloudMlV1HyperparameterOutput', 8, repeated=True)
 
 
 class GoogleCloudMlV1Version(_messages.Message):

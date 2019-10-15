@@ -11102,7 +11102,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
         method_id=u'compute.subnetworks.patch',
         ordered_params=[u'project', u'region', u'subnetwork'],
         path_params=[u'project', u'region', u'subnetwork'],
-        query_params=[u'requestId'],
+        query_params=[u'drainTimeoutSeconds', u'requestId'],
         relative_path=u'projects/{project}/regions/{region}/subnetworks/{subnetwork}',
         request_field=u'subnetworkResource',
         request_type_name=u'ComputeSubnetworksPatchRequest',

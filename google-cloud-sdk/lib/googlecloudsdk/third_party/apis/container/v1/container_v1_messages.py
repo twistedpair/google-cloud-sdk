@@ -54,6 +54,20 @@ class AddonsConfig(_messages.Message):
   networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 4)
 
 
+class AuthenticatorGroupsConfig(_messages.Message):
+  r"""Configuration for returning group information from authenticators.
+
+  Fields:
+    enabled: Whether this cluster should return group membership lookups
+      during authentication using a group of security groups.
+    securityGroup: The name of the security group-of-groups to be used. Only
+      relevant if enabled = true.
+  """
+
+  enabled = _messages.BooleanField(1)
+  securityGroup = _messages.StringField(2)
+
+
 class AutoUpgradeOptions(_messages.Message):
   r"""AutoUpgradeOptions defines the set of options for the user to control
   how the Auto Upgrades will proceed.
@@ -165,6 +179,8 @@ class Cluster(_messages.Message):
   Fields:
     addonsConfig: Configurations for the various addons available to run in
       the cluster.
+    authenticatorGroupsConfig: Configuration controlling RBAC group membership
+      information.
     autoscaling: Cluster-level autoscaling configuration.
     binaryAuthorization: Configuration for Binary Authorization.
     clusterIpv4Cidr: The IP address range of the container pods in this
@@ -356,52 +372,53 @@ class Cluster(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   addonsConfig = _messages.MessageField('AddonsConfig', 1)
-  autoscaling = _messages.MessageField('ClusterAutoscaling', 2)
-  binaryAuthorization = _messages.MessageField('BinaryAuthorization', 3)
-  clusterIpv4Cidr = _messages.StringField(4)
-  conditions = _messages.MessageField('StatusCondition', 5, repeated=True)
-  createTime = _messages.StringField(6)
-  currentMasterVersion = _messages.StringField(7)
-  currentNodeCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  currentNodeVersion = _messages.StringField(9)
-  databaseEncryption = _messages.MessageField('DatabaseEncryption', 10)
-  defaultMaxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 11)
-  description = _messages.StringField(12)
-  enableKubernetesAlpha = _messages.BooleanField(13)
-  enableTpu = _messages.BooleanField(14)
-  endpoint = _messages.StringField(15)
-  expireTime = _messages.StringField(16)
-  initialClusterVersion = _messages.StringField(17)
-  initialNodeCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(19, repeated=True)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 20)
-  labelFingerprint = _messages.StringField(21)
-  legacyAbac = _messages.MessageField('LegacyAbac', 22)
-  location = _messages.StringField(23)
-  locations = _messages.StringField(24, repeated=True)
-  loggingService = _messages.StringField(25)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 26)
-  masterAuth = _messages.MessageField('MasterAuth', 27)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 28)
-  monitoringService = _messages.StringField(29)
-  name = _messages.StringField(30)
-  network = _messages.StringField(31)
-  networkConfig = _messages.MessageField('NetworkConfig', 32)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 33)
-  nodeConfig = _messages.MessageField('NodeConfig', 34)
-  nodeIpv4CidrSize = _messages.IntegerField(35, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 36, repeated=True)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 37)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 38)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 39)
-  selfLink = _messages.StringField(40)
-  servicesIpv4Cidr = _messages.StringField(41)
-  status = _messages.EnumField('StatusValueValuesEnum', 42)
-  statusMessage = _messages.StringField(43)
-  subnetwork = _messages.StringField(44)
-  tpuIpv4CidrBlock = _messages.StringField(45)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 46)
-  zone = _messages.StringField(47)
+  authenticatorGroupsConfig = _messages.MessageField('AuthenticatorGroupsConfig', 2)
+  autoscaling = _messages.MessageField('ClusterAutoscaling', 3)
+  binaryAuthorization = _messages.MessageField('BinaryAuthorization', 4)
+  clusterIpv4Cidr = _messages.StringField(5)
+  conditions = _messages.MessageField('StatusCondition', 6, repeated=True)
+  createTime = _messages.StringField(7)
+  currentMasterVersion = _messages.StringField(8)
+  currentNodeCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  currentNodeVersion = _messages.StringField(10)
+  databaseEncryption = _messages.MessageField('DatabaseEncryption', 11)
+  defaultMaxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 12)
+  description = _messages.StringField(13)
+  enableKubernetesAlpha = _messages.BooleanField(14)
+  enableTpu = _messages.BooleanField(15)
+  endpoint = _messages.StringField(16)
+  expireTime = _messages.StringField(17)
+  initialClusterVersion = _messages.StringField(18)
+  initialNodeCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(20, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 21)
+  labelFingerprint = _messages.StringField(22)
+  legacyAbac = _messages.MessageField('LegacyAbac', 23)
+  location = _messages.StringField(24)
+  locations = _messages.StringField(25, repeated=True)
+  loggingService = _messages.StringField(26)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 27)
+  masterAuth = _messages.MessageField('MasterAuth', 28)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 29)
+  monitoringService = _messages.StringField(30)
+  name = _messages.StringField(31)
+  network = _messages.StringField(32)
+  networkConfig = _messages.MessageField('NetworkConfig', 33)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 34)
+  nodeConfig = _messages.MessageField('NodeConfig', 35)
+  nodeIpv4CidrSize = _messages.IntegerField(36, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 37, repeated=True)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 38)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 39)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 40)
+  selfLink = _messages.StringField(41)
+  servicesIpv4Cidr = _messages.StringField(42)
+  status = _messages.EnumField('StatusValueValuesEnum', 43)
+  statusMessage = _messages.StringField(44)
+  subnetwork = _messages.StringField(45)
+  tpuIpv4CidrBlock = _messages.StringField(46)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 47)
+  zone = _messages.StringField(48)
 
 
 class ClusterAutoscaling(_messages.Message):

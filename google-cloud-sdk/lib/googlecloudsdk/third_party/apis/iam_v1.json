@@ -1035,7 +1035,7 @@
           ]
         },
         "validationUnitName": {
-          "description": "The validation unit name, for instance\n\u201ClintValidationUnits\/ConditionComplexityCheck\u201D.",
+          "description": "The validation unit name, for instance\n\"lintValidationUnits\/ConditionComplexityCheck\".",
           "type": "string"
         },
         "severity": {

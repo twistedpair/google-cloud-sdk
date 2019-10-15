@@ -127,12 +127,11 @@ def AddUpdateArgs(parser, include_alpha_logging,
       logs are reported and 0.0 means no logs are reported. Default is 0.5
       which means half of all collected logs are reported.
       """)
-  AddLoggingMetadata(parser, messages)
 
   if include_alpha_logging:
     messages = apis.GetMessagesModule('compute',
                                       compute_api.COMPUTE_ALPHA_API_VERSION)
-    AddLoggingAggregationIntervalAlpha(parser, messages)
+    AddLoggingAggregationIntervalDeprecated(parser, messages)
     parser.add_argument(
         '--flow-sampling',
         type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
@@ -143,7 +142,27 @@ def AddUpdateArgs(parser, include_alpha_logging,
         logs are reported and 0.0 means no logs are reported. Default is 0.5
         which means half of all collected logs are reported.
         """)
+    AddLoggingMetadataDeprecated(parser, messages)
+
+    parser.add_argument(
+        '--logging-filter-expr',
+        help="""\
+        Can only be specified if VPC flow logs for this subnetwork is enabled.
+        Export filter used to define which VPC flow logs should be logged.
+        """)
     AddLoggingMetadataAlpha(parser, messages)
+    parser.add_argument(
+        '--logging-metadata-fields',
+        type=arg_parsers.ArgList(),
+        metavar='METADATA_FIELD',
+        default=None,
+        help="""\
+        Can only be specified if VPC flow logs for this subnetwork is enabled
+        and "metadata" is set to CUSTOM_METADATA. The custom list of metadata
+        fields that should be added to reported VPC flow logs.
+        """)
+  else:
+    AddLoggingMetadata(parser, messages)
 
   if include_l7_internal_load_balancing:
     updated_field.add_argument(
@@ -241,7 +260,7 @@ def AddLoggingAggregationInterval(parser, messages):
   GetLoggingAggregationIntervalArg(messages).choice_arg.AddToParser(parser)
 
 
-def GetLoggingAggregationIntervalArgAlpha(messages):
+def GetLoggingAggregationIntervalArgDeprecated(messages):
   return arg_utils.ChoiceEnumMapper(
       '--aggregation-interval',
       messages.SubnetworkLogConfig.AggregationIntervalValueValuesEnum,
@@ -262,8 +281,9 @@ def GetLoggingAggregationIntervalArgAlpha(messages):
         """)
 
 
-def AddLoggingAggregationIntervalAlpha(parser, messages):
-  GetLoggingAggregationIntervalArgAlpha(messages).choice_arg.AddToParser(parser)
+def AddLoggingAggregationIntervalDeprecated(parser, messages):
+  GetLoggingAggregationIntervalArgDeprecated(messages).choice_arg.AddToParser(
+      parser)
 
 
 def GetLoggingMetadataArg(messages):
@@ -285,13 +305,33 @@ def AddLoggingMetadata(parser, messages):
   GetLoggingMetadataArg(messages).choice_arg.AddToParser(parser)
 
 
-def GetLoggingMetadataArgAlpha(messages):
+def GetLoggingMetadataArgDeprecated(messages):
   return arg_utils.ChoiceEnumMapper(
       '--metadata',
       messages.SubnetworkLogConfig.MetadataValueValuesEnum,
       custom_mappings={
           'INCLUDE_ALL_METADATA': 'include-all-metadata',
           'EXCLUDE_ALL_METADATA': 'exclude-all-metadata'
+      },
+      help_str="""\
+        Can only be specified if VPC flow logging for this subnetwork is
+        enabled. Configures whether metadata fields should be added to the
+        reported VPC flow logs. Default is to include all metadata.
+        """)
+
+
+def AddLoggingMetadataDeprecated(parser, messages):
+  GetLoggingMetadataArgDeprecated(messages).choice_arg.AddToParser(parser)
+
+
+def GetLoggingMetadataArgAlpha(messages):
+  return arg_utils.ChoiceEnumMapper(
+      '--logging-metadata',
+      messages.SubnetworkLogConfig.MetadataValueValuesEnum,
+      custom_mappings={
+          'INCLUDE_ALL_METADATA': 'include-all-metadata',
+          'EXCLUDE_ALL_METADATA': 'exclude-all-metadata',
+          'CUSTOM_METADATA': 'custom'
       },
       help_str="""\
         Can only be specified if VPC flow logging for this subnetwork is
