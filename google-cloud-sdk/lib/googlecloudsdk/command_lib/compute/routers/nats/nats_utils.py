@@ -74,8 +74,7 @@ def CreateNatMessage(args, compute_holder):
 
 def UpdateNatMessage(nat,
                      args,
-                     compute_holder,
-                     with_drain_ips=False):
+                     compute_holder):
   """Updates a NAT message with the specified arguments."""
   if (args.subnet_option in [
       nat_flags.SubnetOption.ALL_RANGES, nat_flags.SubnetOption.PRIMARY_RANGES
@@ -84,19 +83,18 @@ def UpdateNatMessage(nat,
     nat.sourceSubnetworkIpRangesToNat = ranges_to_nat
     nat.subnetworks = subnetworks
 
-  if with_drain_ips:
-    if args.drain_nat_ips:
-      drain_nat_ips = nat_flags.DRAIN_NAT_IP_ADDRESSES_ARG.ResolveAsResource(
-          args, compute_holder.resources)
-      nat.drainNatIps = [six.text_type(ip) for ip in drain_nat_ips]
+  if args.drain_nat_ips:
+    drain_nat_ips = nat_flags.DRAIN_NAT_IP_ADDRESSES_ARG.ResolveAsResource(
+        args, compute_holder.resources)
+    nat.drainNatIps = [six.text_type(ip) for ip in drain_nat_ips]
 
-      # Remove a IP from nat_ips if it is going to be drained.
-      if not args.nat_external_ip_pool:
-        nat.natIps = [ip for ip in nat.natIps
-                      if not _ContainIp(drain_nat_ips, ip)]
+    # Remove a IP from nat_ips if it is going to be drained.
+    if not args.nat_external_ip_pool:
+      nat.natIps = [ip for ip in nat.natIps
+                    if not _ContainIp(drain_nat_ips, ip)]
 
-    if args.clear_drain_nat_ips:
-      nat.drainNatIps = []
+  if args.clear_drain_nat_ips:
+    nat.drainNatIps = []
 
   if (args.ip_allocation_option == nat_flags.IpAllocationOption.AUTO or
       args.nat_external_ip_pool):

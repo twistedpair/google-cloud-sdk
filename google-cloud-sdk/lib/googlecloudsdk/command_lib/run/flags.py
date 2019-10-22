@@ -55,7 +55,7 @@ _PLATFORMS = collections.OrderedDict([
     ('managed', 'Fully managed version of Cloud Run. Use with the `--region` '
                 'flag or set the [run/region] property to specify a Cloud Run '
                 'region.'),
-    ('gke', 'Cloud Run for Anthos on Google Kubernetes Engine. Use with the '
+    ('gke', 'Cloud Run for Anthos on Google Cloud. Use with the '
             '`--cluster` and `--cluster-location` flags or set the '
             '[run/cluster] and [run/cluster_location] properties to specify a '
             'cluster in a given zone.'),
@@ -66,7 +66,7 @@ _PLATFORMS = collections.OrderedDict([
 
 _PLATFORM_SHORT_DESCRIPTIONS = {
     'managed': 'Cloud Run (fully managed)',
-    'gke': 'Cloud Run for Anthos deployed on GKE',
+    'gke': 'Cloud Run for Anthos deployed on Google Cloud',
     'kubernetes': 'Cloud Run for Anthos deployed on VMware',
 }
 

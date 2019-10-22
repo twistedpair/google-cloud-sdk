@@ -420,6 +420,9 @@ _KNOWN_ERRORS = {
     'oauth2client.client.AccessTokenRefreshError': _GetTokenRefreshError,
     'ssl.SSLError': core_exceptions.NetworkIssueError,
     'socket.error': core_exceptions.NetworkIssueError,
+    'builtins.ConnectionAbortedError': core_exceptions.NetworkIssueError,
+    'builtins.ConnectionRefusedError': core_exceptions.NetworkIssueError,
+    'builtins.ConnectionResetError': core_exceptions.NetworkIssueError,
 }
 
 

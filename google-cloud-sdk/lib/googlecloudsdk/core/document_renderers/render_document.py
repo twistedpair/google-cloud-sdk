@@ -35,6 +35,7 @@ import argparse
 import re
 import sys
 
+from googlecloudsdk.core import argv_utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.document_renderers import devsite_renderer
 from googlecloudsdk.core.document_renderers import html_renderer
@@ -942,4 +943,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-  main(sys.argv)
+  main(argv_utils.GetDecodedArgv())

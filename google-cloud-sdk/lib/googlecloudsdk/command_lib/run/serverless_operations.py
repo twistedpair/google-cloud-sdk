@@ -24,7 +24,9 @@ import datetime
 import functools
 import random
 import string
+from apitools.base.py import encoding
 from apitools.base.py import exceptions as api_exceptions
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.run import condition as run_condition
 from googlecloudsdk.api_lib.run import configuration
 from googlecloudsdk.api_lib.run import domain_mapping
@@ -999,7 +1001,8 @@ class ServerlessOperations(object):
       for msg in run_condition.GetNonTerminalMessages(poller.GetConditions()):
         tracker.AddWarning(msg)
 
-  def ListRevisions(self, namespace_ref, service_name):
+  def ListRevisions(self, namespace_ref, service_name,
+                    limit=None, page_size=100):
     """List all revisions for the given service.
 
     Revision list gets sorted by service name and creation timestamp.
@@ -1007,11 +1010,17 @@ class ServerlessOperations(object):
     Args:
       namespace_ref: Resource, namespace to list revisions in
       service_name: str, The service for which to list revisions.
+      limit: Optional[int], max number of revisions to list.
+      page_size: Optional[int], number of revisions to fetch at a time
 
-    Returns:
-      A list of revisions for the given service.
+    Yields:
+      Revisions for the given surface
     """
     messages = self.messages_module
+    # NB: This is a hack to compensate for apitools not generating this line.
+    #     It's necessary to make the URL parameter be "continue".
+    encoding.AddCustomJsonFieldMapping(
+        messages.RunNamespacesRevisionsListRequest, 'continue_', 'continue')
     request = messages.RunNamespacesRevisionsListRequest(
         parent=namespace_ref.RelativeName(),
     )
@@ -1020,15 +1029,15 @@ class ServerlessOperations(object):
       # 'service-less' operation.
       request.labelSelector = 'serving.knative.dev/service = {}'.format(
           service_name)
-    with metrics.RecordDuration(metric_names.LIST_REVISIONS):
-      response = self._client.namespaces_revisions.List(request)
-
-    # Server does not sort the response so we'll need to sort client-side
-    revisions = [revision.Revision(item, messages) for item in response.items]
-    # Newest first
-    revisions.sort(key=lambda r: r.creation_timestamp, reverse=True)
-    revisions.sort(key=lambda r: r.service_name)
-    return revisions
+    for result in list_pager.YieldFromList(
+        service=self._client.namespaces_revisions,
+        request=request,
+        limit=limit,
+        batch_size=page_size,
+        current_token_attribute='continue_',
+        next_token_attribute=('metadata', 'continue_'),
+        batch_size_attribute='limit'):
+      yield revision.Revision(result, messages)
 
   def ListDomainMappings(self, namespace_ref):
     """List all domain mappings.

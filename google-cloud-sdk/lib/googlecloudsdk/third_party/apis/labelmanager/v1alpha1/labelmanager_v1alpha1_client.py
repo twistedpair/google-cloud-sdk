@@ -38,6 +38,7 @@ class LabelmanagerV1alpha1(base_api.BaseApiClient):
     self.labelKeys = self.LabelKeysService(self)
     self.labelValues_labelBindings = self.LabelValuesLabelBindingsService(self)
     self.labelValues = self.LabelValuesService(self)
+    self.operations = self.OperationsService(self)
 
   class LabelKeysService(base_api.BaseApiService):
     """Service class for the labelKeys resource."""
@@ -576,6 +577,45 @@ ACTIVE state.
         relative_path=u'v1alpha1/{+name}:undelete',
         request_field=u'undeleteLabelValueRequest',
         request_type_name=u'LabelmanagerLabelValuesUndeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class OperationsService(base_api.BaseApiService):
+    """Service class for the operations resource."""
+
+    _NAME = u'operations'
+
+    def __init__(self, client):
+      super(LabelmanagerV1alpha1.OperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
+method to poll the operation result at intervals as recommended by the API
+service.
+
+      Args:
+        request: (LabelmanagerOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/operations/{operationsId}',
+        http_method=u'GET',
+        method_id=u'labelmanager.operations.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'LabelmanagerOperationsGetRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

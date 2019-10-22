@@ -235,11 +235,18 @@ class EnvVarsAsDictionaryWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):
 
   @property
   def literals(self):
-    """Mutable dict-like object for env vars with a string literal."""
+    """Mutable dict-like object for env vars with a string literal.
+
+    Note that if neither value nor valueFrom is specified, the list entry will
+    be treated as a literal empty string.
+
+    Returns:
+      A mutable, dict-like object for managing string literal env vars.
+    """
     return k8s_object.ListAsDictionaryWrapper(
         self._env_vars,
         self._env_var_class,
-        filter_func=lambda env_var: env_var.value is not None)
+        filter_func=lambda env_var: env_var.valueFrom is None)
 
   @property
   def secrets(self):

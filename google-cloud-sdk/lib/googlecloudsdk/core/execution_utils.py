@@ -28,6 +28,7 @@ import subprocess
 import sys
 import time
 
+from googlecloudsdk.core import argv_utils
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -221,7 +222,7 @@ def ArgsForGcloud():
   if not sys.executable:
     # In hermetic par/stub files sys.executable is None. In regular installs,
     # and in classic par/stub files it is a non-empty string.
-    return _GetToolArgs(None, None, sys.argv[0])
+    return _GetToolArgs(None, None, argv_utils.GetDecodedArgv()[0])
   return ArgsForPythonTool(config.GcloudPath())
 
 

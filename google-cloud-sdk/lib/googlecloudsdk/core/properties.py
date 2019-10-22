@@ -24,6 +24,7 @@ import re
 import sys
 import enum
 
+from googlecloudsdk.core import argv_utils
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.configurations import named_configs
@@ -39,7 +40,7 @@ import six
 # the --configuration flag.  If they did, this could affect the value of the
 # properties defined in that configuration.  Since some libraries (like logging)
 # use properties at startup, we want to use the correct configuration for that.
-named_configs.FLAG_OVERRIDE_STACK.PushFromArgs(sys.argv)
+named_configs.FLAG_OVERRIDE_STACK.PushFromArgs(argv_utils.GetDecodedArgv())
 
 _SET_PROJECT_HELP = """\
 To set your project, run:
@@ -1653,7 +1654,6 @@ class _SectionApiEndpointOverrides(_Section):
     self.accesscontextmanager = self._Add('accesscontextmanager')
     self.appengine = self._Add('appengine')
     self.bigtableadmin = self._Add('bigtableadmin')
-    self.bigtableclusteradmin = self._Add('bigtableclusteradmin')
     self.binaryauthorization = self._Add('binaryauthorization')
     self.bio = self._Add('bio')
     self.buildartifacts = self._Add('buildartifacts')
@@ -1757,6 +1757,7 @@ class _SectionApiClientOverrides(_Section):
     self.compute = self._Add('compute')
     self.container = self._Add('container')
     self.sql = self._Add('sql')
+    self.run = self._Add('run')
 
 
 class _SectionEmulator(_Section):

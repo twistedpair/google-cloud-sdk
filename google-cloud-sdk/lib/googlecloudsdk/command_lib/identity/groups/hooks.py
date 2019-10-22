@@ -20,8 +20,8 @@ from __future__ import unicode_literals
 
 from apitools.base.py import encoding
 
-from googlecloudsdk.api_lib.identity import cloudidentity_client as ci_client
 from googlecloudsdk.api_lib.cloudresourcemanager import organizations
+from googlecloudsdk.api_lib.identity import cloudidentity_client as ci_client
 from googlecloudsdk.calliope import exceptions
 
 _CIG_API_VERSION = 'v1alpha1'
@@ -130,6 +130,23 @@ def SetGroupUpdateMask(unused_ref, args, request):
         'Must specify at least one field mask.')
 
   request.updateMask = ','.join(update_mask)
+
+  return request
+
+
+def GenerateQuery(unused_ref, args, request):
+  """Generate and set the query on the request based on the args.
+
+  Args:
+    unused_ref: unused.
+    args: The argparse namespace.
+    request: The request to modify.
+  Returns:
+    The updated request.
+  """
+  customer_id = ConvertOrgIdToObfuscatedCustomerId(args.organization)
+  request.query = 'parent==\"customerId/{0}\" && \"{1}\" in labels'.format(
+      customer_id, args.label)
 
   return request
 

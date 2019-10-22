@@ -91,4 +91,5 @@ def AddConditionFlagToParser(parser):
       help=(
           'Condition expression for filtering the resources the policy applies '
           'to. At the moment, the only allowed syntax for a condition is '
-          "'resource.matchLabels(label_key_id, label_value_id)'."))
+          '\'resource.matchLabels("labelKeys/{label_key_id}", "labelValues/{label_value_id}")\'.'
+      ))

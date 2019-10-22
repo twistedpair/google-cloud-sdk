@@ -75,6 +75,7 @@ from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.calliope import suggest_commands
 from googlecloudsdk.calliope import usage_text
+from googlecloudsdk.core import argv_utils
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
@@ -641,7 +642,7 @@ class ArgumentParser(argparse.ArgumentParser):
   def parse_known_args(self, args=None, namespace=None):
     """Overrides argparse.ArgumentParser's .parse_known_args method."""
     if args is None:
-      args = sys.argv[1:]
+      args = argv_utils.GetDecodedArgv()[1:]
     if namespace is None:
       namespace = Namespace()
     namespace._SetParser(self)  # pylint: disable=protected-access

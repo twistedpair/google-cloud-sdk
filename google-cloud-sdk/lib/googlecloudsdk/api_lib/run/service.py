@@ -95,6 +95,14 @@ class Service(k8s_object.KubernetesObject):
     return self.template.labels
 
   @property
+  def revision_name(self):
+    return self.template.name
+
+  @revision_name.setter
+  def revision_name(self, value):
+    self.template.name = value
+
+  @property
   def latest_created_revision(self):
     return self.status.latestCreatedRevisionName
 

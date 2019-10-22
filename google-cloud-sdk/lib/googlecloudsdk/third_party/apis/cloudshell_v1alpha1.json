@@ -165,6 +165,25 @@
           "items": {
             "$ref": "PublicKey"
           }
+        },
+        "size": {
+          "description": "Indicates the size of the backing VM running the environment.  If set to\nsomething other than DEFAULT, it will be reverted to the default VM size\nafter vm_size_expire_time.",
+          "enumDescriptions": [
+            "The VM size is unknown.",
+            "The default VM size.",
+            "The boosted VM size."
+          ],
+          "type": "string",
+          "enum": [
+            "VM_SIZE_UNSPECIFIED",
+            "DEFAULT",
+            "BOOSTED"
+          ]
+        },
+        "vmSizeExpireTime": {
+          "description": "Output only. The time when the Environment will expire back to the default\nVM size.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

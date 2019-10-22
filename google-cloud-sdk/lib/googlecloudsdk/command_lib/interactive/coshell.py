@@ -646,13 +646,20 @@ class _UnixCoshell(_UnixCoshellBase):
     else:
       shell_command = [self.SHELL_PATH]
 
+    # Python 3 adds a restore_signals kwarg to subprocess.Popen that defaults to
+    # True, and has the effect of restoring the subprocess's SIGPIPE handler to
+    # the default action. Python 2, on the other hand, keeps the modified
+    # SIGPIPE handler for the subprocess. The coshell relies on the latter
+    # behavior.
+    additional_kwargs = {} if six.PY2 else {'restore_signals': False}
     self._shell = subprocess.Popen(
         shell_command,
         env=os.environ,  # NOTE: Needed to pass mocked environ to children.
         stdin=subprocess.PIPE,
         stdout=stdout,
         stderr=stderr,
-        close_fds=False)
+        close_fds=False,
+        **additional_kwargs)
 
     if caller_shell_status_fd >= 0:
       os.dup2(caller_shell_status_fd, self.SHELL_STATUS_FD)

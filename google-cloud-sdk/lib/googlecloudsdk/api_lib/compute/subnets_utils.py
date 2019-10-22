@@ -125,8 +125,12 @@ def MakeSubnetworkUpdateRequest(
     with client.apitools_client.IncludeFields(cleared_fields):
       return client.MakeRequests(
           [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
-  elif (enable_flow_logs is not None or aggregation_interval is not None or
-        flow_sampling is not None or metadata is not None):
+  elif (enable_flow_logs is not None or
+        aggregation_interval is not None or
+        flow_sampling is not None or
+        metadata is not None or
+        (include_alpha_logging and filter_expr is not None) or
+        (include_alpha_logging and metadata_fields is not None)):
     subnetwork = client.messages.Subnetwork()
     original_subnetwork = client.MakeRequests([
         (client.apitools_client.subnetworks, 'Get',

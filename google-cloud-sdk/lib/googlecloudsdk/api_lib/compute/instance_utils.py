@@ -286,6 +286,14 @@ def CreateShieldedInstanceIntegrityPolicyMessage(messages,
   return shielded_instance_integrity_policy
 
 
+def CreateConfidentialInstanceMessage(messages, enable_confidential_compute):
+  """Create confidentialInstanceConfig message for VM."""
+  confidential_instance_config = messages.ConfidentialInstanceConfig(
+      enableConfidentialCompute=enable_confidential_compute)
+
+  return confidential_instance_config
+
+
 def CreateMachineTypeUris(
     resources, compute_client,
     machine_type, custom_cpu, custom_memory, vm_type, ext, instance_refs):

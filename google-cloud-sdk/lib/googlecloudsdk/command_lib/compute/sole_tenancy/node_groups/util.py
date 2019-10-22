@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.command_lib.compute.sole_tenancy.node_groups import flags
+
 
 def ParseNodeTemplate(resources, name, project=None, region=None):
   """Parses a node template resource and returns a resource reference.
@@ -34,3 +36,18 @@ def ParseNodeTemplate(resources, name, project=None, region=None):
   return resources.Parse(
       name, {'project': project, 'region': region},
       collection='compute.nodeTemplates')
+
+
+def BuildAutoscaling(args, messages):
+  """Build NodeGroupAutoscalingPolicy object from args."""
+
+  if args.mode:
+    mapper = flags.GetAutoscalingModeEnumMapper(messages)
+    mode = mapper.GetEnumForChoice(args.mode)
+    autoscaling_policy = messages.NodeGroupAutoscalingPolicy(
+        mode=mode,
+        minSize=args.min_size if args.min_size else None,
+        maxSize=args.max_size if args.max_size else None)
+    return autoscaling_policy
+
+  return None

@@ -1211,9 +1211,11 @@ class SSHCommand(object):
       args.extend(self.remainder)
 
     if self.remote_command:
-      if env.suite is Suite.OPENSSH:  # Putty doesn't like double dash
+      if env.suite is Suite.OPENSSH:
         args.append('--')
-      args.extend(self.remote_command)
+        args.extend(self.remote_command)
+      else:
+        args.append(' '.join(self.remote_command))
     return args
 
   def Run(self, env=None, force_connect=False,

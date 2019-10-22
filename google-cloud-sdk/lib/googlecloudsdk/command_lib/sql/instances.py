@@ -437,12 +437,10 @@ class _BaseInstances(object):
           args.master_dump_file_path, args.master_ca_certificate_path,
           args.client_certificate_path, args.client_key_path)
 
-    # ALPHA args.
-    if _IsAlpha(release_track):
-      key_name = _GetAndValidateCmekKeyName(args)
-      if key_name:
-        config = sql_messages.DiskEncryptionConfiguration(kmsKeyName=key_name)
-        instance_resource.diskEncryptionConfiguration = config
+    key_name = _GetAndValidateCmekKeyName(args)
+    if key_name:
+      config = sql_messages.DiskEncryptionConfiguration(kmsKeyName=key_name)
+      instance_resource.diskEncryptionConfiguration = config
 
     return instance_resource
 

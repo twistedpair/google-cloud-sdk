@@ -184,7 +184,7 @@ def AddMessageRetentionFlags(parser, is_update):
           Whether or not to retain acknowledged messages.  If true,
           messages are not expunged from the subscription's backlog
           until they fall out of the --message-retention-duration
-          window.""")
+          window. Acknowledged messages are not retained by default.""")
   parser.add_argument(
       '--message-retention-duration',
       type=retention_parser,

@@ -90,23 +90,14 @@ def SetMembershipResourceName(unused_ref, args, request):
     The updated request.
   """
 
-  group_id = ''
-  if args.IsSpecified('group_email'):
-    group_id = groups_hooks.ConvertEmailToResourceName(
-        args.group_email, 'group_email')
-  else:
-    raise exceptions.InvalidArgumentException(
-        'Must specify group-email argument.')
-
-  member_id = ''
+  name = ''
   if args.IsSpecified('group_email') and args.IsSpecified('member_email'):
-    member_id = ConvertEmailToMembershipResourceName(
+    name = ConvertEmailToMembershipResourceName(
         args.group_email, args.member_email, 'group_email', 'member_email')
   else:
     raise exceptions.InvalidArgumentException(
-        'Must specify member-email argument.')
+        'Must specify group-email and member-email argument.')
 
-  name = 'groups/' + group_id + '/memberships/' + member_id
   if hasattr(request, 'group'):
     request.group.name = name
   else:
@@ -196,8 +187,12 @@ def ConvertEmailToMembershipResourceName(
 
   """
 
+  # Resource name example: groups/03qco8b4452k99t
+  group_id = groups_hooks.ConvertEmailToResourceName(
+      group_email, group_arg_name)
+
   lookup_membership_name_resp = ci_client.LookupMembershipName(
-      group_email, member_email)
+      group_id, member_email)
 
   if 'name' in lookup_membership_name_resp:
     return lookup_membership_name_resp['name']

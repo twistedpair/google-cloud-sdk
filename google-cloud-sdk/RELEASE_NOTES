@@ -5,14 +5,55 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 268.0.0 (2019-10-22)
+
+### Cloud Life Sciences
+
+* Added `gcloud beta lifesciences pipelines` which defines and runs pipelines.
+* Added `gcloud beta lifesciences operations` which manages pipeline operations.
+
+### Cloud Memorystore
+
+*   Modified `--update-redis-config` flag of `gcloud redis instances update` to
+    accept 'maxmemory-gb' as a parameter.
+
+### Cloud SQL
+
+* Promoted `--disk-encryption-key` flag to GA.
+
+### Cloud Storage
+
+* 
+* Updated gsutil component to 4.45.
+
+### Compute Engine
+
+* Promoted `--drain-nat-ips` and `--clear-drain-nat-ips` flags of
+  `gcloud compute routers nats` to GA.
+
+### GKE Hub
+
+* Renamed `container hub register-cluster` and `container hub unregister-cluster` to `container memberships register` and `container memberships unregister` respectively.
+
+### Kubernetes Engine
+
+*   Fixed issue where `gcloud beta container clusters update` crashed when
+    adding a maintenance exclusion if a maintenance window is set but no
+    exclusions exist.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 267.0.0 (2019-10-15)
 
 ### Breaking Changes
 
-*   **(Cloud Datastore Emulator)** Removed the deprecated component (gcd-emulator) for the legacy version that
-*   **(Cloud Datastore Emulator)** used the v1beta3 API.
-*   **(Cloud Datastore Emulator)** Removed the deprecated `--legacy` flag from `gcloud <alpha|beta> emulators
-*   **(Cloud Datastore Emulator)** datastore start` that invoked the legacy version of the emulator.
+*   **(Cloud Datastore Emulator)** Removed the deprecated component
+    (gcd-emulator) for the legacy version that used the v1beta3 API.
+*   **(Cloud Datastore Emulator)** Removed the deprecated `--legacy` flag from
+    `gcloud beta emulators datastore start` that invoked the legacy version of
+    the emulator.
 
 
 ### BigQuery
@@ -24,7 +65,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Asset Inventory
 
-* Promoted group commands of `gcloud asset feeds` to beta.
+* Promoted `gcloud asset feeds` command group to beta.
 
 ### Cloud Bigtable
 
@@ -33,8 +74,8 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Cloud Dataproc
 
 * Fixed issue where `--region` flag was not honored for `gcloud beta dataproc
-  commands`. Specifically when passing resources as URIs.
-  * If `dataproc/region` was set `--region` flag still correctly overrode it.
+  commands`, specifically when passing resources as URIs.
+  * If `dataproc/region` is set `--region` flag, still correctly override it.
 
 ### Cloud Firestore
 
@@ -47,8 +88,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud IAM
 
-* Promoted `--description` flag of `gcloud iam service-accounts create` to GA.
-* Promoted `--description` flag of `gcloud iam service-accounts update` to GA.
+* Promoted `--description` flag of `gcloud iam service-accounts create` and `gcloud iam service-accounts update` to GA.
 
 ### Cloud Run
 
@@ -57,8 +97,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Compute Engine
 
-* Promoted `--family` flag of `gcloud compute images import` to GA.
-* Promoted `--description` flag of `gcloud compute images import` to GA.
+* Promoted `--family` and `--description` flags of `gcloud compute images import` to GA.
 
 ### Kubernetes Engine
 
@@ -80,7 +119,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### App Engine
 
-* Loosen validation for Go main package paths. Hyphens and other characters are now valid.
+* Modified validation for Go main package paths: hyphens and other characters are now valid.
 * Added error checking when a deployed jar does not contain a Main-Class manifest entry.
 
 
@@ -96,7 +135,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Cloud Dataproc
 
 * Added `realm` field to the file specified by `--kerberos-config-file`,
-applicable to the following commands:
+  applicable to the following commands:
     * `gcloud dataproc clusters create`
     * `gcloud dataproc workflow-templates set-managed-cluster`
     * `gcloud beta dataproc clusters create`
@@ -104,11 +143,11 @@ applicable to the following commands:
 
 ### Cloud Functions
 
-* Promote `--vpc-connector` in functions deploy to GA.
+* Promoted `--vpc-connector` in functions deploy to GA.
 
 ### Cloud Run
 
-* Made `routes` and `configurations` command groups hidden.
+* Modified `routes` and `configurations` command groups to be hidden.
 * Changed the descriptions of the platforms for Cloud Run to match current
   product names and functionality.
 
@@ -119,13 +158,12 @@ applicable to the following commands:
 
 ### Cloud Storage
 
-* 
 * Updated gsutil component to 4.44.
 
 ### Compute Engine
 
 * Promoted `--networks` flag of `compute backend-services create` to beta.
-* Promoted 'SHARED_LOADBALANCER_VIP' option of  `--purpose` flag of
+* Promoted 'SHARED_LOADBALANCER_VIP' option of `--purpose` flag of
   `gcloud beta compute addresses create` to beta.
 
 ### Kubernetes Engine

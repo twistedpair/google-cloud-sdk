@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.compute import utils as compute_util
 from googlecloudsdk.api_lib.compute.operations import poller
 from googlecloudsdk.api_lib.util import waiter
-from googlecloudsdk.command_lib.compute.sole_tenancy.node_groups import flags
 from googlecloudsdk.command_lib.compute.sole_tenancy.node_groups import util
 from six.moves import map
 
@@ -69,14 +68,9 @@ class NodeGroupsClient(object):
         zone=node_group_ref.zone)
     return self._service.DeleteNodes(request)
 
-  def SetAutoscalingPolicy(self, node_group_ref, autoscaling_policy):
+  def SetAutoscalingPolicy(self, node_group_ref, args):
     """Sets the autoscaling policy on a node group."""
-    mapper = flags.GetAutoscalingModeEnumMapper(self.messages)
-    mode = mapper.GetEnumForChoice(autoscaling_policy['mode'])
-    autoscaling_policy_ref = self.messages.NodeGroupAutoscalingPolicy(
-        mode=mode,
-        minSize=autoscaling_policy.get('min-size'),
-        maxSize=autoscaling_policy.get('max-size'))
+    autoscaling_policy_ref = util.BuildAutoscaling(args, self.messages)
     set_request = self.messages.NodeGroupsSetAutoscalingPolicyRequest(
         autoscalingPolicy=autoscaling_policy_ref)
     request = self.messages.ComputeNodeGroupsSetAutoscalingPolicyRequest(
@@ -100,7 +94,7 @@ class NodeGroupsClient(object):
              node_template=None,
              additional_node_count=None,
              delete_nodes=None,
-             autoscaling_policy=None):
+             autoscaling_policy_args=None):
     """Updates a Compute Node Group."""
     set_node_template_ref = None
     add_nodes_ref = None
@@ -119,8 +113,9 @@ class NodeGroupsClient(object):
       operation = self.DeleteNodes(node_group_ref, delete_nodes)
       delete_nodes_ref = self._GetOperationsRef(operation)
 
-    if autoscaling_policy:
-      operation = self.SetAutoscalingPolicy(node_group_ref, autoscaling_policy)
+    if autoscaling_policy_args:
+      operation = self.SetAutoscalingPolicy(node_group_ref,
+                                            autoscaling_policy_args)
       autoscaling_policy_ref = self._GetOperationsRef(operation)
 
     node_group_name = node_group_ref.Name()
@@ -141,15 +136,15 @@ class NodeGroupsClient(object):
             deleted_nodes_str, node_group_name)) or result
 
     autoscaling_policy_str_list = []
-    if autoscaling_policy:
-      if autoscaling_policy.get('mode'):
-        mode_str = 'mode={0}'.format(autoscaling_policy['mode'])
+    if autoscaling_policy_args:
+      if autoscaling_policy_args.mode:
+        mode_str = 'mode={0}'.format(autoscaling_policy_args.mode)
         autoscaling_policy_str_list.append(mode_str)
-      if autoscaling_policy.get('min-size'):
-        min_str = 'min-size={0}'.format(autoscaling_policy['min-size'])
+      if autoscaling_policy_args.min_size:
+        min_str = 'min-size={0}'.format(autoscaling_policy_args.min_size)
         autoscaling_policy_str_list.append(min_str)
-      if autoscaling_policy.get('max-size'):
-        max_str = 'max-size={0}'.format(autoscaling_policy['max-size'])
+      if autoscaling_policy_args.max_size:
+        max_str = 'max-size={0}'.format(autoscaling_policy_args.max_size)
         autoscaling_policy_str_list.append(max_str)
     autoscaling_policy_str = ','.join(autoscaling_policy_str_list)
     result = self._WaitForResult(

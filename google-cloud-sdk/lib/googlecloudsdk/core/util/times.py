@@ -62,7 +62,6 @@ from googlecloudsdk.core.util import times_data
 
 import six
 
-
 try:
   from dateutil import tzwin  # pylint: disable=g-import-not-at-top, Windows
 except ImportError:
@@ -102,7 +101,9 @@ def _StrFtime(dt, fmt):
   """Convert strftime exceptions to Datetime Errors."""
   try:
     return dt.strftime(fmt)
-  except (TypeError, UnicodeDecodeError) as e:
+  # With dateutil 2.8, strftime() now raises a UnicodeError when it cannot
+  # decode the string as 'ascii' on Python 2.
+  except (TypeError, UnicodeError) as e:
     if '%Z' not in fmt:
       raise DateTimeValueError(six.text_type(e))
     # Most likely a non-ascii tzname() in python2. Fall back to +-HH:MM.

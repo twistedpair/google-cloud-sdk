@@ -43,6 +43,7 @@ import textwrap
 from googlecloudsdk.calliope import cli_tree
 from googlecloudsdk.command_lib.static_completion import generate as generate_static
 from googlecloudsdk.command_lib.static_completion import lookup
+from googlecloudsdk.core import argv_utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
 from googlecloudsdk.core import log
@@ -80,7 +81,8 @@ def _DisableLongRunningCliTreeGeneration(command):
     return False
   # Only generate these CLI trees on the fly for explicit requests.
   # It can take ~1minute, not good, especially at the interactive prompt.
-  if 'update-cli-trees' in sys.argv or '--update-cli-trees' in sys.argv:
+  decoded_argv = argv_utils.GetDecodedArgv()
+  if 'update-cli-trees' in decoded_argv or '--update-cli-trees' in decoded_argv:
     return False
   # It's a long running generator, not explicitly requested -- disable.
   return True

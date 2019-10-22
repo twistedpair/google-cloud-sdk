@@ -245,6 +245,10 @@ class KubernetesObject(object):
       return self._m.spec.generation
     return self._m.metadata.generation
 
+  @generation.setter
+  def generation(self, value):
+    self._m.metadata.generation = value
+
   @property
   def conditions(self):
     self.AssertFullObject()

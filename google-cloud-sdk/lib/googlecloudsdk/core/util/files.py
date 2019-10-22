@@ -163,12 +163,13 @@ def _ShouldRetryOperation(func, exc_info):
   Returns:
     True if the error can be retried or false if we should just fail.
   """
-  if not (func == os.remove or func == os.rmdir):
+  # os.unlink is the same as os.remove
+  if not (func == os.remove or func == os.rmdir or func == os.unlink):
     return False
-  if not WindowsError or exc_info[0] != WindowsError:
+  if not WindowsError:
     return False
   e = exc_info[1]
-  return e.winerror in RETRY_ERROR_CODES
+  return getattr(e, 'winerror', None) in RETRY_ERROR_CODES
 
 
 def _RetryOperation(exc_info, func, args,
@@ -217,7 +218,11 @@ def _HandleRemoveError(func, failed_path, exc_info):
 
   # Access denied on Windows. This happens when trying to delete a readonly
   # file. Change the permissions and retry the delete.
-  if exc_info[0] == WindowsError and exc_info[1].winerror == 5:
+  #
+  # In python 3.3+, WindowsError is an alias of OSError and exc_info[0] can be
+  # a subclass of OSError.
+  if (WindowsError and issubclass(exc_info[0], WindowsError) and
+      getattr(exc_info[1], 'winerror', None) == 5):
     os.chmod(failed_path, stat.S_IWUSR)
 
   # Don't remove the trailing comma in the passed arg tuple.  It indicates that

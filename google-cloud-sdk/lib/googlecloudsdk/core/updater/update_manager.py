@@ -26,6 +26,7 @@ import subprocess
 import sys
 import textwrap
 
+from googlecloudsdk.core import argv_utils
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
@@ -1422,10 +1423,11 @@ prompt, or run:
            components=' '.join(missing_components)))
     except SystemExit:
       # This happens when updating using bundled Python.
-      self.__Write(log.status,
-                   'Installing component in a new window.\n\n'
-                   'Please re-run this command when installation is complete.\n'
-                   '    $ {0}'.format(' '.join(['gcloud'] + sys.argv[1:])))
+      self.__Write(
+          log.status, 'Installing component in a new window.\n\n'
+          'Please re-run this command when installation is complete.\n'
+          '    $ {0}'.format(' '.join(['gcloud'] +
+                                      argv_utils.GetDecodedArgv()[1:])))
       raise
 
     # Restart the original command.
@@ -1552,7 +1554,7 @@ def RestartCommand(command=None, args=None, python=None, block=True):
       terminate before continuing.
   """
   command = command or config.GcloudPath()
-  command_args = args or sys.argv[1:]
+  command_args = args or argv_utils.GetDecodedArgv()[1:]
   args = execution_utils.ArgsForPythonTool(command, *command_args,
                                            python=python)
   args = [encoding.Encode(a) for a in args]

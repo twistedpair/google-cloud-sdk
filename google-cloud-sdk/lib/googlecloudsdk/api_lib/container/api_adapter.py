@@ -198,6 +198,7 @@ GCEPDCSIDRIVER = 'GcePersistentDiskCsiDriver'
 ISTIO = 'Istio'
 NETWORK_POLICY = 'NetworkPolicy'
 NODELOCALDNS = 'NodeLocalDNS'
+APPLICATIONMANAGER = 'ApplicationManager'
 RESOURCE_LIMITS = 'resourceLimits'
 SERVICE_ACCOUNT = 'serviceAccount'
 SCOPES = 'scopes'
@@ -206,7 +207,7 @@ DEFAULT_ADDONS = [INGRESS, HPA]
 ADDONS_OPTIONS = DEFAULT_ADDONS + [DASHBOARD, NETWORK_POLICY]
 BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [ISTIO, CLOUDRUN]
 ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS + [
-    NODELOCALDNS, CONFIGCONNECTOR, GCEPDCSIDRIVER
+    NODELOCALDNS, CONFIGCONNECTOR, GCEPDCSIDRIVER, APPLICATIONMANAGER
 ]
 
 
@@ -966,6 +967,7 @@ class APIAdapter(object):
           enable_node_local_dns=(NODELOCALDNS in options.addons),
           enable_config_connector=(CONFIGCONNECTOR in options.addons),
           enable_gcepd_csi_driver=(GCEPDCSIDRIVER in options.addons),
+          enable_application_manager=(APPLICATIONMANAGER in options.addons),
       )
       cluster.addonsConfig = addons
 
@@ -1549,7 +1551,8 @@ class APIAdapter(object):
                     disable_network_policy=None,
                     enable_node_local_dns=None,
                     enable_config_connector=None,
-                    enable_gcepd_csi_driver=None):
+                    enable_gcepd_csi_driver=None,
+                    enable_application_manager=None):
     """Generates an AddonsConfig object given specific parameters.
 
     Args:
@@ -1560,6 +1563,7 @@ class APIAdapter(object):
       enable_node_local_dns: whether to enable NodeLocalDNS cache.
       enable_config_connector: whether to enable ConfigConnector.
       enable_gcepd_csi_driver: whether to enable GcePersistentDiskCsiDriver.
+      enable_application_manager: whether to enable ApplicationManager.
 
     Returns:
       An AddonsConfig object that contains the options defining what addons to
@@ -1587,6 +1591,8 @@ class APIAdapter(object):
     if enable_gcepd_csi_driver:
       addons.gcePersistentDiskCsiDriverConfig = self.messages.GcePersistentDiskCsiDriverConfig(
           enabled=True)
+    if enable_application_manager:
+      addons.kalmConfig = self.messages.KalmConfig(enabled=True)
 
     return addons
 
@@ -2192,6 +2198,8 @@ class APIAdapter(object):
       # handle.
       policy.window = self.messages.MaintenanceWindow(
           maintenanceExclusions=empty_excl)
+    elif policy.window.maintenanceExclusions is None:
+      policy.window.maintenanceExclusions = empty_excl
     return policy
 
   def _GetMaintenanceExclusionNames(self, maintenance_policy):
@@ -2721,6 +2729,10 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         update.desiredAddonsConfig.cloudRunConfig = (
             self.messages.CloudRunConfig(
                 disabled=options.disable_addons.get(CLOUDRUN)))
+      if options.disable_addons.get(APPLICATIONMANAGER) is not None:
+        update.desiredAddonsConfig.kalmConfig = (
+            self.messages.KalmConfig(
+                enabled=(not options.disable_addons.get(APPLICATIONMANAGER))))
     if options.update_nodes and options.concurrent_node_count:
       update.concurrentNodeCount = options.concurrent_node_count
 

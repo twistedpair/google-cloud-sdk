@@ -139,6 +139,9 @@ class Environment(_messages.Message):
   user has a single environment with the ID "default".
 
   Enums:
+    SizeValueValuesEnum: Indicates the size of the backing VM running the
+      environment.  If set to something other than DEFAULT, it will be
+      reverted to the default VM size after vm_size_expire_time.
     StateValueValuesEnum: Output only. Current execution state of this
       environment.
 
@@ -156,6 +159,9 @@ class Environment(_messages.Message):
       private key corresponding to at least one of these public keys. Keys can
       be added to or removed from the environment using the CreatePublicKey
       and DeletePublicKey methods.
+    size: Indicates the size of the backing VM running the environment.  If
+      set to something other than DEFAULT, it will be reverted to the default
+      VM size after vm_size_expire_time.
     sshHost: Output only. Host to which clients can connect to initiate SSH
       sessions with the environment.
     sshPort: Output only. Port to which clients can connect to initiate SSH
@@ -163,9 +169,25 @@ class Environment(_messages.Message):
     sshUsername: Output only. Username that clients should use when initiating
       SSH sessions with the environment.
     state: Output only. Current execution state of this environment.
+    vmSizeExpireTime: Output only. The time when the Environment will expire
+      back to the default VM size.
     webHost: Output only. Host to which clients can connect to initiate HTTPS
       or WSS connections with the environment.
   """
+
+  class SizeValueValuesEnum(_messages.Enum):
+    r"""Indicates the size of the backing VM running the environment.  If set
+    to something other than DEFAULT, it will be reverted to the default VM
+    size after vm_size_expire_time.
+
+    Values:
+      VM_SIZE_UNSPECIFIED: The VM size is unknown.
+      DEFAULT: The default VM size.
+      BOOSTED: The boosted VM size.
+    """
+    VM_SIZE_UNSPECIFIED = 0
+    DEFAULT = 1
+    BOOSTED = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current execution state of this environment.
@@ -189,11 +211,13 @@ class Environment(_messages.Message):
   id = _messages.StringField(2)
   name = _messages.StringField(3)
   publicKeys = _messages.MessageField('PublicKey', 4, repeated=True)
-  sshHost = _messages.StringField(5)
-  sshPort = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  sshUsername = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  webHost = _messages.StringField(9)
+  size = _messages.EnumField('SizeValueValuesEnum', 5)
+  sshHost = _messages.StringField(6)
+  sshPort = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  sshUsername = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  vmSizeExpireTime = _messages.StringField(10)
+  webHost = _messages.StringField(11)
 
 
 class Operation(_messages.Message):

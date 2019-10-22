@@ -119,31 +119,29 @@ def GetMaintenancePolicyEnumMapper(messages):
 
 
 def AddAutoscalingPolicyArgToParser(parser):
-  parser.add_argument(
-      '--autoscaling-policy',
-      type=arg_parsers.ArgDict(
-          spec={
-              'mode': _ModeChoice(),
-              'min-size': int,
-              'max-size': int,
-          },
-          required_keys=[
-              'mode'
-          ]),
-      help="""\
-Option to specify the autoscaling policy for node groups.
+  """Add autoscaling configuration  arguments to parser."""
 
-*mode*::: Options for mode are 'on' or 'off'. When set to 'on', the autoscaler
+  group = parser.add_group(help='Autoscaling policy for node groups.')
+  group.add_argument('--mode',
+                     type=_ModeChoice(),
+                     required=True,
+                     help="""
+Options for mode are 'on' or 'off'. When set to 'on', the autoscaler
 will increase or decrease the size of the node group in response to capacity
 needs. If set to 'off', the autoscaler will not update the size of the node
 group.
-
-*min-size*::: The minimum size of the node group. Default is 0 and must be
-an integer value smaller than or equal to max-size.
-
-*max-size*::: The maximum size of the node group. Default is 100 and must be
-smaller or equal to 100 and larger than or equal to min-size.
-
+""")
+  group.add_argument('--min-size',
+                     type=int,
+                     help="""
+The minimum size of the node group. Default is 0 and must be an integer value
+smaller than or equal to max-size.
+""")
+  group.add_argument('--max-size',
+                     type=int,
+                     help="""
+The maximum size of the node group. Default is 100 and must be smaller or equal
+to 100 and larger than or equal to min-size.
 """)
 
 

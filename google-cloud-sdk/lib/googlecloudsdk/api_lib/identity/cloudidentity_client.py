@@ -77,11 +77,11 @@ def LookupGroupName(email):
   return json.loads(raw_content.decode('utf8'))
 
 
-def LookupMembershipName(group_email, member_email):
+def LookupMembershipName(group_id, member_email):
   """Lookup membership name for a specific pair of member key id and group email.
 
   Args:
-    group_email: str, group email
+    group_id: str, group id (e.g. groups/03qco8b4452k99t)
     member_email: str, member email
   Returns:
     LookupMembershipNameResponse: Response message for LookupMembershipName
@@ -94,7 +94,6 @@ def LookupMembershipName(group_email, member_email):
 
   # Following part is added to resolve the gcloud known issue described
   # in this bug: b/141658179
-  group_id = 'groups/' + group_email
   query_params = [('parent', group_id), ('memberKey.id', member_email)]
   base_url = client.url
   url = '{}{}/{}/memberships:lookup?{}'.format(

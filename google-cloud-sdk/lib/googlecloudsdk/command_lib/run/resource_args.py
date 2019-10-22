@@ -124,7 +124,7 @@ class DefaultFallthrough(deps.Fallthrough):
 def NamespaceAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='namespace',
-      help_text='Specific to Cloud Run on GKE: '
+      help_text='Specific to Cloud Run for Anthos: '
       'Kubernetes namespace for the {resource}.',
       fallthroughs=[
           deps.PropertyFallthrough(properties.VALUES.run.namespace),

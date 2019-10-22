@@ -523,6 +523,16 @@ class LabelmanagerLabelValuesUndeleteRequest(_messages.Message):
   undeleteLabelValueRequest = _messages.MessageField('UndeleteLabelValueRequest', 2)
 
 
+class LabelmanagerOperationsGetRequest(_messages.Message):
+  r"""A LabelmanagerOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ListLabelBindingsResponse(_messages.Message):
   r"""The ListLabelBindings response
 

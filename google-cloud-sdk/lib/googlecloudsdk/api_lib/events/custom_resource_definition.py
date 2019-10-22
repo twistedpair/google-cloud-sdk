@@ -43,7 +43,7 @@ class SourceSpecProperty(object):
     self.required = required
 
 
-_EVENT_TYPE_REGISTRY_KEY = 'registry.cloud.run/eventTypes'
+_EVENT_TYPE_REGISTRY_KEY = 'registry.cloud.google.com/eventTypes'
 
 
 class EventType(object):

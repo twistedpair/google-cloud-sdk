@@ -1869,6 +1869,21 @@ def AddShieldedInstanceIntegrityPolicyArgs(parser):
       help=help_text)
 
 
+def AddConfidentialComputeArgs(parser):
+  """Adds flags for confidential compute for instance."""
+  help_text = """\
+  The instance will boot with confidential compute enabled. Confidential
+  Compute is based on Secure Encrypted Virtualization (SEV), an AMD
+  virtualization feature for running confidential instances.
+  """
+  parser.add_argument(
+      '--confidential-compute',
+      dest='confidential_compute',
+      action='store_true',
+      default=None,
+      help=help_text)
+
+
 def AddHostnameArg(parser):
   """Adds flag for overriding hostname for instance."""
   parser.add_argument(

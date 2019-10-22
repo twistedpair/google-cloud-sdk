@@ -211,7 +211,7 @@ class StorageClient(object):
       # If the upload fails with an error, apitools (for whatever reason)
       # doesn't close the file object, so we have to call this ourselves to
       # force it to happen.
-      del upload
+      upload.stream.close()
 
     if response.size != file_size:
       log.debug('Response size: {0} bytes, but local file is {1} bytes.'.format(
@@ -251,8 +251,6 @@ class StorageClient(object):
         local_file=local_path, gcs=gsc_path))
     try:
       self.client.objects.Get(get_req, download=download)
-      # Close the stream to release the file handle so we can check its contents
-      download.stream.close()
       # When there's a download, Get() returns None so we Get() again to check
       # the file size.
       response = self.client.objects.Get(get_req)
@@ -261,6 +259,9 @@ class StorageClient(object):
           'Could not copy [{gcs}] to [{local_file}]. Please retry: {err}'
           .format(local_file=local_path, gcs=gsc_path,
                   err=http_exc.HttpException(err)))
+    finally:
+      # Close the stream to release the file handle so we can check its contents
+      download.stream.close()
 
     file_size = _GetFileSize(local_path)
     if response.size != file_size:

@@ -74,18 +74,6 @@ apis:
       resources:
         projects:
           path: projects/{projectId}
-  bigtableclusteradmin:
-    v1:
-      discovery_doc: bigtableclusteradmin_v1.json
-      resources:
-        operations:
-          path: operations/{+operationId}
-        projects:
-          path: projects/{projectId}
-        projects.zones:
-          path: projects/{projectId}/zones/{zoneId}
-        projects.zones.clusters:
-          path: projects/{projectId}/zones/{zoneId}/clusters/{clusterId}
   binaryauthorization:
     v1alpha2:
       default: true

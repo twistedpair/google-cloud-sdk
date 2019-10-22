@@ -35,6 +35,7 @@ from googlecloudsdk.calliope import command_loading
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.calliope import parser_extensions
+from googlecloudsdk.core import argv_utils
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
@@ -932,7 +933,7 @@ class CLI(object):
       _ArgComplete(self.__top_element.ai)
 
     if not args:
-      args = sys.argv[1:]
+      args = argv_utils.GetDecodedArgv()[1:]
 
     # Look for a --configuration flag and update property state based on
     # that before proceeding to the main argparse parse step.
