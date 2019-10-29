@@ -8492,6 +8492,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Patch the node group. (== suppress_warning http-rest-shadowed ==).
+
+      Args:
+        request: (ComputeNodeGroupsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.nodeGroups.patch',
+        ordered_params=[u'project', u'zone', u'nodeGroup'],
+        path_params=[u'nodeGroup', u'project', u'zone'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}',
+        request_field=u'nodeGroupResource',
+        request_type_name=u'ComputeNodeGroupsPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetAutoscalingPolicy(self, request, global_params=None):
       r"""Sets the autoscaling policy of the node group. (== suppress_warning http-rest-shadowed ==).
 

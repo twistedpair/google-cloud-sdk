@@ -213,6 +213,18 @@ class DatastoreProjectsImportRequest(_messages.Message):
   projectId = _messages.StringField(2, required=True)
 
 
+class DatastoreProjectsIndexesDeleteRequest(_messages.Message):
+  r"""A DatastoreProjectsIndexesDeleteRequest object.
+
+  Fields:
+    indexId: The resource ID of the index to delete.
+    projectId: Project ID against which to make the request.
+  """
+
+  indexId = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+
+
 class DatastoreProjectsIndexesGetRequest(_messages.Message):
   r"""A DatastoreProjectsIndexesGetRequest object.
 

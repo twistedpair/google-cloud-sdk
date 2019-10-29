@@ -184,6 +184,7 @@ class _Command(six.with_metaclass(abc.ABCMeta, object)):
         args, no_exit=True, out_func=out.write, err_func=err.write)
     message = _STAGING_COMMAND_OUTPUT_TEMPLATE.format(
         out=out.getvalue(), err=err.getvalue())
+    message = message.replace('\r\n', '\n')
     log.info(message)
     if return_code:
       raise StagingCommandFailedError(args, return_code, message)

@@ -109,9 +109,107 @@
     }
   },
   "schemas": {
-    "GoogleIamAssistV1alpha2ExplainAccessRequest": {
-      "id": "GoogleIamAssistV1alpha2ExplainAccessRequest",
-      "description": "ExplainAccessRequest is used in ExplainAccess",
+    "GoogleLongrunningListOperationsResponse": {
+      "id": "GoogleLongrunningListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
+      "type": "object",
+      "properties": {
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleLongrunningOperation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleLongrunningOperation": {
+      "id": "GoogleLongrunningOperation",
+      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should be a resource name ending with `operations\/{unique_id}`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "GoogleRpcStatus"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "GoogleRpcStatus": {
+      "id": "GoogleRpcStatus",
+      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains\nthree pieces of data: error code, error message, and error details.\n\nYou can find out more about this error model and how to work with it in the\n[API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "GoogleIamAssistV1alpha2CheckAccessRequest": {
+      "id": "GoogleIamAssistV1alpha2CheckAccessRequest",
+      "description": "CheckAccessRequest is the request for CheckAccess",
+      "type": "object",
+      "properties": {
+        "accessTuple": {
+          "description": "Required. The tuple to check access for.",
+          "$ref": "GoogleIamAssistV1alpha2AccessTuple"
+        },
+        "policyOverlay": {
+          "description": "Mapping from full resource names to simulated policies.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleIamV1Policy"
+          }
+        }
+      }
+    },
+    "GoogleIamAssistV1alpha2AccessTuple": {
+      "id": "GoogleIamAssistV1alpha2AccessTuple",
+      "description": "AccessTuple defines information required for checking an access attempt.\nIn other words, this is the tuple given to `CheckAccess`.",
       "type": "object",
       "properties": {
         "principal": {
@@ -373,78 +471,6 @@
         }
       }
     },
-    "GoogleIamAssistV1alpha2ExplainAccessResponse": {
-      "id": "GoogleIamAssistV1alpha2ExplainAccessResponse",
-      "description": "ExplainAccessResponse is used in ExplainAccess.",
-      "type": "object",
-      "properties": {
-        "access": {
-          "description": "Reflects whether the probed access was granted, denied\nor ultimately could not be decided from the caller's point of view.",
-          "enumDescriptions": [
-            "Reserved",
-            "The access is granted due to one or multiple bindings found.",
-            "The access is not granted by the policy.",
-            "At least one binding was found but it is conditional. undecided,\nundetermined ,uncertain, open, tentative, contingent",
-            "Indicating that lack of access to the underlying information\ncauses the result to be undetermined.\nThis can be due to\n\n1) The caller has no access to the policy. In this case ExplainedPolicy\n   will have not policy set.\n\n2) The caller has no access to some of the items referenced in the policy.\n   In this case the policy in ExplainedPolicy will be set but the\n   explanations field will contain at least one inconclusive element."
-          ],
-          "type": "string",
-          "enum": [
-            "ACCESS_STATE_UNSPECIFIED",
-            "GRANTED",
-            "NOT_GRANTED",
-            "UNKNOWN_CONDITIONAL",
-            "UNKNOWN_INFO_DENIED"
-          ]
-        },
-        "explainedPolicies": {
-          "description": "List of explained policies.\nEach explanation corresponds to one policy along the ancestry path.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleIamAssistV1alpha2ExplainedPolicy"
-          }
-        }
-      }
-    },
-    "GoogleIamAssistV1alpha2ExplainedPolicy": {
-      "id": "GoogleIamAssistV1alpha2ExplainedPolicy",
-      "description": "An explained IAM policy combines the raw policy in the context\nof the resource which it is attached to along with detailed\nevaluation on the evaluation parameters provided through the request.",
-      "type": "object",
-      "properties": {
-        "access": {
-          "description": "Access decision for this section of the resource's effective policy.",
-          "enumDescriptions": [
-            "Reserved",
-            "The access is granted due to one or multiple bindings found.",
-            "The access is not granted by the policy.",
-            "At least one binding was found but it is conditional. undecided,\nundetermined ,uncertain, open, tentative, contingent",
-            "Indicating that lack of access to the underlying information\ncauses the result to be undetermined.\nThis can be due to\n\n1) The caller has no access to the policy. In this case ExplainedPolicy\n   will have not policy set.\n\n2) The caller has no access to some of the items referenced in the policy.\n   In this case the policy in ExplainedPolicy will be set but the\n   explanations field will contain at least one inconclusive element."
-          ],
-          "type": "string",
-          "enum": [
-            "ACCESS_STATE_UNSPECIFIED",
-            "GRANTED",
-            "NOT_GRANTED",
-            "UNKNOWN_CONDITIONAL",
-            "UNKNOWN_INFO_DENIED"
-          ]
-        },
-        "fullResourceName": {
-          "description": "Resource that this section of the effective policy attaches to.",
-          "type": "string"
-        },
-        "policy": {
-          "description": "The IAM policy attached to the resource.",
-          "$ref": "GoogleIamV1Policy"
-        },
-        "bindingExplanations": {
-          "description": "Detailed binding evaluation explanations provide information\nabout how each binding contributes to the principal's\naccess or the lack thereof.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleIamAssistV1alpha2BindingExplanation"
-          }
-        }
-      }
-    },
     "GoogleIamV1Policy": {
       "id": "GoogleIamV1Policy",
       "description": "Defines an Identity and Access Management (IAM) policy. It is used to\nspecify access control policies for Cloud Platform resources.\n\n\nA `Policy` is a collection of `bindings`. A `binding` binds one or more\n`members` to a single `role`. Members can be user accounts, service accounts,\nGoogle groups, and domains (such as G Suite). A `role` is a named list of\npermissions (defined by IAM or configured by users). A `binding` can\noptionally specify a `condition`, which is a logic expression that further\nconstrains the role binding based on attributes about the request and\/or\ntarget resource.\n\n**JSON Example**\n\n    {\n      \"bindings\": [\n        {\n          \"role\": \"roles\/resourcemanager.organizationAdmin\",\n          \"members\": [\n            \"user:mike@example.com\",\n            \"group:admins@example.com\",\n            \"domain:google.com\",\n            \"serviceAccount:my-project-id@appspot.gserviceaccount.com\"\n          ]\n        },\n        {\n          \"role\": \"roles\/resourcemanager.organizationViewer\",\n          \"members\": [\"user:eve@example.com\"],\n          \"condition\": {\n            \"title\": \"expirable access\",\n            \"description\": \"Does not grant access after Sep 2020\",\n            \"expression\": \"request.time <\n            timestamp('2020-10-01T00:00:00.000Z')\",\n          }\n        }\n      ]\n    }\n\n**YAML Example**\n\n    bindings:\n    - members:\n      - user:mike@example.com\n      - group:admins@example.com\n      - domain:google.com\n      - serviceAccount:my-project-id@appspot.gserviceaccount.com\n      role: roles\/resourcemanager.organizationAdmin\n    - members:\n      - user:eve@example.com\n      role: roles\/resourcemanager.organizationViewer\n      condition:\n        title: expirable access\n        description: Does not grant access after Sep 2020\n        expression: request.time < timestamp('2020-10-01T00:00:00.000Z')\n\nFor a description of IAM and its features, see the\n[IAM developer's guide](https:\/\/cloud.google.com\/iam\/docs).",
@@ -569,254 +595,6 @@
         }
       }
     },
-    "GoogleIamAssistV1alpha2BindingExplanation": {
-      "id": "GoogleIamAssistV1alpha2BindingExplanation",
-      "description": "Binding Explanation.",
-      "type": "object",
-      "properties": {
-        "access": {
-          "description": "REQUIRED: Access decision for this binding.",
-          "enumDescriptions": [
-            "Reserved",
-            "The access is granted due to one or multiple bindings found.",
-            "The access is not granted by the policy.",
-            "At least one binding was found but it is conditional. undecided,\nundetermined ,uncertain, open, tentative, contingent",
-            "Indicating that lack of access to the underlying information\ncauses the result to be undetermined.\nThis can be due to\n\n1) The caller has no access to the policy. In this case ExplainedPolicy\n   will have not policy set.\n\n2) The caller has no access to some of the items referenced in the policy.\n   In this case the policy in ExplainedPolicy will be set but the\n   explanations field will contain at least one inconclusive element."
-          ],
-          "type": "string",
-          "enum": [
-            "ACCESS_STATE_UNSPECIFIED",
-            "GRANTED",
-            "NOT_GRANTED",
-            "UNKNOWN_CONDITIONAL",
-            "UNKNOWN_INFO_DENIED"
-          ]
-        },
-        "conditionExplanation": {
-          "description": "Condition evaluation state for this binding.",
-          "$ref": "GoogleIamAssistV1alpha2ConditionExplanation"
-        },
-        "role": {
-          "description": "The role that this binding grants in the policy.",
-          "type": "string"
-        },
-        "condition": {
-          "description": "The condition which needs to be satisfied in order for this\nbinding to grant the role to the principal.",
-          "$ref": "GoogleTypeExpr"
-        },
-        "rolePermission": {
-          "description": "Whether the role of this binding contains the checked permission",
-          "enumDescriptions": [
-            "Reserved",
-            "Permission is included in the role.",
-            "Permission is included in the role.",
-            "Calling principal has no access to the role permission relation."
-          ],
-          "type": "string",
-          "enum": [
-            "ROLE_PERMISSION_UNSPECIFIED",
-            "ROLE_PERMISSION_INCLUDED",
-            "ROLE_PERMISSION_NOT_INCLUDED",
-            "ROLE_PERMISSION_UNKNOWN_INFO_DENIED"
-          ]
-        },
-        "memberships": {
-          "description": "For each member in the binding, provides information\nwhether or not the principal from the request is included\nin the member by which the CheckResult is keyed.\nMay indicate that the caller has no access to this information.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string",
-            "enum": [
-              "MEMBERSHIP_UNSPECIFIED",
-              "MEMBERSHIP_INCLUDED",
-              "MEMBERSHIP_NOT_INCLUDED",
-              "MEMBERSHIP_UNKNOWN_INFO_DENIED",
-              "MEMBERSHIP_UNKNOWN_UNSUPPORTED"
-            ]
-          }
-        }
-      }
-    },
-    "GoogleIamAssistV1alpha2ConditionExplanation": {
-      "id": "GoogleIamAssistV1alpha2ConditionExplanation",
-      "description": "Condition Explanation",
-      "type": "object",
-      "properties": {
-        "value": {
-          "description": "Value of the condition",
-          "$ref": "GoogleIamAssistV1alpha2ConditionExplanationValue"
-        },
-        "evaluationStates": {
-          "description": "List of evaluated states of non boolean expression in the condition",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleIamAssistV1alpha2ConditionExplanationEvaluationState"
-          }
-        }
-      }
-    },
-    "GoogleIamAssistV1alpha2ConditionExplanationValue": {
-      "id": "GoogleIamAssistV1alpha2ConditionExplanationValue",
-      "description": "Represents a condition expression value.",
-      "type": "object",
-      "properties": {
-        "nullValue": {
-          "description": "Null value.",
-          "enumDescriptions": [
-            "Null value."
-          ],
-          "type": "string",
-          "enum": [
-            "NULL_VALUE"
-          ]
-        },
-        "boolValue": {
-          "description": "Boolean value.",
-          "type": "boolean"
-        }
-      }
-    },
-    "GoogleIamAssistV1alpha2ConditionExplanationEvaluationState": {
-      "id": "GoogleIamAssistV1alpha2ConditionExplanationEvaluationState",
-      "description": "Evaluated state of an expression",
-      "type": "object",
-      "properties": {
-        "start": {
-          "description": "Start position of an expression in the original condition, by character",
-          "type": "integer",
-          "format": "int32"
-        },
-        "end": {
-          "description": "End position of an expression in the original condition, by character,\nend included, for example: the end position of the first part of\n\"a==b || c==d\" would be 4",
-          "type": "integer",
-          "format": "int32"
-        },
-        "value": {
-          "description": "Value of this expression",
-          "$ref": "GoogleIamAssistV1alpha2ConditionExplanationValue"
-        }
-      }
-    },
-    "GoogleLongrunningListOperationsResponse": {
-      "id": "GoogleLongrunningListOperationsResponse",
-      "description": "The response message for Operations.ListOperations.",
-      "type": "object",
-      "properties": {
-        "operations": {
-          "description": "A list of operations that matches the specified filter in the request.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleLongrunningOperation"
-          }
-        },
-        "nextPageToken": {
-          "description": "The standard List next-page token.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleLongrunningOperation": {
-      "id": "GoogleLongrunningOperation",
-      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should be a resource name ending with `operations\/{unique_id}`.",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        },
-        "done": {
-          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
-          "type": "boolean"
-        },
-        "error": {
-          "description": "The error result of the operation in case of failure or cancellation.",
-          "$ref": "GoogleRpcStatus"
-        },
-        "response": {
-          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        }
-      }
-    },
-    "GoogleRpcStatus": {
-      "id": "GoogleRpcStatus",
-      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains\nthree pieces of data: error code, error message, and error details.\n\nYou can find out more about this error model and how to work with it in the\n[API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
-      "type": "object",
-      "properties": {
-        "code": {
-          "description": "The status code, which should be an enum value of google.rpc.Code.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "message": {
-          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
-          "type": "string"
-        },
-        "details": {
-          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "any",
-              "description": "Properties of the object. Contains field @type with type URL."
-            }
-          }
-        }
-      }
-    },
-    "GoogleIamAssistV1alpha2CheckAccessRequest": {
-      "id": "GoogleIamAssistV1alpha2CheckAccessRequest",
-      "description": "CheckAccessRequest is the request for CheckAccess",
-      "type": "object",
-      "properties": {
-        "accessTuple": {
-          "description": "Required. The tuple to check access for.",
-          "$ref": "GoogleIamAssistV1alpha2AccessTuple"
-        },
-        "policyOverlay": {
-          "description": "Mapping from full resource names to simulated policies.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "GoogleIamV1Policy"
-          }
-        }
-      }
-    },
-    "GoogleIamAssistV1alpha2AccessTuple": {
-      "id": "GoogleIamAssistV1alpha2AccessTuple",
-      "description": "AccessTuple defines information required for checking an access attempt.\nIn other words, this is the tuple given to `CheckAccess`.",
-      "type": "object",
-      "properties": {
-        "principal": {
-          "description": "REQUIRED: The principal on behalf of who the access is explained for.\nThe format is the one of the principal's email addresses associated with\nits gaia account. It must be an account that can appear as an actor.\nFor example groups are not supported. Currently, service accounts\nare partially supported.",
-          "type": "string"
-        },
-        "fullResourceName": {
-          "description": "REQUIRED: A full resource name according to http:\/\/go\/resource-names.\nThis is the full resource name of the resource that access\nis checked against.",
-          "type": "string"
-        },
-        "permission": {
-          "description": "REQUIRED: The Cloud IAM permission under which defines the kind of access\nbeing explained. Example: \"resourcemanager.projects.get\" would explain\nif and why the principal has the resourcemanager.projects.get permission\non the resource specified in full_resource_name declared in this structure.\nSee https:\/\/cloud.google.com\/iam\/docs\/testing-permissions",
-          "type": "string"
-        },
-        "conditionContext": {
-          "description": "OPTIONAL: The Cloud IAM condition context under which defines the kind of\naccess being explained. ExplainAccess would explain if and why the\nprincipal has the queried permission on the resource specified in\nfull_resource_name under this context",
-          "$ref": "GoogleRpcContextAttributeContext"
-        }
-      }
-    },
     "GoogleIamAssistV1alpha2CheckAccessResponse": {
       "id": "GoogleIamAssistV1alpha2CheckAccessResponse",
       "description": "CheckAccessResponse is the response from CheckAccess.",
@@ -930,6 +708,7 @@
     },
     "GoogleIamAssistV1alpha2ReplayDiffAccessStateDiff": {
       "id": "GoogleIamAssistV1alpha2ReplayDiffAccessStateDiff",
+      "description": "Container for AccessState of baseline and simulated policies.",
       "type": "object",
       "properties": {
         "baseline": {
@@ -972,30 +751,6 @@
     }
   },
   "resources": {
-    "access": {
-      "methods": {
-        "explain": {
-          "id": "iamassist.access.explain",
-          "path": "v1alpha2/access:explain",
-          "flatPath": "v1alpha2/access:explain",
-          "httpMethod": "POST",
-          "parameters": {
-          },
-          "parameterOrder": [
-          ],
-          "request": {
-            "$ref": "GoogleIamAssistV1alpha2ExplainAccessRequest"
-          },
-          "response": {
-            "$ref": "GoogleIamAssistV1alpha2ExplainAccessResponse"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Perform a check on whether a member is granted a permission\non a resource and how that grant\/deny is determined according\nto the resource's effective IAM policy interpretation."
-        }
-      }
-    },
     "operations": {
       "methods": {
         "list": {

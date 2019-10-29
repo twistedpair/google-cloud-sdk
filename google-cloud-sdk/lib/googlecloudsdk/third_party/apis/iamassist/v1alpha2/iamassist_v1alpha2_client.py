@@ -35,47 +35,8 @@ class IamassistV1alpha2(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.access = self.AccessService(self)
     self.operations = self.OperationsService(self)
     self.simulator = self.SimulatorService(self)
-
-  class AccessService(base_api.BaseApiService):
-    """Service class for the access resource."""
-
-    _NAME = u'access'
-
-    def __init__(self, client):
-      super(IamassistV1alpha2.AccessService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Explain(self, request, global_params=None):
-      r"""Perform a check on whether a member is granted a permission.
-on a resource and how that grant/deny is determined according
-to the resource's effective IAM policy interpretation.
-
-      Args:
-        request: (GoogleIamAssistV1alpha2ExplainAccessRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleIamAssistV1alpha2ExplainAccessResponse) The response message.
-      """
-      config = self.GetMethodConfig('Explain')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Explain.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'iamassist.access.explain',
-        ordered_params=[],
-        path_params=[],
-        query_params=[],
-        relative_path=u'v1alpha2/access:explain',
-        request_field='<request>',
-        request_type_name=u'GoogleIamAssistV1alpha2ExplainAccessRequest',
-        response_type_name=u'GoogleIamAssistV1alpha2ExplainAccessResponse',
-        supports_download=False,
-    )
 
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""

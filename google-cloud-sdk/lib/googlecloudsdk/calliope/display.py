@@ -443,6 +443,21 @@ class Displayer(object):
         printer=self._printer,
         defaults=self._defaults)
 
+  def _AddDisplayTaps(self):
+    """Adds each of the standard display taps, if needed.
+
+       The taps must be included in this order in order to generate the correct
+       results. For example, limiting should not happen until after filtering is
+       complete, and pagination should only happen on the fully trimmed results.
+    """
+    self._AddUriCacheTap()
+    self._AddFlattenTap()
+    self._AddFilterTap()
+    self._AddSortByTap()
+    self._AddLimitTap()
+    self._AddPageTap()
+    self._AddUriReplaceTap()
+
   def Display(self):
     """The default display method."""
 
@@ -459,26 +474,7 @@ class Displayer(object):
     # Initialize the printer.
     self._InitPrinter()
 
-    # Add a URI cache update tap if needed.
-    self._AddUriCacheTap()
-
-    # Add a resource page tap if needed.
-    self._AddPageTap()
-
-    # Add a resource flatten tap if needed.
-    self._AddFlattenTap()
-
-    # Add a sort tap if needed.
-    self._AddSortByTap()
-
-    # Add a resource filter tap if needed.
-    self._AddFilterTap()
-
-    # Add a resource limit tap if needed.
-    self._AddLimitTap()
-
-    # Add the URI replace tap if needed.
-    self._AddUriReplaceTap()
+    self._AddDisplayTaps()
 
     resources_were_displayed = True
     if self._printer:

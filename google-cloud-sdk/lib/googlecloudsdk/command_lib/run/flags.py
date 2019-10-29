@@ -530,6 +530,8 @@ def AddCommandFlag(parser):
   """Add flags for specifying container's startup command."""
   parser.add_argument(
       '--command',
+      metavar='COMMAND',
+      type=arg_parsers.ArgList(),
       help='Entrypoint for the container image. If not specified, the '
       'container image\'s default Entrypoint is run. '
       'To reset this field to its default, pass an empty string.')
@@ -539,11 +541,33 @@ def AddArgsFlag(parser):
   """Add flags for specifying container's startup args."""
   parser.add_argument(
       '--args',
-      help='Arguments passed to the command run by the container '
-      'image. If not specified and no \'--command\' is provided, the container '
-      'image\'s default Cmd is used. Otherwise, if not specified, no arguments '
-      'are passed. '
+      metavar='ARG',
+      type=arg_parsers.ArgList(),
+      help='Comma-separated arguments passed to the command run by the '
+      'container image. If not specified and no \'--command\' is provided, the '
+      'container image\'s default Cmd is used. Otherwise, if not specified, no '
+      'arguments are passed. '
       'To reset this field to its default, pass an empty string.')
+
+
+def _PortValue(value):
+  """Returns True if port value is an int within range or 'default'."""
+  try:
+    return value == 'default' or (int(value) >= 1 and int(value) <= 65535)
+  except ValueError:
+    return False
+
+
+def AddPortFlag(parser):
+  """Add port flag to override $PORT."""
+  parser.add_argument(
+      '--port',
+      type=arg_parsers.CustomFunctionValidator(
+          _PortValue,
+          'must be an integer between 1 and 65535, inclusive, or "default".'),
+      help='Container port to receive requests at. Also sets the $PORT '
+      'environment variable. Must be a number between 1 and 65535, inclusive. '
+      'To unset this field, pass the special value "default".')
 
 
 def _HasChanges(args, flags):
@@ -836,7 +860,8 @@ def GetConfigurationChanges(args):
   if 'args' in args and args.args is not None:
     # Allow passing an empty string here to reset the field
     changes.append(config_changes.ContainerArgsChange(args.args))
-
+  if _FlagIsExplicitlySet(args, 'port'):
+    changes.append(config_changes.ContainerPortChange(args.port))
   return changes
 
 
@@ -892,7 +917,6 @@ def GetRegion(args, prompt=False):
   Region is decided in the following order:
   - region argument;
   - run/region gcloud config;
-  - compute/region gcloud config;
   - prompt user.
 
   Args:
@@ -906,8 +930,6 @@ def GetRegion(args, prompt=False):
     return args.region
   if properties.VALUES.run.region.IsExplicitlySet():
     return properties.VALUES.run.region.Get()
-  if properties.VALUES.compute.region.IsExplicitlySet():
-    return properties.VALUES.compute.region.Get()
   if prompt:
     region = PromptForRegion()
     if region:

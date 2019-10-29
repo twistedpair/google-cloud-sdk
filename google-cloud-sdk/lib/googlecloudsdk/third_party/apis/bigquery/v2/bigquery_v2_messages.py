@@ -669,7 +669,15 @@ class CsvOptions(_messages.Message):
     skipLeadingRows: [Optional] The number of rows at the top of a CSV file
       that BigQuery will skip when reading the data. The default value is 0.
       This property is useful if you have header rows in the file that should
-      be skipped.
+      be skipped. When autodetect is on, the behavior is the following: *
+      skipLeadingRows unspecified - Autodetect tries to detect headers in the
+      first row. If they are not detected, the row is read as data. Otherwise
+      data is read starting from the second row. * skipLeadingRows is 0 -
+      Instructs autodetect that there are no headers and data should be read
+      starting from the first row. * skipLeadingRows = N > 0 - Autodetect
+      skips N-1 rows and tries to detect headers in row N. If headers are not
+      detected, row N is just skipped. Otherwise row N is used to extract
+      column names for the detected schema.
   """
 
   allowJaggedRows = _messages.BooleanField(1)
@@ -2914,6 +2922,8 @@ class TableList(_messages.Message):
       kind: The resource type.
       labels: The labels associated with this table. You can use these to
         organize and group your tables.
+      rangePartitioning: The range partitioning specification for this table,
+        if configured.
       tableReference: A reference uniquely identifying the table.
       timePartitioning: The time-based partitioning specification for this
         table, if configured.
@@ -2963,10 +2973,11 @@ class TableList(_messages.Message):
     id = _messages.StringField(5)
     kind = _messages.StringField(6, default=u'bigquery#table')
     labels = _messages.MessageField('LabelsValue', 7)
-    tableReference = _messages.MessageField('TableReference', 8)
-    timePartitioning = _messages.MessageField('TimePartitioning', 9)
-    type = _messages.StringField(10)
-    view = _messages.MessageField('ViewValue', 11)
+    rangePartitioning = _messages.MessageField('RangePartitioning', 8)
+    tableReference = _messages.MessageField('TableReference', 9)
+    timePartitioning = _messages.MessageField('TimePartitioning', 10)
+    type = _messages.StringField(11)
+    view = _messages.MessageField('ViewValue', 12)
 
   etag = _messages.StringField(1)
   kind = _messages.StringField(2, default=u'bigquery#tableList')

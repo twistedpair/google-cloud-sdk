@@ -464,7 +464,7 @@
           "type": "string"
         },
         "version": {
-          "description": "The name of the version the tag refers to.",
+          "description": "The name of the version the tag refers to, for example:\n\"projects\/p1\/repositories\/repo1\/packages\/pkg1\/versions\/sha256:5243811\"",
           "type": "string"
         }
       }

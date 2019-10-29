@@ -38,8 +38,3 @@ properties:
   clientTlsSettings:
     description: TLS Settings for the backend service.
     $ref: ClientTlsSettings.yaml
-  serverSettingsSelector:
-    description: |-
-      The listener config of the XDS client is generated if the selector matches
-      the client.
-    $ref: ServerSecuritySettingsSelector.yaml

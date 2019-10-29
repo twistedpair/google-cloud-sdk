@@ -1246,7 +1246,7 @@ class AllocationSpecificSKUReservation(_messages.Message):
 
   Fields:
     count: Specifies the number of resources that are allocated.
-    inUseCount: [OutputOnly] Indicates how many instances are in use.
+    inUseCount: [Output Only] Indicates how many instances are in use.
     instanceProperties: The instance properties for the reservation.
   """
 
@@ -1609,7 +1609,13 @@ class Autoscaler(_messages.Message):
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the autoscaler
-      configuration.
+      configuration. Current set of possible values: PENDING: Autoscaler
+      backend hasn't read new/updated configuration DELETING: Configuration is
+      being deleted ACTIVE: Configuration is acknowledged to be effective.
+      Some warnings might or might not be present in the status_details field.
+      ERROR: Configuration has errors. Actionable for users. Details are
+      present in the status_details field. New values might be added in the
+      future.
 
   Fields:
     autoscalingPolicy: The configuration parameters for the autoscaling
@@ -1640,7 +1646,13 @@ class Autoscaler(_messages.Message):
     region: [Output Only] URL of the region where the instance group resides
       (for autoscalers living in regional scope).
     selfLink: [Output Only] Server-defined URL for the resource.
-    status: [Output Only] The status of the autoscaler configuration.
+    status: [Output Only] The status of the autoscaler configuration. Current
+      set of possible values: PENDING: Autoscaler backend hasn't read
+      new/updated configuration DELETING: Configuration is being deleted
+      ACTIVE: Configuration is acknowledged to be effective. Some warnings
+      might or might not be present in the status_details field. ERROR:
+      Configuration has errors. Actionable for users. Details are present in
+      the status_details field. New values might be added in the future.
     statusDetails: [Output Only] Human-readable details about the current
       state of the autoscaler. Read the documentation for Commonly returned
       status messages for examples of status messages you might encounter.
@@ -1650,7 +1662,13 @@ class Autoscaler(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""[Output Only] The status of the autoscaler configuration.
+    r"""[Output Only] The status of the autoscaler configuration. Current set
+    of possible values: PENDING: Autoscaler backend hasn't read new/updated
+    configuration DELETING: Configuration is being deleted ACTIVE:
+    Configuration is acknowledged to be effective. Some warnings might or
+    might not be present in the status_details field. ERROR: Configuration has
+    errors. Actionable for users. Details are present in the status_details
+    field. New values might be added in the future.
 
     Values:
       ACTIVE: <no description>
@@ -1958,15 +1976,115 @@ class AutoscalerStatusDetails(_messages.Message):
   r"""A AutoscalerStatusDetails object.
 
   Enums:
-    TypeValueValuesEnum: The type of error returned.
+    TypeValueValuesEnum: The type of error, warning or notice returned.
+      Current set of possible values: ALL_INSTANCES_UNHEALTHY (WARNING): All
+      instances in the instance group are unhealthy (not in RUNNING state).
+      BACKEND_SERVICE_DOES_NOT_EXIST (ERROR): There is no backend service
+      attached to the instance group. CAPPED_AT_MAX_NUM_REPLICAS (WARNING):
+      Autoscaler recommends size bigger than maxNumReplicas.
+      CUSTOM_METRIC_DATA_POINTS_TOO_SPARSE (WARNING): The custom metric
+      samples are not exported often enough to be a credible base for
+      autoscaling. CUSTOM_METRIC_INVALID (ERROR): The custom metric that was
+      specified does not exist or does not have the necessary labels.
+      MIN_EQUALS_MAX (WARNING): The minNumReplicas is equal to maxNumReplicas.
+      This means the autoscaler cannot add or remove instances from the
+      instance group. MISSING_CUSTOM_METRIC_DATA_POINTS (WARNING): The
+      autoscaler did not receive any data from the custom metric configured
+      for autoscaling. MISSING_LOAD_BALANCING_DATA_POINTS (WARNING): The
+      autoscaler is configured to scale based on a load balancing signal but
+      the instance group has not received any requests from the load balancer.
+      MODE_OFF (WARNING): Autoscaling is turned off. The number of instances
+      in the group won't change automatically. The autoscaling configuration
+      is preserved. MODE_ONLY_UP (WARNING): Autoscaling is in the "Autoscale
+      only up" mode. Instances in the group will be only added.
+      MORE_THAN_ONE_BACKEND_SERVICE (ERROR): The instance group cannot be
+      autoscaled because it has more than one backend service attached to it.
+      NOT_ENOUGH_QUOTA_AVAILABLE (ERROR): Exceeded quota for necessary
+      resources, such as CPU, number of instances and so on.
+      REGION_RESOURCE_STOCKOUT (ERROR): Showed only for regional autoscalers:
+      there is a resource stockout in the chosen region.
+      SCALING_TARGET_DOES_NOT_EXIST (ERROR): The target to be scaled does not
+      exist. UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION (ERROR):
+      Autoscaling does not work with an HTTP/S load balancer that has been
+      configured for maxRate. ZONE_RESOURCE_STOCKOUT (ERROR): For zonal
+      autoscalers: there is a resource stockout in the chosen zone. For
+      regional autoscalers: in at least one of the zones you're using there is
+      a resource stockout. New values might be added in the future. Some of
+      the values might not be available in all API versions.
 
   Fields:
     message: The status message.
-    type: The type of error returned.
+    type: The type of error, warning or notice returned. Current set of
+      possible values: ALL_INSTANCES_UNHEALTHY (WARNING): All instances in the
+      instance group are unhealthy (not in RUNNING state).
+      BACKEND_SERVICE_DOES_NOT_EXIST (ERROR): There is no backend service
+      attached to the instance group. CAPPED_AT_MAX_NUM_REPLICAS (WARNING):
+      Autoscaler recommends size bigger than maxNumReplicas.
+      CUSTOM_METRIC_DATA_POINTS_TOO_SPARSE (WARNING): The custom metric
+      samples are not exported often enough to be a credible base for
+      autoscaling. CUSTOM_METRIC_INVALID (ERROR): The custom metric that was
+      specified does not exist or does not have the necessary labels.
+      MIN_EQUALS_MAX (WARNING): The minNumReplicas is equal to maxNumReplicas.
+      This means the autoscaler cannot add or remove instances from the
+      instance group. MISSING_CUSTOM_METRIC_DATA_POINTS (WARNING): The
+      autoscaler did not receive any data from the custom metric configured
+      for autoscaling. MISSING_LOAD_BALANCING_DATA_POINTS (WARNING): The
+      autoscaler is configured to scale based on a load balancing signal but
+      the instance group has not received any requests from the load balancer.
+      MODE_OFF (WARNING): Autoscaling is turned off. The number of instances
+      in the group won't change automatically. The autoscaling configuration
+      is preserved. MODE_ONLY_UP (WARNING): Autoscaling is in the "Autoscale
+      only up" mode. Instances in the group will be only added.
+      MORE_THAN_ONE_BACKEND_SERVICE (ERROR): The instance group cannot be
+      autoscaled because it has more than one backend service attached to it.
+      NOT_ENOUGH_QUOTA_AVAILABLE (ERROR): Exceeded quota for necessary
+      resources, such as CPU, number of instances and so on.
+      REGION_RESOURCE_STOCKOUT (ERROR): Showed only for regional autoscalers:
+      there is a resource stockout in the chosen region.
+      SCALING_TARGET_DOES_NOT_EXIST (ERROR): The target to be scaled does not
+      exist. UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION (ERROR):
+      Autoscaling does not work with an HTTP/S load balancer that has been
+      configured for maxRate. ZONE_RESOURCE_STOCKOUT (ERROR): For zonal
+      autoscalers: there is a resource stockout in the chosen zone. For
+      regional autoscalers: in at least one of the zones you're using there is
+      a resource stockout. New values might be added in the future. Some of
+      the values might not be available in all API versions.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The type of error returned.
+    r"""The type of error, warning or notice returned. Current set of possible
+    values: ALL_INSTANCES_UNHEALTHY (WARNING): All instances in the instance
+    group are unhealthy (not in RUNNING state). BACKEND_SERVICE_DOES_NOT_EXIST
+    (ERROR): There is no backend service attached to the instance group.
+    CAPPED_AT_MAX_NUM_REPLICAS (WARNING): Autoscaler recommends size bigger
+    than maxNumReplicas. CUSTOM_METRIC_DATA_POINTS_TOO_SPARSE (WARNING): The
+    custom metric samples are not exported often enough to be a credible base
+    for autoscaling. CUSTOM_METRIC_INVALID (ERROR): The custom metric that was
+    specified does not exist or does not have the necessary labels.
+    MIN_EQUALS_MAX (WARNING): The minNumReplicas is equal to maxNumReplicas.
+    This means the autoscaler cannot add or remove instances from the instance
+    group. MISSING_CUSTOM_METRIC_DATA_POINTS (WARNING): The autoscaler did not
+    receive any data from the custom metric configured for autoscaling.
+    MISSING_LOAD_BALANCING_DATA_POINTS (WARNING): The autoscaler is configured
+    to scale based on a load balancing signal but the instance group has not
+    received any requests from the load balancer. MODE_OFF (WARNING):
+    Autoscaling is turned off. The number of instances in the group won't
+    change automatically. The autoscaling configuration is preserved.
+    MODE_ONLY_UP (WARNING): Autoscaling is in the "Autoscale only up" mode.
+    Instances in the group will be only added. MORE_THAN_ONE_BACKEND_SERVICE
+    (ERROR): The instance group cannot be autoscaled because it has more than
+    one backend service attached to it. NOT_ENOUGH_QUOTA_AVAILABLE (ERROR):
+    Exceeded quota for necessary resources, such as CPU, number of instances
+    and so on. REGION_RESOURCE_STOCKOUT (ERROR): Showed only for regional
+    autoscalers: there is a resource stockout in the chosen region.
+    SCALING_TARGET_DOES_NOT_EXIST (ERROR): The target to be scaled does not
+    exist. UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION (ERROR):
+    Autoscaling does not work with an HTTP/S load balancer that has been
+    configured for maxRate. ZONE_RESOURCE_STOCKOUT (ERROR): For zonal
+    autoscalers: there is a resource stockout in the chosen zone. For regional
+    autoscalers: in at least one of the zones you're using there is a resource
+    stockout. New values might be added in the future. Some of the values
+    might not be available in all API versions.
 
     Values:
       ALL_INSTANCES_UNHEALTHY: <no description>
@@ -30064,7 +30182,9 @@ class NetworkEndpoint(_messages.Message):
 
 
 class NetworkEndpointGroup(_messages.Message):
-  r"""Represents a collection of network endpoints.
+  r"""Represents a collection of network endpoints.  For more information read
+  Setting up network endpoint groups in load balancing. (== resource_for
+  v1.networkEndpointGroups ==) (== resource_for beta.networkEndpointGroups ==)
 
   Enums:
     NetworkEndpointTypeValueValuesEnum: Type of network endpoints in this
@@ -30743,6 +30863,8 @@ class NetworkInterface(_messages.Message):
       adding a NetworkInterface. An up-to-date fingerprint must be provided in
       order to update the NetworkInterface, otherwise the request will fail
       with error 412 conditionNotMet.
+    ipv6Address: [Output Only] An IPv6 internal network address for this
+      network interface.
     kind: [Output Only] Type of the resource. Always compute#networkInterface
       for network interfaces.
     name: [Output Only] The name of the network interface, which is generated
@@ -30771,11 +30893,12 @@ class NetworkInterface(_messages.Message):
   accessConfigs = _messages.MessageField('AccessConfig', 1, repeated=True)
   aliasIpRanges = _messages.MessageField('AliasIpRange', 2, repeated=True)
   fingerprint = _messages.BytesField(3)
-  kind = _messages.StringField(4, default=u'compute#networkInterface')
-  name = _messages.StringField(5)
-  network = _messages.StringField(6)
-  networkIP = _messages.StringField(7)
-  subnetwork = _messages.StringField(8)
+  ipv6Address = _messages.StringField(4)
+  kind = _messages.StringField(5, default=u'compute#networkInterface')
+  name = _messages.StringField(6)
+  network = _messages.StringField(7)
+  networkIP = _messages.StringField(8)
+  subnetwork = _messages.StringField(9)
 
 
 class NetworkList(_messages.Message):
@@ -31058,7 +31181,7 @@ class NodeGroup(_messages.Message):
   separated from instances in other projects, or to group your instances
   together on the same host hardware. For more information, read Sole-tenant
   nodes. (== resource_for beta.nodeGroups ==) (== resource_for v1.nodeGroups
-  ==) NextID: 15
+  ==) NextID: 16
 
   Enums:
     StatusValueValuesEnum:
@@ -33301,9 +33424,9 @@ class OutlierDetection(_messages.Message):
       ejected when an outlier status is detected through success rate
       statistics. This setting can be used to disable ejection or to ramp it
       up slowly. Defaults to 100.
-    interval: Time interval between ejection sweep analysis. This can result
+    interval: Time interval between ejection analysis sweeps. This can result
       in both new ejections as well as hosts being returned to service.
-      Defaults to 1 seconds.
+      Defaults to 1 second.
     maxEjectionPercent: Maximum percentage of hosts in the load balancing pool
       for the backend service that can be ejected. Defaults to 50%.
     successRateMinimumHosts: The number of hosts in a cluster that must have
@@ -34389,6 +34512,7 @@ class Quota(_messages.Message):
       PREEMPTIBLE_NVIDIA_T4_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_T4_VWS_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_V100_GPUS: <no description>
+      PRIVATE_V6_ACCESS_SUBNETWORKS: <no description>
       REGIONAL_AUTOSCALERS: <no description>
       REGIONAL_INSTANCE_GROUP_MANAGERS: <no description>
       RESERVATIONS: <no description>
@@ -34396,6 +34520,7 @@ class Quota(_messages.Message):
       ROUTERS: <no description>
       ROUTES: <no description>
       SECURITY_POLICIES: <no description>
+      SECURITY_POLICY_CEVAL_RULES: <no description>
       SECURITY_POLICY_RULES: <no description>
       SNAPSHOTS: <no description>
       SSD_TOTAL_GB: <no description>
@@ -34471,29 +34596,31 @@ class Quota(_messages.Message):
     PREEMPTIBLE_NVIDIA_T4_GPUS = 55
     PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 56
     PREEMPTIBLE_NVIDIA_V100_GPUS = 57
-    REGIONAL_AUTOSCALERS = 58
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 59
-    RESERVATIONS = 60
-    RESOURCE_POLICIES = 61
-    ROUTERS = 62
-    ROUTES = 63
-    SECURITY_POLICIES = 64
-    SECURITY_POLICY_RULES = 65
-    SNAPSHOTS = 66
-    SSD_TOTAL_GB = 67
-    SSL_CERTIFICATES = 68
-    STATIC_ADDRESSES = 69
-    SUBNETWORKS = 70
-    TARGET_HTTPS_PROXIES = 71
-    TARGET_HTTP_PROXIES = 72
-    TARGET_INSTANCES = 73
-    TARGET_POOLS = 74
-    TARGET_SSL_PROXIES = 75
-    TARGET_TCP_PROXIES = 76
-    TARGET_VPN_GATEWAYS = 77
-    URL_MAPS = 78
-    VPN_GATEWAYS = 79
-    VPN_TUNNELS = 80
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 58
+    REGIONAL_AUTOSCALERS = 59
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 60
+    RESERVATIONS = 61
+    RESOURCE_POLICIES = 62
+    ROUTERS = 63
+    ROUTES = 64
+    SECURITY_POLICIES = 65
+    SECURITY_POLICY_CEVAL_RULES = 66
+    SECURITY_POLICY_RULES = 67
+    SNAPSHOTS = 68
+    SSD_TOTAL_GB = 69
+    SSL_CERTIFICATES = 70
+    STATIC_ADDRESSES = 71
+    SUBNETWORKS = 72
+    TARGET_HTTPS_PROXIES = 73
+    TARGET_HTTP_PROXIES = 74
+    TARGET_INSTANCES = 75
+    TARGET_POOLS = 76
+    TARGET_SSL_PROXIES = 77
+    TARGET_TCP_PROXIES = 78
+    TARGET_VPN_GATEWAYS = 79
+    URL_MAPS = 80
+    VPN_GATEWAYS = 81
+    VPN_TUNNELS = 82
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -35697,7 +35824,7 @@ class Reservation(_messages.Message):
     StatusValueValuesEnum: [Output Only] The status of the reservation.
 
   Fields:
-    commitment: [OutputOnly] Full or partial URL to a parent commitment. This
+    commitment: [Output Only] Full or partial URL to a parent commitment. This
       field displays for reservations that are tied to a commitment.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -38107,9 +38234,9 @@ class RouterStatusNatStatus(_messages.Message):
     autoAllocatedNatIps: A list of IPs auto-allocated for NAT. Example:
       ["1.1.1.1", "129.2.16.89"]
     drainAutoAllocatedNatIps: A list of IPs auto-allocated for NAT that are in
-      drain mode. Example: ["1.1.1.1", ?179.12.26.133?].
+      drain mode. Example: ["1.1.1.1", "179.12.26.133"].
     drainUserAllocatedNatIps: A list of IPs user-allocated for NAT that are in
-      drain mode. Example: ["1.1.1.1", ?179.12.26.133?].
+      drain mode. Example: ["1.1.1.1", "179.12.26.133"].
     minExtraNatIpsNeeded: The number of extra IPs to allocate. This will be
       greater than 0 only if user-specified IPs are NOT enough to allow all
       configured VMs to use NAT. This value is meaningful only when auto-
@@ -38879,12 +39006,12 @@ class ShieldedInstanceIdentity(_messages.Message):
   r"""A shielded Instance identity entry.
 
   Fields:
-    encryptionKey: An Endorsement Key (EK) issued to the Shielded Instance's
-      vTPM.
+    encryptionKey: An Endorsement Key (EK) made by the RSA 2048 algorithm
+      issued to the Shielded Instance's vTPM.
     kind: [Output Only] Type of the resource. Always
       compute#shieldedInstanceIdentity for shielded Instance identity entry.
-    signingKey: An Attestation Key (AK) issued to the Shielded Instance's
-      vTPM.
+    signingKey: An Attestation Key (AK) made by the RSA 2048 algorithm issued
+      to the Shielded Instance's vTPM.
   """
 
   encryptionKey = _messages.MessageField('ShieldedInstanceIdentityEntry', 1)
@@ -39014,7 +39141,7 @@ class Snapshot(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    diskSizeGb: [Output Only] Size of the snapshot, specified in GB.
+    diskSizeGb: [Output Only] Size of the source disk, specified in GB.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#snapshot for
@@ -40250,6 +40377,11 @@ class Subnetwork(_messages.Message):
   (== resource_for v1.subnetworks ==)
 
   Enums:
+    PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
+      type for the VMs in this subnet. This is an expanded field of
+      enablePrivateV6Access. If both fields are set, privateIpv6GoogleAccess
+      will take priority.  This field can be both set at resource creation
+      time and updated using patch.
     PurposeValueValuesEnum: The purpose of the resource. This field can be
       either PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork
       with purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created
@@ -40303,6 +40435,8 @@ class Subnetwork(_messages.Message):
       example, 10.0.0.0/8 or 192.168.0.0/16. Ranges must be unique and non-
       overlapping within a network. Only IPv4 is supported. This field can be
       set only at resource creation time.
+    ipv6CidrRange: [Output Only] The range of internal IPv6 addresses that are
+      owned by this subnetwork.
     kind: [Output Only] Type of the resource. Always compute#subnetwork for
       Subnetwork resources.
     logConfig: This field denotes the VPC flow logging options for this
@@ -40322,6 +40456,16 @@ class Subnetwork(_messages.Message):
       services without assigned external IP addresses. This field can be both
       set at resource creation time and updated using
       setPrivateIpGoogleAccess.
+    privateIpv6GoogleAccess: The private IPv6 google access type for the VMs
+      in this subnet. This is an expanded field of enablePrivateV6Access. If
+      both fields are set, privateIpv6GoogleAccess will take priority.  This
+      field can be both set at resource creation time and updated using patch.
+    privateIpv6GoogleAccessServiceAccounts: The service accounts can be used
+      to selectively turn on Private IPv6 Google Access only on the VMs
+      primary service account matching the value. This value only takes effect
+      when PrivateIpv6GoogleAccess is
+      ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE_FOR_SERVICE_ACCOUNTS or
+      ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE_FOR_SERVICE_ACCOUNTS.
     purpose: The purpose of the resource. This field can be either
       PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork with
       purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork
@@ -40348,6 +40492,24 @@ class Subnetwork(_messages.Message):
       connections to the load balancer are being drained. A subnetwork that is
       draining cannot be used or modified until it reaches a status of READY.
   """
+
+  class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
+    r"""The private IPv6 google access type for the VMs in this subnet. This
+    is an expanded field of enablePrivateV6Access. If both fields are set,
+    privateIpv6GoogleAccess will take priority.  This field can be both set at
+    resource creation time and updated using patch.
+
+    Values:
+      DISABLE_GOOGLE_ACCESS: <no description>
+      ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE: <no description>
+      ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE: <no description>
+      ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE_FOR_SERVICE_ACCOUNTS: <no
+        description>
+    """
+    DISABLE_GOOGLE_ACCESS = 0
+    ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE = 1
+    ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE = 2
+    ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE_FOR_SERVICE_ACCOUNTS = 3
 
   class PurposeValueValuesEnum(_messages.Enum):
     r"""The purpose of the resource. This field can be either PRIVATE_RFC_1918
@@ -40403,17 +40565,20 @@ class Subnetwork(_messages.Message):
   gatewayAddress = _messages.StringField(6)
   id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
   ipCidrRange = _messages.StringField(8)
-  kind = _messages.StringField(9, default=u'compute#subnetwork')
-  logConfig = _messages.MessageField('SubnetworkLogConfig', 10)
-  name = _messages.StringField(11)
-  network = _messages.StringField(12)
-  privateIpGoogleAccess = _messages.BooleanField(13)
-  purpose = _messages.EnumField('PurposeValueValuesEnum', 14)
-  region = _messages.StringField(15)
-  role = _messages.EnumField('RoleValueValuesEnum', 16)
-  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 17, repeated=True)
-  selfLink = _messages.StringField(18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
+  ipv6CidrRange = _messages.StringField(9)
+  kind = _messages.StringField(10, default=u'compute#subnetwork')
+  logConfig = _messages.MessageField('SubnetworkLogConfig', 11)
+  name = _messages.StringField(12)
+  network = _messages.StringField(13)
+  privateIpGoogleAccess = _messages.BooleanField(14)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 15)
+  privateIpv6GoogleAccessServiceAccounts = _messages.StringField(16, repeated=True)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 17)
+  region = _messages.StringField(18)
+  role = _messages.EnumField('RoleValueValuesEnum', 19)
+  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 20, repeated=True)
+  selfLink = _messages.StringField(21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
 
 
 class SubnetworkAggregatedList(_messages.Message):

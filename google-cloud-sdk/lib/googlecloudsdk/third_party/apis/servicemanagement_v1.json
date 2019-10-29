@@ -2517,50 +2517,6 @@
         }
       }
     },
-    "ListServiceConsumersResponse": {
-      "id": "ListServiceConsumersResponse",
-      "description": "Response message for `ListServiceConsumers` method.",
-      "type": "object",
-      "properties": {
-        "projectSettings": {
-          "description": "The project-level results of the query.",
-          "type": "array",
-          "items": {
-            "$ref": "ProjectSettings"
-          }
-        },
-        "customerSettings": {
-          "description": "The organization\/folder-level results of the query.",
-          "type": "array",
-          "items": {
-            "$ref": "CustomerSettings"
-          }
-        },
-        "nextPageToken": {
-          "description": "Token that can be passed to `ListServiceConsumers` to resume a paginated\nquery.",
-          "type": "string"
-        }
-      }
-    },
-    "CustomerSettings": {
-      "id": "CustomerSettings",
-      "description": "Settings that control how a customer (organization or folder) uses\na service.",
-      "type": "object",
-      "properties": {
-        "serviceName": {
-          "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.",
-          "type": "string"
-        },
-        "customerId": {
-          "description": "ID for the customer that consumes the service (see above).\nCustomer id is always in the format of a Gaia id.",
-          "type": "string"
-        },
-        "quotaSettings": {
-          "description": "Settings that control how much or how fast the service can be used by the\nconsumer projects under the organization or folder collectively.",
-          "$ref": "QuotaSettings"
-        }
-      }
-    },
     "EnableServiceRequest": {
       "id": "EnableServiceRequest",
       "description": "Request message for EnableService method.",
@@ -2598,6 +2554,25 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "CustomerSettings": {
+      "id": "CustomerSettings",
+      "description": "Settings that control how a customer (organization or folder) uses\na service.",
+      "type": "object",
+      "properties": {
+        "serviceName": {
+          "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.",
+          "type": "string"
+        },
+        "customerId": {
+          "description": "ID for the customer that consumes the service (see above).\nCustomer id is always in the format of a Gaia id.",
+          "type": "string"
+        },
+        "quotaSettings": {
+          "description": "Settings that control how much or how fast the service can be used by the\nconsumer projects under the organization or folder collectively.",
+          "$ref": "QuotaSettings"
         }
       }
     },
@@ -3703,38 +3678,22 @@
             }
           }
         },
-        "consumers": {
+        "accessPolicy": {
           "methods": {
-            "list": {
-              "id": "servicemanagement.services.consumers.list",
-              "path": "v1/services/{serviceName}/consumers",
-              "flatPath": "v1/services/{serviceName}/consumers",
-              "httpMethod": "GET",
+            "query": {
+              "id": "servicemanagement.services.accessPolicy.query",
+              "path": "v1/services/{serviceName}/accessPolicy:query",
+              "flatPath": "v1/services/{serviceName}/accessPolicy:query",
+              "httpMethod": "POST",
               "parameters": {
                 "serviceName": {
-                  "description": "If service_name is specified, return only consumer settings for the\nspecified service.\n\nIf not specified, for organizations or folders this will return consumer\nsettings for all services that have defined org-level quotas in the service\nconfiguration. For projects, this will return consumer project settings\nfor all services activated by the consumer project.\n\nIn this version of the API, the only supported consumer type is\n\"organization\".",
+                  "description": "The service to query access for.",
                   "location": "path",
                   "required": true,
                   "type": "string"
                 },
-                "consumerId": {
-                  "description": "Include services consumed by the specified consumer.\n\nThe Google Service Management implementation accepts the following\nforms:\n- project:<project_id>\n- organization:<organization number>\n- folder:<folder number>\n\nIn this version of the API, the only supported consumer type is\n\"organization\".",
-                  "location": "query",
-                  "type": "string"
-                },
-                "consumerIds": {
-                  "location": "query",
-                  "repeated": true,
-                  "type": "string"
-                },
-                "pageSize": {
-                  "description": "Requested size of the next page of data.",
-                  "location": "query",
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "pageToken": {
-                  "description": "Token identifying which result to start with; returned by a previous list\ncall.",
+                "userEmail": {
+                  "description": "The user to query access for.",
                   "location": "query",
                   "type": "string"
                 }
@@ -3743,14 +3702,176 @@
                 "serviceName"
               ],
               "response": {
-                "$ref": "ListServiceConsumersResponse"
+                "$ref": "QueryUserAccessResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only",
+                "https://www.googleapis.com/auth/service.management",
+                "https://www.googleapis.com/auth/service.management.readonly"
+              ],
+              "description": "Method to query the accessibility of a service and any associated\nvisibility labels for a specified user.\n\nMembers of the producer project may call this method and specify any user.\n\nAny user may call this method, but must specify their own email address.\nIn this case the method will return NOT_FOUND if the user has no access to\nthe service."
+            }
+          }
+        },
+        "customerSettings": {
+          "methods": {
+            "get": {
+              "id": "servicemanagement.services.customerSettings.get",
+              "path": "v1/services/{serviceName}/customerSettings/{customerId}",
+              "flatPath": "v1/services/{serviceName}/customerSettings/{customerId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "serviceName": {
+                  "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.\nThis field is required.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "customerId": {
+                  "description": "ID for the customer. See the comment for `CustomerSettings.customer_id`\nfield of message for its format. This field is required.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "expand": {
+                  "description": "Fields to expand in any results.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                },
+                "view": {
+                  "description": "Request only fields for the specified view.",
+                  "location": "query",
+                  "type": "string",
+                  "enum": [
+                    "PROJECT_SETTINGS_VIEW_UNSPECIFIED",
+                    "CONSUMER_VIEW",
+                    "PRODUCER_VIEW",
+                    "ALL"
+                  ]
+                }
+              },
+              "parameterOrder": [
+                "serviceName",
+                "customerId"
+              ],
+              "response": {
+                "$ref": "CustomerSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only",
+                "https://www.googleapis.com/auth/service.management",
+                "https://www.googleapis.com/auth/service.management.readonly"
+              ],
+              "description": "Retrieves the settings that control the specified customer's usage of the\nservice."
+            }
+          }
+        },
+        "projectSettings": {
+          "methods": {
+            "get": {
+              "id": "servicemanagement.services.projectSettings.get",
+              "path": "v1/services/{serviceName}/projectSettings/{consumerProjectId}",
+              "flatPath": "v1/services/{serviceName}/projectSettings/{consumerProjectId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "serviceName": {
+                  "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "consumerProjectId": {
+                  "description": "The project ID of the consumer.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "expand": {
+                  "description": "Fields to expand in any results.  By default, the following fields\nare not present in the result:\n- `operations`\n- `quota_usage`",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                },
+                "view": {
+                  "description": "Request only the fields for the specified view.",
+                  "location": "query",
+                  "type": "string",
+                  "enum": [
+                    "PROJECT_SETTINGS_VIEW_UNSPECIFIED",
+                    "CONSUMER_VIEW",
+                    "PRODUCER_VIEW",
+                    "ALL"
+                  ]
+                }
+              },
+              "parameterOrder": [
+                "serviceName",
+                "consumerProjectId"
+              ],
+              "response": {
+                "$ref": "ProjectSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only",
+                "https://www.googleapis.com/auth/service.management",
+                "https://www.googleapis.com/auth/service.management.readonly"
+              ],
+              "description": "Retrieves the settings that control the specified consumer project's usage\nof the service."
+            },
+            "patch": {
+              "id": "servicemanagement.services.projectSettings.patch",
+              "path": "v1/services/{serviceName}/projectSettings/{consumerProjectId}",
+              "flatPath": "v1/services/{serviceName}/projectSettings/{consumerProjectId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "serviceName": {
+                  "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "consumerProjectId": {
+                  "description": "The project ID of the consumer.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "The field mask specifying which fields are to be updated.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                },
+                "excludeFinalQuotaSettingsInResponse": {
+                  "description": "Do not include updated quota setting in the operation response.",
+                  "location": "query",
+                  "type": "boolean"
+                }
+              },
+              "parameterOrder": [
+                "serviceName",
+                "consumerProjectId"
+              ],
+              "request": {
+                "$ref": "ProjectSettings"
+              },
+              "response": {
+                "$ref": "Operation"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/service.management"
               ],
-              "description": "Lists consumer settings for managed services.\nTo search across all services, specify {service_name} as '-'."
-            },
+              "description": "Updates specified subset of the settings that control the specified\nconsumer project's usage of the service.  Attempts to update a field not\ncontrolled by the caller will result in an access denied error.\n\nOperation<response: ProjectSettings>\nThe metadata field of the Operation will be a CompositeOperationMetadata\nobject."
+            }
+          }
+        },
+        "consumers": {
+          "methods": {
             "setIamPolicy": {
               "id": "servicemanagement.services.consumers.setIamPolicy",
               "path": "v1/services/{servicesId}/consumers/{consumersId}:setIamPolicy",
@@ -3859,274 +3980,6 @@
                 "https://www.googleapis.com/auth/service.management.readonly"
               ],
               "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning."
-            }
-          }
-        },
-        "accessPolicy": {
-          "methods": {
-            "query": {
-              "id": "servicemanagement.services.accessPolicy.query",
-              "path": "v1/services/{serviceName}/accessPolicy:query",
-              "flatPath": "v1/services/{serviceName}/accessPolicy:query",
-              "httpMethod": "POST",
-              "parameters": {
-                "serviceName": {
-                  "description": "The service to query access for.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "userEmail": {
-                  "description": "The user to query access for.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "serviceName"
-              ],
-              "response": {
-                "$ref": "QueryUserAccessResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/cloud-platform.read-only",
-                "https://www.googleapis.com/auth/service.management",
-                "https://www.googleapis.com/auth/service.management.readonly"
-              ],
-              "description": "Method to query the accessibility of a service and any associated\nvisibility labels for a specified user.\n\nMembers of the producer project may call this method and specify any user.\n\nAny user may call this method, but must specify their own email address.\nIn this case the method will return NOT_FOUND if the user has no access to\nthe service."
-            }
-          }
-        },
-        "customerSettings": {
-          "methods": {
-            "get": {
-              "id": "servicemanagement.services.customerSettings.get",
-              "path": "v1/services/{serviceName}/customerSettings/{customerId}",
-              "flatPath": "v1/services/{serviceName}/customerSettings/{customerId}",
-              "httpMethod": "GET",
-              "parameters": {
-                "serviceName": {
-                  "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.\nThis field is required.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "customerId": {
-                  "description": "ID for the customer. See the comment for `CustomerSettings.customer_id`\nfield of message for its format. This field is required.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "expand": {
-                  "description": "Fields to expand in any results.",
-                  "location": "query",
-                  "type": "string",
-                  "format": "google-fieldmask"
-                },
-                "view": {
-                  "description": "Request only fields for the specified view.",
-                  "location": "query",
-                  "type": "string",
-                  "enum": [
-                    "PROJECT_SETTINGS_VIEW_UNSPECIFIED",
-                    "CONSUMER_VIEW",
-                    "PRODUCER_VIEW",
-                    "ALL"
-                  ]
-                }
-              },
-              "parameterOrder": [
-                "serviceName",
-                "customerId"
-              ],
-              "response": {
-                "$ref": "CustomerSettings"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/cloud-platform.read-only",
-                "https://www.googleapis.com/auth/service.management",
-                "https://www.googleapis.com/auth/service.management.readonly"
-              ],
-              "description": "Retrieves the settings that control the specified customer's usage of the\nservice."
-            },
-            "patch": {
-              "id": "servicemanagement.services.customerSettings.patch",
-              "path": "v1/services/{serviceName}/customerSettings/{customerId}",
-              "flatPath": "v1/services/{serviceName}/customerSettings/{customerId}",
-              "httpMethod": "PATCH",
-              "parameters": {
-                "serviceName": {
-                  "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.\nThis field is required.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "customerId": {
-                  "description": "ID for the customer. See the comment for `CustomerSettings.customer_id`\nfield of message for its format. This field is required.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "updateMask": {
-                  "description": "The field mask specifying which fields are to be updated.",
-                  "location": "query",
-                  "type": "string",
-                  "format": "google-fieldmask"
-                }
-              },
-              "parameterOrder": [
-                "serviceName",
-                "customerId"
-              ],
-              "request": {
-                "$ref": "CustomerSettings"
-              },
-              "response": {
-                "$ref": "Operation"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/service.management"
-              ],
-              "description": "Patches specified subset of the settings that control the specified\ncustomer's usage of the service.  Attempts to update a field not\ncontrolled by the caller will result in an access denied error.\n\nOperation<response: CustomerSettings>"
-            }
-          }
-        },
-        "projectSettings": {
-          "methods": {
-            "get": {
-              "id": "servicemanagement.services.projectSettings.get",
-              "path": "v1/services/{serviceName}/projectSettings/{consumerProjectId}",
-              "flatPath": "v1/services/{serviceName}/projectSettings/{consumerProjectId}",
-              "httpMethod": "GET",
-              "parameters": {
-                "serviceName": {
-                  "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "consumerProjectId": {
-                  "description": "The project ID of the consumer.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "expand": {
-                  "description": "Fields to expand in any results.  By default, the following fields\nare not present in the result:\n- `operations`\n- `quota_usage`",
-                  "location": "query",
-                  "type": "string",
-                  "format": "google-fieldmask"
-                },
-                "view": {
-                  "description": "Request only the fields for the specified view.",
-                  "location": "query",
-                  "type": "string",
-                  "enum": [
-                    "PROJECT_SETTINGS_VIEW_UNSPECIFIED",
-                    "CONSUMER_VIEW",
-                    "PRODUCER_VIEW",
-                    "ALL"
-                  ]
-                }
-              },
-              "parameterOrder": [
-                "serviceName",
-                "consumerProjectId"
-              ],
-              "response": {
-                "$ref": "ProjectSettings"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/cloud-platform.read-only",
-                "https://www.googleapis.com/auth/service.management",
-                "https://www.googleapis.com/auth/service.management.readonly"
-              ],
-              "description": "Retrieves the settings that control the specified consumer project's usage\nof the service."
-            },
-            "update": {
-              "id": "servicemanagement.services.projectSettings.update",
-              "path": "v1/services/{serviceName}/projectSettings/{consumerProjectId}",
-              "flatPath": "v1/services/{serviceName}/projectSettings/{consumerProjectId}",
-              "httpMethod": "PUT",
-              "parameters": {
-                "serviceName": {
-                  "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "consumerProjectId": {
-                  "description": "The project ID of the consumer.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "serviceName",
-                "consumerProjectId"
-              ],
-              "request": {
-                "$ref": "ProjectSettings"
-              },
-              "response": {
-                "$ref": "Operation"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/service.management"
-              ],
-              "description": "NOTE: Currently unsupported.  Use PatchProjectSettings instead.\n\nUpdates the settings that control the specified consumer project's usage\nof the service.  Attempts to update a field not controlled by the caller\nwill result in an access denied error.\n\nOperation<response: ProjectSettings>"
-            },
-            "patch": {
-              "id": "servicemanagement.services.projectSettings.patch",
-              "path": "v1/services/{serviceName}/projectSettings/{consumerProjectId}",
-              "flatPath": "v1/services/{serviceName}/projectSettings/{consumerProjectId}",
-              "httpMethod": "PATCH",
-              "parameters": {
-                "serviceName": {
-                  "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "consumerProjectId": {
-                  "description": "The project ID of the consumer.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "updateMask": {
-                  "description": "The field mask specifying which fields are to be updated.",
-                  "location": "query",
-                  "type": "string",
-                  "format": "google-fieldmask"
-                },
-                "excludeFinalQuotaSettingsInResponse": {
-                  "description": "Do not include updated quota setting in the operation response.",
-                  "location": "query",
-                  "type": "boolean"
-                }
-              },
-              "parameterOrder": [
-                "serviceName",
-                "consumerProjectId"
-              ],
-              "request": {
-                "$ref": "ProjectSettings"
-              },
-              "response": {
-                "$ref": "Operation"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/service.management"
-              ],
-              "description": "Updates specified subset of the settings that control the specified\nconsumer project's usage of the service.  Attempts to update a field not\ncontrolled by the caller will result in an access denied error.\n\nOperation<response: ProjectSettings>\nThe metadata field of the Operation will be a CompositeOperationMetadata\nobject."
             }
           }
         }

@@ -1200,7 +1200,7 @@ class AllocationSpecificSKUReservation(_messages.Message):
 
   Fields:
     count: Specifies the number of resources that are allocated.
-    inUseCount: [OutputOnly] Indicates how many instances are in use.
+    inUseCount: [Output Only] Indicates how many instances are in use.
     instanceProperties: The instance properties for the reservation.
   """
 
@@ -1557,7 +1557,13 @@ class Autoscaler(_messages.Message):
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the autoscaler
-      configuration.
+      configuration. Current set of possible values: PENDING: Autoscaler
+      backend hasn't read new/updated configuration DELETING: Configuration is
+      being deleted ACTIVE: Configuration is acknowledged to be effective.
+      Some warnings might or might not be present in the status_details field.
+      ERROR: Configuration has errors. Actionable for users. Details are
+      present in the status_details field. New values might be added in the
+      future.
 
   Fields:
     autoscalingPolicy: The configuration parameters for the autoscaling
@@ -1583,7 +1589,13 @@ class Autoscaler(_messages.Message):
     region: [Output Only] URL of the region where the instance group resides
       (for autoscalers living in regional scope).
     selfLink: [Output Only] Server-defined URL for the resource.
-    status: [Output Only] The status of the autoscaler configuration.
+    status: [Output Only] The status of the autoscaler configuration. Current
+      set of possible values: PENDING: Autoscaler backend hasn't read
+      new/updated configuration DELETING: Configuration is being deleted
+      ACTIVE: Configuration is acknowledged to be effective. Some warnings
+      might or might not be present in the status_details field. ERROR:
+      Configuration has errors. Actionable for users. Details are present in
+      the status_details field. New values might be added in the future.
     statusDetails: [Output Only] Human-readable details about the current
       state of the autoscaler. Read the documentation for Commonly returned
       status messages for examples of status messages you might encounter.
@@ -1593,7 +1605,13 @@ class Autoscaler(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""[Output Only] The status of the autoscaler configuration.
+    r"""[Output Only] The status of the autoscaler configuration. Current set
+    of possible values: PENDING: Autoscaler backend hasn't read new/updated
+    configuration DELETING: Configuration is being deleted ACTIVE:
+    Configuration is acknowledged to be effective. Some warnings might or
+    might not be present in the status_details field. ERROR: Configuration has
+    errors. Actionable for users. Details are present in the status_details
+    field. New values might be added in the future.
 
     Values:
       ACTIVE: <no description>
@@ -1900,15 +1918,115 @@ class AutoscalerStatusDetails(_messages.Message):
   r"""A AutoscalerStatusDetails object.
 
   Enums:
-    TypeValueValuesEnum: The type of error returned.
+    TypeValueValuesEnum: The type of error, warning or notice returned.
+      Current set of possible values: ALL_INSTANCES_UNHEALTHY (WARNING): All
+      instances in the instance group are unhealthy (not in RUNNING state).
+      BACKEND_SERVICE_DOES_NOT_EXIST (ERROR): There is no backend service
+      attached to the instance group. CAPPED_AT_MAX_NUM_REPLICAS (WARNING):
+      Autoscaler recommends size bigger than maxNumReplicas.
+      CUSTOM_METRIC_DATA_POINTS_TOO_SPARSE (WARNING): The custom metric
+      samples are not exported often enough to be a credible base for
+      autoscaling. CUSTOM_METRIC_INVALID (ERROR): The custom metric that was
+      specified does not exist or does not have the necessary labels.
+      MIN_EQUALS_MAX (WARNING): The minNumReplicas is equal to maxNumReplicas.
+      This means the autoscaler cannot add or remove instances from the
+      instance group. MISSING_CUSTOM_METRIC_DATA_POINTS (WARNING): The
+      autoscaler did not receive any data from the custom metric configured
+      for autoscaling. MISSING_LOAD_BALANCING_DATA_POINTS (WARNING): The
+      autoscaler is configured to scale based on a load balancing signal but
+      the instance group has not received any requests from the load balancer.
+      MODE_OFF (WARNING): Autoscaling is turned off. The number of instances
+      in the group won't change automatically. The autoscaling configuration
+      is preserved. MODE_ONLY_UP (WARNING): Autoscaling is in the "Autoscale
+      only up" mode. Instances in the group will be only added.
+      MORE_THAN_ONE_BACKEND_SERVICE (ERROR): The instance group cannot be
+      autoscaled because it has more than one backend service attached to it.
+      NOT_ENOUGH_QUOTA_AVAILABLE (ERROR): Exceeded quota for necessary
+      resources, such as CPU, number of instances and so on.
+      REGION_RESOURCE_STOCKOUT (ERROR): Showed only for regional autoscalers:
+      there is a resource stockout in the chosen region.
+      SCALING_TARGET_DOES_NOT_EXIST (ERROR): The target to be scaled does not
+      exist. UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION (ERROR):
+      Autoscaling does not work with an HTTP/S load balancer that has been
+      configured for maxRate. ZONE_RESOURCE_STOCKOUT (ERROR): For zonal
+      autoscalers: there is a resource stockout in the chosen zone. For
+      regional autoscalers: in at least one of the zones you're using there is
+      a resource stockout. New values might be added in the future. Some of
+      the values might not be available in all API versions.
 
   Fields:
     message: The status message.
-    type: The type of error returned.
+    type: The type of error, warning or notice returned. Current set of
+      possible values: ALL_INSTANCES_UNHEALTHY (WARNING): All instances in the
+      instance group are unhealthy (not in RUNNING state).
+      BACKEND_SERVICE_DOES_NOT_EXIST (ERROR): There is no backend service
+      attached to the instance group. CAPPED_AT_MAX_NUM_REPLICAS (WARNING):
+      Autoscaler recommends size bigger than maxNumReplicas.
+      CUSTOM_METRIC_DATA_POINTS_TOO_SPARSE (WARNING): The custom metric
+      samples are not exported often enough to be a credible base for
+      autoscaling. CUSTOM_METRIC_INVALID (ERROR): The custom metric that was
+      specified does not exist or does not have the necessary labels.
+      MIN_EQUALS_MAX (WARNING): The minNumReplicas is equal to maxNumReplicas.
+      This means the autoscaler cannot add or remove instances from the
+      instance group. MISSING_CUSTOM_METRIC_DATA_POINTS (WARNING): The
+      autoscaler did not receive any data from the custom metric configured
+      for autoscaling. MISSING_LOAD_BALANCING_DATA_POINTS (WARNING): The
+      autoscaler is configured to scale based on a load balancing signal but
+      the instance group has not received any requests from the load balancer.
+      MODE_OFF (WARNING): Autoscaling is turned off. The number of instances
+      in the group won't change automatically. The autoscaling configuration
+      is preserved. MODE_ONLY_UP (WARNING): Autoscaling is in the "Autoscale
+      only up" mode. Instances in the group will be only added.
+      MORE_THAN_ONE_BACKEND_SERVICE (ERROR): The instance group cannot be
+      autoscaled because it has more than one backend service attached to it.
+      NOT_ENOUGH_QUOTA_AVAILABLE (ERROR): Exceeded quota for necessary
+      resources, such as CPU, number of instances and so on.
+      REGION_RESOURCE_STOCKOUT (ERROR): Showed only for regional autoscalers:
+      there is a resource stockout in the chosen region.
+      SCALING_TARGET_DOES_NOT_EXIST (ERROR): The target to be scaled does not
+      exist. UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION (ERROR):
+      Autoscaling does not work with an HTTP/S load balancer that has been
+      configured for maxRate. ZONE_RESOURCE_STOCKOUT (ERROR): For zonal
+      autoscalers: there is a resource stockout in the chosen zone. For
+      regional autoscalers: in at least one of the zones you're using there is
+      a resource stockout. New values might be added in the future. Some of
+      the values might not be available in all API versions.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The type of error returned.
+    r"""The type of error, warning or notice returned. Current set of possible
+    values: ALL_INSTANCES_UNHEALTHY (WARNING): All instances in the instance
+    group are unhealthy (not in RUNNING state). BACKEND_SERVICE_DOES_NOT_EXIST
+    (ERROR): There is no backend service attached to the instance group.
+    CAPPED_AT_MAX_NUM_REPLICAS (WARNING): Autoscaler recommends size bigger
+    than maxNumReplicas. CUSTOM_METRIC_DATA_POINTS_TOO_SPARSE (WARNING): The
+    custom metric samples are not exported often enough to be a credible base
+    for autoscaling. CUSTOM_METRIC_INVALID (ERROR): The custom metric that was
+    specified does not exist or does not have the necessary labels.
+    MIN_EQUALS_MAX (WARNING): The minNumReplicas is equal to maxNumReplicas.
+    This means the autoscaler cannot add or remove instances from the instance
+    group. MISSING_CUSTOM_METRIC_DATA_POINTS (WARNING): The autoscaler did not
+    receive any data from the custom metric configured for autoscaling.
+    MISSING_LOAD_BALANCING_DATA_POINTS (WARNING): The autoscaler is configured
+    to scale based on a load balancing signal but the instance group has not
+    received any requests from the load balancer. MODE_OFF (WARNING):
+    Autoscaling is turned off. The number of instances in the group won't
+    change automatically. The autoscaling configuration is preserved.
+    MODE_ONLY_UP (WARNING): Autoscaling is in the "Autoscale only up" mode.
+    Instances in the group will be only added. MORE_THAN_ONE_BACKEND_SERVICE
+    (ERROR): The instance group cannot be autoscaled because it has more than
+    one backend service attached to it. NOT_ENOUGH_QUOTA_AVAILABLE (ERROR):
+    Exceeded quota for necessary resources, such as CPU, number of instances
+    and so on. REGION_RESOURCE_STOCKOUT (ERROR): Showed only for regional
+    autoscalers: there is a resource stockout in the chosen region.
+    SCALING_TARGET_DOES_NOT_EXIST (ERROR): The target to be scaled does not
+    exist. UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION (ERROR):
+    Autoscaling does not work with an HTTP/S load balancer that has been
+    configured for maxRate. ZONE_RESOURCE_STOCKOUT (ERROR): For zonal
+    autoscalers: there is a resource stockout in the chosen zone. For regional
+    autoscalers: in at least one of the zones you're using there is a resource
+    stockout. New values might be added in the future. Some of the values
+    might not be available in all API versions.
 
     Values:
       ALL_INSTANCES_UNHEALTHY: <no description>
@@ -1919,6 +2037,7 @@ class AutoscalerStatusDetails(_messages.Message):
       MIN_EQUALS_MAX: <no description>
       MISSING_CUSTOM_METRIC_DATA_POINTS: <no description>
       MISSING_LOAD_BALANCING_DATA_POINTS: <no description>
+      MODE_OFF: <no description>
       MORE_THAN_ONE_BACKEND_SERVICE: <no description>
       NOT_ENOUGH_QUOTA_AVAILABLE: <no description>
       REGION_RESOURCE_STOCKOUT: <no description>
@@ -1935,13 +2054,14 @@ class AutoscalerStatusDetails(_messages.Message):
     MIN_EQUALS_MAX = 5
     MISSING_CUSTOM_METRIC_DATA_POINTS = 6
     MISSING_LOAD_BALANCING_DATA_POINTS = 7
-    MORE_THAN_ONE_BACKEND_SERVICE = 8
-    NOT_ENOUGH_QUOTA_AVAILABLE = 9
-    REGION_RESOURCE_STOCKOUT = 10
-    SCALING_TARGET_DOES_NOT_EXIST = 11
-    UNKNOWN = 12
-    UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION = 13
-    ZONE_RESOURCE_STOCKOUT = 14
+    MODE_OFF = 8
+    MORE_THAN_ONE_BACKEND_SERVICE = 9
+    NOT_ENOUGH_QUOTA_AVAILABLE = 10
+    REGION_RESOURCE_STOCKOUT = 11
+    SCALING_TARGET_DOES_NOT_EXIST = 12
+    UNKNOWN = 13
+    UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION = 14
+    ZONE_RESOURCE_STOCKOUT = 15
 
   message = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -27436,7 +27556,9 @@ class NetworkEndpoint(_messages.Message):
 
 
 class NetworkEndpointGroup(_messages.Message):
-  r"""Represents a collection of network endpoints.
+  r"""Represents a collection of network endpoints.  For more information read
+  Setting up network endpoint groups in load balancing. (== resource_for
+  v1.networkEndpointGroups ==) (== resource_for beta.networkEndpointGroups ==)
 
   Enums:
     NetworkEndpointTypeValueValuesEnum: Type of network endpoints in this
@@ -28406,7 +28528,7 @@ class NodeGroup(_messages.Message):
   separated from instances in other projects, or to group your instances
   together on the same host hardware. For more information, read Sole-tenant
   nodes. (== resource_for beta.nodeGroups ==) (== resource_for v1.nodeGroups
-  ==) NextID: 15
+  ==) NextID: 16
 
   Enums:
     StatusValueValuesEnum:
@@ -30649,9 +30771,9 @@ class OutlierDetection(_messages.Message):
       ejected when an outlier status is detected through success rate
       statistics. This setting can be used to disable ejection or to ramp it
       up slowly. Defaults to 100.
-    interval: Time interval between ejection sweep analysis. This can result
+    interval: Time interval between ejection analysis sweeps. This can result
       in both new ejections as well as hosts being returned to service.
-      Defaults to 1 seconds.
+      Defaults to 1 second.
     maxEjectionPercent: Maximum percentage of hosts in the load balancing pool
       for the backend service that can be ejected. Defaults to 50%.
     successRateMinimumHosts: The number of hosts in a cluster that must have
@@ -32277,7 +32399,7 @@ class Reservation(_messages.Message):
     StatusValueValuesEnum: [Output Only] The status of the reservation.
 
   Fields:
-    commitment: [OutputOnly] Full or partial URL to a parent commitment. This
+    commitment: [Output Only] Full or partial URL to a parent commitment. This
       field displays for reservations that are tied to a commitment.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -34592,9 +34714,9 @@ class RouterStatusNatStatus(_messages.Message):
     autoAllocatedNatIps: A list of IPs auto-allocated for NAT. Example:
       ["1.1.1.1", "129.2.16.89"]
     drainAutoAllocatedNatIps: A list of IPs auto-allocated for NAT that are in
-      drain mode. Example: ["1.1.1.1", ?179.12.26.133?].
+      drain mode. Example: ["1.1.1.1", "179.12.26.133"].
     drainUserAllocatedNatIps: A list of IPs user-allocated for NAT that are in
-      drain mode. Example: ["1.1.1.1", ?179.12.26.133?].
+      drain mode. Example: ["1.1.1.1", "179.12.26.133"].
     minExtraNatIpsNeeded: The number of extra IPs to allocate. This will be
       greater than 0 only if user-specified IPs are NOT enough to allow all
       configured VMs to use NAT. This value is meaningful only when auto-
@@ -35297,12 +35419,12 @@ class ShieldedInstanceIdentity(_messages.Message):
   r"""A shielded Instance identity entry.
 
   Fields:
-    encryptionKey: An Endorsement Key (EK) issued to the Shielded Instance's
-      vTPM.
+    encryptionKey: An Endorsement Key (EK) made by the RSA 2048 algorithm
+      issued to the Shielded Instance's vTPM.
     kind: [Output Only] Type of the resource. Always
       compute#shieldedInstanceIdentity for shielded Instance identity entry.
-    signingKey: An Attestation Key (AK) issued to the Shielded Instance's
-      vTPM.
+    signingKey: An Attestation Key (AK) made by the RSA 2048 algorithm issued
+      to the Shielded Instance's vTPM.
   """
 
   encryptionKey = _messages.MessageField('ShieldedInstanceIdentityEntry', 1)
@@ -35378,7 +35500,7 @@ class Snapshot(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    diskSizeGb: [Output Only] Size of the snapshot, specified in GB.
+    diskSizeGb: [Output Only] Size of the source disk, specified in GB.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#snapshot for

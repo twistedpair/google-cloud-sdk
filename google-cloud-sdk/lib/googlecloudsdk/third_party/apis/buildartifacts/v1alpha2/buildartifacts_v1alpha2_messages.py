@@ -923,7 +923,8 @@ class Tag(_messages.Message):
   Fields:
     name: The name of the tag, for example:
       "projects/p1/repositories/repo1/packages/pkg1/tags/tag1".
-    version: The name of the version the tag refers to.
+    version: The name of the version the tag refers to, for example:
+      "projects/p1/repositories/repo1/packages/pkg1/versions/sha256:5243811"
   """
 
   name = _messages.StringField(1)

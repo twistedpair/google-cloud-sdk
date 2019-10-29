@@ -45,16 +45,13 @@ apis:
     v1:
       discovery_doc: accesscontextmanager_v1.json
       default: true
-  # Admin SDK version - directory/v1 doesn't match the expected version of Gcloud scripts(v1).
-  # Hence, the files were generated locally, renamed and checked in.
-  # TODO(b/142448542): Fix automated generation for Beta/GA launches.
-  # admin:
-  #   v1:
-  #     discovery_doc: admin_v1.json
-  #     default: true
-  #     resources:
-  #       customer:
-  #         path: customer/{customerId}
+  admin:
+    v1:
+      discovery_doc: admin_v1.json
+      default: true
+      resources:
+        customer:
+          path: customer/{customerId}
   appengine:
     v1alpha:
       discovery_doc: appengine_v1alpha.json
@@ -68,6 +65,10 @@ apis:
       resources:
         projects:
           path: projects/{projectId}
+  artifactregistry:
+    v1beta1:
+      discovery_doc: artifactregistry_v1beta1.json
+      default: true
   bigtableadmin:
     v2:
       discovery_doc: bigtableadmin_v2.json
@@ -118,6 +119,8 @@ apis:
           path: iamPolicies
     v1p2beta1:
       discovery_doc: cloudasset_v1p2beta1.json
+    v1p4alpha1:
+      discovery_doc: cloudasset_v1p4alpha1.json
   cloudbilling:
     v1:
       discovery_doc: cloudbilling_v1.json
@@ -492,6 +495,8 @@ apis:
       discovery_doc: managedidentities_v1alpha1.json
     v1beta1:
       discovery_doc: managedidentities_v1beta1.json
+    v1:
+      discovery_doc: managedidentities_v1.json
       default: true
   logging:
     v2:

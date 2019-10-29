@@ -6861,8 +6861,7 @@ class ProductSearchParams(_messages.Message):
 
   Fields:
     boundingPoly: The bounding polygon around the area of interest in the
-      image. Optional. If it is not specified, system discretion will be
-      applied.
+      image. If it is not specified, system discretion will be applied.
     filter: The filtering expression. This can be used to restrict search
       results based on Product labels. We currently support an AND of OR of
       key-value expressions, where each expression within an OR must have the

@@ -632,8 +632,8 @@ class OsConstraint(_messages.Message):
     osType: Required. The allowed OS type.
     requireVerifiedChromeOs: Only allows requests from devices with a verified
       Chrome OS. Verifications includes requirements that the device is
-      enterprise-managed, conformant to Dasher domain policies, and the caller
-      has permission to call the API targeted by the request.
+      enterprise-managed, conformant to domain policies, and the caller has
+      permission to call the API targeted by the request.
   """
 
   class OsTypeValueValuesEnum(_messages.Enum):

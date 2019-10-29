@@ -83,7 +83,7 @@ def UpdateNatMessage(nat,
     nat.sourceSubnetworkIpRangesToNat = ranges_to_nat
     nat.subnetworks = subnetworks
 
-  if args.drain_nat_ips:
+  if args.nat_external_drain_ip_pool:
     drain_nat_ips = nat_flags.DRAIN_NAT_IP_ADDRESSES_ARG.ResolveAsResource(
         args, compute_holder.resources)
     nat.drainNatIps = [six.text_type(ip) for ip in drain_nat_ips]
@@ -93,7 +93,7 @@ def UpdateNatMessage(nat,
       nat.natIps = [ip for ip in nat.natIps
                     if not _ContainIp(drain_nat_ips, ip)]
 
-  if args.clear_drain_nat_ips:
+  if args.clear_nat_external_drain_ip_pool:
     nat.drainNatIps = []
 
   if (args.ip_allocation_option == nat_flags.IpAllocationOption.AUTO or

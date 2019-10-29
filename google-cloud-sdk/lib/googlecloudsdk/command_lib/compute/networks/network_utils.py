@@ -91,7 +91,7 @@ def AddMtuArg(parser):
       type=int,
       help="""Maximum transmission unit(MTU) is the size of the largest frame
               that can be transmitted on this network. Default value is
-              1460 bytes, the maximum is 1600 bytes. The MTU advertised
+              1460 bytes, the maximum is 1500 bytes. The MTU advertised
               via DHCP to all instances attached to this network.""")
 
 

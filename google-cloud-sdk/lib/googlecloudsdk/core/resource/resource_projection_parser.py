@@ -381,7 +381,7 @@ class Parser(object):
       add_transform = self._lex.Transform(key.pop(), self._projection.active)
     else:
       add_transform = None
-    if attribute and not key:
+    if attribute:
       attribute = copy.copy(attribute)
     else:
       attribute = self._Attribute(self._projection.PROJECT)

@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 
 import abc
 import copy
-import shlex
 
 from googlecloudsdk.api_lib.run import configuration
 from googlecloudsdk.api_lib.run import k8s_object
@@ -62,7 +61,7 @@ class LabelChanges(ConfigChanger):
     # Currently assumes all "system"-owned labels are applied by the control
     # plane and it's ok for us to clear them on the client.
     update_result = self._diff.Apply(
-        resource.MessagesModule().ObjectMeta.LabelsValue,
+        k8s_object.Meta(resource.MessagesModule()).LabelsValue,
         resource.metadata.labels)
     maybe_new_labels = update_result.GetOrNone()
     if maybe_new_labels:
@@ -658,8 +657,8 @@ class TrafficChanges(ConfigChanger):
 class ContainerCommandChange(ConfigChanger):
   """Represents the user intent to change the 'command' for the container."""
 
-  def __init__(self, command_str):
-    self._commands = shlex.split(command_str)
+  def __init__(self, command):
+    self._commands = command
 
   def Adjust(self, resource):
     resource.template.container.command = self._commands
@@ -669,9 +668,26 @@ class ContainerCommandChange(ConfigChanger):
 class ContainerArgsChange(ConfigChanger):
   """Represents the user intent to change the 'args' for the container."""
 
-  def __init__(self, args_str):
-    self._args = shlex.split(args_str)
+  def __init__(self, args):
+    self._args = args
 
   def Adjust(self, resource):
     resource.template.container.args = self._args
+    return resource
+
+
+class ContainerPortChange(ConfigChanger):
+  """Represents the user intent to change the containerPort number."""
+
+  def __init__(self, port):
+    self._port = port
+
+  def Adjust(self, resource):
+    if self._port == 'default':
+      resource.template.container.reset('ports')
+    else:
+      resource.template.container.ports = [
+          resource.MessagesModule().ContainerPort(
+              containerPort=int(self._port))
+      ]
     return resource

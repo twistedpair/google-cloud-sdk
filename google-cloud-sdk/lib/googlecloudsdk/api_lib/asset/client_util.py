@@ -35,6 +35,7 @@ import six
 API_NAME = 'cloudasset'
 DEFAULT_API_VERSION = 'v1'
 V1P2BETA1_API_VERSION = 'v1p2beta1'
+V1P4ALPHA1_API_VERSION = 'v1p4alpha1'
 BASE_URL = 'https://cloudasset.googleapis.com'
 _HEADERS = {'Content-Type': 'application/json', 'X-HTTP-Method-Override': 'GET'}
 _HTTP_ERROR_FORMAT = ('HTTP request failed with status code {}. '
@@ -119,6 +120,63 @@ def MakeGetAssetsHistoryHttpRequests(args, api_version=DEFAULT_API_VERSION):
 
   for asset in history_response.assets:
     yield asset
+
+
+def MakeAnalyzeIamPolicyHttpRequests(args, api_version=V1P4ALPHA1_API_VERSION):
+  """Manually make the get assets history request."""
+  http_client = http.Http()
+
+  parent = asset_utils.GetParentNameForAnalyzeIamPolicy(args.organization)
+  url_base = '{0}/{1}/{2}:{3}'.format(BASE_URL, api_version, parent,
+                                      'analyzeIamPolicy')
+
+  params = []
+  if args.IsSpecified('full_resource_name'):
+    params.extend([('resourceSelector.fullResourceName',
+                    args.full_resource_name)])
+
+  if args.IsSpecified('identity'):
+    params.extend([('identitySelector.identity', args.identity)])
+
+  if args.IsSpecified('roles'):
+    params.extend([('accessSelector.roles', r) for r in args.roles])
+  if args.IsSpecified('permissions'):
+    params.extend([('accessSelector.permissions', p) for p in args.permissions])
+
+  if args.IsSpecified('expand_groups'):
+    params.extend([('options.expandGroups', args.expand_groups)])
+  if args.IsSpecified('expand_resources'):
+    params.extend([('options.expandResources', args.expand_resources)])
+  if args.IsSpecified('expand_roles'):
+    params.extend([('options.expandRoles', args.expand_roles)])
+
+  if args.IsSpecified('output_resource_edges'):
+    params.extend([('options.outputResourceEdges', args.output_resource_edges)])
+  if args.IsSpecified('output_group_edges'):
+    params.extend([('options.outputGroupEdges', args.output_group_edges)])
+  if args.IsSpecified('output_partial_result_before_timeout'):
+    params.extend([('options.outputPartialResultBeforeTimeout',
+                    args.output_partial_result_before_timeout)])
+
+  url_query = six.moves.urllib.parse.urlencode(params)
+  url = '?'.join([url_base, url_query])
+  response, raw_content = http_client.request(uri=url, headers=_HEADERS)
+
+  content = core_encoding.Decode(raw_content)
+
+  if response['status'] != '200':
+    http_error = api_exceptions.HttpError(response, content, url)
+    raise exceptions.HttpException(http_error)
+
+  response_message_class = GetMessages(api_version).AnalyzeIamPolicyResponse
+  try:
+    response = encoding.JsonToMessage(response_message_class, content)
+  except ValueError as e:
+    err_msg = ('Failed receiving proper response from server, cannot'
+               'parse received assets. Error details: ' + six.text_type(e))
+    raise MessageDecodeError(err_msg)
+
+  return response
 
 
 class AssetExportClient(object):

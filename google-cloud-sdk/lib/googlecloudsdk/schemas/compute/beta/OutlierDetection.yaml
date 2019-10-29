@@ -27,9 +27,9 @@ properties:
       type: string
   baseEjectionTime:
     description: |-
-      The base time that a host is ejected for. The real time is equal to the
-      base time multiplied by the number of times the host has been ejected.
-      Defaults to 30000ms or 30s.
+      The base time that a host is ejected for. The real ejection time is equal
+      to the base ejection time multiplied by the number of times the host has
+      been ejected. Defaults to 30000ms or 30s.
     $ref: Duration.yaml
   consecutiveErrors:
     description: |-
@@ -41,19 +41,19 @@ properties:
     description: |-
       The number of consecutive gateway failures (502, 503, 504 status or
       connection errors that are mapped to one of those status codes) before a
-      consecutive gateway failure ejection occurs. Defaults to 5.
+      consecutive gateway failure ejection occurs. Defaults to 3.
     type: integer
   enforcingConsecutiveErrors:
     description: |-
       The percentage chance that a host will be actually ejected when an outlier
       status is detected through consecutive 5xx. This setting can be used to
-      disable ejection or to ramp it up slowly. Defaults to 100.
+      disable ejection or to ramp it up slowly. Defaults to 0.
     type: integer
   enforcingConsecutiveGatewayFailure:
     description: |-
       The percentage chance that a host will be actually ejected when an outlier
       status is detected through consecutive gateway failures. This setting can
-      be used to disable ejection or to ramp it up slowly. Defaults to 0.
+      be used to disable ejection or to ramp it up slowly. Defaults to 100.
     type: integer
   enforcingSuccessRate:
     description: |-
@@ -64,13 +64,13 @@ properties:
   interval:
     description: |-
       Time interval between ejection sweep analysis. This can result in both new
-      ejections as well as hosts being returned to service. Defaults to 10
+      ejections as well as hosts being returned to service. Defaults to 1
       seconds.
     $ref: Duration.yaml
   maxEjectionPercent:
     description: |-
       Maximum percentage of hosts in the load balancing pool for the backend
-      service that can be ejected. Defaults to 10%.
+      service that can be ejected. Defaults to 50%.
     type: integer
   successRateMinimumHosts:
     description: |-

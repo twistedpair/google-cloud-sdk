@@ -39,6 +39,7 @@ class RunV1alpha1(base_api.BaseApiClient):
     self.namespaces_configurations = self.NamespacesConfigurationsService(self)
     self.namespaces_domainmappings = self.NamespacesDomainmappingsService(self)
     self.namespaces_eventtypes = self.NamespacesEventtypesService(self)
+    self.namespaces_pubsubs = self.NamespacesPubsubsService(self)
     self.namespaces_revisions = self.NamespacesRevisionsService(self)
     self.namespaces_routes = self.NamespacesRoutesService(self)
     self.namespaces_services = self.NamespacesServicesService(self)
@@ -48,6 +49,7 @@ class RunV1alpha1(base_api.BaseApiClient):
     self.projects_locations_configurations = self.ProjectsLocationsConfigurationsService(self)
     self.projects_locations_domainmappings = self.ProjectsLocationsDomainmappingsService(self)
     self.projects_locations_eventtypes = self.ProjectsLocationsEventtypesService(self)
+    self.projects_locations_pubsubs = self.ProjectsLocationsPubsubsService(self)
     self.projects_locations_revisions = self.ProjectsLocationsRevisionsService(self)
     self.projects_locations_routes = self.ProjectsLocationsRoutesService(self)
     self.projects_locations_services = self.ProjectsLocationsServicesService(self)
@@ -335,6 +337,158 @@ class RunV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name=u'RunNamespacesEventtypesListRequest',
         response_type_name=u'ListEventTypesResponse',
+        supports_download=False,
+    )
+
+  class NamespacesPubsubsService(base_api.BaseApiService):
+    """Service class for the namespaces_pubsubs resource."""
+
+    _NAME = u'namespaces_pubsubs'
+
+    def __init__(self, client):
+      super(RunV1alpha1.NamespacesPubsubsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new pubsub.
+
+      Args:
+        request: (RunNamespacesPubsubsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PubSub) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/pubsubs',
+        http_method=u'POST',
+        method_id=u'run.namespaces.pubsubs.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+parent}/pubsubs',
+        request_field=u'pubSub',
+        request_type_name=u'RunNamespacesPubsubsCreateRequest',
+        response_type_name=u'PubSub',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Rpc to delete a pubsub.
+
+      Args:
+        request: (RunNamespacesPubsubsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/pubsubs/{pubsubsId}',
+        http_method=u'DELETE',
+        method_id=u'run.namespaces.pubsubs.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'apiVersion', u'kind', u'propagationPolicy'],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'RunNamespacesPubsubsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a pubsub.
+
+      Args:
+        request: (RunNamespacesPubsubsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PubSub) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/pubsubs/{pubsubsId}',
+        http_method=u'GET',
+        method_id=u'run.namespaces.pubsubs.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'RunNamespacesPubsubsGetRequest',
+        response_type_name=u'PubSub',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list pubsubs.
+
+      Args:
+        request: (RunNamespacesPubsubsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPubSubsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/pubsubs',
+        http_method=u'GET',
+        method_id=u'run.namespaces.pubsubs.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+parent}/pubsubs',
+        request_field='',
+        request_type_name=u'RunNamespacesPubsubsListRequest',
+        response_type_name=u'ListPubSubsResponse',
+        supports_download=False,
+    )
+
+    def ReplacePubSub(self, request, global_params=None):
+      r"""Rpc to replace a pubsub.
+
+Only the spec and metadata labels and annotations are modifiable. After
+the Update request, Cloud Run will work to make the 'status'
+match the requested 'spec'.
+
+May provide metadata.resourceVersion to enforce update from last read for
+optimistic concurrency control.
+
+      Args:
+        request: (RunNamespacesPubsubsReplacePubSubRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PubSub) The response message.
+      """
+      config = self.GetMethodConfig('ReplacePubSub')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplacePubSub.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/pubsubs/{pubsubsId}',
+        http_method=u'PUT',
+        method_id=u'run.namespaces.pubsubs.replacePubSub',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+name}',
+        request_field=u'pubSub',
+        request_type_name=u'RunNamespacesPubsubsReplacePubSubRequest',
+        response_type_name=u'PubSub',
         supports_download=False,
     )
 
@@ -1089,6 +1243,158 @@ optimistic concurrency control.
         request_field='',
         request_type_name=u'RunProjectsLocationsEventtypesListRequest',
         response_type_name=u'ListEventTypesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPubsubsService(base_api.BaseApiService):
+    """Service class for the projects_locations_pubsubs resource."""
+
+    _NAME = u'projects_locations_pubsubs'
+
+    def __init__(self, client):
+      super(RunV1alpha1.ProjectsLocationsPubsubsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new pubsub.
+
+      Args:
+        request: (RunProjectsLocationsPubsubsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PubSub) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/pubsubs',
+        http_method=u'POST',
+        method_id=u'run.projects.locations.pubsubs.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+parent}/pubsubs',
+        request_field=u'pubSub',
+        request_type_name=u'RunProjectsLocationsPubsubsCreateRequest',
+        response_type_name=u'PubSub',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Rpc to delete a pubsub.
+
+      Args:
+        request: (RunProjectsLocationsPubsubsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/pubsubs/{pubsubsId}',
+        http_method=u'DELETE',
+        method_id=u'run.projects.locations.pubsubs.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'apiVersion', u'kind', u'propagationPolicy'],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'RunProjectsLocationsPubsubsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a pubsub.
+
+      Args:
+        request: (RunProjectsLocationsPubsubsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PubSub) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/pubsubs/{pubsubsId}',
+        http_method=u'GET',
+        method_id=u'run.projects.locations.pubsubs.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'RunProjectsLocationsPubsubsGetRequest',
+        response_type_name=u'PubSub',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list pubsubs.
+
+      Args:
+        request: (RunProjectsLocationsPubsubsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPubSubsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/pubsubs',
+        http_method=u'GET',
+        method_id=u'run.projects.locations.pubsubs.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
+        relative_path=u'v1alpha1/{+parent}/pubsubs',
+        request_field='',
+        request_type_name=u'RunProjectsLocationsPubsubsListRequest',
+        response_type_name=u'ListPubSubsResponse',
+        supports_download=False,
+    )
+
+    def ReplacePubSub(self, request, global_params=None):
+      r"""Rpc to replace a pubsub.
+
+Only the spec and metadata labels and annotations are modifiable. After
+the Update request, Cloud Run will work to make the 'status'
+match the requested 'spec'.
+
+May provide metadata.resourceVersion to enforce update from last read for
+optimistic concurrency control.
+
+      Args:
+        request: (RunProjectsLocationsPubsubsReplacePubSubRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PubSub) The response message.
+      """
+      config = self.GetMethodConfig('ReplacePubSub')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplacePubSub.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/pubsubs/{pubsubsId}',
+        http_method=u'PUT',
+        method_id=u'run.projects.locations.pubsubs.replacePubSub',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field=u'pubSub',
+        request_type_name=u'RunProjectsLocationsPubsubsReplacePubSubRequest',
+        response_type_name=u'PubSub',
         supports_download=False,
     )
 

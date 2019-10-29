@@ -37,8 +37,8 @@ class Service(k8s_object.KubernetesObject):
   API_CATEGORY = 'serving.knative.dev'
   KIND = 'Service'
   # Field names that are present in Cloud Run messages, but should not be
-  # initialized because they aren't supported by the control plane yet.
-  FIELD_BLACKLIST = ['manual', 'release', 'template']
+  # initialized because they are here for legacy reasons.
+  FIELD_BLACKLIST = ['manual', 'release', 'runLatest', 'pinned', 'container']
 
   @classmethod
   def New(cls, client, namespace):
@@ -52,29 +52,16 @@ class Service(k8s_object.KubernetesObject):
       A new Service object to be deployed.
     """
     ret = super(Service, cls).New(client, namespace)
-    # We're in oneOf territory, set the other to None for now.
-    ret.spec.pinned = None
-
-    # Unset a pile of unused things on the container.
-    ret.configuration.container.lifecycle = None
-    ret.configuration.container.livenessProbe = None
-    ret.configuration.container.readinessProbe = None
-    ret.configuration.container.resources = None
-    ret.configuration.container.securityContext = None
+    ret.template.spec.containers = [client.MESSAGES_MODULE.Container()]
     return ret
-
-  def _EnsureRevisionMeta(self):
-    revision_meta = self.spec.revisionTemplate.metadata
-    if revision_meta is None:
-      revision_meta = self._messages.ObjectMeta()
-      self.spec.revisionTemplate.metadata = revision_meta
-    return revision_meta
 
   @property
   def configuration(self):
     """Configuration (configuration.Configuration) of the service, if any."""
-    options = (self._m.spec.pinned, self._m.spec.runLatest)
-    ret = next((o.configuration for o in options if o is not None), None)
+    ret = None
+    if hasattr(self._m.spec, 'pinned'):
+      options = (self._m.spec.pinned, self._m.spec.runLatest)
+      ret = next((o.configuration for o in options if o is not None), None)
     if ret:
       return configuration.Configuration.SpecOnly(ret, self._messages)
     return None
@@ -87,7 +74,7 @@ class Service(k8s_object.KubernetesObject):
       ret = revision.Revision.Template(
           self.spec.template, self.MessagesModule())
       if not ret.metadata:
-        ret.metadata = self.MessagesModule().ObjectMeta()
+        ret.metadata = k8s_object.MakeMeta(self.MessagesModule())
       return ret
 
   @property

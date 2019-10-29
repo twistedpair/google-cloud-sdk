@@ -307,8 +307,6 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     else:
       box = None
       table_column_pad = self.attributes.get('pad', _TABLE_COLUMN_PAD)
-      if self._page_count > 1:
-        self._out.write('\n')
 
     # Sort by columns if requested.
     rows = self._rows
@@ -619,4 +617,5 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     """Flushes the current resource page output."""
     self._page_count += 1
     self.Finish()
+    self._out.write('\n')
     self._rows = []

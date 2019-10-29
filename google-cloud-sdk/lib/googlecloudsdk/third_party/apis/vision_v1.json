@@ -718,7 +718,7 @@
       "type": "object",
       "properties": {
         "boundingPoly": {
-          "description": "The bounding polygon around the area of interest in the image.\nOptional. If it is not specified, system discretion will be applied.",
+          "description": "The bounding polygon around the area of interest in the image.\nIf it is not specified, system discretion will be applied.",
           "$ref": "BoundingPoly"
         },
         "productSet": {

@@ -30,6 +30,7 @@ import tempfile
 from googlecloudsdk.api_lib.run import gke
 from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import flags
 
@@ -353,9 +354,10 @@ def DeriveRegionalEndpoint(endpoint, region):
 class _RegionalConnectionContext(ConnectionInfo):
   """Context manager to connect a particular Cloud Run region."""
 
-  def __init__(self, region):
+  def __init__(self, region, version):
     super(_RegionalConnectionContext, self).__init__()
     self.region = region
+    self._version = version
 
   @property
   def ns_label(self):
@@ -373,22 +375,26 @@ class _RegionalConnectionContext(ConnectionInfo):
   @contextlib.contextmanager
   def Connect(self):
     global_endpoint = apis.GetEffectiveApiEndpoint(
-        global_methods.SERVERLESS_API_NAME,
-        global_methods.SERVERLESS_API_VERSION)
+        global_methods.SERVERLESS_API_NAME, self._version)
     self.endpoint = DeriveRegionalEndpoint(global_endpoint, self.region)
     with _OverrideEndpointOverrides(self.endpoint):
       yield self
+
+  @property
+  def api_version(self):
+    return self._version
 
   @property
   def supports_one_platform(self):
     return True
 
 
-def GetConnectionContext(args):
+def GetConnectionContext(args, track=base.ReleaseTrack.BETA):
   """Gets the regional, kubeconfig, or GKE connection context.
 
   Args:
     args: Namespace, the args namespace.
+    track: ReleaseTrack, the release track.
 
   Raises:
     ArgumentError if region or cluster is not specified.
@@ -415,4 +421,8 @@ def GetConnectionContext(args):
       raise flags.ArgumentError(
           'You must specify a region. Either use the `--region` flag '
           'or set the run/region property.')
-    return _RegionalConnectionContext(region)
+    if track == base.ReleaseTrack.ALPHA:
+      version = 'v1'
+    else:
+      version = global_methods.SERVERLESS_API_VERSION
+    return _RegionalConnectionContext(region, version)

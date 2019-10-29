@@ -216,6 +216,33 @@ Operation<response: google.protobuf.Empty>
         supports_download=False,
     )
 
+    def GenerateServiceIdentity(self, request, global_params=None):
+      r"""Generate service identity for service.
+
+      Args:
+        request: (ServiceusageServicesGenerateServiceIdentityRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('GenerateServiceIdentity')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateServiceIdentity.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}:generateServiceIdentity',
+        http_method=u'POST',
+        method_id=u'serviceusage.services.generateServiceIdentity',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1beta1/{+parent}:generateServiceIdentity',
+        request_field='',
+        request_type_name=u'ServiceusageServicesGenerateServiceIdentityRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Returns the service configuration and enabled state for a given service.
 
@@ -240,6 +267,33 @@ Operation<response: google.protobuf.Empty>
         request_field='',
         request_type_name=u'ServiceusageServicesGetRequest',
         response_type_name=u'Service',
+        supports_download=False,
+    )
+
+    def GetServiceIdentity(self, request, global_params=None):
+      r"""Get service identity for service.
+
+      Args:
+        request: (ServiceusageServicesGetServiceIdentityRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('GetServiceIdentity')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetServiceIdentity.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}:getServiceIdentity',
+        http_method=u'GET',
+        method_id=u'serviceusage.services.getServiceIdentity',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1beta1/{+parent}:getServiceIdentity',
+        request_field='',
+        request_type_name=u'ServiceusageServicesGetServiceIdentityRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 

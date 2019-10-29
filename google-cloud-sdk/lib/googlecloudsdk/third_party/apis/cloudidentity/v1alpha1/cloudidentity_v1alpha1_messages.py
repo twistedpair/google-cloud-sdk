@@ -218,17 +218,34 @@ class CloudidentityGroupsMembershipsLookupRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class CloudidentityGroupsMembershipsModifyMembershipRolesRequest(_messages.Message):
+  r"""A CloudidentityGroupsMembershipsModifyMembershipRolesRequest object.
+
+  Fields:
+    modifyMembershipRolesRequest: A ModifyMembershipRolesRequest resource to
+      be passed as the request body.
+    name: [membership resource name]
+      (https://cloud.google.com/apis/design/resource_names) of the Membership
+      in the format: `groups/{group_id}/memberships/{member_id}`, where
+      group_id is the unique ID assigned to the Group to which Membership
+      belongs to, and member_id is the unique ID assigned to the member.
+  """
+
+  modifyMembershipRolesRequest = _messages.MessageField('ModifyMembershipRolesRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class CloudidentityGroupsMembershipsPatchRequest(_messages.Message):
   r"""A CloudidentityGroupsMembershipsPatchRequest object.
 
   Fields:
     membership: A Membership resource to be passed as the request body.
-    name: [Resource name](https://cloud.google.com/apis/design/resource_names)
-      of the Membership in the format:
-      `groups/{group_id}/memberships/{member_id}`, where group_id is the
-      unique ID assigned to the Group to which Membership belongs to, and
-      member_id is the unique ID assigned to the member  Must be left blank
-      while creating a Membership.
+    name: Output only. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Membership in the format: `groups/{group_id}/memberships/{member_id}`,
+      where group_id is the unique ID assigned to the Group to which
+      Membership belongs to, and member_id is the unique ID assigned to the
+      member  Must be left blank while creating a Membership.
     updateMask: A string attribute.
   """
 
@@ -242,10 +259,10 @@ class CloudidentityGroupsPatchRequest(_messages.Message):
 
   Fields:
     group: A Group resource to be passed as the request body.
-    name: [Resource name](https://cloud.google.com/apis/design/resource_names)
-      of the Group in the format: `groups/{group_id}`, where group_id is the
-      unique ID assigned to the Group.  Must be left blank while creating a
-      Group.
+    name: Output only. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Group
+      in the format: `groups/{group_id}`, where group_id is the unique ID
+      assigned to the Group.  Must be left blank while creating a Group.
     updateMask: Editable fields: `display_name`, `description`
   """
 
@@ -382,13 +399,13 @@ class Group(_messages.Message):
   r"""Resource representing a Group.
 
   Messages:
-    LabelsValue: `Required` while Group creation. Labels for Group resource.
-      Use values ('system/groups/external','') and
+    LabelsValue: Required. `Required` while Group creation. Labels for Group
+      resource. Use values ('system/groups/external','') and
       ('system/groups/discussion_forum', '') for creating an external or
       discussion forum Group respectively.
 
   Fields:
-    createTime: The time when the Group was created. Output only.
+    createTime: Output only. The time when the Group was created. Output only.
     description: An extended description to help users determine the purpose
       of a Group. For example, you can include information about who should
       join the Group, the types of messages to send to the Group, links to
@@ -396,27 +413,30 @@ class Group(_messages.Message):
       characters.
     displayName: The Group's display name.
     dynamicGroupMetadata: Dynamic group metadata like queries and status.
-    groupKey: EntityKey of the Group.  Must be set when creating a Group,
-      read-only afterwards.
-    labels: `Required` while Group creation. Labels for Group resource. Use
-      values ('system/groups/external','') and
+    groupKey: Required. Immutable. EntityKey of the Group.  Must be set when
+      creating a Group, read-only afterwards.
+    labels: Required. `Required` while Group creation. Labels for Group
+      resource. Use values ('system/groups/external','') and
       ('system/groups/discussion_forum', '') for creating an external or
       discussion forum Group respectively.
-    name: [Resource name](https://cloud.google.com/apis/design/resource_names)
-      of the Group in the format: `groups/{group_id}`, where group_id is the
-      unique ID assigned to the Group.  Must be left blank while creating a
-      Group.
-    parent: The entity under which this Group resides in Cloud Identity
-      resource hierarchy. Must be set when creating a Group, read-only
-      afterwards.  Currently allowed types: `identitysources` and `customers`.
-    updateTime: The time when the Group was last updated. Output only.
+    name: Output only. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Group
+      in the format: `groups/{group_id}`, where group_id is the unique ID
+      assigned to the Group.  Must be left blank while creating a Group.
+    parent: Required. Immutable. The entity under which this Group resides in
+      Cloud Identity resource hierarchy. Must be set when creating a Group,
+      read-only afterwards.  Currently allowed types: `identitysources` and
+      `customers`.
+    updateTime: Output only. The time when the Group was last updated. Output
+      only.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""`Required` while Group creation. Labels for Group resource. Use values
-    ('system/groups/external','') and ('system/groups/discussion_forum', '')
-    for creating an external or discussion forum Group respectively.
+    r"""Required. `Required` while Group creation. Labels for Group resource.
+    Use values ('system/groups/external','') and
+    ('system/groups/discussion_forum', '') for creating an external or
+    discussion forum Group respectively.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -506,21 +526,23 @@ class Membership(_messages.Message):
   r"""Resource representing a Membership within a Group
 
   Fields:
-    createTime: Creation timestamp of the Membership. Output only.
+    createTime: Output only. Creation timestamp of the Membership. Output
+      only.
     expiryDetail: Expiry details of the Membership. It can be set only during
       the Membership creation/update time.
-    name: [Resource name](https://cloud.google.com/apis/design/resource_names)
-      of the Membership in the format:
-      `groups/{group_id}/memberships/{member_id}`, where group_id is the
-      unique ID assigned to the Group to which Membership belongs to, and
-      member_id is the unique ID assigned to the member  Must be left blank
-      while creating a Membership.
-    preferredMemberKey: EntityKey of the entity to be added as the member.
-      Must be set while creating a Membership, read-only afterwards.
-      Currently allowed entity types: `Users`, `Groups`.
+    name: Output only. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Membership in the format: `groups/{group_id}/memberships/{member_id}`,
+      where group_id is the unique ID assigned to the Group to which
+      Membership belongs to, and member_id is the unique ID assigned to the
+      member  Must be left blank while creating a Membership.
+    preferredMemberKey: Required. Immutable. EntityKey of the entity to be
+      added as the member. Must be set while creating a Membership, read-only
+      afterwards.  Currently allowed entity types: `Users`, `Groups`.
     roles: Roles for a member within the Group.  Currently supported
       MembershipRoles: `"MEMBER"`.
-    updateTime: Last updated timestamp of the Membership. Output only.
+    updateTime: Output only. Last updated timestamp of the Membership. Output
+      only.
   """
 
   createTime = _messages.StringField(1)
@@ -563,6 +585,50 @@ class MembershipRoleExpiryDetail(_messages.Message):
   """
 
   expireTime = _messages.StringField(1)
+
+
+class ModifyMembershipRolesRequest(_messages.Message):
+  r"""A ModifyMembershipRolesRequest object.
+
+  Fields:
+    addRoles: Membership roles to be added. Currently supported
+      MembershipRole: 'MEMBER', 'OWNER', 'MANAGER'.
+    removeRoles: Membership role name to be removed. Currently supported
+      MembershipRole: 'OWNER', 'MANAGER'. If removing all roles is needed,
+      please use DeleteMembership to delete the whole membership resource.
+      MEMBER-less owner is not supported so removing just MEMBER role won't be
+      possible.
+    updateRolesParams: Parameters to update membership roles.
+  """
+
+  addRoles = _messages.MessageField('MembershipRole', 1, repeated=True)
+  removeRoles = _messages.StringField(2, repeated=True)
+  updateRolesParams = _messages.MessageField('ModifyMembershipRolesRequestUpdateMembershipRolesParams', 3, repeated=True)
+
+
+class ModifyMembershipRolesRequestUpdateMembershipRolesParams(_messages.Message):
+  r"""Resource representing the parameters to update membership roles.
+
+  Fields:
+    fieldMask: Comma-separated list of fully qualified names of fields to be
+      updated. See: http://shortn/_WfViTS7z9e for detail. Currently only
+      support expiry_detail.
+    membershipRole: Membership roles to be updated. Currently only support to
+      update expiry_detail for 'MEMBER' role.
+  """
+
+  fieldMask = _messages.StringField(1)
+  membershipRole = _messages.MessageField('MembershipRole', 2)
+
+
+class ModifyMembershipRolesResponse(_messages.Message):
+  r"""A ModifyMembershipRolesResponse object.
+
+  Fields:
+    membership: The membership resource after modifying the membership roles.
+  """
+
+  membership = _messages.MessageField('Membership', 1)
 
 
 class Operation(_messages.Message):

@@ -1648,21 +1648,6 @@ class ListServiceConfigsResponse(_messages.Message):
   serviceConfigs = _messages.MessageField('Service', 2, repeated=True)
 
 
-class ListServiceConsumersResponse(_messages.Message):
-  r"""Response message for `ListServiceConsumers` method.
-
-  Fields:
-    customerSettings: The organization/folder-level results of the query.
-    nextPageToken: Token that can be passed to `ListServiceConsumers` to
-      resume a paginated query.
-    projectSettings: The project-level results of the query.
-  """
-
-  customerSettings = _messages.MessageField('CustomerSettings', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  projectSettings = _messages.MessageField('ProjectSettings', 3, repeated=True)
-
-
 class ListServiceRolloutsResponse(_messages.Message):
   r"""Response message for ListServiceRollouts method.
 
@@ -3491,35 +3476,6 @@ class ServicemanagementServicesConsumersGetIamPolicyRequest(_messages.Message):
   servicesId = _messages.StringField(3, required=True)
 
 
-class ServicemanagementServicesConsumersListRequest(_messages.Message):
-  r"""A ServicemanagementServicesConsumersListRequest object.
-
-  Fields:
-    consumerId: Include services consumed by the specified consumer.  The
-      Google Service Management implementation accepts the following forms: -
-      project:<project_id> - organization:<organization number> -
-      folder:<folder number>  In this version of the API, the only supported
-      consumer type is "organization".
-    consumerIds: A string attribute.
-    pageSize: Requested size of the next page of data.
-    pageToken: Token identifying which result to start with; returned by a
-      previous list call.
-    serviceName: If service_name is specified, return only consumer settings
-      for the specified service.  If not specified, for organizations or
-      folders this will return consumer settings for all services that have
-      defined org-level quotas in the service configuration. For projects,
-      this will return consumer project settings for all services activated by
-      the consumer project.  In this version of the API, the only supported
-      consumer type is "organization".
-  """
-
-  consumerId = _messages.StringField(1)
-  consumerIds = _messages.StringField(2, repeated=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  serviceName = _messages.StringField(5, required=True)
-
-
 class ServicemanagementServicesConsumersSetIamPolicyRequest(_messages.Message):
   r"""A ServicemanagementServicesConsumersSetIamPolicyRequest object.
 
@@ -3589,27 +3545,6 @@ class ServicemanagementServicesCustomerSettingsGetRequest(_messages.Message):
   expand = _messages.StringField(2)
   serviceName = _messages.StringField(3, required=True)
   view = _messages.EnumField('ViewValueValuesEnum', 4)
-
-
-class ServicemanagementServicesCustomerSettingsPatchRequest(_messages.Message):
-  r"""A ServicemanagementServicesCustomerSettingsPatchRequest object.
-
-  Fields:
-    customerId: ID for the customer. See the comment for
-      `CustomerSettings.customer_id` field of message for its format. This
-      field is required.
-    customerSettings: A CustomerSettings resource to be passed as the request
-      body.
-    serviceName: The name of the service.  See the [overview](/service-
-      management/overview) for naming requirements.  For example:
-      `example.googleapis.com`. This field is required.
-    updateMask: The field mask specifying which fields are to be updated.
-  """
-
-  customerId = _messages.StringField(1, required=True)
-  customerSettings = _messages.MessageField('CustomerSettings', 2)
-  serviceName = _messages.StringField(3, required=True)
-  updateMask = _messages.StringField(4)
 
 
 class ServicemanagementServicesDeleteRequest(_messages.Message):

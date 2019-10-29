@@ -27,16 +27,10 @@ properties:
       type: string
   affinityCookieTtlSec:
     description: |-
-      Lifetime of cookies in seconds if session_affinity is GENERATED_COOKIE. If
-      set to 0, the cookie is non-persistent and lasts only until the end of the
-      browser session (or equivalent). The maximum allowed value for TTL is one
-      day.  When the load balancing scheme is INTERNAL, this field is not used.
+      If set to 0, the cookie is non-persistent and lasts only until the end of
+      the browser session (or equivalent). The maximum allowed value is one day
+      (86,400).
     type: integer
-  appEngineBackend:
-    description: |-
-      Directs request to an App Engine app. cloudFunctionBackend and backends[]
-      must be empty if this is set.
-    $ref: BackendServiceAppEngineBackend.yaml
   backends:
     description: The list of backends that serve this BackendService.
     type: array
@@ -48,16 +42,12 @@ properties:
   circuitBreakers:
     description: |-
       Settings controlling the volume of connections to a backend service.
-      This field is applicable to either:   - A regional backend service
-      with the service_protocol set to HTTP, HTTPS, or HTTP2, and
+      If not set, this feature is considered disabled.  This field is
+      applicable to either:   - A regional backend service with the
+      service_protocol set to HTTP, HTTPS, or HTTP2, and
       load_balancing_scheme set to INTERNAL_MANAGED.  - A global backend
       service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED.
     $ref: CircuitBreakers.yaml
-  cloudFunctionBackend:
-    description: |-
-      Directs request to a cloud function. appEngineBackend and backends[]
-      must be empty if this is set.
-    $ref: BackendServiceCloudFunctionBackend.yaml
   connectionDraining:
     description: A ConnectionDraining attribute.
     $ref: ConnectionDraining.yaml
@@ -91,11 +81,15 @@ properties:
     type: string
   enableCDN:
     description: |-
-      If true, enable Cloud CDN for this BackendService.  When the load
-      balancing scheme is INTERNAL, this field is not used.
+      If true, enables Cloud CDN for the backend service. Only
+      applicable if the loadBalancingScheme is EXTERNAL and the protocol
+      is HTTP or HTTPS.
     type: boolean
   failoverPolicy:
-    description: A BackendServiceFailoverPolicy attribute.
+    description: |-
+      Applicable only to Failover for Internal TCP/UDP Load Balancing.
+      Requires at least one backend instance group to be defined as a
+      backup (failover) backend.
     $ref: BackendServiceFailoverPolicy.yaml
   healthChecks:
     description: |-
@@ -119,10 +113,14 @@ properties:
     type: string
   loadBalancingScheme:
     description: |-
-      Indicates whether the backend service will be used with
-      internal or external load balancing. A backend service created
-      for one type of load balancing cannot be used with the other.
-      Possible values are INTERNAL and EXTERNAL.
+      Specifies the load balancer type. Choose EXTERNAL for load
+      balancers that receive traffic from external clients. Choose
+      INTERNAL for Internal TCP/UDP Load Balancing. Choose
+      INTERNAL_MANAGED for Internal HTTP(S) Load Balancing. Choose
+      INTERNAL_SELF_MANAGED for Traffic Director. A backend service
+      created for one type of load balancing cannot be used with
+      another. For more information, refer to Choosing a load
+      balancer.
     type: string
     enum:
     - EXTERNAL
@@ -169,34 +167,48 @@ properties:
       be a dash, lowercase letter, or digit, except the last
       character, which cannot be a dash.
     type: string
+  network:
+    description: |-
+      The URL of the network to which this backend service belongs.
+      This field can only be spcified when the load balancing scheme
+      is set to INTERNAL.
+    type: string
   outlierDetection:
     description: |-
-      Settings controlling eviction of unhealthy hosts from the load
-      balancing pool. This field is applicable to either:   - A
-      regional backend service with the service_protocol set to
-      HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to
-      INTERNAL_MANAGED.  - A global backend service with the
-      load_balancing_scheme set to INTERNAL_SELF_MANAGED.
+      Settings controlling the eviction of unhealthy hosts from the
+      load balancing pool for the backend service. If not set, this
+      feature is considered disabled.  This field is applicable to
+      either:   - A regional backend service with the
+      service_protocol set to HTTP, HTTPS, or HTTP2, and
+      load_balancing_scheme set to INTERNAL_MANAGED.  - A global
+      backend service with the load_balancing_scheme set to
+      INTERNAL_SELF_MANAGED.
     $ref: OutlierDetection.yaml
   port:
     description: |-
       Deprecated in favor of portName. The TCP port to connect on
-      the backend. The default value is 80.  This cannot be used for
-      internal load balancing.
+      the backend. The default value is 80.  This cannot be used if
+      the loadBalancingScheme is INTERNAL (Internal TCP/UDP Load
+      Balancing).
     type: integer
   portName:
     description: |-
-      Name of backend port. The same name should appear in the
-      instance groups referenced by this service. Required when the
-      load balancing scheme is EXTERNAL.  When the load balancing
-      scheme is INTERNAL, this field is not used.
+      A named port on a backend instance group representing the port
+      for communication to the backend VMs in that group. Required
+      when the loadBalancingScheme is EXTERNAL and the backends are
+      instance groups. The named port must be defined on each
+      backend instance group. This parameter has no meaning if the
+      backends are NEGs.    Must be omitted when the
+      loadBalancingScheme is INTERNAL (Internal TCP/UDP Load
+      Blaancing).
     type: string
   protocol:
     description: |-
       The protocol this BackendService uses to communicate with
-      backends.  Possible values are HTTP, HTTPS, TCP, and SSL. The
-      default is HTTP.  For internal load balancing, the possible
-      values are TCP and UDP, and the default is TCP.
+      backends.  Possible values are HTTP, HTTPS, HTTP2, TCP, SSL,
+      or UDP, depending on the chosen load balancer or Traffic
+      Director configuration. Refer to the documentation for the
+      load balancer or for Traffic Director for more information.
     type: string
     enum:
     - HTTP
@@ -218,31 +230,21 @@ properties:
       [Output Only] The resource URL for the security policy
       associated with this backend service.
     type: string
-  securitySettings:
-    description: |-
-      This field specifies the security policy that applies to this
-      backend service. This field is applicable to either:   - A
-      regional backend service with the service_protocol set to
-      HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to
-      INTERNAL_MANAGED.  - A global backend service with the
-      load_balancing_scheme set to INTERNAL_SELF_MANAGED.
-    $ref: SecuritySettings.yaml
   selfLink:
     description: '[Output Only] Server-defined URL for the resource.'
     type: string
-  selfLinkWithId:
-    description: |-
-      [Output Only] Server-defined URL for this resource with the
-      resource id.
-    type: string
   sessionAffinity:
     description: |-
-      Type of session affinity to use. The default is NONE. When the
-      load balancing scheme is EXTERNAL, can be NONE, CLIENT_IP, or
-      GENERATED_COOKIE.  When the load balancing scheme is INTERNAL,
-      can be NONE, CLIENT_IP, CLIENT_IP_PROTO, or
-      CLIENT_IP_PORT_PROTO.  When the protocol is UDP, this field is
-      not used.
+      Type of session affinity to use. The default is NONE. Session
+      affinity is not applicable if the --protocol is UDP.  When the
+      loadBalancingScheme is EXTERNAL, possible values are NONE,
+      CLIENT_IP, or GENERATED_COOKIE. You can use GENERATED_COOKIE
+      if the protocol is HTTP or HTTPS.  When the
+      loadBalancingScheme is INTERNAL, possible values are NONE,
+      CLIENT_IP, CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO.  When the
+      loadBalancingScheme is INTERNAL_SELF_MANAGED, possible values
+      are NONE, CLIENT_IP, GENERATED_COOKIE, HEADER_FIELD, or
+      HTTP_COOKIE.
     type: string
     enum:
     - CLIENT_IP
@@ -254,6 +256,7 @@ properties:
     - NONE
   timeoutSec:
     description: |-
-      How many seconds to wait for the backend before considering it
-      a failed request. Default is 30 seconds.
+      The backend service timeout has a different meaning depending
+      on the type of load balancer. For more information read,
+      Backend service settings The default is 30 seconds.
     type: integer

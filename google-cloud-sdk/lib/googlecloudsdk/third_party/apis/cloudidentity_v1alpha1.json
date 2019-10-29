@@ -121,15 +121,15 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "[Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the\nGroup in the format: `groups\/{group_id}`, where group_id is the unique ID\nassigned to the Group.\n\nMust be left blank while creating a Group.",
+          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the\nGroup in the format: `groups\/{group_id}`, where group_id is the unique ID\nassigned to the Group.\n\nMust be left blank while creating a Group.",
           "type": "string"
         },
         "groupKey": {
-          "description": "EntityKey of the Group.\n\nMust be set when creating a Group, read-only afterwards.",
+          "description": "Required. Immutable. EntityKey of the Group.\n\nMust be set when creating a Group, read-only afterwards.",
           "$ref": "EntityKey"
         },
         "parent": {
-          "description": "The entity under which this Group resides in Cloud Identity resource\nhierarchy. Must be set when creating a Group, read-only afterwards.\n\nCurrently allowed types: `identitysources` and `customers`.",
+          "description": "Required. Immutable. The entity under which this Group resides in Cloud Identity resource\nhierarchy. Must be set when creating a Group, read-only afterwards.\n\nCurrently allowed types: `identitysources` and `customers`.",
           "type": "string"
         },
         "displayName": {
@@ -141,17 +141,17 @@
           "type": "string"
         },
         "createTime": {
-          "description": "The time when the Group was created.\nOutput only.",
+          "description": "Output only. The time when the Group was created.\nOutput only.",
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "The time when the Group was last updated.\nOutput only.",
+          "description": "Output only. The time when the Group was last updated.\nOutput only.",
           "type": "string",
           "format": "google-datetime"
         },
         "labels": {
-          "description": "`Required` while Group creation. Labels for Group resource.\nUse values ('system\/groups\/external','') and\n('system\/groups\/discussion_forum', '') for creating an external or\ndiscussion forum Group respectively.",
+          "description": "Required. `Required` while Group creation. Labels for Group resource.\nUse values ('system\/groups\/external','') and\n('system\/groups\/discussion_forum', '') for creating an external or\ndiscussion forum Group respectively.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -357,20 +357,20 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "[Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the\nMembership in the format: `groups\/{group_id}\/memberships\/{member_id}`,\nwhere group_id is the unique ID assigned to the Group to which Membership\nbelongs to, and member_id is the unique ID assigned to the member\n\nMust be left blank while creating a Membership.",
+          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the\nMembership in the format: `groups\/{group_id}\/memberships\/{member_id}`,\nwhere group_id is the unique ID assigned to the Group to which Membership\nbelongs to, and member_id is the unique ID assigned to the member\n\nMust be left blank while creating a Membership.",
           "type": "string"
         },
         "preferredMemberKey": {
-          "description": "EntityKey of the entity to be added as the member. Must be set while\ncreating a Membership, read-only afterwards.\n\nCurrently allowed entity types: `Users`, `Groups`.",
+          "description": "Required. Immutable. EntityKey of the entity to be added as the member. Must be set while\ncreating a Membership, read-only afterwards.\n\nCurrently allowed entity types: `Users`, `Groups`.",
           "$ref": "EntityKey"
         },
         "createTime": {
-          "description": "Creation timestamp of the Membership. Output only.",
+          "description": "Output only. Creation timestamp of the Membership. Output only.",
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Last updated timestamp of the Membership. Output only.",
+          "description": "Output only. Last updated timestamp of the Membership. Output only.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -452,6 +452,59 @@
           "type": "string"
         }
       }
+    },
+    "ModifyMembershipRolesRequest": {
+      "id": "ModifyMembershipRolesRequest",
+      "type": "object",
+      "properties": {
+        "addRoles": {
+          "description": "Membership roles to be added.\nCurrently supported MembershipRole: 'MEMBER', 'OWNER', 'MANAGER'.",
+          "type": "array",
+          "items": {
+            "$ref": "MembershipRole"
+          }
+        },
+        "removeRoles": {
+          "description": "Membership role name to be removed.\nCurrently supported MembershipRole: 'OWNER', 'MANAGER'.\nIf removing all roles is needed, please use DeleteMembership to delete the\nwhole membership resource. MEMBER-less owner is not supported so removing\njust MEMBER role won't be possible.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "updateRolesParams": {
+          "description": "Parameters to update membership roles.",
+          "type": "array",
+          "items": {
+            "$ref": "ModifyMembershipRolesRequestUpdateMembershipRolesParams"
+          }
+        }
+      }
+    },
+    "ModifyMembershipRolesRequestUpdateMembershipRolesParams": {
+      "id": "ModifyMembershipRolesRequestUpdateMembershipRolesParams",
+      "description": "Resource representing the parameters to update membership roles.",
+      "type": "object",
+      "properties": {
+        "fieldMask": {
+          "description": "Comma-separated list of fully qualified names of fields to be updated.\nSee: http:\/\/shortn\/_WfViTS7z9e for detail.\nCurrently only support expiry_detail.",
+          "type": "string",
+          "format": "google-fieldmask"
+        },
+        "membershipRole": {
+          "description": "Membership roles to be updated.\nCurrently only support to update expiry_detail for 'MEMBER' role.",
+          "$ref": "MembershipRole"
+        }
+      }
+    },
+    "ModifyMembershipRolesResponse": {
+      "id": "ModifyMembershipRolesResponse",
+      "type": "object",
+      "properties": {
+        "membership": {
+          "description": "The membership resource after modifying the membership roles.",
+          "$ref": "Membership"
+        }
+      }
     }
   },
   "resources": {
@@ -522,7 +575,7 @@
           "httpMethod": "PATCH",
           "parameters": {
             "name": {
-              "description": "[Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the\nGroup in the format: `groups\/{group_id}`, where group_id is the unique ID\nassigned to the Group.\n\nMust be left blank while creating a Group.",
+              "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the\nGroup in the format: `groups\/{group_id}`, where group_id is the unique ID\nassigned to the Group.\n\nMust be left blank while creating a Group.",
               "location": "path",
               "required": true,
               "pattern": "^groups\/[^\/]+$",
@@ -763,7 +816,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "[Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the\nMembership in the format: `groups\/{group_id}\/memberships\/{member_id}`,\nwhere group_id is the unique ID assigned to the Group to which Membership\nbelongs to, and member_id is the unique ID assigned to the member\n\nMust be left blank while creating a Membership.",
+                  "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the\nMembership in the format: `groups\/{group_id}\/memberships\/{member_id}`,\nwhere group_id is the unique ID assigned to the Group to which Membership\nbelongs to, and member_id is the unique ID assigned to the member\n\nMust be left blank while creating a Membership.",
                   "location": "path",
                   "required": true,
                   "pattern": "^groups\/[^\/]+\/memberships\/[^\/]+$",
@@ -900,6 +953,35 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "List Memberships within a Group."
+            },
+            "modifyMembershipRoles": {
+              "id": "cloudidentity.groups.memberships.modifyMembershipRoles",
+              "path": "v1alpha1/{+name}:modifyMembershipRoles",
+              "flatPath": "v1alpha1/groups/{groupsId}/memberships/{membershipsId}:modifyMembershipRoles",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "[membership resource name]\n(https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Membership in\nthe format: `groups\/{group_id}\/memberships\/{member_id}`, where group_id is\nthe unique ID assigned to the Group to which Membership belongs to, and\nmember_id is the unique ID assigned to the member.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^groups\/[^\/]+\/memberships\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "ModifyMembershipRolesRequest"
+              },
+              "response": {
+                "$ref": "ModifyMembershipRolesResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-identity.groups",
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Modify membership roles."
             }
           }
         }

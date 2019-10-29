@@ -6,7 +6,7 @@
   "canonicalName": "Cloud Machine Learning Engine",
   "version": "v1",
   "revision": "0",
-  "title": "Cloud Machine Learning Engine",
+  "title": "AI Platform Training & Prediction API",
   "description": "An API to enable creating and using machine learning models.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -299,6 +299,10 @@
         "pythonVersion": {
           "description": "Optional. The version of Python used in training. If not set, the default\nversion is '2.7'. Python '3.5' is available when `runtime_version` is set\nto '1.4' and above. Python '2.7' works with all supported\n<a href=\"\/ml-engine\/docs\/runtime-version-list\">runtime versions<\/a>.",
           "type": "string"
+        },
+        "useChiefInTfConfig": {
+          "description": "Optional. Use 'chief' instead of 'master' in TF_CONFIG when Custom\nContainer is used and evaluator is not specified.\n\nDefaults to false.",
+          "type": "boolean"
         }
       }
     },
@@ -341,7 +345,9 @@
             "Nvidia Tesla P4 GPU.",
             "Nvidia Tesla T4 GPU.",
             "TPU v2.",
-            "TPU v3."
+            "TPU v3.",
+            "TPU v2 POD.",
+            "TPU v3 POD."
           ],
           "type": "string",
           "enum": [
@@ -352,7 +358,9 @@
             "NVIDIA_TESLA_P4",
             "NVIDIA_TESLA_T4",
             "TPU_V2",
-            "TPU_V3"
+            "TPU_V3",
+            "TPU_V2_POD",
+            "TPU_V3_POD"
           ]
         }
       }
@@ -829,11 +837,34 @@
       "description": "Message holding configuration options for explaining model predictions.\nCurrently, the only supported mechanism to explain a model's prediction is\nthrough attributing its output back to its inputs which is essentially a\ncredit assignment task. We support multiple attribution methods, some\nspecific to particular frameworks like Tensorflow and XGBoost.\nNext idx: 6.",
       "type": "object",
       "properties": {
+        "ablationAttribution": {
+          "description": "Tensorflow framework explanation methods.",
+          "$ref": "GoogleCloudMlV1__AblationAttribution"
+        },
         "integratedGradientsAttribution": {
           "$ref": "GoogleCloudMlV1__IntegratedGradientsAttribution"
         },
         "samplingShapAttribution": {
           "$ref": "GoogleCloudMlV1__SamplingShapAttribution"
+        },
+        "treeShapAttribution": {
+          "description": "XGBoost Framework explanation methods.",
+          "$ref": "GoogleCloudMlV1__TreeShapAttribution"
+        },
+        "saabasAttribution": {
+          "$ref": "GoogleCloudMlV1__SaabasAttribution"
+        }
+      }
+    },
+    "GoogleCloudMlV1__AblationAttribution": {
+      "id": "GoogleCloudMlV1__AblationAttribution",
+      "description": "Attributes credit to model inputs by ablating features (ie. setting them to\ntheir default\/missing values) and computing corresponding model score delta\nper feature. The term \"ablation\" is in reference to running an\n\"ablation study\" to analyze input effects on the outcome of interest, which\nin this case is the model's output.\nThis attribution method is supported for Tensorflow and XGBoost models.",
+      "type": "object",
+      "properties": {
+        "numFeatureInteractions": {
+          "description": "Number of feature interactions to account for in the ablation process,\ncapped at the maximum number of provided input features.\nCurrently, only the value 1 is supported.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -859,6 +890,20 @@
           "type": "integer",
           "format": "int32"
         }
+      }
+    },
+    "GoogleCloudMlV1__TreeShapAttribution": {
+      "id": "GoogleCloudMlV1__TreeShapAttribution",
+      "description": "Attributes credit by computing the Shapley value taking advantage of the\nmodel's tree ensemble structure. Refer to this paper for more details:\nhttp:\/\/papers.nips.cc\/paper\/7062-a-unified-approach-to-interpreting-model-predictions.pdf.\nThis attribution method is supported for XGBoost models.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudMlV1__SaabasAttribution": {
+      "id": "GoogleCloudMlV1__SaabasAttribution",
+      "description": "Attributes credit by running a faster aproximation to the TreeShap method.\nPlease refer to this link for more details:\nhttps:\/\/blog.datadive.net\/interpreting-random-forests\/ This attribution\nmethod is only supported for XGBoost models.",
+      "type": "object",
+      "properties": {
       }
     },
     "GoogleCloudMlV1__TrainingOutput": {
@@ -1246,7 +1291,9 @@
             "Nvidia Tesla P4 GPU.",
             "Nvidia Tesla T4 GPU.",
             "TPU v2.",
-            "TPU v3."
+            "TPU v3.",
+            "TPU v2 POD.",
+            "TPU v3 POD."
           ],
           "type": "array",
           "items": {
@@ -1259,7 +1306,9 @@
               "NVIDIA_TESLA_P4",
               "NVIDIA_TESLA_T4",
               "TPU_V2",
-              "TPU_V3"
+              "TPU_V3",
+              "TPU_V2_POD",
+              "TPU_V3_POD"
             ]
           }
         }

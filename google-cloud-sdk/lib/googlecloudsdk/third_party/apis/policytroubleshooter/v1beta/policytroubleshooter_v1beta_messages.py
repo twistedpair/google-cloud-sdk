@@ -324,7 +324,8 @@ class GoogleCloudPolicytroubleshooterV1betaTroubleshootIamPolicyRequest(_message
   r"""TroubleshootIamPolicyRequest is used in TroubleshootIamPolicy
 
   Fields:
-    accessTuple: A GoogleCloudPolicytroubleshooterV1betaAccessTuple attribute.
+    accessTuple: Collection of attributes for example user, permission,
+      resource that define troubleshooter's input.
   """
 
   accessTuple = _messages.MessageField('GoogleCloudPolicytroubleshooterV1betaAccessTuple', 1)

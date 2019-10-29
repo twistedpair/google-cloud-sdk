@@ -31,11 +31,6 @@ properties:
   oauth2ClientId:
     description: A string attribute.
     type: string
-  oauth2ClientInfo:
-    description: |-
-      [Input Only] OAuth client info required to generate client id to be used
-      for IAP.
-    $ref: BackendServiceIAPOAuth2ClientInfo.yaml
   oauth2ClientSecret:
     description: A string attribute.
     type: string

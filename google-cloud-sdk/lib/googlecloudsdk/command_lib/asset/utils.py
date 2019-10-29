@@ -86,3 +86,18 @@ def GetParentNameForGetHistory(organization,
   if organization:
     return 'organizations/{0}'.format(organization)
   return 'projects/{0}'.format(project)
+
+
+def VerifyParentForAnalyzeIamPolicy(organization, attribute='root cloud asset'):
+  """Verify the parent name."""
+  if organization is None:
+    raise gcloud_exceptions.RequiredArgumentException(
+        '--organization',
+        'Should specify the organization for {0}.'.format(attribute))
+
+
+def GetParentNameForAnalyzeIamPolicy(organization,
+                                     attribute='root cloud asset'):
+  """Gets the parent name from organization Id."""
+  VerifyParentForAnalyzeIamPolicy(organization, attribute)
+  return 'organizations/{0}'.format(organization)

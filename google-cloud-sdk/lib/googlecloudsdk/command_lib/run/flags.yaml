@@ -16,15 +16,10 @@ platform: &platform
   - &platform_gke
     arg_value: 'gke'
     help_text: |
-      Cloud Run on Google Kubernetes Engine. This platform is not supported by
+      Cloud Run for Anthos on Google Cloud. This platform is not supported by
       this command.
-
-platform_alpha:
-  <<: *platform
-  choices:
-  - *platform_managed
-  - *platform_gke
-  - arg_value: 'kubernetes'
+  - &platform_kubernetes
+    arg_value: 'kubernetes'
     help_text: |
       Use a Knative-compatible kubernetes cluster. This platform is not supported
       by this command.

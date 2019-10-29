@@ -29,6 +29,7 @@ from googlecloudsdk.core.credentials import http as http_creds
 _PROJECT_RESOURCE = 'projects/%s'
 _PROJECT_SERVICE_RESOURCE = 'projects/%s/services/%s'
 _V1_VERSION = 'v1'
+_V1BETA1_VERSION = 'v1beta1'
 _V1ALPHA_VERSION = 'v1alpha'
 
 
@@ -238,13 +239,13 @@ def GenerateServiceIdentity(project, service):
   Returns:
     The email and uid of the generated service identity.
   """
-  client = _GetClientInstance(version=_V1ALPHA_VERSION)
+  client = _GetClientInstance(version=_V1BETA1_VERSION)
   messages = client.MESSAGES_MODULE
 
-  request = messages.ServiceusageServicesGenerateIdentityRequest(
+  request = messages.ServiceusageServicesGenerateServiceIdentityRequest(
       parent=_PROJECT_SERVICE_RESOURCE % (project, service))
   try:
-    op = client.services.GenerateIdentity(request)
+    op = client.services.GenerateServiceIdentity(request)
     return _GetOperationResponseProperty(
         op, 'email'), _GetOperationResponseProperty(op, 'unique_id')
   except (apitools_exceptions.HttpForbiddenError,

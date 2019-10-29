@@ -108,7 +108,7 @@ class FileProjectsLocationsInstancesPatchRequest(_messages.Message):
       projects/{project_id}/locations/{location_id}/instances/{instance_id}.
     updateMask: Mask of fields to update.  At least one path must be supplied
       in this field.  The elements of the repeated paths field may only
-      include these fields: "description" "file_shares" "labels"
+      include these fields:  * "description" * "file_shares" * "labels"
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -594,6 +594,22 @@ class GoogleCloudSaasacceleratorManagementProvidersV1RolloutMetadata(_messages.M
   rolloutName = _messages.StringField(3)
 
 
+class GoogleCloudSaasacceleratorManagementProvidersV1SloEligibility(_messages.Message):
+  r"""SloEligibility is a tuple containing eligibility value: true if an
+  instance is eligible for SLO calculation or false if it should be excluded
+  from all SLO-related calculations along with a user-defined reason.
+
+  Fields:
+    eligible: Whether an instance is eligible or ineligible.
+    reason: User-defined reason for the current value of instance eligibility.
+      Usually, this can be directly mapped to the internal state. An empty
+      reason is allowed.
+  """
+
+  eligible = _messages.BooleanField(1)
+  reason = _messages.StringField(2)
+
+
 class GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion(_messages.Message):
   r"""SloExclusion represents an excusion in SLI calculation applies to all
   SLOs.
@@ -628,6 +644,7 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
   the instance.
 
   Fields:
+    eligibility: Optional: user-defined instance eligibility.
     exclusions: List of SLO exclusion windows. When multiple entries in the
       list match (matching the exclusion time-window against current time
       point) the exclusion reason used in the first matching entry will be
@@ -637,8 +654,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
       will be reflected in the historically produced timeseries regardless of
       the current state).  This field can be used to mark the instance as
       temporary ineligible for the purpose of SLO calculation. For permanent
-      instance SLO exclusion, a dedicated tier name can be used that does not
-      have targets specified in the service SLO configuration.
+      instance SLO exclusion, use of custom instance eligibility is
+      recommended. See 'eligibility' field below.
     nodes: Optional: list of nodes. Some producers need to use per-node
       metadata to calculate SLO. This field allows such producers to publish
       per-node SLO meta data, which will be consumed by SSA Eligibility
@@ -648,9 +665,10 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
       Field is mandatory and must not be empty.
   """
 
-  exclusions = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion', 1, repeated=True)
-  nodes = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata', 2, repeated=True)
-  tier = _messages.StringField(3)
+  eligibility = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloEligibility', 1)
+  exclusions = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion', 2, repeated=True)
+  nodes = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata', 3, repeated=True)
+  tier = _messages.StringField(4)
 
 
 class Instance(_messages.Message):

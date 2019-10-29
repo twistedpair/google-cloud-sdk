@@ -430,7 +430,7 @@
           "type": "string"
         },
         "requireVerifiedChromeOs": {
-          "description": "Only allows requests from devices with a verified Chrome OS.\nVerifications includes requirements that the device is enterprise-managed,\nconformant to Dasher domain policies, and the caller has permission to call\nthe API targeted by the request.",
+          "description": "Only allows requests from devices with a verified Chrome OS.\nVerifications includes requirements that the device is enterprise-managed,\nconformant to domain policies, and the caller has permission to call\nthe API targeted by the request.",
           "type": "boolean"
         }
       }

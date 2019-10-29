@@ -52,3 +52,9 @@ def LabelBindingsService():
   """Returns the label bindings service class."""
   client = LabelManagerClient()
   return client.labelValues_labelBindings
+
+
+def OperationsService():
+  """Returns the operations service class."""
+  client = LabelManagerClient()
+  return client.operations

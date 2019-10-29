@@ -61,6 +61,16 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  NAMESPACES_PUBSUBS = (
+      'namespaces.pubsubs',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/pubsubs/{pubsubsId}',
+      },
+      [u'name'],
+      True
+  )
   NAMESPACES_REVISIONS = (
       'namespaces.revisions',
       '{+name}',
@@ -144,6 +154,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/eventtypes/'
               '{eventtypesId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_PUBSUBS = (
+      'projects.locations.pubsubs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/pubsubs/'
+              '{pubsubsId}',
       },
       [u'name'],
       True

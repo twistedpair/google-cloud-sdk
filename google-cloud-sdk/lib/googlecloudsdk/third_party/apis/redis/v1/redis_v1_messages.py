@@ -208,7 +208,7 @@ class Instance(_messages.Message):
     alternativeLocationId: Optional. Only applicable to STANDARD_HA tier which
       protects the instance against zonal failures by provisioning it across
       two zones. If provided, it must be a different zone from the one
-      provided in [location_id].
+      provided in location_id.
     authorizedNetwork: Optional. The full name of the Google Compute Engine
       [network](/compute/docs/networks-and-firewalls#networks) to which the
       instance is connected. If left unspecified, the `default` network will
@@ -216,9 +216,9 @@ class Instance(_messages.Message):
     createTime: Output only. The time the instance was created.
     currentLocationId: Output only. The current zone where the Redis endpoint
       is placed. For Basic Tier instances, this will always be the same as the
-      [location_id] provided by the user at creation time. For Standard Tier
-      instances, this can be either [location_id] or [alternative_location_id]
-      and can change after a failover event.
+      location_id provided by the user at creation time. For Standard Tier
+      instances, this can be either location_id or alternative_location_id and
+      can change after a failover event.
     displayName: An arbitrary and optional user-provided name for the
       instance.
     host: Output only. Hostname or IP address of the exposed Redis endpoint
@@ -227,8 +227,8 @@ class Instance(_messages.Message):
     locationId: Optional. The zone where the instance will be provisioned. If
       not provided, the service will choose a zone for the instance. For
       STANDARD_HA tier, instances will be created across two zones for
-      protection against zonal failures. If [alternative_location_id] is also
-      provided, it must be different from [location_id].
+      protection against zonal failures. If alternative_location_id is also
+      provided, it must be different from location_id.
     memorySizeGb: Required. Redis memory size in GiB.
     name: Required. Unique name of the resource in this scope including
       project and location using the form:
@@ -236,8 +236,8 @@ class Instance(_messages.Message):
       Note: Redis instances are managed and addressed at regional level so
       location_id here refers to a GCP region; however, users may choose which
       specific zone (or collection of zones for cross-zone instances) an
-      instance should be provisioned in. Refer to [location_id] and
-      [alternative_location_id] fields for more details.
+      instance should be provisioned in. Refer to location_id and
+      alternative_location_id fields for more details.
     persistenceIamIdentity: Output only. Cloud IAM identity used by import /
       export operations to transfer data to/from Cloud Storage. Format is
       "serviceAccount:<service_account_email>". The value may change over time
@@ -388,9 +388,9 @@ class ListInstancesResponse(_messages.Message):
       field of the request is "-", all regions available to the project are
       queried, and the results aggregated. If in such an aggregated query a
       location is unavailable, a dummy Redis entry is included in the response
-      with the "name" field set to a value of the form
-      projects/{project_id}/locations/{location_id}/instances/- and the
-      "status" field set to ERROR and "status_message" field set to "location
+      with the `name` field set to a value of the form
+      `projects/{project_id}/locations/{location_id}/instances/`- and the
+      `status` field set to ERROR and `status_message` field set to "location
       not available for ListInstances".
     nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
@@ -750,10 +750,10 @@ class RedisProjectsLocationsInstancesListRequest(_messages.Message):
     pageSize: The maximum number of items to return.  If not specified, a
       default value of 1000 will be used by the service. Regardless of the
       page_size value, the response may include a partial list and a caller
-      should only rely on response's next_page_token to determine if there are
-      more instances left to be queried.
-    pageToken: The next_page_token value returned from a previous List
-      request, if any.
+      should only rely on response's `next_page_token` to determine if there
+      are more instances left to be queried.
+    pageToken: The `next_page_token` value returned from a previous
+      ListInstances request, if any.
     parent: Required. The resource name of the instance location using the
       form:     `projects/{project_id}/locations/{location_id}` where
       `location_id` refers to a GCP region.
@@ -775,8 +775,8 @@ class RedisProjectsLocationsInstancesPatchRequest(_messages.Message):
       Note: Redis instances are managed and addressed at regional level so
       location_id here refers to a GCP region; however, users may choose which
       specific zone (or collection of zones for cross-zone instances) an
-      instance should be provisioned in. Refer to [location_id] and
-      [alternative_location_id] fields for more details.
+      instance should be provisioned in. Refer to location_id and
+      alternative_location_id fields for more details.
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field may
       only include these fields from Instance:   *   `displayName`  *

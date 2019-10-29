@@ -185,6 +185,33 @@ within a Group by member's EntityKey.
         supports_download=False,
     )
 
+    def ModifyMembershipRoles(self, request, global_params=None):
+      r"""Modify membership roles.
+
+      Args:
+        request: (CloudidentityGroupsMembershipsModifyMembershipRolesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ModifyMembershipRolesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ModifyMembershipRoles')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ModifyMembershipRoles.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/groups/{groupsId}/memberships/{membershipsId}:modifyMembershipRoles',
+        http_method=u'POST',
+        method_id=u'cloudidentity.groups.memberships.modifyMembershipRoles',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}:modifyMembershipRoles',
+        request_field=u'modifyMembershipRolesRequest',
+        request_type_name=u'CloudidentityGroupsMembershipsModifyMembershipRolesRequest',
+        response_type_name=u'ModifyMembershipRolesResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates a Membership.
 

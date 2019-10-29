@@ -5,6 +5,55 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 269.0.0 (2019-10-29)
+
+### Breaking Changes
+
+*   **(Cloud Run)** Removed check for the compute/region property when determining which Cloud
+  Run region to use. Pass `--region` or set the run/region property instead.
+
+
+### Cloud Composer
+
+* Added two Airflow subcommands (list_dag_runs, next_execution) to `gcloud
+  composer environments run`.
+
+### Cloud Functions
+
+* Promoted network settings flags (ingress, egress) for `gcloud functions deploy` to beta.
+* Promoted prompt to allow unauthenticated access for `gcloud functions deploy` to GA.
+* Promoted `--allow-unauthenticated` flag for `gcloud functions deploy` to GA.
+
+### Cloud IAM
+
+* Promoted `gcloud iam service-accounts disable` to GA.
+* Promoted `gcloud iam service-accounts enable` to GA.
+
+### Cloud Services
+
+* Promoted `services identity` command group to beta.
+* Removed the command `services operations list`.
+
+### Compute Engine
+
+* Promoted `--next-hop-ilb` and `--next-hop-ilb-region` flags of
+  `gcloud compute routes create` to GA.
+* Promoted `gcloud compute packet-mirrorings` command group to beta.
+* Promoted `--is-mirroring-collector` flag of
+`gcloud compute forwarding-rules create` command to beta.
+* Rename the flag `--drain-nat-ips` to `--nat-external-drain-ip-pool` to match
+the user guide.
+
+### Miscellaneous
+
+* Fixed issue where results would be limited before filtering.
+* Fixed issue where a blank line was not printed between pages when the result
+  set fit on two pages.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 268.0.0 (2019-10-22)
 
 ### Cloud Life Sciences

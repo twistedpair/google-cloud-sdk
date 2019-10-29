@@ -285,7 +285,7 @@
             "Default unknown type",
             "Output only. The type of entry that has a GoogleSQL schema, including\nlogical views.",
             "Output only. An entry type which is used for streaming entries. Example:\nCloud Pub\/Sub topic.",
-            "An entry type which is a set of files or objects. Example: Cloud Storage\nfileset."
+            "Alpha feature. An entry type which is a set of files or objects. Example:\nCloud Storage fileset."
           ],
           "type": "string",
           "enum": [
@@ -1064,7 +1064,7 @@
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "The fields to update on the entry. If absent or empty, all modifiable\nfields are updated.\n\nCurrently only `schema` field in Cloud Pub\/Sub topic entries is modifiable.",
+                          "description": "The fields to update on the entry. If absent or empty, all modifiable\nfields are updated.\n\nThe following fields are modifiable:\n* For entries with type `DATA_STREAM`:\n   * `schema`\n* For entries with type `FILESET`\n   * `schema`\n   * `display_name`\n   * `description`\n   * `gcs_fileset_spec`\n   * `gcs_fileset_spec.file_patterns`",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"

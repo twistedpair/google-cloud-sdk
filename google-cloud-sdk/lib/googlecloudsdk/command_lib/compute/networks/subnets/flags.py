@@ -329,8 +329,8 @@ def GetLoggingMetadataArgAlpha(messages):
       '--logging-metadata',
       messages.SubnetworkLogConfig.MetadataValueValuesEnum,
       custom_mappings={
-          'INCLUDE_ALL_METADATA': 'include-all-metadata',
-          'EXCLUDE_ALL_METADATA': 'exclude-all-metadata',
+          'INCLUDE_ALL_METADATA': 'include-all',
+          'EXCLUDE_ALL_METADATA': 'exclude-all',
           'CUSTOM_METADATA': 'custom'
       },
       help_str="""\

@@ -395,21 +395,6 @@ class BasicLevel(_messages.Message):
   conditions = _messages.MessageField('Condition', 2, repeated=True)
 
 
-class BridgeServiceRestriction(_messages.Message):
-  r"""Alpha. Specifies which services are granted access via this Bridge
-  Service Perimeter.
-
-  Fields:
-    allowedServices: The list of APIs usable through the Bridge Perimeter.
-      Must be empty unless 'enable_restriction' is True.
-    enableRestriction: Whether to restrict the set of APIs callable through
-      the Bridge Service Perimeter.
-  """
-
-  allowedServices = _messages.StringField(1, repeated=True)
-  enableRestriction = _messages.BooleanField(2)
-
-
 class Condition(_messages.Message):
   r"""A condition necessary for an `AccessLevel` to be granted. The Condition
   is an AND over its fields. So a Condition is true if: 1) the request IP is
@@ -515,21 +500,6 @@ class DevicePolicy(_messages.Message):
   requireAdminApproval = _messages.BooleanField(4)
   requireCorpOwned = _messages.BooleanField(5)
   requireScreenlock = _messages.BooleanField(6)
-
-
-class IngressServiceRestriction(_messages.Message):
-  r"""Alpha. Specifies how Access Levels are to be used for accessing the
-  Service Perimeter.
-
-  Fields:
-    allowedServices: The list of APIs usable with a valid Access Level. Must
-      be empty unless 'enable_restriction' is True.
-    enableRestriction: Whether to restrict the set of APIs callable outside
-      the Service Perimeter via Access Levels.
-  """
-
-  allowedServices = _messages.StringField(1, repeated=True)
-  enableRestriction = _messages.BooleanField(2)
 
 
 class ListAccessLevelsResponse(_messages.Message):
@@ -692,8 +662,8 @@ class OsConstraint(_messages.Message):
     osType: Required. The allowed OS type.
     requireVerifiedChromeOs: Only allows requests from devices with a verified
       Chrome OS. Verifications includes requirements that the device is
-      enterprise-managed, conformant to Dasher domain policies, and the caller
-      has permission to call the API targeted by the request.
+      enterprise-managed, conformant to domain policies, and the caller has
+      permission to call the API targeted by the request.
   """
 
   class OsTypeValueValuesEnum(_messages.Enum):
@@ -854,11 +824,6 @@ class ServicePerimeterConfig(_messages.Message):
       the perimeter. Example:
       `"accessPolicies/MY_POLICY/accessLevels/MY_LEVEL"`. For Service
       Perimeter Bridge, must be empty.
-    bridgeServiceRestriction: Alpha. Configuration for what services are
-      accessible via the Bridge Perimeter. Must be empty for non-Bridge
-      Perimeters.
-    ingressServiceRestriction: Alpha. Configuration for which services may be
-      used with Access Levels.
     resources: A list of GCP resources that are inside of the service
       perimeter. Currently only projects are allowed. Format:
       `projects/{project_number}`
@@ -875,12 +840,10 @@ class ServicePerimeterConfig(_messages.Message):
   """
 
   accessLevels = _messages.StringField(1, repeated=True)
-  bridgeServiceRestriction = _messages.MessageField('BridgeServiceRestriction', 2)
-  ingressServiceRestriction = _messages.MessageField('IngressServiceRestriction', 3)
-  resources = _messages.StringField(4, repeated=True)
-  restrictedServices = _messages.StringField(5, repeated=True)
-  unrestrictedServices = _messages.StringField(6, repeated=True)
-  vpcServiceRestriction = _messages.MessageField('VpcServiceRestriction', 7)
+  resources = _messages.StringField(2, repeated=True)
+  restrictedServices = _messages.StringField(3, repeated=True)
+  unrestrictedServices = _messages.StringField(4, repeated=True)
+  vpcServiceRestriction = _messages.MessageField('VpcServiceRestriction', 5)
 
 
 class StandardQueryParameters(_messages.Message):

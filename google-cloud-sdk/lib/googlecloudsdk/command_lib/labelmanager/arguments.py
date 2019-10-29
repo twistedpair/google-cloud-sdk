@@ -36,21 +36,6 @@ def AddDisplayNameArgToParser(parser):
             'alphanumerics between.'))
 
 
-def AddParentArgToParser(parser):
-  """Adds argument for the label parent to the parser.
-
-  Args:
-    parser: ArgumentInterceptor, An argparse parser.
-  """
-  parser.add_argument(
-      'PARENT',
-      metavar='PARENT',
-      help=(
-          'Parent of the label key or value. This must be the form '
-          'organizations/{org_id} for a label key and labelKeys/{lable_key_id} '
-          'for a label value.'))
-
-
 def AddLabelParentArgToParser(parser):
   """Adds argument for the label parent to the parser.
 

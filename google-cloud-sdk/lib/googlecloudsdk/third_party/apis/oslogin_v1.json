@@ -125,7 +125,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "A unique user ID.",
+          "description": "Required. A unique user ID.",
           "type": "string"
         },
         "posixAccounts": {
@@ -253,7 +253,7 @@
           "httpMethod": "GET",
           "parameters": {
             "name": {
-              "description": "The unique ID for the user in format `users\/{user}`.",
+              "description": "Required. The unique ID for the user in format `users\/{user}`.",
               "location": "path",
               "required": true,
               "pattern": "^users\/[^\/]+$",
@@ -289,7 +289,7 @@
           "httpMethod": "POST",
           "parameters": {
             "parent": {
-              "description": "The unique ID for the user in format `users\/{user}`.",
+              "description": "Required. The unique ID for the user in format `users\/{user}`.",
               "location": "path",
               "required": true,
               "pattern": "^users\/[^\/]+$",
@@ -328,7 +328,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "A reference to the POSIX account to update. POSIX accounts are identified\nby the project ID they are associated with. A reference to the POSIX\naccount is in format `users\/{user}\/projects\/{project}`.",
+                  "description": "Required. A reference to the POSIX account to update. POSIX accounts are identified\nby the project ID they are associated with. A reference to the POSIX\naccount is in format `users\/{user}\/projects\/{project}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^users\/[^\/]+\/projects\/[^\/]+$",
@@ -358,7 +358,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "The fingerprint of the public key to update. Public keys are identified by\ntheir SHA-256 fingerprint. The fingerprint of the public key is in format\n`users\/{user}\/sshPublicKeys\/{fingerprint}`.",
+                  "description": "Required. The fingerprint of the public key to update. Public keys are identified by\ntheir SHA-256 fingerprint. The fingerprint of the public key is in format\n`users\/{user}\/sshPublicKeys\/{fingerprint}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^users\/[^\/]+\/sshPublicKeys\/[^\/]+$",
@@ -410,7 +410,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "The fingerprint of the public key to update. Public keys are identified by\ntheir SHA-256 fingerprint. The fingerprint of the public key is in format\n`users\/{user}\/sshPublicKeys\/{fingerprint}`.",
+                  "description": "Required. The fingerprint of the public key to update. Public keys are identified by\ntheir SHA-256 fingerprint. The fingerprint of the public key is in format\n`users\/{user}\/sshPublicKeys\/{fingerprint}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^users\/[^\/]+\/sshPublicKeys\/[^\/]+$",

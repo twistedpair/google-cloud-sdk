@@ -168,8 +168,10 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesPatchRequest(_messages.Messa
       }/entries/{entry_id}  Note that this Entry and its child resources may
       not actually be stored in the location in this name.
     updateMask: The fields to update on the entry. If absent or empty, all
-      modifiable fields are updated.  Currently only `schema` field in Cloud
-      Pub/Sub topic entries is modifiable.
+      modifiable fields are updated.  The following fields are modifiable: *
+      For entries with type `DATA_STREAM`:    * `schema` * For entries with
+      type `FILESET`    * `schema`    * `display_name`    * `description`    *
+      `gcs_fileset_spec`    * `gcs_fileset_spec.file_patterns`
   """
 
   googleCloudDatacatalogV1beta1Entry = _messages.MessageField('GoogleCloudDatacatalogV1beta1Entry', 1)
@@ -717,8 +719,8 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
         including logical views.
       DATA_STREAM: Output only. An entry type which is used for streaming
         entries. Example: Cloud Pub/Sub topic.
-      FILESET: An entry type which is a set of files or objects. Example:
-        Cloud Storage fileset.
+      FILESET: Alpha feature. An entry type which is a set of files or
+        objects. Example: Cloud Storage fileset.
     """
     ENTRY_TYPE_UNSPECIFIED = 0
     TABLE = 1

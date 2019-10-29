@@ -115,6 +115,7 @@
       "type": "object",
       "properties": {
         "accessTuple": {
+          "description": "Collection of attributes for example user, permission, resource that define\ntroubleshooter's input.",
           "$ref": "GoogleCloudPolicytroubleshooterV1betaAccessTuple"
         }
       }

@@ -430,7 +430,7 @@
           "type": "string"
         },
         "requireVerifiedChromeOs": {
-          "description": "Only allows requests from devices with a verified Chrome OS.\nVerifications includes requirements that the device is enterprise-managed,\nconformant to Dasher domain policies, and the caller has permission to call\nthe API targeted by the request.",
+          "description": "Only allows requests from devices with a verified Chrome OS.\nVerifications includes requirements that the device is enterprise-managed,\nconformant to domain policies, and the caller has permission to call\nthe API targeted by the request.",
           "type": "boolean"
         }
       }
@@ -542,14 +542,6 @@
         "vpcServiceRestriction": {
           "description": "Alpha. Configuration for within Perimeter allowed APIs.",
           "$ref": "VpcServiceRestriction"
-        },
-        "ingressServiceRestriction": {
-          "description": "Alpha. Configuration for which services may be used with Access Levels.",
-          "$ref": "IngressServiceRestriction"
-        },
-        "bridgeServiceRestriction": {
-          "description": "Alpha. Configuration for what services are accessible via the Bridge\nPerimeter. Must be empty for non-Bridge Perimeters.",
-          "$ref": "BridgeServiceRestriction"
         }
       }
     },
@@ -564,42 +556,6 @@
         },
         "allowedServices": {
           "description": "The list of APIs usable within the Service Perimeter. Must be empty\nunless 'enable_restriction' is True.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "IngressServiceRestriction": {
-      "id": "IngressServiceRestriction",
-      "description": "Alpha. Specifies how Access Levels are to be used for accessing the Service\nPerimeter.",
-      "type": "object",
-      "properties": {
-        "enableRestriction": {
-          "description": "Whether to restrict the set of APIs callable outside the Service\nPerimeter via Access Levels.",
-          "type": "boolean"
-        },
-        "allowedServices": {
-          "description": "The list of APIs usable with a valid Access Level. Must be empty unless\n'enable_restriction' is True.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "BridgeServiceRestriction": {
-      "id": "BridgeServiceRestriction",
-      "description": "Alpha. Specifies which services are granted access via this Bridge Service\nPerimeter.",
-      "type": "object",
-      "properties": {
-        "enableRestriction": {
-          "description": "Whether to restrict the set of APIs callable through the Bridge Service\nPerimeter.",
-          "type": "boolean"
-        },
-        "allowedServices": {
-          "description": "The list of APIs usable through the Bridge Perimeter. Must be empty\nunless 'enable_restriction' is True.",
           "type": "array",
           "items": {
             "type": "string"

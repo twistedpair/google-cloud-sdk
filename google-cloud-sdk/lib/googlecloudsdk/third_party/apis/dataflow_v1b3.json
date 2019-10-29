@@ -228,6 +228,10 @@
           "items": {
             "$ref": "PubsubSnapshotMetadata"
           }
+        },
+        "description": {
+          "description": "User specified description of the snapshot. Maybe empty.",
+          "type": "string"
         }
       }
     },
@@ -1493,6 +1497,10 @@
         "snapshotSources": {
           "description": "If true, perform snapshots for sources which support this.",
           "type": "boolean"
+        },
+        "description": {
+          "description": "User specified description of the snapshot. Maybe empty.",
+          "type": "string"
         }
       }
     },

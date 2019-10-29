@@ -31,6 +31,29 @@ import six
 REGION_LABEL = 'cloud.googleapis.com/location'
 
 
+def Meta(m):
+  """Metadta class from messages module."""
+  if hasattr(m, 'ObjectMeta'):
+    return m.ObjectMeta
+  elif hasattr(m, 'K8sIoApimachineryPkgApisMetaV1ObjectMeta'):
+    return m.K8sIoApimachineryPkgApisMetaV1ObjectMeta
+  raise ValueError('Provided module does not have a known metadata class')
+
+
+def ListMeta(m):
+  """List Metadta class from messages module."""
+  if hasattr(m, 'ListMeta'):
+    return m.ListMeta
+  elif hasattr(m, 'K8sIoApimachineryPkgApisMetaV1ListMeta'):
+    return m.K8sIoApimachineryPkgApisMetaV1ListMeta
+  raise ValueError('Provided module does not have a known metadata class')
+
+
+def MakeMeta(m, *args, **kwargs):
+  """Make metadata message from messages module."""
+  return Meta(m)(*args, **kwargs)
+
+
 def InitializedInstance(msg_cls, excluded_fields=None):
   """Produce an instance of msg_cls, with all sub-messages initialized.
 
@@ -318,6 +341,12 @@ class KubernetesObject(object):
   def MakeSerializable(self):
     return self.Message()
 
+  def MakeCondition(self, *args, **kwargs):
+    if hasattr(self._messages, 'GoogleCloudRunV1Condition'):
+      return self._messages.GoogleCloudRunV1Condition(*args, **kwargs)
+    else:
+      return getattr(self._messages, self.kind + 'Condition')(*args, **kwargs)
+
   def __eq__(self, other):
     if isinstance(other, type(self)):
       return self.Message() == other.Message()
@@ -329,20 +358,20 @@ class KubernetesObject(object):
 
 def AnnotationsFromMetadata(messages_mod, metadata):
   if not metadata.annotations:
-    metadata.annotations = messages_mod.ObjectMeta.AnnotationsValue()
+    metadata.annotations = Meta(messages_mod).AnnotationsValue()
   return ListAsDictionaryWrapper(
       metadata.annotations.additionalProperties,
-      messages_mod.ObjectMeta.AnnotationsValue.AdditionalProperty,
+      Meta(messages_mod).AnnotationsValue.AdditionalProperty,
       key_field='key',
       value_field='value')
 
 
 def LabelsFromMetadata(messages_mod, metadata):
   if not metadata.labels:
-    metadata.labels = messages_mod.ObjectMeta.LabelsValue()
+    metadata.labels = Meta(messages_mod).LabelsValue()
   return ListAsDictionaryWrapper(
       metadata.labels.additionalProperties,
-      messages_mod.ObjectMeta.LabelsValue.AdditionalProperty,
+      Meta(messages_mod).LabelsValue.AdditionalProperty,
       key_field='key',
       value_field='value')
 

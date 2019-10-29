@@ -41,6 +41,23 @@ class Revision(k8s_object.KubernetesObject):
       READY_CONDITION,
   }
 
+  FIELD_BLACKLIST = ['container']
+
+  @classmethod
+  def New(cls, client, namespace):
+    """Produces a new Revision object.
+
+    Args:
+      client: The Cloud Run API client.
+      namespace: str, The serving namespace.
+
+    Returns:
+      A new Revision object to be deployed.
+    """
+    ret = super(Revision, cls).New(client, namespace)
+    ret.spec.containers = [client.MESSAGES_MODULE.Container()]
+    return ret
+
   @property
   def env_vars(self):
     """Returns a mutable, dict-like object to manage env vars.
@@ -111,12 +128,13 @@ class Revision(k8s_object.KubernetesObject):
   @property
   def container(self):
     """The container in the revisionTemplate."""
-    if self.spec.container and self.spec.containers:
-      raise ValueError(
-          'Revision can have only one of `container` or `containers` set')
-    elif self.spec.container:
-      return self.spec.container
-    elif self.spec.containers:
+    if hasattr(self.spec, 'container'):
+      if self.spec.container and self.spec.containers:
+        raise ValueError(
+            'Revision can have only one of `container` or `containers` set')
+      elif self.spec.container:
+        return self.spec.container
+    if self.spec.containers:
       if self.spec.containers[0] is None or len(self.spec.containers) != 1:
         raise ValueError('List of containers must contain exactly one element')
       return self.spec.containers[0]

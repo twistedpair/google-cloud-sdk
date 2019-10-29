@@ -74,6 +74,23 @@ class GoogleApiHttpBody(_messages.Message):
   extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
 
 
+class GoogleCloudMlV1AblationAttribution(_messages.Message):
+  r"""Attributes credit to model inputs by ablating features (ie. setting them
+  to their default/missing values) and computing corresponding model score
+  delta per feature. The term "ablation" is in reference to running an
+  "ablation study" to analyze input effects on the outcome of interest, which
+  in this case is the model's output. This attribution method is supported for
+  Tensorflow and XGBoost models.
+
+  Fields:
+    numFeatureInteractions: Number of feature interactions to account for in
+      the ablation process, capped at the maximum number of provided input
+      features. Currently, only the value 1 is supported.
+  """
+
+  numFeatureInteractions = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudMlV1AcceleratorConfig(_messages.Message):
   r"""Represents a hardware accelerator request config. Note that the
   AcceleratorConfig could be used in both Jobs and Versions.
@@ -100,6 +117,8 @@ class GoogleCloudMlV1AcceleratorConfig(_messages.Message):
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
+      TPU_V2_POD: TPU v2 POD.
+      TPU_V3_POD: TPU v3 POD.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -109,6 +128,8 @@ class GoogleCloudMlV1AcceleratorConfig(_messages.Message):
     NVIDIA_TESLA_T4 = 5
     TPU_V2 = 6
     TPU_V3 = 7
+    TPU_V2_POD = 8
+    TPU_V3_POD = 9
 
   count = _messages.IntegerField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -190,6 +211,8 @@ class GoogleCloudMlV1Capability(_messages.Message):
       NVIDIA_TESLA_T4: <no description>
       TPU_V2: <no description>
       TPU_V3: <no description>
+      TPU_V2_POD: <no description>
+      TPU_V3_POD: <no description>
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -199,6 +222,8 @@ class GoogleCloudMlV1Capability(_messages.Message):
     NVIDIA_TESLA_T4 = 5
     TPU_V2 = 6
     TPU_V3 = 7
+    TPU_V2_POD = 8
+    TPU_V3_POD = 9
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""TypeValueValuesEnum enum type.
@@ -236,14 +261,20 @@ class GoogleCloudMlV1ExplanationConfig(_messages.Message):
   specific to particular frameworks like Tensorflow and XGBoost. Next idx: 6.
 
   Fields:
+    ablationAttribution: Tensorflow framework explanation methods.
     integratedGradientsAttribution: A
       GoogleCloudMlV1IntegratedGradientsAttribution attribute.
+    saabasAttribution: A GoogleCloudMlV1SaabasAttribution attribute.
     samplingShapAttribution: A GoogleCloudMlV1SamplingShapAttribution
       attribute.
+    treeShapAttribution: XGBoost Framework explanation methods.
   """
 
-  integratedGradientsAttribution = _messages.MessageField('GoogleCloudMlV1IntegratedGradientsAttribution', 1)
-  samplingShapAttribution = _messages.MessageField('GoogleCloudMlV1SamplingShapAttribution', 2)
+  ablationAttribution = _messages.MessageField('GoogleCloudMlV1AblationAttribution', 1)
+  integratedGradientsAttribution = _messages.MessageField('GoogleCloudMlV1IntegratedGradientsAttribution', 2)
+  saabasAttribution = _messages.MessageField('GoogleCloudMlV1SaabasAttribution', 3)
+  samplingShapAttribution = _messages.MessageField('GoogleCloudMlV1SamplingShapAttribution', 4)
+  treeShapAttribution = _messages.MessageField('GoogleCloudMlV1TreeShapAttribution', 5)
 
 
 class GoogleCloudMlV1ExplanationInput(_messages.Message):
@@ -1487,6 +1518,15 @@ class GoogleCloudMlV1RequestLoggingConfig(_messages.Message):
   samplingPercentage = _messages.FloatField(2)
 
 
+class GoogleCloudMlV1SaabasAttribution(_messages.Message):
+  r"""Attributes credit by running a faster aproximation to the TreeShap
+  method. Please refer to this link for more details:
+  https://blog.datadive.net/interpreting-random-forests/ This attribution
+  method is only supported for XGBoost models.
+  """
+
+
+
 class GoogleCloudMlV1SamplingShapAttribution(_messages.Message):
   r"""An attribution method that approximates Shapley values for features that
   contribute to the label being predicted. A sampling strategy is used to
@@ -1622,6 +1662,9 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       engine/docs/versioning">how to manage runtime versions</a>.
     scaleTier: Required. Specifies the machine types, the number of replicas
       for workers and parameter servers.
+    useChiefInTfConfig: Optional. Use 'chief' instead of 'master' in TF_CONFIG
+      when Custom Container is used and evaluator is not specified.  Defaults
+      to false.
     workerConfig: Optional. The configuration for workers.  You should only
       set `workerConfig.acceleratorConfig` if `workerType` is set to a Compute
       Engine machine type. [Learn about restrictions on accelerator
@@ -1702,9 +1745,10 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
   region = _messages.StringField(13)
   runtimeVersion = _messages.StringField(14)
   scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 15)
-  workerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 16)
-  workerCount = _messages.IntegerField(17)
-  workerType = _messages.StringField(18)
+  useChiefInTfConfig = _messages.BooleanField(16)
+  workerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 17)
+  workerCount = _messages.IntegerField(18)
+  workerType = _messages.StringField(19)
 
 
 class GoogleCloudMlV1TrainingOutput(_messages.Message):
@@ -1736,6 +1780,15 @@ class GoogleCloudMlV1TrainingOutput(_messages.Message):
   isHyperparameterTuningJob = _messages.BooleanField(6)
   nasJobOutput = _messages.MessageField('GoogleCloudMlV1NasJobOutput', 7)
   trials = _messages.MessageField('GoogleCloudMlV1HyperparameterOutput', 8, repeated=True)
+
+
+class GoogleCloudMlV1TreeShapAttribution(_messages.Message):
+  r"""Attributes credit by computing the Shapley value taking advantage of the
+  model's tree ensemble structure. Refer to this paper for more details:
+  http://papers.nips.cc/paper/7062-a-unified-approach-to-interpreting-model-
+  predictions.pdf. This attribution method is supported for XGBoost models.
+  """
+
 
 
 class GoogleCloudMlV1Version(_messages.Message):

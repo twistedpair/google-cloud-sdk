@@ -151,15 +151,87 @@ class Capabilities(_messages.Message):
   drop = _messages.StringField(2, repeated=True)
 
 
+class CloudEventOverrides(_messages.Message):
+  r"""CloudEventOverrides defines arguments for a Source that control the
+  output format of the CloudEvents produced by the Source.
+
+  Messages:
+    ExtensionsValue: Extensions specify what attribute are added or overridden
+      on the outbound event. Each `Extensions` key-value pair are set on the
+      event as an attribute extension independently. +optional
+
+  Fields:
+    extensions: Extensions specify what attribute are added or overridden on
+      the outbound event. Each `Extensions` key-value pair are set on the
+      event as an attribute extension independently. +optional
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExtensionsValue(_messages.Message):
+    r"""Extensions specify what attribute are added or overridden on the
+    outbound event. Each `Extensions` key-value pair are set on the event as
+    an attribute extension independently. +optional
+
+    Messages:
+      AdditionalProperty: An additional property for a ExtensionsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ExtensionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExtensionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  extensions = _messages.MessageField('ExtensionsValue', 1)
+
+
+class Condition(_messages.Message):
+  r"""Condition defines a generic condition for a Resource
+
+  Fields:
+    lastTransitionTime: Optional. Last time the condition transitioned from
+      one status to another.
+    message: Optional. Human readable message indicating details about the
+      current status.
+    reason: Optional. One-word CamelCase reason for the condition's last
+      transition.
+    severity: Optional. How to interpret failures of this condition, one of
+      Error, Warning, Info
+    status: Status of the condition, one of True, False, Unknown.
+    type: type is used to communicate the status of the reconciliation
+      process. See also:
+      https://github.com/knative/serving/blob/master/docs/spec/errors.md
+      #error-conditions-and-reporting Types common to all resources include: *
+      "Ready": True when the Resource is ready.
+  """
+
+  lastTransitionTime = _messages.StringField(1)
+  message = _messages.StringField(2)
+  reason = _messages.StringField(3)
+  severity = _messages.StringField(4)
+  status = _messages.StringField(5)
+  type = _messages.StringField(6)
+
+
 class ConfigMapEnvSource(_messages.Message):
   r"""ConfigMapEnvSource selects a ConfigMap to populate the environment
   variables with.  The contents of the target ConfigMap's Data field will
   represent the key-value pairs as environment variables.
 
   Fields:
-    localObjectReference: Output only. This field should not be used directly
-      as it is meant to be inlined directly into the message. Use the "name"
-      field instead.
+    localObjectReference: This field should not be used directly as it is
+      meant to be inlined directly into the message. Use the "name" field
+      instead.
     name: Cloud Run fully managed: not supported  Cloud Run for Anthos:
       supported  The ConfigMap to select from.
     optional: Cloud Run fully managed: not supported  Cloud Run for Anthos:
@@ -178,9 +250,9 @@ class ConfigMapKeySelector(_messages.Message):
   Fields:
     key: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
       The key to select.
-    localObjectReference: Output only. This field should not be used directly
-      as it is meant to be inlined directly into the message. Use the "name"
-      field instead.
+    localObjectReference: This field should not be used directly as it is
+      meant to be inlined directly into the message. Use the "name" field
+      instead.
     name: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
       The ConfigMap to select from.
     optional: Cloud Run fully managed: not supported  Cloud Run on GKE:
@@ -481,6 +553,21 @@ class ContainerPort(_messages.Message):
   protocol = _messages.StringField(5)
 
 
+class Destination(_messages.Message):
+  r"""A Destination object.
+
+  Fields:
+    ref: ObjectReference points to an Addressable. + optional
+    uri: URI is for direct URI Designations or used with the resulting URL
+      from Addressable ObjectReference. If used with an ObjectReference, will
+      be appended to the path of the resulting URL from the Addressable. +
+      optional
+  """
+
+  ref = _messages.MessageField('ObjectReference', 1)
+  uri = _messages.StringField(2)
+
+
 class DomainMapping(_messages.Message):
   r"""Resource to hold the state and status of a user's domain mapping.
 
@@ -750,57 +837,6 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
-class GoogleRpcStatus(_messages.Message):
-  r"""The `Status` type defines a logical error model that is suitable for
-  different programming environments, including REST APIs and RPC APIs. It is
-  used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
-  find out more about this error model and how to work with it in the [API
-  Design Guide](https://cloud.google.com/apis/design/errors).
-
-  Messages:
-    DetailsValueListEntry: A DetailsValueListEntry object.
-
-  Fields:
-    code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
-      common set of message types for APIs to use.
-    message: A developer-facing error message, which should be in English. Any
-      user-facing error message should be localized and sent in the
-      google.rpc.Status.details field, or localized by the client.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class DetailsValueListEntry(_messages.Message):
-    r"""A DetailsValueListEntry object.
-
-    Messages:
-      AdditionalProperty: An additional property for a DetailsValueListEntry
-        object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a DetailsValueListEntry object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
-  message = _messages.StringField(3)
-
-
 class HTTPGetAction(_messages.Message):
   r"""HTTPGetAction describes an action based on HTTP Get requests.
 
@@ -955,63 +991,24 @@ class ListAuthorizedDomainsResponse(_messages.Message):
 class ListConfigurationsResponse(_messages.Message):
   r"""ListConfigurationsResponse is a list of Configuration resources.
 
-  Messages:
-    RegionDetailsValue: Details for the regions used during a global call
-      including any failures. This is not populated when targeting a specific
-      region.
-
   Fields:
     apiVersion: The API version for this call such as
       "serving.knative.dev/v1alpha1".
     items: List of Configurations.
     kind: The kind of this resource, in this case "ConfigurationList".
     metadata: Metadata associated with this Configuration list.
-    regionDetails: Details for the regions used during a global call including
-      any failures. This is not populated when targeting a specific region.
     unreachable: Locations that could not be reached.
   """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class RegionDetailsValue(_messages.Message):
-    r"""Details for the regions used during a global call including any
-    failures. This is not populated when targeting a specific region.
-
-    Messages:
-      AdditionalProperty: An additional property for a RegionDetailsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type RegionDetailsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a RegionDetailsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A RegionDetails attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('RegionDetails', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('Configuration', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
-  regionDetails = _messages.MessageField('RegionDetailsValue', 5)
-  unreachable = _messages.StringField(6, repeated=True)
+  unreachable = _messages.StringField(5, repeated=True)
 
 
 class ListDomainMappingsResponse(_messages.Message):
   r"""ListDomainMappingsResponse is a list of DomainMapping resources.
-
-  Messages:
-    RegionDetailsValue: Details for the regions used during a global call
-      including any failures. This is not populated when targeting a specific
-      region.
 
   Fields:
     apiVersion: The API version for this call such as
@@ -1019,52 +1016,18 @@ class ListDomainMappingsResponse(_messages.Message):
     items: List of DomainMappings.
     kind: The kind of this resource, in this case "DomainMappingList".
     metadata: Metadata associated with this DomainMapping list.
-    regionDetails: Details for the regions used during a global call including
-      any failures. This is not populated when targeting a specific region.
     unreachable: Locations that could not be reached.
   """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class RegionDetailsValue(_messages.Message):
-    r"""Details for the regions used during a global call including any
-    failures. This is not populated when targeting a specific region.
-
-    Messages:
-      AdditionalProperty: An additional property for a RegionDetailsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type RegionDetailsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a RegionDetailsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A RegionDetails attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('RegionDetails', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('DomainMapping', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
-  regionDetails = _messages.MessageField('RegionDetailsValue', 5)
-  unreachable = _messages.StringField(6, repeated=True)
+  unreachable = _messages.StringField(5, repeated=True)
 
 
 class ListEventTypesResponse(_messages.Message):
   r"""ListEventTypesResponse is a list of EventType resources.
-
-  Messages:
-    RegionDetailsValue: Details for the regions used during a global call
-      including any failures. This is not populated when targeting a specific
-      region.
 
   Fields:
     apiVersion: The API version for this call such as
@@ -1072,43 +1035,14 @@ class ListEventTypesResponse(_messages.Message):
     items: List of EventTypes.
     kind: The kind of this resource, in this case "EventTypeList".
     metadata: Metadata associated with this EventType list.
-    regionDetails: Details for the regions used during a global call including
-      any failures. This is not populated when targeting a specific region.
     unreachable: Locations that could not be reached.
   """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class RegionDetailsValue(_messages.Message):
-    r"""Details for the regions used during a global call including any
-    failures. This is not populated when targeting a specific region.
-
-    Messages:
-      AdditionalProperty: An additional property for a RegionDetailsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type RegionDetailsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a RegionDetailsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A RegionDetails attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('RegionDetails', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('EventType', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
-  regionDetails = _messages.MessageField('RegionDetailsValue', 5)
-  unreachable = _messages.StringField(6, repeated=True)
+  unreachable = _messages.StringField(5, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -1153,13 +1087,27 @@ class ListMeta(_messages.Message):
   selfLink = _messages.StringField(3)
 
 
+class ListPubSubsResponse(_messages.Message):
+  r"""ListPubSubsResponse is a list of PubSub resources.
+
+  Fields:
+    apiVersion: The API version for this call such as
+      "events.cloud.google.com/v1alpha1".
+    items: List of PubSubs.
+    kind: The kind of this resource, in this case "PubSubList".
+    metadata: Metadata associated with this PubSub list.
+    unreachable: Locations that could not be reached.
+  """
+
+  apiVersion = _messages.StringField(1)
+  items = _messages.MessageField('PubSub', 2, repeated=True)
+  kind = _messages.StringField(3)
+  metadata = _messages.MessageField('ListMeta', 4)
+  unreachable = _messages.StringField(5, repeated=True)
+
+
 class ListRevisionsResponse(_messages.Message):
   r"""ListRevisionsResponse is a list of Revision resources.
-
-  Messages:
-    RegionDetailsValue: Details for the regions used during a global call
-      including any failures. This is not populated when targeting a specific
-      region.
 
   Fields:
     apiVersion: The API version for this call such as
@@ -1167,52 +1115,18 @@ class ListRevisionsResponse(_messages.Message):
     items: List of Revisions.
     kind: The kind of this resource, in this case "RevisionList".
     metadata: Metadata associated with this revision list.
-    regionDetails: Details for the regions used during a global call including
-      any failures. This is not populated when targeting a specific region.
     unreachable: Locations that could not be reached.
   """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class RegionDetailsValue(_messages.Message):
-    r"""Details for the regions used during a global call including any
-    failures. This is not populated when targeting a specific region.
-
-    Messages:
-      AdditionalProperty: An additional property for a RegionDetailsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type RegionDetailsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a RegionDetailsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A RegionDetails attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('RegionDetails', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('Revision', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
-  regionDetails = _messages.MessageField('RegionDetailsValue', 5)
-  unreachable = _messages.StringField(6, repeated=True)
+  unreachable = _messages.StringField(5, repeated=True)
 
 
 class ListRoutesResponse(_messages.Message):
   r"""ListRoutesResponse is a list of Route resources.
-
-  Messages:
-    RegionDetailsValue: Details for the regions used during a global call
-      including any failures. This is not populated when targeting a specific
-      region.
 
   Fields:
     apiVersion: The API version for this call such as
@@ -1220,52 +1134,18 @@ class ListRoutesResponse(_messages.Message):
     items: List of Routes.
     kind: The kind of this resource, in this case always "RouteList".
     metadata: Metadata associated with this Route list.
-    regionDetails: Details for the regions used during a global call including
-      any failures. This is not populated when targeting a specific region.
     unreachable: Locations that could not be reached.
   """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class RegionDetailsValue(_messages.Message):
-    r"""Details for the regions used during a global call including any
-    failures. This is not populated when targeting a specific region.
-
-    Messages:
-      AdditionalProperty: An additional property for a RegionDetailsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type RegionDetailsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a RegionDetailsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A RegionDetails attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('RegionDetails', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('Route', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
-  regionDetails = _messages.MessageField('RegionDetailsValue', 5)
-  unreachable = _messages.StringField(6, repeated=True)
+  unreachable = _messages.StringField(5, repeated=True)
 
 
 class ListServicesResponse(_messages.Message):
   r"""A list of Service resources.
-
-  Messages:
-    RegionDetailsValue: Details for the regions used during a global call
-      including any failures. This is not populated when targeting a specific
-      region.
 
   Fields:
     apiVersion: The API version for this call such as
@@ -1273,52 +1153,18 @@ class ListServicesResponse(_messages.Message):
     items: List of Services.
     kind: The kind of this resource, in this case "ServiceList".
     metadata: Metadata associated with this Service list.
-    regionDetails: Details for the regions used during a global call including
-      any failures. This is not populated when targeting a specific region.
     unreachable: Locations that could not be reached.
   """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class RegionDetailsValue(_messages.Message):
-    r"""Details for the regions used during a global call including any
-    failures. This is not populated when targeting a specific region.
-
-    Messages:
-      AdditionalProperty: An additional property for a RegionDetailsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type RegionDetailsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a RegionDetailsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A RegionDetails attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('RegionDetails', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('Service', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
-  regionDetails = _messages.MessageField('RegionDetailsValue', 5)
-  unreachable = _messages.StringField(6, repeated=True)
+  unreachable = _messages.StringField(5, repeated=True)
 
 
 class ListTriggersResponse(_messages.Message):
   r"""ListTriggersResponse is a list of Trigger resources.
-
-  Messages:
-    RegionDetailsValue: Details for the regions used during a global call
-      including any failures. This is not populated when targeting a specific
-      region.
 
   Fields:
     apiVersion: The API version for this call such as
@@ -1326,43 +1172,14 @@ class ListTriggersResponse(_messages.Message):
     items: List of Triggers.
     kind: The kind of this resource, in this case "TriggerList".
     metadata: Metadata associated with this Trigger list.
-    regionDetails: Details for the regions used during a global call including
-      any failures. This is not populated when targeting a specific region.
     unreachable: Locations that could not be reached.
   """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class RegionDetailsValue(_messages.Message):
-    r"""Details for the regions used during a global call including any
-    failures. This is not populated when targeting a specific region.
-
-    Messages:
-      AdditionalProperty: An additional property for a RegionDetailsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type RegionDetailsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a RegionDetailsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A RegionDetails attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('RegionDetails', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('Trigger', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
-  regionDetails = _messages.MessageField('RegionDetailsValue', 5)
-  unreachable = _messages.StringField(6, repeated=True)
+  unreachable = _messages.StringField(5, repeated=True)
 
 
 class LocalObjectReference(_messages.Message):
@@ -1730,27 +1547,38 @@ class OwnerReference(_messages.Message):
 class Policy(_messages.Message):
   r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
-  consists of a list of `bindings`. A `binding` binds a list of `members` to a
-  `role`, where the members can be user accounts, Google groups, Google
-  domains, and service accounts. A `role` is a named list of permissions
-  defined by IAM.  **JSON Example**      {       "bindings": [         {
-  "role": "roles/owner",           "members": [
+  is a collection of `bindings`. A `binding` binds one or more `members` to a
+  single `role`. Members can be user accounts, service accounts, Google
+  groups, and domains (such as G Suite). A `role` is a named list of
+  permissions (defined by IAM or configured by users). A `binding` can
+  optionally specify a `condition`, which is a logic expression that further
+  constrains the role binding based on attributes about the request and/or
+  target resource.  **JSON Example**      {       "bindings": [         {
+  "role": "roles/resourcemanager.organizationAdmin",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
-  "domain:google.com",             "serviceAccount:my-other-
-  app@appspot.gserviceaccount.com"           ]         },         {
-  "role": "roles/viewer",           "members": ["user:sean@example.com"]
-  }       ]     }  **YAML Example**      bindings:     - members:       -
-  user:mike@example.com       - group:admins@example.com       -
-  domain:google.com       - serviceAccount:my-other-
-  app@appspot.gserviceaccount.com       role: roles/owner     - members:
-  - user:sean@example.com       role: roles/viewer   For a description of IAM
-  and its features, see the [IAM developer's
+  "domain:google.com",             "serviceAccount:my-project-
+  id@appspot.gserviceaccount.com"           ]         },         {
+  "role": "roles/resourcemanager.organizationViewer",           "members":
+  ["user:eve@example.com"],           "condition": {             "title":
+  "expirable access",             "description": "Does not grant access after
+  Sep 2020",             "expression": "request.time <
+  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ]     }
+  **YAML Example**      bindings:     - members:       - user:mike@example.com
+  - group:admins@example.com       - domain:google.com       - serviceAccount
+  :my-project-id@appspot.gserviceaccount.com       role:
+  roles/resourcemanager.organizationAdmin     - members:       -
+  user:eve@example.com       role: roles/resourcemanager.organizationViewer
+  condition:         title: expirable access         description: Does not
+  grant access after Sep 2020         expression: request.time <
+  timestamp('2020-10-01T00:00:00.000Z')  For a description of IAM and its
+  features, see the [IAM developer's
   guide](https://cloud.google.com/iam/docs).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. `bindings` with no
-      members will result in an error.
+    bindings: Associates a list of `members` to a `role`. Optionally may
+      specify a `condition` that determines when binding is in effect.
+      `bindings` with no members will result in an error.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -1759,12 +1587,18 @@ class Policy(_messages.Message):
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten.
+      the existing policy is overwritten. Due to blind-set semantics of an
+      etag-less policy, 'setIamPolicy' will not fail even if either of
+      incoming or stored policy does not meet the version requirements.
     version: Specifies the format of the policy.  Valid values are 0, 1, and
-      3. Requests specifying an invalid value will be rejected.  Policies with
-      any conditional bindings must specify version 3. Policies without any
-      conditional bindings may specify any valid value or leave the field
-      unset.
+      3. Requests specifying an invalid value will be rejected.  Operations
+      affecting conditional bindings must specify version 3. This can be
+      either setting a conditional policy, modifying a conditional binding, or
+      removing a conditional binding from the stored conditional policy.
+      Operations on non-conditional policies may specify any valid value or
+      leave the field unset.  If no etag is provided in the call to
+      `setIamPolicy`, any version compliance checks on the incoming and/or
+      stored policy is skipped.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -1805,6 +1639,85 @@ class Probe(_messages.Message):
   timeoutSeconds = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
+class PubSub(_messages.Message):
+  r"""A PubSub object.
+
+  Fields:
+    apiVersion: The API version for this call such as
+      "events.cloud.google.com/v1alpha1".
+    kind: The kind of resource, in this case "PubSub".
+    metadata: Metadata associated with this PubSub.
+    spec: Spec defines the desired state of the PubSub.
+    status: Status represents the current state of the PubSub. This data may
+      be out of date. +optional
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  metadata = _messages.MessageField('ObjectMeta', 3)
+  spec = _messages.MessageField('PubSubSpec', 4)
+  status = _messages.MessageField('PubSubStatus', 5)
+
+
+class PubSubSpec(_messages.Message):
+  r"""The desired state of the PubSub.
+
+  Fields:
+    ackDeadline: AckDeadline is the default maximum time after a subscriber
+      receives a message before the subscriber should acknowledge the message.
+      Defaults to 30 seconds ('30s'). +optional
+    ceOverrides: CloudEventOverrides defines overrides to control the output
+      format and modifications of the event sent to the sink. +optional
+    project: Project is the ID of the Google Cloud Project that the PubSub
+      Topic exists in. If omitted, defaults to same as the cluster. +optional
+    pubsubSecret: PubSubSecret is the credential to use to create Topic /
+      PullSubscription resources. If omitted, uses Secret.
+    retainAckedMessages: RetainAckedMessages defines whether to retain
+      acknowledged messages. If true, acknowledged messages will not be
+      expunged until they fall out of the RetentionDuration window.
+    retentionDuration: RetentionDuration defines how long to retain messages
+      in backlog, from the time of publish. If RetainAckedMessages is true,
+      this duration affects the retention of acknowledged messages, otherwise
+      only unacknowledged messages are retained. Cannot be longer than 7 days
+      or shorter than 10 minutes. Defaults to 7 days ('7d'). +optional
+    secret: Secret is the credential to use to create the Scheduler Job. If
+      not specified, defaults to: Name: google-cloud-key Key: key.json
+      +optional
+    sink: Sink is a reference to an object that will resolve to a domain name
+      or a URI directly to use as the sink.
+    topic: Topic is the ID of the PubSub Topic to Subscribe to. It must be in
+      the form of the unique identifier within the project, not the entire
+      name. E.g. it must be 'laconia', not 'projects/my-proj/topics/laconia'.
+  """
+
+  ackDeadline = _messages.StringField(1)
+  ceOverrides = _messages.MessageField('CloudEventOverrides', 2)
+  project = _messages.StringField(3)
+  pubsubSecret = _messages.MessageField('SecretKeySelector', 4)
+  retainAckedMessages = _messages.BooleanField(5)
+  retentionDuration = _messages.StringField(6)
+  secret = _messages.MessageField('SecretKeySelector', 7)
+  sink = _messages.MessageField('Destination', 8)
+  topic = _messages.StringField(9)
+
+
+class PubSubStatus(_messages.Message):
+  r"""PubSubStatus represents the current state of a PubSub.
+
+  Fields:
+    conditions: Array of observed PubSubConditions, indicating the current
+      state of the PubSub.
+    observedGeneration: ObservedGeneration is the 'Generation' of the PubSub
+      that was last processed by the controller.
+    sinkUri: SinkURI is the current active sink URI that has been configured
+      for the Source. +optional
+  """
+
+  conditions = _messages.MessageField('Condition', 1, repeated=True)
+  observedGeneration = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  sinkUri = _messages.StringField(3)
+
+
 class Quantity(_messages.Message):
   r"""The view model of a single quantity, e.g. "800 MiB". Corresponds to http
   s://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apimachi
@@ -1815,16 +1728,6 @@ class Quantity(_messages.Message):
   """
 
   string = _messages.StringField(1)
-
-
-class RegionDetails(_messages.Message):
-  r"""Information for a regional call used for a global API.
-
-  Fields:
-    error: The status indicating why the regional call failed
-  """
-
-  error = _messages.MessageField('GoogleRpcStatus', 1)
 
 
 class ResourceRecord(_messages.Message):
@@ -2506,6 +2409,93 @@ class RunNamespacesEventtypesListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
+class RunNamespacesPubsubsCreateRequest(_messages.Message):
+  r"""A RunNamespacesPubsubsCreateRequest object.
+
+  Fields:
+    parent: The project ID or project number in which this pubsub should be
+      created.
+    pubSub: A PubSub resource to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  pubSub = _messages.MessageField('PubSub', 2)
+
+
+class RunNamespacesPubsubsDeleteRequest(_messages.Message):
+  r"""A RunNamespacesPubsubsDeleteRequest object.
+
+  Fields:
+    apiVersion: Cloud Run currently ignores this parameter.
+    kind: Cloud Run currently ignores this parameter.
+    name: The name of the pubsub being deleted. If needed, replace
+      {namespace_id} with the project ID.
+    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
+      currently ignores this setting, and deletes in the background. Please
+      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
+      collection/ for more information.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  propagationPolicy = _messages.StringField(4)
+
+
+class RunNamespacesPubsubsGetRequest(_messages.Message):
+  r"""A RunNamespacesPubsubsGetRequest object.
+
+  Fields:
+    name: The name of the pubsub being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RunNamespacesPubsubsListRequest(_messages.Message):
+  r"""A RunNamespacesPubsubsListRequest object.
+
+  Fields:
+    continue_: Optional encoded string to continue paging.
+    fieldSelector: Allows to filter resources based on a specific value for a
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
+    labelSelector: Allows to filter resources based on a label. Supported
+      operations are =, !=, exists, in, and notIn.
+    limit: The maximum number of records that should be returned.
+    parent: The project ID or project number from which the pubsubs should be
+      listed.
+    resourceVersion: The baseline resource version from which the list or
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
+  """
+
+  continue_ = _messages.StringField(1)
+  fieldSelector = _messages.StringField(2)
+  includeUninitialized = _messages.BooleanField(3)
+  labelSelector = _messages.StringField(4)
+  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(6, required=True)
+  resourceVersion = _messages.StringField(7)
+  watch = _messages.BooleanField(8)
+
+
+class RunNamespacesPubsubsReplacePubSubRequest(_messages.Message):
+  r"""A RunNamespacesPubsubsReplacePubSubRequest object.
+
+  Fields:
+    name: The name of the pubsub being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+    pubSub: A PubSub resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pubSub = _messages.MessageField('PubSub', 2)
+
+
 class RunNamespacesRevisionsDeleteRequest(_messages.Message):
   r"""A RunNamespacesRevisionsDeleteRequest object.
 
@@ -2983,6 +2973,93 @@ class RunProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class RunProjectsLocationsPubsubsCreateRequest(_messages.Message):
+  r"""A RunProjectsLocationsPubsubsCreateRequest object.
+
+  Fields:
+    parent: The project ID or project number in which this pubsub should be
+      created.
+    pubSub: A PubSub resource to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  pubSub = _messages.MessageField('PubSub', 2)
+
+
+class RunProjectsLocationsPubsubsDeleteRequest(_messages.Message):
+  r"""A RunProjectsLocationsPubsubsDeleteRequest object.
+
+  Fields:
+    apiVersion: Cloud Run currently ignores this parameter.
+    kind: Cloud Run currently ignores this parameter.
+    name: The name of the pubsub being deleted. If needed, replace
+      {namespace_id} with the project ID.
+    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
+      currently ignores this setting, and deletes in the background. Please
+      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
+      collection/ for more information.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  propagationPolicy = _messages.StringField(4)
+
+
+class RunProjectsLocationsPubsubsGetRequest(_messages.Message):
+  r"""A RunProjectsLocationsPubsubsGetRequest object.
+
+  Fields:
+    name: The name of the pubsub being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RunProjectsLocationsPubsubsListRequest(_messages.Message):
+  r"""A RunProjectsLocationsPubsubsListRequest object.
+
+  Fields:
+    continue_: Optional encoded string to continue paging.
+    fieldSelector: Allows to filter resources based on a specific value for a
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
+    labelSelector: Allows to filter resources based on a label. Supported
+      operations are =, !=, exists, in, and notIn.
+    limit: The maximum number of records that should be returned.
+    parent: The project ID or project number from which the pubsubs should be
+      listed.
+    resourceVersion: The baseline resource version from which the list or
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
+  """
+
+  continue_ = _messages.StringField(1)
+  fieldSelector = _messages.StringField(2)
+  includeUninitialized = _messages.BooleanField(3)
+  labelSelector = _messages.StringField(4)
+  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(6, required=True)
+  resourceVersion = _messages.StringField(7)
+  watch = _messages.BooleanField(8)
+
+
+class RunProjectsLocationsPubsubsReplacePubSubRequest(_messages.Message):
+  r"""A RunProjectsLocationsPubsubsReplacePubSubRequest object.
+
+  Fields:
+    name: The name of the pubsub being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+    pubSub: A PubSub resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pubSub = _messages.MessageField('PubSub', 2)
+
+
 class RunProjectsLocationsRevisionsDeleteRequest(_messages.Message):
   r"""A RunProjectsLocationsRevisionsDeleteRequest object.
 
@@ -3343,9 +3420,9 @@ class SecretEnvSource(_messages.Message):
   key-value pairs as environment variables.
 
   Fields:
-    localObjectReference: Output only. This field should not be used directly
-      as it is meant to be inlined directly into the message. Use the "name"
-      field instead.
+    localObjectReference: This field should not be used directly as it is
+      meant to be inlined directly into the message. Use the "name" field
+      instead.
     name: Cloud Run fully managed: not supported  Cloud Run for Anthos:
       supported  The Secret to select from.
     optional: Cloud Run fully managed: not supported  Cloud Run for Anthos:
@@ -3364,9 +3441,9 @@ class SecretKeySelector(_messages.Message):
   Fields:
     key: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
       The key of the secret to select from.  Must be a valid secret key.
-    localObjectReference: Output only. This field should not be used directly
-      as it is meant to be inlined directly into the message. Use the "name"
-      field instead.
+    localObjectReference: This field should not be used directly as it is
+      meant to be inlined directly into the message. Use the "name" field
+      instead.
     name: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
       The name of the secret in the pod's namespace to select from.
     optional: Cloud Run fully managed: not supported  Cloud Run on GKE:
@@ -3890,9 +3967,8 @@ class TriggerFilter(_messages.Message):
       the event context. An event passes the filter if all values are equal to
       the specified values.  Nested context attributes are not supported as
       keys. Only string values are supported.  +optional
-    sourceAndType: SourceAndType filters events based on exact matches on the
-      CloudEvents type and source attributes. This field has been replaced by
-      the Attributes field.  +optional
+    sourceAndType: SourceAndType is DEPRECATED and replaced by the Attributes
+      field.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -3929,9 +4005,8 @@ class TriggerFilter(_messages.Message):
 
 
 class TriggerFilterSourceAndType(_messages.Message):
-  r"""TriggerFilterSourceAndType filters events based on exact matches on the
-  cloud event's type and source attributes. Only exact matches will pass the
-  filter.
+  r"""TriggerFilterSourceAndType is DEPRECATED. Filters are now contained in
+  the map of attributes in TriggerFilter proto.
 
   Fields:
     source: A string attribute.

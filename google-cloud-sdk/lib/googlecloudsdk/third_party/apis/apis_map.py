@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Base template using which the apis_map.py is generated."""
 
 from __future__ import absolute_import
@@ -26,10 +25,14 @@ class APIDef(object):
   Attributes:
     class_path: str, Path to the package containing api related modules.
     client_classpath: str, Relative path to the client class for an API version.
-    messages_modulepath: str, Relative path to the messages module for an
-      API version.
+    client_full_classpath: str, Full path to the client class for an API
+      version.
+    messages_modulepath: str, Relative path to the messages module for an API
+      version.
+    messages_full_modulepath: str, Full path to the messages module for an API
+      version.
     default_version: bool, Whether this API version is the default version for
-    the API.
+      the API.
   """
 
   def __init__(self,
@@ -51,18 +54,16 @@ class APIDef(object):
     return self.class_path + '.' + self.messages_modulepath
 
   def __eq__(self, other):
-    return (isinstance(other, self.__class__)
-            and self.__dict__ == other.__dict__)
+    return (isinstance(other, self.__class__) and
+            self.__dict__ == other.__dict__)
 
   def __ne__(self, other):
     return not self.__eq__(other)
 
   def get_init_source(self):
     src_fmt = 'APIDef("{0}", "{1}", "{2}", {3})'
-    return src_fmt.format(self.class_path,
-                          self.client_classpath,
-                          self.messages_modulepath,
-                          self.default_version)
+    return src_fmt.format(self.class_path, self.client_classpath,
+                          self.messages_modulepath, self.default_version)
 
   def __repr__(self):
     return self.get_init_source()
@@ -117,6 +118,14 @@ MAP = {
                 messages_modulepath='appengine_v1beta_messages',
                 default_version=False),
     },
+    'artifactregistry': {
+        'v1beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.artifactregistry.v1beta1',
+                client_classpath='artifactregistry_v1beta1_client.ArtifactregistryV1beta1',
+                messages_modulepath='artifactregistry_v1beta1_messages',
+                default_version=True),
+    },
     'bigquery': {
         'v2':
             APIDef(
@@ -139,14 +148,6 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.bigtableadmin.v2',
                 client_classpath='bigtableadmin_v2_client.BigtableadminV2',
                 messages_modulepath='bigtableadmin_v2_messages',
-                default_version=True),
-    },
-    'bigtableclusteradmin': {
-        'v1':
-            APIDef(
-                class_path='googlecloudsdk.third_party.apis.bigtableclusteradmin.v1',
-                client_classpath='bigtableclusteradmin_v1_client.BigtableclusteradminV1',
-                messages_modulepath='bigtableclusteradmin_v1_messages',
                 default_version=True),
     },
     'billingbudgets': {
@@ -217,6 +218,12 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.cloudasset.v1p2beta1',
                 client_classpath='cloudasset_v1p2beta1_client.CloudassetV1p2beta1',
                 messages_modulepath='cloudasset_v1p2beta1_messages',
+                default_version=False),
+        'v1p4alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.cloudasset.v1p4alpha1',
+                client_classpath='cloudasset_v1p4alpha1_client.CloudassetV1p4alpha1',
+                messages_modulepath='cloudasset_v1p4alpha1_messages',
                 default_version=False),
     },
     'cloudbilling': {
@@ -792,6 +799,12 @@ MAP = {
                 default_version=True),
     },
     'managedidentities': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.managedidentities.v1',
+                client_classpath='managedidentities_v1_client.ManagedidentitiesV1',
+                messages_modulepath='managedidentities_v1_messages',
+                default_version=True),
         'v1alpha1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.managedidentities.v1alpha1',
@@ -803,7 +816,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.managedidentities.v1beta1',
                 client_classpath='managedidentities_v1beta1_client.ManagedidentitiesV1beta1',
                 messages_modulepath='managedidentities_v1beta1_messages',
-                default_version=True),
+                default_version=False),
     },
     'ml': {
         'v1':

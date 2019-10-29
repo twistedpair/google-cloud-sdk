@@ -1563,7 +1563,7 @@
     },
     "IosModel": {
       "id": "IosModel",
-      "description": "A description of an iOS device tests may be run on.\nNext tag: 10",
+      "description": "A description of an iOS device tests may be run on.\nNext tag: 11",
       "type": "object",
       "properties": {
         "id": {

@@ -27,36 +27,31 @@ properties:
       type: string
   IPAddress:
     description: |-
-      The IP address that this forwarding rule is serving on behalf of.
-      Addresses are restricted based on the forwarding rule's load balancing
-      scheme (EXTERNAL or INTERNAL) and scope (global or regional). When the
-      load balancing scheme is EXTERNAL, for global forwarding rules, the
-      address must be a global IP, and for regional forwarding rules, the
-      address must live in the same region as the forwarding rule. If this field
-      is empty, an ephemeral IPv4 address from the same scope (global or
-      regional) will be assigned. A regional forwarding rule supports IPv4 only.
-      A global forwarding rule supports either IPv4 or IPv6.  When the load
-      balancing scheme is INTERNAL_SELF_MANAGED, this must be a URL reference to
-      an existing Address resource ( internal regional static IP address), with
-      a purpose of GCE_END_POINT and address_type of INTERNAL. When the load
-      balancing scheme is INTERNAL, this can only be an RFC 1918 IP address
-      belonging to the network/subnet configured for the forwarding rule. By
-      default, if this field is empty, an ephemeral internal IP address will be
-      automatically allocated from the IP range of the subnet or network
-      configured for this forwarding rule.  An address can be specified either
-      by a literal IP address or a URL reference to an existing Address
-      resource. The following examples are all valid:   - 100.1.2.3  -
-      https://www.googleapis.com/compute/v1/projects/project/regi
-      ons/region/addresses/address  -
-      projects/project/regions/region/addresses/address  -
-      regions/region/addresses/address  - global/addresses/address  - address
+      IP address that this forwarding rule serves. When a client sends traffic
+      to this IP address, the forwarding rule directs the traffic to the target
+      that you specify in the forwarding rule.  If you don't specify a reserved
+      IP address, an ephemeral IP address is assigned. Methods for specifying an
+      IP address:  * IPv4 dotted decimal, as in `100.1.2.3` * Full URL, as in
+      https://www.googleapis.com/compute/v
+      1/projects/project_id/regions/region/addresses/address-name * Partial URL
+      or by name, as in: * projects/project_id/regions/region/addresses
+      /address-name * regions/region/addresses/address-name * global/addresses
+      /address-name * address-name   The loadBalancingScheme and the forwarding
+      rule's target determine the type of IP address that you can use. For
+      detailed information, refer to [IP address specifications ](/load-
+      balancing/docs/forwarding-rule- concepts#ip_address_specifications).
     type: string
   IPProtocol:
     description: |-
       The IP protocol to which this rule applies. Valid options are TCP, UDP,
-      ESP, AH, SCTP or ICMP.  When the load balancing scheme is INTERNAL, only
-      TCP and UDP are valid. When the load balancing scheme is
-      INTERNAL_SELF_MANAGED, only TCPis valid.
+      ESP, AH, SCTP or ICMP.  For Internal TCP/UDP Load Balancing, the load
+      balancing scheme is INTERNAL, and one of TCP or UDP are valid. For Traffic
+      Director, the load balancing scheme is INTERNAL_SELF_MANAGED, and only
+      TCPis valid. For Internal HTTP(S) Load Balancing, the load balancing
+      scheme is INTERNAL_MANAGED, and only TCP is valid. For HTTP(S), SSL Proxy,
+      and TCP Proxy Load Balancing, the load balancing scheme is EXTERNAL and
+      only TCP is valid. For Network TCP/UDP Load Balancing, the load balancing
+      scheme is EXTERNAL, and one of TCP or UDP is valid.
     type: string
     enum:
     - AH
@@ -106,6 +101,14 @@ properties:
     - IPV4
     - IPV6
     - UNSPECIFIED_VERSION
+  isMirroringCollector:
+    description: |-
+      Indicates whether or not this load balancer can be used as a collector for
+      packet mirroring. To prevent mirroring loops, instances behind this load
+      balancer will not have their traffic mirrored even if a PacketMirroring
+      rule applies to them. This can only be set to true for load balancers that
+      have their loadBalancingScheme set to INTERNAL.
+    type: boolean
   kind:
     description: |-
       [Output Only] Type of the resource. Always compute#forwardingRule for
@@ -118,14 +121,7 @@ properties:
       Label values may be empty.
     $ref: LabelsValue.yaml
   loadBalancingScheme:
-    description: |-
-      This signifies what the ForwardingRule will be used for and can only take
-      the following values: INTERNAL, INTERNAL_SELF_MANAGED, EXTERNAL. The value
-      of INTERNAL means that this will be used for Internal Network Load
-      Balancing (TCP, UDP). The value of INTERNAL_SELF_MANAGED means that this
-      will be used for Internal Global HTTP(S) LB. The value of EXTERNAL means
-      that this will be used for External Load Balancing (HTTP(S) LB, External
-      TCP/UDP LB, SSL Proxy)
+    description: Specifies the forwarding rule type. EXTERNAL is used
     type: string
     enum:
     - EXTERNAL
@@ -180,27 +176,23 @@ properties:
     type: string
     enum:
     - PREMIUM
-    - SELECT
     - STANDARD
   portRange:
-    description: |-
-      This field is used along with the target field for TargetHttpProxy,
-      TargetHttpsProxy, TargetSslProxy, TargetTcpProxy, TargetVpnGateway,
-      TargetPool, TargetInstance.  Applicable only when IPProtocol is TCP,
-      UDP, or SCTP, only packets addressed to ports in the specified range
-      will be forwarded to target. Forwarding rules with the same
-      [IPAddress, IPProtocol] pair must have disjoint port ranges.  Some
-      types of forwarding target have constraints on the acceptable ports:
-      -
+    description: This field is deprecated. See the port field.
     type: string
   ports:
     description: |-
-      This field is used along with the backend_service field for internal
-      load balancing.  When the load balancing scheme is INTERNAL, a list of
-      ports can be configured, for example, ['80'], ['8000','9000'] etc.
-      Only packets addressed to these ports will be forwarded to the
-      backends configured with this forwarding rule.  You may specify a
-      maximum of up to 5 ports.
+      List of comma-separated ports. The forwarding rule forwards packets
+      with matching destination ports. If the forwarding rule's
+      loadBalancingScheme is EXTERNAL, and the forwarding rule references a
+      target pool, specifying ports is optional. You can specify an
+      unlimited number of ports, but they must be contiguous. If you omit
+      ports, GCP forwards traffic on any port of the forwarding rule's
+      protocol.  If the forwarding rule's loadBalancingScheme is EXTERNAL,
+      and the forwarding rule references a target HTTP proxy, target HTTPS
+      proxy, target TCP proxy, target SSL proxy, or target VPN gateway, you
+      must specify ports using the following constraints:    -
+      TargetHttpProxy: 80, 8080  -
     type: array
     items:
       type: string
@@ -214,15 +206,10 @@ properties:
   selfLink:
     description: '[Output Only] Server-defined URL for the resource.'
     type: string
-  selfLinkWithId:
-    description: |-
-      [Output Only] Server-defined URL for this resource with the
-      resource id.
-    type: string
   serviceLabel:
     description: |-
       An optional prefix to the service name for this Forwarding Rule.
-      If specified, will be the first label of the fully qualified
+      If specified, the prefix is the first label of the fully qualified
       service name.  The label must be 1-63 characters long, and comply
       with RFC1035. Specifically, the label must be 1-63 characters long
       and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`

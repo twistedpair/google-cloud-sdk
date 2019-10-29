@@ -4084,6 +4084,7 @@ class Snapshot(_messages.Message):
 
   Fields:
     creationTime: The time this snapshot was created.
+    description: User specified description of the snapshot. Maybe empty.
     id: The unique ID of this snapshot.
     projectId: The project this snapshot belongs to.
     pubsubMetadata: PubSub snapshot metadata.
@@ -4112,27 +4113,30 @@ class Snapshot(_messages.Message):
     DELETED = 5
 
   creationTime = _messages.StringField(1)
-  id = _messages.StringField(2)
-  projectId = _messages.StringField(3)
-  pubsubMetadata = _messages.MessageField('PubsubSnapshotMetadata', 4, repeated=True)
-  sourceJobId = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  ttl = _messages.StringField(7)
+  description = _messages.StringField(2)
+  id = _messages.StringField(3)
+  projectId = _messages.StringField(4)
+  pubsubMetadata = _messages.MessageField('PubsubSnapshotMetadata', 5, repeated=True)
+  sourceJobId = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  ttl = _messages.StringField(8)
 
 
 class SnapshotJobRequest(_messages.Message):
   r"""Request to create a snapshot of a job.
 
   Fields:
+    description: User specified description of the snapshot. Maybe empty.
     location: The location that contains this job.
     snapshotSources: If true, perform snapshots for sources which support
       this.
     ttl: TTL for the snapshot.
   """
 
-  location = _messages.StringField(1)
-  snapshotSources = _messages.BooleanField(2)
-  ttl = _messages.StringField(3)
+  description = _messages.StringField(1)
+  location = _messages.StringField(2)
+  snapshotSources = _messages.BooleanField(3)
+  ttl = _messages.StringField(4)
 
 
 class Source(_messages.Message):

@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.protorpclite import protojson
 from googlecloudsdk.api_lib.run import k8s_object
 
 
@@ -28,6 +29,9 @@ _SERVICE_KIND = 'Service'
 EVENT_TYPE_FIELD = 'type'
 # k8s OwnerReference serialized to a json string
 DEPENDENCY_ANNOTATION_FIELD = 'knative.dev/dependency'
+# Field placed on both the trigger and source (as a CEOverrdie) to link the
+# resources so the trigger only consumes events from that source
+SOURCE_TRIGGER_LINK_FIELD = 'knsourcetrigger'
 
 
 class Trigger(k8s_object.KubernetesObject):
@@ -39,6 +43,26 @@ class Trigger(k8s_object.KubernetesObject):
   TERMINAL_CONDITIONS = {
       READY_CONDITION,
   }
+  FIELD_BLACKLIST = ['sourceAndType']
+
+  @property
+  def dependency(self):
+    """The knative dependency annotation.
+
+    Returns:
+      ObjectReference of the dependency annotation if one exists, else None.
+    """
+    if DEPENDENCY_ANNOTATION_FIELD not in self.annotations:
+      return None
+    return protojson.decode_message(
+        self._messages.ObjectReference,
+        self.annotations[DEPENDENCY_ANNOTATION_FIELD])
+
+  @dependency.setter
+  def dependency(self, k8s_obj):
+    """Set the knative dependency annotation by passing a k8s_object.KubernetesObject."""
+    self.annotations[DEPENDENCY_ANNOTATION_FIELD] = protojson.encode_message(
+        k8s_obj.AsObjectReference())
 
   @property
   def broker(self):
