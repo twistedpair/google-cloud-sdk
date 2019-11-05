@@ -32,7 +32,7 @@ class Asset(_messages.Message):
       defined by the GCP resource and cannot be modified by the user.
     name: The relative resource name of this asset. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
-      me Example: "organizations/123/assets/456".
+      me Example: "organizations/{organization_id}/assets/{asset_id}".
     resourceProperties: Resource managed properties. These properties are
       managed and defined by the GCP resource and cannot be modified by the
       user.
@@ -246,10 +246,10 @@ class Expr(_messages.Message):
 
 class Finding(_messages.Message):
   r"""Cloud Security Command Center (Cloud SCC) finding.  A finding is a
-  record of assessment data (security, risk, health or privacy) ingested into
-  Cloud SCC for presentation, notification, analysis, policy testing, and
-  enforcement. For example, an XSS vulnerability in an App Engine application
-  is a finding.
+  record of assessment data like security, risk, health, or privacy, that is
+  ingested into Cloud SCC for presentation, notification, analysis, policy
+  testing, and enforcement. For example, a cross-site scripting (XSS)
+  vulnerability in an App Engine application is a finding.
 
   Enums:
     StateValueValuesEnum: The state of the finding.
@@ -275,11 +275,12 @@ class Finding(_messages.Message):
       This field is guaranteed to be either empty or a well formed URL.
     name: The relative resource name of this finding. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
-      me Example: "organizations/123/sources/456/findings/789"
+      me Example: "organizations/{organization_id}/sources/{source_id}/finding
+      s/{finding_id}"
     parent: The relative resource name of the source the finding belongs to.
       See: https://cloud.google.com/apis/design/resource_names#relative_resour
       ce_name This field is immutable after creation time. For example:
-      "organizations/123/sources/456"
+      "organizations/{organization_id}/sources/{source_id}"
     resourceName: The full resource name of the Google Cloud Platform (GCP)
       resource this finding is for. See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name
@@ -924,7 +925,7 @@ class OrganizationSettings(_messages.Message):
       discovery of future assets will not occur.
     name: The relative resource name of the settings. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
-      me Example: "organizations/123/organizationSettings".
+      me Example: "organizations/{organization_id}/organizationSettings".
   """
 
   assetDiscoveryConfig = _messages.MessageField('AssetDiscoveryConfig', 1)
@@ -1050,8 +1051,10 @@ class SecurityMarks(_messages.Message):
       be between 1 - 4096 characters (inclusive)
     name: The relative resource name of the SecurityMarks. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
-      me Examples: "organizations/123/assets/456/securityMarks"
-      "organizations/123/sources/456/findings/789/securityMarks".
+      me Examples:
+      "organizations/{organization_id}/assets/{asset_id}/securityMarks" "organ
+      izations/{organization_id}/sources/{source_id}/findings/{finding_id}/sec
+      urityMarks".
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1209,8 +1212,10 @@ class SecuritycenterOrganizationsAssetsUpdateSecurityMarksRequest(_messages.Mess
   Fields:
     name: The relative resource name of the SecurityMarks. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
-      me Examples: "organizations/123/assets/456/securityMarks"
-      "organizations/123/sources/456/findings/789/securityMarks".
+      me Examples:
+      "organizations/{organization_id}/assets/{asset_id}/securityMarks" "organ
+      izations/{organization_id}/sources/{source_id}/findings/{finding_id}/sec
+      urityMarks".
     securityMarks: A SecurityMarks resource to be passed as the request body.
     startTime: The time at which the updated SecurityMarks take effect. If not
       set uses current server time.  Updates will be applied to the
@@ -1323,7 +1328,7 @@ class SecuritycenterOrganizationsSourcesFindingsGroupRequest(_messages.Message):
     parent: Required. Name of the source to groupBy. Its format is
       "organizations/[organization_id]/sources/[source_id]". To groupBy across
       all sources provide a source_id of `-`. For example:
-      organizations/123/sources/-
+      organizations/{organization_id}/sources/-
   """
 
   groupFindingsRequest = _messages.MessageField('GroupFindingsRequest', 1)
@@ -1392,7 +1397,7 @@ class SecuritycenterOrganizationsSourcesFindingsListRequest(_messages.Message):
     parent: Required. Name of the source the findings belong to. Its format is
       "organizations/[organization_id]/sources/[source_id]". To list across
       all sources provide a source_id of `-`. For example:
-      organizations/123/sources/-
+      organizations/{organization_id}/sources/-
     readTime: Time used as a reference point when filtering findings. The
       filter is limited to findings existing at the supplied time and their
       values are those at that specific time. Absence of this field will
@@ -1416,7 +1421,8 @@ class SecuritycenterOrganizationsSourcesFindingsPatchRequest(_messages.Message):
     finding: A Finding resource to be passed as the request body.
     name: The relative resource name of this finding. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
-      me Example: "organizations/123/sources/456/findings/789"
+      me Example: "organizations/{organization_id}/sources/{source_id}/finding
+      s/{finding_id}"
     updateMask: The FieldMask to use when updating the finding resource. This
       field should not be specified when creating a finding.  When updating a
       finding, an empty mask is treated as updating all mutable fields and
@@ -1436,7 +1442,8 @@ class SecuritycenterOrganizationsSourcesFindingsSetStateRequest(_messages.Messag
   Fields:
     name: Required. The relative resource name of the finding. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
-      me Example: "organizations/123/sources/456/finding/789".
+      me Example: "organizations/{organization_id}/sources/{source_id}/finding
+      /{finding_id}".
     setFindingStateRequest: A SetFindingStateRequest resource to be passed as
       the request body.
   """
@@ -1452,8 +1459,10 @@ class SecuritycenterOrganizationsSourcesFindingsUpdateSecurityMarksRequest(_mess
   Fields:
     name: The relative resource name of the SecurityMarks. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
-      me Examples: "organizations/123/assets/456/securityMarks"
-      "organizations/123/sources/456/findings/789/securityMarks".
+      me Examples:
+      "organizations/{organization_id}/assets/{asset_id}/securityMarks" "organ
+      izations/{organization_id}/sources/{source_id}/findings/{finding_id}/sec
+      urityMarks".
     securityMarks: A SecurityMarks resource to be passed as the request body.
     startTime: The time at which the updated SecurityMarks take effect. If not
       set uses current server time.  Updates will be applied to the
@@ -1520,7 +1529,7 @@ class SecuritycenterOrganizationsSourcesPatchRequest(_messages.Message):
   Fields:
     name: The relative resource name of this source. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
-      me Example: "organizations/123/sources/456"
+      me Example: "organizations/{organization_id}/sources/{source_id}"
     source: A Source resource to be passed as the request body.
     updateMask: The FieldMask to use when updating the source resource.  If
       empty all mutable fields will be updated.
@@ -1567,7 +1576,7 @@ class SecuritycenterOrganizationsUpdateOrganizationSettingsRequest(_messages.Mes
   Fields:
     name: The relative resource name of the settings. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
-      me Example: "organizations/123/organizationSettings".
+      me Example: "organizations/{organization_id}/organizationSettings".
     organizationSettings: A OrganizationSettings resource to be passed as the
       request body.
     updateMask: The FieldMask to use when updating the settings resource.   If
@@ -1629,22 +1638,22 @@ class Source(_messages.Message):
   r"""Cloud Security Command Center's (Cloud SCC) finding source. A finding
   source is an entity or a mechanism that can produce a finding. A source is
   like a container of findings that come from the same scanner, logger,
-  monitor, etc.
+  monitor, and other tools.
 
   Fields:
     description: The description of the source (max of 1024 characters).
-      Example: "Cloud Security Scanner is a web security scanner for common
+      Example: "Web Security Scanner is a web security scanner for common
       vulnerabilities in App Engine applications. It can automatically scan
       and detect four common vulnerabilities, including cross-site-scripting
-      (XSS), Flash injection, mixed content (HTTP in HTTPS), and
-      outdated/insecure libraries."
+      (XSS), Flash injection, mixed content (HTTP in HTTPS), and outdated or
+      insecure libraries."
     displayName: The source's display name. A source's display name must be
       unique amongst its siblings, for example, two sources with the same
       parent can't share the same display name. The display name must have a
       length between 1 and 64 characters (inclusive).
     name: The relative resource name of this source. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
-      me Example: "organizations/123/sources/456"
+      me Example: "organizations/{organization_id}/sources/{source_id}"
   """
 
   description = _messages.StringField(1)

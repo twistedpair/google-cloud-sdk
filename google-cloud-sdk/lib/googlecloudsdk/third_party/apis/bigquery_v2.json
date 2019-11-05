@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20191018",
+ "revision": "20191025",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -1735,6 +1735,10 @@
    "id": "MaterializedViewDefinition",
    "type": "object",
    "properties": {
+    "enableRefresh": {
+     "type": "boolean",
+     "description": "[Optional] [TrustedTester] Enable automatic refresh of the materialized view when the base table is updated. The default value is \"true\"."
+    },
     "lastRefreshTime": {
      "type": "string",
      "description": "[Output-only] [TrustedTester] The time when this materialized view was last modified, in milliseconds since the epoch.",
@@ -1743,6 +1747,11 @@
     "query": {
      "type": "string",
      "description": "[Required] A query whose result is persisted."
+    },
+    "refreshIntervalMs": {
+     "type": "string",
+     "description": "[Optional] [TrustedTester] The maximum frequency at which this materialized view will be refreshed. The default value is \"1800000\" (30 minutes).",
+     "format": "int64"
     }
    }
   },
@@ -2313,7 +2322,7 @@
     },
     "requirePartitionFilter": {
      "type": "boolean",
-     "description": "[Beta] [Optional] If set to true, queries over this table require a partition filter that can be used for partition elimination to be specified.",
+     "description": "[Optional] If set to true, queries over this table require a partition filter that can be used for partition elimination to be specified.",
      "default": "false"
     },
     "schema": {

@@ -41,8 +41,8 @@ def _NodePoolFromCluster(cluster, node_pool_name):
     if node_pool.name == node_pool_name:
       # Node pools always have unique names.
       return node_pool
-  raise NodePoolError('No node pool found matching the name [{}].'.format(
-      node_pool_name))
+  raise NodePoolError(
+      'No node pool found matching the name [{}].'.format(node_pool_name))
 
 
 def _MasterUpgradeMessage(name, server_conf, cluster, new_version):
@@ -74,8 +74,8 @@ def _MasterUpgradeMessage(name, server_conf, cluster, new_version):
   else:
     new_version_message = 'the default cluster version'
 
-  return ('Master of cluster [{}] will be upgraded from {} to {}.'
-          .format(name, version_message, new_version_message))
+  return ('Master of cluster [{}] will be upgraded from {} to {}.'.format(
+      name, version_message, new_version_message))
 
 
 def _NodeUpgradeMessage(name, cluster, node_pool_name, new_version,
@@ -86,7 +86,7 @@ def _NodeUpgradeMessage(name, cluster, node_pool_name, new_version,
     name: str, the name of the cluster being upgraded.
     cluster: the cluster object.
     node_pool_name: str, the name of the node pool if the upgrade is for a
-        specific node pool.
+      specific node pool.
     new_version: str, the name of the new version, if given.
     concurrent_node_count: int, the number of nodes to upgrade concurrently.
 
@@ -105,8 +105,7 @@ def _NodeUpgradeMessage(name, cluster, node_pool_name, new_version,
       current_version = _NodePoolFromCluster(cluster, node_pool_name).version
   elif cluster:
     node_message = '{} ({} {})'.format(
-        node_message,
-        cluster.currentNodeCount,
+        node_message, cluster.currentNodeCount,
         text.Pluralize(cluster.currentNodeCount, 'node'))
     current_version = cluster.currentNodeVersion
 
@@ -126,16 +125,19 @@ def _NodeUpgradeMessage(name, cluster, node_pool_name, new_version,
   concurrent_message = ''
   if concurrent_node_count:
     concurrent_message = ' {} {} will be upgraded at a time.'.format(
-        concurrent_node_count,
-        text.Pluralize(concurrent_node_count, 'node'))
+        concurrent_node_count, text.Pluralize(concurrent_node_count, 'node'))
 
-  return ('{} of cluster [{}] will be upgraded from {} to {}.{}'
-          .format(node_message, name, version_message,
-                  new_version_message, concurrent_message))
+  return ('{} of cluster [{}] will be upgraded from {} to {}.{}'.format(
+      node_message, name, version_message, new_version_message,
+      concurrent_message))
 
 
-def ClusterUpgradeMessage(name, server_conf=None, cluster=None, master=False,
-                          node_pool_name=None, new_version=None,
+def ClusterUpgradeMessage(name,
+                          server_conf=None,
+                          cluster=None,
+                          master=False,
+                          node_pool_name=None,
+                          new_version=None,
                           concurrent_node_count=None):
   """Get a message to print during gcloud container clusters upgrade.
 
@@ -145,7 +147,7 @@ def ClusterUpgradeMessage(name, server_conf=None, cluster=None, master=False,
     cluster: the cluster object.
     master: bool, if the upgrade applies to the master version.
     node_pool_name: str, the name of the node pool if the upgrade is for a
-        specific node pool.
+      specific node pool.
     new_version: str, the name of the new version, if given.
     concurrent_node_count: int, the number of nodes to upgrade concurrently.
 
@@ -173,7 +175,7 @@ def GetZone(args, ignore_property=False, required=True):
 
   Args:
     args: an argparse namespace. All the arguments that were provided to this
-        command invocation.
+      command invocation.
     ignore_property: bool, if true, will get location only from argument.
     required: bool, if true, lack of zone will cause raise an exception.
 
@@ -191,8 +193,8 @@ def GetZone(args, ignore_property=False, required=True):
     zone_property = properties.VALUES.compute.zone.Get()
 
   if required and not zone and not zone_property:
-    raise calliope_exceptions.MinimumArgumentException(
-        ['--zone'], 'Please specify zone')
+    raise calliope_exceptions.MinimumArgumentException(['--zone'],
+                                                       'Please specify zone')
 
   return zone or zone_property
 
@@ -202,7 +204,7 @@ def GetZoneOrRegion(args, ignore_property=False, required=True):
 
   Args:
     args: an argparse namespace. All the arguments that were provided to this
-        command invocation.
+      command invocation.
     ignore_property: bool, if true, will get location only from argument.
     required: bool, if true, lack of zone will cause raise an exception.
 
@@ -264,7 +266,7 @@ def ParseUpdateOptionsBase(args, locations):
 
   Args:
     args: an argparse namespace. All the arguments that were provided to this
-        command invocation.
+      command invocation.
     locations: list of strings. Zones in which cluster has nodes.
 
   Returns:
@@ -283,4 +285,17 @@ def ParseUpdateOptionsBase(args, locations):
       locations=locations,
       enable_master_authorized_networks=args.enable_master_authorized_networks,
       master_authorized_networks=args.master_authorized_networks,
-      enable_vertical_pod_autoscaling=args.enable_vertical_pod_autoscaling)
+      database_encryption_key=args.database_encryption_key,
+      disable_database_encryption=args.disable_database_encryption,
+      enable_vertical_pod_autoscaling=args.enable_vertical_pod_autoscaling,
+      enable_autoprovisioning=args.enable_autoprovisioning,
+      autoprovisioning_config_file=args.autoprovisioning_config_file,
+      autoprovisioning_service_account=args.autoprovisioning_service_account,
+      autoprovisioning_scopes=args.autoprovisioning_scopes,
+      autoprovisioning_locations=args.autoprovisioning_locations,
+      min_cpu=args.min_cpu,
+      max_cpu=args.max_cpu,
+      min_memory=args.min_memory,
+      max_memory=args.max_memory,
+      min_accelerator=args.min_accelerator,
+      max_accelerator=args.max_accelerator)

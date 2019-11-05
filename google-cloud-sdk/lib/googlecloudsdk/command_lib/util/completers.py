@@ -156,6 +156,7 @@ class Converter(completion_cache.Completer):
     else:
       collection = None
       is_fully_qualified = True
+    # TODO(b/143543614) audit usage of str
     return str(resources.GRI(reversed(parts),
                              collection=collection,
                              is_fully_qualified=is_fully_qualified))

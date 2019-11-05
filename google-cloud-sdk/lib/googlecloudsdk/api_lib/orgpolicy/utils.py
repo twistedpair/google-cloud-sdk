@@ -84,7 +84,7 @@ def GetMatchingRulesFromPolicy(policy, condition_expression=None):
   else:
     condition_filter = lambda rule: rule.condition is not None and rule.condition.expression == condition_expression
 
-  return list(filter(condition_filter, policy.rules))
+  return list(filter(condition_filter, policy.spec.rules))
 
 
 def GetNonMatchingRulesFromPolicy(policy, condition_expression=None):
@@ -103,7 +103,7 @@ def GetNonMatchingRulesFromPolicy(policy, condition_expression=None):
   else:
     condition_filter = lambda rule: rule.condition is None or rule.condition.expression != condition_expression
 
-  return list(filter(condition_filter, policy.rules))
+  return list(filter(condition_filter, policy.spec.rules))
 
 
 def CreateRuleOnPolicy(policy, condition_expression=None):
@@ -130,9 +130,9 @@ def CreateRuleOnPolicy(policy, condition_expression=None):
   if condition_expression is not None:
     condition = messages.GoogleTypeExpr(expression=condition_expression)
 
-  new_rule = messages.GoogleCloudOrgpolicyV2alpha1PolicyPolicyRule(
+  new_rule = messages.GoogleCloudOrgpolicyV2alpha1PolicySpecPolicyRule(
       condition=condition)
-  new_policy.rules.append(new_rule)
+  new_policy.spec.rules.append(new_rule)
 
   return new_rule, new_policy
 

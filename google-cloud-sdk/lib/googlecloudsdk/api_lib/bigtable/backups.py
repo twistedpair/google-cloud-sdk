@@ -30,9 +30,12 @@ class NoFieldSpecified(core_exceptions.Error):
 def ParseExpireTime(expiration_value):
   """Parse flag value into Datetime format for expireTime."""
   # expiration_value could be in Datetime format or Duration format.
-  datetime = times.ParseDateTime(expiration_value)
+  # backend timezone is UTC.
+  datetime = (times.ParseDuration(expiration_value)
+              .GetRelativeDateTime(times.Now(times.UTC)))
   parsed_datetime = times.FormatDateTime(datetime,
-                                         '%Y-%m-%dT%H:%M:%S.%6f%Ez', times.UTC)
+                                         '%Y-%m-%dT%H:%M:%S.%6f%Ez',
+                                         tzinfo=times.UTC)
   return parsed_datetime
 
 

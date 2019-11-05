@@ -228,7 +228,8 @@ class Templates(object):
              worker_machine_type=None,
              network=None,
              subnetwork=None,
-             dataflow_kms_key=None):
+             dataflow_kms_key=None,
+             disable_public_ips=False):
     """Calls the Dataflow Templates.CreateFromJob method.
 
     Args:
@@ -246,6 +247,7 @@ class Templates(object):
       network: The network for launching instances to run your pipeline.
       subnetwork: The subnetwork for launching instances to run your pipeline.
       dataflow_kms_key: The Cloud KMS key to protect the job resources.
+      disable_public_ips: Cloud Dataflow workers must not use public IPs.
 
     Returns:
       (Job)
@@ -257,6 +259,12 @@ class Templates(object):
 
     # TODO(b/139889563): Remove default when args region is changed to required
     region_id = region_id or DATAFLOW_API_DEFAULT_REGION
+
+    ip_configuration_enum = GetMessagesModule(
+    ).RuntimeEnvironment.IpConfigurationValueValuesEnum
+    ip_private = ip_configuration_enum.WORKER_IP_PRIVATE
+    ip_configuration = ip_private if disable_public_ips else None
+
     body = Templates.CREATE_REQUEST(
         gcsPath=gcs_location,
         jobName=job_name,
@@ -270,7 +278,8 @@ class Templates(object):
             subnetwork=subnetwork,
             machineType=worker_machine_type,
             tempLocation=staging_location,
-            kmsKeyName=dataflow_kms_key),
+            kmsKeyName=dataflow_kms_key,
+            ipConfiguration=ip_configuration),
         parameters=Templates.PARAMETERS_VALUE(
             additionalProperties=params_list) if parameters else None)
     request = GetMessagesModule(

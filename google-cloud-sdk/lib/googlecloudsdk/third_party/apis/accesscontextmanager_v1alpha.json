@@ -525,6 +525,62 @@
           }
         }
       }
+    },
+    "ReplaceAccessLevelsRequest": {
+      "id": "ReplaceAccessLevelsRequest",
+      "description": "A request to replace all existing Access Levels in an Access Policy with\nthe Access Levels provided. This is done within one transaction.",
+      "type": "object",
+      "properties": {
+        "accessLevels": {
+          "description": "Required. The desired Access Levels that should\nreplace all existing Access Levels in the\nAccess Policy.",
+          "type": "array",
+          "items": {
+            "$ref": "AccessLevel"
+          }
+        }
+      }
+    },
+    "ReplaceServicePerimetersRequest": {
+      "id": "ReplaceServicePerimetersRequest",
+      "description": "A request to replace all existing Service Perimeters in an Access Policy\nwith the Service Perimeters provided. This is done within one transaction.",
+      "type": "object",
+      "properties": {
+        "servicePerimeters": {
+          "description": "Required. The desired Service Perimeters that should\nreplace all existing Service Perimeters in the\nAccess Policy.",
+          "type": "array",
+          "items": {
+            "$ref": "ServicePerimeter"
+          }
+        }
+      }
+    },
+    "ReplaceAccessLevelsResponse": {
+      "id": "ReplaceAccessLevelsResponse",
+      "description": "A response to ReplaceAccessLevelsRequest. This will be put inside of\nOperation.response field.",
+      "type": "object",
+      "properties": {
+        "accessLevels": {
+          "description": "List of the Access Level instances.",
+          "type": "array",
+          "items": {
+            "$ref": "AccessLevel"
+          }
+        }
+      }
+    },
+    "ReplaceServicePerimetersResponse": {
+      "id": "ReplaceServicePerimetersResponse",
+      "description": "A response to ReplaceServicePerimetersRequest. This will be put inside of\nOperation.response field.",
+      "type": "object",
+      "properties": {
+        "servicePerimeters": {
+          "description": "List of the Service Perimeter instances.",
+          "type": "array",
+          "items": {
+            "$ref": "ServicePerimeter"
+          }
+        }
+      }
     }
   },
   "resources": {
@@ -868,6 +924,34 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Delete an Access Level by resource\nname. The longrunning operation from this RPC will have a successful status\nonce the Access Level has been removed\nfrom long-lasting storage."
+            },
+            "replaceAll": {
+              "id": "accesscontextmanager.accessPolicies.accessLevels.replaceAll",
+              "path": "v1alpha/{+parent}/accessLevels:replaceAll",
+              "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/accessLevels:replaceAll",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. Resource name for the access policy which owns these\nAccess Levels.\n\nFormat: `accessPolicies\/{policy_id}`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^accessPolicies\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "ReplaceAccessLevelsRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Replace all existing Access Levels in an Access\nPolicy with\nthe Access Levels provided. This\nis done within one transaction. The longrunning operation from this RPC\nwill have a successful status once all replacements have propagated to\nlong-lasting storage. Replacements containing errors will result in an\nerror response for the first error encountered and the transaction will be\ncancelled. Operation.response field will contain\nReplaceAccessLevelsResponse."
             }
           }
         },
@@ -1020,6 +1104,34 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Delete an Service Perimeter by resource\nname. The longrunning operation from this RPC will have a successful status\nonce the Service Perimeter has been\nremoved from long-lasting storage."
+            },
+            "replaceAll": {
+              "id": "accesscontextmanager.accessPolicies.servicePerimeters.replaceAll",
+              "path": "v1alpha/{+parent}/servicePerimeters:replaceAll",
+              "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/servicePerimeters:replaceAll",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. Resource name for the access policy which owns these\nService Perimeters.\n\nFormat: `accessPolicies\/{policy_id}`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^accessPolicies\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "ReplaceServicePerimetersRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Replace all existing Service Perimeters in an\nAccess Policy\nwith the Service Perimeters provided.\nThis is done within one transaction. The longrunning operation from this\nRPC will have a successful status once all replacements have propagated to\nlong-lasting storage. Replacements containing errors will result in an\nerror response for the first error encountered and the transaction will be\ncancelled. Operation.response field will contain\nReplaceServicePerimetersResponse. Either all\nService Perimeters' spec fields\nshould be set or all status fields should be set, but not both."
             }
           }
         }

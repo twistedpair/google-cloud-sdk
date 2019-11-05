@@ -197,7 +197,7 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
           build.identifier,
           params={'projectId': properties.VALUES.core.project.GetOrFail},
           collection='cloudbuild.projects.builds')
-      cloudbuild_logs.CloudBuildClient().Stream(build_ref)
+      cloudbuild_logs.CloudBuildClient().Stream(build_ref, out=log.status)
 
     done_poller = operations_util.AppEngineOperationPoller(
         self.client.apps_operations, operation_metadata_type)

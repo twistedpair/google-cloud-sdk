@@ -398,38 +398,6 @@
           "items": {
             "type": "string"
           }
-        },
-        "glueRecords": {
-          "description": "A list of glue records this registration has.",
-          "type": "array",
-          "items": {
-            "$ref": "GlueRecord"
-          }
-        }
-      }
-    },
-    "GlueRecord": {
-      "id": "GlueRecord",
-      "description": "Defines a GlueRecord. Glue Records or \"Registered Hosts\" are a way of\nmaking the IP address of the name server known when it is a subdomain of\nthe domain for which it serves. For example, If your domain is example.com\nand your name servers are ns1.example.com, ns2.example.com,\nns3.example.com, and ns4.example.com, you would create four registered host\nrecords linking each name server to its IP address. Use glue records when\nyour name servers are subdomains of your domain.",
-      "type": "object",
-      "properties": {
-        "hostName": {
-          "description": "Required. Fully qualified host name, from least to most significant order, e.g.\n\"subdomain.domain.com\".",
-          "type": "string"
-        },
-        "ipv4Addresses": {
-          "description": "List of IPv4 addresses corresponding to this host. At least one of\nipv4_address and ipv6_address must be set.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "ipv6Addresses": {
-          "description": "List of IPv6 addresses corresponding to this host. At least one of\nipv4_address and ipv6_address must be set.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },
@@ -1145,6 +1113,11 @@
                   "location": "query",
                   "type": "string"
                 },
+                "includeUnrevealedLocations": {
+                  "description": "If true, the returned list will include locations which are not yet\nrevealed.",
+                  "location": "query",
+                  "type": "boolean"
+                },
                 "pageSize": {
                   "description": "The standard list page size.",
                   "location": "query",
@@ -1471,6 +1444,34 @@
                   "path": "v1alpha1/{+name}:detach",
                   "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}:detach",
                   "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the Registration to detach. Must be in the format\n`projects\/*\/locations\/*\/registrations\/*`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "DetachRegistrationRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Detach a Registration from Cloud Domains management, leaving it registered\nat Google Domains registrar."
+                },
+                "detach": {
+                  "id": "domains.projects.locations.registrations.detach",
+                  "path": "v1alpha1/{+name}:detach",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}:detach",
+                  "httpMethod": "POST",
                   "parameters": {
                     "name": {
                       "description": "Required. A name of the Registration to detach. Must be in the format\n`projects\/*\/locations\/*\/registrations\/*`.",

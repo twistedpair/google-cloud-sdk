@@ -3460,7 +3460,6 @@ class SoftwareConfig(_messages.Message):
       DRUID: <no description>
       HIVE_WEBHCAT: <no description>
       JUPYTER: <no description>
-      KERBEROS: <no description>
       PRESTO: <no description>
       ZEPPELIN: <no description>
       ZOOKEEPER: <no description>
@@ -3473,13 +3472,12 @@ class SoftwareConfig(_messages.Message):
     DRUID = 2
     HIVE_WEBHCAT = 3
     JUPYTER = 4
-    KERBEROS = 5
-    PRESTO = 6
-    ZEPPELIN = 7
-    ZOOKEEPER = 8
-    SOLR = 9
-    HBASE = 10
-    RANGER = 11
+    PRESTO = 5
+    ZEPPELIN = 6
+    ZOOKEEPER = 7
+    SOLR = 8
+    HBASE = 9
+    RANGER = 10
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):

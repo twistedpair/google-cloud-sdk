@@ -3,7 +3,7 @@
   "discoveryVersion": "v1",
   "id": "datacatalog:v1beta1",
   "name": "datacatalog",
-  "canonicalName": "Cloud DataCatalog",
+  "canonicalName": "Data Catalog",
   "version": "v1beta1",
   "revision": "0",
   "title": "Google Cloud Data Catalog API",

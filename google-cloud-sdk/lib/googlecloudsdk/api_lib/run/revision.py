@@ -117,8 +117,13 @@ class Revision(k8s_object.KubernetesObject):
           self._messages.ResourceRequirements)
     # These fields are in the schema due to an error in interperetation of the
     # Knative spec. We're removing them, so never send any contents for them.
-    self.container.resources.limitsInMap = None
-    self.container.resources.requestsInMap = None
+    try:
+      self.container.resources.limitsInMap = None
+      self.container.resources.requestsInMap = None
+    except AttributeError:
+      # The fields only exist in the v1alpha1 spec, if we're working with a
+      # different version, this is safe to ignore
+      pass
 
   def _EnsureMeta(self):
     if self.metadata is None:

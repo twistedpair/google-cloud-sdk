@@ -198,6 +198,41 @@ errors will result in an error response for the first error encountered.
         supports_download=False,
     )
 
+    def ReplaceAll(self, request, global_params=None):
+      r"""Replace all existing Access Levels in an Access.
+Policy with
+the Access Levels provided. This
+is done within one transaction. The longrunning operation from this RPC
+will have a successful status once all replacements have propagated to
+long-lasting storage. Replacements containing errors will result in an
+error response for the first error encountered and the transaction will be
+cancelled. Operation.response field will contain
+ReplaceAccessLevelsResponse.
+
+      Args:
+        request: (AccesscontextmanagerAccessPoliciesAccessLevelsReplaceAllRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ReplaceAll')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplaceAll.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha/accessPolicies/{accessPoliciesId}/accessLevels:replaceAll',
+        http_method=u'POST',
+        method_id=u'accesscontextmanager.accessPolicies.accessLevels.replaceAll',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1alpha/{+parent}/accessLevels:replaceAll',
+        request_field=u'replaceAccessLevelsRequest',
+        request_type_name=u'AccesscontextmanagerAccessPoliciesAccessLevelsReplaceAllRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class AccessPoliciesServicePerimetersService(base_api.BaseApiService):
     """Service class for the accessPolicies_servicePerimeters resource."""
 
@@ -352,6 +387,43 @@ errors will result in an error response for the first error encountered.
         relative_path=u'v1alpha/{+name}',
         request_field=u'servicePerimeter',
         request_type_name=u'AccesscontextmanagerAccessPoliciesServicePerimetersPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def ReplaceAll(self, request, global_params=None):
+      r"""Replace all existing Service Perimeters in an.
+Access Policy
+with the Service Perimeters provided.
+This is done within one transaction. The longrunning operation from this
+RPC will have a successful status once all replacements have propagated to
+long-lasting storage. Replacements containing errors will result in an
+error response for the first error encountered and the transaction will be
+cancelled. Operation.response field will contain
+ReplaceServicePerimetersResponse. Either all
+Service Perimeters' spec fields
+should be set or all status fields should be set, but not both.
+
+      Args:
+        request: (AccesscontextmanagerAccessPoliciesServicePerimetersReplaceAllRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ReplaceAll')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplaceAll.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha/accessPolicies/{accessPoliciesId}/servicePerimeters:replaceAll',
+        http_method=u'POST',
+        method_id=u'accesscontextmanager.accessPolicies.servicePerimeters.replaceAll',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1alpha/{+parent}/servicePerimeters:replaceAll',
+        request_field=u'replaceServicePerimetersRequest',
+        request_type_name=u'AccesscontextmanagerAccessPoliciesServicePerimetersReplaceAllRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

@@ -111,6 +111,19 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
   upgradeSettings = _messages.MessageField('UpgradeSettings', 4)
 
 
+class AvailableVersion(_messages.Message):
+  r"""AvailableVersion is an additional Kubernetes versions offered to users
+  who subscribed to the release channel.
+
+  Fields:
+    reason: Reason for availability.
+    version: Kubernetes version.
+  """
+
+  reason = _messages.StringField(1)
+  version = _messages.StringField(2)
+
+
 class BigQueryDestination(_messages.Message):
   r"""Parameters for using BigQuery as the destination of resource usage
   export.
@@ -557,6 +570,7 @@ class ClusterUpdate(_messages.Message):
     desiredPodSecurityPolicyConfig: The desired configuration options for the
       PodSecurityPolicy feature.
     desiredPrivateClusterConfig: The desired private cluster configuration.
+    desiredReleaseChannel: The desired release channel configuration.
     desiredResourceUsageExportConfig: The desired configuration for exporting
       resource usage.
     desiredShieldedNodes: Configuration for Shielded Nodes.
@@ -583,10 +597,11 @@ class ClusterUpdate(_messages.Message):
   desiredNodeVersion = _messages.StringField(16)
   desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 17)
   desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 18)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 19)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 20)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 21)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 22)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 19)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 20)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 21)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 22)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 23)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -2468,6 +2483,7 @@ class ReleaseChannelConfig(_messages.Message):
     ChannelValueValuesEnum: The release channel this configuration applies to.
 
   Fields:
+    availableVersions: List of available versions for the release channel.
     channel: The release channel this configuration applies to.
     defaultVersion: The default version for newly created clusters on the
       channel.
@@ -2499,8 +2515,9 @@ class ReleaseChannelConfig(_messages.Message):
     REGULAR = 2
     STABLE = 3
 
-  channel = _messages.EnumField('ChannelValueValuesEnum', 1)
-  defaultVersion = _messages.StringField(2)
+  availableVersions = _messages.MessageField('AvailableVersion', 1, repeated=True)
+  channel = _messages.EnumField('ChannelValueValuesEnum', 2)
+  defaultVersion = _messages.StringField(3)
 
 
 class ResourceLimit(_messages.Message):

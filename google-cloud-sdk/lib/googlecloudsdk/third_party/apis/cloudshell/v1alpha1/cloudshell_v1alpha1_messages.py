@@ -173,6 +173,8 @@ class Environment(_messages.Message):
       back to the default VM size.
     webHost: Output only. Host to which clients can connect to initiate HTTPS
       or WSS connections with the environment.
+    webPorts: Output only. Ports to which clients can connect to initiate
+      HTTPS or WSS connections with the environment.
   """
 
   class SizeValueValuesEnum(_messages.Enum):
@@ -218,6 +220,7 @@ class Environment(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 9)
   vmSizeExpireTime = _messages.StringField(10)
   webHost = _messages.StringField(11)
+  webPorts = _messages.IntegerField(12, repeated=True, variant=_messages.Variant.INT32)
 
 
 class Operation(_messages.Message):

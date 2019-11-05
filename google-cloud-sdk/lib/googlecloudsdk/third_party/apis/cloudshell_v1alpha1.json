@@ -146,6 +146,14 @@
           "description": "Output only. Host to which clients can connect to initiate HTTPS or WSS\nconnections with the environment.",
           "type": "string"
         },
+        "webPorts": {
+          "description": "Output only. Ports to which clients can connect to initiate HTTPS or WSS\nconnections with the environment.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
         "sshUsername": {
           "description": "Output only. Username that clients should use when initiating SSH sessions\nwith the environment.",
           "type": "string"

@@ -79,7 +79,8 @@ def Create(versions_client, operations_client, version_id,
            config_file=None, asyncronous=None, labels=None, machine_type=None,
            description=None, framework=None, python_version=None,
            prediction_class=None, package_uris=None, accelerator_config=None,
-           service_account=None):
+           service_account=None, explanation_method=None,
+           num_integral_steps=None, num_paths=None):
   """Create a version, optionally waiting for creation to finish."""
   if origin:
     try:
@@ -102,7 +103,10 @@ def Create(versions_client, operations_client, version_id,
                                          package_uris=package_uris,
                                          prediction_class=prediction_class,
                                          accelerator_config=accelerator_config,
-                                         service_account=service_account)
+                                         service_account=service_account,
+                                         explanation_method=explanation_method,
+                                         num_integral_steps=num_integral_steps,
+                                         num_paths=num_paths)
   if not version.deploymentUri:
     raise InvalidArgumentCombinationError(
         'Either `--origin` must be provided or `deploymentUri` must be '

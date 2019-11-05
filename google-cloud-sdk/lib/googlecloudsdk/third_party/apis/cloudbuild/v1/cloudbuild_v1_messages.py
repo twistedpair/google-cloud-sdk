@@ -739,7 +739,8 @@ class CloudbuildProjectsTriggersGetRequest(_messages.Message):
 
   Fields:
     projectId: Required. ID of the project that owns the trigger.
-    triggerId: Required. ID of the `BuildTrigger` to get.
+    triggerId: Required. Identifier (`id` or `name`) of the `BuildTrigger` to
+      get.
   """
 
   projectId = _messages.StringField(1, required=True)

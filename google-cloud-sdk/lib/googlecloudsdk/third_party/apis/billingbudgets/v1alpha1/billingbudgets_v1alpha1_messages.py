@@ -87,13 +87,17 @@ class GoogleCloudBillingBudgetsV1alpha1AllUpdatesRule(_messages.Message):
   threshold rules.
 
   Fields:
-    pubsubTopic: Required. The name of Cloud Pub/Sub topic that budget related
-      messages are published to. Updates are sent at regular intervals to the
-      topic. This value of the form `projects/{project_id}/topics/{topic_id}`
-      can be used as IAM resource name and to call services defined in
-      google/pubsub/v1/pubsub.proto. On creation of a budget, the topic must
-      be owned by the user, and Google must be granted publishing permissions
-      on it.
+    pubsubTopic: Required. The name of the Cloud Pub/Sub topic where budget
+      related messages will be published, in the form
+      `projects/{project_id}/topics/{topic_id}`. Updates are sent at regular
+      intervals to the topic. When a topic is set for a budget, the
+      `pubsub.topics.publish` IAM permission must be granted on the topic (or
+      the parent project of the topic) to `billing-budget-
+      alert@system.gserviceaccount.com`. If this permission is not present
+      when a topic is provided at the time of budget creation or updating, the
+      API call will fail with PERMISSION_DENIED. See
+      https://cloud.google.com/pubsub/docs/access-control for more details on
+      Pub/Sub roles and permissions.
     schemaVersion: Required. The schema version of the notification. Only
       "1.0" is accepted. It represents the JSON schema as defined in
       https://cloud.google.com/billing/docs/how-to/budgets#notification_format

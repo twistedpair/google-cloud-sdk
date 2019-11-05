@@ -306,12 +306,13 @@ class APIMethod(object):
     """
     return [f.name for f in self.GetResponseType().all_fields()]
 
-  def Call(self, request, global_params=None, raw=False,
+  def Call(self, request, client=None, global_params=None, raw=False,
            limit=None, page_size=None):
     """Executes this method with the given arguments.
 
     Args:
       request: The apitools request object to send.
+      client: base_api.BaseApiClient, An API client to use for making requests.
       global_params: {str: str}, A dictionary of global parameters to send with
         the request.
       raw: bool, True to not do any processing of the response, False to maybe
@@ -323,8 +324,9 @@ class APIMethod(object):
     Returns:
       The response from the API.
     """
-    client = apis.GetClientInstance(
-        self.collection.api_name, self.collection.api_version)
+    if client is None:
+      client = apis.GetClientInstance(
+          self.collection.api_name, self.collection.api_version)
     service = _GetService(client, self.collection.name)
     request_func = self._GetRequestFunc(
         service, request, raw=raw, limit=limit, page_size=page_size)

@@ -676,18 +676,48 @@ class ContainerArgsChange(ConfigChanger):
     return resource
 
 
-class ContainerPortChange(ConfigChanger):
-  """Represents the user intent to change the containerPort number."""
+_HTTP2_NAME = 'h2c'
+_DEFAULT_PORT = 8080
 
-  def __init__(self, port):
+
+class ContainerPortChange(ConfigChanger):
+  """Represents the user intent to change the port name and/or number."""
+
+  def __init__(self, port=None, use_http2=None):
+    """Initialize a ContainerPortChange.
+
+    Args:
+      port: str, the port number to set the port to, "default" to unset the
+        containerPort field, or None to not modify the port number.
+      use_http2: bool, True to set the port name for http/2, False to unset it,
+        or None to not modify the port name.
+    """
     self._port = port
+    self._http2 = use_http2
 
   def Adjust(self, resource):
+    """Modify an existing ContainerPort or create a new one."""
+    port_msg = (
+        resource.template.container.ports[0]
+        if resource.template.container.ports else
+        resource.MessagesModule().ContainerPort())
+    # Set port to given value or clear field
     if self._port == 'default':
-      resource.template.container.reset('ports')
+      port_msg.reset('containerPort')
+    elif self._port is not None:
+      port_msg.containerPort = int(self._port)
+    # Set name for http/2 or clear field
+    if self._http2:
+      port_msg.name = _HTTP2_NAME
+    elif self._http2 is not None:
+      port_msg.reset('name')
+    # A port number must be specified
+    if port_msg.name and not port_msg.containerPort:
+      port_msg.containerPort = _DEFAULT_PORT
+
+    # Use the ContainerPort iff it's not empty
+    if port_msg.containerPort:
+      resource.template.container.ports = [port_msg]
     else:
-      resource.template.container.ports = [
-          resource.MessagesModule().ContainerPort(
-              containerPort=int(self._port))
-      ]
+      resource.template.container.reset('ports')
     return resource

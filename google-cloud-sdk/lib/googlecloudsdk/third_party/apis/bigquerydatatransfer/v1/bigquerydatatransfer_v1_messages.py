@@ -153,6 +153,10 @@ class BigquerydatatransferProjectsLocationsTransferConfigsCreateRequest(_message
       projects/{project_id}/locations/{location_id} If specified location and
       location of the destination bigquery dataset do not match - the request
       will fail.
+    serviceAccountName: Optional service account name. If this field is set,
+      transfer config will be created with this service account credentials.
+      It requires that requesting user calling this API has permissions to act
+      as this service account.
     transferConfig: A TransferConfig resource to be passed as the request
       body.
     versionInfo: Optional version info. If users want to find a very recent
@@ -165,8 +169,9 @@ class BigquerydatatransferProjectsLocationsTransferConfigsCreateRequest(_message
 
   authorizationCode = _messages.StringField(1)
   parent = _messages.StringField(2, required=True)
-  transferConfig = _messages.MessageField('TransferConfig', 3)
-  versionInfo = _messages.StringField(4)
+  serviceAccountName = _messages.StringField(3)
+  transferConfig = _messages.MessageField('TransferConfig', 4)
+  versionInfo = _messages.StringField(5)
 
 
 class BigquerydatatransferProjectsLocationsTransferConfigsDeleteRequest(_messages.Message):
@@ -242,6 +247,11 @@ class BigquerydatatransferProjectsLocationsTransferConfigsPatchRequest(_messages
       CreateTransferConfigRequest along with project_id and region. If
       config_id is not provided, usually a uuid, even though it is not
       guaranteed or required, will be generated for config_id.
+    serviceAccountName: Optional service account name. If this field is set
+      and "service_account_name" is set in update_mask, transfer config will
+      be updated to use this service account credentials. It requires that
+      requesting user calling this API has permissions to act as this service
+      account.
     transferConfig: A TransferConfig resource to be passed as the request
       body.
     updateMask: Required. Required list of fields to be updated in this
@@ -256,9 +266,10 @@ class BigquerydatatransferProjectsLocationsTransferConfigsPatchRequest(_messages
 
   authorizationCode = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
-  transferConfig = _messages.MessageField('TransferConfig', 3)
-  updateMask = _messages.StringField(4)
-  versionInfo = _messages.StringField(5)
+  serviceAccountName = _messages.StringField(3)
+  transferConfig = _messages.MessageField('TransferConfig', 4)
+  updateMask = _messages.StringField(5)
+  versionInfo = _messages.StringField(6)
 
 
 class BigquerydatatransferProjectsLocationsTransferConfigsRunsDeleteRequest(_messages.Message):
@@ -444,6 +455,10 @@ class BigquerydatatransferProjectsTransferConfigsCreateRequest(_messages.Message
       projects/{project_id}/locations/{location_id} If specified location and
       location of the destination bigquery dataset do not match - the request
       will fail.
+    serviceAccountName: Optional service account name. If this field is set,
+      transfer config will be created with this service account credentials.
+      It requires that requesting user calling this API has permissions to act
+      as this service account.
     transferConfig: A TransferConfig resource to be passed as the request
       body.
     versionInfo: Optional version info. If users want to find a very recent
@@ -456,8 +471,9 @@ class BigquerydatatransferProjectsTransferConfigsCreateRequest(_messages.Message
 
   authorizationCode = _messages.StringField(1)
   parent = _messages.StringField(2, required=True)
-  transferConfig = _messages.MessageField('TransferConfig', 3)
-  versionInfo = _messages.StringField(4)
+  serviceAccountName = _messages.StringField(3)
+  transferConfig = _messages.MessageField('TransferConfig', 4)
+  versionInfo = _messages.StringField(5)
 
 
 class BigquerydatatransferProjectsTransferConfigsDeleteRequest(_messages.Message):
@@ -530,6 +546,11 @@ class BigquerydatatransferProjectsTransferConfigsPatchRequest(_messages.Message)
       CreateTransferConfigRequest along with project_id and region. If
       config_id is not provided, usually a uuid, even though it is not
       guaranteed or required, will be generated for config_id.
+    serviceAccountName: Optional service account name. If this field is set
+      and "service_account_name" is set in update_mask, transfer config will
+      be updated to use this service account credentials. It requires that
+      requesting user calling this API has permissions to act as this service
+      account.
     transferConfig: A TransferConfig resource to be passed as the request
       body.
     updateMask: Required. Required list of fields to be updated in this
@@ -544,9 +565,10 @@ class BigquerydatatransferProjectsTransferConfigsPatchRequest(_messages.Message)
 
   authorizationCode = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
-  transferConfig = _messages.MessageField('TransferConfig', 3)
-  updateMask = _messages.StringField(4)
-  versionInfo = _messages.StringField(5)
+  serviceAccountName = _messages.StringField(3)
+  transferConfig = _messages.MessageField('TransferConfig', 4)
+  updateMask = _messages.StringField(5)
+  versionInfo = _messages.StringField(6)
 
 
 class BigquerydatatransferProjectsTransferConfigsRunsDeleteRequest(_messages.Message):

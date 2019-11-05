@@ -975,6 +975,12 @@ MAP = {
                 client_classpath='secretmanager_v1alpha_client.SecretmanagerV1alpha',
                 messages_modulepath='secretmanager_v1alpha_messages',
                 default_version=True),
+         'v1beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.secretmanager.v1beta1',
+                client_classpath='secretmanager_v1beta1_client.SecretmanagerV1beta1',
+                messages_modulepath='secretmanager_v1beta1_messages',
+                default_version=False),
     },
     'securitycenter': {
         'v1':

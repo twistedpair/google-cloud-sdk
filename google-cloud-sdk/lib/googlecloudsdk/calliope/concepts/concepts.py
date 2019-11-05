@@ -770,7 +770,8 @@ def ParseAttributesFromData(attributes_data, expected_param_names):
 
 DEFAULT_PROJECT_ATTRIBUTE_CONFIG = ResourceParameterAttributeConfig(
     name='project',
-    help_text='The Cloud project for the {resource}.',
+    help_text='Project ID of the Google Cloud Platform project for '
+              'the {resource}.',
     fallthroughs=[
         # Typically argument fallthroughs should be configured at the command
         # level, but the --project flag is currently available in every command.

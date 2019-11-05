@@ -61,6 +61,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.interconnects = self.InterconnectsService(self)
     self.licenseCodes = self.LicenseCodesService(self)
     self.licenses = self.LicensesService(self)
+    self.machineImages = self.MachineImagesService(self)
     self.machineTypes = self.MachineTypesService(self)
     self.networkEndpointGroups = self.NetworkEndpointGroupsService(self)
     self.networks = self.NetworksService(self)
@@ -3807,6 +3808,32 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
         supports_download=False,
     )
 
+    def ListErrors(self, request, global_params=None):
+      r"""Lists all errors thrown by actions on instances for a given managed instance group. (== suppress_warning http-rest-shadowed ==).
+
+      Args:
+        request: (ComputeInstanceGroupManagersListErrorsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceGroupManagersListErrorsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListErrors')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListErrors.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.instanceGroupManagers.listErrors',
+        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'zone'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/listErrors',
+        request_field='',
+        request_type_name=u'ComputeInstanceGroupManagersListErrorsRequest',
+        response_type_name=u'InstanceGroupManagersListErrorsResponse',
+        supports_download=False,
+    )
+
     def ListManagedInstances(self, request, global_params=None):
       r"""Lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action. (== suppress_warning http-rest-shadowed ==).
 
@@ -4887,7 +4914,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id=u'compute.instances.insert',
         ordered_params=[u'project', u'zone'],
         path_params=[u'project', u'zone'],
-        query_params=[u'requestId', u'sourceInstanceTemplate'],
+        query_params=[u'requestId', u'sourceInstanceTemplate', u'sourceMachineImage'],
         relative_path=u'projects/{project}/zones/{zone}/instances',
         request_field=u'instance',
         request_type_name=u'ComputeInstancesInsertRequest',
@@ -6320,6 +6347,198 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field=u'globalSetPolicyRequest',
         request_type_name=u'ComputeLicensesSetIamPolicyRequest',
         response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+  class MachineImagesService(base_api.BaseApiService):
+    """Service class for the machineImages resource."""
+
+    _NAME = u'machineImages'
+
+    def __init__(self, client):
+      super(ComputeBeta.MachineImagesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified machine image. Deleting a machine image is permanent and cannot be undone. (== suppress_warning http-rest-shadowed ==).
+
+      Args:
+        request: (ComputeMachineImagesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.machineImages.delete',
+        ordered_params=[u'project', u'machineImage'],
+        path_params=[u'machineImage', u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/machineImages/{machineImage}',
+        request_field='',
+        request_type_name=u'ComputeMachineImagesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified machine image. Gets a list of available machine images by making a list() request. (== suppress_warning http-rest-shadowed ==).
+
+      Args:
+        request: (ComputeMachineImagesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MachineImage) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.machineImages.get',
+        ordered_params=[u'project', u'machineImage'],
+        path_params=[u'machineImage', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/machineImages/{machineImage}',
+        request_field='',
+        request_type_name=u'ComputeMachineImagesGetRequest',
+        response_type_name=u'MachineImage',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists. (== suppress_warning http-rest-shadowed ==).
+
+      Args:
+        request: (ComputeMachineImagesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.machineImages.getIamPolicy',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[u'optionsRequestedPolicyVersion'],
+        relative_path=u'projects/{project}/global/machineImages/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name=u'ComputeMachineImagesGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a machine image in the specified project using the data that is included in the request. If you are creating a new machine image to update an existing instance, your new machine image should use the same network or, if applicable, the same subnetwork as the original instance. (== suppress_warning http-rest-shadowed ==).
+
+      Args:
+        request: (ComputeMachineImagesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.machineImages.insert',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'requestId', u'sourceInstance'],
+        relative_path=u'projects/{project}/global/machineImages',
+        request_field=u'machineImage',
+        request_type_name=u'ComputeMachineImagesInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of machine images that are contained within the specified project. (== suppress_warning http-rest-shadowed ==).
+
+      Args:
+        request: (ComputeMachineImagesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MachineImageList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.machineImages.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/machineImages',
+        request_field='',
+        request_type_name=u'ComputeMachineImagesListRequest',
+        response_type_name=u'MachineImageList',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. (== suppress_warning http-rest-shadowed ==).
+
+      Args:
+        request: (ComputeMachineImagesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.machineImages.setIamPolicy',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/machineImages/{resource}/setIamPolicy',
+        request_field=u'globalSetPolicyRequest',
+        request_type_name=u'ComputeMachineImagesSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+
+      Args:
+        request: (ComputeMachineImagesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.machineImages.testIamPermissions',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/machineImages/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeMachineImagesTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -9444,6 +9663,32 @@ A regional managed instance group can contain up to 2000 instances. (== suppress
         request_field='',
         request_type_name=u'ComputeRegionInstanceGroupManagersListRequest',
         response_type_name=u'RegionInstanceGroupManagerList',
+        supports_download=False,
+    )
+
+    def ListErrors(self, request, global_params=None):
+      r"""Lists all errors thrown by actions on instances for a given regional managed instance group. (== suppress_warning http-rest-shadowed ==).
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersListErrorsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RegionInstanceGroupManagersListErrorsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListErrors')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListErrors.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.regionInstanceGroupManagers.listErrors',
+        ordered_params=[u'project', u'region', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'region'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/listErrors',
+        request_field='',
+        request_type_name=u'ComputeRegionInstanceGroupManagersListErrorsRequest',
+        response_type_name=u'RegionInstanceGroupManagersListErrorsResponse',
         supports_download=False,
     )
 

@@ -264,7 +264,7 @@ at Google Domains registrar.
 
     Detach.method_config = lambda: base_api.ApiMethodInfo(
         flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}:detach',
-        http_method=u'PATCH',
+        http_method=u'POST',
         method_id=u'domains.projects.locations.registrations.detach',
         ordered_params=[u'name'],
         path_params=[u'name'],
@@ -561,7 +561,7 @@ may "fail open" without warning.
         method_id=u'domains.projects.locations.list',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
+        query_params=[u'filter', u'includeUnrevealedLocations', u'pageSize', u'pageToken'],
         relative_path=u'v1alpha1/{+name}/locations',
         request_field='',
         request_type_name=u'DomainsProjectsLocationsListRequest',

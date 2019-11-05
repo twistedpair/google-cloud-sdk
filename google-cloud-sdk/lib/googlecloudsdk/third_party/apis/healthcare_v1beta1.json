@@ -522,7 +522,7 @@
       "type": "object",
       "properties": {
         "paths": {
-          "description": "List of paths to FHIR fields to be redacted. Each path is a\nperiod-separated list where each component is either a field name or\nFHIR type name, for example: Patient, HumanName.\nFor \"choice\" types (those defined in the FHIR spec with the form:\nfield[x]) we use two separate components. For example,\n\"deceasedAge.unit\" is matched by \"Deceased.Age.unit\".\nSupported types are: AdministrativeGenderCode, Code, Date, DateTime,\nDecimal, HumanName, Id, LanguageCode, Markdown, MimeTypeCode, Oid,\nString, Uri, Uuid, Xhtml.",
+          "description": "List of paths to FHIR fields to be redacted. Each path is a\nperiod-separated list where each component is either a field name or\nFHIR type name, for example: Patient, HumanName.\nFor \"choice\" types (those defined in the FHIR spec with the form:\nfield[x]) we use two separate components. For example,\n\"deceasedAge.unit\" is matched by \"Deceased.Age.unit\".\nSupported types are: AdministrativeGenderCode, Code, Date, DateTime,\nDecimal, HumanName, Id, LanguageCode, Markdown, Oid, String, Uri, Uuid,\nXhtml.",
           "type": "array",
           "items": {
             "type": "string"

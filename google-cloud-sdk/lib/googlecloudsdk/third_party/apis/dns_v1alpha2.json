@@ -691,6 +691,10 @@
           "description": "! The presence of this field indicates that DNS Peering is enabled for this\n! zone. The value of this field contains the network to peer with.",
           "$ref": "ManagedZonePeeringConfig"
         },
+        "reverseLookupConfig": {
+          "description": "! The presence of this field indicates that this is a managed reverse\n! lookup zone and Cloud DNS will resolve reverse lookup queries using\n! automatically configured records for VPC resources. This only applies\n! to networks listed under private_visibility_config.",
+          "$ref": "ManagedZoneReverseLookupConfig"
+        },
         "kind": {
           "default": "dns#managedZone",
           "type": "string"
@@ -796,6 +800,18 @@
           "description": "! IPv4 address of a target name server.",
           "type": "string"
         },
+        "forwardingPath": {
+          "description": "! Forwarding path for this NameServerTarget, if unset or set to DEFAULT,\n! Cloud DNS will make forwarding decision based on address ranges,\n! i.e. RFC1918 addresses go to the VPC, Non-RFC1918 addresses go to the\n! Internet. When set to PRIVATE, Cloud DNS will always send queries\n! through VPC for this target",
+          "enumDescriptions": [
+            "! Cloud DNS will make forwarding decision based on address ranges,\n! i.e. RFC1918 addresses forward to the target through the VPC and\n! Non-RFC1918 addresses will forward to the target through the\n! Internet",
+            "Cloud DNS will always forward to this target through the VPC."
+          ],
+          "type": "string",
+          "enum": [
+            "default",
+            "private"
+          ]
+        },
         "kind": {
           "default": "dns#managedZoneForwardingConfigNameServerTarget",
           "type": "string"
@@ -863,6 +879,16 @@
         },
         "kind": {
           "default": "dns#managedZonePeeringConfigTargetNetwork",
+          "type": "string"
+        }
+      }
+    },
+    "ManagedZoneReverseLookupConfig": {
+      "id": "ManagedZoneReverseLookupConfig",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "default": "dns#managedZoneReverseLookupConfig",
           "type": "string"
         }
       }
@@ -1012,6 +1038,18 @@
         "ipv4Address": {
           "description": "! IPv4 address to forward to.",
           "type": "string"
+        },
+        "forwardingPath": {
+          "description": "! Forwarding path for this TargetNameServer, if unset or set to DEFAULT,\n! Cloud DNS will make forwarding decision based on address ranges,\n! i.e. RFC1918 addresses go to the VPC, Non-RFC1918 addresses go to the\n! Internet. When set to PRIVATE, Cloud DNS will always send queries\n! through VPC for this target",
+          "enumDescriptions": [
+            "! Cloud DNS will make forwarding decision based on address ranges,\n! i.e. RFC1918 addresses forward to the target through the VPC and\n! Non-RFC1918 addresses will forward to the target through the\n! Internet",
+            "Cloud DNS will always forward to this target through the VPC."
+          ],
+          "type": "string",
+          "enum": [
+            "default",
+            "private"
+          ]
         },
         "kind": {
           "default": "dns#policyAlternativeNameServerConfigTargetNameServer",

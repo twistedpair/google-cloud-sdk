@@ -225,7 +225,7 @@
           ]
         },
         "masterType": {
-          "description": "Optional. Specifies the type of virtual machine to use for your training\njob's master worker.\n\nThe following types are supported:\n\n<dl>\n  <dt>standard<\/dt>\n  <dd>\n  A basic machine configuration suitable for training simple models with\n  small to moderate datasets.\n  <\/dd>\n  <dt>large_model<\/dt>\n  <dd>\n  A machine with a lot of memory, specially suited for parameter servers\n  when your model is large (having many hidden layers or layers with very\n  large numbers of nodes).\n  <\/dd>\n  <dt>complex_model_s<\/dt>\n  <dd>\n  A machine suitable for the master and workers of the cluster when your\n  model requires more computation than the standard machine can handle\n  satisfactorily.\n  <\/dd>\n  <dt>complex_model_m<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <i>complex_model_s<\/i>.\n  <\/dd>\n  <dt>complex_model_l<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <i>complex_model_m<\/i>.\n  <\/dd>\n  <dt>standard_gpu<\/dt>\n  <dd>\n  A machine equivalent to <i>standard<\/i> that\n  also includes a single NVIDIA Tesla K80 GPU. See more about\n  <a href=\"\/ml-engine\/docs\/tensorflow\/using-gpus\">using GPUs to\n  train your model<\/a>.\n  <\/dd>\n  <dt>complex_model_m_gpu<\/dt>\n  <dd>\n  A machine equivalent to <i>complex_model_m<\/i> that also includes\n  four NVIDIA Tesla K80 GPUs.\n  <\/dd>\n  <dt>complex_model_l_gpu<\/dt>\n  <dd>\n  A machine equivalent to <i>complex_model_l<\/i> that also includes\n  eight NVIDIA Tesla K80 GPUs.\n  <\/dd>\n  <dt>standard_p100<\/dt>\n  <dd>\n  A machine equivalent to <i>standard<\/i> that\n  also includes a single NVIDIA Tesla P100 GPU.\n  <\/dd>\n  <dt>complex_model_m_p100<\/dt>\n  <dd>\n  A machine equivalent to <i>complex_model_m<\/i> that also includes\n  four NVIDIA Tesla P100 GPUs.\n  <\/dd>\n  <dt>standard_v100<\/dt>\n  <dd>\n  A machine equivalent to <i>standard<\/i> that\n  also includes a single NVIDIA Tesla V100 GPU.\n  <\/dd>\n  <dt>large_model_v100<\/dt>\n  <dd>\n  A machine equivalent to <i>large_model<\/i> that\n  also includes a single NVIDIA Tesla V100 GPU.\n  <\/dd>\n  <dt>complex_model_m_v100<\/dt>\n  <dd>\n  A machine equivalent to <i>complex_model_m<\/i> that\n  also includes four NVIDIA Tesla V100 GPUs.\n  <\/dd>\n  <dt>complex_model_l_v100<\/dt>\n  <dd>\n  A machine equivalent to <i>complex_model_l<\/i> that\n  also includes eight NVIDIA Tesla V100 GPUs.\n  <\/dd>\n  <dt>cloud_tpu<\/dt>\n  <dd>\n  A TPU VM including one Cloud TPU. See more about\n  <a href=\"\/ml-engine\/docs\/tensorflow\/using-tpus\">using TPUs to train\n  your model<\/a>.\n  <\/dd>\n<\/dl>\n\nYou may also use certain Compute Engine machine types directly in this\nfield. The following types are supported:\n\n- `n1-standard-4`\n- `n1-standard-8`\n- `n1-standard-16`\n- `n1-standard-32`\n- `n1-standard-64`\n- `n1-standard-96`\n- `n1-highmem-2`\n- `n1-highmem-4`\n- `n1-highmem-8`\n- `n1-highmem-16`\n- `n1-highmem-32`\n- `n1-highmem-64`\n- `n1-highmem-96`\n- `n1-highcpu-16`\n- `n1-highcpu-32`\n- `n1-highcpu-64`\n- `n1-highcpu-96`\n\nSee more about [using Compute Engine machine\ntypes](\/ml-engine\/docs\/tensorflow\/machine-types#compute-engine-machine-types).\n\nYou must set this value when `scaleTier` is set to `CUSTOM`.",
+          "description": "Optional. Specifies the type of virtual machine to use for your training\njob's master worker. You must specify this field when `scaleTier` is set to\n`CUSTOM`.\n\nYou can use certain Compute Engine machine types directly in this field.\nThe following types are supported:\n\n- `n1-standard-4`\n- `n1-standard-8`\n- `n1-standard-16`\n- `n1-standard-32`\n- `n1-standard-64`\n- `n1-standard-96`\n- `n1-highmem-2`\n- `n1-highmem-4`\n- `n1-highmem-8`\n- `n1-highmem-16`\n- `n1-highmem-32`\n- `n1-highmem-64`\n- `n1-highmem-96`\n- `n1-highcpu-16`\n- `n1-highcpu-32`\n- `n1-highcpu-64`\n- `n1-highcpu-96`\n\nLearn more about [using Compute Engine machine\ntypes](\/ml-engine\/docs\/machine-types#compute-engine-machine-types).\n\nAlternatively, you can use the following legacy machine types:\n\n- `standard`\n- `large_model`\n- `complex_model_s`\n- `complex_model_m`\n- `complex_model_l`\n- `standard_gpu`\n- `complex_model_m_gpu`\n- `complex_model_l_gpu`\n- `standard_p100`\n- `complex_model_m_p100`\n- `standard_v100`\n- `large_model_v100`\n- `complex_model_m_v100`\n- `complex_model_l_v100`\n\nLearn more about [using legacy machine\ntypes](\/ml-engine\/docs\/machine-types#legacy-machine-types).\n\nFinally, if you want to use a TPU for training, specify `cloud_tpu` in this\nfield. Learn more about the [special configuration options for training\nwith\nTPUs](\/ml-engine\/docs\/tensorflow\/using-tpus#configuring_a_custom_tpu_machine).",
           "type": "string"
         },
         "masterConfig": {
@@ -233,7 +233,7 @@
           "$ref": "GoogleCloudMlV1__ReplicaConfig"
         },
         "workerType": {
-          "description": "Optional. Specifies the type of virtual machine to use for your training\njob's worker nodes.\n\nThe supported values are the same as those described in the entry for\n`masterType`.\n\nThis value must be consistent with the category of machine type that\n`masterType` uses. In other words, both must be AI Platform machine\ntypes or both must be Compute Engine machine types.\n\nIf you use `cloud_tpu` for this value, see special instructions for\n[configuring a custom TPU\nmachine](\/ml-engine\/docs\/tensorflow\/using-tpus#configuring_a_custom_tpu_machine).\n\nThis value must be present when `scaleTier` is set to `CUSTOM` and\n`workerCount` is greater than zero.",
+          "description": "Optional. Specifies the type of virtual machine to use for your training\njob's worker nodes.\n\nThe supported values are the same as those described in the entry for\n`masterType`.\n\nThis value must be consistent with the category of machine type that\n`masterType` uses. In other words, both must be Compute Engine machine\ntypes or both must be legacy machine types.\n\nIf you use `cloud_tpu` for this value, see special instructions for\n[configuring a custom TPU\nmachine](\/ml-engine\/docs\/tensorflow\/using-tpus#configuring_a_custom_tpu_machine).\n\nThis value must be present when `scaleTier` is set to `CUSTOM` and\n`workerCount` is greater than zero.",
           "type": "string"
         },
         "workerConfig": {
@@ -241,7 +241,7 @@
           "$ref": "GoogleCloudMlV1__ReplicaConfig"
         },
         "parameterServerType": {
-          "description": "Optional. Specifies the type of virtual machine to use for your training\njob's parameter server.\n\nThe supported values are the same as those described in the entry for\n`master_type`.\n\nThis value must be consistent with the category of machine type that\n`masterType` uses. In other words, both must be AI Platform machine\ntypes or both must be Compute Engine machine types.\n\nThis value must be present when `scaleTier` is set to `CUSTOM` and\n`parameter_server_count` is greater than zero.",
+          "description": "Optional. Specifies the type of virtual machine to use for your training\njob's parameter server.\n\nThe supported values are the same as those described in the entry for\n`master_type`.\n\nThis value must be consistent with the category of machine type that\n`masterType` uses. In other words, both must be Compute Engine machine\ntypes or both must be legacy machine types.\n\nThis value must be present when `scaleTier` is set to `CUSTOM` and\n`parameter_server_count` is greater than zero.",
           "type": "string"
         },
         "parameterServerConfig": {
@@ -327,7 +327,7 @@
     },
     "GoogleCloudMlV1__AcceleratorConfig": {
       "id": "GoogleCloudMlV1__AcceleratorConfig",
-      "description": "Represents a hardware accelerator request config.\nNote that the AcceleratorConfig could be used in both Jobs and Versions.",
+      "description": "Represents a hardware accelerator request config.\nNote that the AcceleratorConfig can be used in both Jobs and Versions.\nLearn more about [accelerators for training](\/ml-engine\/docs\/using-gpus) and\n[accelerators for online\nprediction](\/ml-engine\/docs\/machine-types-online-prediction#gpus).",
       "type": "object",
       "properties": {
         "count": {
@@ -834,7 +834,7 @@
     },
     "GoogleCloudMlV1__ExplanationConfig": {
       "id": "GoogleCloudMlV1__ExplanationConfig",
-      "description": "Message holding configuration options for explaining model predictions.\nCurrently, the only supported mechanism to explain a model's prediction is\nthrough attributing its output back to its inputs which is essentially a\ncredit assignment task. We support multiple attribution methods, some\nspecific to particular frameworks like Tensorflow and XGBoost.\nNext idx: 6.",
+      "description": "Message holding configuration options for explaining model predictions.\nCurrently, the only supported mechanism to explain a model's prediction is\nthrough attributing its output back to its inputs which is essentially a\ncredit assignment task. We support multiple attribution methods, some\nspecific to particular frameworks like Tensorflow and XGBoost.\nNext idx: 7.",
       "type": "object",
       "properties": {
         "ablationAttribution": {
@@ -843,6 +843,9 @@
         },
         "integratedGradientsAttribution": {
           "$ref": "GoogleCloudMlV1__IntegratedGradientsAttribution"
+        },
+        "sampledShapleyAttribution": {
+          "$ref": "GoogleCloudMlV1__SampledShapleyAttribution"
         },
         "samplingShapAttribution": {
           "$ref": "GoogleCloudMlV1__SamplingShapAttribution"
@@ -880,13 +883,24 @@
         }
       }
     },
-    "GoogleCloudMlV1__SamplingShapAttribution": {
-      "id": "GoogleCloudMlV1__SamplingShapAttribution",
+    "GoogleCloudMlV1__SampledShapleyAttribution": {
+      "id": "GoogleCloudMlV1__SampledShapleyAttribution",
       "description": "An attribution method that approximates Shapley values for features that\ncontribute to the label being predicted. A sampling strategy is used to\napproximate the value rather than considering all subsets of features.",
       "type": "object",
       "properties": {
         "numPaths": {
           "description": "The number of feature permutations to consider when approximating the\nshapley values.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudMlV1__SamplingShapAttribution": {
+      "id": "GoogleCloudMlV1__SamplingShapAttribution",
+      "description": "DEPRECATED - use SampledShapleyAttribution.",
+      "type": "object",
+      "properties": {
+        "numPaths": {
           "type": "integer",
           "format": "int32"
         }
@@ -1493,11 +1507,11 @@
           "type": "string"
         },
         "machineType": {
-          "description": "Optional. The type of machine on which to serve the model. Currently only\napplies to online prediction service.\n<dl>\n  <dt>mls1-c1-m2<\/dt>\n  <dd>\n  The <b>default<\/b> machine type, with 1 core and 2 GB RAM. The deprecated\n  name for this machine type is \"mls1-highmem-1\".\n  <\/dd>\n  <dt>mls1-c4-m2<\/dt>\n  <dd>\n  In <b>Beta<\/b>. This machine type has 4 cores and 2 GB RAM. The\n  deprecated name for this machine type is \"mls1-highcpu-4\".\n  <\/dd>\n<\/dl>",
+          "description": "Optional. The type of machine on which to serve the model. Currently only\napplies to online prediction service. If this field is not specified, it\ndefaults to `mls1-c1-m2`.\n\nOnline prediction supports the following machine types:\n\n* `mls1-c1-m2`\n* `mls1-c4-m2`\n* `n1-standard-2`\n* `n1-standard-4`\n* `n1-standard-8`\n* `n1-standard-16`\n* `n1-standard-32`\n* `n1-highmem-2`\n* `n1-highmem-4`\n* `n1-highmem-8`\n* `n1-highmem-16`\n* `n1-highmem-32`\n* `n1-highcpu-2`\n* `n1-highcpu-4`\n* `n1-highcpu-8`\n* `n1-highcpu-16`\n* `n1-highcpu-32`\n\n`mls1-c1-m2` is generally available. All other machine types are available\nin beta. Learn more about the [differences between machine\ntypes](\/ml-engine\/docs\/machine-types-online-prediction).",
           "type": "string"
         },
         "autoScaling": {
-          "description": "Automatically scale the number of nodes used to serve the model in\nresponse to increases and decreases in traffic. Care should be\ntaken to ramp up traffic according to the model's ability to scale\nor you will start seeing increases in latency and 429 response codes.",
+          "description": "Automatically scale the number of nodes used to serve the model in\nresponse to increases and decreases in traffic. Care should be\ntaken to ramp up traffic according to the model's ability to scale\nor you will start seeing increases in latency and 429 response codes.\n\nNote that you cannot use AutoScaling if your version uses\n[GPUs](#Version.FIELDS.accelerator_config). Instead, you must use specify\n`manual_scaling`.",
           "$ref": "GoogleCloudMlV1__AutoScaling"
         },
         "manualScaling": {
@@ -1532,7 +1546,7 @@
           "type": "string"
         },
         "predictionClass": {
-          "description": "Optional. The fully qualified name\n(<var>module_name<\/var>.<var>class_name<\/var>) of a class that implements\nthe Predictor interface described in this reference field. The module\ncontaining this class should be included in a package provided to the\n[`packageUris` field](#Version.FIELDS.package_uris).\n\nSpecify this field if and only if you are deploying a [custom prediction\nroutine (beta)](\/ml-engine\/docs\/tensorflow\/custom-prediction-routines).\nIf you specify this field, you must set\n[`runtimeVersion`](#Version.FIELDS.runtime_version) to 1.4 or greater.\n\nThe following code sample provides the Predictor interface:\n\n```py\nclass Predictor(object):\n\"\"\"Interface for constructing custom predictors.\"\"\"\n\ndef predict(self, instances, **kwargs):\n    \"\"\"Performs custom prediction.\n\n    Instances are the decoded values from the request. They have already\n    been deserialized from JSON.\n\n    Args:\n        instances: A list of prediction input instances.\n        **kwargs: A dictionary of keyword args provided as additional\n            fields on the predict request body.\n\n    Returns:\n        A list of outputs containing the prediction results. This list must\n        be JSON serializable.\n    \"\"\"\n    raise NotImplementedError()\n\n@classmethod\ndef from_path(cls, model_dir):\n    \"\"\"Creates an instance of Predictor using the given path.\n\n    Loading of the predictor should be done in this method.\n\n    Args:\n        model_dir: The local directory that contains the exported model\n            file along with any additional files uploaded when creating the\n            version resource.\n\n    Returns:\n        An instance implementing this Predictor class.\n    \"\"\"\n    raise NotImplementedError()\n```\n\nLearn more about [the Predictor interface and custom prediction\nroutines](\/ml-engine\/docs\/tensorflow\/custom-prediction-routines).",
+          "description": "Optional. The fully qualified name\n(<var>module_name<\/var>.<var>class_name<\/var>) of a class that implements\nthe Predictor interface described in this reference field. The module\ncontaining this class should be included in a package provided to the\n[`packageUris` field](#Version.FIELDS.package_uris).\n\nSpecify this field if and only if you are deploying a [custom prediction\nroutine (beta)](\/ml-engine\/docs\/tensorflow\/custom-prediction-routines).\nIf you specify this field, you must set\n[`runtimeVersion`](#Version.FIELDS.runtime_version) to 1.4 or greater and\nyou must set `machineType` to a [legacy (MLS1)\nmachine type](\/ml-engine\/docs\/machine-types-online-prediction).\n\nThe following code sample provides the Predictor interface:\n\n<pre style=\"max-width: 626px;\">\nclass Predictor(object):\n\"\"\"Interface for constructing custom predictors.\"\"\"\n\ndef predict(self, instances, **kwargs):\n    \"\"\"Performs custom prediction.\n\n    Instances are the decoded values from the request. They have already\n    been deserialized from JSON.\n\n    Args:\n        instances: A list of prediction input instances.\n        **kwargs: A dictionary of keyword args provided as additional\n            fields on the predict request body.\n\n    Returns:\n        A list of outputs containing the prediction results. This list must\n        be JSON serializable.\n    \"\"\"\n    raise NotImplementedError()\n\n@classmethod\ndef from_path(cls, model_dir):\n    \"\"\"Creates an instance of Predictor using the given path.\n\n    Loading of the predictor should be done in this method.\n\n    Args:\n        model_dir: The local directory that contains the exported model\n            file along with any additional files uploaded when creating the\n            version resource.\n\n    Returns:\n        An instance implementing this Predictor class.\n    \"\"\"\n    raise NotImplementedError()\n<\/pre>\n\nLearn more about [the Predictor interface and custom prediction\nroutines](\/ml-engine\/docs\/tensorflow\/custom-prediction-routines).",
           "type": "string"
         },
         "packageUris": {
@@ -1555,7 +1569,7 @@
           "format": "byte"
         },
         "framework": {
-          "description": "Optional. The machine learning framework AI Platform uses to train\nthis version of the model. Valid values are `TENSORFLOW`, `SCIKIT_LEARN`,\n`XGBOOST`. If you do not specify a framework, AI Platform\nwill analyze files in the deployment_uri to determine a framework. If you\nchoose `SCIKIT_LEARN` or `XGBOOST`, you must also set the runtime version\nof the model to 1.4 or greater.\n\nDo **not** specify a framework if you're deploying a [custom\nprediction routine](\/ml-engine\/docs\/tensorflow\/custom-prediction-routines).",
+          "description": "Optional. The machine learning framework AI Platform uses to train\nthis version of the model. Valid values are `TENSORFLOW`, `SCIKIT_LEARN`,\n`XGBOOST`. If you do not specify a framework, AI Platform\nwill analyze files in the deployment_uri to determine a framework. If you\nchoose `SCIKIT_LEARN` or `XGBOOST`, you must also set the runtime version\nof the model to 1.4 or greater.\n\nDo **not** specify a framework if you're deploying a [custom\nprediction routine](\/ml-engine\/docs\/tensorflow\/custom-prediction-routines).\n\nIf you specify a [Compute Engine (N1) machine\ntype](\/ml-engine\/docs\/machine-types-online-prediction) in the\n`machineType` field, you must specify `TENSORFLOW`\nfor the framework.",
           "enumDescriptions": [
             "Unspecified framework. Assigns a value based on the file suffix.",
             "Tensorflow framework.",
@@ -1575,7 +1589,7 @@
           "type": "string"
         },
         "acceleratorConfig": {
-          "description": "Accelerator config for GPU serving.",
+          "description": "Optional. Accelerator config for using GPUs for online prediction (beta).\nOnly specify this field if you have specified a Compute Engine (N1) machine\ntype in the `machineType` field. Learn more about [using GPUs for online\nprediction](\/ml-engine\/docs\/machine-types-online-prediction#gpus).",
           "$ref": "GoogleCloudMlV1__AcceleratorConfig"
         },
         "serviceAccount": {
@@ -1602,7 +1616,7 @@
       "type": "object",
       "properties": {
         "minNodes": {
-          "description": "Optional. The minimum number of nodes to allocate for this model. These\nnodes are always up, starting from the time the model is deployed.\nTherefore, the cost of operating this model will be at least\n`rate` * `min_nodes` * number of hours since last billing cycle,\nwhere `rate` is the cost per node-hour as documented in the\n[pricing guide](\/ml-engine\/docs\/pricing),\neven if no predictions are performed. There is additional cost for each\nprediction performed.\n\nUnlike manual scaling, if the load gets too heavy for the nodes\nthat are up, the service will automatically add nodes to handle the\nincreased load as well as scale back as traffic drops, always maintaining\nat least `min_nodes`. You will be charged for the time in which additional\nnodes are used.\n\nIf not specified, `min_nodes` defaults to 0, in which case, when traffic\nto a model stops (and after a cool-down period), nodes will be shut down\nand no charges will be incurred until traffic to the model resumes.\n\nYou can set `min_nodes` when creating the model version, and you can also\nupdate `min_nodes` for an existing version:\n<pre>\nupdate_body.json:\n{\n  'autoScaling': {\n    'minNodes': 5\n  }\n}\n<\/pre>\nHTTP request:\n<pre>\nPATCH\nhttps:\/\/ml.googleapis.com\/v1\/{name=projects\/*\/models\/*\/versions\/*}?update_mask=autoScaling.minNodes\n-d @.\/update_body.json\n<\/pre>",
+          "description": "Optional. The minimum number of nodes to allocate for this model. These\nnodes are always up, starting from the time the model is deployed.\nTherefore, the cost of operating this model will be at least\n`rate` * `min_nodes` * number of hours since last billing cycle,\nwhere `rate` is the cost per node-hour as documented in the\n[pricing guide](\/ml-engine\/docs\/pricing),\neven if no predictions are performed. There is additional cost for each\nprediction performed.\n\nUnlike manual scaling, if the load gets too heavy for the nodes\nthat are up, the service will automatically add nodes to handle the\nincreased load as well as scale back as traffic drops, always maintaining\nat least `min_nodes`. You will be charged for the time in which additional\nnodes are used.\n\nIf `min_nodes` is not specified and AutoScaling is used with a [legacy\n(MLS1) machine type](\/ml-engine\/docs\/machine-types-online-prediction),\n`min_nodes` defaults to 0, in which case, when traffic to a model stops\n(and after a cool-down period), nodes will be shut down and no charges will\nbe incurred until traffic to the model resumes.\n\nIf `min_nodes` is not specified and AutoScaling is used with a [Compute\nEngine (N1) machine type](\/ml-engine\/docs\/machine-types-online-prediction),\n`min_nodes` defaults to 1. `min_nodes` must be at least 1 for use with a\nCompute Engine machine type.\n\nNote that you cannot use AutoScaling if your version uses\n[GPUs](#Version.FIELDS.accelerator_config). Instead, you must use\nManualScaling.\n\nYou can set `min_nodes` when creating the model version, and you can also\nupdate `min_nodes` for an existing version:\n<pre>\nupdate_body.json:\n{\n  'autoScaling': {\n    'minNodes': 5\n  }\n}\n<\/pre>\nHTTP request:\n<pre style=\"max-width: 626px;\">\nPATCH\nhttps:\/\/ml.googleapis.com\/v1\/{name=projects\/*\/models\/*\/versions\/*}?update_mask=autoScaling.minNodes\n-d @.\/update_body.json\n<\/pre>",
           "type": "integer",
           "format": "int32"
         }
@@ -2738,7 +2752,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Specifies the path, relative to `Version`, of the field to\nupdate. Must be present and non-empty.\n\nFor example, to change the description of a version to \"foo\", the\n`update_mask` parameter would be specified as `description`, and the\n`PATCH` request body would specify the new value, as follows:\n    {\n      \"description\": \"foo\"\n    }\n\nCurrently the only supported update mask fields are `description` and\n`autoScaling.minNodes`.",
+                      "description": "Required. Specifies the path, relative to `Version`, of the field to\nupdate. Must be present and non-empty.\n\nFor example, to change the description of a version to \"foo\", the\n`update_mask` parameter would be specified as `description`, and the\n`PATCH` request body would specify the new value, as follows:\n\n```\n{\n  \"description\": \"foo\"\n}\n```\n\nCurrently the only supported update mask fields are `description`,\n`autoScaling.minNodes`, and `manualScaling.nodes`. However, you can only\nupdate `manualScaling.nodes` if the version uses a [Compute Engine (N1)\nmachine type](\/ml-engine\/docs\/machine-types-online-prediction).",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"

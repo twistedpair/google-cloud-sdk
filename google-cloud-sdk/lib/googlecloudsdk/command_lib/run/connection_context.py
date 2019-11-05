@@ -232,6 +232,7 @@ class _KubeconfigConnectionContext(ConnectionInfo):
           with _OverrideEndpointOverrides(self.endpoint):
             yield self
       except httplib2.SSLHandshakeError as e:
+        # TODO(b/143543614) audit usage of str
         if 'CERTIFICATE_VERIFY_FAILED' in str(e):
           raise gke.NoCaCertError(
               'Missing or invalid [certificate-authority] or '

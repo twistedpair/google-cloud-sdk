@@ -37,6 +37,7 @@ from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.calliope import usage_text
+from googlecloudsdk.calliope.concepts import handlers
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core.util import text
@@ -405,6 +406,19 @@ class CommandCommon(object):
       # Add parent arguments to the list of all arguments.
       for arg in self._parent_group.ai.arguments:
         self.ai.arguments.append(arg)
+      # Add parent concepts to children, if they aren't represented already
+      if self._parent_group.ai.concept_handler:
+        if not self.ai.concept_handler:
+          self.ai.add_concepts(handlers.RuntimeHandler())
+        # pylint: disable=protected-access
+        for concept_details in self._parent_group.ai.concept_handler._all_concepts:
+          try:
+            self.ai.concept_handler.AddConcept(**concept_details)
+          except handlers.RepeatedConceptName:
+            raise parser_errors.ArgumentException(
+                'repeated concept in {command}: {concept_name}'.format(
+                    command=self.dotted_name,
+                    concept_name=concept_details['name']))
       # Add parent flags to children, if they aren't represented already
       for flag in self._parent_group.GetAllAvailableFlags():
         if flag.is_replicated:

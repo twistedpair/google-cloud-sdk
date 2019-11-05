@@ -2117,13 +2117,21 @@ class MaterializedViewDefinition(_messages.Message):
   r"""A MaterializedViewDefinition object.
 
   Fields:
+    enableRefresh: [Optional] [TrustedTester] Enable automatic refresh of the
+      materialized view when the base table is updated. The default value is
+      "true".
     lastRefreshTime: [Output-only] [TrustedTester] The time when this
       materialized view was last modified, in milliseconds since the epoch.
     query: [Required] A query whose result is persisted.
+    refreshIntervalMs: [Optional] [TrustedTester] The maximum frequency at
+      which this materialized view will be refreshed. The default value is
+      "1800000" (30 minutes).
   """
 
-  lastRefreshTime = _messages.IntegerField(1)
-  query = _messages.StringField(2)
+  enableRefresh = _messages.BooleanField(1)
+  lastRefreshTime = _messages.IntegerField(2)
+  query = _messages.StringField(3)
+  refreshIntervalMs = _messages.IntegerField(4)
 
 
 class ModelDefinition(_messages.Message):
@@ -2659,9 +2667,9 @@ class Table(_messages.Message):
     rangePartitioning: [TrustedTester] Range partitioning specification for
       this table. Only one of timePartitioning and rangePartitioning should be
       specified.
-    requirePartitionFilter: [Beta] [Optional] If set to true, queries over
-      this table require a partition filter that can be used for partition
-      elimination to be specified.
+    requirePartitionFilter: [Optional] If set to true, queries over this table
+      require a partition filter that can be used for partition elimination to
+      be specified.
     schema: [Optional] Describes the schema of this table.
     selfLink: [Output-only] A URL that can be used to access this resource
       again.

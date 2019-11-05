@@ -80,7 +80,6 @@ class APIAdapter(object):
     # doesn't support nested messages. See the discussion here:
     # https://groups.google.com/a/google.com/forum/#!msg/cloud-sdk-eng/hwdwUTEmvlw/fRdrvK26AAAJ
     query_params = [
-        ('connectAgent.name', option.name),
         ('connectAgent.namespace', option.namespace),
         ('connectAgent.proxy', option.proxy),
         ('isUpgrade', option.is_upgrade),

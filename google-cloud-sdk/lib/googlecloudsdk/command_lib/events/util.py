@@ -26,6 +26,9 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import retry
 
 
+SOURCE_COLLECTION_NAME = 'run.namespaces.{plural_kind}'
+
+
 # Max wait time before timing out
 _POLLING_TIMEOUT_MS = 60000
 # Max wait time between poll retries before timing out
@@ -47,7 +50,7 @@ def GetSourceRef(name, namespace, source_crd):
   return resources.REGISTRY.Parse(
       name,
       {'namespacesId': namespace},
-      'run.namespaces.{}'.format(source_crd.source_kind_plural))
+      SOURCE_COLLECTION_NAME.format(plural_kind=source_crd.source_kind_plural))
 
 
 def ValidateTrigger(trigger_obj, expected_source_obj, expected_event_type):

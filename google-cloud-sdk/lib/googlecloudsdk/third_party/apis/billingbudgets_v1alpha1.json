@@ -268,7 +268,7 @@
       "type": "object",
       "properties": {
         "pubsubTopic": {
-          "description": "Required. The name of Cloud Pub\/Sub topic that budget related messages are\npublished to. Updates are sent at regular intervals to the topic.\nThis value of the form\n`projects\/{project_id}\/topics\/{topic_id}` can be used as IAM resource name\nand to call services defined in google\/pubsub\/v1\/pubsub.proto. On\ncreation of a budget, the topic must be owned by the user, and\nGoogle must be granted publishing permissions on it.",
+          "description": "Required. The name of the Cloud Pub\/Sub topic where budget related messages will be\npublished, in the form `projects\/{project_id}\/topics\/{topic_id}`.\nUpdates are sent at regular intervals to the topic.\nWhen a topic is set for a budget, the `pubsub.topics.publish` IAM\npermission must be granted on the topic (or the parent project of the\ntopic) to `billing-budget-alert@system.gserviceaccount.com`.\nIf this permission is not present when a topic is provided at the time of\nbudget creation or updating, the API call will fail with PERMISSION_DENIED.\nSee https:\/\/cloud.google.com\/pubsub\/docs\/access-control for more details on\nPub\/Sub roles and permissions.",
           "type": "string"
         },
         "schemaVersion": {

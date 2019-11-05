@@ -134,7 +134,7 @@ class InstallationConfig(object):
                release_channel, config_suffix):
     # JSON returns all unicode.  We know these are regular strings and using
     # unicode in environment variables on Windows doesn't work.
-    self.version = str(version)
+    self.version = version
     self.revision = revision
     self.user_agent = str(user_agent)
     self.documentation_url = str(documentation_url)

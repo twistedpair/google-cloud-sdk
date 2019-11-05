@@ -20,7 +20,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+import io
 
+from googlecloudsdk.core import log
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.core.yaml import dict_like
@@ -66,12 +68,8 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
     self._yaml = yaml.YAML(typ='safe')
     self._yaml.default_flow_style = False
     self._yaml.old_indent = resource_printer_base.STRUCTURED_INDENTATION
-    self._yaml.allow_unicode = False
-    # By default, the yaml module uses encoding=utf-8. This is probably
-    # so you can write it directly to stdout and have it work, but since
-    # we put everything through the log module that handles the encoding there,
-    # we want to maintain everything as unicode strings here.
-    self._yaml.encoding = None
+    self._yaml.allow_unicode = True
+    self._yaml.encoding = log.LOG_FILE_ENCODING
 
     null = self.attributes.get('null')
     version = self.attributes.get('version')
@@ -144,8 +142,15 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
       record: A YAML-serializable Python object.
       delimit: Prints resource delimiters if True.
     """
+    stream = self._out
+    # In python 2, to dump unicode in ruamel, we need to use a byte stream,
+    # and handle the decoding ourselves. python 3 can handle it correctly.
+    if six.PY2 and  isinstance(self._out, io.StringIO):
+      stream = io.BytesIO()
     record = self._UpdateTypesForOutput(record)
     self._yaml.explicit_start = delimit
     self._yaml.dump(
         record,
-        stream=self._out)
+        stream=stream)
+    if stream is not self._out:
+      self._out.write(stream.getvalue().decode(log.LOG_FILE_ENCODING))

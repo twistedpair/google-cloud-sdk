@@ -647,7 +647,7 @@ class FieldMetadata(_messages.Message):
       components. For example, "deceasedAge.unit" is matched by
       "Deceased.Age.unit". Supported types are: AdministrativeGenderCode,
       Code, Date, DateTime, Decimal, HumanName, Id, LanguageCode, Markdown,
-      MimeTypeCode, Oid, String, Uri, Uuid, Xhtml.
+      Oid, String, Uri, Uuid, Xhtml.
   """
 
   class ActionValueValuesEnum(_messages.Enum):

@@ -804,8 +804,8 @@ class FieldMetadata(_messages.Message):
       in the FHIR spec with the form: field[x]), use two separate components.
       For example, "deceasedAge.unit" is matched by "Deceased.Age.unit".
       Supported types are: AdministrativeGenderCode, Code, Date, DateTime,
-      Decimal, HumanName, Id, LanguageCode, Markdown, MimeTypeCode, Oid,
-      String, Uri, Uuid, Xhtml.
+      Decimal, HumanName, Id, LanguageCode, Markdown, Oid, String, Uri, Uuid,
+      Xhtml.
   """
 
   class ActionValueValuesEnum(_messages.Enum):

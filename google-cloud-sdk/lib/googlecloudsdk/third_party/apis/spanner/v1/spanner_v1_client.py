@@ -36,6 +36,8 @@ class SpannerV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_instanceConfigs = self.ProjectsInstanceConfigsService(self)
+    self.projects_instances_backups_operations = self.ProjectsInstancesBackupsOperationsService(self)
+    self.projects_instances_backups = self.ProjectsInstancesBackupsService(self)
     self.projects_instances_databases_operations = self.ProjectsInstancesDatabasesOperationsService(self)
     self.projects_instances_databases_sessions = self.ProjectsInstancesDatabasesSessionsService(self)
     self.projects_instances_databases = self.ProjectsInstancesDatabasesService(self)
@@ -104,6 +106,252 @@ class SpannerV1(base_api.BaseApiClient):
         request_field='',
         request_type_name=u'SpannerProjectsInstanceConfigsListRequest',
         response_type_name=u'ListInstanceConfigsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsInstancesBackupsOperationsService(base_api.BaseApiService):
+    """Service class for the projects_instances_backups_operations resource."""
+
+    _NAME = u'projects_instances_backups_operations'
+
+    def __init__(self, client):
+      super(SpannerV1.ProjectsInstancesBackupsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation.  The server.
+makes a best effort to cancel the operation, but success is not
+guaranteed.  If the server doesn't support this method, it returns
+`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
+Operations.GetOperation or
+other methods to check whether the cancellation succeeded or whether the
+operation completed despite cancellation. On successful cancellation,
+the operation is not deleted; instead, it becomes an operation with
+an Operation.error value with a google.rpc.Status.code of 1,
+corresponding to `Code.CANCELLED`.
+
+      Args:
+        request: (SpannerProjectsInstancesBackupsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}/operations/{operationsId}:cancel',
+        http_method=u'POST',
+        method_id=u'spanner.projects.instances.backups.operations.cancel',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:cancel',
+        request_field='',
+        request_type_name=u'SpannerProjectsInstancesBackupsOperationsCancelRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a long-running operation. This method indicates that the client is.
+no longer interested in the operation result. It does not cancel the
+operation. If the server doesn't support this method, it returns
+`google.rpc.Code.UNIMPLEMENTED`.
+
+      Args:
+        request: (SpannerProjectsInstancesBackupsOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}/operations/{operationsId}',
+        http_method=u'DELETE',
+        method_id=u'spanner.projects.instances.backups.operations.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'SpannerProjectsInstancesBackupsOperationsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
+method to poll the operation result at intervals as recommended by the API
+service.
+
+      Args:
+        request: (SpannerProjectsInstancesBackupsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}/operations/{operationsId}',
+        http_method=u'GET',
+        method_id=u'spanner.projects.instances.backups.operations.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'SpannerProjectsInstancesBackupsOperationsGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the.
+server doesn't support this method, it returns `UNIMPLEMENTED`.
+
+NOTE: the `name` binding allows API services to override the binding
+to use different resource name schemes, such as `users/*/operations`. To
+override the binding, API services can add a binding such as
+`"/v1/{name=users/*}/operations"` to their service configuration.
+For backwards compatibility, the default name includes the operations
+collection id, however overriding users must ensure the name binding
+is the parent resource, without the operations collection id.
+
+      Args:
+        request: (SpannerProjectsInstancesBackupsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}/operations',
+        http_method=u'GET',
+        method_id=u'spanner.projects.instances.backups.operations.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'SpannerProjectsInstancesBackupsOperationsListRequest',
+        response_type_name=u'ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsInstancesBackupsService(base_api.BaseApiService):
+    """Service class for the projects_instances_backups resource."""
+
+    _NAME = u'projects_instances_backups'
+
+    def __init__(self, client):
+      super(SpannerV1.ProjectsInstancesBackupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a database resource.
+Returns an empty policy if a database exists but does
+not have a policy set.
+
+Authorization requires `spanner.databases.getIamPolicy` permission on
+resource.
+
+      Args:
+        request: (SpannerProjectsInstancesBackupsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}:getIamPolicy',
+        http_method=u'POST',
+        method_id=u'spanner.projects.instances.backups.getIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1/{+resource}:getIamPolicy',
+        request_field=u'getIamPolicyRequest',
+        request_type_name=u'SpannerProjectsInstancesBackupsGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on a database resource.
+Replaces any existing policy.
+
+Authorization requires `spanner.databases.setIamPolicy`
+permission on resource.
+
+      Args:
+        request: (SpannerProjectsInstancesBackupsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}:setIamPolicy',
+        http_method=u'POST',
+        method_id=u'spanner.projects.instances.backups.setIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1/{+resource}:setIamPolicy',
+        request_field=u'setIamPolicyRequest',
+        request_type_name=u'SpannerProjectsInstancesBackupsSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that the caller has on the specified database resource.
+
+Attempting this RPC on a non-existent Cloud Spanner database will
+result in a NOT_FOUND error if the user has
+`spanner.databases.list` permission on the containing Cloud
+Spanner instance. Otherwise returns an empty set of permissions.
+
+      Args:
+        request: (SpannerProjectsInstancesBackupsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}:testIamPermissions',
+        http_method=u'POST',
+        method_id=u'spanner.projects.instances.backups.testIamPermissions',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1/{+resource}:testIamPermissions',
+        request_field=u'testIamPermissionsRequest',
+        request_type_name=u'SpannerProjectsInstancesBackupsTestIamPermissionsRequest',
+        response_type_name=u'TestIamPermissionsResponse',
         supports_download=False,
     )
 

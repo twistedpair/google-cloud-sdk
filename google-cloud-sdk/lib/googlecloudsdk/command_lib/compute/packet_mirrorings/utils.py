@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 def ResolveNetworkURI(project, network, resource_parser):
   """Resolves the URI of a network."""
   if project and network and resource_parser:
+    # TODO(b/143543614) audit usage of str
     return str(
         resource_parser.Parse(
             network, collection='compute.networks',
@@ -32,6 +33,7 @@ def ResolveNetworkURI(project, network, resource_parser):
 def ResolveInstanceURI(project, instance, resource_parser):
   """Resolves the URI of an instance."""
   if project and instance and resource_parser:
+    # TODO(b/143543614) audit usage of str
     return str(
         resource_parser.Parse(
             instance,
@@ -43,6 +45,7 @@ def ResolveInstanceURI(project, instance, resource_parser):
 def ResolveSubnetURI(project, region, subnet, resource_parser):
   """Resolves the URI of a subnet."""
   if project and region and subnet and resource_parser:
+    # TODO(b/143543614) audit usage of str
     return str(
         resource_parser.Parse(
             subnet,
@@ -57,6 +60,7 @@ def ResolveSubnetURI(project, region, subnet, resource_parser):
 def ResolveForwardingRuleURI(project, region, forwarding_rule, resource_parser):
   """Resolves the URI of a forwarding rule."""
   if project and region and forwarding_rule and resource_parser:
+    # TODO(b/143543614) audit usage of str
     return str(
         resource_parser.Parse(
             forwarding_rule,

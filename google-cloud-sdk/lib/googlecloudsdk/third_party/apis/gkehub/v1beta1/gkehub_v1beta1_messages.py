@@ -246,8 +246,7 @@ class GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest(_messages
   object.
 
   Fields:
-    connectAgent_name: Name is the unique identifier for a connect agent per
-      project. Limited to 1024 characters.
+    connectAgent_name: Deprecated. Do not set.
     connectAgent_namespace: Namespace for GKE Connect agent resources. If
       empty, uses 'gke-connect'.
     connectAgent_proxy: Connection name of the proxy if a proxy is required to

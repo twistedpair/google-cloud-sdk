@@ -768,6 +768,10 @@ class ManagedZone(_messages.Message):
       peer with.
     privateVisibilityConfig: ! For privately visible zones, the set of Virtual
       Private Cloud resources ! that the zone is visible from.
+    reverseLookupConfig: ! The presence of this field indicates that this is a
+      managed reverse ! lookup zone and Cloud DNS will resolve reverse lookup
+      queries using ! automatically configured records for VPC resources. This
+      only applies ! to networks listed under private_visibility_config.
     serviceDiscoveryConfig: ! This field links to the associated service
       registry. This field should ! not be set for public zones or forwarding
       zones.
@@ -824,8 +828,9 @@ class ManagedZone(_messages.Message):
   nameServers = _messages.StringField(11, repeated=True)
   peeringConfig = _messages.MessageField('ManagedZonePeeringConfig', 12)
   privateVisibilityConfig = _messages.MessageField('ManagedZonePrivateVisibilityConfig', 13)
-  serviceDiscoveryConfig = _messages.MessageField('ManagedZoneServiceDiscoveryConfig', 14)
-  visibility = _messages.EnumField('VisibilityValueValuesEnum', 15)
+  reverseLookupConfig = _messages.MessageField('ManagedZoneReverseLookupConfig', 14)
+  serviceDiscoveryConfig = _messages.MessageField('ManagedZoneServiceDiscoveryConfig', 15)
+  visibility = _messages.EnumField('VisibilityValueValuesEnum', 16)
 
 
 class ManagedZoneDnsSecConfig(_messages.Message):
@@ -893,13 +898,44 @@ class ManagedZoneForwardingConfig(_messages.Message):
 class ManagedZoneForwardingConfigNameServerTarget(_messages.Message):
   r"""A ManagedZoneForwardingConfigNameServerTarget object.
 
+  Enums:
+    ForwardingPathValueValuesEnum: ! Forwarding path for this
+      NameServerTarget, if unset or set to DEFAULT, ! Cloud DNS will make
+      forwarding decision based on address ranges, ! i.e. RFC1918 addresses go
+      to the VPC, Non-RFC1918 addresses go to the ! Internet. When set to
+      PRIVATE, Cloud DNS will always send queries ! through VPC for this
+      target
+
   Fields:
+    forwardingPath: ! Forwarding path for this NameServerTarget, if unset or
+      set to DEFAULT, ! Cloud DNS will make forwarding decision based on
+      address ranges, ! i.e. RFC1918 addresses go to the VPC, Non-RFC1918
+      addresses go to the ! Internet. When set to PRIVATE, Cloud DNS will
+      always send queries ! through VPC for this target
     ipv4Address: ! IPv4 address of a target name server.
     kind: A string attribute.
   """
 
-  ipv4Address = _messages.StringField(1)
-  kind = _messages.StringField(2, default=u'dns#managedZoneForwardingConfigNameServerTarget')
+  class ForwardingPathValueValuesEnum(_messages.Enum):
+    r"""! Forwarding path for this NameServerTarget, if unset or set to
+    DEFAULT, ! Cloud DNS will make forwarding decision based on address
+    ranges, ! i.e. RFC1918 addresses go to the VPC, Non-RFC1918 addresses go
+    to the ! Internet. When set to PRIVATE, Cloud DNS will always send queries
+    ! through VPC for this target
+
+    Values:
+      default: ! Cloud DNS will make forwarding decision based on address
+        ranges, ! i.e. RFC1918 addresses forward to the target through the VPC
+        and ! Non-RFC1918 addresses will forward to the target through the !
+        Internet
+      private: Cloud DNS will always forward to this target through the VPC.
+    """
+    default = 0
+    private = 1
+
+  forwardingPath = _messages.EnumField('ForwardingPathValueValuesEnum', 1)
+  ipv4Address = _messages.StringField(2)
+  kind = _messages.StringField(3, default=u'dns#managedZoneForwardingConfigNameServerTarget')
 
 
 class ManagedZoneOperationsListResponse(_messages.Message):
@@ -982,6 +1018,16 @@ class ManagedZonePrivateVisibilityConfigNetwork(_messages.Message):
 
   kind = _messages.StringField(1, default=u'dns#managedZonePrivateVisibilityConfigNetwork')
   networkUrl = _messages.StringField(2)
+
+
+class ManagedZoneReverseLookupConfig(_messages.Message):
+  r"""A ManagedZoneReverseLookupConfig object.
+
+  Fields:
+    kind: A string attribute.
+  """
+
+  kind = _messages.StringField(1, default=u'dns#managedZoneReverseLookupConfig')
 
 
 class ManagedZoneServiceDiscoveryConfig(_messages.Message):
@@ -1229,13 +1275,44 @@ class PolicyAlternativeNameServerConfig(_messages.Message):
 class PolicyAlternativeNameServerConfigTargetNameServer(_messages.Message):
   r"""A PolicyAlternativeNameServerConfigTargetNameServer object.
 
+  Enums:
+    ForwardingPathValueValuesEnum: ! Forwarding path for this
+      TargetNameServer, if unset or set to DEFAULT, ! Cloud DNS will make
+      forwarding decision based on address ranges, ! i.e. RFC1918 addresses go
+      to the VPC, Non-RFC1918 addresses go to the ! Internet. When set to
+      PRIVATE, Cloud DNS will always send queries ! through VPC for this
+      target
+
   Fields:
+    forwardingPath: ! Forwarding path for this TargetNameServer, if unset or
+      set to DEFAULT, ! Cloud DNS will make forwarding decision based on
+      address ranges, ! i.e. RFC1918 addresses go to the VPC, Non-RFC1918
+      addresses go to the ! Internet. When set to PRIVATE, Cloud DNS will
+      always send queries ! through VPC for this target
     ipv4Address: ! IPv4 address to forward to.
     kind: A string attribute.
   """
 
-  ipv4Address = _messages.StringField(1)
-  kind = _messages.StringField(2, default=u'dns#policyAlternativeNameServerConfigTargetNameServer')
+  class ForwardingPathValueValuesEnum(_messages.Enum):
+    r"""! Forwarding path for this TargetNameServer, if unset or set to
+    DEFAULT, ! Cloud DNS will make forwarding decision based on address
+    ranges, ! i.e. RFC1918 addresses go to the VPC, Non-RFC1918 addresses go
+    to the ! Internet. When set to PRIVATE, Cloud DNS will always send queries
+    ! through VPC for this target
+
+    Values:
+      default: ! Cloud DNS will make forwarding decision based on address
+        ranges, ! i.e. RFC1918 addresses forward to the target through the VPC
+        and ! Non-RFC1918 addresses will forward to the target through the !
+        Internet
+      private: Cloud DNS will always forward to this target through the VPC.
+    """
+    default = 0
+    private = 1
+
+  forwardingPath = _messages.EnumField('ForwardingPathValueValuesEnum', 1)
+  ipv4Address = _messages.StringField(2)
+  kind = _messages.StringField(3, default=u'dns#policyAlternativeNameServerConfigTargetNameServer')
 
 
 class PolicyNetwork(_messages.Message):

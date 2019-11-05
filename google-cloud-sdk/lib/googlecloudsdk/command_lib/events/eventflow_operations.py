@@ -35,10 +35,11 @@ from googlecloudsdk.command_lib.events import stages
 from googlecloudsdk.command_lib.events import util
 from googlecloudsdk.command_lib.run import serverless_operations
 from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.command_lib.util.apis import registry
 from googlecloudsdk.core import metrics
 
 
-_EVENT_SOURCES_LABEL_SELECTOR = 'eventing.knative.dev/source=true'
+_EVENT_SOURCES_LABEL_SELECTOR = 'duck.knative.dev/source=true'
 
 _CRD_CLIENT_VERSION = 'v1beta1'
 
@@ -189,7 +190,8 @@ class EventflowOperations(object):
       return None
     return trigger.Trigger(response, self.messages)
 
-  def CreateTrigger(self, trigger_ref, source_obj, event_type, target_service):
+  def CreateTrigger(self, trigger_ref, source_obj, event_type, target_service,
+                    broker):
     """Create a trigger that sends events to the target service.
 
     Args:
@@ -199,6 +201,7 @@ class EventflowOperations(object):
       event_type: custom_resource_definition.EventTypeDefinition, the event
         type the source will filter by.
       target_service: str, name of the Cloud Run service to subscribe.
+      broker: str, name of the broker to act as a sink for the source.
 
     Returns:
       trigger.Trigger of the created trigger.
@@ -212,6 +215,7 @@ class EventflowOperations(object):
     trigger_obj.filter_attributes[
         trigger.EVENT_TYPE_FIELD] = event_type.type
     trigger_obj.subscriber = target_service
+    trigger_obj.broker = broker
 
     request = self.messages.RunNamespacesTriggersCreateRequest(
         trigger=trigger_obj.Message(),
@@ -244,48 +248,41 @@ class EventflowOperations(object):
       raise exceptions.TriggerNotFound(
           'Trigger [{}] not found.'.format(trigger_ref.Name()))
 
-  def _GetSourceRequestMessageType(self, verb, source_crd):
-    """Returns the request message class for a given verb and source_crd.
+  def _FindSourceMethod(self, source_crd, method_name):
+    """Returns the given method for the given source kind.
 
-    Because every source has its own message classes for rpc requests, this
-    helper is used to get the class of a request message for a given source
+    Because every source has its own methods for rpc requests, this helper is
+    used to get the underlying methods for a request against a given source
     type. Preferred usage of this private message is via the public
-    methods: self.Source{verb}Message.
+    methods: self.Source{Method_name}Method.
 
     Args:
-      verb: str, the request type (e.g. "Get", "Create", "List", etc.)
       source_crd: custom_resource_definition.SourceCustomResourceDefinition,
         source CRD of the type we want to make a request against.
+      method_name: str, the method name (e.g. "get", "create", "list", etc.)
 
     Returns:
-      messages.Message, class of the request message.
+      registry.APIMethod, holds information for the requested method.
     """
-    return getattr(
-        self.messages, 'RunNamespaces{service}{verb}Request'.format(
-            service=source_crd.source_kind_plural.capitalize(),
-            verb=verb.lower().capitalize()))
+    return registry.GetMethod(
+        util.SOURCE_COLLECTION_NAME.format(
+            plural_kind=source_crd.source_kind_plural), method_name)
 
-  def SourceCreateMessage(self, source_crd):
-    """Returns the request message class for a Create request of this source."""
-    return self._GetSourceRequestMessageType('Create', source_crd)
+  def SourceCreateMethod(self, source_crd):
+    """Returns the request method for a Create request of this source."""
+    return self._FindSourceMethod(source_crd, 'create')
 
-  def SourceGetMessage(self, source_crd):
-    """Returns the request message class for a Get request of this source."""
-    return self._GetSourceRequestMessageType('Get', source_crd)
-
-  def SourceClientService(self, source_crd):
-    """Returns an instance of the client service class for the given source_crd."""
-    return getattr(self._client, 'namespaces_{service}'.format(
-        service=source_crd.source_kind_plural))
+  def SourceGetMethod(self, source_crd):
+    """Returns the request method for a Get request of this source."""
+    return self._FindSourceMethod(source_crd, 'get')
 
   def GetSource(self, source_ref, source_crd):
     """Returns the referenced source."""
-    request_message_type = self.SourceGetMessage(source_crd)
-    request = request_message_type(
-        name=source_ref.RelativeName())
+    request_method = self.SourceGetMethod(source_crd)
+    request_message_type = request_method.GetRequestType()
+    request = request_message_type(name=source_ref.RelativeName())
     try:
-      client_service = self.SourceClientService(source_crd)
-      response = client_service.Get(request)
+      response = request_method.Call(request, client=self._client)
     except api_exceptions.HttpNotFoundError:
       return None
     return source.Source(response, self.messages, source_crd.source_kind)
@@ -319,16 +316,14 @@ class EventflowOperations(object):
     source_obj.sink = broker
     arg_utils.ParseStaticFieldsIntoMessage(source_obj.spec, parameters)
 
-    request_message_type = self.SourceCreateMessage(source_crd)
-    source_field = (
-        source_crd.source_kind[0].lower() + source_crd.source_kind[1:])
+    request_method = self.SourceCreateMethod(source_crd)
+    request_message_type = request_method.GetRequestType()
     request = request_message_type(**{
-        source_field: source_obj.Message(),
+        request_method.request_field: source_obj.Message(),
         'parent': namespace_ref.RelativeName()})
     with metrics.RecordDuration(metric_names.CREATE_SOURCE):
       try:
-        client_service = self.SourceClientService(source_crd)
-        response = client_service.Create(request)
+        response = request_method.Call(request, client=self._client)
       except api_exceptions.HttpConflictError:
         raise exceptions.SourceCreationError(
             'Source [{}] already exists.'.format(source_obj.name))
@@ -364,8 +359,8 @@ class EventflowOperations(object):
     """
     # Create trigger if it doesn't already exist
     if trigger_obj is None:
-      trigger_obj = self.CreateTrigger(
-          trigger_ref, source_obj, event_type, target_service)
+      trigger_obj = self.CreateTrigger(trigger_ref, source_obj, event_type,
+                                       target_service, broker)
 
     # Create source
     self.CreateSource(source_obj, event_type.crd, trigger_obj, namespace_ref,

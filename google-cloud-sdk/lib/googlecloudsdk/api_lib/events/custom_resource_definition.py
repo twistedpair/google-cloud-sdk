@@ -43,7 +43,7 @@ class SourceSpecProperty(object):
     self.required = required
 
 
-_EVENT_TYPE_REGISTRY_KEY = 'registry.cloud.google.com/eventTypes'
+_EVENT_TYPE_REGISTRY_KEY = 'registry.knative.dev/eventTypes'
 
 
 class EventType(object):

@@ -145,7 +145,10 @@ class VersionsClient(object):
                    prediction_class=None,
                    package_uris=None,
                    accelerator_config=None,
-                   service_account=None):
+                   service_account=None,
+                   explanation_method=None,
+                   num_integral_steps=None,
+                   num_paths=None):
     """Create a Version object.
 
     The object is based on an optional YAML configuration file and the
@@ -174,6 +177,10 @@ class VersionsClient(object):
       accelerator_config: an accelerator config message object.
       service_account: Specifies the service account for resource access
         control.
+      explanation_method: Enables explanations and selects the explanation
+        method. Valid options are 'integrated-gradients' and 'sampled-shapley'.
+      num_integral_steps: Number of integral steps for Integrated Gradients.
+      num_paths: Number of paths for Sampled Shapley.
 
 
     Returns:
@@ -221,6 +228,22 @@ class VersionsClient(object):
         'acceleratorConfig': accelerator_config,
         'serviceAccount': service_account
     }
+
+    explanation_config = None
+    if explanation_method == 'integrated-gradients':
+      explanation_config = self.messages.GoogleCloudMlV1ExplanationConfig()
+      ig_config = self.messages.GoogleCloudMlV1IntegratedGradientsAttribution()
+      ig_config.numIntegralSteps = num_integral_steps
+      explanation_config.integratedGradientsAttribution = ig_config
+    elif explanation_method == 'sampled-shapley':
+      explanation_config = self.messages.GoogleCloudMlV1ExplanationConfig()
+      shap_config = self.messages.GoogleCloudMlV1SampledShapleyAttribution()
+      shap_config.numPaths = num_paths
+      explanation_config.sampledShapleyAttribution = shap_config
+
+    if explanation_config is not None:
+      additional_fields['explanationConfig'] = explanation_config
+
     for field_name, value in additional_fields.items():
       if value is not None:
         setattr(version, field_name, value)

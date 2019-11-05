@@ -31,6 +31,8 @@ class AddonsConfig(_messages.Message):
   cluster, enabling additional functionality.
 
   Fields:
+    cloudRunConfig: Configuration for the Cloud Run addon, which allows the
+      user to use a managed Knative service.
     horizontalPodAutoscaling: Configuration for the horizontal pod autoscaling
       feature, which increases or decreases the number of replica pods a
       replication controller has based on the resource usage of the existing
@@ -48,10 +50,11 @@ class AddonsConfig(_messages.Message):
       whether network policy is enabled for the nodes.
   """
 
-  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 1)
-  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 2)
-  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 3)
-  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 4)
+  cloudRunConfig = _messages.MessageField('CloudRunConfig', 1)
+  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 2)
+  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 3)
+  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 4)
+  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 5)
 
 
 class AuthenticatorGroupsConfig(_messages.Message):
@@ -165,6 +168,16 @@ class ClientCertificateConfig(_messages.Message):
   """
 
   issueClientCertificate = _messages.BooleanField(1)
+
+
+class CloudRunConfig(_messages.Message):
+  r"""Configuration options for the Cloud Run feature.
+
+  Fields:
+    disabled: Whether Cloud Run addon is enabled for this cluster.
+  """
+
+  disabled = _messages.BooleanField(1)
 
 
 class Cluster(_messages.Message):
@@ -1434,23 +1447,68 @@ class MaintenancePolicy(_messages.Message):
   cluster.
 
   Fields:
+    resourceVersion: A hash identifying the version of this policy, so that
+      updates to fields of the policy won't accidentally undo intermediate
+      changes (and so that users of the API unaware of some fields won't
+      accidentally remove other fields). Make a <code>get()</code> request to
+      the cluster to get the current resource version and include it with
+      requests to set the policy.
     window: Specifies the maintenance window in which maintenance may be
       performed.
   """
 
-  window = _messages.MessageField('MaintenanceWindow', 1)
+  resourceVersion = _messages.StringField(1)
+  window = _messages.MessageField('MaintenanceWindow', 2)
 
 
 class MaintenanceWindow(_messages.Message):
   r"""MaintenanceWindow defines the maintenance window to be used for the
   cluster.
 
+  Messages:
+    MaintenanceExclusionsValue: Exceptions to maintenance window. Non-
+      emergency maintenance should not occur in these windows.
+
   Fields:
     dailyMaintenanceWindow: DailyMaintenanceWindow specifies a daily
       maintenance operation window.
+    maintenanceExclusions: Exceptions to maintenance window. Non-emergency
+      maintenance should not occur in these windows.
+    recurringWindow: RecurringWindow specifies some number of recurring time
+      periods for maintenance to occur. The time windows may be overlapping.
+      If no maintenance windows are set, maintenance can occur at any time.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MaintenanceExclusionsValue(_messages.Message):
+    r"""Exceptions to maintenance window. Non-emergency maintenance should not
+    occur in these windows.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        MaintenanceExclusionsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        MaintenanceExclusionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MaintenanceExclusionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A TimeWindow attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('TimeWindow', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   dailyMaintenanceWindow = _messages.MessageField('DailyMaintenanceWindow', 1)
+  maintenanceExclusions = _messages.MessageField('MaintenanceExclusionsValue', 2)
+  recurringWindow = _messages.MessageField('RecurringTimeWindow', 3)
 
 
 class MasterAuth(_messages.Message):
@@ -2044,6 +2102,35 @@ class PrivateClusterConfig(_messages.Message):
   masterIpv4CidrBlock = _messages.StringField(3)
   privateEndpoint = _messages.StringField(4)
   publicEndpoint = _messages.StringField(5)
+
+
+class RecurringTimeWindow(_messages.Message):
+  r"""Represents an arbitrary window of time that recurs.
+
+  Fields:
+    recurrence: An RRULE (https://tools.ietf.org/html/rfc5545#section-3.8.5.3)
+      for how this window reccurs. They go on for the span of time between the
+      start and end time.  For example, to have something repeat every
+      weekday, you'd use:   <code>FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR</code> To
+      repeat some window daily (equivalent to the DailyMaintenanceWindow):
+      <code>FREQ=DAILY</code> For the first weekend of every month:
+      <code>FREQ=MONTHLY;BYSETPOS=1;BYDAY=SA,SU</code> This specifies how
+      frequently the window starts. Eg, if you wanted to have a 9-5 UTC-4
+      window every weekday, you'd use something like: <code>   start time =
+      2019-01-01T09:00:00-0400   end time = 2019-01-01T17:00:00-0400
+      recurrence = FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR </code> Windows can span
+      multiple days. Eg, to make the window encompass every weekend from
+      midnight Saturday till the last minute of Sunday UTC: <code>   start
+      time = 2019-01-05T00:00:00Z   end time = 2019-01-07T23:59:00Z
+      recurrence = FREQ=WEEKLY;BYDAY=SA </code> Note the start and end time's
+      specific dates are largely arbitrary except to specify duration of the
+      window and when it first starts. The FREQ values of HOURLY, MINUTELY,
+      and SECONDLY are not supported.
+    window: The window of the first recurrence.
+  """
+
+  recurrence = _messages.StringField(1)
+  window = _messages.MessageField('TimeWindow', 2)
 
 
 class ResourceLimit(_messages.Message):
@@ -2652,6 +2739,19 @@ class StatusCondition(_messages.Message):
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
+
+
+class TimeWindow(_messages.Message):
+  r"""Represents an arbitrary window of time.
+
+  Fields:
+    endTime: The time that the window ends. The end time should take place
+      after the start time.
+    startTime: The time that the window first starts.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
 
 
 class UpdateClusterRequest(_messages.Message):

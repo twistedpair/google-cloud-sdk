@@ -1803,6 +1803,10 @@
           "description": "The desired config of Intra-node visibility.",
           "$ref": "IntraNodeVisibilityConfig"
         },
+        "desiredReleaseChannel": {
+          "description": "The desired release channel configuration.",
+          "$ref": "ReleaseChannel"
+        },
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to. The only valid value is the\nlatest supported version.\n\nUsers may specify either explicit versions offered by\nKubernetes Engine or version aliases, which have the following behavior:\n\n- \"latest\": picks the highest valid Kubernetes version\n- \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version\n- \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version\n- \"1.X.Y-gke.N\": picks an explicit Kubernetes version\n- \"-\": picks the default Kubernetes version",
           "type": "string"
@@ -2330,6 +2334,28 @@
         },
         "defaultVersion": {
           "description": "The default version for newly created clusters on the channel.",
+          "type": "string"
+        },
+        "availableVersions": {
+          "description": "List of available versions for the release channel.",
+          "type": "array",
+          "items": {
+            "$ref": "AvailableVersion"
+          }
+        }
+      }
+    },
+    "AvailableVersion": {
+      "id": "AvailableVersion",
+      "description": "AvailableVersion is an additional Kubernetes versions offered\nto users who subscribed to the release channel.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "Kubernetes version.",
+          "type": "string"
+        },
+        "reason": {
+          "description": "Reason for availability.",
           "type": "string"
         }
       }

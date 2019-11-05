@@ -322,6 +322,20 @@
             "USER_PROVIDED",
             "GOOGLE_PROVIDED"
           ]
+        },
+        "keyType": {
+          "description": "The key type.",
+          "enumDescriptions": [
+            "Unspecified key type. The presence of this in the\nmessage will immediately result in an error.",
+            "User-managed keys (managed and rotated by the user).",
+            "System-managed keys (managed and rotated by Google)."
+          ],
+          "type": "string",
+          "enum": [
+            "KEY_TYPE_UNSPECIFIED",
+            "USER_MANAGED",
+            "SYSTEM_MANAGED"
+          ]
         }
       }
     },
@@ -885,11 +899,10 @@
           "type": "string"
         },
         "description": {
-          "description": "A brief description of what this Permission is used for.",
+          "description": "A brief description of what this Permission is used for.\nThis permission can ONLY be used in predefined roles.",
           "type": "string"
         },
         "onlyInPredefinedRoles": {
-          "description": "This permission can ONLY be used in predefined roles.",
           "type": "boolean"
         },
         "stage": {

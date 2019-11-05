@@ -32,7 +32,7 @@ from six.moves.http_client import ResponseNotReady
 
 try:
   # pylint:disable=g-import-not-at-top
-  from urlparse import parse_qsl
+  from six.moves.urllib.parse import parse_qsl
 except ImportError:
   # pylint:disable=g-import-not-at-top
   from cgi import parse_qsl

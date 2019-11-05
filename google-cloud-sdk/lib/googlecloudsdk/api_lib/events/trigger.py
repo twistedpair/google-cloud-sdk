@@ -29,6 +29,12 @@ _SERVICE_KIND = 'Service'
 EVENT_TYPE_FIELD = 'type'
 # k8s OwnerReference serialized to a json string
 DEPENDENCY_ANNOTATION_FIELD = 'knative.dev/dependency'
+# Annotation to indicate that the namespace should be labeled, which in
+# will create the broker "default" if it does not already exist.
+# The value for this field should only be "enabled" and it should only be set
+# if the trigger's broker is named "default".
+_INJECTION_ANNOTATION_FIELD = 'knative-eventing-injection'
+_INJECTION_BROKER_NAME = 'default'
 # Field placed on both the trigger and source (as a CEOverrdie) to link the
 # resources so the trigger only consumes events from that source
 SOURCE_TRIGGER_LINK_FIELD = 'knsourcetrigger'
@@ -67,6 +73,12 @@ class Trigger(k8s_object.KubernetesObject):
   @property
   def broker(self):
     return self._m.spec.broker
+
+  @broker.setter
+  def broker(self, value):
+    if value == _INJECTION_BROKER_NAME:
+      self.annotations[_INJECTION_ANNOTATION_FIELD] = 'enabled'
+    self._m.spec.broker = value
 
   @property
   def subscriber(self):

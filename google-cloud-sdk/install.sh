@@ -79,27 +79,58 @@ _cloudsdk_root_dir() {
 }
 CLOUDSDK_ROOT_DIR=$(_cloudsdk_root_dir "$0")
 
-# if CLOUDSDK_PYTHON is empty
-if [ -z "$CLOUDSDK_PYTHON" ]; then
-  # if python2 exists then plain python may point to a version != 2
-  if _cloudsdk_which python2 >/dev/null; then
-    CLOUDSDK_PYTHON=python2
-  elif _cloudsdk_which python2.7 >/dev/null; then
-    # this is what some OS X versions call their built-in Python
-    CLOUDSDK_PYTHON=python2.7
-  elif _cloudsdk_which python >/dev/null; then
-    # Use unversioned python if it exists.
-    CLOUDSDK_PYTHON=python
-  elif _cloudsdk_which python3 >/dev/null; then
-    # We support python3, but only want to default to it if nothing else is
-    # found.
-    CLOUDSDK_PYTHON=python3
-  else
-    # This won't work because it wasn't found above, but at this point this
-    # is our best guess for the error message.
-    CLOUDSDK_PYTHON=python
+setup_cloudsdk_python() {
+  if [ -z "$CLOUDSDK_PYTHON" ]; then
+    # if python2 exists then plain python may point to a version != 2
+    if _cloudsdk_which python2 >/dev/null; then
+      CLOUDSDK_PYTHON=python2
+    elif _cloudsdk_which python2.7 >/dev/null; then
+      # this is what some OS X versions call their built-in Python
+      CLOUDSDK_PYTHON=python2.7
+    elif _cloudsdk_which python >/dev/null; then
+      # Use unversioned python if it exists.
+      CLOUDSDK_PYTHON=python
+    elif _cloudsdk_which python3 >/dev/null; then
+      # We support python3, but only want to default to it if nothing else is
+      # found.
+      CLOUDSDK_PYTHON=python3
+    else
+      # This won't work because it wasn't found above, but at this point this
+      # is our best guess for the error message.
+      CLOUDSDK_PYTHON=python
+    fi
   fi
-fi
+}
+
+setup_cloudsdk_python_prefer_python3() {
+# Settings for corp
+  if [ -z "$CLOUDSDK_PYTHON" ]; then
+    # if python3 exists then plain python may point to a version != 3
+    if _cloudsdk_which python3 >/dev/null; then
+      CLOUDSDK_PYTHON=python3
+    elif _cloudsdk_which python2.7 >/dev/null; then
+      # this is what some OS X versions call their built-in Python
+      CLOUDSDK_PYTHON=python2.7
+    elif _cloudsdk_which python >/dev/null; then
+      # Use unversioned python if it exists.
+      CLOUDSDK_PYTHON=python
+    elif _cloudsdk_which python2 >/dev/null; then
+      # We support python2, but only want to default to it if nothing else is
+      # found.
+      CLOUDSDK_PYTHON=python2
+    else
+      # This won't work because it wasn't found above, but at this point this
+      # is our best guess for the error message.
+      CLOUDSDK_PYTHON=python
+    fi
+  fi
+}
+
+case $HOSTNAME in
+  *.corp.google.com) setup_cloudsdk_python_prefer_python3;;
+  *.c.googlers.com) setup_cloudsdk_python_prefer_python3;;
+  *) setup_cloudsdk_python;;
+esac
 
 # $PYTHONHOME can interfere with gcloud. Users should use
 # CLOUDSDK_PYTHON to configure which python gcloud uses.

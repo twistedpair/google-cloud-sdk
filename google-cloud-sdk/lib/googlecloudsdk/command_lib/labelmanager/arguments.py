@@ -46,10 +46,8 @@ def AddLabelParentArgToParser(parser):
       '--label-parent',
       required=True,
       metavar='LABEL_PARENT',
-      help=(
-          'Parent of the label key or value. This must be the form '
-          'organizations/{org_id} for a label key and labelKeys/{lable_key_id} '
-          'for a label value.'))
+      help=('Parent of the label key. This must be the form '
+            'organizations/{org_id}'))
 
 
 def AddDescriptionArgToParser(parser):
@@ -72,3 +70,15 @@ def AddAsyncArgToParser(parser):
     parser: ArgumentInterceptor, An argparse parser.
   """
   base.ASYNC_FLAG.AddToParser(parser)
+
+
+def AddOperationNameArgToParser(parser):
+  """Adds operation name flag to the parser.
+
+  Args:
+    parser: ArgumentInterceptor, An argparse parser.
+  """
+  parser.add_argument(
+      'OPERATION_NAME',
+      metavar='OPERATION_NAME',
+      help='Name of the long running operation in label manager.')

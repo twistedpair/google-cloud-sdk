@@ -2466,9 +2466,8 @@ class GoogleCloudVideointelligenceV1p3beta1TextSegment(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1p3beta1TimestampedObject(_messages.Message):
-  r"""For tracking related features, such as LOGO_RECOGNITION, FACE_DETECTION,
-  CELEBRITY_RECOGNITION, PERSON_DETECTION. An object at time_offset with
-  attributes, and located with normalized_bounding_box.
+  r"""For tracking related features. An object at time_offset with attributes,
+  and located with normalized_bounding_box.
 
   Fields:
     attributes: Optional. The attributes of the object in the bounding box.

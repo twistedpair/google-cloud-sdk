@@ -347,6 +347,7 @@ def _EncodeMessageBody(message_body):
   """
   message_body_str = message_body
   if not isinstance(message_body, six.string_types):
+    # TODO(b/143543614) audit usage of str
     message_body_str = str(message_body, 'utf8')
   return http_encoding.Encode(message_body_str)
 

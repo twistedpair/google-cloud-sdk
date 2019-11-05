@@ -36,6 +36,14 @@ class ParseError(Error):
     super(ParseError, self).__init__(msg)
 
 
+class RepeatedConceptName(Error):
+  """Raised when adding a concept if one with the given name already exists."""
+
+  def __init__(self, concept_name):
+    msg = 'Repeated concept name [{}].'.format(concept_name)
+    super(RepeatedConceptName, self).__init__(msg)
+
+
 class RuntimeHandler(object):
   """A handler to hold information about all concept arguments in a command.
 
@@ -61,9 +69,14 @@ class RuntimeHandler(object):
       concept_info: ConceptInfo, the object that holds dependencies of the
         concept.
       required: bool, True if the concept must be parseable, False if not.
+
+    Raises:
+      RepeatedConceptName: If the given "name" has already been used with a
+        concept.
     """
 
     class LazyParse(object):
+      """Class provided when accessing a concept to lazily parse from args."""
 
       def __init__(self, parse, arg_getter):
         self.parse = parse
@@ -77,8 +90,14 @@ class RuntimeHandler(object):
             raise ParseError(name, six.text_type(e))
           return None
 
+    if hasattr(self, name):
+      raise RepeatedConceptName(name)
     setattr(self, name, LazyParse(concept_info.Parse, self.ParsedArgs))
-    self._all_concepts.append(concept_info)
+    self._all_concepts.append({
+        'name': name,
+        'concept_info': concept_info,
+        'required': required,
+    })
     for _, arg_name in six.iteritems(concept_info.attribute_to_args_map):
       self._arg_name_lookup[util.NormalizeFormat(arg_name)] = concept_info
 
@@ -86,5 +105,5 @@ class RuntimeHandler(object):
     return self._arg_name_lookup.get(util.NormalizeFormat(arg_name))
 
   def Reset(self):
-    for concept_info in self._all_concepts:
-      concept_info.ClearCache()
+    for concept_details in self._all_concepts:
+      concept_details['concept_info'].ClearCache()

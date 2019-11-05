@@ -1873,6 +1873,102 @@ class SpannerProjectsInstanceConfigsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class SpannerProjectsInstancesBackupsGetIamPolicyRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesBackupsGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The Cloud Spanner resource for which the policy is
+      being retrieved. The format is `projects/<project
+      ID>/instances/<instance ID>` for instance resources and
+      `projects/<project ID>/instances/<instance ID>/databases/<database ID>`
+      for database resources.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class SpannerProjectsInstancesBackupsOperationsCancelRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesBackupsOperationsCancelRequest object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SpannerProjectsInstancesBackupsOperationsDeleteRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesBackupsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SpannerProjectsInstancesBackupsOperationsGetRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesBackupsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SpannerProjectsInstancesBackupsOperationsListRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesBackupsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class SpannerProjectsInstancesBackupsSetIamPolicyRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesBackupsSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The Cloud Spanner resource for which the policy is
+      being set. The format is `projects/<project ID>/instances/<instance ID>`
+      for instance resources and `projects/<project ID>/instances/<instance
+      ID>/databases/<database ID>` for databases resources.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class SpannerProjectsInstancesBackupsTestIamPermissionsRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesBackupsTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The Cloud Spanner resource for which permissions are
+      being tested. The format is `projects/<project ID>/instances/<instance
+      ID>` for instance resources and `projects/<project
+      ID>/instances/<instance ID>/databases/<database ID>` for database
+      resources.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class SpannerProjectsInstancesCreateRequest(_messages.Message):
   r"""A SpannerProjectsInstancesCreateRequest object.
 

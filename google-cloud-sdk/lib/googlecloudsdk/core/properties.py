@@ -269,6 +269,8 @@ class _Sections(object):
     scc: Section, The section containing scc properties for the Cloud SDK.
     dataproc: Section, The section containing dataproc properties for the Cloud
       SDK.
+    dataflow: Section, The section containing dataflow properties for the Cloud
+      SDK.
     datafusion: Section, The section containing datafusion properties for the
       Cloud SDK.
     default_section: Section, The main section of the properties file (core).
@@ -338,6 +340,7 @@ class _Sections(object):
     self.core = _SectionCore()
     self.scc = _SectionScc()
     self.dataproc = _SectionDataproc()
+    self.dataflow = _SectionDataflow()
     self.datafusion = _SectionDatafusion()
     self.deployment_manager = _SectionDeploymentManager()
     self.devshell = _SectionDevshell()
@@ -381,6 +384,7 @@ class _Sections(object):
         self.core,
         self.scc,
         self.dataproc,
+        self.dataflow,
         self.datafusion,
         self.deployment_manager,
         self.devshell,
@@ -1460,6 +1464,18 @@ class _SectionComposer(_Section):
             'location. This parameter corresponds to the '
             '/locations/<location> segment of the Composer resource URIs being '
             'referenced.'))
+
+
+class _SectionDataflow(_Section):
+  """Contains the properties for the 'dataflow' section."""
+
+  def __init__(self):
+    super(_SectionDataflow, self).__init__('dataflow')
+    self.disable_public_ips = self._AddBool(
+        'disable_public_ips',
+        help_text='Specifies that Cloud Dataflow workers '
+        'must not use public IP addresses.',
+        default=False)
 
 
 class _SectionDatafusion(_Section):

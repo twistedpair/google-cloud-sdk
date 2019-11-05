@@ -10,6 +10,19 @@ from apitools.base.py import encoding
 package = 'orgpolicy'
 
 
+class GoogleCloudOrgpolicyV2alpha1AlternatePolicySpec(_messages.Message):
+  r"""A GoogleCloudOrgpolicyV2alpha1AlternatePolicySpec object.
+
+  Fields:
+    launch: Reference to the launch that will be used while audit logging and
+      to control the launch. Should be set only in the alternate policy.
+    spec: A GoogleCloudOrgpolicyV2alpha1PolicySpec attribute.
+  """
+
+  launch = _messages.StringField(1)
+  spec = _messages.MessageField('GoogleCloudOrgpolicyV2alpha1PolicySpec', 2)
+
+
 class GoogleCloudOrgpolicyV2alpha1Constraint(_messages.Message):
   r"""A `Constraint` describes a way in which a resource's configuration can
   be restricted. For example, it controls which cloud services can be
@@ -120,6 +133,21 @@ class GoogleCloudOrgpolicyV2alpha1ListPoliciesResponse(_messages.Message):
 
 
 class GoogleCloudOrgpolicyV2alpha1Policy(_messages.Message):
+  r"""A GoogleCloudOrgpolicyV2alpha1Policy object.
+
+  Fields:
+    alternate: An alternate policy configuration that will be used instead of
+      the baseline policy configurations as determined by the launch.
+      Currently the only way the launch can trigger the alternate
+      configuration is via dry-run/dark.
+    spec: A GoogleCloudOrgpolicyV2alpha1PolicySpec attribute.
+  """
+
+  alternate = _messages.MessageField('GoogleCloudOrgpolicyV2alpha1AlternatePolicySpec', 1)
+  spec = _messages.MessageField('GoogleCloudOrgpolicyV2alpha1PolicySpec', 2)
+
+
+class GoogleCloudOrgpolicyV2alpha1PolicySpec(_messages.Message):
   r"""Defines a Cloud Organization `Policy` which is used to specify
   `Constraints` for configurations of Cloud Platform resources.
 
@@ -136,16 +164,7 @@ class GoogleCloudOrgpolicyV2alpha1Policy(_messages.Message):
       set. Otherwise, the `etag` is required for `UpdatePolicy`.
     inheritFromParent: This field can be set only for Policies which configure
       list constraints.
-    name: Immutable. The resource name of the Policy. Must be one of the
-      following forms, where constraint_name is the name of the constraint
-      which this Policy configures: *
-      `projects/{project_number}/policies/{constraint_name}` *
-      `folders/{folder_id}/policies/{constraint_name}` *
-      `organizations/{organization_id}/policies/{constraint_name}`  For
-      example, "projects/123/policies/compute.disableSerialPortAccess".  Note:
-      `projects/{project_id}/policies/{constraint_name}` is also an acceptable
-      name for API requests, but responses will return the name using the
-      equivalent project number.
+    name: A string attribute.
     reset: Ignores policies set above this resource and restores the
       `constraint_default` enforcement behavior of the specific `Constraint`
       at this resource. This field can be set in policies for either list or
@@ -167,11 +186,11 @@ class GoogleCloudOrgpolicyV2alpha1Policy(_messages.Message):
   inheritFromParent = _messages.BooleanField(2)
   name = _messages.StringField(3)
   reset = _messages.BooleanField(4)
-  rules = _messages.MessageField('GoogleCloudOrgpolicyV2alpha1PolicyPolicyRule', 5, repeated=True)
+  rules = _messages.MessageField('GoogleCloudOrgpolicyV2alpha1PolicySpecPolicyRule', 5, repeated=True)
   updateTime = _messages.StringField(6)
 
 
-class GoogleCloudOrgpolicyV2alpha1PolicyPolicyRule(_messages.Message):
+class GoogleCloudOrgpolicyV2alpha1PolicySpecPolicyRule(_messages.Message):
   r"""A rule used to express this policy.
 
   Fields:
@@ -196,10 +215,10 @@ class GoogleCloudOrgpolicyV2alpha1PolicyPolicyRule(_messages.Message):
   condition = _messages.MessageField('GoogleTypeExpr', 2)
   denyAll = _messages.BooleanField(3)
   enforce = _messages.BooleanField(4)
-  values = _messages.MessageField('GoogleCloudOrgpolicyV2alpha1PolicyPolicyRuleStringValues', 5)
+  values = _messages.MessageField('GoogleCloudOrgpolicyV2alpha1PolicySpecPolicyRuleStringValues', 5)
 
 
-class GoogleCloudOrgpolicyV2alpha1PolicyPolicyRuleStringValues(_messages.Message):
+class GoogleCloudOrgpolicyV2alpha1PolicySpecPolicyRuleStringValues(_messages.Message):
   r"""A message that holds specific allowed and denied values. This message
   can define specific values and subtrees of Cloud Resource Manager resource
   hierarchy (`Organizations`, `Folders`, `Projects`) that are allowed or
@@ -357,16 +376,7 @@ class OrgpolicyPoliciesPatchRequest(_messages.Message):
       `etag` is required.
     googleCloudOrgpolicyV2alpha1Policy: A GoogleCloudOrgpolicyV2alpha1Policy
       resource to be passed as the request body.
-    name: Immutable. The resource name of the Policy. Must be one of the
-      following forms, where constraint_name is the name of the constraint
-      which this Policy configures: *
-      `projects/{project_number}/policies/{constraint_name}` *
-      `folders/{folder_id}/policies/{constraint_name}` *
-      `organizations/{organization_id}/policies/{constraint_name}`  For
-      example, "projects/123/policies/compute.disableSerialPortAccess".  Note:
-      `projects/{project_id}/policies/{constraint_name}` is also an acceptable
-      name for API requests, but responses will return the name using the
-      equivalent project number.
+    name: A string attribute.
   """
 
   forceUnconditionalWrite = _messages.BooleanField(1)

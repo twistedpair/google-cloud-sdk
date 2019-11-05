@@ -1319,6 +1319,11 @@
                   "location": "query",
                   "type": "string"
                 },
+                "includeUnrevealedLocations": {
+                  "description": "If true, the returned list will include locations which are not yet\nrevealed.",
+                  "location": "query",
+                  "type": "boolean"
+                },
                 "pageSize": {
                   "description": "The standard list page size.",
                   "location": "query",

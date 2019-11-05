@@ -5,6 +5,115 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 270.0.0 (2019-11-05)
+
+### AI Platform
+
+* Added `--explanation-method`, `--num-integral-steps`, and `--num-paths`
+  options for `gcloud <alpha|beta> ai-platform versions create`.
+* Added command `gcloud <alpha|beta> ai-platform explain`.
+
+### App Engine
+
+* 
+* Updated the Python SDK to version 1.9.87.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/python/release-notes>
+
+### App Engine Flexible Environment
+
+* Fixed `gcloud beta app deploy` to stream to build logs to stderr instead of
+  stdout.
+
+### Cloud Bigtable
+
+* Show full operation name without the implied operation and project prefix in `gcloud bigtable operations list`.
+* Accept full operation name or full name without the implied operation and project prefix in `gcloud bigtable operations describe`.
+
+### Cloud Dataflow
+
+* Added `--disable-public-ips` flag to `gcloud dataflow jobs run`.
+
+### Cloud Dataproc
+
+* Fixed `gcloud dataproc workflow-templates instantiate-inline` to accept
+  cluster properties. Previously, you would have seen the error
+  "File not found $PWD/google-cloud-sdk/latest/google-cloud-sdk/lib/googlecloudsdk/schemas/dataproc/v1/PropertiesValue.yaml".
+
+### Cloud Endpoints
+
+* Fixed issue where `gcloud endpoints services deploy` would sometimes fail due
+  to a permissions error.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.10.0
+  * Added support for seeding database from export via `--seed_from_export`.
+  * Fixed an issue where batchGet and transactions does not work over REST.
+
+### Cloud Storage
+
+* 
+* Updated gsutil component to 4.46.
+
+### Compute Engine
+
+* Promoted `--mode` flag of `gcloud compute instance-groups managed
+  set-autoscaling` command to beta.
+* Promoted `gcloud compute instance-groups managed update-autoscaling` command
+ to beta.
+
+### Kubernetes Engine
+
+*   Fixed issue where setting maintenance windows would overwrite all existing
+    maintenance exclusions.
+*   Fixed issue where you could not set a recurring maintenance window if a
+    daily window was already set (and vice versa).
+*   Promoted Node Auto-Provisioning to GA. Use
+    `--enable-autoprovisioning` with `gcloud container clusters create`
+    or `gcloud container clusters update` to enable this feature.
+*   Added `--enable-autoprovisioning` to `gcloud container node-pools create`,
+    `gcloud beta container node-pools create`,
+    `gcloud beta container node-pools update` and
+    `gcloud container node-pools update`.
+*   Fixed cluster and node pool creation in `gcloud beta container` commands when
+    using GKE versions below 1.13.6. The regression was caused by sending a
+    NodePool API field that's version-gated (1.13.6+ only). This field is now
+    only sent when `--shielded-integrity-monitoring` or `--shielded-secure-boot`
+    flags are set.
+*   Added `--max-surge-upgrade` and `--max-unavailable-upgrade` flags to
+    `gcloud beta container` command group. Use these flags to specify surge
+    upgrade parameters for cluster creation, node pool creation, or node pool
+    update.
+    * Surge upgrade is enabled by default (`--max-surge-upgrade=1`) for
+        clusters and node pools created with `gcloud beta container` commands.
+*   Promoted the following flags to GA on `gcloud container clusters create` and
+    `gcloud container clusters update`:
+    *   `--maintenance-window-start`
+    *   `--maintenance-window-end`
+    *   `--maintenance-window-recurrence`
+*   Promoted the following flags to GA on `gcloud container clusters update`:
+    *   `--add-maintenance-exclusion-name`
+    *   `--add-maintenance-exclusion-start`
+    *   `--add-maintenance-exclusion-end`
+    *   `--clear-maintenance-window`
+    *   `--remove-maintenance-exclusion`
+*   Promoted `--security-group` flag of `gcloud container clusters create` to GA.
+    This flag enables support for Google Groups in Kubernetes RBAC rules.
+*   Promoted `--database-encryption-key` for `gcloud container clusters
+    create|update`, and `--disable-database-encryption` for `gcloud container
+    clusters update` to GA.
+* Added `--enable-cloud-run-alpha` flag to `gcloud container clusters create`
+  to enable Cloud Run alpha features on the cluster.
+
+### Managed Active Directory
+
+* Promoted `gcloud active-directory` command group to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 269.0.0 (2019-10-29)
 
 ### Breaking Changes

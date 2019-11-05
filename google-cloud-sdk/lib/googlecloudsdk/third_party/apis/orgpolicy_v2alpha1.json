@@ -206,11 +206,23 @@
     },
     "GoogleCloudOrgpolicyV2alpha1Policy": {
       "id": "GoogleCloudOrgpolicyV2alpha1Policy",
+      "type": "object",
+      "properties": {
+        "spec": {
+          "$ref": "GoogleCloudOrgpolicyV2alpha1PolicySpec"
+        },
+        "alternate": {
+          "description": "An alternate policy configuration that will be used instead of the baseline\npolicy configurations as determined by the launch.\nCurrently the only way the launch can trigger the alternate configuration\nis via dry-run\/dark.",
+          "$ref": "GoogleCloudOrgpolicyV2alpha1AlternatePolicySpec"
+        }
+      }
+    },
+    "GoogleCloudOrgpolicyV2alpha1PolicySpec": {
+      "id": "GoogleCloudOrgpolicyV2alpha1PolicySpec",
       "description": "Defines a Cloud Organization `Policy` which is used to specify `Constraints`\nfor configurations of Cloud Platform resources.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Immutable. The resource name of the Policy. Must be one of the following\nforms, where constraint_name is the name of the constraint which this\nPolicy configures:\n* `projects\/{project_number}\/policies\/{constraint_name}`\n* `folders\/{folder_id}\/policies\/{constraint_name}`\n* `organizations\/{organization_id}\/policies\/{constraint_name}`\n\nFor example, \"projects\/123\/policies\/compute.disableSerialPortAccess\".\n\nNote: `projects\/{project_id}\/policies\/{constraint_name}` is also an\nacceptable name for API requests, but responses will return the name using\nthe equivalent project number.",
           "type": "string"
         },
         "etag": {
@@ -226,7 +238,7 @@
           "description": "Up to 10 PolicyRules are allowed.\n\nIn Policies for boolean constraints, the following requirements apply:\n  - There must be one and only one PolicyRule where condition is unset.\n  - BooleanPolicyRules with conditions must set `enforced` to the opposite\n    of the PolicyRule without a condition.\n  - During policy evaluation, PolicyRules with conditions that are\n    true for a target resource take precedence.",
           "type": "array",
           "items": {
-            "$ref": "GoogleCloudOrgpolicyV2alpha1PolicyPolicyRule"
+            "$ref": "GoogleCloudOrgpolicyV2alpha1PolicySpecPolicyRule"
           }
         },
         "inheritFromParent": {
@@ -239,14 +251,14 @@
         }
       }
     },
-    "GoogleCloudOrgpolicyV2alpha1PolicyPolicyRule": {
-      "id": "GoogleCloudOrgpolicyV2alpha1PolicyPolicyRule",
+    "GoogleCloudOrgpolicyV2alpha1PolicySpecPolicyRule": {
+      "id": "GoogleCloudOrgpolicyV2alpha1PolicySpecPolicyRule",
       "description": "A rule used to express this policy.",
       "type": "object",
       "properties": {
         "values": {
           "description": "List of values to be used for this PolicyRule. This field can be set\nonly in Policies for list constraints.",
-          "$ref": "GoogleCloudOrgpolicyV2alpha1PolicyPolicyRuleStringValues"
+          "$ref": "GoogleCloudOrgpolicyV2alpha1PolicySpecPolicyRuleStringValues"
         },
         "allowAll": {
           "description": "Setting this to true means that all values are allowed. This field can\nbe set only in Policies for list constraints.",
@@ -266,8 +278,8 @@
         }
       }
     },
-    "GoogleCloudOrgpolicyV2alpha1PolicyPolicyRuleStringValues": {
-      "id": "GoogleCloudOrgpolicyV2alpha1PolicyPolicyRuleStringValues",
+    "GoogleCloudOrgpolicyV2alpha1PolicySpecPolicyRuleStringValues": {
+      "id": "GoogleCloudOrgpolicyV2alpha1PolicySpecPolicyRuleStringValues",
       "description": "A message that holds specific allowed and denied values.\nThis message can define specific values and subtrees of Cloud Resource\nManager resource hierarchy (`Organizations`, `Folders`, `Projects`) that\nare allowed or denied. This is achieved by using the `under:` and\noptional `is:` prefixes.\nThe `under:` prefix is used to denote resource subtree values.\nThe `is:` prefix is used to denote specific values, and is required only\nif the value contains a \":\". Values prefixed with \"is:\" are treated the\nsame as values with no prefix.\nAncestry subtrees must be in one of the following formats:\n    - \"projects\/<project-id>\", e.g. \"projects\/tokyo-rain-123\"\n    - \"folders\/<folder-id>\", e.g. \"folders\/1234\"\n    - \"organizations\/<organization-id>\", e.g. \"organizations\/1234\"\nThe `supports_under` field of the associated `Constraint`  defines\nwhether ancestry prefixes can be used.",
       "type": "object",
       "properties": {
@@ -307,6 +319,19 @@
         "location": {
           "description": "An optional string indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudOrgpolicyV2alpha1AlternatePolicySpec": {
+      "id": "GoogleCloudOrgpolicyV2alpha1AlternatePolicySpec",
+      "type": "object",
+      "properties": {
+        "launch": {
+          "description": "Reference to the launch that will be used while audit logging and to\ncontrol the launch.\nShould be set only in the alternate policy.",
+          "type": "string"
+        },
+        "spec": {
+          "$ref": "GoogleCloudOrgpolicyV2alpha1PolicySpec"
         }
       }
     },
@@ -487,7 +512,6 @@
           "httpMethod": "PATCH",
           "parameters": {
             "name": {
-              "description": "Immutable. The resource name of the Policy. Must be one of the following\nforms, where constraint_name is the name of the constraint which this\nPolicy configures:\n* `projects\/{project_number}\/policies\/{constraint_name}`\n* `folders\/{folder_id}\/policies\/{constraint_name}`\n* `organizations\/{organization_id}\/policies\/{constraint_name}`\n\nFor example, \"projects\/123\/policies\/compute.disableSerialPortAccess\".\n\nNote: `projects\/{project_id}\/policies\/{constraint_name}` is also an\nacceptable name for API requests, but responses will return the name using\nthe equivalent project number.",
               "location": "path",
               "required": true,
               "pattern": "^[^\/]+\/[^\/]+\/policies\/[^\/]+$",
@@ -543,3 +567,4 @@
   },
   "basePath": ""
 }
+

@@ -68,6 +68,7 @@ class ConnectionDetails(object):
     return not self.__eq__(other)
 
   def __repr__(self):
+    # TODO(b/143543614) audit usage of str
     return str('ConnectionDetails(**{})'.format(self.__dict__))
 
 

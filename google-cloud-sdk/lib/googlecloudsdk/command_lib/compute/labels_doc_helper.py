@@ -19,11 +19,12 @@ from __future__ import division
 from __future__ import unicode_literals
 
 _LIST_LABELS_DETAILED_HELP_TEMPLATE = """
-    Labels can be used to identify the {resource} and to filter them as in
+    Labels can be used to identify the {resource} and to filter them. To find a
+    {resource} labeled with key-value pair ``k1'', ``v2''
 
-      $ {{parent_command}} list --filter='labels.k1:value2'
+      $ {{parent_command}} list --filter='labels.k1:v2'
 
-    To list existing labels
+    To list only the labels when describing a resource, use --format
 
       $ {{parent_command}} describe {sample} --format='default(labels)'
 """
@@ -33,11 +34,11 @@ _ADD_LABELS_BRIEF_DOC_TEMPLATE = """\
 """
 _ADD_LABELS_DESCRIPTION_TEMPLATE = """
     *{{command}}* adds labels to a Google Compute Engine {product}.
-    For example, running:
+"""
+_ADD_LABELS_EXAMPLE_TEMPLATE = """
+    To add key-value pairs ``k0''=``v0'' and ``k1''=``v1'' to '{sample}'
 
       $ {{command}} {sample} --labels=k0=v0,k1=v1
-
-    will add key-value pairs ``k0''=``v0'' and ``k1''=``v1'' to '{sample}'.
 """
 
 _REMOVE_LABELS_BRIEF_DOC_TEMPLATE = """\
@@ -45,12 +46,13 @@ _REMOVE_LABELS_BRIEF_DOC_TEMPLATE = """\
 """
 _REMOVE_LABELS_DESCRIPTION_TEMPLATE = """
     *{{command}}* removes labels from a Google Compute Engine {product}.
-    For example, running:
+"""
+_REMOVE_LABELS_EXAMPLE_TEMPLATE = """
+    To remove existing labels with key ``k0'' and ``k1'' from '{sample}'
 
       $ {{command}} {sample} --labels=k0,k1
-
-    will remove existing labels with key  ``k0'' and ``k1'' from '{sample}'.
 """
+
 
 # Maps a resource name (e.g. 'instance' or 'image') to its product name.
 # No trailing whitespace allowed.
@@ -70,10 +72,10 @@ def GenerateDetailedHelpForAddLabels(resource):
   Returns:
     The detailed help doc for the add-labels command.
   """
-  return _GenerateDetailedHelpForCommand(
-      resource,
-      _ADD_LABELS_BRIEF_DOC_TEMPLATE,
-      _ADD_LABELS_DESCRIPTION_TEMPLATE)
+  return _GenerateDetailedHelpForCommand(resource,
+                                         _ADD_LABELS_BRIEF_DOC_TEMPLATE,
+                                         _ADD_LABELS_DESCRIPTION_TEMPLATE,
+                                         _ADD_LABELS_EXAMPLE_TEMPLATE)
 
 
 def GenerateDetailedHelpForRemoveLabels(resource):
@@ -84,20 +86,21 @@ def GenerateDetailedHelpForRemoveLabels(resource):
   Returns:
     The detailed help doc for the remove-labels command.
   """
-  return _GenerateDetailedHelpForCommand(
-      resource,
-      _REMOVE_LABELS_BRIEF_DOC_TEMPLATE,
-      _REMOVE_LABELS_DESCRIPTION_TEMPLATE)
+  return _GenerateDetailedHelpForCommand(resource,
+                                         _REMOVE_LABELS_BRIEF_DOC_TEMPLATE,
+                                         _REMOVE_LABELS_DESCRIPTION_TEMPLATE,
+                                         _REMOVE_LABELS_EXAMPLE_TEMPLATE)
 
 
-def _GenerateDetailedHelpForCommand(
-    resource, brief_doc_template, description_template):
+def _GenerateDetailedHelpForCommand(resource, brief_doc_template,
+                                    description_template, example_template):
   """Generates the detailed help doc for a command.
 
   Args:
     resource: The name of the resource. e.g "instance", "image" or "disk"
     brief_doc_template: The brief doc template to use.
     description_template: The command description template.
+    example_template: The example template to use.
   Returns:
     The detailed help doc for a command. The returned value is a map with
     two attributes; 'brief' and 'description'.
@@ -109,7 +112,9 @@ def _GenerateDetailedHelpForCommand(
   brief = brief_doc_template.format(product_plural)
   format_kwargs = {'product': product, 'sample': sample,
                    'resource': resource}
-  description = (description_template.format(**format_kwargs) +
-                 _LIST_LABELS_DETAILED_HELP_TEMPLATE.format(**format_kwargs))
+  description = description_template.format(**format_kwargs)
+  examples = (
+      example_template.format(**format_kwargs) +
+      _LIST_LABELS_DETAILED_HELP_TEMPLATE.format(**format_kwargs))
 
-  return {'brief': brief, 'DESCRIPTION': description}
+  return {'brief': brief, 'DESCRIPTION': description, 'EXAMPLES': examples}

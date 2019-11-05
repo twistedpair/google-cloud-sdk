@@ -59,11 +59,12 @@ class LogTailer(object):
     self.out = out
 
   @classmethod
-  def FromBuild(cls, build):
+  def FromBuild(cls, build, out=log.out):
     """Build a LogTailer from a build resource.
 
     Args:
       build: Build resource, The build whose logs shall be streamed.
+      out: The output stream to write the logs to.
 
     Raises:
       NoLogsBucketException: If the build does not specify a logsBucket.
@@ -95,7 +96,7 @@ class LogTailer(object):
     return cls(
         bucket=log_bucket,
         obj=log_object,
-        out=log.out,
+        out=out,
         url_pattern='https://storage.googleapis.com/{bucket}/{obj}')
 
   def Poll(self, is_last=False):
@@ -205,11 +206,12 @@ class CloudBuildClient(object):
             projectId=build_ref.projectId,
             id=build_ref.id))
 
-  def Stream(self, build_ref):
+  def Stream(self, build_ref, out=log.out):
     """Stream the logs for a build.
 
     Args:
       build_ref: Build reference, The build whose logs shall be streamed.
+      out: The output stream to write the logs to.
 
     Raises:
       NoLogsBucketException: If the build does not specify a logsBucket.
@@ -219,7 +221,7 @@ class CloudBuildClient(object):
       poll.
     """
     build = self.GetBuild(build_ref)
-    log_tailer = LogTailer.FromBuild(build)
+    log_tailer = LogTailer.FromBuild(build, out=out)
 
     statuses = self.messages.Build.StatusValueValuesEnum
     working_statuses = [

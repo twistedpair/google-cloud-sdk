@@ -87,6 +87,10 @@ WARN_NODE_VERSION_WITH_AUTOUPGRADE_ENABLED = (
     'Node-pools created at the specified version will be auto-upgraded '
     'whenever auto-upgrade preconditions are met.')
 
+INVALIID_SURGE_UPGRADE_SETTINGS = (
+    '\'--max-surge-upgrade\' and \'--max-unavailable-upgrade\' must be used in '
+    'conjunction.')
+
 GKE_DEFAULT_POD_RANGE = 14
 GKE_DEFAULT_POD_RANGE_PER_NODE = 24
 GKE_ROUTE_BASED_SERVICE_RANGE = 20

@@ -969,7 +969,7 @@
                       "type": "string"
                     },
                     "connectAgent.name": {
-                      "description": "Name is the unique identifier for a connect agent per project.\nLimited to 1024 characters.",
+                      "description": "Deprecated. Do not set.",
                       "location": "query",
                       "type": "string"
                     },

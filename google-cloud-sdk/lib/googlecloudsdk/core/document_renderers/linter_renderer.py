@@ -32,6 +32,9 @@ class LinterRenderer(text_renderer.TextRenderer):
   _HEADINGS_TO_LINT = ["NAME", "EXAMPLES", "DESCRIPTION"]
   _NAME_WORD_LIMIT = 20
   _PERSONAL_PRONOUNS = {"me", "we", "I", "us", "he", "she", "him", "her"}
+  # gcloud does not recognize the following flags as not requiring a value so
+  # they would be marked as violations in _analyze_example_flags_equals.
+  _NON_BOOL_FLAGS_WHITELIST = ["--quiet", "--help"]
 
   def __init__(self, *args, **kwargs):
     super(LinterRenderer, self).__init__(*args, **kwargs)
@@ -149,7 +152,8 @@ class LinterRenderer(text_renderer.TextRenderer):
 
   def _analyze_example_flags_equals(self, flags):
     for flag in flags:
-      if "=" not in flag and flag not in self.command_metadata.bool_flags:
+      if ("=" not in flag and flag not in self.command_metadata.bool_flags and
+          flag not in self._NON_BOOL_FLAGS_WHITELIST):
         self.equals_violation_flags.append(flag)
 
   def _analyze_name(self, section):

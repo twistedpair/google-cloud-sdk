@@ -549,8 +549,8 @@ apis:
     v1beta1:
       discovery_doc: runtimeconfig_v1beta1.json
   secretmanager:
-    v1alpha:
-      discovery_doc: secretmanager_v1alpha.json
+    v1beta1:
+      discovery_doc: secretmanager_v1beta1.json
   securitycenter:
     v1beta1:
       discovery_doc: securitycenter_v1beta1.json

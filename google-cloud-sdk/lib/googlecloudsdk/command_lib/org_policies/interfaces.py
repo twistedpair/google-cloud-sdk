@@ -148,10 +148,11 @@ class OrgPolicyGetAndUpdateCommand(
     parent = utils.GetResourceFromArgs(args)
 
     empty_policy = self.org_policy_messages.GoogleCloudOrgpolicyV2alpha1Policy(
-        name=name)
+        spec=self.org_policy_messages.GoogleCloudOrgpolicyV2alpha1PolicySpec(
+            name=name))
     new_policy = self.UpdatePolicy(empty_policy, args)
 
-    if not new_policy.rules and not new_policy.inheritFromParent and not new_policy.reset:
+    if not new_policy.spec.rules and not new_policy.spec.inheritFromParent and not new_policy.spec.reset:
       # Return the response received after a successful DeletePolicy.
       return self.org_policy_messages.GoogleProtobufEmpty()
 
@@ -182,7 +183,7 @@ class OrgPolicyGetAndUpdateCommand(
 
     policy_name = utils.GetPolicyNameFromArgs(args)
 
-    if not updated_policy.rules and not updated_policy.inheritFromParent and not updated_policy.reset:
+    if not updated_policy.spec.rules and not updated_policy.spec.inheritFromParent and not updated_policy.spec.reset:
       delete_request = self.org_policy_messages.OrgpolicyPoliciesDeleteRequest(
           name=policy_name)
       delete_response = self.policy_service.Delete(delete_request)

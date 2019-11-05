@@ -570,6 +570,14 @@ def AddPortFlag(parser):
       'To unset this field, pass the special value "default".')
 
 
+def AddHttp2Flag(parser):
+  """Add http/2 flag to set the port name."""
+  parser.add_argument(
+      '--use-http2',
+      action=arg_parsers.StoreTrueFalseAction,
+      help='Whether to use HTTP/2 for connections to the service.')
+
+
 def _HasChanges(args, flags):
   """True iff any of the passed flags are set."""
   return any(_FlagIsExplicitlySet(args, flag) for flag in flags)
@@ -860,8 +868,10 @@ def GetConfigurationChanges(args):
   if 'args' in args and args.args is not None:
     # Allow passing an empty string here to reset the field
     changes.append(config_changes.ContainerArgsChange(args.args))
-  if _FlagIsExplicitlySet(args, 'port'):
-    changes.append(config_changes.ContainerPortChange(args.port))
+  if (_FlagIsExplicitlySet(args, 'port') or
+      _FlagIsExplicitlySet(args, 'use_http2')):
+    changes.append(
+        config_changes.ContainerPortChange(args.port, args.use_http2))
   return changes
 
 
@@ -1084,6 +1094,13 @@ def VerifyOnePlatformFlags(args):
             platform='gke',
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['gke']))
 
+  if _FlagIsExplicitlySet(args, 'use_http2'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--[no-]-use-http2',
+            platform='gke',
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['gke']))
+
   if _FlagIsExplicitlySet(args, 'kubeconfig'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
@@ -1095,27 +1112,6 @@ def VerifyOnePlatformFlags(args):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--context',
-            platform='kubernetes',
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['kubernetes']))
-
-  if _FlagIsExplicitlySet(args, 'no_traffic'):
-    raise serverless_exceptions.ConfigurationError(
-        error_msg.format(
-            flag='--no-traffic',
-            platform='kubernetes',
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['kubernetes']))
-
-  if _FlagIsExplicitlySet(args, 'to_revisions'):
-    raise serverless_exceptions.ConfigurationError(
-        error_msg.format(
-            flag='--to-revisions',
-            platform='kubernetes',
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['kubernetes']))
-
-  if _FlagIsExplicitlySet(args, 'to_latest'):
-    raise serverless_exceptions.ConfigurationError(
-        error_msg.format(
-            flag='--to-latest',
             platform='kubernetes',
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['kubernetes']))
 
@@ -1144,13 +1140,6 @@ def VerifyGKEFlags(args):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--region',
-            platform='managed',
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['managed']))
-
-  if _FlagIsExplicitlySet(args, 'revision_suffix'):
-    raise serverless_exceptions.ConfigurationError(
-        error_msg.format(
-            flag='--revision-suffix',
             platform='managed',
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['managed']))
 
@@ -1208,13 +1197,6 @@ def VerifyKubernetesFlags(args):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--region',
-            platform='managed',
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['managed']))
-
-  if _FlagIsExplicitlySet(args, 'revision_suffix'):
-    raise serverless_exceptions.ConfigurationError(
-        error_msg.format(
-            flag='--revision-suffix',
             platform='managed',
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['managed']))
 

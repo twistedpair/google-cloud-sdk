@@ -217,12 +217,12 @@ def _DeleteRulesWithEmptyValues(policy, args):
   condition = None
   if args.condition is not None:
     condition = org_policy_messages.GoogleTypeExpr(expression=args.condition)
-  empty_values = org_policy_messages.GoogleCloudOrgpolicyV2alpha1PolicyPolicyRuleStringValues(
+  empty_values = org_policy_messages.GoogleCloudOrgpolicyV2alpha1PolicySpecPolicyRuleStringValues(
   )
-  matching_empty_rule = org_policy_messages.GoogleCloudOrgpolicyV2alpha1PolicyPolicyRule(
+  matching_empty_rule = org_policy_messages.GoogleCloudOrgpolicyV2alpha1PolicySpecPolicyRule(
       condition=condition, values=empty_values)
-  new_policy.rules = [
-      rule for rule in new_policy.rules if rule != matching_empty_rule
+  new_policy.spec.rules = [
+      rule for rule in new_policy.spec.rules if rule != matching_empty_rule
   ]
 
   return new_policy

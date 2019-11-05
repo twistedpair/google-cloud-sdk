@@ -539,6 +539,42 @@ The count of the accelerator must be greater than 0.
       type=accelerator_type)
 
 
+def AddExplainabilityFlags(parser):
+  """Add args that configure explainability."""
+  base.ChoiceArgument(
+      '--explanation-method',
+      choices=['integrated-gradients', 'sampled-shapley'],
+      required=False,
+      help_str="""\
+          Enable explanations and select the explanation method to use.
+
+          The valid options are:
+            integrated-gradients: Use Integrated Gradients.
+            sampled-shapley: Use Sampled Shapley.
+      """
+  ).AddToParser(parser)
+  base.Argument(
+      '--num-integral-steps',
+      type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
+      default=50,
+      required=False,
+      help="""\
+          Number of integral steps for Integrated Gradients. Only valid when
+          `--explanation-method=integrated-gradients` is specified.
+      """
+  ).AddToParser(parser)
+  base.Argument(
+      '--num-paths',
+      type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
+      default=50,
+      required=False,
+      help="""\
+          Number of paths for Sampled Shapley. Only valid when
+          `--explanation-method=sampled-shapley` is specified.
+      """
+  ).AddToParser(parser)
+
+
 def AddCustomContainerFlags(parser, support_tpu_tf_version=False):
   """Add Custom container flags to parser."""
   GetMasterMachineType().AddToParser(parser)

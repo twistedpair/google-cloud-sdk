@@ -54,4 +54,7 @@ properties:
       The properties to set on daemon config files.Property keys are
       specified in prefix:property format, for example core:hadoop.tmp.dir.
       The following are supported prefixes and their
-    $ref: PropertiesValue.yaml
+    type: object
+    additionalProperties:
+      description: Additional properties of type string
+      type: string

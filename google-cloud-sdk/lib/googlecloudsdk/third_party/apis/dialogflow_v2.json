@@ -448,7 +448,7 @@
           ]
         },
         "priority": {
-          "description": "Optional. The priority of this intent. Higher numbers represent higher\npriorities. If this is zero or unspecified, we use the default\npriority 500000.\n\nNegative numbers mean that the intent is disabled.",
+          "description": "Optional. The priority of this intent. Higher numbers represent higher\npriorities.\n\n- If the supplied value is unspecified or 0, the service\n  translates the value to 500,000, which corresponds to the\n  `Normal` priority in the console.\n- If the supplied value is negative, the intent is ignored\n  in runtime detect intent requests.",
           "type": "integer",
           "format": "int32"
         },
@@ -975,6 +975,10 @@
           "items": {
             "$ref": "GoogleCloudDialogflowV2IntentMessageListSelectItem"
           }
+        },
+        "subtitle": {
+          "description": "Optional. Subtitle of the list.",
+          "type": "string"
         }
       }
     },
@@ -1980,189 +1984,6 @@
         }
       }
     },
-    "GoogleCloudDialogflowV2HumanAgentAssistantEvent": {
-      "id": "GoogleCloudDialogflowV2HumanAgentAssistantEvent",
-      "description": "Represents a notification sent to Cloud Pub\/Sub subscribers for\nhuman agent assistant events in a specific conversation.",
-      "type": "object",
-      "properties": {
-        "conversation": {
-          "description": "The conversation this notification refers to.\nFormat: `projects\/<Project ID>\/conversations\/<Conversation ID>`.",
-          "type": "string"
-        },
-        "participant": {
-          "description": "The participant that the suggestion is compiled for. And This field is used\nto call Participants.ListSuggestions API. Format:\n`projects\/<Project ID>\/conversations\/<Conversation\nID>\/participants\/<Participant ID>`.\nIt will not be set in legacy workflow.\nHumanAgentAssistantConfig.name for more\ninformation.",
-          "type": "string"
-        },
-        "suggestionResults": {
-          "description": "The suggestion results payload that this notification refers to.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudDialogflowV2SuggestionResult"
-          }
-        }
-      }
-    },
-    "GoogleCloudDialogflowV2SuggestionResult": {
-      "id": "GoogleCloudDialogflowV2SuggestionResult",
-      "description": "One response of different type of suggestion response which is used in\nthe response of Participants.AnalyzeContent and\nParticipants.AnalyzeContent, as well as HumanAgentAssistantEvent.",
-      "type": "object",
-      "properties": {
-        "error": {
-          "description": "Error status if the request failed.",
-          "$ref": "GoogleRpcStatus"
-        },
-        "suggestArticlesResponse": {
-          "description": "SuggestArticlesResponse if request is for ARTICLE_SUGGESTION.",
-          "$ref": "GoogleCloudDialogflowV2SuggestArticlesResponse"
-        },
-        "suggestFaqAnswersResponse": {
-          "description": "SuggestFaqAnswersResponse if request is for FAQ_ANSWER.",
-          "$ref": "GoogleCloudDialogflowV2SuggestFaqAnswersResponse"
-        }
-      }
-    },
-    "GoogleCloudDialogflowV2SuggestArticlesResponse": {
-      "id": "GoogleCloudDialogflowV2SuggestArticlesResponse",
-      "description": "The response message for [Participants.SuggestArticles]",
-      "type": "object",
-      "properties": {
-        "articleAnswers": {
-          "description": "Articles ordered by score in descending order.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudDialogflowV2ArticleAnswer"
-          }
-        },
-        "latestMessage": {
-          "description": "The name of the latest conversation message used to compile\nsuggestion for.\n\nFormat: `projects\/<Project ID>\/conversations\/<Conversation\nID>\/messages\/<Message ID>`.",
-          "type": "string"
-        },
-        "contextSize": {
-          "description": "Number of messages prior to and including\nlast_conversation_message to compile the suggestion. It may be smaller\nthan the CompileSuggestionRequest.context_messages_count field in the\nrequest if there aren't that many messages in the conversation.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "GoogleCloudDialogflowV2ArticleAnswer": {
-      "id": "GoogleCloudDialogflowV2ArticleAnswer",
-      "description": "Represents article answer.",
-      "type": "object",
-      "properties": {
-        "title": {
-          "description": "The article title.",
-          "type": "string"
-        },
-        "uri": {
-          "description": "The article URI.",
-          "type": "string"
-        },
-        "snippets": {
-          "description": "Article snippets.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "confidence": {
-          "description": "Article match confidence.\nThe system's confidence score that this article is a good match for this\nconverstation, as a value from 0.0 (completely uncertain) to 1.0\n(completely certain).",
-          "type": "number",
-          "format": "float"
-        },
-        "metadata": {
-          "description": "A map that contains metadata about the answer and the\ndocument from which it originates.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "answerRecord": {
-          "description": "The name of answer record, in the format of\n\"projects\/<Project ID>\/answerRecords\/<Answer Record ID>\"",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudDialogflowV2SuggestFaqAnswersResponse": {
-      "id": "GoogleCloudDialogflowV2SuggestFaqAnswersResponse",
-      "description": "The request message for [Participants.SuggestFaqAnswers]",
-      "type": "object",
-      "properties": {
-        "faqAnswers": {
-          "description": "Answers extracted from FAQ documents.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudDialogflowV2FaqAnswer"
-          }
-        },
-        "latestMessage": {
-          "description": "The name of the latest conversation message used to compile\nsuggestion for.\n\nFormat: `projects\/<Project ID>\/conversations\/<Conversation\nID>\/messages\/<Message ID>`.",
-          "type": "string"
-        },
-        "contextSize": {
-          "description": "Number of messages prior to and including\nlast_conversation_message to compile the suggestion. It may be smaller\nthan the CompileSuggestionRequest.context_messages_count field in the\nrequest if there aren't that many messages in the conversation.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "GoogleCloudDialogflowV2FaqAnswer": {
-      "id": "GoogleCloudDialogflowV2FaqAnswer",
-      "description": "Represents answer from \"frequently asked questions\".",
-      "type": "object",
-      "properties": {
-        "answer": {
-          "description": "The piece of text from the `source` knowledge base document.",
-          "type": "string"
-        },
-        "confidence": {
-          "description": "The system's confidence score that this Knowledge answer is a good match\nfor this conversational query, range from 0.0 (completely uncertain)\nto 1.0 (completely certain).",
-          "type": "number",
-          "format": "float"
-        },
-        "question": {
-          "description": "The corresponding FAQ question.",
-          "type": "string"
-        },
-        "source": {
-          "description": "Indicates which Knowledge Document this answer was extracted\nfrom.\nFormat: `projects\/<Project ID>\/agent\/knowledgeBases\/<Knowledge Base\nID>\/documents\/<Document ID>`.",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "A map that contains metadata about the answer and the\ndocument from which it originates.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "answerRecord": {
-          "description": "The name of answer record, in the format of\n\"projects\/<Project ID>\/answerRecords\/<Answer Record ID>\"",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudDialogflowV2KnowledgeOperationMetadata": {
-      "id": "GoogleCloudDialogflowV2KnowledgeOperationMetadata",
-      "description": "Metadata in google::longrunning::Operation for Knowledge operations.",
-      "type": "object",
-      "properties": {
-        "state": {
-          "description": "Output only. The current state of this operation.",
-          "enumDescriptions": [
-            "State unspecified.",
-            "The operation has been created.",
-            "The operation is currently running.",
-            "The operation is done, either cancelled or completed."
-          ],
-          "type": "string",
-          "enum": [
-            "STATE_UNSPECIFIED",
-            "PENDING",
-            "RUNNING",
-            "DONE"
-          ]
-        }
-      }
-    },
     "GoogleCloudDialogflowV2beta1BatchUpdateEntityTypesResponse": {
       "id": "GoogleCloudDialogflowV2beta1BatchUpdateEntityTypesResponse",
       "description": "The response message for EntityTypes.BatchUpdateEntityTypes.",
@@ -2291,7 +2112,7 @@
           ]
         },
         "priority": {
-          "description": "Optional. The priority of this intent. Higher numbers represent higher\npriorities. If this is zero or unspecified, we use the default\npriority 500000.\n\nNegative numbers mean that the intent is disabled.",
+          "description": "The priority of this intent. Higher numbers represent higher\npriorities.\n\n- If the supplied value is unspecified or 0, the service\n  translates the value to 500,000, which corresponds to the\n  `Normal` priority in the console.\n- If the supplied value is negative, the intent is ignored\n  in runtime detect intent requests.",
           "type": "integer",
           "format": "int32"
         },
@@ -2890,6 +2711,10 @@
           "items": {
             "$ref": "GoogleCloudDialogflowV2beta1IntentMessageListSelectItem"
           }
+        },
+        "subtitle": {
+          "description": "Optional. Subtitle of the list.",
+          "type": "string"
         }
       }
     },

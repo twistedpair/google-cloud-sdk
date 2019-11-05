@@ -782,6 +782,23 @@ class DlpProjectsLocationsContentReidentifyRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class DlpProjectsLocationsImageRedactRequest(_messages.Message):
+  r"""A DlpProjectsLocationsImageRedactRequest object.
+
+  Fields:
+    googlePrivacyDlpV2RedactImageRequest: A
+      GooglePrivacyDlpV2RedactImageRequest resource to be passed as the
+      request body.
+    location: The geographic location to process the request. Reserved for
+      future extensions.
+    parent: The parent resource name, for example projects/my-project-id.
+  """
+
+  googlePrivacyDlpV2RedactImageRequest = _messages.MessageField('GooglePrivacyDlpV2RedactImageRequest', 1)
+  location = _messages.StringField(2, required=True)
+  parent = _messages.StringField(3, required=True)
+
+
 class DlpProjectsStoredInfoTypesCreateRequest(_messages.Message):
   r"""A DlpProjectsStoredInfoTypesCreateRequest object.
 
@@ -1176,20 +1193,22 @@ class GooglePrivacyDlpV2CharacterMaskConfig(_messages.Message):
 
   Fields:
     charactersToIgnore: When masking a string, items in this list will be
-      skipped when replacing. For example, if your string is 555-555-5555 and
-      you ask us to skip `-` and mask 5 chars with * we would produce
-      ***-*55-5555.
-    maskingCharacter: Character to mask the sensitive values&mdash;for
-      example, "*" for an alphabetic string such as name, or "0" for a numeric
-      string such as ZIP code or credit card number. String must have length
-      1. If not supplied, we will default to "*" for strings, 0 for digits.
+      skipped when replacing characters. For example, if the input string is
+      `555-555-5555` and you instruct Cloud DLP to skip `-` and mask 5
+      characters with `*`, Cloud DLP returns `***-**5-5555`.
+    maskingCharacter: Character to use to mask the sensitive values&mdash;for
+      example, `*` for an alphabetic string such as a name, or `0` for a
+      numeric string such as ZIP code or credit card number. This string must
+      have a length of 1. If not supplied, this value defaults to `*` for
+      strings, and `0` for digits.
     numberToMask: Number of characters to mask. If not set, all matching chars
       will be masked. Skipped characters do not count towards this tally.
     reverseOrder: Mask characters in reverse order. For example, if
-      `masking_character` is '0', number_to_mask is 14, and `reverse_order` is
-      false, then 1234-5678-9012-3456 -> 00000000000000-3456 If
-      `masking_character` is '*', `number_to_mask` is 3, and `reverse_order`
-      is true, then 12345 -> 12***
+      `masking_character` is `0`, `number_to_mask` is `14`, and
+      `reverse_order` is `false`, then the input string `1234-5678-9012-3456`
+      is masked as `00000000000000-3456`. If `masking_character` is `*`,
+      `number_to_mask` is `3`, and `reverse_order` is `true`, then the string
+      `12345` is masked as `12***`.
   """
 
   charactersToIgnore = _messages.MessageField('GooglePrivacyDlpV2CharsToIgnore', 1, repeated=True)
@@ -3751,12 +3770,15 @@ class GooglePrivacyDlpV2RedactImageRequest(_messages.Message):
     includeFindings: Whether the response should include findings along with
       the redacted image.
     inspectConfig: Configuration for the inspector.
+    location: The geographic location to process the request. Reserved for
+      future extensions.
   """
 
   byteItem = _messages.MessageField('GooglePrivacyDlpV2ByteContentItem', 1)
   imageRedactionConfigs = _messages.MessageField('GooglePrivacyDlpV2ImageRedactionConfig', 2, repeated=True)
   includeFindings = _messages.BooleanField(3)
   inspectConfig = _messages.MessageField('GooglePrivacyDlpV2InspectConfig', 4)
+  location = _messages.StringField(5)
 
 
 class GooglePrivacyDlpV2RedactImageResponse(_messages.Message):
@@ -4196,7 +4218,7 @@ class GooglePrivacyDlpV2TimePartConfig(_messages.Message):
       MONTH: [1-12]
       DAY_OF_MONTH: [1-31]
       DAY_OF_WEEK: [1-7]
-      WEEK_OF_YEAR: [1-52]
+      WEEK_OF_YEAR: [1-53]
       HOUR_OF_DAY: [0-23]
     """
     TIME_PART_UNSPECIFIED = 0

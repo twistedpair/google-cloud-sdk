@@ -102,6 +102,7 @@ class AndroidInstrumentationTest(_messages.Message):
       android-test-orchestrator> for more information about Android Test
       Orchestrator.  If not set, the test will be run without the
       orchestrator.
+    shardingOption: The option to run tests in multiple shards in parallel.
     testApk: Required. The APK containing the test code to be executed.
     testPackageId: The java package for the test to be executed. The default
       value is determined by examining the application's manifest.
@@ -141,10 +142,11 @@ class AndroidInstrumentationTest(_messages.Message):
   appBundle = _messages.MessageField('AppBundle', 2)
   appPackageId = _messages.StringField(3)
   orchestratorOption = _messages.EnumField('OrchestratorOptionValueValuesEnum', 4)
-  testApk = _messages.MessageField('FileReference', 5)
-  testPackageId = _messages.StringField(6)
-  testRunnerClass = _messages.StringField(7)
-  testTargets = _messages.StringField(8, repeated=True)
+  shardingOption = _messages.MessageField('ShardingOption', 5)
+  testApk = _messages.MessageField('FileReference', 6)
+  testPackageId = _messages.StringField(7)
+  testRunnerClass = _messages.StringField(8)
+  testTargets = _messages.StringField(9, repeated=True)
 
 
 class AndroidMatrix(_messages.Message):
@@ -863,6 +865,20 @@ class Locale(_messages.Message):
   tags = _messages.StringField(4, repeated=True)
 
 
+class ManualSharding(_messages.Message):
+  r"""Shards test cases into the specified groups of packages, classes, and/or
+  methods.  With manual sharding enabled, specifying test targets via
+  environment_variables or in InstrumentationTest is invalid.
+
+  Fields:
+    testTargetsForShard: Required. Group of packages, classes, and/or test
+      methods to be run for each shard. The number of shard_test_targets must
+      be > 1, and <= 50.
+  """
+
+  testTargetsForShard = _messages.MessageField('TestTargetsForShard', 1, repeated=True)
+
+
 class NetworkConfiguration(_messages.Message):
   r"""A NetworkConfiguration object.
 
@@ -1030,6 +1046,34 @@ class RoboStartingIntent(_messages.Message):
   timeout = _messages.StringField(3)
 
 
+class Shard(_messages.Message):
+  r"""Output only. Details about the shard.
+
+  Fields:
+    numShards: Output only. The total number of shards.
+    shardIndex: Output only. The index of the shard among all the shards.
+    testTargetsForShard: Output only. Test targets for each shard.
+  """
+
+  numShards = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  shardIndex = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  testTargetsForShard = _messages.MessageField('TestTargetsForShard', 3)
+
+
+class ShardingOption(_messages.Message):
+  r"""Options for enabling sharding.
+
+  Fields:
+    manualSharding: Shards test cases into the specified groups of packages,
+      classes, and/or methods.
+    uniformSharding: Uniformly shards test cases given a total number of
+      shards.
+  """
+
+  manualSharding = _messages.MessageField('ManualSharding', 1)
+  uniformSharding = _messages.MessageField('UniformSharding', 2)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -1152,6 +1196,7 @@ class TestExecution(_messages.Message):
     id: Output only. Unique id set by the service.
     matrixId: Output only. Id of the containing TestMatrix.
     projectId: Output only. The cloud project that owns the test execution.
+    shard: Output only. Details about the shard.
     state: Output only. Indicates the current progress of the test execution
       (e.g., FINISHED).
     testDetails: Output only. Additional details about the running test.
@@ -1211,11 +1256,12 @@ class TestExecution(_messages.Message):
   id = _messages.StringField(2)
   matrixId = _messages.StringField(3)
   projectId = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  testDetails = _messages.MessageField('TestDetails', 6)
-  testSpecification = _messages.MessageField('TestSpecification', 7)
-  timestamp = _messages.StringField(8)
-  toolResultsStep = _messages.MessageField('ToolResultsStep', 9)
+  shard = _messages.MessageField('Shard', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  testDetails = _messages.MessageField('TestDetails', 7)
+  testSpecification = _messages.MessageField('TestSpecification', 8)
+  timestamp = _messages.StringField(9)
+  toolResultsStep = _messages.MessageField('ToolResultsStep', 10)
 
 
 class TestMatrix(_messages.Message):
@@ -1512,6 +1558,20 @@ class TestSpecification(_messages.Message):
   testTimeout = _messages.StringField(10)
 
 
+class TestTargetsForShard(_messages.Message):
+  r"""Test targets for a shard.
+
+  Fields:
+    testTargets: Group of packages, classes, and/or test methods to be run for
+      each shard. The targets need to be specified in AndroidJUnitRunner
+      argument format. For example, "package com.my.packages" "class
+      com.my.package.MyClass".  The number of shard_test_targets must be
+      greater than 0.
+  """
+
+  testTargets = _messages.StringField(1, repeated=True)
+
+
 class TestingProjectsTestMatricesCancelRequest(_messages.Message):
   r"""A TestingProjectsTestMatricesCancelRequest object.
 
@@ -1647,6 +1707,20 @@ class TrafficRule(_messages.Message):
   delay = _messages.StringField(3)
   packetDuplicationRatio = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
   packetLossRatio = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+
+
+class UniformSharding(_messages.Message):
+  r"""Uniformly shards test cases given a total number of shards.  For
+  Instrumentation test, it will be translated to "-e numShard" "-e shardIndex"
+  AndroidJUnitRunner arguments. With uniform sharding enabled, specifying
+  these sharding arguments via environment_variables is invalid.
+
+  Fields:
+    numShards: Required. Total number of shards. The number must be > 1, and
+      <= 50.
+  """
+
+  numShards = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class XcodeVersion(_messages.Message):

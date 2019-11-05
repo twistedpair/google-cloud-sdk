@@ -1551,10 +1551,10 @@ class Permission(_messages.Message):
     apiDisabled: The service API associated with the permission is not
       enabled.
     customRolesSupportLevel: The current custom role support level.
-    description: A brief description of what this Permission is used for.
+    description: A brief description of what this Permission is used for. This
+      permission can ONLY be used in predefined roles.
     name: The name of this Permission.
-    onlyInPredefinedRoles: This permission can ONLY be used in predefined
-      roles.
+    onlyInPredefinedRoles: A boolean attribute.
     primaryPermission: The preferred name for this permission. If present,
       then this permission is an alias of, and equivalent to, the listed
       primary_permission.
@@ -1945,6 +1945,7 @@ class ServiceAccountKey(_messages.Message):
     KeyAlgorithmValueValuesEnum: Specifies the algorithm (and possibly key
       size) for the key.
     KeyOriginValueValuesEnum: The key origin.
+    KeyTypeValueValuesEnum: The key type.
     PrivateKeyTypeValueValuesEnum: The output format for the private key. Only
       provided in `CreateServiceAccountKey` responses, not in
       `GetServiceAccountKey` or `ListServiceAccountKey` responses.  Google
@@ -1954,6 +1955,7 @@ class ServiceAccountKey(_messages.Message):
   Fields:
     keyAlgorithm: Specifies the algorithm (and possibly key size) for the key.
     keyOrigin: The key origin.
+    keyType: The key type.
     name: The resource name of the service account key in the following format
       `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}`.
     privateKeyData: The private key data. Only provided in
@@ -2000,6 +2002,19 @@ class ServiceAccountKey(_messages.Message):
     USER_PROVIDED = 1
     GOOGLE_PROVIDED = 2
 
+  class KeyTypeValueValuesEnum(_messages.Enum):
+    r"""The key type.
+
+    Values:
+      KEY_TYPE_UNSPECIFIED: Unspecified key type. The presence of this in the
+        message will immediately result in an error.
+      USER_MANAGED: User-managed keys (managed and rotated by the user).
+      SYSTEM_MANAGED: System-managed keys (managed and rotated by Google).
+    """
+    KEY_TYPE_UNSPECIFIED = 0
+    USER_MANAGED = 1
+    SYSTEM_MANAGED = 2
+
   class PrivateKeyTypeValueValuesEnum(_messages.Enum):
     r"""The output format for the private key. Only provided in
     `CreateServiceAccountKey` responses, not in `GetServiceAccountKey` or
@@ -2020,12 +2035,13 @@ class ServiceAccountKey(_messages.Message):
 
   keyAlgorithm = _messages.EnumField('KeyAlgorithmValueValuesEnum', 1)
   keyOrigin = _messages.EnumField('KeyOriginValueValuesEnum', 2)
-  name = _messages.StringField(3)
-  privateKeyData = _messages.BytesField(4)
-  privateKeyType = _messages.EnumField('PrivateKeyTypeValueValuesEnum', 5)
-  publicKeyData = _messages.BytesField(6)
-  validAfterTime = _messages.StringField(7)
-  validBeforeTime = _messages.StringField(8)
+  keyType = _messages.EnumField('KeyTypeValueValuesEnum', 3)
+  name = _messages.StringField(4)
+  privateKeyData = _messages.BytesField(5)
+  privateKeyType = _messages.EnumField('PrivateKeyTypeValueValuesEnum', 6)
+  publicKeyData = _messages.BytesField(7)
+  validAfterTime = _messages.StringField(8)
+  validBeforeTime = _messages.StringField(9)
 
 
 class SetIamPolicyRequest(_messages.Message):

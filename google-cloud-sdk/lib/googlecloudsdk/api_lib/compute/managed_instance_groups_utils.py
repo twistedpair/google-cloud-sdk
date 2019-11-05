@@ -270,18 +270,18 @@ def GetModeFlag():
           'on': ('to permit autoscaling to scale up and down (default for '
                  'new autoscalers).'),
           'only-up': 'to permit autoscaling to scale only up and not down.',
-          'only-down': 'to permit autoscaling to scale only down and not up.',
           'off': ('to turn off autoscaling, while keeping the new '
                   'configuration.')
       },
       help_str="""\
           Set the mode of an autoscaler for a managed instance group.
 
-          You can turn off or restrict MIG activities without changing MIG
-          configuration and then having to restore it later. MIG configuration
-          persists while the activities are turned off or restricted, and the
-          activities pick it up when they are turned on again or when the
-          restrictions are lifted.
+          You can turn off or restrict MIG autoscaler activities (scaling up,
+          scaling down) without changing autoscaler configuration and then
+          having to restore it later. Autoscaler configuration persists while
+          the activities are turned off or restricted, and the activities pick
+          it up when they are turned on again or when the restrictions are
+          lifted.
       """)
 
 

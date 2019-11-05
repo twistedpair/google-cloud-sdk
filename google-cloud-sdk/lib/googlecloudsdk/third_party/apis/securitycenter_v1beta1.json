@@ -209,7 +209,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The relative resource name of this source. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nExample:\n\"organizations\/123\/sources\/456\"",
+          "description": "The relative resource name of this source. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nExample:\n\"organizations\/{organization_id}\/sources\/{source_id}\"",
           "type": "string"
         },
         "displayName": {
@@ -228,11 +228,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The relative resource name of this finding. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nExample:\n\"organizations\/123\/sources\/456\/findings\/789\"",
+          "description": "The relative resource name of this finding. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nExample:\n\"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\"",
           "type": "string"
         },
         "parent": {
-          "description": "Immutable. The relative resource name of the source the finding belongs to. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nThis field is immutable after creation time.\nFor example:\n\"organizations\/123\/sources\/456\"",
+          "description": "Immutable. The relative resource name of the source the finding belongs to. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nThis field is immutable after creation time.\nFor example:\n\"organizations\/{organization_id}\/sources\/{source_id}\"",
           "type": "string"
         },
         "resourceName": {
@@ -290,7 +290,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The relative resource name of the SecurityMarks. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nExamples:\n\"organizations\/123\/assets\/456\/securityMarks\"\n\"organizations\/123\/sources\/456\/findings\/789\/securityMarks\".",
+          "description": "The relative resource name of the SecurityMarks. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nExamples:\n\"organizations\/{organization_id}\/assets\/{asset_id}\/securityMarks\"\n\"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\".",
           "type": "string"
         },
         "marks": {
@@ -455,7 +455,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The relative resource name of the settings. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nExample:\n\"organizations\/123\/organizationSettings\".",
+          "description": "The relative resource name of the settings. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nExample:\n\"organizations\/{organization_id}\/organizationSettings\".",
           "type": "string"
         },
         "enableAssetDiscovery": {
@@ -687,7 +687,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The relative resource name of this asset. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nExample:\n\"organizations\/123\/assets\/456\".",
+          "description": "The relative resource name of this asset. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nExample:\n\"organizations\/{organization_id}\/assets\/{asset_id}\".",
           "type": "string"
         },
         "securityCenterProperties": {
@@ -962,7 +962,7 @@
           "httpMethod": "PATCH",
           "parameters": {
             "name": {
-              "description": "The relative resource name of the settings. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nExample:\n\"organizations\/123\/organizationSettings\".",
+              "description": "The relative resource name of the settings. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nExample:\n\"organizations\/{organization_id}\/organizationSettings\".",
               "location": "path",
               "required": true,
               "pattern": "^organizations\/[^\/]+\/organizationSettings$",
@@ -1297,7 +1297,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "The relative resource name of this source. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nExample:\n\"organizations\/123\/sources\/456\"",
+                  "description": "The relative resource name of this source. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nExample:\n\"organizations\/{organization_id}\/sources\/{source_id}\"",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+$",
@@ -1369,7 +1369,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Name of the source to groupBy. Its format is\n\"organizations\/[organization_id]\/sources\/[source_id]\". To groupBy across\nall sources provide a source_id of `-`. For example:\norganizations\/123\/sources\/-",
+                      "description": "Required. Name of the source to groupBy. Its format is\n\"organizations\/[organization_id]\/sources\/[source_id]\". To groupBy across\nall sources provide a source_id of `-`. For example:\norganizations\/{organization_id}\/sources\/-",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+$",
@@ -1388,7 +1388,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Filters an organization or source's findings and  groups them by their\nspecified properties.\n\nTo group across all sources provide a `-` as the source id.\nExample: \/v1beta1\/organizations\/123\/sources\/-\/findings"
+                  "description": "Filters an organization or source's findings and  groups them by their\nspecified properties.\n\nTo group across all sources provide a `-` as the source id.\nExample: \/v1beta1\/organizations\/{organization_id}\/sources\/-\/findings"
                 },
                 "list": {
                   "id": "securitycenter.organizations.sources.findings.list",
@@ -1397,7 +1397,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Name of the source the findings belong to. Its format is\n\"organizations\/[organization_id]\/sources\/[source_id]\". To list across all\nsources provide a source_id of `-`. For example:\norganizations\/123\/sources\/-",
+                      "description": "Required. Name of the source the findings belong to. Its format is\n\"organizations\/[organization_id]\/sources\/[source_id]\". To list across all\nsources provide a source_id of `-`. For example:\norganizations\/{organization_id}\/sources\/-",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+$",
@@ -1446,7 +1446,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists an organization or source's findings.\n\nTo list across all sources provide a `-` as the source id.\nExample: \/v1beta1\/organizations\/123\/sources\/-\/findings"
+                  "description": "Lists an organization or source's findings.\n\nTo list across all sources provide a `-` as the source id.\nExample: \/v1beta1\/organizations\/{organization_id}\/sources\/-\/findings"
                 },
                 "setState": {
                   "id": "securitycenter.organizations.sources.findings.setState",
@@ -1455,7 +1455,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. The relative resource name of the finding. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nExample:\n\"organizations\/123\/sources\/456\/finding\/789\".",
+                      "description": "Required. The relative resource name of the finding. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nExample:\n\"organizations\/{organization_id}\/sources\/{source_id}\/finding\/{finding_id}\".",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+$",
@@ -1483,7 +1483,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The relative resource name of this finding. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nExample:\n\"organizations\/123\/sources\/456\/findings\/789\"",
+                      "description": "The relative resource name of this finding. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nExample:\n\"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\"",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+$",
@@ -1517,7 +1517,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The relative resource name of the SecurityMarks. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nExamples:\n\"organizations\/123\/assets\/456\/securityMarks\"\n\"organizations\/123\/sources\/456\/findings\/789\/securityMarks\".",
+                      "description": "The relative resource name of the SecurityMarks. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nExamples:\n\"organizations\/{organization_id}\/assets\/{asset_id}\/securityMarks\"\n\"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\".",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+\/securityMarks$",
@@ -1683,7 +1683,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "The relative resource name of the SecurityMarks. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nExamples:\n\"organizations\/123\/assets\/456\/securityMarks\"\n\"organizations\/123\/sources\/456\/findings\/789\/securityMarks\".",
+                  "description": "The relative resource name of the SecurityMarks. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name\nExamples:\n\"organizations\/{organization_id}\/assets\/{asset_id}\/securityMarks\"\n\"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\".",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+\/assets\/[^\/]+\/securityMarks$",

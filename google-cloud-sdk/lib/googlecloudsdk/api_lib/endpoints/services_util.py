@@ -410,12 +410,13 @@ def DoesServiceExist(service_name):
     return True
 
 
-def CreateService(service_name, project):
+def CreateService(service_name, project, is_async=False):
   """Creates a Service resource.
 
   Args:
     service_name: name of the service to be created.
     project: the project Id
+    is_async: If False, the method will block until the operation completes.
   """
   messages = GetMessagesModule()
   client = GetClientInstance()
@@ -424,7 +425,9 @@ def CreateService(service_name, project):
       serviceName=service_name,
       producerProjectId=project,
   )
-  client.services.Create(create_request)
+  result = client.services.Create(create_request)
+
+  GetProcessedOperationResult(result, is_async=is_async)
 
 
 def ValidateFingerprint(fingerprint):

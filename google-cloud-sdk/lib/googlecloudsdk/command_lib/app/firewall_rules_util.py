@@ -58,6 +58,7 @@ def ParseFirewallRule(client, priority):
 
   """
   res = GetRegistry(client.ApiVersion()).Parse(
+      # TODO(b/143543614) audit usage of str
       str(ParsePriority(priority)),
       params={'appsId': client.project},
       collection='appengine.apps.firewall.ingressRules')

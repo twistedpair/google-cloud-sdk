@@ -384,7 +384,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The fingerprint of the public key to retrieve. Public keys are identified\nby their SHA-256 fingerprint. The fingerprint of the public key is in\nformat `users\/{user}\/sshPublicKeys\/{fingerprint}`.",
+                  "description": "Required. The fingerprint of the public key to retrieve. Public keys are identified\nby their SHA-256 fingerprint. The fingerprint of the public key is in\nformat `users\/{user}\/sshPublicKeys\/{fingerprint}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^users\/[^\/]+\/sshPublicKeys\/[^\/]+$",

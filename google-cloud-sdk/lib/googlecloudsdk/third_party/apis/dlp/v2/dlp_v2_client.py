@@ -49,6 +49,7 @@ class DlpV2(base_api.BaseApiClient):
     self.projects_inspectTemplates = self.ProjectsInspectTemplatesService(self)
     self.projects_jobTriggers = self.ProjectsJobTriggersService(self)
     self.projects_locations_content = self.ProjectsLocationsContentService(self)
+    self.projects_locations_image = self.ProjectsLocationsImageService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_storedInfoTypes = self.ProjectsStoredInfoTypesService(self)
     self.projects = self.ProjectsService(self)
@@ -1520,6 +1521,50 @@ to learn more.
         request_field=u'googlePrivacyDlpV2ReidentifyContentRequest',
         request_type_name=u'DlpProjectsLocationsContentReidentifyRequest',
         response_type_name=u'GooglePrivacyDlpV2ReidentifyContentResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsImageService(base_api.BaseApiService):
+    """Service class for the projects_locations_image resource."""
+
+    _NAME = u'projects_locations_image'
+
+    def __init__(self, client):
+      super(DlpV2.ProjectsLocationsImageService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Redact(self, request, global_params=None):
+      r"""Redacts potentially sensitive info from an image.
+This method has limits on input size, processing time, and output size.
+See https://cloud.google.com/dlp/docs/redacting-sensitive-data-images to
+learn more.
+
+When no InfoTypes or CustomInfoTypes are specified in this request, the
+system will automatically choose what detectors to run. By default this may
+be all types, but may change over time as detectors are updated.
+
+      Args:
+        request: (DlpProjectsLocationsImageRedactRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2RedactImageResponse) The response message.
+      """
+      config = self.GetMethodConfig('Redact')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Redact.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/locations/{location}/image:redact',
+        http_method=u'POST',
+        method_id=u'dlp.projects.locations.image.redact',
+        ordered_params=[u'parent', u'location'],
+        path_params=[u'location', u'parent'],
+        query_params=[],
+        relative_path=u'v2/{+parent}/locations/{location}/image:redact',
+        request_field=u'googlePrivacyDlpV2RedactImageRequest',
+        request_type_name=u'DlpProjectsLocationsImageRedactRequest',
+        response_type_name=u'GooglePrivacyDlpV2RedactImageResponse',
         supports_download=False,
     )
 
